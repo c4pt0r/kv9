@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "execution_kind": "direct_tool_terminal",
+  "session_id": null,
+  "terminal_receipt": "83a353",
+  "exit_code": 0,
+  "publisher_sha256": "a361b8d1d826441d343b061dc8ca006bfb689e19596634f459bc9a2e77c91302",
+  "all_original_members_decoded_and_compared": true,
+  "inventory_sha256": "7c696bd94c321b5251c0cf2fd75a9022ff6de2d30e676e08e3ba0d418fcbf5d3"
+}

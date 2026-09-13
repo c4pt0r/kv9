@@ -1,0 +1,74 @@
+{
+  "accepted_complete_operations": 353,
+  "actual_chaos_accepted": false,
+  "audit": {
+    "complete": true,
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/audit.json",
+    "result_sha256": "f98f70b231b61fc54c10b0b580e195dae1559785515581afe20b4f691511bb21",
+    "session_id": null,
+    "terminal_receipt": "e57916"
+  },
+  "client_lifetimes": 2,
+  "client_sha256": "910d1e090d85a343a39052405c8ecee5037c3ca506a9d2e699c2b3555d5f57f9",
+  "complete": true,
+  "default_promoted": false,
+  "histories": [
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "a6ba61f329f4a4742ceab0f7342fcba2824ebb46e99b249493eec3e640c0504e",
+      "operations": 175,
+      "outcomes": {
+        "ok": 161,
+        "unknown": 14
+      },
+      "transport": "tonic_stream"
+    },
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "428d0389baecb9b2f25dab49a0536d5f056c64443cb0af857963e7e0eac776af",
+      "operations": 178,
+      "outcomes": {
+        "ok": 162,
+        "unknown": 16
+      },
+      "transport": "tonic_unary"
+    }
+  ],
+  "ok_operations": 323,
+  "performance_accepted": false,
+  "recovery": {
+    "complete": true,
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/source-result.json",
+    "result_sha256": "84bd30283e8c2cc299094a95176e075b0f1b18fb176a827404f556234c695f10",
+    "session_id": 67872,
+    "terminal_receipt": "aa24b3"
+  },
+  "release": {
+    "complete": true,
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-raft-frame-buffer-release-root-first/source-result.json",
+    "result_sha256": "47ad823998a42639070b8cc8ab5833ade453e2fd55df7080b041c72b582cd677",
+    "session_id": 3608,
+    "terminal_receipt": "9285b7"
+  },
+  "release_manifest_sha256": "98a8977eac706a572ecb89e2b3aef48cde5a41f7c0d8492b0d9f7a731bd1415e",
+  "release_readback": {
+    "complete": true,
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-raft-frame-buffer-release-root-first/readback-first/result.json",
+    "result_sha256": "a7d79f22b669900fc4091b9921778fcf03275b872bd1795df1f8351db1c04c6c",
+    "session_id": null,
+    "terminal_receipt": "f47eb6"
+  },
+  "server_lifetimes": 5,
+  "server_sha256": "53945784b39f7c90951b96d6f0700f432412369c24f26dcdd1d27e1988541c8c",
+  "source_and_inputs_unchanged": true,
+  "source_files": 657,
+  "source_revision": "01d128fd771dfbf0e6826ee5b6821411afac1fec",
+  "source_tree_sha256": "356a3b321a86e5f4e46f631d9e5d40f902656db175dfd6073e631c93754b84a1",
+  "unknown_operations": 30
+}

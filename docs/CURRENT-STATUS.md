@@ -38,8 +38,11 @@ The separate [single-buffer Raft WAL experiment `01d128f`](https://github.com/c4
 removes one allocation and body copy per record. Three source-bound universal
 SMT checks and three counterexample controls pass, as do 710 workspace tests/
 doctests, formatting and Clippy (23 existing tests ignored). Its new compatibility
-test covers 3,840 frames. Exact release, ordinary recovery, actual Chaos Mesh and
-matched performance remain pending; it is separate from the CRC comparison.
+test covers 3,840 frames. Its [exact release and ordinary recovery](WRITE-RAFT-FRAME-BUFFER-RECOVERY.md)
+now pass: 353 complete operations, 323 OK / 30 unknown, six fresh voter drains
+and seven exited lifetimes. Default features, ThinLTO, source/binary/cache
+bindings and original resource guards pass. Actual Chaos Mesh and matched
+performance remain pending; it is separate from the CRC comparison.
 The first capacity tranche now passes independent readback: 387 batches,
 4,042 archived WALs, 8,225 decode receipts and 13,817 closed recorded lifetimes.
 The reader reports 30,673,645,568 bytes of conservative recovery. Both earlier

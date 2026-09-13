@@ -128,8 +128,11 @@ original failed audit and schema repair remain retained without workload reruns.
    or response fences. Three universal SMT checks, three counterexample controls,
    710 workspace tests/doctests, formatting and Clippy pass. Its 23 ignored tests
    are existing; the new writer/replay compatibility case covers 3,840 frames.
-   Keep its exact release, recovery, actual Chaos and performance qualification
-   separate from the frozen CRC A/B screen; no speedup is established.
+   Its [exact release and ordinary recovery](WRITE-RAFT-FRAME-BUFFER-RECOVERY.md)
+   now pass: 353 complete operations, 323 OK / 30 unknown, six fresh drains and
+   seven exited lifetimes. Next qualify the exact release under actual Chaos
+   Mesh, then matched performance and full regressions. Keep these gates
+   separate from CRC; no frame-buffer speedup is established.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.

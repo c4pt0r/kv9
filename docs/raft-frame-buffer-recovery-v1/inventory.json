@@ -1,0 +1,681 @@
+{
+  "all_members_decoded_and_compared": true,
+  "archive": {
+    "bytes": 315798,
+    "name": "original-evidence.tar.gz",
+    "sha256": "4dc4c229a95b2a3dd6045e8028df92988d7f31f7b9c086328f0a89b008cf2e7e"
+  },
+  "complete": true,
+  "decoded_member_bytes": 3720389,
+  "ended_ns": 1789269517634050656,
+  "excluded_executables": [
+    {
+      "bytes": 16141088,
+      "sha256": "53945784b39f7c90951b96d6f0700f432412369c24f26dcdd1d27e1988541c8c",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/kv9"
+    },
+    {
+      "bytes": 3420912,
+      "sha256": "910d1e090d85a343a39052405c8ecee5037c3ca506a9d2e699c2b3555d5f57f9",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/workload/kv9-batch-workload"
+    }
+  ],
+  "files": {
+    "audit/audit.json": {
+      "bytes": 10500,
+      "sha256": "f98f70b231b61fc54c10b0b580e195dae1559785515581afe20b4f691511bb21",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/audit.json"
+    },
+    "audit/batch-tonic-stream-history-checked.json": {
+      "bytes": 18341,
+      "sha256": "54ce4ceb3493475dd514159efaddf29add1d0394bda30f8ac1d854703fcfbb3f",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/batch-tonic-stream-history-checked.json"
+    },
+    "audit/batch-tonic-stream-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/batch-tonic-stream-raw-history.stderr"
+    },
+    "audit/batch-tonic-stream-raw-history.stdout": {
+      "bytes": 633,
+      "sha256": "71667c1ac16bf1bfce06a49399f81510ad88fe7d4aaf7e06ab8499a69739897b",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/batch-tonic-stream-raw-history.stdout"
+    },
+    "audit/batch-tonic-stream-report-checked.json": {
+      "bytes": 21035,
+      "sha256": "f40b588ca6cfc45e73169a3a951a0374b44c0f35dda323dc3f49ba2a429b9ddf",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/batch-tonic-stream-report-checked.json"
+    },
+    "audit/batch-tonic-unary-history-checked.json": {
+      "bytes": 18715,
+      "sha256": "8470a04769b88a6896b4fbf953f54868f2e60655499b44dcbb0589b6bbb53967",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/batch-tonic-unary-history-checked.json"
+    },
+    "audit/batch-tonic-unary-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/batch-tonic-unary-raw-history.stderr"
+    },
+    "audit/batch-tonic-unary-raw-history.stdout": {
+      "bytes": 750,
+      "sha256": "e02e3ea96f05a7254a084bd5a9a1577ddcbc530d40e50da97a31d6fd5b83cea4",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/batch-tonic-unary-raw-history.stdout"
+    },
+    "audit/batch-tonic-unary-report-checked.json": {
+      "bytes": 21452,
+      "sha256": "005dc85d354797c813d76fc9bd5748f5202dc50782c992d66fa8ea403834cdfd",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/batch-tonic-unary-report-checked.json"
+    },
+    "audit/commands.json": {
+      "bytes": 1941,
+      "sha256": "9f96553e84be0296dd18122e18cb4d31059f052a4606ff9aa837eb8e88103ae9",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/commands.json"
+    },
+    "audit/original-inputs.json": {
+      "bytes": 12637,
+      "sha256": "e788ae5ed98ac40c29b3010f282c033ebf4e8cb813b5b3bea8d623df37e49807",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/original-inputs.json"
+    },
+    "audit/source-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/source-head.stderr"
+    },
+    "audit/source-head.stdout": {
+      "bytes": 41,
+      "sha256": "ef76d9ff59c6f7e5c46d3c3c7e3e1c48b3f16e7e690e24b298b46a6bbfcd673e",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/source-head.stdout"
+    },
+    "audit/source-status.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/source-status.stderr"
+    },
+    "audit/source-status.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-audit-first/source-status.stdout"
+    },
+    "preparation/READINESS.pending.json": {
+      "bytes": 508,
+      "sha256": "2070a693abbc974194c80977e75d93b04088585764f829ced2d07bd75b4eb3c7",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/READINESS.pending.json"
+    },
+    "preparation/README.md": {
+      "bytes": 3662,
+      "sha256": "1090cd00b604cd5b304b5221e7afb6c2533aaebb0c2e1559807ebb5c8e27ff3f",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/README.md"
+    },
+    "preparation/audit-terminal.json": {
+      "bytes": 311,
+      "sha256": "f9bd09e1ed43ff05ab54a164811ea7f49964e18067f702db62fb7577d265a0a4",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/audit-terminal.json"
+    },
+    "preparation/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/audit.py"
+    },
+    "preparation/audit.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/audit.py.diff"
+    },
+    "preparation/commands.final.json": {
+      "bytes": 1829,
+      "sha256": "2e1051545866a9b08da6fac145676d9bf8d113eff2e029d254c1793a66267a61",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/commands.final.json"
+    },
+    "preparation/commands.pending.json": {
+      "bytes": 1836,
+      "sha256": "da0b276a45ad4e69f9ce02435847a20fcc0a4c28372db33d7f7a7e823f35c6e2",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/commands.pending.json"
+    },
+    "preparation/inventory.final.json": {
+      "bytes": 2519,
+      "sha256": "0099833446555d5f4a49a4eeabd6e014ccd4653a1f2c4858661e81eb5ee83b97",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/inventory.final.json"
+    },
+    "preparation/inventory.pending.json": {
+      "bytes": 2064,
+      "sha256": "d529799a879cbdb691b2efbfb3c3b167c04a250d8e8b36aa6f1fc2fa4415a74d",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/inventory.pending.json"
+    },
+    "preparation/originals/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/originals/audit.py"
+    },
+    "preparation/originals/process-runner.py": {
+      "bytes": 730,
+      "sha256": "b7c71d7fe1392d53cb26dfd6b9926fd8fbc964813974d3b488b1da2edaf7335a",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/originals/process-runner.py"
+    },
+    "preparation/originals/run-process.py": {
+      "bytes": 2208,
+      "sha256": "f6738dffb027b3a5847af02677571a13825581f47b33e429a2c1115f1532817b",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/originals/run-process.py"
+    },
+    "preparation/process-runner.py": {
+      "bytes": 727,
+      "sha256": "baeb13d9cbd16f42cadd7677d2870611c388857cfd1b12f6d8e8d90c806de775",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/process-runner.py"
+    },
+    "preparation/process-runner.py.diff": {
+      "bytes": 585,
+      "sha256": "019239741d44e9aef7bb79848c99e062bd319b4008da06a7fc517cdf11467c8e",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/process-runner.py.diff"
+    },
+    "preparation/process-terminal.json": {
+      "bytes": 282,
+      "sha256": "d2cf5c4d5359a340280a9deedb72497f45b243ae76cad4800d33fe20912119be",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/process-terminal.json"
+    },
+    "preparation/release-binding.final.json": {
+      "bytes": 5743,
+      "sha256": "f62ee336260b68ea51e168a6c4ee524c52315e2e46bd5056ece6c681bdd94185",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/release-binding.final.json"
+    },
+    "preparation/release-binding.pending.json": {
+      "bytes": 699,
+      "sha256": "4cecfd3f91b0d27993aec295ea188ad8b5051dd17b4b1eea09ded6199f6526f7",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/release-binding.pending.json"
+    },
+    "preparation/run-process.py": {
+      "bytes": 2223,
+      "sha256": "696db4d5da370904ed7503a2c4725312a70e4ed3528fe69986598c4e91a1c0cc",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/run-process.py"
+    },
+    "preparation/run-process.py.diff": {
+      "bytes": 1088,
+      "sha256": "76a9f89405098b7530e3c78943d35b0eaec96dd75d27d36ab1f1c93c6340e2f1",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/run-process.py.diff"
+    },
+    "preparation/source-diff.json": {
+      "bytes": 5840,
+      "sha256": "86487b3e97b27de52298e34369c71a15f0bf3b8173c0f69ab35d01bcf325147d",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/source-diff.json"
+    },
+    "preparation/source-first.log": {
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/source-first.log"
+    },
+    "preparation/source-invocation.json": {
+      "bytes": 812,
+      "sha256": "cddbf6478e75aa304b626237016094d00c003cb6922a72881edba53d316d1d36",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/source-invocation.json"
+    },
+    "preparation/source-result.json": {
+      "bytes": 1133,
+      "sha256": "84bd30283e8c2cc299094a95176e075b0f1b18fb176a827404f556234c695f10",
+      "source": "/tmp/kv9-write-raft-frame-buffer-recovery-preparation-first/source-result.json"
+    },
+    "process/batch-tonic-stream-checked.json": {
+      "bytes": 21035,
+      "sha256": "f40b588ca6cfc45e73169a3a951a0374b44c0f35dda323dc3f49ba2a429b9ddf",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream-checked.json"
+    },
+    "process/batch-tonic-stream-config.json": {
+      "bytes": 787,
+      "sha256": "8d6c4ce5ddf113eeaf803dfd1e3fea57a090d54234404e131c7e7b16dd4790d9",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream-config.json"
+    },
+    "process/batch-tonic-stream.log": {
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream.log"
+    },
+    "process/batch-tonic-stream.stop": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream.stop"
+    },
+    "process/batch-tonic-stream/build.json": {
+      "bytes": 487,
+      "sha256": "08dbdb06c4fac11cb98cfaf9fe8515892f754a574fe33528a7b2cc22f028550a",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream/build.json"
+    },
+    "process/batch-tonic-stream/config.json": {
+      "bytes": 821,
+      "sha256": "fd98434286101290b658c2fa8594b8c0f3862840429d8753f14c0f3bd6179a72",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream/config.json"
+    },
+    "process/batch-tonic-stream/history.jsonl": {
+      "bytes": 404769,
+      "sha256": "a6ba61f329f4a4742ceab0f7342fcba2824ebb46e99b249493eec3e640c0504e",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream/history.jsonl"
+    },
+    "process/batch-tonic-stream/progress.json": {
+      "bytes": 720,
+      "sha256": "771793899cb0218157e66dd09bbc5ee9912bc55e48819f2ff860ce35319db064",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream/progress.json"
+    },
+    "process/batch-tonic-stream/ready.json": {
+      "bytes": 72,
+      "sha256": "b480aa4c8c0776074b23a08e05715997c7f21f706a8777fc21c188397031cc96",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream/ready.json"
+    },
+    "process/batch-tonic-stream/report.json": {
+      "bytes": 200576,
+      "sha256": "25b5669973b5e8a0abd7959f3987ae4b0ff48f1deba584cb41e602945f9a1273",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-stream/report.json"
+    },
+    "process/batch-tonic-unary-checked.json": {
+      "bytes": 21452,
+      "sha256": "005dc85d354797c813d76fc9bd5748f5202dc50782c992d66fa8ea403834cdfd",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary-checked.json"
+    },
+    "process/batch-tonic-unary-config.json": {
+      "bytes": 819,
+      "sha256": "f0c28f448bb4d3362b74137b8b19943f102bb28e289be0dc825b11025a434d91",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary-config.json"
+    },
+    "process/batch-tonic-unary.log": {
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary.log"
+    },
+    "process/batch-tonic-unary.stop": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary.stop"
+    },
+    "process/batch-tonic-unary/build.json": {
+      "bytes": 487,
+      "sha256": "08dbdb06c4fac11cb98cfaf9fe8515892f754a574fe33528a7b2cc22f028550a",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary/build.json"
+    },
+    "process/batch-tonic-unary/config.json": {
+      "bytes": 818,
+      "sha256": "5d06440fee362d1edc47085de5fb59f0277503882964f6f43eac565e194d5bce",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary/config.json"
+    },
+    "process/batch-tonic-unary/history.jsonl": {
+      "bytes": 409991,
+      "sha256": "428d0389baecb9b2f25dab49a0536d5f056c64443cb0af857963e7e0eac776af",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary/history.jsonl"
+    },
+    "process/batch-tonic-unary/progress.json": {
+      "bytes": 720,
+      "sha256": "46535d787ece5f66b4cff3b4f3ba0081d6300a0855c00cb727e51eb358ab3fa4",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary/progress.json"
+    },
+    "process/batch-tonic-unary/ready.json": {
+      "bytes": 71,
+      "sha256": "f72f5c682ee6481b47d0412b3b5136c2aacdca324c9e45c0f151a123c4c4986e",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary/ready.json"
+    },
+    "process/batch-tonic-unary/report.json": {
+      "bytes": 200650,
+      "sha256": "5b3148780057729d5723f51f1e1f3441b8c8a3a9ce1925f98ab20d0b2bacbdaf",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/batch-tonic-unary/report.json"
+    },
+    "process/fixture/command-000.json": {
+      "bytes": 347,
+      "sha256": "5de5a629b34ef6cfe3f2582d5e9d1b61d87dd347e841e110c9f1e04ac28919e3",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-000.json"
+    },
+    "process/fixture/command-001.json": {
+      "bytes": 347,
+      "sha256": "654e5b82acc1cf87f9d7ac86369a292b7d2d91a4faaf4b1fbf3863d356247184",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-001.json"
+    },
+    "process/fixture/command-002.json": {
+      "bytes": 347,
+      "sha256": "bad7b8b51ccaec80845506d8f9ec3ae9bcaff3d54c315f7e3f6cd038d587e36d",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-002.json"
+    },
+    "process/fixture/command-003.json": {
+      "bytes": 961,
+      "sha256": "5823c891b327a911827292ae72157f1f0594c7a7466cccddd5ca67383c5e6ab4",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-003.json"
+    },
+    "process/fixture/command-004.json": {
+      "bytes": 629,
+      "sha256": "cf0232bb2c26123d1b4ed4dbd1dd59b0c0a2a9c57eca44d9318f408e590d1042",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-004.json"
+    },
+    "process/fixture/command-005.json": {
+      "bytes": 629,
+      "sha256": "64b8fb34e8c67ae93b4574e6a88be83888ca3a46d716f87c9fe20f93b051ef9c",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-005.json"
+    },
+    "process/fixture/command-006.json": {
+      "bytes": 629,
+      "sha256": "551bfd238df60e1b390a0e46417d9ee6f74edd173159fd8e26d0acec9436a451",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-006.json"
+    },
+    "process/fixture/command-007.json": {
+      "bytes": 325,
+      "sha256": "1075f5f48cdb458abe121612ddb703259b4a02b204d3c298c214f64c329adaa3",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-007.json"
+    },
+    "process/fixture/command-008.json": {
+      "bytes": 325,
+      "sha256": "c8eed3195a4464d7b3d0cabddbdc9cda2606cea60681bd509f4a303c7410a8fd",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/command-008.json"
+    },
+    "process/fixture/data/n1/catalog.segments/4669944fe3202cf50795a6cb6f8581b5/00000000000000000001.wal": {
+      "bytes": 174117,
+      "sha256": "4994e19a0527379d3e92e6dc67e7720de0d617f8d12d814e90a8cf022378aa19",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/catalog.segments/4669944fe3202cf50795a6cb6f8581b5/00000000000000000001.wal"
+    },
+    "process/fixture/data/n1/catalog.wal": {
+      "bytes": 117,
+      "sha256": "d1af8b728dfc40bfa110fce06432713eabf2e24c1cb79533ae40abe3b0826d75",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/catalog.wal"
+    },
+    "process/fixture/data/n1/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/kv9-initialized"
+    },
+    "process/fixture/data/n1/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "7e27b364b647ffdb563de4ff2089288a484ef2bba5ce62095051b365478d5138",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/kv9-root-descriptor"
+    },
+    "process/fixture/data/n1/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "8745b58c5bd7c9a68ec0a7b8e90eb4ec90341f9d43b6eecab324e2a0214112d2",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/kv9-serving-endpoint"
+    },
+    "process/fixture/data/n1/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "e9dd62bc18edecf39add1335feb9158759cc84d8692b4f5ef0211ee8c8674816",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/kv9-store-identity"
+    },
+    "process/fixture/data/n1/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "435e84d230d703572f9b39baef70f12a1fb63f9e15cebfd39e48bd2e3bcc5329",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/kv9-store-lifecycle"
+    },
+    "process/fixture/data/n1/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/kv9-store-lock"
+    },
+    "process/fixture/data/n1/metrics.json": {
+      "bytes": 61834,
+      "sha256": "0f7a23683d5c0e443457e4e7aaa7f9eb177012bbe4356a57512d066eb70aa4cc",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/metrics.json"
+    },
+    "process/fixture/data/n1/raft/raft.log": {
+      "bytes": 179489,
+      "sha256": "255d405ac4f12202ac682faa65f4b3d9df62928d8fec9eb79cbf216ab76e4ce9",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/raft/raft.log"
+    },
+    "process/fixture/data/n1/status": {
+      "bytes": 3433,
+      "sha256": "eb20783b0734fb94d70c547cf0afb3189168676ea0f13364515f02922e7a00f2",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n1/status"
+    },
+    "process/fixture/data/n2/catalog.segments/6bb7dfd45f49bfaf82a752e1a097ff94/00000000000000000001.wal": {
+      "bytes": 174037,
+      "sha256": "262f98595515eacedef147152aa951afe09afb5f9f1d05c16be8d26dbb4729e7",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/catalog.segments/6bb7dfd45f49bfaf82a752e1a097ff94/00000000000000000001.wal"
+    },
+    "process/fixture/data/n2/catalog.wal": {
+      "bytes": 117,
+      "sha256": "c1115ec31429f0c1a486ad0de24da7197451c75ff6003108e7819bf1278e50e5",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/catalog.wal"
+    },
+    "process/fixture/data/n2/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/kv9-initialized"
+    },
+    "process/fixture/data/n2/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "7e27b364b647ffdb563de4ff2089288a484ef2bba5ce62095051b365478d5138",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/kv9-root-descriptor"
+    },
+    "process/fixture/data/n2/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "c77f3ac660c4aaf5d841dea2a18133822af6faccc8844d57dea04d4f976342e9",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/kv9-serving-endpoint"
+    },
+    "process/fixture/data/n2/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "040e35803cbc5b5895d49604f15df2b3d4458747b5b1e5d1a7e5ff00add4bcfb",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/kv9-store-identity"
+    },
+    "process/fixture/data/n2/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "a3d5aed499d03af100d8976e53466b503aa0cb71413a4420902dc54c68f4c0dd",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/kv9-store-lifecycle"
+    },
+    "process/fixture/data/n2/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/kv9-store-lock"
+    },
+    "process/fixture/data/n2/metrics.json": {
+      "bytes": 61882,
+      "sha256": "2d996497351961d60c32688ac66b6b207fc651bd6838215ea6fd3e631977765a",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/metrics.json"
+    },
+    "process/fixture/data/n2/raft/raft.log": {
+      "bytes": 179441,
+      "sha256": "2e7faf735ee4258fa91823bcb359d11847ba5e401a8f8831aa90e12a0df7ecf3",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/raft/raft.log"
+    },
+    "process/fixture/data/n2/status": {
+      "bytes": 3433,
+      "sha256": "9e7a0f346ef72f655ef8d0ffb4ef75370277ff7675abae32d9d456b99093c82e",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n2/status"
+    },
+    "process/fixture/data/n3/catalog.segments/3c4cf2535383cb5da0cd84f3374333c4/00000000000000000001.wal": {
+      "bytes": 175637,
+      "sha256": "f311acbd004a65b0b5bbb269ca1db6269321b0255fb3fdf470ece128682817ab",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/catalog.segments/3c4cf2535383cb5da0cd84f3374333c4/00000000000000000001.wal"
+    },
+    "process/fixture/data/n3/catalog.wal": {
+      "bytes": 117,
+      "sha256": "25a14d3d2cc48a12a2a8ad6f05cbb017bff63f7108efa75ff30bc88a84cfc874",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/catalog.wal"
+    },
+    "process/fixture/data/n3/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/kv9-initialized"
+    },
+    "process/fixture/data/n3/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "7e27b364b647ffdb563de4ff2089288a484ef2bba5ce62095051b365478d5138",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/kv9-root-descriptor"
+    },
+    "process/fixture/data/n3/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "eebc705aebdf4da4862116889d294cf81b7789c07d84b4ee06d51767a3b4c660",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/kv9-serving-endpoint"
+    },
+    "process/fixture/data/n3/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "53e0f00f8aeb1d29a62279fd9a062042a6c7b2916ba5d568be0c976c3fc9f0a6",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/kv9-store-identity"
+    },
+    "process/fixture/data/n3/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "959f59b06f639afb029da87e8499d65ac1db0501b27a8b2a7b8b0c4db049d099",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/kv9-store-lifecycle"
+    },
+    "process/fixture/data/n3/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/kv9-store-lock"
+    },
+    "process/fixture/data/n3/metrics.json": {
+      "bytes": 63340,
+      "sha256": "b3125107719110e680f0bfe5fb7492452516fc273644995efcbd9242a02a5674",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/metrics.json"
+    },
+    "process/fixture/data/n3/raft/raft.log": {
+      "bytes": 180123,
+      "sha256": "ae51e5bb51b18c4c18994507df7fd740a2709f8d33fcef3731d822a69837e2b6",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/raft/raft.log"
+    },
+    "process/fixture/data/n3/status": {
+      "bytes": 3465,
+      "sha256": "17059147a41c1c3bbb609fe97b343461be0c9f3b390734449f40ed2cd5ece4ec",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/data/n3/status"
+    },
+    "process/fixture/fixture.json": {
+      "bytes": 3205,
+      "sha256": "4521014ec740cb5d504a778d8895d680d26fc8f70e996ea330875471e0b9958d",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/fixture.json"
+    },
+    "process/fixture/n1-restart.log": {
+      "bytes": 115,
+      "sha256": "14157554106afc2dfc5b69f642f9eb616cd80ffdc8ece72fa374d85222470d9b",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/n1-restart.log"
+    },
+    "process/fixture/n1.log": {
+      "bytes": 115,
+      "sha256": "14157554106afc2dfc5b69f642f9eb616cd80ffdc8ece72fa374d85222470d9b",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/n1.log"
+    },
+    "process/fixture/n2-restart.log": {
+      "bytes": 115,
+      "sha256": "65dc886162ad5d41d42ac44c291dec6004579752f818951c9ed82ba167259571",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/n2-restart.log"
+    },
+    "process/fixture/n2.log": {
+      "bytes": 115,
+      "sha256": "65dc886162ad5d41d42ac44c291dec6004579752f818951c9ed82ba167259571",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/n2.log"
+    },
+    "process/fixture/n3.log": {
+      "bytes": 115,
+      "sha256": "c57799a982394cc5a2bcbb13b76789a3702615df872450f7e51da79eb3005eb2",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/n3.log"
+    },
+    "process/fixture/root.bin": {
+      "bytes": 179,
+      "sha256": "7e27b364b647ffdb563de4ff2089288a484ef2bba5ce62095051b365478d5138",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/fixture/root.bin"
+    },
+    "process/summary.json": {
+      "bytes": 200143,
+      "sha256": "03caaa9bf8d2d50fc19ac50f903c8104d58c1a445a3ba5f11ee9c03e59e9c396",
+      "source": "/tmp/kv9-write-raft-frame-buffer-process-first/summary.json"
+    },
+    "release-root/check-release.py": {
+      "bytes": 6789,
+      "sha256": "8a18346e445d2b5ecaf45ced6e52f90d27acce14b3283b36fc5971cce1625dd6",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/check-release.py"
+    },
+    "release-root/preflight.json": {
+      "bytes": 1591,
+      "sha256": "8fa3a0b05bee70321c25e7175c955e8f5c3c4d506f8678a1a9aeb2e8f6519782",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/preflight.json"
+    },
+    "release-root/readback-first/input-hashes.json": {
+      "bytes": 125595,
+      "sha256": "987881d1f6d90a5446cff55258b93f3c132454bb5cacdd066907da350b17f975",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/readback-first/input-hashes.json"
+    },
+    "release-root/readback-first/result.json": {
+      "bytes": 15202,
+      "sha256": "a7d79f22b669900fc4091b9921778fcf03275b872bd1795df1f8351db1c04c6c",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/readback-first/result.json"
+    },
+    "release-root/readback-first/terminal.json": {
+      "bytes": 325,
+      "sha256": "d8571400fa436309fd230791b6a3622fdfa37d6e746543de73cd677243d90984",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/readback-first/terminal.json"
+    },
+    "release-root/run-release.py": {
+      "bytes": 2246,
+      "sha256": "5e666455fbfb79beff705b3fc8080f377b6932a135a6ee338a37a4298e005919",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/run-release.py"
+    },
+    "release-root/source-first.log": {
+      "bytes": 178,
+      "sha256": "581ed04c8bb7fbb85c07cf5656bc841209df6280224b50593dd9b37fe0c62282",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/source-first.log"
+    },
+    "release-root/source-invocation.json": {
+      "bytes": 782,
+      "sha256": "a984ec99f7e5347f1a06bebfb4853936508cbed2ab2cac0426ef6ddc7f73f07f",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/source-invocation.json"
+    },
+    "release-root/source-result.json": {
+      "bytes": 1637,
+      "sha256": "47ad823998a42639070b8cc8ab5833ade453e2fd55df7080b041c72b582cd677",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/source-result.json"
+    },
+    "release-root/terminal.json": {
+      "bytes": 273,
+      "sha256": "50c7fb8fed5b689e5f51b7b87815edf6110752b805cd1b683ffef6fb2fba691f",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-root-first/terminal.json"
+    },
+    "release/build.json": {
+      "bytes": 73340,
+      "sha256": "98a8977eac706a572ecb89e2b3aef48cde5a41f7c0d8492b0d9f7a731bd1415e",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/build.json"
+    },
+    "release/cache-clean.stderr": {
+      "bytes": 3450,
+      "sha256": "1d2c0fdf480744d01e1873362e2b9047fd797087cd0c8dd2c013ad3a7dd2e9cf",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/cache-clean.stderr"
+    },
+    "release/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/cache-clean.stdout"
+    },
+    "release/cache-metadata.json": {
+      "bytes": 27229,
+      "sha256": "01097c59294bc82320d238898132ea4f65f2285b5cfd0a525cd8d726f1d9d07f",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/cache-metadata.json"
+    },
+    "release/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/cache-metadata.log"
+    },
+    "release/cache-safety.json": {
+      "bytes": 21709,
+      "sha256": "e89e061a46c247507436018d2263b3fcad3872a9bdd2a9c3901a551140f530c9",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/cache-safety.json"
+    },
+    "release/kv9-build.log": {
+      "bytes": 8685,
+      "sha256": "7c1ab00b703a6ad1e27de0cf6a1afc7d4d1da0cb93e5571fca0598cf53105859",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/kv9-build.log"
+    },
+    "release/kv9-cargo.jsonl": {
+      "bytes": 212026,
+      "sha256": "cae70376e902b34d5a855577e29ddc34d88c003e2e0447a2afa196bce7007313",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/kv9-cargo.jsonl"
+    },
+    "release/workload/build.json": {
+      "bytes": 487,
+      "sha256": "08dbdb06c4fac11cb98cfaf9fe8515892f754a574fe33528a7b2cc22f028550a",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/workload/build.json"
+    },
+    "release/workload/build.log": {
+      "bytes": 19849,
+      "sha256": "1b0b84c2f40a2515a74c325532e60c6186f0dedb6e58746c36a5fe56906e87e6",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/workload/build.log"
+    },
+    "release/workload/cargo.jsonl": {
+      "bytes": 209014,
+      "sha256": "3f404d0ab7718f85df121e9c84ff20e59a141dfa863b94509ca21135b7189837",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/workload/cargo.jsonl"
+    },
+    "release/workload/sources.json": {
+      "bytes": 68975,
+      "sha256": "197751f52b84e0d15eb05d45eb1d7a6f064b1753f6d17141616cf33b15e952a0",
+      "source": "/tmp/kv9-write-raft-frame-buffer-release-first/workload/sources.json"
+    }
+  },
+  "final_available_bytes": 121449680896,
+  "initial_available_bytes": 121450000384,
+  "main_archive_allowance_bytes": 67108864,
+  "main_archive_bytes_after": 64408311,
+  "scope": "Exact original release/recovery evidence bytes; full original small process/WAL/history inputs included, retained ELF payloads separately hash-bound",
+  "started_ns": 1789269517584024536
+}
