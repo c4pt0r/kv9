@@ -1,0 +1,23 @@
+; Universal frame-layout equality. FNV is any deterministic 32-bit function;
+; its implementation is unchanged. Vec append/slice/copy semantics are premises.+(set-option :produce-models true)
+(define-sort Bytes () (Seq (_ BitVec 8)))
+(define-fun be32 ((word (_ BitVec 32))) Bytes
+  (seq.++ (seq.unit ((_ extract 31 24) word))
+          (seq.unit ((_ extract 23 16) word))
+          (seq.unit ((_ extract 15 8) word))
+          (seq.unit ((_ extract 7 0) word))))
+(declare-const payload Bytes)
+(declare-const kind (_ BitVec 8))
+(declare-fun fnv (Bytes) (_ BitVec 32))
+(assert (< (seq.len payload) 67108864))
+(define-fun body () Bytes (seq.++ (seq.unit kind) payload))
+(define-fun body-length () Int (+ 1 (seq.len payload)))
+(define-fun header () Bytes (be32 ((_ int2bv 32) body-length)))
+(define-fun historical () Bytes (seq.++ header (be32 (fnv body)) body))
+(define-fun staged () Bytes (seq.++ header (be32 #x00000000) (seq.unit kind) payload))
+(define-fun hash-body () Bytes (seq.extract staged 8 body-length))
+(define-fun finished () Bytes
+  (seq.++ (seq.extract staged 0 4) (be32 (fnv hash-body))
+          (seq.extract staged 8 body-length)))
+(assert (distinct historical finished))
+(check-sat)

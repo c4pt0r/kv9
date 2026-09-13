@@ -355,13 +355,15 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                 "raft log record exceeds the replay format limit".into(),
             ));
         }
-        let mut body = Vec::with_capacity(1 + payload.len());
-        body.push(kind);
-        body.extend_from_slice(payload);
-        let mut rec = Vec::with_capacity(8 + body.len());
-        rec.extend_from_slice(&(body.len() as u32).to_be_bytes());
-        rec.extend_from_slice(&fnv1a(&body).to_be_bytes());
-        rec.extend_from_slice(&body);
+        let body_len = 1 + payload.len();
+        let mut rec = Vec::with_capacity(8 + body_len);
+        rec.extend_from_slice(&(body_len as u32).to_be_bytes());
+        rec.extend_from_slice(&[0; 4]);
+        rec.push(kind);
+        rec.extend_from_slice(payload);
+        // Hash the final body in place; filling the checksum cannot change it.
+        let checksum = fnv1a(&rec[8..]);
+        rec[4..8].copy_from_slice(&checksum.to_be_bytes());
         metrics
             .write
             .measure(|| file.write_all(&rec))
@@ -532,6 +534,56 @@ mod tests {
             data: data.to_vec().into(),
             ..Default::default()
         }
+    }
+
+    #[test]
+    fn single_buffer_records_match_the_historical_frame_bytes() {
+        let dir = tmp();
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("frame-compatibility.log");
+        let mut file = OpenOptions::new()
+            .create_new(true)
+            .read(true)
+            .write(true)
+            .open(&path)
+            .unwrap();
+        let metrics = WalIoMetrics::default();
+        let mut expected = Vec::new();
+        let mut records = Vec::new();
+        // Preserve the previous encoder as a compatibility oracle, including
+        // every kind byte and payload lengths on both sides of common widths.
+        for kind in 0..=u8::MAX {
+            for size in [0, 1, 3, 4, 7, 8, 9, 15, 16, 31, 32, 63, 64, 127, 128] {
+                let payload: Vec<u8> = (0..size)
+                    .map(|offset| (offset as u8).wrapping_mul(73).wrapping_add(kind))
+                    .collect();
+                let mut body = vec![kind];
+                body.extend_from_slice(&payload);
+                expected.extend_from_slice(&(body.len() as u32).to_be_bytes());
+                expected.extend_from_slice(&fnv1a(&body).to_be_bytes());
+                expected.extend_from_slice(&body);
+                DiskRaftStorage::<OsFileSystem>::write_record_unsynced(
+                    &metrics, &mut file, kind, &payload,
+                )
+                .unwrap();
+                records.push((kind, payload));
+            }
+        }
+        file.seek(SeekFrom::Start(0)).unwrap();
+        let mut actual = Vec::new();
+        file.read_to_end(&mut actual).unwrap();
+        assert_eq!(actual, expected, "historical Raft WAL bytes changed");
+        let mut at = 0;
+        for (kind, payload) in records {
+            let (decoded_kind, decoded_payload, next) = next_record(&actual, at).unwrap();
+            assert_eq!(decoded_kind, kind);
+            assert_eq!(decoded_payload, payload);
+            at = next;
+        }
+        assert_eq!(at, actual.len());
+        assert!(next_record(&actual, at).is_none());
+        drop(file);
+        std::fs::remove_dir_all(dir).unwrap();
     }
 
     #[test]
