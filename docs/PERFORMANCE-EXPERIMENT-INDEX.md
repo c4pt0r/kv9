@@ -20,10 +20,16 @@ Redis WAIT 1/2 reach 229,760.166 / 232,465.084 point writes/s and about four
 million batch items/s. Preserve KV9's 9.437–9.568-ms loaded batch p99 and the
 volatile-storage/durability limits. This is a baseline, not a selected speedup.
 The CRC reapplication passes its [actual 21-window Chaos campaign](WRITE-CRC-CHAOS.md)
-and independent audit/cleanup: 9,833 complete operations. Twenty-eight A/B
-environment controls pass; matched candidate timing still awaits qualified
-capacity. No CRC speedup or default promotion is established. Read
-optimization remains held; no lease performance result is established.
+and independent audit/cleanup: 9,833 complete operations. Its [matched write
+comparison](WRITE-CRC-PERFORMANCE.md) now passes eight smokes and sixteen timed
+cohorts: loaded BatchPut(64) improves 18.807% to 1,063,493.134 items/s, with p99
+of 6.947–7.012 ms; loaded point writes improve 2.786% to 139,402.831/s.
+Full point/batch and mixed-read regressions remain before default promotion.
+The separate frame-buffer candidate now passes source, release, ordinary
+recovery and [actual Chaos qualification](WRITE-RAFT-FRAME-BUFFER-CHAOS.md);
+its [comparison preparation](WRITE-RAFT-FRAME-BUFFER-PERFORMANCE-PLAN.md) passes
+28 local controls, but performance is still unmeasured pending capacity.
+Read optimization remains held; no lease performance result is established.
 
 The [leader-lease proof](LEADER-LEASE-PROOF.md) is a new design checkpoint:
 eight TLAPS lemmas / 23 obligations plus real-clock containment show how to
@@ -50,8 +56,8 @@ adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
-| Single-buffer Raft WAL frame `01d128f` | Experimental on selected ThinLTO, separate from CRC. Removes one allocation/body copy. Three source-bound universal SMT checks, three counterexample controls, 710 workspace tests/doctests (23 existing ignored), formatting and Clippy pass. New compatibility test writes/replays 3,840 frames. Exact release, recovery, actual Chaos and performance remain pending. [Source qualification](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md). |
-| Slicing-by-eight engine CRC `e5662bb`, reapplied as `e748620` | Experimental on selected ThinLTO. Fresh 47-theorem proof, 710 workspace tests/doctests (23 existing ignored), release, 363-operation ordinary recovery and [actual 21-window Chaos](WRITE-CRC-CHAOS.md) pass. Matched performance remains pending capacity. [Current qualification](write-reference-qualification-v1/README.md); [historical qualification](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md). |
+| Single-buffer Raft WAL frame `01d128f` | Experimental on selected ThinLTO, separate from CRC. Removes one allocation/body copy. Three source-bound universal SMT checks, three counterexample controls, 710 workspace tests/doctests (23 existing ignored), formatting and Clippy pass. New compatibility test writes/replays 3,840 frames. [Exact release and 353-operation recovery](WRITE-RAFT-FRAME-BUFFER-RECOVERY.md) and [actual 21-window Chaos](WRITE-RAFT-FRAME-BUFFER-CHAOS.md) pass: 9,818 complete Chaos operations, four final drains and all 34 recorded server lifetimes exited. Performance remains unmeasured. [Source qualification](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md). |
+| Slicing-by-eight engine CRC `e5662bb`, reapplied as `e748620` | Experimental on selected ThinLTO. Fresh 47-theorem proof, 710 workspace tests/doctests (23 existing ignored), release, 363-operation ordinary recovery and [actual 21-window Chaos](WRITE-CRC-CHAOS.md) pass. [Matched write comparison](WRITE-CRC-PERFORMANCE.md) passes: loaded BatchPut(64) +18.807% with lower pooled p99; loaded point writes +2.786%. Full read/mixed regression remains pending capacity before promotion. [Current qualification](write-reference-qualification-v1/README.md); [historical qualification](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md). |
 | Independent per-request stream tasks `f2c4e85` | Retained; older c64 GET +38.15–38.93%, with better mean/p99. [Original report](https://github.com/c4pt0r/kv9/blob/cf5c87e/docs/PARALLEL-STREAM-GET-PERFORMANCE.md). |
 | Linux jemalloc `629bee4` | Held: older c64 GET +4.47% / +6.24% and better mean/p99, with aggregate mean voter RSS +23.1% / +25.9%. Larger working sets and mixed/write qualification remain necessary. [Report](https://github.com/c4pt0r/kv9/blob/d79ea48/docs/JEMALLOC-SERVER-PERFORMANCE.md). |
 | One RPC runtime worker `711631b` | Rejected for throughput/latency regression. [Report](https://github.com/c4pt0r/kv9/blob/99993db/docs/RPC-WORKER-SCREENING.md). |

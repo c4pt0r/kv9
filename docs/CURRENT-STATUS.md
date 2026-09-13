@@ -46,8 +46,13 @@ and independent audit now pass: 9,818 complete operations, 9,250 OK / 539 unknow
 29 refused, four fresh drains and all 34 recorded server lifetimes exited.
 Cleanup preserves all eight historical namespaces. The first post-run audit's
 missing historical timestamp-receipt path is repaired with its predicates and
-original failure retained; the live workload was not rerun. Matched performance
-and full regressions remain pending; it is separate from the CRC comparison.
+original failure retained; the live workload was not rerun. Its [matched write
+preparation](WRITE-RAFT-FRAME-BUFFER-PERFORMANCE-PLAN.md) now passes 28 local
+controls: eight driver, fifteen auditor and five smoke-schema checks. All eight
+smoke and sixteen timed cohorts remain unrun. The empirical capacity scenario
+requires 170.15 GB available against 120.13 GB at the retained observation, a
+50.02 GB gap. Full regressions also remain pending; this candidate is separate
+from CRC and has no measured speedup.
 The first capacity tranche now passes independent readback: 387 batches,
 4,042 archived WALs, 8,225 decode receipts and 13,817 closed recorded lifetimes.
 The reader reports 30,673,645,568 bytes of conservative recovery. Both earlier

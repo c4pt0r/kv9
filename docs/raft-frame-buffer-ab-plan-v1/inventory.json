@@ -1,0 +1,669 @@
+{
+  "archive_bytes": 958948,
+  "archive_sha256": "b4e42830f908bf86f8244d60ff0f029d0632de6ec6851b29bc21620375e264c3",
+  "capacity_qualified": false,
+  "decoded_bytes": 6631706,
+  "inputs": {
+    "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/audit/terminal.json": {
+      "bytes": 661,
+      "sha256": "de01f76c2ba85a241638673ed3f118600726548129c1784f47c36c792cf16c55"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/smoke-capacity-release.json": {
+      "bytes": 264263,
+      "sha256": "e11e7878bbfeeedab65e6281e788864165aa0ee483edf58efde37a68b8159f64"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/smoke/terminal.json": {
+      "bytes": 273,
+      "sha256": "593c4a8a261ac64932cef352eb987eda364ea83cf5a880adf3a1c9bc110d9aa1"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/summary/terminal.json": {
+      "bytes": 788,
+      "sha256": "244fe33141dbe4752ffa64e3fab69a05705031c82fbd8f69432b6362ef5ecf15"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/timing-capacity-release.json": {
+      "bytes": 268052,
+      "sha256": "a826ba7f328791c8c78ec7b9235fc4d3af98379a91deedfcb0c514c03f666f9f"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/timing/terminal.json": {
+      "bytes": 274,
+      "sha256": "5b6eff4efd4a0c88117ed2efdcc2712176606327ce339423af9207184bf0fd3b"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-preparation-first/capacity.json": {
+      "bytes": 2809,
+      "sha256": "c588e029548d85e1dd019577712b19d3864ce3558b0853bc24a058b0f0ce6bee"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-preparation-first/protocol.json": {
+      "bytes": 20029,
+      "sha256": "49243195c106b935d834685394eb2ccb1db8725662e757e8cc8f4a62e4e505a5"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-preparation-first/results-first/audit.json": {
+      "bytes": 454046,
+      "sha256": "93270a96c7264ba8f8430c43f8f749185b6f08408161e8b5eaec854a9e0ef865"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-preparation-first/results-first/combined-physical-retention.json": {
+      "bytes": 1585050,
+      "sha256": "c573d1d2859f4f8e64e0a43fec77859f69744af9c189f88bc45f2e06252bec99"
+    },
+    "/tmp/kv9-write-crc-slicing8-ab-preparation-first/results-first/logical-original-inventory.json": {
+      "bytes": 2202108,
+      "sha256": "34c47ada25d19e1e30e5901e127750b372dfb4e83fce0201ee8ac08c60e7d592"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-capacity-preparation-first/README.md": {
+      "bytes": 5698,
+      "sha256": "aff7a74355c7a1e5ad8f2afd8674ea03559a54f589761930b2bac482bbe6de0f"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-capacity-preparation-first/derive.py": {
+      "bytes": 9672,
+      "sha256": "81cbb2e04d3a1041574333a7cd0d078726a162ebd2a1238a7f3986696bb19bd6"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-capacity-preparation-first/inventory.json": {
+      "bytes": 750,
+      "sha256": "93831f17cb6c7e4df40f724d83eb0782836a6420b8917fe8efe4e022d1316780"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-capacity-preparation-first/invocation.json": {
+      "bytes": 789,
+      "sha256": "7590c96435c5c3e9c48001d4ab22248b911e164c6d24b159fab99640a698878b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-capacity-preparation-first/result-first.json": {
+      "bytes": 27442,
+      "sha256": "dcfdcf77adbb8fc4ebea71f5baea5b01b3c239bcec1fa43778eef6efe16da047"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-capacity-preparation-first/source-bindings.json": {
+      "bytes": 920,
+      "sha256": "58e9bd67f7ce3154ac59734ceabdebff7b8193afc8bd6609045ca22cdfff606c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/0.stderr": {
+      "bytes": 106,
+      "sha256": "9a892959df7726cdab6d9abf3526c4bb92d6ccd7e74d34b6df76f76601d2834b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/0.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/1.stderr": {
+      "bytes": 2083,
+      "sha256": "aae00f78c672254fa12a8ca46099ee804cdd4e192c4df7631a13499858cedf4b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/1.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/2.stderr": {
+      "bytes": 644,
+      "sha256": "bd30cc636d997bfc3fb1bf5cb1a2d85204bfe0bc7b38b4a7c9eee4736c95c01e"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/2.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/result.json": {
+      "bytes": 1659,
+      "sha256": "82f88eeb5d13092b1a8d7142434fa6283e6a5650fff1c37e2230e36ba4bcb590"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/run.py": {
+      "bytes": 1450,
+      "sha256": "13a821523a3c3dee150a94e69d11766eb1838780853c9471fbdae3b55450a959"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/run.py.diff": {
+      "bytes": 874,
+      "sha256": "f6d4c0a3ea264175c13f3e86095379e1b1ff55071b328c14d38aeb8885287fd9"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-contract-root-first/terminal.json": {
+      "bytes": 507,
+      "sha256": "c2cedf0a6618849eeb4e306a9791b059622f21825cfc8bac7f358fac37df730e"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/READINESS.json": {
+      "bytes": 1264,
+      "sha256": "8d51fd9620a9d755dee5762f7c459a1ef3cb049de505ee17c5467f03a45a00ef"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/README.md": {
+      "bytes": 6653,
+      "sha256": "e6004699158102968fc9e689237fa35b41fa4e1dece8b1ea80c0b6050d1dab60"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/STATIC.json": {
+      "bytes": 915,
+      "sha256": "09a18ca503d32ed732eb60a5aa1e9e267d7503ae715c242fdf0eb203fa12ecfc"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/audit.py": {
+      "bytes": 56337,
+      "sha256": "6ba26050606126c37cd15d1bdf7b327197643109b802bce0b3908df21cb42a5a"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/audit.py.diff": {
+      "bytes": 6149,
+      "sha256": "b32ed86541e30176def13cf67fb2583a6f65571d737752483139df55e7f18041"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/build-bindings.json": {
+      "bytes": 5519,
+      "sha256": "a0075f3ff3cea4219a15e65444a5e2df77dc35d7409070d25ef148a0c4d5bf22"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/build-bindings.json.diff": {
+      "bytes": 4061,
+      "sha256": "fc018341e87f82e03d268a47c3d0b5c8a02bca70a91ecbb4c8ee3a71c8f64256"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/capacity.json": {
+      "bytes": 1905,
+      "sha256": "d501b69c89192f3ec1d4defad440eaee53279e521124e84e64990d59c503a7b3"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/capacity.object-only-initial.json": {
+      "bytes": 1320,
+      "sha256": "838803ef111b27ea223737a004faa6396d392af9db5e5d89d04be745459d8890"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/check-smoke-corrected.py": {
+      "bytes": 4584,
+      "sha256": "1f284fc2afd492b90fd4324271e7a5e1e7bca9816e56695d392fe6db4927e557"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/check-smoke-corrected.py.diff": {
+      "bytes": 1393,
+      "sha256": "7ed6d1970457425cb822323ea3ce9aeefb9c6f09cd0e59e555f9876e30ffa3a7"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/commands.json": {
+      "bytes": 3965,
+      "sha256": "b422b68848d95ca2f1a2c2a39815ac79ecb321e4a54199ef3d022fbf02e20066"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/commands.json.diff": {
+      "bytes": 4173,
+      "sha256": "a6da4aa4213bb37e647e5ab6ccfa03ecd1a374bde64dab2bdbf57f45f0d1f3fc"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/compressed_retention.py": {
+      "bytes": 24610,
+      "sha256": "63dead163f2c660ea954309c6d10d356aa2a806c520d2960df60a3d7d622ac2e"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/compressed_retention.py.diff": {
+      "bytes": 834,
+      "sha256": "cbbe7097db40893d48644ad7858613b0ebdf32c44995e3a897fc22d0a99a999b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/derive.py": {
+      "bytes": 11874,
+      "sha256": "96ed0241c163f94d76a9f7870d7c06063008bf6fc5aaa0bfa571546a21d15301"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/driver-arguments.json": {
+      "bytes": 541,
+      "sha256": "72119cad3eab1c32ee51bc4a6a662a26c4a3de73de42c61e6e8ef967e7e25d5d"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/driver-arguments.json.diff": {
+      "bytes": 536,
+      "sha256": "011624f11422e87be0edce3843290dea13ba2e1555d5e92c062761d20f50211f"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/expected-descriptors.json": {
+      "bytes": 14156,
+      "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/function-delta.json": {
+      "bytes": 3915,
+      "sha256": "5b4a389134187596b789457ec49c38bd9c82c1331e24f3b4a961b716bd08ac74"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/inventory.json": {
+      "bytes": 23228,
+      "sha256": "d949a45598b4a15e3db387c02d8d99a4262efe962f78306e0768e656bcd80a98"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/matched-driver.py": {
+      "bytes": 51909,
+      "sha256": "0c638fa43f0cef0d7843dd5fa2d38d46aef6719ed9f577bf81bbcd04ec61f984"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/matched-driver.py.diff": {
+      "bytes": 3528,
+      "sha256": "b3caeeb0bd6215b98bd541f34e58b40bfb3e68d3c4641e06d4edb22933c56399"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/original-input-pins.json": {
+      "bytes": 5304,
+      "sha256": "7359d81fc4dfa2a0ceca37f810e86eee0c1cab4e0dd154522e1525dc61a36a9b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-controls/result.json": {
+      "bytes": 1641,
+      "sha256": "87e2d20e8f0306ede24063665ca8167ec152ef1960718341f5c57f6bf56c6f91"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/READINESS.json": {
+      "bytes": 1232,
+      "sha256": "455ed24e3f232eb664820e1b94e2b1c4d59a4fa027be6455b492fa404f3e7f67"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/README.md": {
+      "bytes": 6133,
+      "sha256": "721a57ea9bfe30629460b16de86996b8384615745a6ed5edef35f62c59f26e73"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/STATIC.json": {
+      "bytes": 890,
+      "sha256": "7ebdd75a6cca989688ff6e3049bad2768ac1cfbd29261ba8615b8d7ccfd3aea2"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/audit.py": {
+      "bytes": 56318,
+      "sha256": "391df0c4d2a032152d36a8a70767784e07fb09c3fe42848bc733733ca05f53ca"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/audit.py.diff": {
+      "bytes": 18318,
+      "sha256": "39dcb7852d73088c18271748c8625089a628782e876efbbf2c9575da3bd04c64"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/build-bindings.json": {
+      "bytes": 3958,
+      "sha256": "fba7133d4b9d8c556ad09e6d0eb27ce6a58bce4c3988afdac406b6d256f7f9b9"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/capacity.json": {
+      "bytes": 2809,
+      "sha256": "c588e029548d85e1dd019577712b19d3864ce3558b0853bc24a058b0f0ce6bee"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/commands.json": {
+      "bytes": 3598,
+      "sha256": "e4eeef82b0c7987d4a8ca2306bf19717327ed24fa20a9ff8a51fccbc347e7ffd"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/compressed_retention.py": {
+      "bytes": 24600,
+      "sha256": "8d9647f0b90cc9d6bad30443613ac4971371755bbe9231f3bb11d068a7159fca"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/compressed_retention.py.diff": {
+      "bytes": 849,
+      "sha256": "d2bb7735c513643381d3fca91dbb34902f36020070386d254c86ebe5fd670baf"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/driver-arguments.json": {
+      "bytes": 539,
+      "sha256": "cf44d832cc43b83ab8c8487c0901661f78216526bf047750ce0a9190a96c98b1"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/expected-descriptors.json": {
+      "bytes": 14156,
+      "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/function-delta.json": {
+      "bytes": 2671,
+      "sha256": "62943b11a9b53b00da0460599c057e5da8a00569e86b79ca9a0101d88d5dff49"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/inventory.json": {
+      "bytes": 12810,
+      "sha256": "de26af8d419cc7c1693259098bad1e51e47f81468d54a7a9034d215f9e1105ab"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/matched-driver.py": {
+      "bytes": 51902,
+      "sha256": "537eeb3bb0e1fb533ec5648b5b114c123d2d71b791085097274414442fb77f40"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/matched-driver.py.diff": {
+      "bytes": 14222,
+      "sha256": "a7285bbaf330fb980216d0596d3e9a9f8b6e662398d0da6cc02723d1c473786a"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/matched-driver.py.review-correction.diff": {
+      "bytes": 632,
+      "sha256": "2cbfc7b19afc0658ca415299bd7b48b4bec19043c1c0a99e1b3ff8792ead2e31"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/original-input-pins.json": {
+      "bytes": 2136,
+      "sha256": "ae4f709907c642629ae90f3ff7fbaa775003b487bb3f33b19d3aac21a9bc4124"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/preparation-read-observation.json": {
+      "bytes": 353,
+      "sha256": "509759a54f7fd11b12a0e72870eaf35a95defd48e0af00d6d4795a22726ab5e7"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/preparation-terminal.json": {
+      "bytes": 611,
+      "sha256": "34b94afdae91eed91c00584f1bccfc05ba8cc74a60e33e06425efef56f39ea68"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/prepare.py": {
+      "bytes": 16412,
+      "sha256": "eaa4c40a3d2d091dabf2aa717ed340712410c617e0d9749cab97f08c313a96ee"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/protocol.json": {
+      "bytes": 20029,
+      "sha256": "49243195c106b935d834685394eb2ccb1db8725662e757e8cc8f4a62e4e505a5"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/retention_audit.py": {
+      "bytes": 16390,
+      "sha256": "4d353e003d3ed044359c544b0f2587937b25a1a069b6de8c79586a545e3f8cc2"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/retention_audit.py.diff": {
+      "bytes": 902,
+      "sha256": "411e55bf391f3bc089ae5e0cb818ce555a414ea1334fd76237858e54e1815883"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/READINESS.json": {
+      "bytes": 997,
+      "sha256": "05f1e19baa0fcc8136a5534871778f1969ca74e97f0e9362824a09013396802c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/README.md": {
+      "bytes": 5788,
+      "sha256": "3f26f7062ca293f791933e985f6b104ff0951d7ab2faa8b70ce02477351a0634"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/ROOT-REVIEW-REJECTION.json": {
+      "bytes": 321,
+      "sha256": "b380019d5ab23338237b4f05aaba42c715f59e6ff04b49f91b1a21b169e9b341"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/STATIC.json": {
+      "bytes": 655,
+      "sha256": "4eec17f568e6ba8c70e4228142311727dd5094777ca7085a0f2357f396a0314c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/audit.py": {
+      "bytes": 56318,
+      "sha256": "391df0c4d2a032152d36a8a70767784e07fb09c3fe42848bc733733ca05f53ca"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/audit.py.diff": {
+      "bytes": 18318,
+      "sha256": "39dcb7852d73088c18271748c8625089a628782e876efbbf2c9575da3bd04c64"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/build-bindings.json": {
+      "bytes": 3958,
+      "sha256": "fba7133d4b9d8c556ad09e6d0eb27ce6a58bce4c3988afdac406b6d256f7f9b9"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/capacity.json": {
+      "bytes": 2809,
+      "sha256": "c588e029548d85e1dd019577712b19d3864ce3558b0853bc24a058b0f0ce6bee"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/commands.json": {
+      "bytes": 3598,
+      "sha256": "94657a659c253f64dea704ad3e52ed7a9e084547a24e5aedc4cd289067f1cce0"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/compressed_retention.py": {
+      "bytes": 24600,
+      "sha256": "8d9647f0b90cc9d6bad30443613ac4971371755bbe9231f3bb11d068a7159fca"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/compressed_retention.py.diff": {
+      "bytes": 849,
+      "sha256": "d2bb7735c513643381d3fca91dbb34902f36020070386d254c86ebe5fd670baf"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/driver-arguments.json": {
+      "bytes": 539,
+      "sha256": "cf44d832cc43b83ab8c8487c0901661f78216526bf047750ce0a9190a96c98b1"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/expected-descriptors.json": {
+      "bytes": 14156,
+      "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/function-delta.json": {
+      "bytes": 2671,
+      "sha256": "62943b11a9b53b00da0460599c057e5da8a00569e86b79ca9a0101d88d5dff49"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/inventory.json": {
+      "bytes": 5763,
+      "sha256": "b0735a5670e9ed972869a2031212ed945d176af804cb2a1ffec470dd98a17087"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/matched-driver.py": {
+      "bytes": 51912,
+      "sha256": "721c80deab05be00767d2a61611df43837b5d4a217b6e9edd953737c33d65e6c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/matched-driver.py.diff": {
+      "bytes": 14234,
+      "sha256": "dbb24a00f74a75c2c5de1eb3618eeaaceee3db71a2ed413a26c80613b5e3c2a5"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/original-input-pins.json": {
+      "bytes": 2136,
+      "sha256": "ae4f709907c642629ae90f3ff7fbaa775003b487bb3f33b19d3aac21a9bc4124"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/preparation-read-observation.json": {
+      "bytes": 353,
+      "sha256": "509759a54f7fd11b12a0e72870eaf35a95defd48e0af00d6d4795a22726ab5e7"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/preparation-terminal.json": {
+      "bytes": 402,
+      "sha256": "96300ca437e1bf249e4d0b84a4c99d0b7fa40437b415041b570793996307100a"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/prepare.py": {
+      "bytes": 16317,
+      "sha256": "933cec573f9c6b2c4ecad01ffc439608ddf7408acf37c60877b84c5bbfef4030"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/protocol.json": {
+      "bytes": 20029,
+      "sha256": "01bc61540e9f4fbdd1678116b39686414e5346f2d900cbd083bd99edb787dae3"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/retention_audit.py": {
+      "bytes": 16390,
+      "sha256": "4d353e003d3ed044359c544b0f2587937b25a1a069b6de8c79586a545e3f8cc2"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/retention_audit.py.diff": {
+      "bytes": 902,
+      "sha256": "411e55bf391f3bc089ae5e0cb818ce555a414ea1334fd76237858e54e1815883"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/seal.py": {
+      "bytes": 13713,
+      "sha256": "6002c3de7742cbada94e7029ae468328982bbf4fdd6ed27c25d13440316a25d3"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_audit_contract.py": {
+      "bytes": 17701,
+      "sha256": "6a4ac4784a90e2fd90942569d422f3523f34d8fc921b0e0ed4222ddd7ed2ea89"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_audit_contract.py.diff": {
+      "bytes": 6999,
+      "sha256": "a516252d0426ec0c3828328737dcf0e0b3bb966f6da0b1ae05e8e3485461727c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_driver.py": {
+      "bytes": 9848,
+      "sha256": "61e9825828dce974f331fa2d8b674d1f05e635e7ccd0ba4c4801150cfb3b15e9"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_driver.py.diff": {
+      "bytes": 4975,
+      "sha256": "d890a046361ce38854b58fa6583b8b48e126229fd0c1c6dc5cff3633169a9f5b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_smoke_schema.py": {
+      "bytes": 3647,
+      "sha256": "01cf54d815177859301c51288ba92210db6283dff9f24fe6f79656f381cdbe1b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/seal.py": {
+      "bytes": 13713,
+      "sha256": "4f69a20c59c1bafdeab2bb01ff1be489df7e528ed99f9da6b5f440b1a13208e6"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/test_audit_contract.py": {
+      "bytes": 17701,
+      "sha256": "6a4ac4784a90e2fd90942569d422f3523f34d8fc921b0e0ed4222ddd7ed2ea89"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/test_audit_contract.py.diff": {
+      "bytes": 6999,
+      "sha256": "a516252d0426ec0c3828328737dcf0e0b3bb966f6da0b1ae05e8e3485461727c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/test_driver.py": {
+      "bytes": 10631,
+      "sha256": "4b973d4cf5a528faed00f5a3f06b86503c73a634abc5680616c4d4c905a3f3c3"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/test_driver.py.diff": {
+      "bytes": 5768,
+      "sha256": "0d60c6a044b8fe7b0e7d280aa6a3f8eea4d76196e14c828dd99522cdcf669a6c"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/test_driver.py.review-correction.diff": {
+      "bytes": 1229,
+      "sha256": "77d5c628f7f8ae964df3abd1065e72bbc28264bc56f55da9e9123a4cef56b7cf"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/accepted-crc-preparation/test_smoke_schema.py": {
+      "bytes": 3647,
+      "sha256": "01cf54d815177859301c51288ba92210db6283dff9f24fe6f79656f381cdbe1b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/smoke-checker-lineage/check-smoke-corrected.py": {
+      "bytes": 4574,
+      "sha256": "db6f7c1b8ff12534b96cb0d1b24d9470a0c60989f992b04bd14ed92857c2136a"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/smoke-checker-lineage/check-smoke.py": {
+      "bytes": 4386,
+      "sha256": "269066c76abe25c2a0c08c2d0806eafe580d5aab5ee5a453a28435821f765b29"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/smoke-checker-lineage/smoke-checker-import-repair.json": {
+      "bytes": 808,
+      "sha256": "688a5dc54e886791a044f4dc96aedf53cb75599340031cd729781df803c52635"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/smoke-checker-lineage/smoke-readback/result.json": {
+      "bytes": 5807,
+      "sha256": "89238a7e5b10644d3dd810215f54272194579b9f9177a339f414996feddad3b4"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/preparation-terminal.json": {
+      "bytes": 346,
+      "sha256": "373fbdac7707f39e6db4645161a2dcec55fcd5e0703c6ea0419f85c4c4bf6fb7"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/prerequisites.json": {
+      "bytes": 1055,
+      "sha256": "4a6fc4ebdd8b8e032e69df571960fefb2df25b7a2963d4c8736efcd37fd39c08"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/protocol.json": {
+      "bytes": 20049,
+      "sha256": "2f57bc8666bf3c24023582d4a6fd14b37b5b2a54f266c63df8101d6eea65b2a8"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/protocol.json.diff": {
+      "bytes": 4341,
+      "sha256": "c161993a85806a3e175f047a757dedf28c2309c7a1bdbace011eef803df6d896"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/retention_audit.py": {
+      "bytes": 16400,
+      "sha256": "f8e030d4a2f4069a47d5d2a1cef8753bd13a00492d1460ed2bf47ca1d7190da3"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/retention_audit.py.diff": {
+      "bytes": 887,
+      "sha256": "a43ac99bad4c4e1850e668358eb9af90a5bb667ed7446f280ab224392cb32a9e"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/substitutions.json": {
+      "bytes": 1779,
+      "sha256": "05f3ce9825077df0d6c06f20ca28f23c107a6aef2d4def619db7026fb4694e64"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/test_audit_contract.py": {
+      "bytes": 17706,
+      "sha256": "98ba50c13b161caf1d975fc1cc24eb19e08b61a77df974e96a488dc3ccfbe86e"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/test_audit_contract.py.diff": {
+      "bytes": 1840,
+      "sha256": "9ac9ed10c8d39fde424df5f8f0026828df660d05ef2d2eda27c3b613a341df7a"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/test_driver.py": {
+      "bytes": 10638,
+      "sha256": "0bb5fd77be5ddf8cc9087d4cd0947b6560bc5a0bee2375a05057fc4aa7aeb9b6"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/test_driver.py.diff": {
+      "bytes": 1694,
+      "sha256": "2e9974087ff865c0ce9d279cca5b816e3148fb09dccbf359dda6f76450d8c243"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/test_smoke_schema.py": {
+      "bytes": 3647,
+      "sha256": "01cf54d815177859301c51288ba92210db6283dff9f24fe6f79656f381cdbe1b"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-preparation-first/test_smoke_schema.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-publication-first/package.py": {
+      "bytes": 3362,
+      "sha256": "691508d2f8815900434d344120443cde414faf1dba367c9088ad2db9943c8677"
+    }
+  },
+  "main_original_evidence_allowance_bytes": 67108864,
+  "main_original_evidence_bytes_after": 65367259,
+  "member_count": 164,
+  "runtime_executed": false,
+  "scope": "Frozen preparation, local control receipts and capacity metadata; no frame performance run"
+}

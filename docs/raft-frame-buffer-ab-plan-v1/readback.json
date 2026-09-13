@@ -1,0 +1,16 @@
+{
+  "complete": true,
+  "archive_sha256": "b4e42830f908bf86f8244d60ff0f029d0632de6ec6851b29bc21620375e264c3",
+  "member_count": 164,
+  "decoded_bytes": 6631706,
+  "exact_original_source_readback": true,
+  "driver_controls": 8,
+  "auditor_controls": 15,
+  "smoke_schema_controls": 5,
+  "capacity_arithmetic_pass": true,
+  "capacity_qualified": false,
+  "frame_runtime_executed": false,
+  "main_original_evidence_bytes": 65367259,
+  "publication_terminal": "direct/d3ff60/0",
+  "independent_readback_terminal": "direct/e3f17b/0"
+}
