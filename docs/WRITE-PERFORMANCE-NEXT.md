@@ -99,18 +99,29 @@ original failed audit and schema repair remain retained without workload reruns.
    [Original qualification evidence](write-reference-qualification-v1/README.md)
    preserves the separate populations. Historical kernel timings are not a database speedup.
    Existing engine and Raft Ready group commit must not be reimplemented.
-4. Next: run an initial selected-versus-CRC write screen with the same fixed
-   native v3 client: point Put/BatchPut(64), c1/c64, two opposite orders, eight
-   two-second smokes and sixteen ten-second timed cohorts. Reserve capacity
-   before launch; retain original 96-GiB preflight and every storage cap/floor.
+4. Completed: the [selected-versus-CRC write screen](WRITE-CRC-PERFORMANCE.md)
+   with the fixed native v3 client: point Put/BatchPut(64), c1/c64, two opposite
+   orders, eight two-second smokes and sixteen ten-second timed cohorts.
+   All 7,126,939 measured calls succeed once, without unknowns or drops.
+   Loaded batch improves 18.807% to 1,063,493.134 items/s; p99 falls from
+   9.306–9.437 ms to 6.947–7.012 ms. Loaded point writes improve 2.786%.
+   Capacity, source/CPU bindings, 64 timed lifetimes, 48 drains/bindings and
+   all retained bytes pass independent acceptance under the original guards.
    Its [actual 21-window Chaos histories](WRITE-CRC-CHAOS.md), independent audit
    and cleanup now pass: 9,833 complete operations, 600 unknowns and 28 refusals.
-   Twenty-eight A/B environment controls pass; no A/B workload has run.
-   Qualify useful
-   improvements with full point/batch and mixed-read regression coverage, applicable exact
+   Twenty-eight A/B environment controls and five summary arithmetic controls
+   pass. Next, qualify this improvement with full point/batch and mixed-read
+   regression coverage, applicable exact
    source proofs, ordinary recovery and actual Chaos Mesh fault histories before
    default promotion. Preserve loaded batch-write p99 and fixed-rate client-drop
    limitations; an aggregate throughput gain alone is insufficient.
+   The [full regression preparation](write-crc-full-regression-plan-v1/README.md)
+   specifies 24 smokes and 48 timed native cohorts, with point/batch APIs,
+   0/50/100% reads, c1/c64 and two complete opposite orders. Its empirical
+   storage reservation is about 202.38 GB against 121.50 GB observed free,
+   leaving about 80.88 GB to qualify. This is a planning scenario, not a fit
+   guarantee or runtime-ready release. Keep all original caps/floors; continue
+   the separate frame-buffer release/recovery work while capacity is resolved.
 5. Continue with measured checksum, allocation, batching and replication costs.
    The isolated [single-buffer Raft WAL experiment `01d128f`](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
    removes a body allocation/copy without changing frame bytes, checksums, sync

@@ -6,6 +6,15 @@ latency approaching Redis with one primary and two replicas. Reads stay at the
 selected baseline; read parity is not a prerequisite for this write phase.
 See the [write comparison contract and executable plan](WRITE-PERFORMANCE-NEXT.md).
 
+The [CRC write A/B](WRITE-CRC-PERFORMANCE.md) now passes all eight smoke and
+sixteen timed cohorts plus independent acceptance: 7,126,939 measured
+single-attempt successes, no unknown writes or drops. Loaded BatchPut(64)
+improves **18.807%** to **1,063,493.134 items/s**, with p99 falling from
+**9.306–9.437 ms to 6.947–7.012 ms**. Loaded point writes improve **2.786%**
+to **139,402.831 calls/s**. Both orders improve throughput and mean in all
+four workload cells. Full read/mixed regressions remain before promotion;
+selected runtime stays `11113f6`.
+
 The [three-node Redis write comparison](WRITE-REDIS3-BASELINE.md) now passes
 12 smoke and 24 timed cohorts: 18,993,624 measured successful calls, all with
 one data-command attempt, no errors, unknown writes or dropped slots. At c64,
@@ -20,7 +29,8 @@ and ordinary recovery: 363 complete operations, including 26 unknowns.
 Its [actual 21-window Chaos Mesh campaign](WRITE-CRC-CHAOS.md), independent
 audit and cleanup now pass: 9,833 complete operations, including 600 unknowns
 and 28 refusals; all 34 observed server lifetimes have exited. Candidate A/B
-timing remains pending capacity qualification; 28 environment controls pass.
+timing and its unchanged independent auditor now pass; 28 environment controls
+and five summary arithmetic controls also pass.
 The selected runtime is unchanged. The baseline audit's smoke-schema
 repair and all original failures remain retained; no workload was rerun.
 
@@ -35,7 +45,12 @@ The first capacity tranche now passes independent readback: 387 batches,
 The reader reports 30,673,645,568 bytes of conservative recovery. Both earlier
 reader failures are preserved: inode reuse needed file-type checks, and a retained
 negative-test symlink needed exact own-block accounting without traversal. The
-second 251-batch tranche is running; benchmark capacity is not yet released.
+second tranche also passes: 251 batches, 1,654 WALs, 3,308 decode receipts,
+5,968 closed recorded lifetimes and 29,103,132,672 conservative recovered bytes.
+Conditional first-party dev-cache invalidation added 4,754,497,536 observed
+free bytes with release hashes unchanged. Fresh capacity releases admitted the
+completed A/B under every original guard. This does not claim the separate
+64-GiB planning recovery target or a worst-case fit guarantee.
 
 ## Delivered foundation and product limits
 
@@ -165,7 +180,7 @@ The quorum-path diagnosis is complete; the owner-poll candidate has passed its
 source/proof, clean build and ordinary recovery checkpoints, but its completed
 performance screen rejects promotion.
 
-## Latest completed optimization experiment
+## Selected optimization baseline
 
 [ThinLTO complete72 qualification](RELEASE-THIN-LTO-FULL72.md) improves throughput
 and mean latency in all 12 point/batch workload cells and both run orders.
