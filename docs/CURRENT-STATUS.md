@@ -30,9 +30,12 @@ SMT checks and three counterexample controls pass, as do 710 workspace tests/
 doctests, formatting and Clippy (23 existing tests ignored). Its new compatibility
 test covers 3,840 frames. Exact release, ordinary recovery, actual Chaos Mesh and
 matched performance remain pending; it is separate from the CRC comparison.
-The first capacity tranche completed 387 batches and reports 30,684,045,312 bytes
-of conservative recovery. Independent readback stopped at a process-reference
-check; that failure remains under investigation, so capacity is not released.
+The first capacity tranche now passes independent readback: 387 batches,
+4,042 archived WALs, 8,225 decode receipts and 13,817 closed recorded lifetimes.
+The reader reports 30,673,645,568 bytes of conservative recovery. Both earlier
+reader failures are preserved: inode reuse needed file-type checks, and a retained
+negative-test symlink needed exact own-block accounting without traversal. The
+second 251-batch tranche is running; benchmark capacity is not yet released.
 
 ## Delivered foundation and product limits
 
