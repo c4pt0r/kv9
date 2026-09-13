@@ -149,8 +149,15 @@ original failed audit and schema repair remain retained without workload reruns.
    Clippy pass; an actual file probe confirms one `writev` and following `fsync`
    per frame. Its [exact release and ordinary recovery](WRITE-SEGMENT-VECTORED-RECOVERY.md)
    now pass: 352 complete operations, 29 unknowns, six fresh drains and seven
-   exited lifetimes. Qualify actual Chaos and performance separately before
-   promotion. No throughput gain is assumed.
+   exited lifetimes. Its [actual 21-window Chaos Mesh qualification](WRITE-SEGMENT-VECTORED-CHAOS.md)
+   now passes on the original attempt: 9,636 operations, 9,037 OK / 572 unknown /
+   27 refused, four fresh drains and all 34 recorded server lifetimes exited.
+   Independent complete-history checking, full archive readback and owned cleanup
+   pass. A guarded cleanup of this completed source gate's first-party dev cache
+   increased observed free space by 4.76 GB with all protected binaries unchanged;
+   it does not resolve the larger performance reservations. Qualify matched
+   throughput, tail latency and full regressions before promotion. No vectored-WAL
+   throughput gain is assumed.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
