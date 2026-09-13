@@ -1,0 +1,15 @@
+{
+  "complete": true,
+  "package_session_id": 94432,
+  "package_exit_code": 0,
+  "package_terminal_receipt": "b23f1c",
+  "package_result_path": "/tmp/kv9-write-raft-frame-buffer-chaos-publication-post-repair-preparation-first/result.json",
+  "package_result_sha256": "adcc6beee52edde135a8e0ac5e19258fc5a4f3941ee19969b2de035e4a158db0",
+  "integrity_verifier_execution_kind": "direct_tool_terminal",
+  "integrity_verifier_exit_code": 0,
+  "integrity_verifier_terminal_receipt": "5fdfad",
+  "runtime_terminal": "18991/d17a3c/0",
+  "first_post_terminal": "direct/63c5fa/1",
+  "accepted_post_terminal": "36002/bedb0d/0",
+  "workload_rerun": false
+}

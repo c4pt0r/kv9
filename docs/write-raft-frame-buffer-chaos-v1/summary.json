@@ -1,0 +1,63 @@
+{
+  "complete": true,
+  "revision": "01d128fd771dfbf0e6826ee5b6821411afac1fec",
+  "windows": 21,
+  "histories": {
+    "cli": {
+      "sha256": "d82f44ddf4d975f74dda1b46df111cab29dabbbc4e68cc91213e93fc0167282c",
+      "bytes": 3175351,
+      "invokes": 5604,
+      "returns": 5604,
+      "outcomes": {
+        "ok": 5093,
+        "unknown": 499,
+        "refused": 12
+      }
+    },
+    "persistent": {
+      "sha256": "acfb971ad0adb0643e16d4531ef963d79be75f0a6640538b3ab3f605dc9a5706",
+      "bytes": 1112930,
+      "invokes": 1512,
+      "returns": 1512,
+      "outcomes": {
+        "ok": 1496,
+        "unknown": 14,
+        "refused": 2
+      }
+    },
+    "native": {
+      "sha256": "01501283adc632fe5862c7bcaf17c8ae756f7877ede3447366158849917881d6",
+      "bytes": 6827531,
+      "invokes": 2702,
+      "returns": 2702,
+      "outcomes": {
+        "ok": 2661,
+        "refused": 15,
+        "unknown": 26
+      }
+    }
+  },
+  "operations": 9818,
+  "outcomes": {
+    "ok": 9250,
+    "unknown": 539,
+    "refused": 29
+  },
+  "fresh_final_voter_drains": 4,
+  "observed_server_lifetimes": 34,
+  "owned_container_count": 25,
+  "namespace_removed": true,
+  "historical_namespaces_preserved": 8,
+  "cleanup_processes": 8,
+  "archive_verified": true,
+  "performance_measured": false,
+  "selected_runtime_changed": false,
+  "runtime_terminal": "18991/d17a3c/0",
+  "post_terminal": "36002/bedb0d/0",
+  "post_root": "/tmp/kv9-write-raft-frame-buffer-chaos-post-repair-root-first",
+  "first_post_terminal": "direct/63c5fa/1",
+  "auditor_repair": "/tmp/kv9-write-raft-frame-buffer-chaos-audit-repair-first/audit.py",
+  "auditor_repair_sha256": "c7e23c69a5dd68ffb65967aa34effa3a1c973ff79fc0b0ab478c59e98c44176f",
+  "auditor_repair_scope": "Read and pin original timestamp-control receipt already declared by the frozen plan; historical parser controls apply through import-path-only equivalence; all full-history and fault predicates preserved.",
+  "workload_rerun": false
+}

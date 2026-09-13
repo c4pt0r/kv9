@@ -1,0 +1,16 @@
+{
+  "complete": true,
+  "started_ns": 1789271663924193473,
+  "initial_available_bytes": 120178716672,
+  "maximum_added_bytes": 1073741824,
+  "original_benchmark_guards_unchanged": true,
+  "members": 2361,
+  "decoded_bytes": 456176082,
+  "compressed_bytes": 23140146,
+  "compressed_sha256": "2ace2f1aab3820a160e4f21451b853bb7dcda711ce9435c3e005f09fd375d140",
+  "parts": 12,
+  "inventory_sha256": "746c37121216e391dba73b73c43fb0804d46714ea564f1698902c9a6c9e0f03f",
+  "credentials_pattern_scan_passed": true,
+  "ended_ns": 1789271666771972489,
+  "final_available_bytes": 120154816512
+}
