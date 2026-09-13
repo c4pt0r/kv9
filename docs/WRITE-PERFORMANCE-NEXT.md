@@ -120,8 +120,9 @@ original failed audit and schema repair remain retained without workload reruns.
    0/50/100% reads, c1/c64 and two complete opposite orders. Its empirical
    storage reservation is about 202.38 GB against 121.50 GB observed free,
    leaving about 80.88 GB to qualify. This is a planning scenario, not a fit
-   guarantee or runtime-ready release. Keep all original caps/floors; continue
-   the separate frame-buffer release/recovery work while capacity is resolved.
+   guarantee or runtime-ready release. Keep all original caps/floors. The separate
+   frame-buffer source/release/recovery and actual Chaos gates now pass while
+   performance capacity is resolved.
 5. Continue with measured checksum, allocation, batching and replication costs.
    The isolated [single-buffer Raft WAL experiment `01d128f`](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
    removes a body allocation/copy without changing frame bytes, checksums, sync
@@ -130,8 +131,11 @@ original failed audit and schema repair remain retained without workload reruns.
    are existing; the new writer/replay compatibility case covers 3,840 frames.
    Its [exact release and ordinary recovery](WRITE-RAFT-FRAME-BUFFER-RECOVERY.md)
    now pass: 353 complete operations, 323 OK / 30 unknown, six fresh drains and
-   seven exited lifetimes. Next qualify the exact release under actual Chaos
-   Mesh, then matched performance and full regressions. Keep these gates
+   seven exited lifetimes. Its [actual 21-window Chaos Mesh campaign](WRITE-RAFT-FRAME-BUFFER-CHAOS.md)
+   and repaired independent audit now pass: 9,818 operations, 9,250 OK / 539 unknown /
+   29 refused, four fresh drains and all 34 recorded server lifetimes exited.
+   The original missing-receipt audit failure is retained; no workload was rerun.
+   Next qualify matched performance and full regressions. Keep these gates
    separate from CRC; no frame-buffer speedup is established.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC

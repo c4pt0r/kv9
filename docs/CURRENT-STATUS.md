@@ -41,8 +41,13 @@ doctests, formatting and Clippy (23 existing tests ignored). Its new compatibili
 test covers 3,840 frames. Its [exact release and ordinary recovery](WRITE-RAFT-FRAME-BUFFER-RECOVERY.md)
 now pass: 353 complete operations, 323 OK / 30 unknown, six fresh voter drains
 and seven exited lifetimes. Default features, ThinLTO, source/binary/cache
-bindings and original resource guards pass. Actual Chaos Mesh and matched
-performance remain pending; it is separate from the CRC comparison.
+bindings and original resource guards pass. Its [actual Chaos Mesh campaign](WRITE-RAFT-FRAME-BUFFER-CHAOS.md)
+and independent audit now pass: 9,818 complete operations, 9,250 OK / 539 unknown /
+29 refused, four fresh drains and all 34 recorded server lifetimes exited.
+Cleanup preserves all eight historical namespaces. The first post-run audit's
+missing historical timestamp-receipt path is repaired with its predicates and
+original failure retained; the live workload was not rerun. Matched performance
+and full regressions remain pending; it is separate from the CRC comparison.
 The first capacity tranche now passes independent readback: 387 batches,
 4,042 archived WALs, 8,225 decode receipts and 13,817 closed recorded lifetimes.
 The reader reports 30,673,645,568 bytes of conservative recovery. Both earlier

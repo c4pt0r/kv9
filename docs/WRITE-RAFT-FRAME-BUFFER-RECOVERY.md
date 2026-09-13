@@ -4,7 +4,8 @@ The separate single-buffer Raft WAL candidate `01d128f` now passes its exact
 default release and ordinary three-voter recovery gates. Independent checking
 accepts **353 complete operations: 323 OK and 30 unknown**, across streaming
 and unary RPCs. All six final replica drains pass; five server and two client
-lifetimes exit. Actual Chaos Mesh and performance qualification remain pending.
+lifetimes exit. The subsequent [actual Chaos Mesh qualification](WRITE-RAFT-FRAME-BUFFER-CHAOS.md)
+now passes; performance qualification remains pending.
 
 The [source-qualified change](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
 removes one allocation and body copy per Raft WAL record. It preserves length,
@@ -61,10 +62,10 @@ separately hash-bound. No workload was rerun and no hosted CI was dispatched.
 
 ## Remaining gates
 
-Run the candidate's actual 21-window Chaos Mesh matrix with the exact release
+The subsequent 21-window Chaos Mesh matrix now passes with the exact release
 bytes, independent full histories, fault-effect checks and owned cleanup. Keep
 the existing scope limits: a one-host fault campaign is not independent-host
-or power-loss acceptance. Then measure throughput and tail latency against
+or power-loss acceptance. Next measure throughput and tail latency against
 the selected server with the fixed benchmark client and full regressions.
 The checksum-slicing candidate remains separate until independently selected;
 this frame-buffer result changes no default runtime or industrial checklist item.
