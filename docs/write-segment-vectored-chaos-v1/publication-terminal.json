@@ -1,0 +1,26 @@
+{
+  "complete": true,
+  "package": {
+    "session_id": 10409,
+    "terminal_receipt": "efad7a",
+    "exit_code": 0,
+    "result_sha256": "c6685aac827985eaa8071dd94429480578ec0e789afd234210cf0dd1fac15a98"
+  },
+  "verify": {
+    "session_id": null,
+    "execution_kind": "direct_tool_terminal",
+    "terminal_receipt": "2feb2a",
+    "exit_code": 0
+  },
+  "runtime": {
+    "session_id": 22461,
+    "terminal_receipt": "fdf4a8",
+    "exit_code": 0
+  },
+  "post": {
+    "session_id": 88213,
+    "terminal_receipt": "67d0d5",
+    "exit_code": 0
+  },
+  "hosted_ci_dispatched": false
+}

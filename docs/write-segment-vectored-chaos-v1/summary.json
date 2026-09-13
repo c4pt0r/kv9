@@ -1,0 +1,64 @@
+{
+  "complete": true,
+  "revision": "cfd9c927f8ecd33974100f696e6b08b227d25a41",
+  "windows": 21,
+  "histories": {
+    "cli": {
+      "sha256": "b8e6ae406b10bef00c38a52af52b33b6382b708feca1a1b90bbe08ae166bfde9",
+      "bytes": 3109600,
+      "invokes": 5473,
+      "returns": 5473,
+      "outcomes": {
+        "ok": 4947,
+        "unknown": 514,
+        "refused": 12
+      }
+    },
+    "persistent": {
+      "sha256": "f949afa79def6c7ad3b7e9ed2b226b6659727434ff35e1eb3d2f314f557d8d77",
+      "bytes": 1096083,
+      "invokes": 1489,
+      "returns": 1489,
+      "outcomes": {
+        "ok": 1464,
+        "unknown": 20,
+        "refused": 5
+      }
+    },
+    "native": {
+      "sha256": "a667f743f337537fb970041ffe695b596be9bc30d81013f814d63118c34a503f",
+      "bytes": 6756673,
+      "invokes": 2674,
+      "returns": 2674,
+      "outcomes": {
+        "ok": 2626,
+        "unknown": 38,
+        "refused": 10
+      }
+    }
+  },
+  "operations": 9636,
+  "outcomes": {
+    "ok": 9037,
+    "unknown": 572,
+    "refused": 27
+  },
+  "fresh_final_voter_drains": 4,
+  "observed_server_lifetimes": 34,
+  "owned_container_count": 25,
+  "namespace_removed": true,
+  "historical_namespaces_preserved": 8,
+  "cleanup_processes": 8,
+  "archive_verified": true,
+  "performance_measured": false,
+  "selected_runtime_changed": false,
+  "runtime_terminal": "22461/fdf4a8/0",
+  "post_terminal": "88213/67d0d5/0",
+  "post_root": "/tmp/kv9-write-segment-vectored-chaos-root-first",
+  "workload_rerun": false,
+  "post_rerun": false,
+  "source_files": 661,
+  "server_sha256": "c88b79b53f10f76f4bb87c4293e1dd0de0a753e13dc1cce27bd0b44d45694581",
+  "image_id": "sha256:3c7e2ea1c640c3d0413676821571c020f692977c805b9a160da1a71db7e9c989",
+  "scope": "Exact clean cfd9c92 default-feature release server, ordinary-port tonic_stream point and native atomic batch clients, plus original CLI/catalog histories. Original 21 actual voter/storage/endpoint Chaos windows and effects; independent complete histories, source/executable/process identity and fresh final drains. Dedicated client-link/quorum acceptance, performance, cross-host, power-loss and whole-Rust proof are separate."
+}
