@@ -1,0 +1,609 @@
+{
+  "archive_bytes": 483229,
+  "archive_sha256": "af19b8d7eb2a1e39cb6e6f8cbbdc149e200db3c8b47fa4c436837d33ef3dd4c0",
+  "capacity_qualified": false,
+  "decoded_bytes": 1828502,
+  "inputs": {
+    "/tmp/kv9-write-raft-frame-buffer-ab-capacity-preparation-first/inventory.json": {
+      "bytes": 750,
+      "sha256": "93831f17cb6c7e4df40f724d83eb0782836a6420b8917fe8efe4e022d1316780"
+    },
+    "/tmp/kv9-write-raft-frame-buffer-ab-capacity-preparation-first/result-first.json": {
+      "bytes": 27442,
+      "sha256": "dcfdcf77adbb8fc4ebea71f5baea5b01b3c239bcec1fa43778eef6efe16da047"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/0.stderr": {
+      "bytes": 106,
+      "sha256": "2704072544e2da6b30b6e6f90b0a850b7c23e60d2e6c465ccc4001b9dbac77e9"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/0.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/1.stderr": {
+      "bytes": 2083,
+      "sha256": "aae00f78c672254fa12a8ca46099ee804cdd4e192c4df7631a13499858cedf4b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/1.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/2.stderr": {
+      "bytes": 644,
+      "sha256": "436156cbc6028717260e45e2f18a5f94e26c16951e015b8f3b59b6accc1e995f"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/2.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/result.json": {
+      "bytes": 1653,
+      "sha256": "06fdea54c0d952127410d371ed7012e8ea352a42b00fa51a6dd17aea3433898e"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/run.py": {
+      "bytes": 1449,
+      "sha256": "896fda2c37f86717e0f8594c2377c47d4092382ead81b57a92f820f4d75cd0ba"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-contract-root-first/terminal.json": {
+      "bytes": 361,
+      "sha256": "95397957bf3bbac228572d02ce6016c466d2c30a56e930ca41314381e3475731"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/READINESS.json": {
+      "bytes": 860,
+      "sha256": "bd657677d7355d66cb5abb0e109f98cf49907733e08dcb375e959ce600894f86"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/README.md": {
+      "bytes": 3363,
+      "sha256": "f59fa7e40289a661faba9d801f5711d9b9be51b75ace5cd4f4ab1950ae127fa7"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/STATIC.json": {
+      "bytes": 915,
+      "sha256": "89fd3c861802e27afede7e7d0944973e102dba514a0ea53ccd41b9e725bab3ae"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/audit.py": {
+      "bytes": 56330,
+      "sha256": "6bae910f90f2ed55098ce8b791981e5012b8155c4c3de83ed9364f48d540604d"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/audit.py.diff": {
+      "bytes": 6141,
+      "sha256": "00d340e9dcd324f285b377135007955e552dbac2f016eb41795e0d5647f1fcde"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/build-bindings.json": {
+      "bytes": 5703,
+      "sha256": "6bc7102fda9d714ac4997b693caaee270b18c52c14a1acccba96e3630923694b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/build-bindings.json.diff": {
+      "bytes": 4248,
+      "sha256": "9b5f674217e8ce5f6d5b08c61902f4bf68a59229d3c52cae44d99826c9748f78"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/capacity.json": {
+      "bytes": 2270,
+      "sha256": "f4fa75dddc54ce011ceda82bdea55f5957d02f63bb129d80b946c798586c6c23"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/capacity.object-only-initial.json": {
+      "bytes": 1323,
+      "sha256": "ba3685d2159d1e35dd43942f4b86e667471438882693ce794330e1006805b452"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/check-smoke-corrected.py": {
+      "bytes": 4582,
+      "sha256": "5ef55433fb7f6a15f5494e294c4879aee393721bed9a4b59b58dfb7d34e48ae1"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/check-smoke-corrected.py.diff": {
+      "bytes": 1390,
+      "sha256": "d7f8484a47999d3703734f20699922b7048c9541bd634fad673969990ac37ed2"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/commands.json": {
+      "bytes": 3949,
+      "sha256": "b4ae341c3c9025c762f8fc97289682bba95e2d348e36f8636198d7f169bf2087"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/commands.json.diff": {
+      "bytes": 4156,
+      "sha256": "d63e5cf5cb976d2ffb5df77f3944139e119dbec9019c86a318fc707fdd4b5bb5"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/compressed_retention.py": {
+      "bytes": 24608,
+      "sha256": "c958c235f9cac9e0a4f2c7ec1f32d5dd25e378ca3fc11388517ccc4c69e4d369"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/compressed_retention.py.diff": {
+      "bytes": 831,
+      "sha256": "81af322815c6b8866510ce1a47155a3ebfc19355fb41b5e504418fa9c276b00e"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/derive-origin.py": {
+      "bytes": 11874,
+      "sha256": "96ed0241c163f94d76a9f7870d7c06063008bf6fc5aaa0bfa571546a21d15301"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/derive.py": {
+      "bytes": 12465,
+      "sha256": "91a21d55428c097e372620de654f49620f38361efc03d0144d624ad2378314de"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/driver-arguments.json": {
+      "bytes": 539,
+      "sha256": "0e9604d7aea2fc47a9883f8d1dc0e52b0c10d37f6d44ca9c0058b1abc0de59f4"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/driver-arguments.json.diff": {
+      "bytes": 533,
+      "sha256": "444e81f12c8a223b08e9005fad202519cba7dcbc1ee4e003dfa085279bcea7a5"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/expected-descriptors.json": {
+      "bytes": 14156,
+      "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/frame-equivalence.json": {
+      "bytes": 4195,
+      "sha256": "b47b48c8c36f1b50234707621b09d179340fe816402fcd07136116ac8d25c89d"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/function-delta.json": {
+      "bytes": 3915,
+      "sha256": "5b4a389134187596b789457ec49c38bd9c82c1331e24f3b4a961b716bd08ac74"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/inventory.json": {
+      "bytes": 23217,
+      "sha256": "90efa1c6dadeffcfbd81e2518abbac629707cdaad2350b82fe3c679f06e3205c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/matched-driver.py": {
+      "bytes": 51906,
+      "sha256": "68050cd81727a8d3b7aafe3a8036c791de9d6bf5633e66dfadf65fcf67a633c8"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/matched-driver.py.diff": {
+      "bytes": 3524,
+      "sha256": "09acaf5fbbe5aa43ec25d3cced8d3150d163cd4cecd28027cb8e43cbdb3de2bd"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/original-input-pins.json": {
+      "bytes": 4925,
+      "sha256": "686bce1acbcc81b766c3938353f2781404d2c8cb3fb983329ef326d3250c7f89"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-controls/result.json": {
+      "bytes": 1641,
+      "sha256": "87e2d20e8f0306ede24063665ca8167ec152ef1960718341f5c57f6bf56c6f91"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/READINESS.json": {
+      "bytes": 1232,
+      "sha256": "455ed24e3f232eb664820e1b94e2b1c4d59a4fa027be6455b492fa404f3e7f67"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/README.md": {
+      "bytes": 6133,
+      "sha256": "721a57ea9bfe30629460b16de86996b8384615745a6ed5edef35f62c59f26e73"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/STATIC.json": {
+      "bytes": 890,
+      "sha256": "7ebdd75a6cca989688ff6e3049bad2768ac1cfbd29261ba8615b8d7ccfd3aea2"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/audit.py": {
+      "bytes": 56318,
+      "sha256": "391df0c4d2a032152d36a8a70767784e07fb09c3fe42848bc733733ca05f53ca"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/audit.py.diff": {
+      "bytes": 18318,
+      "sha256": "39dcb7852d73088c18271748c8625089a628782e876efbbf2c9575da3bd04c64"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/build-bindings.json": {
+      "bytes": 3958,
+      "sha256": "fba7133d4b9d8c556ad09e6d0eb27ce6a58bce4c3988afdac406b6d256f7f9b9"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/capacity.json": {
+      "bytes": 2809,
+      "sha256": "c588e029548d85e1dd019577712b19d3864ce3558b0853bc24a058b0f0ce6bee"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/commands.json": {
+      "bytes": 3598,
+      "sha256": "e4eeef82b0c7987d4a8ca2306bf19717327ed24fa20a9ff8a51fccbc347e7ffd"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/compressed_retention.py": {
+      "bytes": 24600,
+      "sha256": "8d9647f0b90cc9d6bad30443613ac4971371755bbe9231f3bb11d068a7159fca"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/compressed_retention.py.diff": {
+      "bytes": 849,
+      "sha256": "d2bb7735c513643381d3fca91dbb34902f36020070386d254c86ebe5fd670baf"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/driver-arguments.json": {
+      "bytes": 539,
+      "sha256": "cf44d832cc43b83ab8c8487c0901661f78216526bf047750ce0a9190a96c98b1"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/expected-descriptors.json": {
+      "bytes": 14156,
+      "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/function-delta.json": {
+      "bytes": 2671,
+      "sha256": "62943b11a9b53b00da0460599c057e5da8a00569e86b79ca9a0101d88d5dff49"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/inventory.json": {
+      "bytes": 12810,
+      "sha256": "de26af8d419cc7c1693259098bad1e51e47f81468d54a7a9034d215f9e1105ab"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/matched-driver.py": {
+      "bytes": 51902,
+      "sha256": "537eeb3bb0e1fb533ec5648b5b114c123d2d71b791085097274414442fb77f40"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/matched-driver.py.diff": {
+      "bytes": 14222,
+      "sha256": "a7285bbaf330fb980216d0596d3e9a9f8b6e662398d0da6cc02723d1c473786a"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/matched-driver.py.review-correction.diff": {
+      "bytes": 632,
+      "sha256": "2cbfc7b19afc0658ca415299bd7b48b4bec19043c1c0a99e1b3ff8792ead2e31"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/original-input-pins.json": {
+      "bytes": 2136,
+      "sha256": "ae4f709907c642629ae90f3ff7fbaa775003b487bb3f33b19d3aac21a9bc4124"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/preparation-read-observation.json": {
+      "bytes": 353,
+      "sha256": "509759a54f7fd11b12a0e72870eaf35a95defd48e0af00d6d4795a22726ab5e7"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/preparation-terminal.json": {
+      "bytes": 611,
+      "sha256": "34b94afdae91eed91c00584f1bccfc05ba8cc74a60e33e06425efef56f39ea68"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/prepare.py": {
+      "bytes": 16412,
+      "sha256": "eaa4c40a3d2d091dabf2aa717ed340712410c617e0d9749cab97f08c313a96ee"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/protocol.json": {
+      "bytes": 20029,
+      "sha256": "49243195c106b935d834685394eb2ccb1db8725662e757e8cc8f4a62e4e505a5"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/retention_audit.py": {
+      "bytes": 16390,
+      "sha256": "4d353e003d3ed044359c544b0f2587937b25a1a069b6de8c79586a545e3f8cc2"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/retention_audit.py.diff": {
+      "bytes": 902,
+      "sha256": "411e55bf391f3bc089ae5e0cb818ce555a414ea1334fd76237858e54e1815883"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/READINESS.json": {
+      "bytes": 997,
+      "sha256": "05f1e19baa0fcc8136a5534871778f1969ca74e97f0e9362824a09013396802c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/README.md": {
+      "bytes": 5788,
+      "sha256": "3f26f7062ca293f791933e985f6b104ff0951d7ab2faa8b70ce02477351a0634"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/ROOT-REVIEW-REJECTION.json": {
+      "bytes": 321,
+      "sha256": "b380019d5ab23338237b4f05aaba42c715f59e6ff04b49f91b1a21b169e9b341"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/STATIC.json": {
+      "bytes": 655,
+      "sha256": "4eec17f568e6ba8c70e4228142311727dd5094777ca7085a0f2357f396a0314c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/audit.py": {
+      "bytes": 56318,
+      "sha256": "391df0c4d2a032152d36a8a70767784e07fb09c3fe42848bc733733ca05f53ca"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/audit.py.diff": {
+      "bytes": 18318,
+      "sha256": "39dcb7852d73088c18271748c8625089a628782e876efbbf2c9575da3bd04c64"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/build-bindings.json": {
+      "bytes": 3958,
+      "sha256": "fba7133d4b9d8c556ad09e6d0eb27ce6a58bce4c3988afdac406b6d256f7f9b9"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/capacity.json": {
+      "bytes": 2809,
+      "sha256": "c588e029548d85e1dd019577712b19d3864ce3558b0853bc24a058b0f0ce6bee"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/commands.json": {
+      "bytes": 3598,
+      "sha256": "94657a659c253f64dea704ad3e52ed7a9e084547a24e5aedc4cd289067f1cce0"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/compressed_retention.py": {
+      "bytes": 24600,
+      "sha256": "8d9647f0b90cc9d6bad30443613ac4971371755bbe9231f3bb11d068a7159fca"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/compressed_retention.py.diff": {
+      "bytes": 849,
+      "sha256": "d2bb7735c513643381d3fca91dbb34902f36020070386d254c86ebe5fd670baf"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/driver-arguments.json": {
+      "bytes": 539,
+      "sha256": "cf44d832cc43b83ab8c8487c0901661f78216526bf047750ce0a9190a96c98b1"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/expected-descriptors.json": {
+      "bytes": 14156,
+      "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/function-delta.json": {
+      "bytes": 2671,
+      "sha256": "62943b11a9b53b00da0460599c057e5da8a00569e86b79ca9a0101d88d5dff49"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/inventory.json": {
+      "bytes": 5763,
+      "sha256": "b0735a5670e9ed972869a2031212ed945d176af804cb2a1ffec470dd98a17087"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/matched-driver.py": {
+      "bytes": 51912,
+      "sha256": "721c80deab05be00767d2a61611df43837b5d4a217b6e9edd953737c33d65e6c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/matched-driver.py.diff": {
+      "bytes": 14234,
+      "sha256": "dbb24a00f74a75c2c5de1eb3618eeaaceee3db71a2ed413a26c80613b5e3c2a5"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/original-input-pins.json": {
+      "bytes": 2136,
+      "sha256": "ae4f709907c642629ae90f3ff7fbaa775003b487bb3f33b19d3aac21a9bc4124"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/preparation-read-observation.json": {
+      "bytes": 353,
+      "sha256": "509759a54f7fd11b12a0e72870eaf35a95defd48e0af00d6d4795a22726ab5e7"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/preparation-terminal.json": {
+      "bytes": 402,
+      "sha256": "96300ca437e1bf249e4d0b84a4c99d0b7fa40437b415041b570793996307100a"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/prepare.py": {
+      "bytes": 16317,
+      "sha256": "933cec573f9c6b2c4ecad01ffc439608ddf7408acf37c60877b84c5bbfef4030"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/protocol.json": {
+      "bytes": 20029,
+      "sha256": "01bc61540e9f4fbdd1678116b39686414e5346f2d900cbd083bd99edb787dae3"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/retention_audit.py": {
+      "bytes": 16390,
+      "sha256": "4d353e003d3ed044359c544b0f2587937b25a1a069b6de8c79586a545e3f8cc2"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/retention_audit.py.diff": {
+      "bytes": 902,
+      "sha256": "411e55bf391f3bc089ae5e0cb818ce555a414ea1334fd76237858e54e1815883"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/seal.py": {
+      "bytes": 13713,
+      "sha256": "6002c3de7742cbada94e7029ae468328982bbf4fdd6ed27c25d13440316a25d3"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_audit_contract.py": {
+      "bytes": 17701,
+      "sha256": "6a4ac4784a90e2fd90942569d422f3523f34d8fc921b0e0ed4222ddd7ed2ea89"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_audit_contract.py.diff": {
+      "bytes": 6999,
+      "sha256": "a516252d0426ec0c3828328737dcf0e0b3bb966f6da0b1ae05e8e3485461727c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_driver.py": {
+      "bytes": 9848,
+      "sha256": "61e9825828dce974f331fa2d8b674d1f05e635e7ccd0ba4c4801150cfb3b15e9"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_driver.py.diff": {
+      "bytes": 4975,
+      "sha256": "d890a046361ce38854b58fa6583b8b48e126229fd0c1c6dc5cff3633169a9f5b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_smoke_schema.py": {
+      "bytes": 3647,
+      "sha256": "01cf54d815177859301c51288ba92210db6283dff9f24fe6f79656f381cdbe1b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/seal.py": {
+      "bytes": 13713,
+      "sha256": "4f69a20c59c1bafdeab2bb01ff1be489df7e528ed99f9da6b5f440b1a13208e6"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/test_audit_contract.py": {
+      "bytes": 17701,
+      "sha256": "6a4ac4784a90e2fd90942569d422f3523f34d8fc921b0e0ed4222ddd7ed2ea89"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/test_audit_contract.py.diff": {
+      "bytes": 6999,
+      "sha256": "a516252d0426ec0c3828328737dcf0e0b3bb966f6da0b1ae05e8e3485461727c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/test_driver.py": {
+      "bytes": 10631,
+      "sha256": "4b973d4cf5a528faed00f5a3f06b86503c73a634abc5680616c4d4c905a3f3c3"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/test_driver.py.diff": {
+      "bytes": 5768,
+      "sha256": "0d60c6a044b8fe7b0e7d280aa6a3f8eea4d76196e14c828dd99522cdcf669a6c"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/test_driver.py.review-correction.diff": {
+      "bytes": 1229,
+      "sha256": "77d5c628f7f8ae964df3abd1065e72bbc28264bc56f55da9e9123a4cef56b7cf"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/accepted-crc-preparation/test_smoke_schema.py": {
+      "bytes": 3647,
+      "sha256": "01cf54d815177859301c51288ba92210db6283dff9f24fe6f79656f381cdbe1b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/smoke-checker-lineage/check-smoke-corrected.py": {
+      "bytes": 4574,
+      "sha256": "db6f7c1b8ff12534b96cb0d1b24d9470a0c60989f992b04bd14ed92857c2136a"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/smoke-checker-lineage/check-smoke.py": {
+      "bytes": 4386,
+      "sha256": "269066c76abe25c2a0c08c2d0806eafe580d5aab5ee5a453a28435821f765b29"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/smoke-checker-lineage/smoke-checker-import-repair.json": {
+      "bytes": 808,
+      "sha256": "688a5dc54e886791a044f4dc96aedf53cb75599340031cd729781df803c52635"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/smoke-checker-lineage/smoke-readback/result.json": {
+      "bytes": 5807,
+      "sha256": "89238a7e5b10644d3dd810215f54272194579b9f9177a339f414996feddad3b4"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/prerequisites.json": {
+      "bytes": 1081,
+      "sha256": "a2d7016b60b351a14858abe12ba31c0e1d5033970541d14159e8b6b01478a997"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/protocol.json": {
+      "bytes": 20051,
+      "sha256": "0a841b04a175e654d48d3516b42a4840f38ca670c643d372d99e3bec1959a538"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/protocol.json.diff": {
+      "bytes": 4342,
+      "sha256": "45164196116e4a50b33b3d52761dc99b316f3e760b76ac029f863c55ab694028"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/retention_audit.py": {
+      "bytes": 16398,
+      "sha256": "aed270f2e70f109254740bd1904b8c2430b6f71b9c375e8678a003001350748b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/retention_audit.py.diff": {
+      "bytes": 884,
+      "sha256": "dade053a6980a607b7c6b13c44835338e2d38bce773a19cdfde026348b87b003"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/substitutions.json": {
+      "bytes": 1773,
+      "sha256": "bc03b75dc1af58c518e4f5127409dbab730cf1ebca77c08dcd79e32401c240f7"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/test_audit_contract.py": {
+      "bytes": 17705,
+      "sha256": "dcd83d8fd841b54b22cf9d08d1e602cc3669c8b233f9d43fbeb53471d0ca8836"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/test_audit_contract.py.diff": {
+      "bytes": 1838,
+      "sha256": "1888fb59efbac0bad98502d5e9f1103d8d654d1ea1bef4b037842ea4ff1f4675"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/test_driver.py": {
+      "bytes": 10635,
+      "sha256": "df3f9f8d12d5646cd8f7db4946767d452ff541f7e1505b3b13404f4a200813fe"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/test_driver.py.diff": {
+      "bytes": 1690,
+      "sha256": "e07656b881492b8bd1e08fb66ecea82fdf020ffea842da4340c9b8e32b1451dc"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/test_smoke_schema.py": {
+      "bytes": 3647,
+      "sha256": "01cf54d815177859301c51288ba92210db6283dff9f24fe6f79656f381cdbe1b"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-preparation-first/test_smoke_schema.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-segment-vectored-ab-publication-first/package.py": {
+      "bytes": 3710,
+      "sha256": "9993bb496b1bbba78598471a68cb2f752d58a6522e37dd308e36bf72922ff6bf"
+    }
+  },
+  "main_original_evidence_allowance_bytes": 67108864,
+  "main_original_evidence_bytes_after": 66750607,
+  "member_count": 149,
+  "runtime_executed": false,
+  "scope": "Frozen vectored preparation and local control receipts; historical capacity result/inventory reference the already published frame plan archive. No vectored performance run."
+}

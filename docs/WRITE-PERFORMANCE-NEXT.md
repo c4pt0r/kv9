@@ -155,9 +155,12 @@ original failed audit and schema repair remain retained without workload reruns.
    Independent complete-history checking, full archive readback and owned cleanup
    pass. A guarded cleanup of this completed source gate's first-party dev cache
    increased observed free space by 4.76 GB with all protected binaries unchanged;
-   it does not resolve the larger performance reservations. Qualify matched
-   throughput, tail latency and full regressions before promotion. No vectored-WAL
-   throughput gain is assumed.
+   it does not resolve the larger performance reservations. The [matched vectored
+   comparison preparation](WRITE-SEGMENT-VECTORED-PERFORMANCE-PLAN.md) now passes
+   all 28 driver/auditor/smoke-schema controls with exact original release and
+   fixed-client bindings. Eight smokes and sixteen timed cohorts remain unrun,
+   pending storage and runtime qualification. Qualify throughput, tail latency
+   and full regressions before promotion. No vectored-WAL throughput gain is assumed.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.

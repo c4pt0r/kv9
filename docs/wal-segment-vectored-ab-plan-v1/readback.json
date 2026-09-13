@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "member_count": 149,
+  "decoded_bytes": 1828502,
+  "archive_bytes": 483229,
+  "archive_sha256": "af19b8d7eb2a1e39cb6e6f8cbbdc149e200db3c8b47fa4c436837d33ef3dd4c0",
+  "inventory_sha256": "9ac38945b5792b2215fb32f8dd37a6458474092006ee1a48f1378264f7b1efba",
+  "all_members_read_back": true,
+  "all_original_inputs_compared": true,
+  "control_terminal": "88a107/0",
+  "package_terminal": "2467b9/0",
+  "runtime_executed": false,
+  "capacity_qualified": false
+}
