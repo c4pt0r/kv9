@@ -1,0 +1,21 @@
+{
+  "files": {
+    "omitted-payload-references.json": {
+      "bytes": 2373521,
+      "sha256": "a9af7d3437f557f1d6f039acb454838576dbf394ec426e742aa8eb7f63e6e48a"
+    },
+    "proposed-members.json": {
+      "bytes": 1234400,
+      "sha256": "01c103669d5943e7f68e56d1f9e008774655a03acbdffe86f14514422852656e"
+    },
+    "replay-inputs.json": {
+      "bytes": 195,
+      "sha256": "d05d724a41abac60bcc6ee0bc49d9ae8f543672b833a4a0d3b505afe4064cf6d"
+    },
+    "size-summary.json": {
+      "bytes": 6245,
+      "sha256": "ca429a40a55efcf3405ff905bff05a4a6d09192c9eafe438972491b8dca2b5a0"
+    }
+  },
+  "version": 1
+}

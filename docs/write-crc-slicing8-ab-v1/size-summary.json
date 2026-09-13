@@ -1,0 +1,198 @@
+{
+  "actual_terminals": {
+    "audit": {
+      "audit_path": "/tmp/kv9-write-crc-slicing8-ab-preparation-first/results-first/audit.json",
+      "audit_sha256": "93270a96c7264ba8f8430c43f8f749185b6f08408161e8b5eaec854a9e0ef865",
+      "complete": true,
+      "exit_code": 0,
+      "input_inventory_path": "/tmp/kv9-write-crc-slicing8-ab-preparation-first/results-first/input-inventory.json",
+      "input_inventory_sha256": "567e009d0861f06ca55ee0b4afdf069064e179c71d29d40f21bdc28ee2c63d77",
+      "result_path": "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/audit/result.json",
+      "result_sha256": "94fa4907caf1484d9998a8aeda8f8d6d99c38f1df6de8150905ea39cbaca2d61",
+      "session_id": 40042,
+      "terminal_receipt": "1e3734"
+    },
+    "smoke": {
+      "complete": true,
+      "exit_code": 0,
+      "result_path": "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/smoke/result.json",
+      "result_sha256": "9d42a68d95863b9faacd56a63410b7433dfee935d7e37570c33176c25ff7ae75",
+      "session_id": 97839,
+      "terminal_receipt": "6ff43c"
+    },
+    "smoke-readback": {
+      "complete": true,
+      "execution_kind": "direct_tool_terminal",
+      "exit_code": 0,
+      "result_path": "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/smoke-readback/result.json",
+      "result_sha256": "89238a7e5b10644d3dd810215f54272194579b9f9177a339f414996feddad3b4",
+      "session_id": null,
+      "terminal_receipt": "35910d"
+    },
+    "summary": {
+      "complete": true,
+      "execution_kind": "direct_tool_terminal",
+      "exit_code": 0,
+      "input_hashes_path": "/tmp/kv9-write-crc-slicing8-ab-summary-preparation-first/results-first/input-hashes.json",
+      "input_hashes_sha256": "62dbc2451c9f6709924f9ecbec1c8e65f865f03a39da72ae849bc060869bd98f",
+      "result_path": "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/summary/result.json",
+      "result_sha256": "44283f8afab86b88d2479bf26c090e252c21181b762be66c33d06c398af2735a",
+      "session_id": null,
+      "summary_path": "/tmp/kv9-write-crc-slicing8-ab-summary-preparation-first/results-first/summary.json",
+      "summary_sha256": "c8fd5128d75a9fe49aa201fca512651858f08ff753021a3abf67beb2939a837a",
+      "terminal_receipt": "50f90b",
+      "tool_result": {
+        "chunk_id": "50f90b",
+        "exit_code": 0
+      }
+    },
+    "timing": {
+      "complete": true,
+      "exit_code": 0,
+      "result_path": "/tmp/kv9-write-crc-slicing8-ab-campaign-root-second/timing/result.json",
+      "result_sha256": "cdb12f29e22e8486e4e04ee0b4ea6e3f963de007caa66c8beff988e22d33ee1f",
+      "session_id": 97690,
+      "terminal_receipt": "5063f4"
+    }
+  },
+  "categories": {
+    "accepted-audit": {
+      "bytes": 7940191,
+      "files": 5
+    },
+    "actual-terminal-receipts": {
+      "bytes": 19343,
+      "files": 22
+    },
+    "capacity-decision-authority": {
+      "bytes": 9934527,
+      "files": 20
+    },
+    "contracts": {
+      "bytes": 5919,
+      "files": 8
+    },
+    "exact-original-summary": {
+      "bytes": 442146,
+      "files": 5
+    },
+    "failed-setup-before-output": {
+      "bytes": 5006,
+      "files": 5
+    },
+    "failed-setup-source": {
+      "bytes": 267947,
+      "files": 2
+    },
+    "frozen-preparation-and-rejected-draft": {
+      "bytes": 1178436,
+      "files": 83
+    },
+    "maintenance-reader-lineage": {
+      "bytes": 75599,
+      "files": 12
+    },
+    "maintenance-reader-result-and-failure": {
+      "bytes": 12093810,
+      "files": 8
+    },
+    "maintenance-terminal": {
+      "bytes": 15266,
+      "files": 8
+    },
+    "publication-source-and-first-failure": {
+      "bytes": 76297,
+      "files": 13
+    },
+    "root-orchestration": {
+      "bytes": 550759,
+      "files": 8
+    },
+    "smoke-campaign": {
+      "bytes": 760746,
+      "files": 4
+    },
+    "smoke-client": {
+      "bytes": 11512032,
+      "files": 32
+    },
+    "smoke-fixture": {
+      "bytes": 13483099,
+      "files": 288
+    },
+    "smoke-metadata": {
+      "bytes": 45471562,
+      "files": 376
+    },
+    "source-build-inputs": {
+      "bytes": 2312290,
+      "files": 42
+    },
+    "summary-contracts": {
+      "bytes": 1096,
+      "files": 3
+    },
+    "summary-preparation-and-failures": {
+      "bytes": 89596,
+      "files": 15
+    },
+    "timing-campaign": {
+      "bytes": 983747,
+      "files": 5
+    },
+    "timing-client": {
+      "bytes": 23032017,
+      "files": 64
+    },
+    "timing-fixture": {
+      "bytes": 33335249,
+      "files": 576
+    },
+    "timing-isolation": {
+      "bytes": 98832,
+      "files": 8
+    },
+    "timing-metadata": {
+      "bytes": 173529433,
+      "files": 752
+    }
+  },
+  "complete_metadata_census": true,
+  "counts": {
+    "smoke-cohorts": 8,
+    "smoke-reports": 8,
+    "timing-cohorts": 16,
+    "timing-reports": 16
+  },
+  "decoded_member_bytes": 337214945,
+  "existing_hash_authority_files": 955,
+  "files": 2364,
+  "omitted_compressed_bytes_catalog_sum": 48501030853,
+  "omitted_decoded_bytes_catalog_sum": 69247125269,
+  "omitted_objects": 2796,
+  "payload_reads": false,
+  "publisher_executed": false,
+  "source_roles": {
+    "client": {
+      "binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+      "build": "/tmp/kv9-point-write-v3-release-first/native",
+      "manifest_sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+      "source": "/tmp/kv9-point-write-measurement-v3"
+    },
+    "new": {
+      "build": "/tmp/kv9-write-crc-slicing8-release-first",
+      "manifest_sha256": "32cf899d55b7160f5c3aacfff24da0d145d381e5082b2a6925b94b4cedcf1463",
+      "revision": "e748620a7b0ba326ac5f4fa8e3a6b1ff48553c6a",
+      "server_sha256": "616eed1b823dfaa192a22b2b03a3e7d778bf71efdad7d2b875a49c4bfc94e476",
+      "source": "/tmp/kv9-write-crc-slicing8-thinlto-first"
+    },
+    "old": {
+      "build": "/tmp/kv9-thin-lto-main-integration-release-verbose-first",
+      "manifest_sha256": "582ee4f5840aa8cf04168ee8aeffe92250ed0807ee3f53aea93b25d3494b809d",
+      "revision": "11113f68f6a5df77da1ffb4fcec850953716ffa3",
+      "server_sha256": "dd028cb2f61633dda133b05d814a6d173a79a83145d8ced2f81dc0cf8e0f33bc",
+      "source": "/tmp/kv9-thin-lto-main-integration-first"
+    }
+  }
+}

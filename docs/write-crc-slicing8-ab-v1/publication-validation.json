@@ -1,0 +1,173 @@
+{
+  "complete": true,
+  "scope": "Original reporting bytes and exact summary arithmetic; no new database, WAL, live-source or process acceptance",
+  "inventory_sha256": "4162210534e3ab74006fa9096f7986c9129b7823479d6a1e28e14442f9af4480",
+  "package_terminal": {
+    "complete": true,
+    "session_id": 16791,
+    "terminal_receipt": "c7167e",
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-crc-slicing8-ab-publication-preparation-first/package-first/result.json",
+    "result_sha256": "b8676fc341778a74f59ec4e6a1e6e70d4062386ba78798115f27a00bced64e44"
+  },
+  "package_result": {
+    "argv": [
+      "/tmp/kv9-write-crc-slicing8-ab-publication-preparation-first/package.py",
+      "--selection",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-preparation-first/selection-final",
+      "--selection-inventory-sha256",
+      "e965b3f9e8b138912bda578eb01d2de1d2dd8ccc71f3c2d04271b2883304c74b",
+      "--output",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-first/docs/write-crc-slicing8-ab-v1",
+      "--receipts",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-preparation-first/package-first"
+    ],
+    "complete": true,
+    "compressed_bytes": 41291854,
+    "compressed_sha256": "1a03f85371b4d523f655e935a111ee270e0f83c439921757f66073c973fd09a5",
+    "credential_pattern_scan_passed": true,
+    "decoded_bytes": 337214945,
+    "ended_ns": 1789268057948016315,
+    "final_available_bytes": 121539960832,
+    "initial_available_bytes": 121586069504,
+    "inventory_sha256": "4162210534e3ab74006fa9096f7986c9129b7823479d6a1e28e14442f9af4480",
+    "maximum_added_bytes": 1073741824,
+    "members": 2364,
+    "original_benchmark_guards_unchanged": true,
+    "parts": 20,
+    "pid": 2321223,
+    "selection_inventory_sha256": "e965b3f9e8b138912bda578eb01d2de1d2dd8ccc71f3c2d04271b2883304c74b",
+    "started_ns": 1789268054794634599
+  },
+  "verify": {
+    "complete": true,
+    "session_id": null,
+    "execution_kind": "direct_tool_terminal",
+    "terminal_receipt": "9123f5",
+    "exit_code": 0
+  },
+  "recompute": {
+    "complete": true,
+    "session_id": null,
+    "execution_kind": "direct_tool_terminal",
+    "terminal_receipt": "90f0d9",
+    "exit_code": 0,
+    "original_summary_bytes_identical": true,
+    "original_input_hashes_identical": true
+  },
+  "summary_sha256": "c8fd5128d75a9fe49aa201fca512651858f08ff753021a3abf67beb2939a837a",
+  "source_commands": {
+    "decoded_member_bytes": 337214945,
+    "files": 2364,
+    "first_metadata_failure": {
+      "exit_code": 1,
+      "preserved": true,
+      "tool_receipt": "c30c39"
+    },
+    "metadata_selector_terminal": {
+      "execution_kind": "direct_tool_terminal",
+      "exit_code": 0,
+      "session_id": null,
+      "tool_receipt": "85a7bc"
+    },
+    "omitted_objects": 2796,
+    "publisher": [
+      "sudo",
+      "-n",
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "python3",
+      "-B",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-preparation-first/package.py",
+      "--selection",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-preparation-first/selection-final",
+      "--selection-inventory-sha256",
+      "e965b3f9e8b138912bda578eb01d2de1d2dd8ccc71f3c2d04271b2883304c74b",
+      "--output",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-first/docs/write-crc-slicing8-ab-v1",
+      "--receipts",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-preparation-first/package-first"
+    ],
+    "publisher_executed": false,
+    "recompute": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "python3",
+      "-B",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-first/docs/write-crc-slicing8-ab-v1/recompute.py"
+    ],
+    "source_pins": {
+      "PLAN.json": {
+        "bytes": 8204,
+        "sha256": "0c8edd8016b836b7e6df7b89b8349ff90a476ef87d0a2c4e49c057134586dbc4"
+      },
+      "package-before-review.py": {
+        "bytes": 7423,
+        "sha256": "c33b13599d42dde1ddab485c900063fd3630749d27af8bbf8b3070e7c82bfaf2"
+      },
+      "package.py": {
+        "bytes": 7805,
+        "sha256": "785ab7ec04ce627f6d87dfdbe37c67f46d1f1667da8822e9f02293acb22898bc"
+      },
+      "publication-review-corrections.json": {
+        "bytes": 962,
+        "sha256": "a9f2c21f553f214721b03eef88ef12fb55ab2b167426440d4ed0aca1a9b95f4d"
+      },
+      "publisher-review.diff": {
+        "bytes": 1406,
+        "sha256": "02c9978ad5ca9302a9e168751d2b82ce2dac798319785eefd92ec6a5ffa3b485"
+      },
+      "recompute.py": {
+        "bytes": 5833,
+        "sha256": "ad1391e60afd08011cafde23f50037a42bfaa547ffef5cd494e758df90905535"
+      },
+      "select-members-corrected.py": {
+        "bytes": 12128,
+        "sha256": "e09baa6b55e516868b859e150e0654c4b38fc02eb778acfac5e68b4421d9ccb4"
+      },
+      "select-members-final.py": {
+        "bytes": 13100,
+        "sha256": "eb8fb9ff0074b5938333164b5b5766aaf910b2108b5adab89a7298da310a89e9"
+      },
+      "select-members.py": {
+        "bytes": 12131,
+        "sha256": "606d9d7a2d498f90ae9258b58385c858442d52c2601939f1a6e1e9f8978f2f5e"
+      },
+      "selection-first-failure.json": {
+        "bytes": 733,
+        "sha256": "5dc3235cf38c6ff76c19a52f50129f5144f048742376abf15b8a54c592c47404"
+      },
+      "selector-final-review.diff": {
+        "bytes": 3608,
+        "sha256": "2720c2e718e4fcba2fdd7d466b37d8666a5d4e8ab94a1f3591355b2e0755f09c"
+      },
+      "selector-target-correction.diff": {
+        "bytes": 685,
+        "sha256": "6a1c7fc045388a84bbdee7cd80444c42297de74b06c3aefd2c0565ae4321199d"
+      },
+      "verify.py": {
+        "bytes": 2279,
+        "sha256": "7b0a73a124e5dd5073ed1ffd3e2cf4ea93c4f1f87aa8963bfec4aee8ee19c993"
+      }
+    },
+    "verify": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "python3",
+      "-B",
+      "/tmp/kv9-write-crc-slicing8-ab-publication-first/docs/write-crc-slicing8-ab-v1/verify.py"
+    ]
+  }
+}
