@@ -1,0 +1,59 @@
+{
+  "complete": true,
+  "revision": "e748620a7b0ba326ac5f4fa8e3a6b1ff48553c6a",
+  "windows": 21,
+  "histories": {
+    "cli": {
+      "sha256": "3e500a751c6e641f55a86a383ff484ac07c9114cb7db65a456ba1ed2758aee4d",
+      "bytes": 3183435,
+      "invokes": 5629,
+      "returns": 5629,
+      "outcomes": {
+        "unknown": 552,
+        "ok": 5063,
+        "refused": 14
+      }
+    },
+    "persistent": {
+      "sha256": "251f5c3924e9ca3c45b9743eeb1f68b4a93f303496391476ac29195e7853e622",
+      "bytes": 1112450,
+      "invokes": 1512,
+      "returns": 1512,
+      "outcomes": {
+        "ok": 1491,
+        "unknown": 15,
+        "refused": 6
+      }
+    },
+    "native": {
+      "sha256": "1ed0e8090ea3ee0e60a9c42e979e1823b4a48f2826630305903ae3925d53bdff",
+      "bytes": 6772056,
+      "invokes": 2692,
+      "returns": 2692,
+      "outcomes": {
+        "ok": 2651,
+        "unknown": 33,
+        "refused": 8
+      }
+    }
+  },
+  "operations": 9833,
+  "outcomes": {
+    "ok": 9205,
+    "unknown": 600,
+    "refused": 28
+  },
+  "fresh_final_voter_drains": 4,
+  "observed_server_lifetimes": 34,
+  "owned_container_count": 25,
+  "namespace_removed": true,
+  "historical_namespaces_preserved": 8,
+  "cleanup_processes": 8,
+  "archive_verified": true,
+  "performance_measured": false,
+  "selected_runtime_changed": false,
+  "runtime_terminal": "95644/17104e/0",
+  "post_terminal": "82646/50ccf2/0",
+  "ab_contracts": "c84db0/0",
+  "ab_contract_count": 28
+}
