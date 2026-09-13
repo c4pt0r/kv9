@@ -1,0 +1,74 @@
+{
+  "accepted_complete_operations": 352,
+  "actual_chaos_accepted": false,
+  "audit": {
+    "complete": true,
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-segment-vectored-recovery-audit-first/audit.json",
+    "result_sha256": "10cf69b8cf63acce8efc13cb11f387200e8eba2df92fe461721fe6604165148b",
+    "session_id": null,
+    "terminal_receipt": "b6edca"
+  },
+  "client_lifetimes": 2,
+  "client_sha256": "bd18336b5da137adbe008bc69db15dbf7769b73a74a876b9461c493665086d83",
+  "complete": true,
+  "default_promoted": false,
+  "histories": [
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "c5bd2a0908865566b2462d8a3638d2a69cde9efab285551c22e49dc509fafe48",
+      "operations": 184,
+      "outcomes": {
+        "ok": 169,
+        "unknown": 15
+      },
+      "transport": "tonic_stream"
+    },
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "0b77251a8a2aa6e7535d291457edb12d1d1aa05d30e9837d1e5179454d678be3",
+      "operations": 168,
+      "outcomes": {
+        "ok": 154,
+        "unknown": 14
+      },
+      "transport": "tonic_unary"
+    }
+  ],
+  "ok_operations": 323,
+  "performance_accepted": false,
+  "recovery": {
+    "complete": true,
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-segment-vectored-recovery-preparation-first/source-result.json",
+    "result_sha256": "311453c037fba00482ab576a7f2d940d510e86c758e86126d834c057ea626482",
+    "session_id": 26460,
+    "terminal_receipt": "c218ac"
+  },
+  "release": {
+    "complete": true,
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-segment-vectored-release-root-first/source-result.json",
+    "result_sha256": "8aad9428a22c79803bee013efc22ab7857914143834ae2ffc65c0713760fb6b8",
+    "session_id": 78629,
+    "terminal_receipt": "03508f"
+  },
+  "release_manifest_sha256": "4cf87b0c91fa777453eaca93be6860390674074406205ad9901e44b49bee71bb",
+  "release_readback": {
+    "complete": true,
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-write-segment-vectored-release-root-first/readback-first/result.json",
+    "result_sha256": "11e80352091661e3f4880d401105c2b8ccfe60828ecc2a3a2e8e928904802576",
+    "session_id": null,
+    "terminal_receipt": "e8086d"
+  },
+  "server_lifetimes": 5,
+  "server_sha256": "c88b79b53f10f76f4bb87c4293e1dd0de0a753e13dc1cce27bd0b44d45694581",
+  "source_and_inputs_unchanged": true,
+  "source_files": 661,
+  "source_revision": "cfd9c927f8ecd33974100f696e6b08b227d25a41",
+  "source_tree_sha256": "74968c91e621716047321e7975591eed9a278cf8e44fd2d0ae37985bcedb9ed6",
+  "unknown_operations": 29
+}
