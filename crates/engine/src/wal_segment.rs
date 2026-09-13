@@ -12,7 +12,7 @@
 //! before allocation, so a flipped length cannot turn corruption into a torn tail.
 
 use std::fs::{File, OpenOptions};
-use std::io::{BufReader, Read, Seek, SeekFrom, Write};
+use std::io::{BufReader, IoSlice, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -262,11 +262,7 @@ impl WalSegment {
         let result = self
             .metrics
             .write
-            .measure(|| {
-                self.file.write_all(&header)?;
-                self.file.write_all(&payload)?;
-                self.file.write_all(&crc)
-            })
+            .measure(|| write_frame(&mut self.file, &header, &payload, &crc))
             .and_then(|_| self.metrics.sync.measure(|| self.file.sync_all()));
         if let Err(error) = result {
             self.poisoned = true;
@@ -472,6 +468,42 @@ fn scan(
         discarded_tail_bytes,
     })
 }
+
+/// Write the same header/payload/checksum sequence without joining its buffers.
+/// A successful short write advances only the accepted prefix. Interrupted
+/// writes retry the same suffix; zero progress and other errors reach the
+/// caller's existing poison fence. Synchronization stays with the caller.
+fn write_frame<W: Write>(
+    writer: &mut W,
+    header: &[u8],
+    payload: &[u8],
+    checksum: &[u8],
+) -> std::io::Result<()> {
+    let mut slices = [
+        IoSlice::new(header),
+        IoSlice::new(payload),
+        IoSlice::new(checksum),
+    ];
+    let mut remaining = &mut slices[..];
+    IoSlice::advance_slices(&mut remaining, 0);
+    while !remaining.is_empty() {
+        match writer.write_vectored(remaining) {
+            Ok(0) => {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::WriteZero,
+                    "failed to write complete WAL frame",
+                ));
+            }
+            Ok(written) => IoSlice::advance_slices(&mut remaining, written),
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => {}
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod vectored_tests;
 
 fn sync_namespace(path: &Path) -> std::io::Result<()> {
     let parent = path
