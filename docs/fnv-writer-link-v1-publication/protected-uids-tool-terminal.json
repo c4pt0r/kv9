@@ -1,0 +1,13 @@
+{
+  "execution_kind": "direct_tool_terminal",
+  "tool_result": {
+    "chunk_id": "e44e99",
+    "exit_code": 0
+  },
+  "complete": true,
+  "result": {
+    "path": "/tmp/kv9-fnv-writer-link11-publication-20260914-first/protected-uids-readback.json",
+    "bytes": 2939,
+    "sha256": "23d4fe58b6af70f916874d1818878a70404800eb66ada5bfe51bc8ee86d86b1f"
+  }
+}

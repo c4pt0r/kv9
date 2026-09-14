@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/tmp/kv9-fnv-writer-link11-publication-20260914-first/package.py",
+    "--output",
+    "/tmp/kv9-fnv-writer-link11-publication-20260914-first/bundle-first",
+    "--receipts",
+    "/tmp/kv9-fnv-writer-link11-publication-20260914-first/package-first",
+    "--preparation-inventory-sha256",
+    "6e9ecda34cd4018f2e84f06d518b73983b5f728724bfb7c46b6845d8d47ee336"
+  ],
+  "complete": true,
+  "compressed_bytes": 6317411,
+  "decoded_bytes": 107594169,
+  "elapsed_seconds": 1.0480699730105698,
+  "files": 8421,
+  "inventory_sha256": "2917902c3449f462ebff0e712bd6b916f032271f25ac3a8a9e883af09f554430",
+  "parts": 4,
+  "pid": 1035923,
+  "scope": "Portable Link11 metadata/history/control bytes; original full data archive and executables remain local. Independent archive byte verification is not a new runtime or whole-system acceptance."
+}

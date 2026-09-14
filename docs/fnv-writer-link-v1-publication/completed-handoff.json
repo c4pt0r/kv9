@@ -1,0 +1,80 @@
+{
+  "all_codecs_terminal": true,
+  "complete": true,
+  "compressed_bytes": 6317411,
+  "compressed_sha256": "94d737de14098626513d6810dc6eb068165c8233ead7cb5b339ab03afd3bff1b",
+  "decoded_bytes": 107594169,
+  "file_count": 8421,
+  "independent_verifier_terminal": {
+    "chunk_id": "d3e11f",
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result": {
+      "bytes": 353,
+      "path": "/tmp/kv9-fnv-writer-link11-publication-20260914-first/verify-tool-result.json",
+      "sha256": "93cabdfdae05e811f210a9a8c4521f1942d4db36cd1a93693fb301227c189d6d"
+    },
+    "wall_time_seconds": 0.207032771
+  },
+  "observed_ns": 1789422710794638103,
+  "original_data_archive": {
+    "archive_payload_reaudited": false,
+    "bytes": 12789760,
+    "kind": "complete_original_data_tar",
+    "original_regular_member_bytes": 12739545,
+    "original_regular_members": 50,
+    "original_runner_full_member_readback": true,
+    "sha256": "9e84814987c09e993687d625f04ee4a0a600272b4a756053bc5918aa611784a9",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/owned-data.tar"
+  },
+  "package_directory": "/tmp/kv9-fnv-writer-link11-publication-20260914-first/bundle-first",
+  "package_inventory": {
+    "bytes": 2631562,
+    "path": "/tmp/kv9-fnv-writer-link11-publication-20260914-first/bundle-first/inventory.json",
+    "sha256": "2917902c3449f462ebff0e712bd6b916f032271f25ac3a8a9e883af09f554430"
+  },
+  "package_terminal": {
+    "chunk_id": "c130fe",
+    "exit_code": 0,
+    "result": {
+      "bytes": 851,
+      "path": "/tmp/kv9-fnv-writer-link11-publication-20260914-first/package-first/result.json",
+      "sha256": "b29beecf3d578de74d37f953fce385191b36c19a5ce8a950f625ffd4acb0f64d"
+    },
+    "session_id": 41511
+  },
+  "parts": [
+    {
+      "bytes": 2097152,
+      "name": "evidence.tar.gz.001",
+      "sha256": "5870d5dda0ab3b60d4adca00d42739dc83035a2378077a7ddade62fccde48806"
+    },
+    {
+      "bytes": 2097152,
+      "name": "evidence.tar.gz.002",
+      "sha256": "1269874e1546929e3df7afda6a4a7193f6600659a8c2e936823722ce890c2b40"
+    },
+    {
+      "bytes": 2097152,
+      "name": "evidence.tar.gz.003",
+      "sha256": "1c7d476a227bc015d1d7d5dae997e83666d73bb878524453a68f93d36fe605a8"
+    },
+    {
+      "bytes": 25955,
+      "name": "evidence.tar.gz.004",
+      "sha256": "9d31be8b3363af0a2cbced88a515b82dae88e36dba1420b662eebc6ce012dbdf"
+    }
+  ],
+  "preparation_inventory": {
+    "bytes": 2453,
+    "path": "/tmp/kv9-fnv-writer-link11-publication-20260914-first/inventory.preparation.json",
+    "sha256": "6e9ecda34cd4018f2e84f06d518b73983b5f728724bfb7c46b6845d8d47ee336"
+  },
+  "protected_uid_actual_tool": "e44e99/0",
+  "protected_uid_readback": {
+    "bytes": 2939,
+    "path": "/tmp/kv9-fnv-writer-link11-publication-20260914-first/protected-uids-readback.json",
+    "sha256": "23d4fe58b6af70f916874d1818878a70404800eb66ada5bfe51bc8ee86d86b1f"
+  },
+  "publication": "Root owns copying verified bundle and optional terminal/receipt sidecars to a separate evidence branch. No original data/source/ELF deletion or Git action occurred."
+}

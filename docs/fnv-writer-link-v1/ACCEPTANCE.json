@@ -1,0 +1,550 @@
+{
+  "accepted_source_revision": "12f44d35590ede5f89337fe731dd950162865154",
+  "checker_attempts": [
+    {
+      "guided_unknown": false,
+      "prepare_ranges": false,
+      "states": 1972,
+      "unknown_effect_limit": 0,
+      "verdict": "inconclusive"
+    },
+    {
+      "guided_unknown": true,
+      "prepare_ranges": false,
+      "states": 2881,
+      "unknown_effect_limit": null,
+      "verdict": "valid"
+    }
+  ],
+  "cleanup": {
+    "complete": true,
+    "namespace_absent": true,
+    "namespace_uid": "31e5f208-cca3-4549-a3df-e82e184c6c78",
+    "preserved": {
+      "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+      "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+      "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+      "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+      "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+      "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+      "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+      "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+    }
+  },
+  "drains": {
+    "original_independent_audit_accepted": true,
+    "post_client_serial_observations": 3,
+    "required_fresh_empty_observations_per_voter": 2,
+    "voters": 3
+  },
+  "exact_tcp_reset": {
+    "after": {
+      "after_command": 2598,
+      "before_command": 2596,
+      "capture_command": 2597,
+      "cpu_allowed": "6-15,22-31",
+      "ended_unix_ns": 1789421904622253867,
+      "executable_sha256": "6b1867110dd7eaab5d3a8571b2227e77658ecb6b89f59dd4460836b691935ff3",
+      "last_seq": 2521,
+      "partial_tail_bytes": 0,
+      "phase": "client-stream-drop",
+      "pod_uid": "e9755b59-fd15-4564-a1c5-6823d2e9b7c9",
+      "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "process_pid": 32,
+      "process_start_ticks": 171042340,
+      "socket_inodes": [
+        "271318151",
+        "271312697"
+      ],
+      "started_unix_ns": 1789421904497219230
+    },
+    "before": {
+      "after_command": 2565,
+      "before_command": 2563,
+      "capture_command": 2564,
+      "cpu_allowed": "6-15,22-31",
+      "ended_unix_ns": 1789421902908659839,
+      "executable_sha256": "6b1867110dd7eaab5d3a8571b2227e77658ecb6b89f59dd4460836b691935ff3",
+      "last_seq": 2497,
+      "partial_tail_bytes": 0,
+      "phase": "client-stream-drop",
+      "pod_uid": "e9755b59-fd15-4564-a1c5-6823d2e9b7c9",
+      "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "process_pid": 32,
+      "process_start_ticks": 171042340,
+      "socket_inodes": [
+        "271318151",
+        "271312194"
+      ],
+      "started_unix_ns": 1789421902783042461
+    },
+    "command": 2585,
+    "kind": "non-Chaos Linux SOCK_DESTROY",
+    "new": {
+      "destination_ip": "10.96.126.195",
+      "destination_port": 20160,
+      "inode": "271312697",
+      "source_ip": "10.244.0.67",
+      "source_port": 37246
+    },
+    "old": {
+      "destination_ip": "10.96.126.195",
+      "destination_port": 20160,
+      "inode": "271312194",
+      "source_ip": "10.244.0.67",
+      "source_port": 57002
+    }
+  },
+  "fully_contained_window_counts": {
+    "baseline": {
+      "batch_get": {
+        "ok": 47,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 46,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 13,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 14,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 12,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "delay-healed": {
+      "batch_get": {
+        "ok": 46,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 46,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 13,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 13,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 14,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "exact-tcp-reset": {
+      "batch_get": {
+        "ok": 52,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 51,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 15,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 16,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 14,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "loss-healed": {
+      "batch_get": {
+        "ok": 49,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 49,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 14,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 15,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 13,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "partition-healed": {
+      "batch_get": {
+        "ok": 51,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 51,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 13,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 14,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 15,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "quorum-healed": {
+      "batch_get": {
+        "ok": 55,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 54,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 16,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 16,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 15,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "quorum-loss": {
+      "batch_get": {
+        "ok": 0,
+        "refused": 48,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 0,
+        "refused": 48,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 0,
+        "refused": 14,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 0,
+        "refused": 12,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 0,
+        "refused": 14,
+        "unknown": 0
+      }
+    },
+    "reset-healed": {
+      "batch_get": {
+        "ok": 53,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 53,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 15,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 16,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 15,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "vip-delay": {
+      "batch_get": {
+        "ok": 47,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 46,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 12,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 13,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 14,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "vip-partial-loss": {
+      "batch_get": {
+        "ok": 84,
+        "refused": 0,
+        "unknown": 0
+      },
+      "batch_put": {
+        "ok": 84,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delete": {
+        "ok": 24,
+        "refused": 0,
+        "unknown": 0
+      },
+      "get": {
+        "ok": 23,
+        "refused": 0,
+        "unknown": 0
+      },
+      "put": {
+        "ok": 24,
+        "refused": 0,
+        "unknown": 0
+      }
+    },
+    "vip-partition": {
+      "batch_get": {
+        "ok": 0,
+        "refused": 0,
+        "unknown": 13
+      },
+      "batch_put": {
+        "ok": 0,
+        "refused": 0,
+        "unknown": 13
+      },
+      "delete": {
+        "ok": 0,
+        "refused": 0,
+        "unknown": 3
+      },
+      "get": {
+        "ok": 0,
+        "refused": 0,
+        "unknown": 4
+      },
+      "put": {
+        "ok": 0,
+        "refused": 0,
+        "unknown": 4
+      }
+    }
+  },
+  "history": {
+    "kinds": {
+      "batch_get": 745,
+      "batch_put": 744,
+      "delete": 212,
+      "get": 213,
+      "put": 212
+    },
+    "operations": 2126,
+    "outcomes": {
+      "ok": 1835,
+      "refused": 228,
+      "unknown": 63
+    },
+    "successful": {
+      "batch_get": 643,
+      "batch_put": 643,
+      "delete": 183,
+      "get": 184,
+      "put": 182
+    },
+    "successful_by_phase": {
+      "baseline": {
+        "batch_get": 61,
+        "batch_put": 60,
+        "delete": 17,
+        "get": 18,
+        "put": 16
+      },
+      "client-link-delay": {
+        "batch_get": 56,
+        "batch_put": 55,
+        "delete": 16,
+        "get": 16,
+        "put": 17
+      },
+      "client-link-loss": {
+        "batch_get": 101,
+        "batch_put": 101,
+        "delete": 29,
+        "get": 29,
+        "put": 29
+      },
+      "client-link-partition": {
+        "batch_get": 3,
+        "batch_put": 1,
+        "put": 1
+      },
+      "client-stream-drop": {
+        "batch_get": 76,
+        "batch_put": 78,
+        "delete": 22,
+        "get": 22,
+        "put": 22
+      },
+      "healing": {
+        "batch_get": 342,
+        "batch_put": 346,
+        "delete": 99,
+        "get": 99,
+        "put": 96
+      },
+      "initialization": {
+        "batch_get": 1,
+        "batch_put": 1
+      },
+      "quorum-loss": {
+        "batch_get": 2,
+        "batch_put": 1,
+        "put": 1
+      },
+      "verify": {
+        "batch_get": 1
+      }
+    }
+  },
+  "netem_after": {
+    "dropped": 203,
+    "handle": "5:",
+    "parent": "1:4"
+  },
+  "netem_before": {
+    "dropped": 0,
+    "handle": "5:",
+    "parent": "1:4"
+  },
+  "netem_leaf_drop_delta": 203,
+  "owned_container_lifetimes": 5,
+  "performance_or_promotion_claim": false,
+  "readout_scope": "Arithmetic/readback of original independently accepted records; no runtime or history re-audit.",
+  "retained_originals": {
+    "archive_bytes": 12789760,
+    "bytes": 12739545,
+    "full_archive": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/owned-data.tar",
+    "full_archive_sha256": "Recorded by publisher in omitted-payload-references.json; not read during metadata-only preparation.",
+    "inventory": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained-inventory.json",
+    "regular_files": 50
+  },
+  "source_inputs": [
+    {
+      "bytes": 318743,
+      "path": "/tmp/kv9-fnv-writer-link11-preparation-20260914-first/acceptance-first/audit.json",
+      "sha256": "af2f044b8a8096fecfb7becc7474b42208b7d4fbadf720e55ebdcaffa9dc2331"
+    },
+    {
+      "bytes": 1649,
+      "path": "/tmp/kv9-fnv-writer-link11-preparation-20260914-first/acceptance-first/leaf.json",
+      "sha256": "c56ab4e06f444f04d27309fc5d3a3407f2d169aee09b2abc3776104dba455cfd"
+    },
+    {
+      "bytes": 25836,
+      "path": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/window-outcomes.json",
+      "sha256": "84e5b5181e07ee22ae93de53a9cf8e533e3b9904858dd05cffe695dc9b0c1454"
+    },
+    {
+      "bytes": 6904,
+      "path": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained-inventory.json",
+      "sha256": "841a8dbe2ce271790e04f5d9a4a1c473e5c9959b50ffd37fcb70315eee8dc9a9"
+    },
+    {
+      "bytes": 96138,
+      "path": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/fresh-drain.json",
+      "sha256": "692ba2890da5e95beb5b9e5d1e315c4e84c3ce0ef28048f6312093ed8a0e63de"
+    },
+    {
+      "bytes": 642,
+      "path": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/cleanup.json",
+      "sha256": "8efbbe2ce13abee72c00b9715edcbd2739acb65b9d7edd8d620380dba3c5bd12"
+    },
+    {
+      "bytes": 1531,
+      "path": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/owned-node-lifetimes.json",
+      "sha256": "7e5edd7f30a3aad6c830f83b6b7ce00535ee41cf0e4dc7c8a18c6dbbd4bd91aa"
+    },
+    {
+      "bytes": 2939,
+      "path": "/tmp/kv9-fnv-writer-link11-publication-20260914-first/protected-uids-readback.json",
+      "sha256": "23d4fe58b6af70f916874d1818878a70404800eb66ada5bfe51bc8ee86d86b1f"
+    }
+  ],
+  "window_durations_seconds": {
+    "baseline": 16.22848182,
+    "delay-healed": 16.766639039,
+    "exact-tcp-reset": 18.419759217,
+    "loss-healed": 17.424063693,
+    "partition-healed": 17.984035066,
+    "quorum-healed": 19.581524552,
+    "quorum-loss": 19.036152084,
+    "reset-healed": 18.708347656,
+    "vip-delay": 24.548897694,
+    "vip-partial-loss": 35.193407283,
+    "vip-partition": 17.778517024
+  }
+}

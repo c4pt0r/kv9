@@ -1,0 +1,7 @@
+{
+  "chunk_id": "d3e11f",
+  "wall_time_seconds": 0.207032771,
+  "exit_code": 0,
+  "original_token_count": 53,
+  "output": "{\"complete\": true, \"files\": 8421, \"decoded_bytes\": 107594169, \"compressed_bytes\": 6317411, \"parts\": 4, \"scope\": \"Exact portable metadata bytes only; no original source, runtime, WAL or performance acceptance.\"}\n"
+}

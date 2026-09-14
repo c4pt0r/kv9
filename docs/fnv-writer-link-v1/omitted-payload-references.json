@@ -1,0 +1,271 @@
+[
+  {
+    "bytes": 1046557,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "69bf7ad0980ff684012cbe1a40c0163537feb91a30b98e9d817b0a20bd4d7a2e",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/catalog.segments/851fbd31fed12919959441f9b4b6148b/00000000000000000001.wal"
+  },
+  {
+    "bytes": 117,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "a12418a01feee8a619dae54772e7d4fcacdc322da5933c42e5a33bcc072085ee",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/catalog.wal"
+  },
+  {
+    "bytes": 12,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/kv9-initialized"
+  },
+  {
+    "bytes": 179,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "5f5521433bc61a0225546d16434351a4f6fd9c14b3fbe313577efa63e2e92190",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/kv9-root-descriptor"
+  },
+  {
+    "bytes": 238,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "8d470314cc359b01fd7c29d34f88eea7a3766f89dbaf3d05d6c01afed926e977",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/kv9-serving-endpoint"
+  },
+  {
+    "bytes": 80,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "f5177b3d756a324560a6b2308b8cdb7211ce24458f69ca9e9f20b66f137994d4",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/kv9-store-identity"
+  },
+  {
+    "bytes": 97,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "4f83214314d745a670a8d7b7a0254a590f2a507eef6cbac803c5172bf4f64a71",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/kv9-store-lifecycle"
+  },
+  {
+    "bytes": 0,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/kv9-store-lock"
+  },
+  {
+    "bytes": 1075551,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "9f82bc01237d2b8c658e91f4b7b58da8f55c909a3c8134c8f1feb64dbce067af",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/raft/raft.log"
+  },
+  {
+    "bytes": 179,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "5f5521433bc61a0225546d16434351a4f6fd9c14b3fbe313577efa63e2e92190",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/root.bin"
+  },
+  {
+    "bytes": 0,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-1/start"
+  },
+  {
+    "bytes": 1046677,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "46c8c7fa5271e4e3febddd61613c068941a562450169d050132f35602642bea8",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/catalog.segments/ba198e1c73b26dc78ef9f258115da4c2/00000000000000000001.wal"
+  },
+  {
+    "bytes": 117,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "b3c457cbf9e85609af8637fcfe61b71929a830d674324b75815ea43dffea5441",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/catalog.wal"
+  },
+  {
+    "bytes": 12,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/kv9-initialized"
+  },
+  {
+    "bytes": 179,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "5f5521433bc61a0225546d16434351a4f6fd9c14b3fbe313577efa63e2e92190",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/kv9-root-descriptor"
+  },
+  {
+    "bytes": 239,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "90d5db7945f79679fea999506c5ca88f356da11e2e98061210c794fc11ca70cc",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/kv9-serving-endpoint"
+  },
+  {
+    "bytes": 80,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "6eb83aa3a01e69427018454bc773eb77ddad30e259263ebe22532fd9c83e040e",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/kv9-store-identity"
+  },
+  {
+    "bytes": 97,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "42e2bb4505d967fd721dead80ccf2305f3654d2ee6496c13146180056b9cb6ea",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/kv9-store-lifecycle"
+  },
+  {
+    "bytes": 0,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/kv9-store-lock"
+  },
+  {
+    "bytes": 1075599,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "af4eabea1ed9113be22c679ac6fa93aee55a99a912e6aae0a59f1c9294aa3743",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/raft/raft.log"
+  },
+  {
+    "bytes": 179,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "5f5521433bc61a0225546d16434351a4f6fd9c14b3fbe313577efa63e2e92190",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/root.bin"
+  },
+  {
+    "bytes": 0,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-2/start"
+  },
+  {
+    "bytes": 1046397,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "b60182424bc5c4546372e5ecbc4e844ccfc523278f73c52a8fe4581a393c3b01",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/catalog.segments/fa950c3005fdf35d4ebea2805121c3d6/00000000000000000001.wal"
+  },
+  {
+    "bytes": 117,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "3aa6d370c90e800f2303ad5379acf1a1585f36bc26b1b43bf704e969c12336b3",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/catalog.wal"
+  },
+  {
+    "bytes": 12,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/kv9-initialized"
+  },
+  {
+    "bytes": 179,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "5f5521433bc61a0225546d16434351a4f6fd9c14b3fbe313577efa63e2e92190",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/kv9-root-descriptor"
+  },
+  {
+    "bytes": 238,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "4cbec5de5f9685ee441f30d2d1b7ea4cf04b3eda2ec528c6c36f324a1c5b1a14",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/kv9-serving-endpoint"
+  },
+  {
+    "bytes": 80,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "7a14eab9b3b04957e61ab35becdcee68de8cf14b19467ae16a3b2e53ee4b7920",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/kv9-store-identity"
+  },
+  {
+    "bytes": 97,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "747260d7fdb00d31a128df51ee54bbb06b8a8fd209d2511f42bd823e872a460a",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/kv9-store-lifecycle"
+  },
+  {
+    "bytes": 0,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/kv9-store-lock"
+  },
+  {
+    "bytes": 1075474,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "9ae239034863bc2b2862c28a7b088500139094c4303a58943f62b3bc94d81f37",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/raft/raft.log"
+  },
+  {
+    "bytes": 179,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "5f5521433bc61a0225546d16434351a4f6fd9c14b3fbe313577efa63e2e92190",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/root.bin"
+  },
+  {
+    "bytes": 0,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-3/start"
+  },
+  {
+    "bytes": 179,
+    "inspected_payload": false,
+    "kind": "original_retained_data",
+    "sha256": "5f5521433bc61a0225546d16434351a4f6fd9c14b3fbe313577efa63e2e92190",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/retained/data-control/root.bin"
+  },
+  {
+    "bytes": 16157344,
+    "inspected_payload": false,
+    "kind": "original_executable",
+    "sha256": "d84b0ec8e466a9dc3f4953751605d91c90a90a66df1b03b57a3412e43e42603e",
+    "source": "/tmp/kv9-fnv-writer-release-20260914-runtime-source/kv9"
+  },
+  {
+    "bytes": 3420872,
+    "inspected_payload": false,
+    "kind": "original_executable",
+    "sha256": "6b1867110dd7eaab5d3a8571b2227e77658ecb6b89f59dd4460836b691935ff3",
+    "source": "/tmp/kv9-fnv-writer-release-20260914-runtime-source/workload/kv9-batch-workload"
+  },
+  {
+    "bytes": 245760,
+    "inspected_payload": false,
+    "kind": "original_observer_tool_archive",
+    "sha256": "02811415fa11b8d4d4bd318211307d4051cb9227ced438930f0e8560f194b7e1",
+    "source": "/tmp/kv9-fnv-writer-link11-preparation-20260914-first/observer-tools.tar"
+  },
+  {
+    "archive_payload_reaudited": false,
+    "bytes": 12789760,
+    "kind": "complete_original_data_tar",
+    "original_regular_member_bytes": 12739545,
+    "original_regular_members": 50,
+    "original_runner_full_member_readback": true,
+    "sha256": "9e84814987c09e993687d625f04ee4a0a600272b4a756053bc5918aa611784a9",
+    "source": "/tmp/kv9-native-link-acceptance-fnv12f-20260914-first/owned-data.tar"
+  }
+]
