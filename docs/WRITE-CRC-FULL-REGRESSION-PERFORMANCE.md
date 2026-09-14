@@ -10,8 +10,10 @@ with lower separate read and write p99 intervals in both run orders.
 All **24 two-second smokes and 48 ten-second timed cohorts** pass independent
 acceptance. All **35,103,005 measured calls** succeed in one attempt, covering
 **285,605,495 input items**, with no measured errors, unknown writes or dropped
-slots. These results qualify the measured candidate for main integration work;
-they do not claim that current main has already been rebuilt or promoted.
+slots. The subsequent [main integration](CRC32-SLICING-INTEGRATION.md) now passes
+its own proof, 789 tests, clean release, ordinary recovery and actual Chaos Mesh
+qualification. The measurements below remain attributed to the original e748
+binary; they are not a new main performance run.
 
 ## Same-campaign throughput and latency
 
