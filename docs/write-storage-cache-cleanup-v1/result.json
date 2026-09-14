@@ -1,0 +1,76 @@
+{
+  "started_at": "2026-09-14T01:48:46.787048+00:00",
+  "scope": "Inactive, reconstructible Rust incremental compilation and npm/Bun download caches only",
+  "actions": [
+    {
+      "path": "/home/dongxu/db9svc/db9-backend/target/debug/incremental",
+      "operation": "remove inactive incremental cache contents",
+      "allocated_before_bytes": 38660218880,
+      "available_before_bytes": 118255988736,
+      "available_after_bytes": 156586913792,
+      "remaining_entries": 0
+    },
+    {
+      "path": "/home/dongxu/db9svc/db9-server/target/debug/incremental",
+      "operation": "remove inactive incremental cache contents",
+      "allocated_before_bytes": 29333299200,
+      "available_before_bytes": 156586913792,
+      "available_after_bytes": 185675771904,
+      "remaining_entries": 0
+    },
+    {
+      "path": "/home/dongxu/db9svc/db9-server-pr2750-review/target/debug/incremental",
+      "operation": "remove inactive incremental cache contents",
+      "allocated_before_bytes": 4816248832,
+      "available_before_bytes": 185675771904,
+      "available_after_bytes": 190445129728,
+      "remaining_entries": 0
+    },
+    {
+      "path": "/home/dongxu/db9svc/db9-server-activity-flake/target/debug/incremental",
+      "operation": "remove inactive incremental cache contents",
+      "allocated_before_bytes": 3681869824,
+      "available_before_bytes": 190445129728,
+      "available_after_bytes": 194080108544,
+      "remaining_entries": 0
+    },
+    {
+      "operation": "npm native download cache cleanup",
+      "command": [
+        "npm",
+        "cache",
+        "clean",
+        "--force",
+        "--cache",
+        "/home/dongxu/.npm"
+      ],
+      "exit_code": 0,
+      "available_before_bytes": 194080108544,
+      "available_after_bytes": 198755893248
+    },
+    {
+      "operation": "bun native download cache cleanup",
+      "command": [
+        "bun",
+        "pm",
+        "cache",
+        "rm"
+      ],
+      "exit_code": 1,
+      "available_before_bytes": 198755893248,
+      "available_after_bytes": 198755889152
+    },
+    {
+      "operation": "Bun native cache cleanup with required package context",
+      "exit_code": 0,
+      "available_before_bytes": 198755811328,
+      "available_after_bytes": 208181657600
+    }
+  ],
+  "available_before_bytes": 118255992832,
+  "busy": [],
+  "available_after_bytes": 208181657600,
+  "observed_available_increase_bytes": 89925664768,
+  "completed_at": "2026-09-14T01:49:23.718669+00:00",
+  "status": "complete"
+}

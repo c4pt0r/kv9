@@ -6,6 +6,23 @@ the selected ThinLTO/Safe ReadIndex baseline. The experimental lease work and
 its remaining clock/Chaos gates are retained; read parity is not claimed and is
 no longer a prerequisite for this write phase.
 
+## Local storage checkpoint (2026-09-14 UTC)
+
+The [completed cache cleanup](write-storage-cache-cleanup-v1/result.json) increased
+observed root-filesystem available space from 118,255,992,832 to 208,181,657,600
+bytes: 89,925,664,768 bytes reclaimed. Only inactive Rust incremental compilation
+caches and npm/Bun download caches were removed. Source, retained executables,
+historical benchmark payloads and Chaos/recovery evidence remain available.
+The initial Bun command required a package context; its successful retry is
+recorded separately. No RAID mount, Docker prune or hosted CI was needed.
+
+This supersedes the older free-space observations below. Available space now
+exceeds the 170.15 GB matched-comparison and 202.38 GB CRC empirical scenarios;
+it does not reserve both campaigns simultaneously or guarantee an unrun
+candidate's size. Recheck capacity before each campaign and retain every
+existing floor, cap and restore reserve. Next execute the complete vectored
+write screen with its original source/client bindings and 28 passed controls.
+
 ## Comparison contract
 
 | Panel | Successful call requires | Interpretation |
