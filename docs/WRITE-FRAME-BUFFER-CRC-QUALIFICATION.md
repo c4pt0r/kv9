@@ -3,8 +3,10 @@
 The combined write candidate passes local source, proof, ordinary recovery and
 actual Chaos Mesh qualification. Candidate
 [`e9249f2`](https://github.com/c4pt0r/kv9/commit/e9249f2cbd069dcdc44312be826a68494cf694db)
-is published on `experiment/write-frame-buffer-crc`. Performance measurement
-remains pending; the candidate is not promoted to the production branch.
+is published on `experiment/write-frame-buffer-crc`. Its [completed write screen](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md)
+does not establish a general gain: loaded point throughput falls 0.517%, loaded
+batch throughput changes +0.379% with worse pooled p99, and both loaded workloads
+reverse direction across orders. The candidate remains experimental.
 
 ## Change and proof scope
 
@@ -55,21 +57,24 @@ The source tree SHA256 is
 Both executables retain opt-level 3, ThinLTO, one codegen unit, unwind and empty
 production features. Test-only pressure features remain separate.
 
-## Next measurement and development steps
+## Measurement and next development steps
 
-Compare the original CRC main executable at `bd42e60` against this exact candidate
-using the same native v3 client. Cover point Put and BatchPut(64), concurrency
-1 and 64, eight two-second smokes and sixteen ten-second timed cohorts in two
-opposite complete orders. Report whole-call mean and p99 alongside calls/s and
-items/s, retaining all attempts and outcomes. Twenty-eight preparation controls
-have passed. Fresh retained-disk capacity must be established before launch.
+The original CRC main executable at `bd42e60` and this exact candidate have now
+completed their paired write screen using the same native v3 client: point Put
+and BatchPut(64), concurrency 1 and 64, eight two-second smokes and sixteen
+ten-second timed cohorts in two opposite complete orders. All 7,247,954 measured
+calls succeed once; full independent retention and lifecycle checks pass.
+Twenty-eight runtime-preparation and five reporting controls pass. The
+[performance report](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md) retains whole-call
+latency, rates, all outcomes and the actual capacity observations.
 
 This is a shared-host volatile-tmpfs diagnostic with unchanged Raft/WAL semantics.
 Real-disk, power-loss and cross-host acceptance remain separate. No new Redis
-comparison or frame-buffer speedup is established. The latest measured numbers
-remain the [original CRC full regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md).
-Full read/write/mixed regression follows a successful write screen; only then
-consider runtime promotion. The [write development order](WRITE-PERFORMANCE-NEXT.md)
-and subsequent dynamic multi-Raft and range-splitting roadmap remain in force.
+comparison or general frame-buffer speedup is established. The latest exact-main
+write numbers are in that report; the [original CRC full regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md)
+remains a separate read/write/mixed campaign. Keep CRC main and next obtain
+current-source CPU attribution before choosing another implementation. The
+[write development order](WRITE-PERFORMANCE-NEXT.md) and subsequent dynamic
+multi-Raft and range-splitting roadmap remain in force.
 
 All checks ran locally. Hosted CI was not dispatched.

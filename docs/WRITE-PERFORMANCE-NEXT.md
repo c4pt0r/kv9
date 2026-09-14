@@ -32,9 +32,20 @@ mixed batch throughput 16.898%, while the [vectored screen](WRITE-SEGMENT-VECTOR
 found no write gain. The [exact-main CRC integration](CRC32-SLICING-INTEGRATION.md)
 now passes source-bound proof, 789 tests/doctests, a clean default release,
 ordinary recovery and all 21 actual Chaos windows with complete independent
-histories and cleanup. It adds no new QPS measurement. Reapply the frame-buffer
-experiment to this CRC baseline, qualify that source and recheck capacity before
-its paired write screen; keep all original guards.
+histories and cleanup. The subsequent [exact-main/frame-buffer write screen](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md)
+now passes eight smokes and sixteen timed cohorts. CRC main reaches 139,188.639
+point Put/s and 1,065,680.142 BatchPut(64) items/s at c64. The combined frame-buffer
+candidate is not selected: point throughput changes -0.517%, batch changes +0.379%
+with worse pooled p99, and both loaded workloads reverse direction across orders.
+All 7,247,954 measured calls succeed once. The source/proof/recovery/Chaos evidence
+and complete write results remain published separately.
+
+Before that screen, exact inactive Cargo-artifact cleanup reclaimed an observed
+59,290,816,512 bytes while preserving source, application binaries and prior
+evidence. The screen now retains 52,317,179,904 bytes; its smoke/timing capacity
+checks passed with unchanged floors and restoration reserve. Historical free-space
+observations do not reserve another campaign. Next obtain CPU attribution on the
+exact current CRC main release before choosing the next implementation.
 
 ## Comparison contract
 
@@ -158,7 +169,7 @@ original failed audit and schema repair remain retained without workload reruns.
    Its own 21-window Chaos campaign retains 11,316 operations: 10,683 OK /
    602 unknown / 31 refused. Independent full histories, four fresh final drains,
    all 31 observed server lifetime exits, full archive readback and scoped cleanup
-   pass. Its new binary has not been timed; the e748 performance results remain
+   pass. Its new binary had not been timed at that checkpoint; the e748 results remain
    separate. Every Raft/sync/response fence and remaining industrial gate stays.
 
 5. Continue with measured checksum, allocation, batching and replication costs.
@@ -178,10 +189,21 @@ original failed audit and schema repair remain retained without workload reruns.
    sixteen timed cohorts remain unrun: the unchanged retention/restore scenario
    needs 170.15 GB available against 120.13 GB observed, a 50.02 GB gap.
    These historical reservations apply to that original standalone candidate;
-   no frame-buffer speedup is established. Reapply it to the now-qualified CRC
-   main baseline, recheck proof/source/recovery and actual Chaos on the resulting
-   source, then compare that exact pair under freshly observed capacity. Do not
-   assume isolated gains compose or relabel old results as combined acceptance.
+   no frame-buffer speedup is established. The combined candidate `e9249f2` is
+   now published and [qualified on the integrated CRC baseline](WRITE-FRAME-BUFFER-CRC-QUALIFICATION.md):
+   790 tests/doctests pass (23 existing ignored), frame and CRC proofs pass,
+   and its clean release and ordinary recovery retain 337 operations (309 OK /
+   28 unknown). Actual Chaos Mesh passes 21 windows with 9,805 complete-history
+   operations (9,170 OK / 613 unknown / 22 refused), four fresh final drains,
+   all 33 server lifetime exits, archive readback and scoped cleanup.
+   All eight fresh write smokes pass 810,022 calls and 32 lifetime exits. The
+   [paired 16-cohort timing campaign](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md) passes
+   7,247,954 one-attempt successful calls, full independent retained-byte checks,
+   64 timed lifetime exits and 48 fresh drains/bindings. The candidate is not
+   selected: loaded point changes -0.517%, loaded batch +0.379% with worse pooled
+   p99, and both loaded throughput directions reverse between orders. The c1
+   batch improvement does not establish general selection. Preserve this and
+   the standalone experiment; do not pool their evidence.
    The separate [segmented-WAL vectored-write candidate `cfd9c92`](https://github.com/c4pt0r/kv9/blob/cfd9c927f8ecd33974100f696e6b08b227d25a41/docs/WRITE-SEGMENT-VECTORED.md)
    now preserves the frame stream through a short-write-aware vectored loop.
    Three SMT checks, three countermodels, 714 tests/doctests, formatting and
@@ -201,12 +223,18 @@ original failed audit and schema repair remain retained without workload reruns.
    acceptance: 6,961,558 measured calls all succeed once. Loaded point throughput
    changes -0.612% and batch throughput -1.020%, with worse pooled p99 intervals.
    Keep the isolated candidate experimental; this screen establishes no write
-   gain and does not justify default promotion. Full CRC regressions and main
-   integration now pass; next qualify and measure frame-buffer on the integrated
-   CRC baseline with fresh capacity qualification. Preserve the original vectored experiment for
+   gain and does not justify default promotion. Full CRC regressions, main
+   integration and the combined frame-buffer write screen now pass; the latter
+   does not justify promotion. Preserve the original vectored experiment for
    a separately justified real-disk or combined-candidate study.
-   Use the retained profiles before collecting a necessary current-source profile;
-   do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
+   Next profile the exact current CRC main executable with the accepted bounded
+   point/batch protocol. The retained post-CRC profile used the older byte-table
+   implementation, so its sample fractions do not identify today's remaining
+   slicing-by-eight/ThinLTO bottleneck. Preserve active-prefix/edge/32-bin/clock/
+   zero-loss coverage, independent decoding and bounded cleanup. Select a new
+   change from current instruction/task/ownership costs; keep instrumented CPU
+   results separate from QPS. Do not repeat rejected worker/transport sweeps.
+   DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
 6. After the write phase, return to bounded dynamic multi-Raft (#22), epoch routing
    (#23), recoverable membership (#24), automatic splits (#25) and placement
