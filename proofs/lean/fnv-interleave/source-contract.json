@@ -1,0 +1,32 @@
+{
+  "declarations": {
+    "const OFFSET:": "const OFFSET: u32 = 0x811c9dc5;",
+    "const PRIME:": "const PRIME: u32 = 0x01000193;",
+    "fn finish(": "fn finish(mut hash: u32, bytes: &[u8]) -> u32 {\n    for &byte in bytes {\n        hash = (hash ^ u32::from(byte)).wrapping_mul(PRIME);\n    }\n    hash\n}",
+    "fn fnv1a(": "fn fnv1a(bytes: &[u8]) -> u32 {\n    finish(OFFSET, bytes)\n}",
+    "fn fnv1a_four(": "fn fnv1a_four(inputs: [&[u8]; 4]) -> [u32; 4] {\n    fnv1a_four_from(inputs, [OFFSET; 4])\n}",
+    "fn fnv1a_four_from(": "fn fnv1a_four_from(inputs: [&[u8]; 4], initial: [u32; 4]) -> [u32; 4] {\n    let [a, b, c, d] = inputs;\n    let common = a.len().min(b.len()).min(c.len()).min(d.len());\n    let [mut h0, mut h1, mut h2, mut h3] = initial;\n    for i in 0..common {\n        h0 = (h0 ^ u32::from(a[i])).wrapping_mul(PRIME);\n        h1 = (h1 ^ u32::from(b[i])).wrapping_mul(PRIME);\n        h2 = (h2 ^ u32::from(c[i])).wrapping_mul(PRIME);\n        h3 = (h3 ^ u32::from(d[i])).wrapping_mul(PRIME);\n    }\n    [\n        finish(h0, &a[common..]),\n        finish(h1, &b[common..]),\n        finish(h2, &c[common..]),\n        finish(h3, &d[common..]),\n    ]\n}"
+  },
+  "foundations": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "module_sha256": "a836a03afbf5080eea9d35e040896dd823b66954ed5db356a7de88cfc0d1945d",
+  "parent_fnv": "fn fnv1a(bytes: &[u8]) -> u32 {\n    let mut hash: u32 = 0x811c9dc5;\n    for &b in bytes {\n        hash ^= u32::from(b);\n        hash = hash.wrapping_mul(0x01000193);\n    }\n    hash\n}",
+  "parent_revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+  "parent_sha256": "c21e69c48f5ae1d6439466c577f0f307068af138adba9c02034827163c2c00de",
+  "parent_source": "crates/raft/src/storage.rs",
+  "proof_sha256": "238db37c0e58d402ff95e9575754c12587e269ba75e647c0842fef6e2a1ce94f",
+  "scope": "Four independent bytewise folds under explicit Rust primitive/index/slice semantics; no writer integration or whole Rust/Raft proof.",
+  "source": "crates/raft/src/storage/fnv.rs",
+  "theorems": [
+    "scalar_append",
+    "four_equivalence",
+    "split_equivalence",
+    "lane_independence",
+    "common_length_bound",
+    "checksum_equivalence"
+  ],
+  "version": 1
+}
