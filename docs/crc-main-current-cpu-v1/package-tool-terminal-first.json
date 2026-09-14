@@ -1,0 +1,7 @@
+{
+  "chunk_id": "3d7283",
+  "wall_time_seconds": 0.285808906,
+  "exit_code": 0,
+  "original_token_count": 164,
+  "output": "{\"complete\": true, \"argv\": [\"/tmp/kv9-crc-main-current-profile-publication-preparation-20260914-first/package.py\", \"--output\", \"/tmp/kv9-crc-main-current-profile-evidence-worktree-20260914-first/docs/crc-main-current-cpu-v1\", \"--receipts\", \"/tmp/kv9-crc-main-current-profile-package-root-20260914-first\"], \"pid\": 3793796, \"scope\": \"Portable current bd42 CPU diagnostic bytes only; no runtime re-execution, data decode or throughput acceptance.\", \"files\": 803, \"decoded_bytes\": 36908139, \"compressed_bytes\": 4117081, \"parts\": 2, \"inventory_sha256\": \"fa32fdc7d5894129c396fee58a7b44bdcaf0af74417043347d100a0c970befe3\", \"elapsed_seconds\": 0.3505134549923241}\n"
+}

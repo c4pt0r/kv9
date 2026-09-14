@@ -1,0 +1,7 @@
+{
+  "chunk_id": "f6df3d",
+  "wall_time_seconds": 0.000332832,
+  "exit_code": 0,
+  "original_token_count": 53,
+  "output": "{\"complete\": true, \"files\": 803, \"decoded_bytes\": 36908139, \"compressed_bytes\": 4117081, \"parts\": 2, \"scope\": \"Exact portable metadata bytes only; no original source, runtime, WAL or performance acceptance.\"}\n"
+}

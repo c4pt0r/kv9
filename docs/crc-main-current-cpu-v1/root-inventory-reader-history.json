@@ -1,0 +1,12 @@
+{
+  "first": {
+    "chunk_id": "e30f67",
+    "exit_code": 1,
+    "error": "Root treated the publisher inventory file list as a map. No package was launched by that check."
+  },
+  "correction": {
+    "chunk_id": "228760",
+    "exit_code": 0,
+    "result": "All twelve frozen files pass the corrected list-schema reader; publisher sources unchanged."
+  }
+}
