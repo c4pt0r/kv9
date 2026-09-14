@@ -1,5 +1,9 @@
 # CRC-32 computation equivalence
 
+Historical byte-table qualification. Current engine CRC uses the [slicing-by-eight proof](../crc32-slicing8/README.md).
+The original source contract and checker below remain unchanged.
+
+
 This proof covers the replacement of the reflected IEEE CRC bit loop by the
 256-entry byte table in `crates/engine/src/wal.rs`. It does not prove WAL recovery,
 Rust compilation, operating-system persistence, CRC collision resistance, or
