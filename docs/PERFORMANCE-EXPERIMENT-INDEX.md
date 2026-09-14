@@ -12,7 +12,7 @@ only to its recorded source, client, workload and duration. Historical numbers
 must not be relabeled as current measurements or full industrial qualification.
 
 The priority remains [writes against Redis with one primary and two replicas](WRITE-PERFORMANCE-NEXT.md).
-The [latest exact-main write screen](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md)
+The [earlier exact-main/frame-buffer write screen](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md)
 records **139,188.639 point Put/s** and **1,065,680.142 BatchPut(64) items/s** at
 c64, with p99 0.737–0.745 ms and 6.947–7.012 ms per batch respectively. Redis
 was not rerun; its [earlier three-copy reference](WRITE-REDIS3-BASELINE.md)
@@ -22,8 +22,11 @@ The frame-buffer and vectored candidates do not establish a general write gain.
 
 The [bounded FNV writer](WRITE-FNV-WRITER.md) passes proof, source checks,
 default release, ordinary recovery, 21 Chaos windows and a separate 11-window
-client-link/quorum-loss campaign. Its matched performance screen remains
-pending [retention capacity](WRITE-FNV-CAPACITY.md). The separate
+client-link/quorum-loss campaign. Its [complete matched write screen](WRITE-FNV-WRITER-PERFORMANCE.md)
+now reaches 139,878.372 point Put/s (+0.351%) and 1,096,549.396 batch items/s
+(+4.131%) at c64. The paired CRC control reaches 139,388.631 / 1,053,049.319.
+FNV pooled batch p99 worsens from 7.602–7.668 ms to 9.830–9.961 ms; loaded
+point reverses direction between orders. Keep CRC main selected. The separate
 [receipt tail-hint candidate](WRITE-RECEIPT-TAIL-HINT.md) passes source/proof
 qualification and awaits release/recovery/Chaos/timing. Neither is selected or
 combined with the other. Read optimization remains held; no lease performance
@@ -55,7 +58,7 @@ adds no throughput, latency or Redis comparison result.
 | Change / source | Recorded decision and evidence |
 | --- | --- |
 | Validated receipt tail hint `a6ac335` | Experimental on CRC main. [18 proof statements / 158 obligations and 793 workspace tests/doctests](WRITE-RECEIPT-TAIL-HINT.md) pass, with 23 existing ignored. Direct checked access for consecutive tail indexes; binary/first-match fallbacks preserve complete receipt semantics. Release, recovery, actual Chaos and throughput/p99 remain pending. |
-| Bounded four-lane FNV writer `12f44d3` | [Proof, 797 tests/doctests, exact default release and recovery](WRITE-FNV-WRITER.md) pass. Actual [21-window Chaos](WRITE-FNV-WRITER-CHAOS.md) and [11-window client-link/quorum-loss](WRITE-FNV-WRITER-LINK-CHAOS.md) acceptance pass. No database performance result; unselected pending capacity and matched timing. |
+| Bounded four-lane FNV writer `12f44d3` | [Proof, 797 tests/doctests, exact default release and recovery](WRITE-FNV-WRITER.md) pass. Actual [21-window Chaos](WRITE-FNV-WRITER-CHAOS.md) and [11-window client-link/quorum-loss](WRITE-FNV-WRITER-LINK-CHAOS.md) acceptance pass. [Eight smokes and sixteen timed cohorts](WRITE-FNV-WRITER-PERFORMANCE.md) pass: c64 point +0.351%, batch +4.131%, but pooled p99 worsens for both. CRC main stays selected. |
 | Integrated slicing-by-eight CRC `bd42e60` | Selected after [full regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md) and [exact-main proof/source/release/recovery/Chaos](CRC32-SLICING-INTEGRATION.md). Latest point/batch write numbers are above; historical e748 comparisons retain their own source attribution. |
 | Frame-buffer on CRC `e9249f2` | [Not selected](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md): loaded point -0.517%, batch +0.379% with worse pooled p99; both reverse across opposite orders. All 8 smokes / 16 timed cohorts pass. |
 | Segmented WAL vectored writes `cfd9c92` | Experimental on selected ThinLTO, separate from CRC and the Raft frame-buffer candidate. Three universal SMT checks, three countermodels, 714 workspace tests/doctests (23 existing ignored), formatting and Clippy pass. An actual file/replay probe records one `writev` plus the existing `fsync` per frame. [Exact release and 352-operation recovery](WRITE-SEGMENT-VECTORED-RECOVERY.md) pass: 29 unknowns, six fresh drains and seven exited lifetimes. Actual [Chaos](WRITE-SEGMENT-VECTORED-CHAOS.md) and [performance](WRITE-SEGMENT-VECTORED-PERFORMANCE.md) now pass; the measured candidate is not selected. [Source qualification](https://github.com/c4pt0r/kv9/blob/cfd9c927f8ecd33974100f696e6b08b227d25a41/docs/WRITE-SEGMENT-VECTORED.md). |
