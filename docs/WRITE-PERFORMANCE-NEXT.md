@@ -44,8 +44,13 @@ Before that screen, exact inactive Cargo-artifact cleanup reclaimed an observed
 59,290,816,512 bytes while preserving source, application binaries and prior
 evidence. The screen now retains 52,317,179,904 bytes; its smoke/timing capacity
 checks passed with unchanged floors and restoration reserve. Historical free-space
-observations do not reserve another campaign. Next obtain CPU attribution on the
-exact current CRC main release before choosing the next implementation.
+observations do not reserve another campaign. The [exact current CRC main CPU
+profile](WRITE-CRC-MAIN-CPU-PROFILE.md) now passes both instrumented workloads and
+independent decode: 3,259 point and 3,106 batch samples, full interval coverage
+and zero sample loss. Fresh disassembly attributes 11.751% of batch samples to
+the legacy Raft WAL FNV loop and 5.094% of point samples to receipt linear search.
+Next evaluate bounded interleaving of independent FNV states, with exact checksum
+equivalence and unchanged frame/sync/failure semantics. No new QPS gain is claimed.
 
 ## Comparison contract
 
@@ -227,13 +232,19 @@ original failed audit and schema repair remain retained without workload reruns.
    integration and the combined frame-buffer write screen now pass; the latter
    does not justify promotion. Preserve the original vectored experiment for
    a separately justified real-disk or combined-candidate study.
-   Next profile the exact current CRC main executable with the accepted bounded
-   point/batch protocol. The retained post-CRC profile used the older byte-table
-   implementation, so its sample fractions do not identify today's remaining
-   slicing-by-eight/ThinLTO bottleneck. Preserve active-prefix/edge/32-bin/clock/
-   zero-loss coverage, independent decoding and bounded cleanup. Select a new
-   change from current instruction/task/ownership costs; keep instrumented CPU
-   results separate from QPS. Do not repeat rejected worker/transport sweeps.
+   Completed: [current CRC main CPU attribution](WRITE-CRC-MAIN-CPU-PROFILE.md)
+   with the unchanged bounded point/batch protocol. Both workloads, original
+   independent decoder, active-prefix/edge/32-bin/clock/zero-loss coverage and
+   cleanup pass. Fresh exact-binary disassembly identifies the legacy Raft FNV
+   loop at 365/3,106 batch samples (11.751%), and receipt linear search at
+   166/3,259 point samples (5.094%). The old byte-table profile stays historical.
+   Next test a bounded FNV interleaving kernel for independent records already
+   in one Ready, with lane equivalence proof and explicit allocation bounds.
+   Any integration must preserve frame bytes/order, sync/publication boundaries,
+   failure poisoning and scalar fallback, then pass actual recovery/Chaos and
+   paired throughput/latency acceptance. No new runtime candidate or speedup is
+   established by profiling. Keep receipt and persistent-map ownership as
+   secondary targets; do not repeat rejected worker/transport sweeps.
    DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
 6. After the write phase, return to bounded dynamic multi-Raft (#22), epoch routing
