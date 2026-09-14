@@ -1,0 +1,10 @@
+{
+  "session_id": 73657,
+  "launch_receipt": "470caf",
+  "actual_terminal_receipt": "eab7c5",
+  "exit_code": 0,
+  "observed_ns": 1789411025600496532,
+  "result_path": "/tmp/kv9-frame-crc-chaos-root-20260914-first/post-result.json",
+  "result_sha256": "2bcd3ee5a3005442152d5801360e9a5a63e2992835e257e3a25247bcafeab8b9",
+  "complete": true
+}

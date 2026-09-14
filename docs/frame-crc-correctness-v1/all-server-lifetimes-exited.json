@@ -1,0 +1,774 @@
+{
+  "complete": true,
+  "scope": "Readback exit/absence for every container supporting an accepted server lifetime.",
+  "server_lifetimes": [
+    {
+      "node": "1",
+      "pod_uid": "4ae09d78-7b85-4580-83cc-529907986c6b",
+      "namespace_pid": 408,
+      "start_ticks": 169913472,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "962c8f0f4cf231617bbe1dbfa774acd6b0e9a1af5cb92002e608a2c67d1bb021"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "61cdca91-dcd8-49ea-bc7f-63da178b2514",
+      "namespace_pid": 1,
+      "start_ticks": 169890736,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "8d4f6c7517b8b78e3c3a4311e2ad093e8373b8af001355efc22d3ba574249701"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "61cdca91-dcd8-49ea-bc7f-63da178b2514",
+      "namespace_pid": 1,
+      "start_ticks": 169897478,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "607cbab31fce2535913c477717ce0bb24f4ba63603c0b630c62974155093ae58"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "b7185cd9-c748-4a3f-9730-46a5c29131a5",
+      "namespace_pid": 48,
+      "start_ticks": 169918756,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "43100888b96dced52f20a0f19303dc928f30e28b63e7a2c43c6f8d38edabdf8d"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "df1117e1-a4ab-4092-9a00-1f652061a665",
+      "namespace_pid": 17,
+      "start_ticks": 169905548,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "df1117e1-a4ab-4092-9a00-1f652061a665",
+      "namespace_pid": 459,
+      "start_ticks": 169906386,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "df1117e1-a4ab-4092-9a00-1f652061a665",
+      "namespace_pid": 795,
+      "start_ticks": 169906927,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "df1117e1-a4ab-4092-9a00-1f652061a665",
+      "namespace_pid": 1016,
+      "start_ticks": 169907381,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "e799ffe4-ee62-4a7d-9353-3631b3b1a817",
+      "namespace_pid": 1,
+      "start_ticks": 169887848,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "faa38161da264bb8b8daff24248fc0074ad846b37979e00dcdf31f1d9d44a447"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "1",
+      "pod_uid": "f92778c0-1be2-4d4f-a7be-5ea75e010551",
+      "namespace_pid": 16,
+      "start_ticks": 169912332,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "8e26cba37623bfa5c42979d7528a74c566a9270dcefcd48d44608d817cc98f0d"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "2ad6b586-6e29-40bd-a826-ffd7b870ec4e",
+      "namespace_pid": 1,
+      "start_ticks": 169891134,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "8be59f92b04e9b112fb0b5f6a74eb7546b576be832ea85071418eca08499b775"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "2ad6b586-6e29-40bd-a826-ffd7b870ec4e",
+      "namespace_pid": 1,
+      "start_ticks": 169894793,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "bf3c7f47d0ed590b9ab7ac429934904135a0273b63979bfc256d0c0a6ad1b8ff"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "2ad6b586-6e29-40bd-a826-ffd7b870ec4e",
+      "namespace_pid": 1,
+      "start_ticks": 169899048,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "f94b6ea9e79a0fa741fabfe7ea350a6045d089bc894766b35a17d21c332d876f"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "44a522af-f47c-4236-8c31-8bd10d2c12b6",
+      "namespace_pid": 16,
+      "start_ticks": 169913834,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "8422c1d67d860f48cc1d11820e3a15b3e9266168674ef7906a6f9578428c9899"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "6df03230-5feb-4091-a26a-9f310f856084",
+      "namespace_pid": 401,
+      "start_ticks": 169914958,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "6a638e5b76fd5197779e2e3f1695a61c6c1b4c679dde0dd8eedf60f77c8e5de4"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "82d10629-a14d-4691-bd2d-a5763cf284a3",
+      "namespace_pid": 52,
+      "start_ticks": 169921354,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "5e754b8e68464d47c1664b97b90342a4fcf2e596187f53bbd862df9ded8e68ae"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "a597e061-33fe-4b8c-9d60-f1961f49728f",
+      "namespace_pid": 1,
+      "start_ticks": 169887929,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "cdbd5b87b7f4707ebfb4e547e0ad9b15f850af35258e6284f87b30fad9958a37"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "c92f901a-c47a-4846-b27f-680dff334840",
+      "namespace_pid": 17,
+      "start_ticks": 169907884,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "4e90934f72f423950ac9e7bef49c6c4f5032c43272ebf1f19b11082347fb941f"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "c92f901a-c47a-4846-b27f-680dff334840",
+      "namespace_pid": 458,
+      "start_ticks": 169908744,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "4e90934f72f423950ac9e7bef49c6c4f5032c43272ebf1f19b11082347fb941f"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "2",
+      "pod_uid": "c92f901a-c47a-4846-b27f-680dff334840",
+      "namespace_pid": 985,
+      "start_ticks": 169909722,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "4e90934f72f423950ac9e7bef49c6c4f5032c43272ebf1f19b11082347fb941f"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "03d5113e-6ae3-492a-b29f-1c810ff8a586",
+      "namespace_pid": 1,
+      "start_ticks": 169896348,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "54b47787b0fc6f51c8f613813ca4fa2fc4a7b88bf08ff3c3249c41456aa374bf"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "03d5113e-6ae3-492a-b29f-1c810ff8a586",
+      "namespace_pid": 1,
+      "start_ticks": 169902051,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "f2a4d38aaee61d7188b60a55d2600559ff096c7ff27913469d426ff26c7cf07d"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "2b1b87a7-f0c3-4a6a-bb60-bfe8da5cdeaa",
+      "namespace_pid": 17,
+      "start_ticks": 169910200,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "2b1b87a7-f0c3-4a6a-bb60-bfe8da5cdeaa",
+      "namespace_pid": 250,
+      "start_ticks": 169910542,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "2b1b87a7-f0c3-4a6a-bb60-bfe8da5cdeaa",
+      "namespace_pid": 475,
+      "start_ticks": 169911016,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "2b1b87a7-f0c3-4a6a-bb60-bfe8da5cdeaa",
+      "namespace_pid": 965,
+      "start_ticks": 169911995,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "3bd1253d-d37c-4404-8364-a3ef6d96f750",
+      "namespace_pid": 16,
+      "start_ticks": 169915302,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "44491f28d6403c88778c50442f67e65d0bf1ff6aff0e379da8fc777aca4bc5af"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "88bf1002-298f-4426-9ccd-bb686d8636db",
+      "namespace_pid": 44,
+      "start_ticks": 169923865,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "f472e9f187863c41aff2c4bc069568785a55e8f3f7a996c79d0f640b00c6550e"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "b14315ce-cc70-45b2-82fa-7b7edba114a0",
+      "namespace_pid": 1,
+      "start_ticks": 169888029,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "d6531ab7291b5953b10e3270b65b766c3adb190d6eb9301a18f2286986aa49a5"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "c17aa7f1-b257-4ce0-bea6-3d2da2bdcf68",
+      "namespace_pid": 1,
+      "start_ticks": 169890737,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "a525b1e174804ed5f7a059a997ab90a2251cdf9470eb53fdfba86cdb2877ddb1"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "3",
+      "pod_uid": "cb1218e6-69b2-4b68-ac9c-4dfc97fffa48",
+      "namespace_pid": 399,
+      "start_ticks": 169916291,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "27d01d523fc9af4ddf51524952fad1f529549f7e713c9824fe940d41bf2a8ec6"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "4",
+      "pod_uid": "dbf728ca-6085-40c4-87dc-6aa2723a5ffe",
+      "namespace_pid": 1,
+      "start_ticks": 169892969,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "8bc9169779b2fbcf4d0c6bafd3beff6c45e0a49dc3055e29634efb18757ec506"
+      ],
+      "all_containers_exited": true
+    },
+    {
+      "node": "4",
+      "pod_uid": "f2f33e07-56a4-4a46-945c-54bc09cc069b",
+      "namespace_pid": 1,
+      "start_ticks": 169924796,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "container_ids": [
+        "2c762efe1765283064e8a778fd8480c518acc1b3c2281f85725c7084d01e2e09"
+      ],
+      "all_containers_exited": true
+    }
+  ],
+  "container_states": {
+    "068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014": "removed",
+    "27d01d523fc9af4ddf51524952fad1f529549f7e713c9824fe940d41bf2a8ec6": "removed",
+    "2c762efe1765283064e8a778fd8480c518acc1b3c2281f85725c7084d01e2e09": "removed",
+    "43100888b96dced52f20a0f19303dc928f30e28b63e7a2c43c6f8d38edabdf8d": "removed",
+    "44491f28d6403c88778c50442f67e65d0bf1ff6aff0e379da8fc777aca4bc5af": "removed",
+    "4e90934f72f423950ac9e7bef49c6c4f5032c43272ebf1f19b11082347fb941f": "removed",
+    "54b47787b0fc6f51c8f613813ca4fa2fc4a7b88bf08ff3c3249c41456aa374bf": "removed",
+    "5e754b8e68464d47c1664b97b90342a4fcf2e596187f53bbd862df9ded8e68ae": "removed",
+    "607cbab31fce2535913c477717ce0bb24f4ba63603c0b630c62974155093ae58": "removed",
+    "6a638e5b76fd5197779e2e3f1695a61c6c1b4c679dde0dd8eedf60f77c8e5de4": "removed",
+    "8422c1d67d860f48cc1d11820e3a15b3e9266168674ef7906a6f9578428c9899": "removed",
+    "8bc9169779b2fbcf4d0c6bafd3beff6c45e0a49dc3055e29634efb18757ec506": "removed",
+    "8be59f92b04e9b112fb0b5f6a74eb7546b576be832ea85071418eca08499b775": "removed",
+    "8d4f6c7517b8b78e3c3a4311e2ad093e8373b8af001355efc22d3ba574249701": "removed",
+    "8e26cba37623bfa5c42979d7528a74c566a9270dcefcd48d44608d817cc98f0d": "removed",
+    "962c8f0f4cf231617bbe1dbfa774acd6b0e9a1af5cb92002e608a2c67d1bb021": "removed",
+    "a525b1e174804ed5f7a059a997ab90a2251cdf9470eb53fdfba86cdb2877ddb1": "removed",
+    "ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31": "removed",
+    "bf3c7f47d0ed590b9ab7ac429934904135a0273b63979bfc256d0c0a6ad1b8ff": "removed",
+    "cdbd5b87b7f4707ebfb4e547e0ad9b15f850af35258e6284f87b30fad9958a37": "removed",
+    "d6531ab7291b5953b10e3270b65b766c3adb190d6eb9301a18f2286986aa49a5": "removed",
+    "f2a4d38aaee61d7188b60a55d2600559ff096c7ff27913469d426ff26c7cf07d": "removed",
+    "f472e9f187863c41aff2c4bc069568785a55e8f3f7a996c79d0f640b00c6550e": "removed",
+    "f94b6ea9e79a0fa741fabfe7ea350a6045d089bc894766b35a17d21c332d876f": "removed",
+    "faa38161da264bb8b8daff24248fc0074ad846b37979e00dcdf31f1d9d44a447": "removed"
+  },
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014"
+      ],
+      "started_unix_ns": 1789410781566151714,
+      "ended_unix_ns": 1789410781605313885,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.604524  574059 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014\\\": not found\" containerID=\"068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"068c5d17ee92f8cb7a63663653d51158de4943a57e0e3495357366eb915e5014\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "27d01d523fc9af4ddf51524952fad1f529549f7e713c9824fe940d41bf2a8ec6"
+      ],
+      "started_unix_ns": 1789410781605318785,
+      "ended_unix_ns": 1789410781625742376,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.624882  574077 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"27d01d523fc9af4ddf51524952fad1f529549f7e713c9824fe940d41bf2a8ec6\\\": not found\" containerID=\"27d01d523fc9af4ddf51524952fad1f529549f7e713c9824fe940d41bf2a8ec6\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"27d01d523fc9af4ddf51524952fad1f529549f7e713c9824fe940d41bf2a8ec6\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "2c762efe1765283064e8a778fd8480c518acc1b3c2281f85725c7084d01e2e09"
+      ],
+      "started_unix_ns": 1789410781625747606,
+      "ended_unix_ns": 1789410781645687774,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.644785  574096 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"2c762efe1765283064e8a778fd8480c518acc1b3c2281f85725c7084d01e2e09\\\": not found\" containerID=\"2c762efe1765283064e8a778fd8480c518acc1b3c2281f85725c7084d01e2e09\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"2c762efe1765283064e8a778fd8480c518acc1b3c2281f85725c7084d01e2e09\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "43100888b96dced52f20a0f19303dc928f30e28b63e7a2c43c6f8d38edabdf8d"
+      ],
+      "started_unix_ns": 1789410781645692573,
+      "ended_unix_ns": 1789410781665287844,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.664596  574114 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"43100888b96dced52f20a0f19303dc928f30e28b63e7a2c43c6f8d38edabdf8d\\\": not found\" containerID=\"43100888b96dced52f20a0f19303dc928f30e28b63e7a2c43c6f8d38edabdf8d\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"43100888b96dced52f20a0f19303dc928f30e28b63e7a2c43c6f8d38edabdf8d\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "44491f28d6403c88778c50442f67e65d0bf1ff6aff0e379da8fc777aca4bc5af"
+      ],
+      "started_unix_ns": 1789410781665292223,
+      "ended_unix_ns": 1789410781686139527,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.685389  574132 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"44491f28d6403c88778c50442f67e65d0bf1ff6aff0e379da8fc777aca4bc5af\\\": not found\" containerID=\"44491f28d6403c88778c50442f67e65d0bf1ff6aff0e379da8fc777aca4bc5af\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"44491f28d6403c88778c50442f67e65d0bf1ff6aff0e379da8fc777aca4bc5af\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "4e90934f72f423950ac9e7bef49c6c4f5032c43272ebf1f19b11082347fb941f"
+      ],
+      "started_unix_ns": 1789410781686144687,
+      "ended_unix_ns": 1789410781705271703,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.704619  574150 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"4e90934f72f423950ac9e7bef49c6c4f5032c43272ebf1f19b11082347fb941f\\\": not found\" containerID=\"4e90934f72f423950ac9e7bef49c6c4f5032c43272ebf1f19b11082347fb941f\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"4e90934f72f423950ac9e7bef49c6c4f5032c43272ebf1f19b11082347fb941f\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "54b47787b0fc6f51c8f613813ca4fa2fc4a7b88bf08ff3c3249c41456aa374bf"
+      ],
+      "started_unix_ns": 1789410781705276742,
+      "ended_unix_ns": 1789410781724496903,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.723713  574168 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"54b47787b0fc6f51c8f613813ca4fa2fc4a7b88bf08ff3c3249c41456aa374bf\\\": not found\" containerID=\"54b47787b0fc6f51c8f613813ca4fa2fc4a7b88bf08ff3c3249c41456aa374bf\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"54b47787b0fc6f51c8f613813ca4fa2fc4a7b88bf08ff3c3249c41456aa374bf\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "5e754b8e68464d47c1664b97b90342a4fcf2e596187f53bbd862df9ded8e68ae"
+      ],
+      "started_unix_ns": 1789410781724501110,
+      "ended_unix_ns": 1789410781744101993,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.743383  574186 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"5e754b8e68464d47c1664b97b90342a4fcf2e596187f53bbd862df9ded8e68ae\\\": not found\" containerID=\"5e754b8e68464d47c1664b97b90342a4fcf2e596187f53bbd862df9ded8e68ae\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"5e754b8e68464d47c1664b97b90342a4fcf2e596187f53bbd862df9ded8e68ae\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "607cbab31fce2535913c477717ce0bb24f4ba63603c0b630c62974155093ae58"
+      ],
+      "started_unix_ns": 1789410781744106221,
+      "ended_unix_ns": 1789410781763342321,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.762687  574204 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"607cbab31fce2535913c477717ce0bb24f4ba63603c0b630c62974155093ae58\\\": not found\" containerID=\"607cbab31fce2535913c477717ce0bb24f4ba63603c0b630c62974155093ae58\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"607cbab31fce2535913c477717ce0bb24f4ba63603c0b630c62974155093ae58\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "6a638e5b76fd5197779e2e3f1695a61c6c1b4c679dde0dd8eedf60f77c8e5de4"
+      ],
+      "started_unix_ns": 1789410781763346519,
+      "ended_unix_ns": 1789410781783098825,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.782411  574222 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"6a638e5b76fd5197779e2e3f1695a61c6c1b4c679dde0dd8eedf60f77c8e5de4\\\": not found\" containerID=\"6a638e5b76fd5197779e2e3f1695a61c6c1b4c679dde0dd8eedf60f77c8e5de4\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"6a638e5b76fd5197779e2e3f1695a61c6c1b4c679dde0dd8eedf60f77c8e5de4\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "8422c1d67d860f48cc1d11820e3a15b3e9266168674ef7906a6f9578428c9899"
+      ],
+      "started_unix_ns": 1789410781783103674,
+      "ended_unix_ns": 1789410781802070740,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.801462  574240 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"8422c1d67d860f48cc1d11820e3a15b3e9266168674ef7906a6f9578428c9899\\\": not found\" containerID=\"8422c1d67d860f48cc1d11820e3a15b3e9266168674ef7906a6f9578428c9899\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"8422c1d67d860f48cc1d11820e3a15b3e9266168674ef7906a6f9578428c9899\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "8bc9169779b2fbcf4d0c6bafd3beff6c45e0a49dc3055e29634efb18757ec506"
+      ],
+      "started_unix_ns": 1789410781802076661,
+      "ended_unix_ns": 1789410781846529431,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.844818  574259 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"8bc9169779b2fbcf4d0c6bafd3beff6c45e0a49dc3055e29634efb18757ec506\\\": not found\" containerID=\"8bc9169779b2fbcf4d0c6bafd3beff6c45e0a49dc3055e29634efb18757ec506\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"8bc9169779b2fbcf4d0c6bafd3beff6c45e0a49dc3055e29634efb18757ec506\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "8be59f92b04e9b112fb0b5f6a74eb7546b576be832ea85071418eca08499b775"
+      ],
+      "started_unix_ns": 1789410781846534130,
+      "ended_unix_ns": 1789410781866825013,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.866218  574277 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"8be59f92b04e9b112fb0b5f6a74eb7546b576be832ea85071418eca08499b775\\\": not found\" containerID=\"8be59f92b04e9b112fb0b5f6a74eb7546b576be832ea85071418eca08499b775\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"8be59f92b04e9b112fb0b5f6a74eb7546b576be832ea85071418eca08499b775\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "8d4f6c7517b8b78e3c3a4311e2ad093e8373b8af001355efc22d3ba574249701"
+      ],
+      "started_unix_ns": 1789410781866829311,
+      "ended_unix_ns": 1789410781903039449,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.902352  574296 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"8d4f6c7517b8b78e3c3a4311e2ad093e8373b8af001355efc22d3ba574249701\\\": not found\" containerID=\"8d4f6c7517b8b78e3c3a4311e2ad093e8373b8af001355efc22d3ba574249701\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"8d4f6c7517b8b78e3c3a4311e2ad093e8373b8af001355efc22d3ba574249701\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "8e26cba37623bfa5c42979d7528a74c566a9270dcefcd48d44608d817cc98f0d"
+      ],
+      "started_unix_ns": 1789410781903043747,
+      "ended_unix_ns": 1789410781923044628,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.922268  574314 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"8e26cba37623bfa5c42979d7528a74c566a9270dcefcd48d44608d817cc98f0d\\\": not found\" containerID=\"8e26cba37623bfa5c42979d7528a74c566a9270dcefcd48d44608d817cc98f0d\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"8e26cba37623bfa5c42979d7528a74c566a9270dcefcd48d44608d817cc98f0d\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "962c8f0f4cf231617bbe1dbfa774acd6b0e9a1af5cb92002e608a2c67d1bb021"
+      ],
+      "started_unix_ns": 1789410781923050259,
+      "ended_unix_ns": 1789410781943162358,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.942359  574333 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"962c8f0f4cf231617bbe1dbfa774acd6b0e9a1af5cb92002e608a2c67d1bb021\\\": not found\" containerID=\"962c8f0f4cf231617bbe1dbfa774acd6b0e9a1af5cb92002e608a2c67d1bb021\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"962c8f0f4cf231617bbe1dbfa774acd6b0e9a1af5cb92002e608a2c67d1bb021\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "a525b1e174804ed5f7a059a997ab90a2251cdf9470eb53fdfba86cdb2877ddb1"
+      ],
+      "started_unix_ns": 1789410781943167117,
+      "ended_unix_ns": 1789410781961746879,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:01.961097  574352 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"a525b1e174804ed5f7a059a997ab90a2251cdf9470eb53fdfba86cdb2877ddb1\\\": not found\" containerID=\"a525b1e174804ed5f7a059a997ab90a2251cdf9470eb53fdfba86cdb2877ddb1\"\ntime=\"2026-09-14T18:33:01Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"a525b1e174804ed5f7a059a997ab90a2251cdf9470eb53fdfba86cdb2877ddb1\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31"
+      ],
+      "started_unix_ns": 1789410781961751237,
+      "ended_unix_ns": 1789410782004310734,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:02.003509  574370 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31\\\": not found\" containerID=\"ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31\"\ntime=\"2026-09-14T18:33:02Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"ad9430dc99800c56f57eb786ed51c8e09dc096d370314fa37b03395adb357b31\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "bf3c7f47d0ed590b9ab7ac429934904135a0273b63979bfc256d0c0a6ad1b8ff"
+      ],
+      "started_unix_ns": 1789410782004314521,
+      "ended_unix_ns": 1789410782024784941,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:02.024170  574388 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"bf3c7f47d0ed590b9ab7ac429934904135a0273b63979bfc256d0c0a6ad1b8ff\\\": not found\" containerID=\"bf3c7f47d0ed590b9ab7ac429934904135a0273b63979bfc256d0c0a6ad1b8ff\"\ntime=\"2026-09-14T18:33:02Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"bf3c7f47d0ed590b9ab7ac429934904135a0273b63979bfc256d0c0a6ad1b8ff\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "cdbd5b87b7f4707ebfb4e547e0ad9b15f850af35258e6284f87b30fad9958a37"
+      ],
+      "started_unix_ns": 1789410782024789369,
+      "ended_unix_ns": 1789410782043796170,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:02.042904  574406 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"cdbd5b87b7f4707ebfb4e547e0ad9b15f850af35258e6284f87b30fad9958a37\\\": not found\" containerID=\"cdbd5b87b7f4707ebfb4e547e0ad9b15f850af35258e6284f87b30fad9958a37\"\ntime=\"2026-09-14T18:33:02Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"cdbd5b87b7f4707ebfb4e547e0ad9b15f850af35258e6284f87b30fad9958a37\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "d6531ab7291b5953b10e3270b65b766c3adb190d6eb9301a18f2286986aa49a5"
+      ],
+      "started_unix_ns": 1789410782043800277,
+      "ended_unix_ns": 1789410782088510088,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:02.086540  574424 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"d6531ab7291b5953b10e3270b65b766c3adb190d6eb9301a18f2286986aa49a5\\\": not found\" containerID=\"d6531ab7291b5953b10e3270b65b766c3adb190d6eb9301a18f2286986aa49a5\"\ntime=\"2026-09-14T18:33:02Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"d6531ab7291b5953b10e3270b65b766c3adb190d6eb9301a18f2286986aa49a5\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "f2a4d38aaee61d7188b60a55d2600559ff096c7ff27913469d426ff26c7cf07d"
+      ],
+      "started_unix_ns": 1789410782088514155,
+      "ended_unix_ns": 1789410782108390343,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:02.107694  574441 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"f2a4d38aaee61d7188b60a55d2600559ff096c7ff27913469d426ff26c7cf07d\\\": not found\" containerID=\"f2a4d38aaee61d7188b60a55d2600559ff096c7ff27913469d426ff26c7cf07d\"\ntime=\"2026-09-14T18:33:02Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"f2a4d38aaee61d7188b60a55d2600559ff096c7ff27913469d426ff26c7cf07d\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "f472e9f187863c41aff2c4bc069568785a55e8f3f7a996c79d0f640b00c6550e"
+      ],
+      "started_unix_ns": 1789410782108395001,
+      "ended_unix_ns": 1789410782126903921,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:02.126222  574458 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"f472e9f187863c41aff2c4bc069568785a55e8f3f7a996c79d0f640b00c6550e\\\": not found\" containerID=\"f472e9f187863c41aff2c4bc069568785a55e8f3f7a996c79d0f640b00c6550e\"\ntime=\"2026-09-14T18:33:02Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"f472e9f187863c41aff2c4bc069568785a55e8f3f7a996c79d0f640b00c6550e\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "f94b6ea9e79a0fa741fabfe7ea350a6045d089bc894766b35a17d21c332d876f"
+      ],
+      "started_unix_ns": 1789410782126908379,
+      "ended_unix_ns": 1789410782146186919,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:02.145352  574476 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"f94b6ea9e79a0fa741fabfe7ea350a6045d089bc894766b35a17d21c332d876f\\\": not found\" containerID=\"f94b6ea9e79a0fa741fabfe7ea350a6045d089bc894766b35a17d21c332d876f\"\ntime=\"2026-09-14T18:33:02Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"f94b6ea9e79a0fa741fabfe7ea350a6045d089bc894766b35a17d21c332d876f\\\": not found\"\n"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "faa38161da264bb8b8daff24248fc0074ad846b37979e00dcdf31f1d9d44a447"
+      ],
+      "started_unix_ns": 1789410782146191407,
+      "ended_unix_ns": 1789410782184411215,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "E0914 18:33:02.182829  574495 remote_runtime.go:569] \"ContainerStatus from runtime service failed\" err=\"rpc error: code = NotFound desc = an error occurred when try to find container \\\"faa38161da264bb8b8daff24248fc0074ad846b37979e00dcdf31f1d9d44a447\\\": not found\" containerID=\"faa38161da264bb8b8daff24248fc0074ad846b37979e00dcdf31f1d9d44a447\"\ntime=\"2026-09-14T18:33:02Z\" level=fatal msg=\"get the status of containers: get container status: rpc error: code = NotFound desc = an error occurred when try to find container \\\"faa38161da264bb8b8daff24248fc0074ad846b37979e00dcdf31f1d9d44a447\\\": not found\"\n"
+    }
+  ],
+  "completed_unix_ns": 1789410782184448364
+}

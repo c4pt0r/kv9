@@ -1,0 +1,91 @@
+{
+  "complete": true,
+  "source_sha256": "fcd4e9d112ee0bb8ff64b76dd2b9185bdd8fb1bf5aab3410d7e831beb032fcf0",
+  "ancestor_production_sha256": "36b97dfa80194cc0f2b75ab48b2ea5ae82823a76357dee8a5ea1a18c97956d8f",
+  "candidate_production_sha256": "f2f3ca78af4eac9eb8e92c513dfef3ab13610811ec6fa53eda5bd987d24143a0",
+  "production_delta_exact": true,
+  "solver": "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+  "solver_sha256": "4321b0c0db1574a1e90881d9e097f12b8753d0c3e78b21a0155c77005a631436",
+  "solver_version": "Z3 version 4.8.9 - 64 bit",
+  "cases": [
+    {
+      "name": "frame-equivalence",
+      "source_sha256": "6703b1db31655f7b2bd389852ab740d3e864012a8c537bb364b0d59d46108736",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:10",
+        "-smt2",
+        "/tmp/kv9-frame-crc-proof-20260914-first/frame-equivalence.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "unsat",
+      "verified": true
+    },
+    {
+      "name": "body-preserved",
+      "source_sha256": "0f9c1785751f3674cb8fcf6d8da8aeda3c9dd8dfa4121e35458555629e6e2a27",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:10",
+        "-smt2",
+        "/tmp/kv9-frame-crc-proof-20260914-first/body-preserved.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "unsat",
+      "verified": true
+    },
+    {
+      "name": "representable-bounds",
+      "source_sha256": "c701af5780d0732501dd22ab6e373f11d93fd59273aa02281180166e44073d7f",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:10",
+        "-smt2",
+        "/tmp/kv9-frame-crc-proof-20260914-first/representable-bounds.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "unsat",
+      "verified": true
+    },
+    {
+      "name": "wrong-hash-offset",
+      "source_sha256": "1db934df85dd6b0af493e9ca3dd7b0a5bea3b3ec66b135f69d5187f69842e03d",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:10",
+        "-smt2",
+        "/tmp/kv9-frame-crc-proof-20260914-first/wrong-hash-offset.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "verified": true
+    },
+    {
+      "name": "wrong-checksum-range",
+      "source_sha256": "350b2c74ea32d4a08defa7e82a45868bd68293dcf8b11abc816aad0e8f0edf60",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:10",
+        "-smt2",
+        "/tmp/kv9-frame-crc-proof-20260914-first/wrong-checksum-range.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "verified": true
+    },
+    {
+      "name": "omitted-kind",
+      "source_sha256": "6e6a93148a6243bd13aff8c561c76461a132a48b43d9218a34fe2b19e0592909",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:10",
+        "-smt2",
+        "/tmp/kv9-frame-crc-proof-20260914-first/omitted-kind.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "verified": true
+    }
+  ],
+  "scope": "Universal byte-sequence layout and length arithmetic under Rust Vec/slice/serialization and compiler premises; not whole-Rust, WAL durability or Raft proof"
+}

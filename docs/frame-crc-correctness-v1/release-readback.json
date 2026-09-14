@@ -1,0 +1,306 @@
+{
+  "complete": true,
+  "revision": "e9249f2cbd069dcdc44312be826a68494cf694db",
+  "source_files_checked": 866,
+  "source_tree_sha256": "43fbcb002533602ca397ad877327543c9cd6d4e061a6af8f170efda7aa154cea",
+  "server_sha256": "96bdb92ea90f131c6434033f912193c24531bc17b7bfaf8207e4c46902aa1714",
+  "workload_sha256": "5959b48e6b99777dc18628b63acc9f4c636c01822ae92dee90454c34d9d2a466",
+  "build_sha256": "9e304fc18d6ec011a120f922d2c7e416cf1918a227d78ddfbc03c65a3d8c5dc9",
+  "workload_build_sha256": "30fccc3dbc7fb12409207b306d0cf598ffeb9052c9e1e6432a6743af0b1c84d3",
+  "default_feature_attestation": {
+    "kv9-cargo.jsonl:kv9_common": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9_engine": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9_raft": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9_region": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9_txn": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9_meta": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9_server": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_common": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_txn": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_region": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_meta": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_engine": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_raft": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_server": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9-batch-workload": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    }
+  },
+  "codegen": [
+    {
+      "log": "kv9-build.log",
+      "crate": "kv9",
+      "codegen_flags": [
+        "opt-level=3",
+        "lto=thin",
+        "codegen-units=1",
+        "metadata=800d2ce40bf9a59e",
+        "extra-filename=-24992454863049ad",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_common",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=abf8bc41e0795a92",
+        "extra-filename=-256e539b8af1ba35",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_engine",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=4f3de75385ccd8bb",
+        "extra-filename=-a138971bf33a8003",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_raft",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=75f910181dce7856",
+        "extra-filename=-bc2f622565ed93bb",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_region",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=26fbd6c5752c5340",
+        "extra-filename=-b5a2c0781f72373b",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_txn",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=1ac26a43d0fae1d0",
+        "extra-filename=-41c81dc466420ff8",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_meta",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=e7d540f4c0bb2cb0",
+        "extra-filename=-26d0a0792fcd0082",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_server",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=d902986ac937b8be",
+        "extra-filename=-c6aeba372df9a6d9",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_batch_workload",
+      "codegen_flags": [
+        "opt-level=3",
+        "lto=thin",
+        "codegen-units=1",
+        "metadata=e93d3a9a216dcdda",
+        "extra-filename=-5ed3126b19d7c2a0",
+        "strip=debuginfo"
+      ]
+    }
+  ],
+  "release_tool_terminal": {
+    "complete": true,
+    "exit_code": 0,
+    "session_id": 81371,
+    "terminal_receipt": "f79bb2",
+    "result_path": "/tmp/kv9-frame-crc-release-root-20260914-first/source-result.json",
+    "result_sha256": "f877857bae1380b086a98efd6a30586a986be27456c0e4f98269a3723c2f8888"
+  }
+}

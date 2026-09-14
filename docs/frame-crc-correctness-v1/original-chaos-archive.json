@@ -1,0 +1,14 @@
+{
+  "all_inputs_rehashed": true,
+  "all_members_read_back": true,
+  "bytes": 92343933,
+  "complete": true,
+  "file_bytes": 938844491,
+  "files": 4258,
+  "inventory": "/tmp/kv9-frame-crc-chaos-preparation-20260914-first/archive-first/inventory.json",
+  "inventory_sha256": "b88138ee8b58c549c2887daf0f462ae6e06836660b73e120a68ea550b627bc3c",
+  "members": 4553,
+  "scope": "Original accepted archive identity copied from its completed readback; payload not read by this metadata preparation.",
+  "sha256": "b3bc55144f53c83bbdcb5369c2388a4905e024e3a221e94a723477e46a88ecbc",
+  "source": "/tmp/kv9-frame-crc-chaos-preparation-20260914-first/archive-first/evidence.tar.gz"
+}

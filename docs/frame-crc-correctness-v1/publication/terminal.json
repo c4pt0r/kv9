@@ -1,0 +1,15 @@
+{
+  "complete": true,
+  "execution_kind": "direct_tool_terminal",
+  "session_id": null,
+  "terminal_receipt": "593129",
+  "exit_code": 0,
+  "tool_result": {
+    "chunk_id": "593129",
+    "exit_code": 0
+  },
+  "result_path": "/tmp/kv9-frame-crc-correctness-publication-root-20260914-first/result.json",
+  "result_sha256": "f125ee0ccd9128b9adf1fa4b854113662b70bed67510865c7e3be08c0baf5cbb",
+  "metadata_inventory_sha256": "4fe0c807af1f70fcc8cc42549ee19105472c7e4ac5eb1dead280342031219cbe",
+  "chaos_parts_index_sha256": "fd2df303593b78234e3a561f1908a28ee9f820b725adfc3d5c2a162880b345dd"
+}

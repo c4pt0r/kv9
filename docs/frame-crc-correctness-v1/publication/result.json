@@ -1,0 +1,225 @@
+{
+  "complete": true,
+  "started_ns": 1789412636689007296,
+  "free_before_bytes": 121521115136,
+  "phases": [
+    {
+      "name": "metadata",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "/usr/bin/python3",
+        "-B",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/package-source-recovery.py",
+        "--output",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1"
+      ],
+      "started_ns": 1789412636689012927,
+      "exit_code": 0,
+      "ended_ns": 1789412636916176248
+    },
+    {
+      "name": "tools",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/verify-source-recovery.py",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/package-source-recovery.py",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/chaos-parts.py",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/metadata-selection.json",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/original-chaos-archive.json",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/lineage.json",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/select-metadata.py",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1"
+      ],
+      "started_ns": 1789412636916463546,
+      "exit_code": 0,
+      "ended_ns": 1789412636917656466
+    },
+    {
+      "name": "draft",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/README.draft.md",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/README.md"
+      ],
+      "started_ns": 1789412636917788423,
+      "exit_code": 0,
+      "ended_ns": 1789412636918633122
+    },
+    {
+      "name": "readable-0",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-source-20260914-first/result.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/source-checks.json"
+      ],
+      "started_ns": 1789412636918717360,
+      "exit_code": 0,
+      "ended_ns": 1789412636919391040
+    },
+    {
+      "name": "readable-1",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-proof-20260914-first/result.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/frame-proof-result.json"
+      ],
+      "started_ns": 1789412636919455751,
+      "exit_code": 0,
+      "ended_ns": 1789412636920029424
+    },
+    {
+      "name": "readable-2",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-slicing-proof-20260914-first/result.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/crc-proof-result.json"
+      ],
+      "started_ns": 1789412636920092682,
+      "exit_code": 0,
+      "ended_ns": 1789412636920733731
+    },
+    {
+      "name": "readable-3",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-release-root-20260914-first/independent-release-readback.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/release-readback.json"
+      ],
+      "started_ns": 1789412636920800225,
+      "exit_code": 0,
+      "ended_ns": 1789412636921334885
+    },
+    {
+      "name": "readable-4",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-recovery-audit-20260914-first/audit.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/recovery-audit.json"
+      ],
+      "started_ns": 1789412636921398343,
+      "exit_code": 0,
+      "ended_ns": 1789412636921914338
+    },
+    {
+      "name": "readable-5",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-chaos-preparation-20260914-first/independent/audit.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/chaos-audit.json"
+      ],
+      "started_ns": 1789412636922030295,
+      "exit_code": 0,
+      "ended_ns": 1789412636922606623
+    },
+    {
+      "name": "readable-6",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-chaos-root-20260914-first/post-terminal.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/post-terminal.json"
+      ],
+      "started_ns": 1789412636922699156,
+      "exit_code": 0,
+      "ended_ns": 1789412636923234988
+    },
+    {
+      "name": "readable-7",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-chaos-preparation-20260914-first/cleanup/summary.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/cleanup-summary.json"
+      ],
+      "started_ns": 1789412636923315759,
+      "exit_code": 0,
+      "ended_ns": 1789412636923832365
+    },
+    {
+      "name": "readable-8",
+      "argv": [
+        "cp",
+        "--",
+        "/tmp/kv9-frame-crc-chaos-preparation-20260914-first/cleanup/all-server-lifetimes-exited.json",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/all-server-lifetimes-exited.json"
+      ],
+      "started_ns": 1789412636923914669,
+      "exit_code": 0,
+      "ended_ns": 1789412636924869124
+    },
+    {
+      "name": "chaos-split",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "/usr/bin/python3",
+        "-B",
+        "/tmp/kv9-frame-crc-correctness-publication-preparation-20260914-first/chaos-parts.py",
+        "--output",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/chaos-original"
+      ],
+      "started_ns": 1789412636924960204,
+      "exit_code": 0,
+      "ended_ns": 1789412637114070107
+    },
+    {
+      "name": "metadata-verify",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "/usr/bin/python3",
+        "-B",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/verify-source-recovery.py",
+        "--root",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1",
+        "--inventory-sha256",
+        "4fe0c807af1f70fcc8cc42549ee19105472c7e4ac5eb1dead280342031219cbe"
+      ],
+      "started_ns": 1789412637114494261,
+      "exit_code": 0,
+      "ended_ns": 1789412637166407905
+    },
+    {
+      "name": "split-verify",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "/usr/bin/python3",
+        "-B",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/chaos-parts.py",
+        "--output",
+        "/tmp/kv9-frame-crc-correctness-evidence-worktree-20260914-first/docs/frame-crc-correctness-v1/chaos-original",
+        "--verify-only"
+      ],
+      "started_ns": 1789412637166674765,
+      "exit_code": 0,
+      "ended_ns": 1789412637265587425
+    }
+  ],
+  "ended_ns": 1789412637265929304
+}

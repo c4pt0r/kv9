@@ -1,0 +1,18 @@
+{
+  "scope": "Original small CRC main packager adapted only to frozen explicit metadata selection, candidate revision, output argument and truthful metadata-only scope. Compression/part/readback code retained; independent verifier byte-identical. No package execution.",
+  "originals": {
+    "/tmp/kv9-crc-main-integration-evidence-worktree-20260914-first/docs/crc-main-integration-v1/package-source-recovery.py": {
+      "bytes": 3899,
+      "sha256": "fb72fb4fa60ead2a15bff0e0d92eb292d9d2752f31ba760283410ad569d9d5f3"
+    },
+    "/tmp/kv9-crc-main-integration-evidence-worktree-20260914-first/docs/crc-main-integration-v1/verify-source-recovery.py": {
+      "bytes": 5398,
+      "sha256": "84e6a55e3a268ee192cd9dbcee93937cecde14f40f132f43b37c31edeadf6f4b"
+    }
+  },
+  "metadata_selection_receipt": {
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "tool_receipt": "43cb43"
+  }
+}

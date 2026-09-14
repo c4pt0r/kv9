@@ -1,0 +1,232 @@
+{
+  "original_source": "/tmp/kv9-frame-crc-chaos-preparation-20260914-first/archive-first/evidence.tar.gz",
+  "original_bytes": 92343933,
+  "original_sha256": "b3bc55144f53c83bbdcb5369c2388a4905e024e3a221e94a723477e46a88ecbc",
+  "parts": [
+    {
+      "name": "chaos-original.tar.gz.001",
+      "bytes": 2097152,
+      "sha256": "c69a4053a171001d2532322fa2b66c72f15270ad65069d256b09da6b070b79e7"
+    },
+    {
+      "name": "chaos-original.tar.gz.002",
+      "bytes": 2097152,
+      "sha256": "54005bad7c8fb7f1fa9dad86c4f259b68e768aed7e73791f8472e699d75e448a"
+    },
+    {
+      "name": "chaos-original.tar.gz.003",
+      "bytes": 2097152,
+      "sha256": "03d25b8ef73c44297066640b8ebd61a291ba8ac3982434f2cb162027a6093b34"
+    },
+    {
+      "name": "chaos-original.tar.gz.004",
+      "bytes": 2097152,
+      "sha256": "bf923e2e2e2ad8b815305c6819de2c9d766747d13880a95c852572dc38c56473"
+    },
+    {
+      "name": "chaos-original.tar.gz.005",
+      "bytes": 2097152,
+      "sha256": "6048bdb383e019f1ec73d0a6ecb7ea0f1a4a17373dcbff9845f3a92b56b239e8"
+    },
+    {
+      "name": "chaos-original.tar.gz.006",
+      "bytes": 2097152,
+      "sha256": "95b94f153c6154ceb9d5ebeba444405b679070bd46f301e151a3c586c9b7fe56"
+    },
+    {
+      "name": "chaos-original.tar.gz.007",
+      "bytes": 2097152,
+      "sha256": "9b85909ccd303699d09275986642ca6473d51a0cd05acc38b3773d2fd330255c"
+    },
+    {
+      "name": "chaos-original.tar.gz.008",
+      "bytes": 2097152,
+      "sha256": "61ac3b8be35c8307a6fbb675de2310e38830a411b9cd52b42baa0e80d1174dcd"
+    },
+    {
+      "name": "chaos-original.tar.gz.009",
+      "bytes": 2097152,
+      "sha256": "5a69a083f263cef882252f3039144cbae499fed661f041dd92fafe60583bd6fb"
+    },
+    {
+      "name": "chaos-original.tar.gz.010",
+      "bytes": 2097152,
+      "sha256": "023e4de1b7fc5095504f991548c03bbb5e634a6177d6171b95eb731edadb35d9"
+    },
+    {
+      "name": "chaos-original.tar.gz.011",
+      "bytes": 2097152,
+      "sha256": "54a0cb1762003f32c7df0a6abcd30ffb1d1fe96603c4863499a064e65363d135"
+    },
+    {
+      "name": "chaos-original.tar.gz.012",
+      "bytes": 2097152,
+      "sha256": "fed12a7b14e71563095114c3bfc76f4b4162fafe6955dba21a3999f119ff01cf"
+    },
+    {
+      "name": "chaos-original.tar.gz.013",
+      "bytes": 2097152,
+      "sha256": "1e3398a9ec02842bdd2256f23ca72a6f52df357f624f1b130b6a8073fe12deb8"
+    },
+    {
+      "name": "chaos-original.tar.gz.014",
+      "bytes": 2097152,
+      "sha256": "8c7aa42094f490dd4c7a84f32a5aa280789dbfe145a44cce10b1ecae01c2921e"
+    },
+    {
+      "name": "chaos-original.tar.gz.015",
+      "bytes": 2097152,
+      "sha256": "1f97217e75ad3e2f090a3f7ed447734aa4c3d3927993f84550a3cbe577520b63"
+    },
+    {
+      "name": "chaos-original.tar.gz.016",
+      "bytes": 2097152,
+      "sha256": "5a5fa2d55cb3bcd813e6d4ef70fdc4eef96b43f4add9ca87905abd5c25c8cdb1"
+    },
+    {
+      "name": "chaos-original.tar.gz.017",
+      "bytes": 2097152,
+      "sha256": "ca58352b6906bfc4b335f1237be621b5e9c14e387b622f1cc69ae36a693edb4c"
+    },
+    {
+      "name": "chaos-original.tar.gz.018",
+      "bytes": 2097152,
+      "sha256": "74c46a662ba00d8a3b85d5e82be5b572d3b0322f244577dead2f58953b15d211"
+    },
+    {
+      "name": "chaos-original.tar.gz.019",
+      "bytes": 2097152,
+      "sha256": "14eca6731f1fbe467fe1f74e8c57884a51cfcbdd5446ea0c4e6e28902f8febdf"
+    },
+    {
+      "name": "chaos-original.tar.gz.020",
+      "bytes": 2097152,
+      "sha256": "7880ee7f8972967ff70508b841a50f814d64a7772d910b1c795f7257e9bcd80d"
+    },
+    {
+      "name": "chaos-original.tar.gz.021",
+      "bytes": 2097152,
+      "sha256": "2f745eb35bf2df19e67d0de5b32bbb1ed9d049a14962abda6ea3fc1450dbe61c"
+    },
+    {
+      "name": "chaos-original.tar.gz.022",
+      "bytes": 2097152,
+      "sha256": "0a2c353683fe59eb62f9d4b1e167a68dcf4dcc5f6b405296e660d374993ad346"
+    },
+    {
+      "name": "chaos-original.tar.gz.023",
+      "bytes": 2097152,
+      "sha256": "7c2c89b999267e2f9db26077ba97e697ccd49badadb7f21078ca7b0f40f03869"
+    },
+    {
+      "name": "chaos-original.tar.gz.024",
+      "bytes": 2097152,
+      "sha256": "1f00994ac58dc00e64ae1091dbcd73544c15b74f06cd0fc255d391b1a62a6a13"
+    },
+    {
+      "name": "chaos-original.tar.gz.025",
+      "bytes": 2097152,
+      "sha256": "77c3e3acacf744e17f4f0ad7de1f2e290510fe7d120f53434bccabd049d8a571"
+    },
+    {
+      "name": "chaos-original.tar.gz.026",
+      "bytes": 2097152,
+      "sha256": "df2585175085d4007991a981a300089b56b1339e511bf0858cf51fd0f22fa021"
+    },
+    {
+      "name": "chaos-original.tar.gz.027",
+      "bytes": 2097152,
+      "sha256": "9a71ffc309218b4da9023fb45f0018c2ddf480f4a2fe60f4942f910ecb30d8de"
+    },
+    {
+      "name": "chaos-original.tar.gz.028",
+      "bytes": 2097152,
+      "sha256": "87a00a27a917059359ed384e44eb76d17f8b73fea2006b722c59a54ed0bfc0bd"
+    },
+    {
+      "name": "chaos-original.tar.gz.029",
+      "bytes": 2097152,
+      "sha256": "5dc6cd8faedbfec74e523b71f71c3181953eb8778061219badf3556856c52a60"
+    },
+    {
+      "name": "chaos-original.tar.gz.030",
+      "bytes": 2097152,
+      "sha256": "29810ad8d2dcb3998810e252bf2ec77c3ef0a20633f88d5fb79e50a123e6df0d"
+    },
+    {
+      "name": "chaos-original.tar.gz.031",
+      "bytes": 2097152,
+      "sha256": "706fa3f29958c290f495765ab98d8ee7a7620998a030a9a61c16c1025460825b"
+    },
+    {
+      "name": "chaos-original.tar.gz.032",
+      "bytes": 2097152,
+      "sha256": "265d6979f149d64582dbf1ed646b58d795848a210db57938bb288419980cb0ae"
+    },
+    {
+      "name": "chaos-original.tar.gz.033",
+      "bytes": 2097152,
+      "sha256": "decc1afc734e34a2d7ce3b1eb1b3e153a9833b65b545da5674666e1fbfa90a45"
+    },
+    {
+      "name": "chaos-original.tar.gz.034",
+      "bytes": 2097152,
+      "sha256": "4bef1d7b85cd0f31c6483c895b7f41d78a8fb535be747152c8184e09bfd1334a"
+    },
+    {
+      "name": "chaos-original.tar.gz.035",
+      "bytes": 2097152,
+      "sha256": "ea71e2b4d4dcf081aeff0068a45bf8ebb49679388b73b9629acf195ba0cecd2f"
+    },
+    {
+      "name": "chaos-original.tar.gz.036",
+      "bytes": 2097152,
+      "sha256": "31b98d60d25913ca1c05db7a333908cdae6000d0d49ef995db68117ec03e754e"
+    },
+    {
+      "name": "chaos-original.tar.gz.037",
+      "bytes": 2097152,
+      "sha256": "3dee63031910046e53ff12ae1029664b257a1447417ecbc0892ec00ded321ba2"
+    },
+    {
+      "name": "chaos-original.tar.gz.038",
+      "bytes": 2097152,
+      "sha256": "7ea599e25a25e7651741d8cdb0db952d8624f019226086aa94685abbbc7cf98e"
+    },
+    {
+      "name": "chaos-original.tar.gz.039",
+      "bytes": 2097152,
+      "sha256": "bf696314e68435837fbd400ceb2744af2c54e72022e3bee97817600a16cc196e"
+    },
+    {
+      "name": "chaos-original.tar.gz.040",
+      "bytes": 2097152,
+      "sha256": "c06333ee68a0abc4d28f0a1d8c43f752b87f4b698cfd1de6dbbcc13e0a7abae6"
+    },
+    {
+      "name": "chaos-original.tar.gz.041",
+      "bytes": 2097152,
+      "sha256": "6d04a15c5f275f0885027cc36ea3fddcf39230196c61175435bbd4ce2a49c8f7"
+    },
+    {
+      "name": "chaos-original.tar.gz.042",
+      "bytes": 2097152,
+      "sha256": "bf8426b65ef291c0d7a53eb9ef39c1b099c9a3cb6b87cd6decc53d1c92190eea"
+    },
+    {
+      "name": "chaos-original.tar.gz.043",
+      "bytes": 2097152,
+      "sha256": "71f15b04e2df0a2355e837ac7291eb6f2e9c32ebb28982cab51391233ddb73f2"
+    },
+    {
+      "name": "chaos-original.tar.gz.044",
+      "bytes": 2097152,
+      "sha256": "2ca8d1af493381094e97ea887fc33451d217ad2bea01d3b642125e1bc517d97b"
+    },
+    {
+      "name": "chaos-original.tar.gz.045",
+      "bytes": 69245,
+      "sha256": "88fa459f8e26d1c9ab39cf9280bba0b78f8ea9f57c676716e23eade25dbc62f5"
+    }
+  ]
+}
