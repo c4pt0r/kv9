@@ -20,8 +20,10 @@ This supersedes the older free-space observations below. Available space now
 exceeds the 170.15 GB matched-comparison and 202.38 GB CRC empirical scenarios;
 it does not reserve both campaigns simultaneously or guarantee an unrun
 candidate's size. Recheck capacity before each campaign and retain every
-existing floor, cap and restore reserve. Next execute the complete vectored
-write screen with its original source/client bindings and 28 passed controls.
+existing floor, cap and restore reserve. The subsequently completed vectored
+screen retained 45.49 GB and left approximately 162.67 GB available. Its
+[accepted result](WRITE-SEGMENT-VECTORED-PERFORMANCE.md) shows no write gain;
+prioritize CRC full regressions and refresh their capacity reservation first.
 
 ## Comparison contract
 
@@ -174,10 +176,15 @@ original failed audit and schema repair remain retained without workload reruns.
    increased observed free space by 4.76 GB with all protected binaries unchanged;
    it does not resolve the larger performance reservations. The [matched vectored
    comparison preparation](WRITE-SEGMENT-VECTORED-PERFORMANCE-PLAN.md) now passes
-   all 28 driver/auditor/smoke-schema controls with exact original release and
-   fixed-client bindings. Eight smokes and sixteen timed cohorts remain unrun,
-   pending storage and runtime qualification. Qualify throughput, tail latency
-   and full regressions before promotion. No vectored-WAL throughput gain is assumed.
+   all 28 driver/auditor/smoke-schema controls. The [completed matched screen](WRITE-SEGMENT-VECTORED-PERFORMANCE.md)
+   now passes eight smokes, sixteen timed cohorts and complete independent
+   acceptance: 6,961,558 measured calls all succeed once. Loaded point throughput
+   changes -0.612% and batch throughput -1.020%, with worse pooled p99 intervals.
+   Keep the isolated candidate experimental; this screen establishes no write
+   gain and does not justify default promotion. Next prioritize full CRC
+   regressions, then the still-unmeasured frame-buffer comparison, each with
+   fresh capacity qualification. Preserve the original vectored experiment for
+   a separately justified real-disk or combined-candidate study.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
