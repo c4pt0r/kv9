@@ -1,0 +1,7 @@
+{
+  "complete": true,
+  "selection_review_receipt": "ee541d",
+  "original_command_sha256": "e59b233f6ae2b7fd172631eda200e2cd71778dea20442244949a96d76a7c9d13",
+  "adjustment": "The prepared inline command encoded a literal backslash-n trailer. Root wrote an actual newline and parsed the resulting JSON before publication. Original prepared command remains retained; selection predicates and payloads are unchanged.",
+  "observed_ns": 1789408694293449988
+}

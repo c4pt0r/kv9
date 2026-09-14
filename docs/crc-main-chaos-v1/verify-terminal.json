@@ -1,0 +1,12 @@
+{
+  "complete": true,
+  "exit_code": 0,
+  "session_id": null,
+  "execution_kind": "direct_tool_terminal",
+  "terminal_receipt": "f27f49",
+  "verified_files": 2291,
+  "verified_parts": 12,
+  "inventory_path": "/tmp/kv9-crc-main-integration-evidence-worktree-20260914-first/docs/crc-main-chaos-v1/inventory.json",
+  "inventory_sha256": "49e7c43036b233f8a597e7354dd398d99e9a35d8c6366ca748f7b52c83418882",
+  "scope": "Independent byte identity readback of published parts, without extraction or rerunning runtime acceptance."
+}

@@ -1,0 +1,115 @@
+{
+  "complete": true,
+  "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+  "source_tree_sha256": "055196fb39a243b749ccb0f6597df791110d693d347c561ab2d536e3de9bf588",
+  "windows": 21,
+  "window_names": [
+    "registration-seed-blackhole",
+    "pod-failure-1",
+    "pod-failure-2",
+    "pod-failure-3",
+    "partition",
+    "public-admission-overload",
+    "delay",
+    "io-voter-1-errno-5",
+    "io-voter-1-errno-28",
+    "io-voter-2-errno-5",
+    "io-voter-2-errno-28",
+    "io-voter-3-errno-5",
+    "io-voter-3-errno-28",
+    "store-loss-voter-1-log-missing",
+    "store-loss-voter-2-log-missing",
+    "store-loss-voter-3-log-missing",
+    "store-loss-voter-1-pvc-replacement",
+    "store-loss-voter-2-pvc-replacement",
+    "store-loss-voter-3-pvc-replacement",
+    "endpoint-migration-pending",
+    "endpoint-migration-recovered"
+  ],
+  "operations": 11316,
+  "outcomes": {
+    "ok": 10683,
+    "unknown": 602,
+    "refused": 31
+  },
+  "histories": {
+    "cli": {
+      "sha256": "13b2dfdcdac162e292dd2e1783bf73831c74dad4857a814a1074d222f83199ef",
+      "bytes": 3697963,
+      "invokes": 6525,
+      "returns": 6525,
+      "outcomes": {
+        "ok": 5957,
+        "unknown": 549,
+        "refused": 19
+      }
+    },
+    "persistent": {
+      "sha256": "fbfb92cb525ecd248b67040208c5d76ab83b13ab0791013ba8e15d8c96a22303",
+      "bytes": 1262412,
+      "invokes": 1709,
+      "returns": 1709,
+      "outcomes": {
+        "ok": 1692,
+        "unknown": 15,
+        "refused": 2
+      }
+    },
+    "native": {
+      "sha256": "0e37d55e3b0e60dd4b273ada096e3c817f28985c3fc5db0575c7290671de9be2",
+      "bytes": 7793643,
+      "invokes": 3082,
+      "returns": 3082,
+      "outcomes": {
+        "ok": 3034,
+        "unknown": 38,
+        "refused": 10
+      }
+    }
+  },
+  "fresh_final_drained_replicas": 4,
+  "server_lifetimes_exited": 31,
+  "container_states": 25,
+  "namespace": "kv9-chaos-vectored-bd42e60-1789407797-1803570",
+  "namespace_uid": "7b133b38-3c6d-47fd-a44a-f349be41fe7a",
+  "namespace_removed": true,
+  "historical_namespace_uids_preserved": 8,
+  "archive_verified": true,
+  "full_archive": {
+    "complete": true,
+    "archive": "/tmp/kv9-crc-main-chaos-preparation-20260914-first/archive-first/evidence.tar.gz",
+    "bytes": 100471419,
+    "sha256": "1b2abda397dd8d6505894d0e2f1125bd936b9b6879379e37e3bceedc60fa5935",
+    "inventory": "/tmp/kv9-crc-main-chaos-preparation-20260914-first/archive-first/inventory.json",
+    "inventory_sha256": "7aeeae5c2b11f9ee9d1bbf1655545dcc5ec1b3d0c5e7a5c66022eef69dd8909f",
+    "members": 4502,
+    "files": 4208,
+    "file_bytes": 1062174968,
+    "roots": [
+      "/tmp/kv9-chaos-e2e.YXm1pC",
+      "/tmp/kv9-crc-main-chaos-preparation-20260914-first",
+      "/tmp/kv9-crc-main-integration-release-20260914-first",
+      "/tmp/kv9-crc-main-chaos-preparation-20260914-first/persistent-build",
+      "/tmp/kv9-crc-main-chaos-preparation-20260914-first/pressure-build-first",
+      "/tmp/kv9-crc-main-chaos-preparation-20260914-first/image-context-first",
+      "/tmp/kv9-thin-lto-delay-selection-repair-first"
+    ],
+    "all_members_read_back": true,
+    "all_inputs_rehashed": true,
+    "started_unix_ns": 1789408536906399416,
+    "ended_unix_ns": 1789408541362252052,
+    "scope": "Freeze, archive and independently read back current native Chaos evidence before cleanup.",
+    "original_fixture_exit_code": 0,
+    "independent_retained_evidence_accepted": true,
+    "cleanup_in_separate_supplement": true
+  },
+  "binary_sha256": "106f517c84fabe790ea139f3c18661e14447abd9e257fdd6ba82bfabe6796eb9",
+  "client_sha256": "4ecc204d985b4dd6f1a3a2a2f0c4a37f838d8a17cb22bdda6463d86b8cf998ca",
+  "native_client_sha256": "ec8002c00253fa6264a2f7bef3814e33dc871c7ef895e6163b7be38be2edffad",
+  "image_id": "sha256:e6ab5372470a3084e0a0e4332724cee7917ddbb07fb3a1b5ae25f3164d62b084",
+  "runtime_terminal": "/tmp/kv9-crc-main-chaos-root-20260914-first/terminal.json",
+  "post_terminal": "/tmp/kv9-crc-main-chaos-root-20260914-first/post-terminal.json",
+  "scope": "Exact clean bd42e60 default-feature release server, ordinary-port tonic_stream point and native atomic batch clients, plus original CLI/catalog histories. Original 21 actual voter/storage/endpoint Chaos windows and effects; independent complete histories, source/executable/process identity and fresh final drains. Dedicated client-link/quorum acceptance, performance, cross-host, power-loss and whole-Rust proof are separate.",
+  "independent_audit_precleanup_scope_preserved": true,
+  "no_new_performance_result": true
+}
