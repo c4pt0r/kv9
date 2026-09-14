@@ -12,7 +12,10 @@ now also pass: 887 source files independently bound, 365 complete operations
 The [actual 21-window Chaos Mesh campaign](WRITE-FNV-WRITER-CHAOS.md) also
 passes: 9,872 complete operations (9,300 OK / 541 unknown / 31 refused), four
 fresh final drains, independent archive readback and all 31 server lifetimes
-exited. Paired database throughput and latency remain unmeasured.
+exited. The separate [eleven-window client-link and quorum-loss campaign](WRITE-FNV-WRITER-LINK-CHAOS.md)
+also passes: 2,126 complete operations (1,835 OK / 63 unknown / 228 refused),
+independent packet-effect/history checks and owned cleanup. Paired database
+throughput and latency remain unmeasured.
 
 ## Implementation and correctness
 
@@ -91,8 +94,10 @@ readback. Hosted CI remains manual and was not dispatched.
 3. Run the matched point Put and BatchPut(64), c1/c64, opposite-order throughput
    and latency screen against selected CRC main. Preserve all quorum, sync,
    apply and response fences and capacity checks. The unchanged full-retention
-   reservation currently exceeds available disk space; known build caches alone
-   cannot close that gap.
+   reservation currently exceeds available disk space. The latest
+   [cache cleanup and compression pilot](WRITE-FNV-CAPACITY.md) reclaim an
+   observed 11.49 GB, leaving an approximately 50.7 GB planning gap; the pilot
+   does not justify bulk recompression of retained histories.
 4. Select only from database results. The standalone equal-body checksum speedup
    and CPU profile do not establish Ready-group frequency or database gains.
 
