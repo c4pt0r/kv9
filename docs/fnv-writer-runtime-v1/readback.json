@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "files": 167,
+  "decoded_bytes": 4171798,
+  "compressed_bytes": 418076,
+  "terminal_receipt": "c89ed5",
+  "exit_code": 0,
+  "scope": "Exact portable evidence bytes only; no runtime re-execution."
+}

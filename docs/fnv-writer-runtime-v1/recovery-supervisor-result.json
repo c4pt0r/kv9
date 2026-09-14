@@ -1,0 +1,46 @@
+{
+  "complete": true,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "/tmp/kv9-fnv-writer-release-recovery-preparation-20260914-runtime-source/process-runner.py",
+    "--build",
+    "/tmp/kv9-fnv-writer-release-20260914-runtime-source",
+    "--output",
+    "/tmp/kv9-fnv-writer-recovery-20260914-runtime-source"
+  ],
+  "script_sha256": "f7ac3d5ab1e285edfad54a8fac6bfb8d42367a83c38f3666e9432a3f43a337f5",
+  "started_ns": 1789417940778061128,
+  "initial_available_bytes": 113321086976,
+  "minimum_available_bytes": 85899345920,
+  "additional_consumption_ceiling_bytes": 17179869184,
+  "accounting": "Conservative decrease in available filesystem bytes, including unrelated host writers; 5-second samples",
+  "samples": [
+    {
+      "unix_ns": 1789417940778406184,
+      "available_bytes": 113321082880
+    },
+    {
+      "unix_ns": 1789417945778497063,
+      "available_bytes": 113319370752
+    },
+    {
+      "unix_ns": 1789417950778596056,
+      "available_bytes": 113318051840
+    },
+    {
+      "unix_ns": 1789417951042190909,
+      "available_bytes": 113317961728
+    }
+  ],
+  "pid": 4056048,
+  "exit_code": 0,
+  "reaped": true,
+  "pid_absent": true,
+  "ended_ns": 1789417951042266050
+}

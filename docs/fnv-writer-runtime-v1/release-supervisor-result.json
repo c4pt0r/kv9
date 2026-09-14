@@ -1,0 +1,70 @@
+{
+  "complete": true,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "CARGO_TERM_VERBOSE=true",
+    "python3",
+    "/tmp/kv9-fnv-writer-release-source-20260914-first/scripts/build-native-batch.py",
+    "--release",
+    "--output",
+    "/tmp/kv9-fnv-writer-release-20260914-runtime-source"
+  ],
+  "script_sha256": "264b869f1d5f653ac92fba7851284e42236f0b8b5ba61819911e503deb3a184f",
+  "started_ns": 1789417866730405671,
+  "initial_available_bytes": 113357107200,
+  "minimum_available_bytes": 85899345920,
+  "additional_consumption_ceiling_bytes": 17179869184,
+  "accounting": "Conservative decrease in available filesystem bytes, including unrelated host writers; 5-second samples",
+  "samples": [
+    {
+      "unix_ns": 1789417866730744635,
+      "available_bytes": 113357103104
+    },
+    {
+      "unix_ns": 1789417871730843095,
+      "available_bytes": 113381957632
+    },
+    {
+      "unix_ns": 1789417876730934811,
+      "available_bytes": 113376657408
+    },
+    {
+      "unix_ns": 1789417881731021406,
+      "available_bytes": 113376624640
+    },
+    {
+      "unix_ns": 1789417886731118510,
+      "available_bytes": 113360859136
+    },
+    {
+      "unix_ns": 1789417891731212607,
+      "available_bytes": 113360842752
+    },
+    {
+      "unix_ns": 1789417896731315729,
+      "available_bytes": 113353621504
+    },
+    {
+      "unix_ns": 1789417901731418300,
+      "available_bytes": 113342402560
+    },
+    {
+      "unix_ns": 1789417906731506001,
+      "available_bytes": 113323978752
+    },
+    {
+      "unix_ns": 1789417907045177520,
+      "available_bytes": 113321172992
+    }
+  ],
+  "pid": 4050115,
+  "exit_code": 0,
+  "reaped": true,
+  "pid_absent": true,
+  "ended_ns": 1789417907045250076
+}

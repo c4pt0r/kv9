@@ -1,0 +1,335 @@
+{
+  "complete": true,
+  "started_ns": 1789417923033834614,
+  "revision": "12f44d35590ede5f89337fe731dd950162865154",
+  "runtime_checkpoint": "12f44d35590ede5f89337fe731dd950162865154",
+  "preparation_hashes": {
+    "process-runner.py": "f7ac3d5ab1e285edfad54a8fac6bfb8d42367a83c38f3666e9432a3f43a337f5",
+    "run-recovery.py": "a2e078a763903e42b6a29b63b775245f0a5d87b1e1d1f590e7b7b4a450c6e6c7",
+    "audit.py": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+  },
+  "source_files": 887,
+  "source_tree_sha256": "ef5201783441fc0bff44fa0256f0ad473ab669dc5338ba5af7cfa4c7e71c562f",
+  "server_sha256": "d84b0ec8e466a9dc3f4953751605d91c90a90a66df1b03b57a3412e43e42603e",
+  "workload_sha256": "6b1867110dd7eaab5d3a8571b2227e77658ecb6b89f59dd4460836b691935ff3",
+  "manifest_sha256": "c845942f728d67acc5682af6eb8c7f3e0b06c19ee5f9145942e75711cf92a1af",
+  "default_production_codegen": [
+    {
+      "path": "/tmp/kv9-fnv-writer-release-20260914-runtime-source/kv9-build.log",
+      "sha256": "05b704bc2caf3a45958b29516652622d2ec3c3a2efac94f327bd093ff52f50f2",
+      "rustc_command": "     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9 --edition=2021 src/main.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values(\"checkpoint-testing\", \"partition-testing\", \"rpc-experiment\"))' -C metadata=800d2ce40bf9a59e -C extra-filename=-24992454863049ad --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-256e539b8af1ba35.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-a138971bf33a8003.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-26d0a0792fcd0082.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-bc2f622565ed93bb.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-b5a2c0781f72373b.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-c6aeba372df9a6d9.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-41c81dc466420ff8.rlib --extern tikv_jemallocator=/home/dongxu/kv9/target/release/deps/libtikv_jemallocator-5ed8c615b51a6d32.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out -L native=/home/dongxu/kv9/target/release/build/tikv-jemalloc-sys-6b1888eb065cfaf0/out/build/lib`"
+    },
+    {
+      "path": "/tmp/kv9-fnv-writer-release-20260914-runtime-source/workload/build.log",
+      "sha256": "08b7133105e2a5c44523892c89375861e9b724cb607adead5df21d26b85b5c90",
+      "rustc_command": "     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_batch_workload --edition=2021 crates/server/src/bin/kv9-batch-workload.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values(\"checkpoint-testing\", \"experimental-leader-lease\", \"rpc-experiment\"))' -C metadata=e93d3a9a216dcdda -C extra-filename=-5ed3126b19d7c2a0 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-256e539b8af1ba35.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-a138971bf33a8003.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-26d0a0792fcd0082.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-bc2f622565ed93bb.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-b5a2c0781f72373b.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-c6aeba372df9a6d9.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-41c81dc466420ff8.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`"
+    }
+  ],
+  "feature_attestation": {
+    "server": {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--bin",
+        "kv9",
+        "--release",
+        "--message-format=json-render-diagnostics"
+      ],
+      "artifacts": {
+        "kv9": {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///tmp/kv9-fnv-writer-release-source-20260914-first#kv9@0.0.0",
+          "manifest_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/Cargo.toml",
+          "target": {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "kv9",
+            "src_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/src/main.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": false,
+            "overflow_checks": false,
+            "test": false
+          },
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/kv9"
+          ],
+          "executable": "/home/dongxu/kv9/target/release/kv9",
+          "fresh": false
+        },
+        "kv9_engine": {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///tmp/kv9-fnv-writer-release-source-20260914-first/crates/engine#kv9-engine@0.0.0",
+          "manifest_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/engine/Cargo.toml",
+          "target": {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "kv9_engine",
+            "src_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/engine/src/lib.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": true,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": false,
+            "overflow_checks": false,
+            "test": false
+          },
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_engine-a138971bf33a8003.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_engine-a138971bf33a8003.rmeta"
+          ],
+          "executable": null,
+          "fresh": true
+        },
+        "kv9_raft": {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///tmp/kv9-fnv-writer-release-source-20260914-first/crates/raft#kv9-raft@0.0.0",
+          "manifest_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/raft/Cargo.toml",
+          "target": {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "kv9_raft",
+            "src_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/raft/src/lib.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": true,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": false,
+            "overflow_checks": false,
+            "test": false
+          },
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_raft-bc2f622565ed93bb.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_raft-bc2f622565ed93bb.rmeta"
+          ],
+          "executable": null,
+          "fresh": true
+        },
+        "kv9_server": {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///tmp/kv9-fnv-writer-release-source-20260914-first/crates/server#kv9-server@0.0.0",
+          "manifest_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/server/Cargo.toml",
+          "target": {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "kv9_server",
+            "src_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/server/src/lib.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": true,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": false,
+            "overflow_checks": false,
+            "test": false
+          },
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_server-c6aeba372df9a6d9.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_server-c6aeba372df9a6d9.rmeta"
+          ],
+          "executable": null,
+          "fresh": true
+        }
+      },
+      "cargo_sha256": "1e0afd362e24d98797d57174c6c6097845f4968f2c9f3eedab4b8c076275ff35"
+    },
+    "workload": {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--bin",
+        "kv9-batch-workload",
+        "--message-format=json-render-diagnostics",
+        "--release"
+      ],
+      "artifacts": {
+        "kv9-batch-workload": {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///tmp/kv9-fnv-writer-release-source-20260914-first/crates/server#kv9-server@0.0.0",
+          "manifest_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/server/Cargo.toml",
+          "target": {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "kv9-batch-workload",
+            "src_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/server/src/bin/kv9-batch-workload.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": false,
+            "overflow_checks": false,
+            "test": false
+          },
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/kv9-batch-workload"
+          ],
+          "executable": "/home/dongxu/kv9/target/release/kv9-batch-workload",
+          "fresh": false
+        },
+        "kv9_engine": {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///tmp/kv9-fnv-writer-release-source-20260914-first/crates/engine#kv9-engine@0.0.0",
+          "manifest_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/engine/Cargo.toml",
+          "target": {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "kv9_engine",
+            "src_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/engine/src/lib.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": true,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": false,
+            "overflow_checks": false,
+            "test": false
+          },
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_engine-a138971bf33a8003.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_engine-a138971bf33a8003.rmeta"
+          ],
+          "executable": null,
+          "fresh": false
+        },
+        "kv9_raft": {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///tmp/kv9-fnv-writer-release-source-20260914-first/crates/raft#kv9-raft@0.0.0",
+          "manifest_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/raft/Cargo.toml",
+          "target": {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "kv9_raft",
+            "src_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/raft/src/lib.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": true,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": false,
+            "overflow_checks": false,
+            "test": false
+          },
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_raft-bc2f622565ed93bb.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_raft-bc2f622565ed93bb.rmeta"
+          ],
+          "executable": null,
+          "fresh": false
+        },
+        "kv9_server": {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///tmp/kv9-fnv-writer-release-source-20260914-first/crates/server#kv9-server@0.0.0",
+          "manifest_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/server/Cargo.toml",
+          "target": {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "kv9_server",
+            "src_path": "/tmp/kv9-fnv-writer-release-source-20260914-first/crates/server/src/lib.rs",
+            "edition": "2021",
+            "doc": true,
+            "doctest": true,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": false,
+            "overflow_checks": false,
+            "test": false
+          },
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_server-c6aeba372df9a6d9.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_server-c6aeba372df9a6d9.rmeta"
+          ],
+          "executable": null,
+          "fresh": false
+        }
+      },
+      "cargo_sha256": "a63bef5bf9c9a8a3053cae392fb8cb63a60e1c0c79529e0bbc5b3880535fe3bc"
+    }
+  },
+  "cache_lock_and_first_party_invalidation_checked": true,
+  "protected_releases_unchanged": true,
+  "release_terminal": {
+    "complete": true,
+    "session_id": 53741,
+    "exit_code": 0,
+    "terminal_receipt": "b9574b",
+    "result_path": "/tmp/kv9-fnv-writer-release-root-20260914-runtime-source/source-result.json",
+    "result_sha256": "9418239035b14c663d0842cd61b194a49e48cbe1a0e532eaac803883406e0b70"
+  },
+  "minimum_observed_available_bytes": 113321172992,
+  "scope": "Exact clean default release, retained source/binary/Cargo/verbose codegen/cache and original resource guards; no runtime recovery, Chaos or performance acceptance",
+  "ended_ns": 1789417923236792464
+}

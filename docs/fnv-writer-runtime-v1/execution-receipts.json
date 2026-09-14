@@ -1,0 +1,44 @@
+[
+  {
+    "stage": "published-docs-release-preflight",
+    "terminal_receipt": "7a74e0",
+    "exit_code": 1
+  },
+  {
+    "stage": "original-inventory-diagnostic",
+    "terminal_receipt": "a25cec",
+    "exit_code": 0
+  },
+  {
+    "stage": "tested-runtime-source-validation",
+    "terminal_receipt": "5ebaa3",
+    "exit_code": 0
+  },
+  {
+    "stage": "runtime-source-binding",
+    "terminal_receipt": "1bbd45",
+    "exit_code": 0
+  },
+  {
+    "stage": "default-release",
+    "session_id": 53741,
+    "terminal_receipt": "b9574b",
+    "exit_code": 0
+  },
+  {
+    "stage": "independent-release-readback",
+    "terminal_receipt": "b71ed8",
+    "exit_code": 0
+  },
+  {
+    "stage": "ordinary-recovery",
+    "session_id": 10589,
+    "terminal_receipt": "bc3b35",
+    "exit_code": 0
+  },
+  {
+    "stage": "independent-recovery-audit",
+    "terminal_receipt": "103df6",
+    "exit_code": 0
+  }
+]
