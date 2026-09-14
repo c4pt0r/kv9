@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/package.actual-terminal.py",
+    "--approve-inventory-sha256",
+    "62758c6c0a27099e1bfbab1824230786bf1c289d0a02104120c7b4cba76d4bef",
+    "--coordination-terminal",
+    "/tmp/kv9-fnv-writer-link11-root-20260914-first/runtime-terminal.json",
+    "--coordination-terminal-sha256",
+    "5cac3d1ff546fefd7dcca88b7f5663bb793ef8eddf982f2d55a4e89e59e17b1f"
+  ],
+  "complete": true,
+  "exit_code": 0,
+  "initial_tool_receipt": "fecf4b",
+  "observed_terminal_ns": 1789422427869630023,
+  "package_pid": 1015077,
+  "package_pid_absent": true,
+  "result": {
+    "bytes": 1234,
+    "path": "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/result.json",
+    "sha256": "2349aa5b2fabe54b84b4716c6ba61bb9dda08ac13d8f381aa9ef1f33836ecabe"
+  },
+  "scope": "One bounded capacity metadata package; no payload backup",
+  "session_id": 57906,
+  "terminal_tool_receipt": "0490fc"
+}

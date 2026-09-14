@@ -1,0 +1,52 @@
+{
+  "cleanup": {
+    "benchmark_capacity_released": false,
+    "codecs_or_cargo_or_children_launched": false,
+    "completed_group_allocated_bytes": 11502772224,
+    "completed_inode_groups": 5985,
+    "conservative_net_recovered_bytes": 11434840064,
+    "free_after_bytes": 122947051520,
+    "free_before_bytes": 111455981568,
+    "observed_filesystem_free_delta_bytes": 11491069952,
+    "payloads_hashed": false,
+    "removed_alias_paths": 5985,
+    "retired_fingerprints": 2912,
+    "retired_native_completion_markers": 12
+  },
+  "cleanup_terminal": {
+    "complete": true,
+    "exit_code": 0,
+    "observed_ns": 1789421546966779299,
+    "result_path": "/tmp/kv9-fnv-writer-extra-cache-review-20260914-first/cleanup-preparation/execution-first/result.json",
+    "result_sha256": "01dfacd8afa01ec6f409eaebcfcc70df7e3528307475f3965a0cd42889b9e139",
+    "session_id": 12594,
+    "terminal_receipt": "functions.exec tools.write_stdin: chunk 2e3d45, terminal exit code 0"
+  },
+  "complete": true,
+  "metadata_selected_bytes": 60324826,
+  "metadata_selected_files": 11740,
+  "pilot": {
+    "all_children_exit_zero": true,
+    "codec_children": 8,
+    "exact_raw_and_legacy_roundtrips": true,
+    "new_encoded_bytes": 53503174,
+    "objects": 2,
+    "original_encoded_bytes": 54452035,
+    "originals_evicted": false,
+    "savings_bytes": 948861,
+    "savings_scope": "Two tested objects only; no wider recompression or capacity projection",
+    "terminal": {
+      "complete": true,
+      "exit_code": 0,
+      "observed_ns": 1789420707483077698,
+      "result_path": "/tmp/kv9-fnv-writer-cold-pilot-20260914-first/execution-first/result.json",
+      "result_sha256": "d798eab03e04deb53443c1924a7d9f909462a28e8369d39c66f3499a635ccf56",
+      "session_id": 32057,
+      "terminal_receipt": "functions.exec tools.write_stdin: chunk fb6f01, terminal exit code 0"
+    }
+  },
+  "protected_executables_match": 6,
+  "publication_integrity_only": true,
+  "retired_metadata_files": 11654,
+  "scope": "Completed nondestructive two-object storage pilot and exact Cargo-cache retirement; no benchmark capacity release"
+}

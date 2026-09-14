@@ -1,0 +1,43 @@
+{
+  "actual_terminal_preparation_inventory": {
+    "bytes": 3230,
+    "path": "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/inventory.actual-terminal.json",
+    "sha256": "62758c6c0a27099e1bfbab1824230786bf1c289d0a02104120c7b4cba76d4bef"
+  },
+  "all_package_and_verifier_processes_terminal": true,
+  "benchmark_capacity_released": false,
+  "complete": true,
+  "compressed_bytes": 6961235,
+  "compressed_sha256": "ddeb30fef31455cfdae1df126ad60b30e9e94cf9eeec1c566e8accb92dbe6fc8",
+  "decoded_member_bytes": 68084499,
+  "members": 11763,
+  "no_repositories_modified": true,
+  "original_failures_preserved": [
+    "selection-first-failure.json",
+    "terminal-schema-static-rejection.json"
+  ],
+  "original_preparation_inventory": {
+    "bytes": 2247,
+    "path": "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/inventory.json",
+    "sha256": "f2c66e18728dc1f56b0e1fbfad51488033576e47e9cfd4bb200ee2d9502a9b1a"
+  },
+  "package_immutable_for_copy": true,
+  "package_inventory": {
+    "bytes": 5432915,
+    "path": "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/package-first/inventory.json",
+    "sha256": "a7fb7d41d87e7068ac9ee31824db47a30d0b71a4ca7ab8c2338e155526558391"
+  },
+  "package_path": "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/package-first",
+  "package_terminal": {
+    "bytes": 942,
+    "path": "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/package-terminal.json",
+    "sha256": "10573ad4318d564f33a943d58d410c9ddc547689ce8f4c88db7dd12a415e70a3"
+  },
+  "parts": 4,
+  "payload_backup": false,
+  "verifier_terminal": {
+    "bytes": 910,
+    "path": "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/verify-terminal.json",
+    "sha256": "e25690268de168a04c9a1ae1f7baa70890a555d314215abc157d9cf7492dd731"
+  }
+}

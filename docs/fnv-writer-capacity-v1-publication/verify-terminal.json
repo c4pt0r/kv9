@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "sudo",
+    "-n",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/package-first/verify.py"
+  ],
+  "complete": true,
+  "execution_kind": "direct_tool_terminal",
+  "observed_terminal_ns": 1789422427869736863,
+  "scope": "Every published member/part byte identity; no repeated semantic audit",
+  "session_id": null,
+  "stdout": "PASS: 11763 exact evidence files, 4 bounded archive parts; integrity only\n",
+  "tool_result": {
+    "chunk_id": "309aaa",
+    "exit_code": 0,
+    "wall_time_seconds": 0.37221732
+  },
+  "verified_package_inventory": {
+    "bytes": 5432915,
+    "path": "/tmp/kv9-fnv-writer-capacity-publication-20260914-first/package-first/inventory.json",
+    "sha256": "a7fb7d41d87e7068ac9ee31824db47a30d0b71a4ca7ab8c2338e155526558391"
+  }
+}
