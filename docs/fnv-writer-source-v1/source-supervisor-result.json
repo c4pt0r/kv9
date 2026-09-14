@@ -1,0 +1,97 @@
+{
+  "complete": true,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "/tmp/kv9-fnv-writer-source-preparation-20260914-first/check-source.py",
+    "--expected-revision",
+    "12f44d35590ede5f89337fe731dd950162865154"
+  ],
+  "script_sha256": "d3787692c56ef16868b5a8080365d383d0baa4f4751f60d057f3940dc65e1ce1",
+  "expected_revision": "12f44d35590ede5f89337fe731dd950162865154",
+  "started_ns": 1789417184989446118,
+  "initial_available_bytes": 114609889280,
+  "minimum_available_bytes": 103079215104,
+  "additional_consumption_ceiling_bytes": 8589934592,
+  "accounting": "Conservative available-byte decrease including unrelated host writers; five-second samples and final sample",
+  "samples": [
+    {
+      "unix_ns": 1789417184989787507,
+      "available_bytes": 114609885184
+    },
+    {
+      "unix_ns": 1789417189989925220,
+      "available_bytes": 118880141312
+    },
+    {
+      "unix_ns": 1789417194990043672,
+      "available_bytes": 118111309824
+    },
+    {
+      "unix_ns": 1789417199990156449,
+      "available_bytes": 116291756032
+    },
+    {
+      "unix_ns": 1789417204990291163,
+      "available_bytes": 114634600448
+    },
+    {
+      "unix_ns": 1789417209990385567,
+      "available_bytes": 114037563392
+    },
+    {
+      "unix_ns": 1789417214990481670,
+      "available_bytes": 114037022720
+    },
+    {
+      "unix_ns": 1789417219990563752,
+      "available_bytes": 114036969472
+    },
+    {
+      "unix_ns": 1789417224990663753,
+      "available_bytes": 114036957184
+    },
+    {
+      "unix_ns": 1789417229990757338,
+      "available_bytes": 114036105216
+    },
+    {
+      "unix_ns": 1789417234990846481,
+      "available_bytes": 114036482048
+    },
+    {
+      "unix_ns": 1789417239990932272,
+      "available_bytes": 114040565760
+    },
+    {
+      "unix_ns": 1789417244991027758,
+      "available_bytes": 114039922688
+    },
+    {
+      "unix_ns": 1789417249991121456,
+      "available_bytes": 114040524800
+    },
+    {
+      "unix_ns": 1789417254991216593,
+      "available_bytes": 113885646848
+    },
+    {
+      "unix_ns": 1789417259991316415,
+      "available_bytes": 113590788096
+    },
+    {
+      "unix_ns": 1789417262257851627,
+      "available_bytes": 113493303296
+    }
+  ],
+  "pid": 3990608,
+  "exit_code": 0,
+  "reaped": true,
+  "pid_absent": true,
+  "ended_ns": 1789417262257955441
+}

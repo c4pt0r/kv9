@@ -1,0 +1,44 @@
+{
+  "accepted": true,
+  "complete": true,
+  "controls": [
+    {
+      "name": "reordered-pending",
+      "rejected": true
+    },
+    {
+      "name": "budget-overrun",
+      "rejected": true
+    },
+    {
+      "name": "missing-full-flush",
+      "rejected": true
+    },
+    {
+      "name": "wrong-lane-result",
+      "rejected": true
+    },
+    {
+      "name": "wrong-budget",
+      "rejected": true
+    },
+    {
+      "name": "missing-sync",
+      "rejected": true
+    },
+    {
+      "name": "custom-axiom",
+      "rejected": true
+    }
+  ],
+  "distinct_writer_theorems": 15,
+  "scope": "Source-mapped ordered staging, logical body budget, checksum/frame equivalence and partial-write prefix; Rust primitives/serialization/file/compiler premises remain explicit. Original synchronization/publication functions compared byte-for-byte at declaration scope.",
+  "source_unchanged": true,
+  "unchanged_boundaries": [
+    "fn with_writer(",
+    "fn persist_ready(",
+    "fn append(",
+    "fn sync_records(",
+    "fn next_record("
+  ]
+}

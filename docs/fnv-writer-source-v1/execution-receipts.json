@@ -1,0 +1,26 @@
+[
+  {
+    "stage": "writer-proof-first",
+    "session_id": 15257,
+    "terminal_chunk": "bf4962",
+    "exit_code": 1
+  },
+  {
+    "stage": "writer-proof-corrected-control",
+    "session_id": 7932,
+    "terminal_chunk": "b99448",
+    "exit_code": 1
+  },
+  {
+    "stage": "writer-proof-qualified",
+    "session_id": 42579,
+    "terminal_chunk": "133027",
+    "exit_code": 0
+  },
+  {
+    "stage": "local-source-gate",
+    "session_id": 16443,
+    "terminal_chunk": "3e6304",
+    "exit_code": 0
+  }
+]

@@ -1,0 +1,321 @@
+{
+  "complete": true,
+  "commands": [
+    {
+      "name": "raft-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789417185492916994,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "complete": true,
+      "ended_ns": 1789417191686274193
+    },
+    {
+      "name": "raft-storage-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "storage::",
+        "--",
+        "--test-threads=4"
+      ],
+      "started_ns": 1789417191686340477,
+      "exit_code": 0,
+      "test_results": [
+        [
+          "35",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "passed": 35,
+      "ignored": 0,
+      "source_unchanged": true,
+      "complete": true,
+      "ended_ns": 1789417192468412473
+    },
+    {
+      "name": "compile-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--workspace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789417192468541384,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "complete": true,
+      "ended_ns": 1789417208740787145
+    },
+    {
+      "name": "workspace-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--workspace",
+        "--",
+        "--test-threads=4"
+      ],
+      "started_ns": 1789417208740880650,
+      "exit_code": 0,
+      "test_results": [
+        [
+          "4",
+          "0",
+          "0"
+        ],
+        [
+          "29",
+          "0",
+          "0"
+        ],
+        [
+          "137",
+          "0",
+          "0"
+        ],
+        [
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "18"
+        ],
+        [
+          "0",
+          "0",
+          "4"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "24",
+          "0",
+          "0"
+        ],
+        [
+          "9",
+          "0",
+          "0"
+        ],
+        [
+          "23",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "13",
+          "0",
+          "0"
+        ],
+        [
+          "258",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "13",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "10",
+          "0",
+          "0"
+        ],
+        [
+          "207",
+          "0",
+          "1"
+        ],
+        [
+          "7",
+          "0",
+          "0"
+        ],
+        [
+          "9",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "17",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "12",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "passed": 797,
+      "ignored": 23,
+      "source_unchanged": true,
+      "complete": true,
+      "ended_ns": 1789417251472211582
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "started_ns": 1789417251472376741,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "complete": true,
+      "ended_ns": 1789417251956273667
+    },
+    {
+      "name": "experimental-check",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "experimental-leader-lease"
+      ],
+      "started_ns": 1789417251956491975,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "complete": true,
+      "ended_ns": 1789417256296170040
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_ns": 1789417256296377057,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "complete": true,
+      "ended_ns": 1789417262135336610
+    }
+  ],
+  "source_root": "/tmp/kv9-raft-fnv-interleave-writer-20260914-first",
+  "expected_revision": "12f44d35590ede5f89337fe731dd950162865154",
+  "source_dirty_at_start": false,
+  "source_unchanged": true,
+  "ended_ns": 1789417262202970339
+}

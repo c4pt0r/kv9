@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "files": 385,
+  "decoded_bytes": 2329805,
+  "compressed_bytes": 449042,
+  "terminal_chunk": "ce8f34",
+  "exit_code": 0,
+  "scope": "Exact portable bytes only; no runtime, proof or performance re-execution."
+}
