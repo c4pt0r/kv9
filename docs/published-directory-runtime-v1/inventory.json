@@ -1,0 +1,851 @@
+{
+  "complete": true,
+  "files": [
+    {
+      "path": "preparation/audit.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/audit.py",
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+    },
+    {
+      "path": "preparation/bind-source.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/bind-source.py",
+      "bytes": 4503,
+      "sha256": "7d80009679d79a330a387744eb793d9cd03b7fa2ddee315a7c917246733814f5"
+    },
+    {
+      "path": "preparation/capacity-controls.json",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/capacity-controls.json",
+      "bytes": 99,
+      "sha256": "b4f033db0455c402e8ceb00cadda789717c04702f35dff41b938c4af6bdff460"
+    },
+    {
+      "path": "preparation/check-release.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/check-release.py",
+      "bytes": 7780,
+      "sha256": "23e000cf23e1a0869c42b789d28de945795dd0b67c8eaeb11169a7f3f9a2f703"
+    },
+    {
+      "path": "preparation/derivation.json",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/derivation.json",
+      "bytes": 3094,
+      "sha256": "8d84d57cbabe90e5cde4ada0b02e039e852a50c785f8bf54aebeae3f0edfab92"
+    },
+    {
+      "path": "preparation/derive.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/derive.py",
+      "bytes": 4677,
+      "sha256": "f08abc1f6921b8a68016d7ddc164d03396038f4644eb7ad17992d7d8fc4c7707"
+    },
+    {
+      "path": "preparation/diffs/audit.py.diff",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/diffs/audit.py.diff",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "preparation/diffs/check-release.py.diff",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/diffs/check-release.py.diff",
+      "bytes": 4249,
+      "sha256": "5f8b070bc7cdadc438a2cb0ef8f36a73023273763d72ea25e4899893e72e69bb"
+    },
+    {
+      "path": "preparation/diffs/process-runner.py.diff",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/diffs/process-runner.py.diff",
+      "bytes": 517,
+      "sha256": "607d3bf9976facecf544bf00b25ff160db4418d61d2302e422dc91a56cb45ae2"
+    },
+    {
+      "path": "preparation/diffs/run-recovery.py.diff",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/diffs/run-recovery.py.diff",
+      "bytes": 2855,
+      "sha256": "8c2ec878a6cbd10b39db31599ccad7829f80630e8ba2d458654f9c7c367d4f95"
+    },
+    {
+      "path": "preparation/diffs/run-release.py.diff",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/diffs/run-release.py.diff",
+      "bytes": 3518,
+      "sha256": "6132989f82c006edb135dba6c3c525c22c8e2ce6f50209e4a8ff4b9d0a330ff2"
+    },
+    {
+      "path": "preparation/inventory-before-release.json",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/inventory-before-release.json",
+      "bytes": 3201,
+      "sha256": "d709de5e54e7baab549f06b07be5df8816db0c56b6584a55185acf8083b89129"
+    },
+    {
+      "path": "preparation/origin/audit.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/origin/audit.py",
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+    },
+    {
+      "path": "preparation/origin/check-release.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/origin/check-release.py",
+      "bytes": 7638,
+      "sha256": "efaddfe06246e267b9f36e7d64b208bfed14ebb94a7c17a378e8e78200a3ddf5"
+    },
+    {
+      "path": "preparation/origin/process-runner.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/origin/process-runner.py",
+      "bytes": 738,
+      "sha256": "f7ac3d5ab1e285edfad54a8fac6bfb8d42367a83c38f3666e9432a3f43a337f5"
+    },
+    {
+      "path": "preparation/origin/run-recovery.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/origin/run-recovery.py",
+      "bytes": 2946,
+      "sha256": "a2e078a763903e42b6a29b63b775245f0a5d87b1e1d1f590e7b7b4a450c6e6c7"
+    },
+    {
+      "path": "preparation/origin/run-release.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/origin/run-release.py",
+      "bytes": 3108,
+      "sha256": "49ca1258db798d2067340d24fe83be3729ba0af1f38cc60b8c7483bbcc594608"
+    },
+    {
+      "path": "preparation/process-runner.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/process-runner.py",
+      "bytes": 747,
+      "sha256": "a93dfbfe52558bc5f95392d7912809789e497c37545dc9f2e2c2c5e16bebfc53"
+    },
+    {
+      "path": "preparation/run-recovery.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/run-recovery.py",
+      "bytes": 3019,
+      "sha256": "cd73c9b94b329ec7ecd6f41dc53c72ef73c27adec4fcdea6c53b20b1242353b8"
+    },
+    {
+      "path": "preparation/run-release.py",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/run-release.py",
+      "bytes": 3158,
+      "sha256": "25b70b0fa106c0531196665c01d2f1f925005df245f88b8421ab0a83cfd2cfc8"
+    },
+    {
+      "path": "preparation/storage-policy.json",
+      "original": "/tmp/kv9-published-directory-release-recovery-preparation-20260914-first/storage-policy.json",
+      "bytes": 865,
+      "sha256": "3e548436c91fe83980c30fe2f898c685bd85bca59e8ef5c021160a6402a9e997"
+    },
+    {
+      "path": "release/build.json",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/build.json",
+      "bytes": 99173,
+      "sha256": "849aab333f8fbaa3014c204c150ed0200aa043d5de9fef6ed8d05b31655e2c8e"
+    },
+    {
+      "path": "release/cache-clean.stderr",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/cache-clean.stderr",
+      "bytes": 1658,
+      "sha256": "3294e4daca17a4ff1faaae8c08d8bbbdc2cecb57c749a2a1c0f8925799b34c23"
+    },
+    {
+      "path": "release/cache-clean.stdout",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "release/cache-metadata.json",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/cache-metadata.json",
+      "bytes": 30035,
+      "sha256": "04411e4b370c1477ea734692502043c89510f41b10c3f2f61d98ef2ca51f864c"
+    },
+    {
+      "path": "release/cache-metadata.log",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "release/cache-safety.json",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/cache-safety.json",
+      "bytes": 22689,
+      "sha256": "d661a3b39f1313334072d8977c62f2ba5c82fc0eff7bf561b206d0dddb6ad4d8"
+    },
+    {
+      "path": "release/kv9-build.log",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/kv9-build.log",
+      "bytes": 12845,
+      "sha256": "3fe81f85c8cf7ddeb64b6e84d65cb0b6ecbd9bb9fc168d30b23b4ce293830544"
+    },
+    {
+      "path": "release/kv9-cargo.jsonl",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/kv9-cargo.jsonl",
+      "bytes": 212669,
+      "sha256": "f71a39e19d2246b3c00156532d794c67925d1940ee5f3fe8739dcf00a9038d05"
+    },
+    {
+      "path": "release/workload/build.json",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/workload/build.json",
+      "bytes": 487,
+      "sha256": "b38bd76bccbe3efc2429eafa1171cc80c13b07215fca358638ac83b55e0fac65"
+    },
+    {
+      "path": "release/workload/build.log",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/workload/build.log",
+      "bytes": 307526,
+      "sha256": "2ac73f35f6e89a8631f5dc74177b677946127d4855a09a2118a03d417d880449"
+    },
+    {
+      "path": "release/workload/cargo.jsonl",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/workload/cargo.jsonl",
+      "bytes": 209874,
+      "sha256": "2ecc3c615be6a0461baa9f81ce157e21d5d002690992adea1b37e97833396879"
+    },
+    {
+      "path": "release/workload/sources.json",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/workload/sources.json",
+      "bytes": 93524,
+      "sha256": "4fb927c80908dc620d9410041ce057132c7d571781273f530af43382ac38383f"
+    },
+    {
+      "path": "release-root/preflight.json",
+      "original": "/tmp/kv9-published-directory-release-root-20260914-first/preflight.json",
+      "bytes": 104508,
+      "sha256": "96745736196c8bd2b1fa8daca11b9c2555986bcdfac2700cc4edb4da522921e5"
+    },
+    {
+      "path": "release-root/readback-first/input-hashes.json",
+      "original": "/tmp/kv9-published-directory-release-root-20260914-first/readback-first/input-hashes.json",
+      "bytes": 186473,
+      "sha256": "27279e7baf645895cbfd34f6416f81bf236d421980d9bbc1eea54acf998d3c9a"
+    },
+    {
+      "path": "release-root/readback-first/result.json",
+      "original": "/tmp/kv9-published-directory-release-root-20260914-first/readback-first/result.json",
+      "bytes": 16103,
+      "sha256": "33cbabc4bcb8efc0a3056d02abcdab773ff269bad91dd4712db2988cd300dbab"
+    },
+    {
+      "path": "release-root/source-first.log",
+      "original": "/tmp/kv9-published-directory-release-root-20260914-first/source-first.log",
+      "bytes": 183,
+      "sha256": "423a1da19e86f3f2ea05d7e8c390faad5abd231dc1d5924f124fd2132d708508"
+    },
+    {
+      "path": "release-root/source-invocation.json",
+      "original": "/tmp/kv9-published-directory-release-root-20260914-first/source-invocation.json",
+      "bytes": 873,
+      "sha256": "7f3358ca862ba53c4ed3d755dec6cddb1c491dc5a2318e6aa4fb88a36583dbab"
+    },
+    {
+      "path": "release-root/source-result.json",
+      "original": "/tmp/kv9-published-directory-release-root-20260914-first/source-result.json",
+      "bytes": 2551,
+      "sha256": "c4717e12c24e36fecbcd4e1a1e75733b564e1cc2cba6f0e7988d6c3a8171c313"
+    },
+    {
+      "path": "release-root/terminal.json",
+      "original": "/tmp/kv9-published-directory-release-root-20260914-first/terminal.json",
+      "bytes": 279,
+      "sha256": "0da926523b8a23175c4000c10cad8e42768958408116ca4719a191404f2888de"
+    },
+    {
+      "path": "recovery/batch-tonic-stream/build.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream/build.json",
+      "bytes": 487,
+      "sha256": "b38bd76bccbe3efc2429eafa1171cc80c13b07215fca358638ac83b55e0fac65"
+    },
+    {
+      "path": "recovery/batch-tonic-stream/config.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream/config.json",
+      "bytes": 821,
+      "sha256": "49bd69668e3c592db3a877bb515ac8caab9161541ab1c6cc067ded8fee82ec15"
+    },
+    {
+      "path": "recovery/batch-tonic-stream/history.jsonl",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream/history.jsonl",
+      "bytes": 434444,
+      "sha256": "1c90871b38a5790e6449bf96b999f6779efcb04ac960a0706d8f632fd857aece"
+    },
+    {
+      "path": "recovery/batch-tonic-stream/progress.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream/progress.json",
+      "bytes": 720,
+      "sha256": "39a422b38360ea66be27d189586cfb562b00299c193583c42bf1020a98d08c88"
+    },
+    {
+      "path": "recovery/batch-tonic-stream/ready.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream/ready.json",
+      "bytes": 72,
+      "sha256": "b29f0e6d954904b53203cae53e7810a3463e28f5308c5fe923ba8173c5d6651e"
+    },
+    {
+      "path": "recovery/batch-tonic-stream/report.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream/report.json",
+      "bytes": 200853,
+      "sha256": "2ac49f80db7438a1079ad1b8ea2d4a145abb463ca9a78dcde98c6892b3bd4867"
+    },
+    {
+      "path": "recovery/batch-tonic-stream-checked.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream-checked.json",
+      "bytes": 22315,
+      "sha256": "83412e50edfa31791066bee77081446c477849bd847675039203074b8061677b"
+    },
+    {
+      "path": "recovery/batch-tonic-stream-config.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream-config.json",
+      "bytes": 787,
+      "sha256": "7c8a08acd7407765b3736ab9e8922ecdf86f2dc1d7975cc48b8d3b7d5469fe60"
+    },
+    {
+      "path": "recovery/batch-tonic-stream.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream.log",
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+    },
+    {
+      "path": "recovery/batch-tonic-stream.stop",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-stream.stop",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery/batch-tonic-unary/build.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary/build.json",
+      "bytes": 487,
+      "sha256": "b38bd76bccbe3efc2429eafa1171cc80c13b07215fca358638ac83b55e0fac65"
+    },
+    {
+      "path": "recovery/batch-tonic-unary/config.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary/config.json",
+      "bytes": 818,
+      "sha256": "904307010b3d5c2258d588f65a7e0aad2c36e3e4f298fed525cad5a8e72593a8"
+    },
+    {
+      "path": "recovery/batch-tonic-unary/history.jsonl",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary/history.jsonl",
+      "bytes": 406789,
+      "sha256": "22d184f61a0221879833262d6f28d988ac8e92bd2b357a5948d6d868dd936c3b"
+    },
+    {
+      "path": "recovery/batch-tonic-unary/progress.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary/progress.json",
+      "bytes": 720,
+      "sha256": "c6d9b6efbbabd744429511e1021c00b5983fc1b2f51885a1baaeb331b1a7c276"
+    },
+    {
+      "path": "recovery/batch-tonic-unary/ready.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary/ready.json",
+      "bytes": 71,
+      "sha256": "751a89d789274627f6f99c3e36f4fc14e0b54036545e4e1b07da689d90e16034"
+    },
+    {
+      "path": "recovery/batch-tonic-unary/report.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary/report.json",
+      "bytes": 200681,
+      "sha256": "43ed61fa267b2799b73c3024e2f7bee26a8fbf5f43931df472a342a0d4c50178"
+    },
+    {
+      "path": "recovery/batch-tonic-unary-checked.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary-checked.json",
+      "bytes": 21401,
+      "sha256": "9fa425af65640bbe30a59d031547ab77282f207821ef8d2c72dd1fa4d0936258"
+    },
+    {
+      "path": "recovery/batch-tonic-unary-config.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary-config.json",
+      "bytes": 819,
+      "sha256": "fca3a9353ea6c23da0fc81f7181cd24d8dcfcee60fe687718e50430179f4ca45"
+    },
+    {
+      "path": "recovery/batch-tonic-unary.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary.log",
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+    },
+    {
+      "path": "recovery/batch-tonic-unary.stop",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/batch-tonic-unary.stop",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery/fixture/command-000.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-000.json",
+      "bytes": 358,
+      "sha256": "153c7ae5011816ff5e6093eb40e231110c174bcbd1bf1c73b37c064d92d06fc9"
+    },
+    {
+      "path": "recovery/fixture/command-001.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-001.json",
+      "bytes": 358,
+      "sha256": "549082194d62f7271ac15036dddfda655e442f1bd305d60dff60967f74361ab8"
+    },
+    {
+      "path": "recovery/fixture/command-002.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-002.json",
+      "bytes": 358,
+      "sha256": "1e9b75d8d27a20c149a6210d797a968e193a0b8b0a519c17bf4ead4cd185d04a"
+    },
+    {
+      "path": "recovery/fixture/command-003.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-003.json",
+      "bytes": 978,
+      "sha256": "8e9152859d1ba23c250aed58864dd9e493701dfaaeceacf8249911d2d3a59030"
+    },
+    {
+      "path": "recovery/fixture/command-004.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-004.json",
+      "bytes": 652,
+      "sha256": "75dfaa38177a0923b20a16d7037b5f32f5b10906d455380a0a9633a306ecf866"
+    },
+    {
+      "path": "recovery/fixture/command-005.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-005.json",
+      "bytes": 652,
+      "sha256": "9f69020700a9d643f22ee9a4dede6938d674bcb2366bc40de1435fe06080b464"
+    },
+    {
+      "path": "recovery/fixture/command-006.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-006.json",
+      "bytes": 652,
+      "sha256": "2b05e4e562ef87219869e5ee82e0b8916a23d2f4d688739a44380dcd8ff5cd23"
+    },
+    {
+      "path": "recovery/fixture/command-007.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-007.json",
+      "bytes": 330,
+      "sha256": "3bb0c34436c65af653907f83134b335d0e9672a7bc6943f61a79762dd92ac2fb"
+    },
+    {
+      "path": "recovery/fixture/command-008.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/command-008.json",
+      "bytes": 331,
+      "sha256": "bf6f77997bd975b30dbba87dddc57f3895b3a3ded27ff98987b739dbf1b4b084"
+    },
+    {
+      "path": "recovery/fixture/data/n1/catalog.segments/a04e95f17e76076bcccf34219239bde7/00000000000000000001.wal",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/catalog.segments/a04e95f17e76076bcccf34219239bde7/00000000000000000001.wal",
+      "bytes": 181547,
+      "sha256": "766cd08e683faf5d01566a6eb3ad5739a6c1445292e8015b0e089833a63021e4"
+    },
+    {
+      "path": "recovery/fixture/data/n1/catalog.wal",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/catalog.wal",
+      "bytes": 117,
+      "sha256": "98f943cc657d1e6f44b3eca84062e567f9d6cfb7895897304025a9af21a9947b"
+    },
+    {
+      "path": "recovery/fixture/data/n1/kv9-initialized",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/kv9-initialized",
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    {
+      "path": "recovery/fixture/data/n1/kv9-root-descriptor",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/kv9-root-descriptor",
+      "bytes": 179,
+      "sha256": "f9ea059ec4af500cbd59c4f393e721a8d56cd86f7a8ca2e9679700d5402645d2"
+    },
+    {
+      "path": "recovery/fixture/data/n1/kv9-serving-endpoint",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/kv9-serving-endpoint",
+      "bytes": 235,
+      "sha256": "4c58addf98a7816dfd9add3d289e6a2e80a68449f67404812ca7b1ce5f9194a2"
+    },
+    {
+      "path": "recovery/fixture/data/n1/kv9-store-identity",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/kv9-store-identity",
+      "bytes": 80,
+      "sha256": "d2719fdcf9785c1cfe09cff754e8a51bfef748c0c960727ec41830d8fd2a07eb"
+    },
+    {
+      "path": "recovery/fixture/data/n1/kv9-store-lifecycle",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/kv9-store-lifecycle",
+      "bytes": 97,
+      "sha256": "0ec6ae162a060f889a4559ac0347a088f45b693020f8e2dc26e20e84e79bb956"
+    },
+    {
+      "path": "recovery/fixture/data/n1/kv9-store-lock",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/kv9-store-lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery/fixture/data/n1/metrics.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/metrics.json",
+      "bytes": 61858,
+      "sha256": "c50860404daad6100c37bf00e33fa0687a965777120ecdf666c723c542f898f2"
+    },
+    {
+      "path": "recovery/fixture/data/n1/raft/raft.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/raft/raft.log",
+      "bytes": 187306,
+      "sha256": "3eb70c0c58dea904e5ab5088b63978e661fade044e4915bfe0c355d78e04fcfa"
+    },
+    {
+      "path": "recovery/fixture/data/n1/status",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n1/status",
+      "bytes": 3433,
+      "sha256": "70c0c3169aa43015479d3065515118d13b01a81effe796a937e08d21bc92396b"
+    },
+    {
+      "path": "recovery/fixture/data/n2/catalog.segments/4668a04a27555b03fdabde62dcefd8b0/00000000000000000001.wal",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/catalog.segments/4668a04a27555b03fdabde62dcefd8b0/00000000000000000001.wal",
+      "bytes": 181467,
+      "sha256": "28d7113021a0939be8a3298fe0d467bc8bb3c61936c884789165dcec7df19b7e"
+    },
+    {
+      "path": "recovery/fixture/data/n2/catalog.wal",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/catalog.wal",
+      "bytes": 117,
+      "sha256": "1cbdbaf0890a853679f1963ffa454077e930cc54815903982ed511040f5736f4"
+    },
+    {
+      "path": "recovery/fixture/data/n2/kv9-initialized",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/kv9-initialized",
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    {
+      "path": "recovery/fixture/data/n2/kv9-root-descriptor",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/kv9-root-descriptor",
+      "bytes": 179,
+      "sha256": "f9ea059ec4af500cbd59c4f393e721a8d56cd86f7a8ca2e9679700d5402645d2"
+    },
+    {
+      "path": "recovery/fixture/data/n2/kv9-serving-endpoint",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/kv9-serving-endpoint",
+      "bytes": 235,
+      "sha256": "0cd9dd91e743cf75bbf81ff30a071874a610f3ca10c617d3ca0f184aefe36791"
+    },
+    {
+      "path": "recovery/fixture/data/n2/kv9-store-identity",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/kv9-store-identity",
+      "bytes": 80,
+      "sha256": "8ae797cb1a08278f9d56675cf030876c293ff80959cd0a6626deae879ab6ea54"
+    },
+    {
+      "path": "recovery/fixture/data/n2/kv9-store-lifecycle",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/kv9-store-lifecycle",
+      "bytes": 97,
+      "sha256": "c9b93090b2a3f5af7d3957eed65b717fd48405d404478818cac5fabdb73dac8d"
+    },
+    {
+      "path": "recovery/fixture/data/n2/kv9-store-lock",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/kv9-store-lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery/fixture/data/n2/metrics.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/metrics.json",
+      "bytes": 62846,
+      "sha256": "f5ff6ceb457f0126e4b14f73a09405b3085015663f3d78268576202f353eaba2"
+    },
+    {
+      "path": "recovery/fixture/data/n2/raft/raft.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/raft/raft.log",
+      "bytes": 187268,
+      "sha256": "43b4707c0548999f864a5c67e421c10640ac01836661f4c5049e68e7ed16d2d0"
+    },
+    {
+      "path": "recovery/fixture/data/n2/status",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n2/status",
+      "bytes": 3444,
+      "sha256": "d910b699e51b620e51db104e1d29b9232adb17aa948bbe0b92f24dfb8c67bb2d"
+    },
+    {
+      "path": "recovery/fixture/data/n3/catalog.segments/11cf316a9c29bea64e34ef03722bba9a/00000000000000000001.wal",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/catalog.segments/11cf316a9c29bea64e34ef03722bba9a/00000000000000000001.wal",
+      "bytes": 183027,
+      "sha256": "ebf93597bc8df3f50a9a2046f2b292915153b3c34466cb71172dd11056884055"
+    },
+    {
+      "path": "recovery/fixture/data/n3/catalog.wal",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/catalog.wal",
+      "bytes": 117,
+      "sha256": "34fe4ef86dd06ccd2d81507123ff93525e7c13f928d3cd6b1d226705f008a066"
+    },
+    {
+      "path": "recovery/fixture/data/n3/kv9-initialized",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/kv9-initialized",
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    {
+      "path": "recovery/fixture/data/n3/kv9-root-descriptor",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/kv9-root-descriptor",
+      "bytes": 179,
+      "sha256": "f9ea059ec4af500cbd59c4f393e721a8d56cd86f7a8ca2e9679700d5402645d2"
+    },
+    {
+      "path": "recovery/fixture/data/n3/kv9-serving-endpoint",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/kv9-serving-endpoint",
+      "bytes": 235,
+      "sha256": "8cc15d8de25e28875e70d744768bb9507c0aa2426c78cb5629563d264669dadb"
+    },
+    {
+      "path": "recovery/fixture/data/n3/kv9-store-identity",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/kv9-store-identity",
+      "bytes": 80,
+      "sha256": "4ef9089b8b6b4ca0eae10ace322d88916def0d877b3a15ae6459e7c2bba01bb7"
+    },
+    {
+      "path": "recovery/fixture/data/n3/kv9-store-lifecycle",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/kv9-store-lifecycle",
+      "bytes": 97,
+      "sha256": "7ec7c4201fb1925438cc7652a17d3480267b2e01f7c9c4e6b8ff81391d41b3b5"
+    },
+    {
+      "path": "recovery/fixture/data/n3/kv9-store-lock",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/kv9-store-lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery/fixture/data/n3/metrics.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/metrics.json",
+      "bytes": 62647,
+      "sha256": "d31d16345d1d6d9f5a2ee2c3fa82b9c45578cf2f49145caf733e8e2b75a13e25"
+    },
+    {
+      "path": "recovery/fixture/data/n3/raft/raft.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/raft/raft.log",
+      "bytes": 187933,
+      "sha256": "93b568a51dc5ab1553331b107a573e7dde60f5a0f926e35fcd75dd14868faa26"
+    },
+    {
+      "path": "recovery/fixture/data/n3/status",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/data/n3/status",
+      "bytes": 3462,
+      "sha256": "27a227de07a54e3e61ae07c22c5847adb1333f22a9ef82c77fa910b71370f8ec"
+    },
+    {
+      "path": "recovery/fixture/fixture.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/fixture.json",
+      "bytes": 3204,
+      "sha256": "2fc8256ee487005dbc090d585b5699cf2f15ca34f23e36c65af0cdd74038eb91"
+    },
+    {
+      "path": "recovery/fixture/n1-restart.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/n1-restart.log",
+      "bytes": 121,
+      "sha256": "b5959ef7f7705762848713d022ffa710aae5df5d0a1f54d82f862a7d1cd28686"
+    },
+    {
+      "path": "recovery/fixture/n1.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/n1.log",
+      "bytes": 121,
+      "sha256": "b5959ef7f7705762848713d022ffa710aae5df5d0a1f54d82f862a7d1cd28686"
+    },
+    {
+      "path": "recovery/fixture/n2-restart.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/n2-restart.log",
+      "bytes": 121,
+      "sha256": "216537f0309a1715ef9ba9a75d9751b5a3da24cf17196f25a184eb24fde97242"
+    },
+    {
+      "path": "recovery/fixture/n2.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/n2.log",
+      "bytes": 121,
+      "sha256": "216537f0309a1715ef9ba9a75d9751b5a3da24cf17196f25a184eb24fde97242"
+    },
+    {
+      "path": "recovery/fixture/n3.log",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/n3.log",
+      "bytes": 121,
+      "sha256": "d2398bbe9afd3779fdb1d606e0356a2e21e86d6239b814af6c538f4cbca789e2"
+    },
+    {
+      "path": "recovery/fixture/root.bin",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/fixture/root.bin",
+      "bytes": 179,
+      "sha256": "f9ea059ec4af500cbd59c4f393e721a8d56cd86f7a8ca2e9679700d5402645d2"
+    },
+    {
+      "path": "recovery/summary.json",
+      "original": "/tmp/kv9-published-directory-recovery-20260914-first/summary.json",
+      "bytes": 202429,
+      "sha256": "85c7ad7635e3cd17daa1eff4261c66e2ac4096f846e6f305d1a701eee2ff6256"
+    },
+    {
+      "path": "recovery-root/actual-audit-terminal.json",
+      "original": "/tmp/kv9-published-directory-recovery-root-20260914-first/actual-audit-terminal.json",
+      "bytes": 248,
+      "sha256": "c28d8efbb997fe017d46b4903211ae93d532e2566a8ecefec17702acaf7e861b"
+    },
+    {
+      "path": "recovery-root/actual-terminal.json",
+      "original": "/tmp/kv9-published-directory-recovery-root-20260914-first/actual-terminal.json",
+      "bytes": 280,
+      "sha256": "bfbdfd487b036ebba4e9349c4b96840d27484070c366a3eb9585faaa97864095"
+    },
+    {
+      "path": "recovery-root/source-first.log",
+      "original": "/tmp/kv9-published-directory-recovery-root-20260914-first/source-first.log",
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd"
+    },
+    {
+      "path": "recovery-root/source-invocation.json",
+      "original": "/tmp/kv9-published-directory-recovery-root-20260914-first/source-invocation.json",
+      "bytes": 902,
+      "sha256": "70525f0e5bc68550d7e169caa10ebb177d5587dd25c3f7c6c16f4f6e4fadc1ce"
+    },
+    {
+      "path": "recovery-root/source-result.json",
+      "original": "/tmp/kv9-published-directory-recovery-root-20260914-first/source-result.json",
+      "bytes": 1348,
+      "sha256": "4cf88c1423328eb10b6d8414637102ba98cb8da16889bc7e2e1baff7b04c9f42"
+    },
+    {
+      "path": "recovery-audit/audit.json",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/audit.json",
+      "bytes": 10728,
+      "sha256": "ea34127fb58a41c79ff23d88c94cfcb2dcc07ac83d642d0b042c11dbb385038e"
+    },
+    {
+      "path": "recovery-audit/batch-tonic-stream-history-checked.json",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/batch-tonic-stream-history-checked.json",
+      "bytes": 19480,
+      "sha256": "5b5db01123f0adedfda32da8978ac029b0f6376f6f0dc322ccdd60a17bb3e48b"
+    },
+    {
+      "path": "recovery-audit/batch-tonic-stream-raw-history.stderr",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/batch-tonic-stream-raw-history.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery-audit/batch-tonic-stream-raw-history.stdout",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/batch-tonic-stream-raw-history.stdout",
+      "bytes": 750,
+      "sha256": "f6905c82fc99c23d85d492fb8777961a9061b568d1641249cca62fb56ad65b3e"
+    },
+    {
+      "path": "recovery-audit/batch-tonic-stream-report-checked.json",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/batch-tonic-stream-report-checked.json",
+      "bytes": 22315,
+      "sha256": "83412e50edfa31791066bee77081446c477849bd847675039203074b8061677b"
+    },
+    {
+      "path": "recovery-audit/batch-tonic-unary-history-checked.json",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/batch-tonic-unary-history-checked.json",
+      "bytes": 18665,
+      "sha256": "1a33a05f4d9ddf44cf11ac704f95d801773016ac815fc54eedc9fe0b68d380cb"
+    },
+    {
+      "path": "recovery-audit/batch-tonic-unary-raw-history.stderr",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/batch-tonic-unary-raw-history.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery-audit/batch-tonic-unary-raw-history.stdout",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/batch-tonic-unary-raw-history.stdout",
+      "bytes": 633,
+      "sha256": "078dffd3f709062c6fb7996e1ed1cc5adae7d03cb20d5d366394d80e315aa876"
+    },
+    {
+      "path": "recovery-audit/batch-tonic-unary-report-checked.json",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/batch-tonic-unary-report-checked.json",
+      "bytes": 21401,
+      "sha256": "9fa425af65640bbe30a59d031547ab77282f207821ef8d2c72dd1fa4d0936258"
+    },
+    {
+      "path": "recovery-audit/commands.json",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/commands.json",
+      "bytes": 2043,
+      "sha256": "3074f2ccbb498fea4b06eb6fd5edfa8733e47a50b16a8064fa10ef147b7ea5bc"
+    },
+    {
+      "path": "recovery-audit/original-inputs.json",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/original-inputs.json",
+      "bytes": 12650,
+      "sha256": "23c50a0fccaa395b430ee7a936076d5de0ceffae2f6b98f99e924407088e005f"
+    },
+    {
+      "path": "recovery-audit/source-head.stderr",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/source-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery-audit/source-head.stdout",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/source-head.stdout",
+      "bytes": 41,
+      "sha256": "93ac7992297db1778f17a19be5d7aee2207f6c757af7dbcc1da7ea089110cab3"
+    },
+    {
+      "path": "recovery-audit/source-status.stderr",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/source-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "recovery-audit/source-status.stdout",
+      "original": "/tmp/kv9-published-directory-recovery-audit-20260914-first/source-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dev-retirement/cache-clean.stderr",
+      "original": "/tmp/kv9-published-directory-dev-cache-retirement-20260914-first/cache-clean.stderr",
+      "bytes": 38,
+      "sha256": "3d18f5f7be7ff44f168816e89f68004e82a8a5a127ee5566fdfdd5ace9c3104d"
+    },
+    {
+      "path": "dev-retirement/cache-clean.stdout",
+      "original": "/tmp/kv9-published-directory-dev-cache-retirement-20260914-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dev-retirement/cache-metadata.json",
+      "original": "/tmp/kv9-published-directory-dev-cache-retirement-20260914-first/cache-metadata.json",
+      "bytes": 29056,
+      "sha256": "089958fc7e6aad348f54aa81bd223f4d350e96897f81d4b9373be1aeb00d2199"
+    },
+    {
+      "path": "dev-retirement/cache-metadata.log",
+      "original": "/tmp/kv9-published-directory-dev-cache-retirement-20260914-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dev-retirement/cache-safety.json",
+      "original": "/tmp/kv9-published-directory-dev-cache-retirement-20260914-first/cache-safety.json",
+      "bytes": 1841,
+      "sha256": "7da4bb5229be000dd4b370e1baa42b20f7370239b33f42d8230b0e132d399640"
+    },
+    {
+      "path": "dev-retirement/result.json",
+      "original": "/tmp/kv9-published-directory-dev-cache-retirement-20260914-first/result.json",
+      "bytes": 1565,
+      "sha256": "08224f1a6114c19813d9dfa68231f4bc215ae7ca9796b1c22588a0a44ca601c1"
+    },
+    {
+      "path": "dev-retirement/retire.py",
+      "original": "/tmp/kv9-published-directory-dev-cache-retirement-20260914-first/retire.py",
+      "bytes": 1873,
+      "sha256": "746baf23e954e1616a8b4432ba179dcd8cbdbba0c3d3f841d795e34ba10c5fbb"
+    },
+    {
+      "path": "publisher/package.py",
+      "original": "/tmp/kv9-published-directory-runtime-publication-20260914-first/package.py",
+      "bytes": 4743,
+      "sha256": "d1a082dac93348763b9436997094e312bfe62f289b998f80fca569acdb6326fe"
+    }
+  ],
+  "decoded_bytes": 4365387,
+  "archive_bytes": 416043,
+  "archive_sha256": "cac5c1844889e8e67ae223127b1c871498d5f7db1cff63c9fd74a0c76c19aa95",
+  "excluded_local_binaries": [
+    {
+      "path": "release/kv9",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/kv9",
+      "bytes": 16161736,
+      "sha256": "43d8bcb2d852d6fcbebb7f528808e53b3eb93588e2637195e9053cd91e8d5450"
+    },
+    {
+      "path": "release/workload/kv9-batch-workload",
+      "original": "/tmp/kv9-published-directory-release-20260914-first/workload/kv9-batch-workload",
+      "bytes": 3420872,
+      "sha256": "205bcf4451d8f1d59023bcd4893d3388ed73846cf0980cbc9efa6cb5df578a2e"
+    }
+  ],
+  "scope": "Default release and complete original ordinary-recovery inputs; not Chaos or performance acceptance."
+}
