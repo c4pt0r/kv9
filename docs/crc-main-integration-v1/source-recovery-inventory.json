@@ -1,0 +1,1494 @@
+{
+  "complete": true,
+  "compressed_bytes": 13473200,
+  "compressed_sha256": "c030c6ccc3778a04be5859546a386850bf98745964a91d2002a992e05f86daf7",
+  "decoded_bytes": 51096826,
+  "files": {
+    "kv9-crc-main-integration-proof-20260914-first/bitwise-source.command.json": {
+      "bytes": 514,
+      "sha256": "4d4e5b42415016bca84a631dca216e284577059671e9d8daa1cadd1ef4b7cd08",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/bitwise-source.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/bitwise-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/bitwise-source.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/bitwise-source.stdout": {
+      "bytes": 31747,
+      "sha256": "eea567f32dc76406ebeb73fb7251fb86eb9ae9cd252231c1a46ca1b54f35ca2a",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/bitwise-source.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/byte-source.command.json": {
+      "bytes": 514,
+      "sha256": "aae126bf0c7f26117b0b28718471eaeaf47f37598f8bd92983f552bde1b18136",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/byte-source.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/byte-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/byte-source.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/byte-source.stdout": {
+      "bytes": 34239,
+      "sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/byte-source.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/CRC32.olean": {
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/CRC32.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/RustTable.command.json": {
+      "bytes": 548,
+      "sha256": "0190b1ede99951cd180d28b5f7265c3870993f50520f0d1982c9336eb6833dec",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/RustTable.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/RustTable.lean": {
+      "bytes": 6305,
+      "sha256": "391dc02544e3c654590224111c3c9426be66011c972b011d6a0a5a8352b01179",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/RustTable.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/RustTable.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/RustTable.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/RustTable.stdout": {
+      "bytes": 835,
+      "sha256": "bc3018066ef6f8fec610e6f7336c2bcbd16e1c7e236be9ea3669e6f8bdd5232e",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/RustTable.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/compiled-tables.json": {
+      "bytes": 40441,
+      "sha256": "44f43fc4c25943eccc03bae00efa85e393b1296d512a7d22be68aaa612c6b3fb",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/compiled-tables.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/rustc.command.json": {
+      "bytes": 582,
+      "sha256": "ffbfbd0bb08949e165ddddb3e152d61c86da934e994900ef6ee04fb199fa1f8f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/rustc.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/rustc.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/rustc.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/rustc.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/rustc.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table": {
+      "bytes": 3965656,
+      "sha256": "6cdb6e8af964130db117d427f573196cb24979274080c5142b0d9c015f72a64a",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table.command.json": {
+      "bytes": 504,
+      "sha256": "08f63e702fa1fefd520d3c501227dbdd674f59b1dfb689099a09cc30447d8533",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table.rs": {
+      "bytes": 2100,
+      "sha256": "94c43041dbf602fbafc0ca630827ad1f5782e027866fcb79eda5eff548c604c4",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table.rs"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table.stdout": {
+      "bytes": 37666,
+      "sha256": "4c6e73bc0f551a5fb30c8caeb62c7543a751c485b7622f3b394fa3c17b679e9f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-polynomial/table.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/CRC32.olean": {
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/CRC32.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustSlicing.command.json": {
+      "bytes": 552,
+      "sha256": "d08673c1ff0fdcfc3c3bd3f756f91008bda76d505c883c8370b773590737583b",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustSlicing.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustSlicing.lean": {
+      "bytes": 29722,
+      "sha256": "c523326aa6b553bc40713db449d2e88284cab6ce2f6a57dea1999ce52628edcd",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustSlicing.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustSlicing.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustSlicing.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustSlicing.stdout": {
+      "bytes": 1062,
+      "sha256": "eba0c7b23875588071e908092bae7d1cb83f05753fa28abe47401a243897f9b0",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustSlicing.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustTable.olean": {
+      "bytes": 812536,
+      "sha256": "12537123a6379ebb02aa6ef4049f69c250da563ccffd28bcc4fb997eec7d103e",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/RustTable.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/Slicing8.olean": {
+      "bytes": 669320,
+      "sha256": "08bd81810c533b61ec942d396ae0ac6521dace9aaa67e8942c674c23eab8afcd",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/Slicing8.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/compiled-tables.json": {
+      "bytes": 40436,
+      "sha256": "b281f511ca6bc1536b50221ef40605a418d8debeb4787c9c4285858d27a4e8d4",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/compiled-tables.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/rustc.command.json": {
+      "bytes": 582,
+      "sha256": "c91b9d8e360814426be419e7d2ba2f4c2407992d179b47517ce6c81f6ddb9be3",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/rustc.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/rustc.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/rustc.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/rustc.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/rustc.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table": {
+      "bytes": 3965656,
+      "sha256": "176fa2998c7aff692e492c298b45335a27bbc824a20ded55fb5eaca0090f6baf",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table.command.json": {
+      "bytes": 504,
+      "sha256": "59972085f99cbccedc05375e9ad39da70d532cb58448e499d630537ae9ec41ac",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table.rs": {
+      "bytes": 2100,
+      "sha256": "b5f25a7d8ad1f674e21082cfac8b1e6994ef03f7143dc3140c7052a3a89258df",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table.rs"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table.stdout": {
+      "bytes": 37666,
+      "sha256": "7b44b0131292bf7110f472cc306b4868a1daddd3299755164a521fa1ae60303b",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-compiled-recurrence/table.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-proof-hole/CRC32.olean": {
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-proof-hole/CRC32.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-proof-hole/Slicing8.command.json": {
+      "bytes": 537,
+      "sha256": "ddb9298fe221873402b1f88f8f242d2b50c1adc56b80e6d75f82849f9792c038",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-proof-hole/Slicing8.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-proof-hole/Slicing8.lean": {
+      "bytes": 7610,
+      "sha256": "37059665532c14eed45b0481b78085781a0bd6353f0595ead539c023e18ecd9f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-proof-hole/Slicing8.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-proof-hole/Slicing8.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-proof-hole/Slicing8.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-proof-hole/Slicing8.stdout": {
+      "bytes": 1329,
+      "sha256": "add755de3eb83bfcd0e74a7262c1f6ba5ef8f5490c1e0c4c5f05ea7b8ad6129c",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-proof-hole/Slicing8.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-source-big-endian/rejection.json": {
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-source-big-endian/rejection.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-source-big-endian/wal-mutant.rs": {
+      "bytes": 36699,
+      "sha256": "08d558cf7d869680aaa30d92db3d220d94c9b1739c1bf6b6a5d26ef58acc160f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-source-big-endian/wal-mutant.rs"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-source-missing-complement/rejection.json": {
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-source-missing-complement/rejection.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-source-missing-complement/wal-mutant.rs": {
+      "bytes": 36698,
+      "sha256": "53692761141e4aa3a7ea5bdc11a5adc0a953b8ae1be139274aecc70f853137f1",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-source-missing-complement/wal-mutant.rs"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-source-tail-shift/rejection.json": {
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-source-tail-shift/rejection.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-source-tail-shift/wal-mutant.rs": {
+      "bytes": 36699,
+      "sha256": "e979fd0d4b3c1577bbb8067267d246177c5e428ac59735e49e273000c16b2669",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-source-tail-shift/wal-mutant.rs"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/CRC32.olean": {
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/CRC32.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.command.json": {
+      "bytes": 543,
+      "sha256": "366e16a92530b404b2005b703f180673016178fc0ecbe97091f6afa4a5cf1e26",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.lean": {
+      "bytes": 7645,
+      "sha256": "43faccfd4b5018b9095098b2a1b07b4de50d0c23cd57a1a9d98f6e32e0b1e373",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.olean": {
+      "bytes": 640144,
+      "sha256": "7d064ee00d82729bb53a651e41f9029960167d381f16a4ffabbc200c188a937f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.stdout": {
+      "bytes": 1311,
+      "sha256": "fb48f158d021d304f78d08d05e7f4c09b68dc1052b2155db5db01689632d29c0",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-unapproved-axiom/Slicing8.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/CRC32.olean": {
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/CRC32.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustSlicing.command.json": {
+      "bytes": 548,
+      "sha256": "f75e08b48eded2a8f6e1a57ee3e1ec519e49c692bdeebd4cb4ce9c20221e649e",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustSlicing.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustSlicing.lean": {
+      "bytes": 29722,
+      "sha256": "8df9af4f93a159ca052eb2258242cd90abfc88080274cc8d4485822b73ab51bf",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustSlicing.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustSlicing.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustSlicing.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustSlicing.stdout": {
+      "bytes": 2220,
+      "sha256": "d08476238b9da0a17c140134ad250435902e4db5a7c9ca8bfb35866215a683d9",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustSlicing.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustTable.olean": {
+      "bytes": 812536,
+      "sha256": "12537123a6379ebb02aa6ef4049f69c250da563ccffd28bcc4fb997eec7d103e",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/RustTable.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/Slicing8.olean": {
+      "bytes": 669320,
+      "sha256": "08bd81810c533b61ec942d396ae0ac6521dace9aaa67e8942c674c23eab8afcd",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/control-wrong-block-row/Slicing8.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/CRC32.lean": {
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/CRC32.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/RustSlicing.lean.in": {
+      "bytes": 4657,
+      "sha256": "464f890c5cb6eae1170052b5fb1ce470ec0fd74d24540de6ae7819ef2c25d5c5",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/RustSlicing.lean.in"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/RustTable.lean.in": {
+      "bytes": 2383,
+      "sha256": "e56b58af76b33ab3c1a5c09ad684a286cc465c48ff882cc59b4bb02293171c9e",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/RustTable.lean.in"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/Slicing8.lean": {
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/Slicing8.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/check-crc32-proof.py": {
+      "bytes": 12999,
+      "sha256": "810a28389aeb9db21f2cef845d3be87e6e924486c3116087e3ac61e389c8ea6d",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/check-crc32-proof.py"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/check-crc32-slicing8-proof.py": {
+      "bytes": 14452,
+      "sha256": "a8f7eb291b1458f96eff1ffd380cd8dadf0b675c483bc83bc0c63a8def9e1a71",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/check-crc32-slicing8-proof.py"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/lean-toolchain"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/slicing-source-contract.json": {
+      "bytes": 5313,
+      "sha256": "d1c5b07d1e04b9a09f4a978d18bff5fc32e3e9ba1dbb6cb0f8833af979a23988",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/slicing-source-contract.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/source-contract.json": {
+      "bytes": 1478,
+      "sha256": "16c49fd8655a04f6a40ce756a02b4de3d0789557fabd9077b04f184b41ae6423",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/source-contract.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inputs/wal.rs": {
+      "bytes": 36699,
+      "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inputs/wal.rs"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/inventory.json": {
+      "bytes": 20993,
+      "sha256": "64a7d5d1a2a0044817755c8ae43a3a5edac25b5670a86c0589ce3f6b4f3bd844",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/inventory.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/lean-version.command.json": {
+      "bytes": 453,
+      "sha256": "4d666cc44545dc74dcbd80e07c5f5f85403a70833d2aab0553604a9afc8f3f38",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/lean-version.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/lean-version.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/lean-version.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/lean-version.stdout": {
+      "bytes": 106,
+      "sha256": "63f3e16bf0258e2cc0ab3010eb1830723df9bb85097b7b72b0137b9be25a78e9",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/lean-version.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/CRC32.axioms.json": {
+      "bytes": 1208,
+      "sha256": "a9fe4884382cb45c28a386520528d7c8a357cf269d41a5c94d57416bdb1eebea",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/CRC32.axioms.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/CRC32.command.json": {
+      "bytes": 521,
+      "sha256": "f68eb18ae5ae847b256650fdd6884693ba1cd589eef350dc290a5997023fe6a3",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/CRC32.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/CRC32.lean": {
+      "bytes": 8167,
+      "sha256": "377a5d58ad8afe38fe7ac272c04226a4a0422f6a23b8092b168fed44769d1a86",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/CRC32.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/CRC32.olean": {
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/CRC32.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/CRC32.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/CRC32.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/CRC32.stdout": {
+      "bytes": 1148,
+      "sha256": "b85b7618ba878c6b5c0b6f9b9fdc74fbf3260ffd276245594e71ece4de6dd090",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/CRC32.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.axioms.json": {
+      "bytes": 823,
+      "sha256": "463a134b2bc600a2553699c4c5866199c9cf7ddd1b70463cd233d8f129ca6d4b",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.axioms.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.command.json": {
+      "bytes": 533,
+      "sha256": "48ab5c46998c4c5c76e471afdc26b26f39613df74495d914b1fe64aca8fb3b10",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.lean": {
+      "bytes": 29722,
+      "sha256": "a3da717e7de57231f3b32342a400f07dfcfcc238180e2ae211ea0967b77db00f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.olean": {
+      "bytes": 6367680,
+      "sha256": "403932fc30d583ef4a86585543c068b66741673594330e14985100137484d1db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.stdout": {
+      "bytes": 811,
+      "sha256": "ee7f1ff6b9cc01c68048440d6a4d49970279aca59981438161d1db0c1e16d132",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustSlicing.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustTable.axioms.json": {
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustTable.axioms.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustTable.command.json": {
+      "bytes": 529,
+      "sha256": "12f026f198cfa493eb1691aac33f131dc7fc3571fd4c0e878ca6b61e3bd9dde3",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustTable.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustTable.lean": {
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustTable.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustTable.olean": {
+      "bytes": 812536,
+      "sha256": "12537123a6379ebb02aa6ef4049f69c250da563ccffd28bcc4fb997eec7d103e",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustTable.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustTable.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustTable.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/RustTable.stdout": {
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/RustTable.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.axioms.json": {
+      "bytes": 1310,
+      "sha256": "9364a68aeb72c586a77783551fce9438fc619393c0ff992eed206730831eb6d6",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.axioms.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.command.json": {
+      "bytes": 527,
+      "sha256": "6b1cf982281e9c27d8b35d4904102692ad7d39e9fe3ef353303ae700ffa5c6b5",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.lean": {
+      "bytes": 7784,
+      "sha256": "9d4bcb3c043d56f02a53b6317ca6f60452e6925cd08905b135d0b7fb313f8bf5",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.olean": {
+      "bytes": 669320,
+      "sha256": "08bd81810c533b61ec942d396ae0ac6521dace9aaa67e8942c674c23eab8afcd",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.stdout": {
+      "bytes": 1249,
+      "sha256": "a5a934a3d75a85f0829609a6bea9eeff49644085600315a7de78e7029ebb0511",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/Slicing8.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/compiled-tables.json": {
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/compiled-tables.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/rustc.command.json": {
+      "bytes": 563,
+      "sha256": "8b40a990f4b3bb7080bafff220788023a394cfbce9dcd95d3e50f9e740cc4b46",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/rustc.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/rustc.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/rustc.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/rustc.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/rustc.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/table": {
+      "bytes": 3965656,
+      "sha256": "b8bcee19e6fb6c409cf86dba303da3f7f3fe644dea171c4345ab2d627e181af8",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/table"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/table.command.json": {
+      "bytes": 466,
+      "sha256": "571ee8daaba031217e7f4499c862bdec55b704672edf7a2f093041db00d05c93",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/table.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/table.rs": {
+      "bytes": 2100,
+      "sha256": "80ff145da373cfc9d197a1c0b962b35c6f00f9aaaad7471b253d9e55dd3b5827",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/table.rs"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/table.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/table.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/positive/table.stdout": {
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/positive/table.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/CRC32.axioms.json": {
+      "bytes": 1208,
+      "sha256": "a9fe4884382cb45c28a386520528d7c8a357cf269d41a5c94d57416bdb1eebea",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/CRC32.axioms.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/CRC32.command.json": {
+      "bytes": 521,
+      "sha256": "9a58ed802a9c933bd74c9321aa9a3d1172a5c5d09161b03e11e8efc33518d86c",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/CRC32.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/CRC32.lean": {
+      "bytes": 8167,
+      "sha256": "377a5d58ad8afe38fe7ac272c04226a4a0422f6a23b8092b168fed44769d1a86",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/CRC32.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/CRC32.olean": {
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/CRC32.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/CRC32.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/CRC32.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/CRC32.stdout": {
+      "bytes": 1148,
+      "sha256": "b85b7618ba878c6b5c0b6f9b9fdc74fbf3260ffd276245594e71ece4de6dd090",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/CRC32.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.axioms.json": {
+      "bytes": 823,
+      "sha256": "463a134b2bc600a2553699c4c5866199c9cf7ddd1b70463cd233d8f129ca6d4b",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.axioms.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.command.json": {
+      "bytes": 533,
+      "sha256": "fae2ba43e51ddc651b05a10051e19cbf0cbc4abe577f314d08b603264185e83d",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.lean": {
+      "bytes": 29722,
+      "sha256": "a3da717e7de57231f3b32342a400f07dfcfcc238180e2ae211ea0967b77db00f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.olean": {
+      "bytes": 6367680,
+      "sha256": "403932fc30d583ef4a86585543c068b66741673594330e14985100137484d1db",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.stdout": {
+      "bytes": 811,
+      "sha256": "ee7f1ff6b9cc01c68048440d6a4d49970279aca59981438161d1db0c1e16d132",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustSlicing.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustTable.axioms.json": {
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustTable.axioms.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustTable.command.json": {
+      "bytes": 529,
+      "sha256": "82c1be22d617dfddbc74d815084f8e92615e0cc0d96e49659dc4aa3598792247",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustTable.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustTable.lean": {
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustTable.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustTable.olean": {
+      "bytes": 812536,
+      "sha256": "12537123a6379ebb02aa6ef4049f69c250da563ccffd28bcc4fb997eec7d103e",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustTable.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustTable.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustTable.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/RustTable.stdout": {
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/RustTable.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.axioms.json": {
+      "bytes": 1310,
+      "sha256": "9364a68aeb72c586a77783551fce9438fc619393c0ff992eed206730831eb6d6",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.axioms.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.command.json": {
+      "bytes": 527,
+      "sha256": "f0b17d21b760b78fbac92a403cc26889b4a4fe2d59edd74d9e3af8a7610fb16a",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.lean": {
+      "bytes": 7784,
+      "sha256": "9d4bcb3c043d56f02a53b6317ca6f60452e6925cd08905b135d0b7fb313f8bf5",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.lean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.olean": {
+      "bytes": 669320,
+      "sha256": "08bd81810c533b61ec942d396ae0ac6521dace9aaa67e8942c674c23eab8afcd",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.olean"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.stdout": {
+      "bytes": 1249,
+      "sha256": "a5a934a3d75a85f0829609a6bea9eeff49644085600315a7de78e7029ebb0511",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/Slicing8.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/compiled-tables.json": {
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/compiled-tables.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/rustc.command.json": {
+      "bytes": 563,
+      "sha256": "0c01c32bd0e1127f9233ef127ca0fcbef4784d13e1594796b66641af90a4aafb",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/rustc.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/rustc.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/rustc.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/rustc.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/rustc.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/table": {
+      "bytes": 3965656,
+      "sha256": "b8bcee19e6fb6c409cf86dba303da3f7f3fe644dea171c4345ab2d627e181af8",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/table"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/table.command.json": {
+      "bytes": 466,
+      "sha256": "89c067adacbade45fdda1dfc500d07598b7b18c1a36a10fc41f1a9e83453b9f0",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/table.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/table.rs": {
+      "bytes": 2100,
+      "sha256": "80ff145da373cfc9d197a1c0b962b35c6f00f9aaaad7471b253d9e55dd3b5827",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/table.rs"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/table.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/table.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/restored/table.stdout": {
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/restored/table.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/result.json": {
+      "bytes": 12563,
+      "sha256": "b3e0558e46e3a39a8c3e364e00be5fef2ae6fad6b2ca79059ead3b53d2d66867",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/result.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/rustc-sysroot.command.json": {
+      "bytes": 451,
+      "sha256": "c7c0ffafecb38b8b47de42db8c3fa6cfcf1f925a190c2d124a13bfb0a77ccf2f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/rustc-sysroot.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/rustc-sysroot.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/rustc-sysroot.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/rustc-sysroot.stdout": {
+      "bytes": 64,
+      "sha256": "165014992e9a86caf71eab17d9129db920166702327d37be7d5a124aa859c48f",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/rustc-sysroot.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/rustc-version.command.json": {
+      "bytes": 499,
+      "sha256": "7e573601f62ed90eaa659420d37055f3ef21878ac73dbdda72e58b73937a0d04",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/rustc-version.command.json"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/rustc-version.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/rustc-version.stderr"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/rustc-version.stdout": {
+      "bytes": 196,
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/rustc-version.stdout"
+    },
+    "kv9-crc-main-integration-proof-20260914-first/source-inputs.json": {
+      "bytes": 1661,
+      "sha256": "7860e016b167e99e743eedabc2be069fc0c809a30397065695ec0bbfc1f9fe31",
+      "source": "/tmp/kv9-crc-main-integration-proof-20260914-first/source-inputs.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream-checked.json": {
+      "bytes": 21409,
+      "sha256": "a9591f09692ed64fab6a670307a6e95fdea0fccb9e2fcaf05a26f5fbf09aee7e",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream-checked.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream-config.json": {
+      "bytes": 787,
+      "sha256": "0b46461807b352f3e15ba9c4b2fce3c02942f29bafc8a3dcb5651345c68aaf9e",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream-config.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream.log": {
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream.stop": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream.stop"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/build.json": {
+      "bytes": 487,
+      "sha256": "0dd3b9462003786b359cb0c6d7eb26628bdda9958ae3ed70d4d52a8906ccdd10",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/build.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/config.json": {
+      "bytes": 821,
+      "sha256": "22f2e8527eb6b8d303ed9dac4f5d41a71b6125baf5121194d6622389707ceeb9",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/config.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/history.jsonl": {
+      "bytes": 411082,
+      "sha256": "f79724c0b60338ebf44dfb00c52fb93b765baff54305813b8756edb499ba5f47",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/history.jsonl"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/progress.json": {
+      "bytes": 720,
+      "sha256": "75b670841c7bf5b58ec257c6e0879968a1a43cfc1c570b35f21e69f70384c91c",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/progress.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/ready.json": {
+      "bytes": 72,
+      "sha256": "540ac82e1d6402f44c69619a3b7bae45845e1a7616971f87781ce36f9bf1635c",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/ready.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/report.json": {
+      "bytes": 200582,
+      "sha256": "cd72d05b8324e2df722045ae54fe9a10fc17fefdc0fc95cbb4f12407ef5c1b47",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/report.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary-checked.json": {
+      "bytes": 21329,
+      "sha256": "22bc0b92f1aabd93c6680106fcf2fa3e274aafe9d9849322d405860c2f066f48",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary-checked.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary-config.json": {
+      "bytes": 819,
+      "sha256": "d0fef748590186c74de81b4a7a933b07f9b47be085faa79cfff8e1a95dda01ba",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary-config.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary.log": {
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary.stop": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary.stop"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/build.json": {
+      "bytes": 487,
+      "sha256": "0dd3b9462003786b359cb0c6d7eb26628bdda9958ae3ed70d4d52a8906ccdd10",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/build.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/config.json": {
+      "bytes": 818,
+      "sha256": "fde2dff9c07cd4016bc935a8dd8c45ac60c1e6e8ad6e5f7eb073587ad51abe4c",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/config.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/history.jsonl": {
+      "bytes": 401689,
+      "sha256": "19437bd40b4bf04772bccfd187740d2ac5551c7f337d40b73d28d2645bd13c2d",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/history.jsonl"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/progress.json": {
+      "bytes": 720,
+      "sha256": "771793899cb0218157e66dd09bbc5ee9912bc55e48819f2ff860ce35319db064",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/progress.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/ready.json": {
+      "bytes": 71,
+      "sha256": "14144f10e5d5c7274b96ed8e0accc743ff4df1a915d580c0956eb11dd4628f66",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/ready.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/report.json": {
+      "bytes": 200361,
+      "sha256": "30bb8583a2bd8eed25e0d35184e6d228b96074b68ccda0cd9dd8fc8b5de3c178",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/report.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-000.json": {
+      "bytes": 360,
+      "sha256": "0c444282a98e490e9fb552091e0749ba386102ff72bb1829d26e9080d229378c",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-000.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-001.json": {
+      "bytes": 360,
+      "sha256": "7be0f8094a899eb5d8d1a2ba74a262fd8c2d8238e445bb728de8ea34a6e2324a",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-001.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-002.json": {
+      "bytes": 360,
+      "sha256": "0517857f623d835d0c6ffd88e658cbbd4bb68624eed493d1b0412d46d6c88a80",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-002.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-003.json": {
+      "bytes": 981,
+      "sha256": "b2edfa2bf98942e879077f10bb8109ca54121bc11e867a696381eb0336fed889",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-003.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-004.json": {
+      "bytes": 656,
+      "sha256": "c5f7d86222309e6f46cc5fd9c2e0b678a7d2dd208270470f3cb90b9bd8b27c8c",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-004.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-005.json": {
+      "bytes": 656,
+      "sha256": "6bd279d54b06ddc680d327f450cbf50b10481540ab63fd479d33aca3c66f94e0",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-005.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-006.json": {
+      "bytes": 656,
+      "sha256": "c28ad843aa34ad53da5dd7c038cf36a3fc272138115244f3bb46c70dbccc8864",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-006.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-007.json": {
+      "bytes": 331,
+      "sha256": "65dc3a715b00f966eaf7c647174137272a4373c20c1b6e85806b8d9f8940c409",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-007.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/command-008.json": {
+      "bytes": 331,
+      "sha256": "33a19f949cf7838f08982450ac07f53df986f131f1ed2da165c6f6f6c316a661",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/command-008.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/catalog.segments/55d19d6144245cd9e8c533f29bd97b58/00000000000000000001.wal": {
+      "bytes": 173891,
+      "sha256": "2fdd954ff7aa1b5ebd66d482ec6aa7bac262c8a6a8746b2dc53a771402540882",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/catalog.segments/55d19d6144245cd9e8c533f29bd97b58/00000000000000000001.wal"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/catalog.wal": {
+      "bytes": 117,
+      "sha256": "6b1f73f5b63153378eda9d2bf141a0ac4e5492726db7be5e76a67c34f8e053ba",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/catalog.wal"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-initialized"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "13baa420877a1da158af29303b48b329bfed983fedf583f3badc268cccedb3fc",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-root-descriptor"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "cbc431cd13592ad3348a970786166ad71bd931a6f35c301bb0b21bd13efa5e44",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-serving-endpoint"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "82c13a9dc3c952dfd25905899a8fc7455dc02189bb736f3ad2926097dfbec22f",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-store-identity"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "a2c5c23a869b51cb74d33d5de4bef4a62bb6fa06cdb7072b6b32172eec88fa3e",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-store-lifecycle"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/kv9-store-lock"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/metrics.json": {
+      "bytes": 61845,
+      "sha256": "5b4f042d0da3850714830d6a43afe69ad4b649b5406ff4ec3aec04d7423149cb",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/metrics.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/raft/raft.log": {
+      "bytes": 179559,
+      "sha256": "bfe856ee6df8ab7527a3cd53020cc961ac438b576b39ed321bf498746d3fb558",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/raft/raft.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/status": {
+      "bytes": 3433,
+      "sha256": "0cee152017bd0f0a1cebdf249a8e7c74c8d51b4a213c5d79f79d98c44078ab41",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n1/status"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/catalog.segments/e87b9c81d268a2a0146d3fada100303e/00000000000000000001.wal": {
+      "bytes": 173891,
+      "sha256": "9425b6ddc54cc735037d21d28a58edd0e4a28ce3352ee08b431a467d16f858d3",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/catalog.segments/e87b9c81d268a2a0146d3fada100303e/00000000000000000001.wal"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/catalog.wal": {
+      "bytes": 117,
+      "sha256": "1a766eb0f24892a998a3f452ea9682661aeca8451dc02334a4b2e1e5825f76a8",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/catalog.wal"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-initialized"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "13baa420877a1da158af29303b48b329bfed983fedf583f3badc268cccedb3fc",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-root-descriptor"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "344a73491f641e0e737b70d4f392ecd956dac2cbdfdd283304f1166362898b95",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-serving-endpoint"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "ee52b5b85329f1f121061baf94b3068e63c10271c38b833f31d7ef5465f0b106",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-store-identity"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "07617c1f4c6ca708bf7dee509202a1a02674c9eb90c2785aaa856b57e358a62d",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-store-lifecycle"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/kv9-store-lock"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/metrics.json": {
+      "bytes": 62863,
+      "sha256": "d258da055950a1e553f3b33ebdf0be45b05385dd5e581364fb3c5456f504a244",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/metrics.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/raft/raft.log": {
+      "bytes": 180924,
+      "sha256": "890cd09bf3e1d427fe67fe9cbd17a827617752288eb4201b434d7885d11e9193",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/raft/raft.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/status": {
+      "bytes": 3444,
+      "sha256": "54459add7f0731efcfadbeef21003ab24dfe0811ec19f94bca05a3a6faf058ef",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n2/status"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/catalog.segments/e17498a5b0312f0c511f108b24cbc8ca/00000000000000000001.wal": {
+      "bytes": 175451,
+      "sha256": "f50fc06ad6bc836b63f1bb81fc1513bbbbf7f59245c82b3392174b2d7d62c582",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/catalog.segments/e17498a5b0312f0c511f108b24cbc8ca/00000000000000000001.wal"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/catalog.wal": {
+      "bytes": 117,
+      "sha256": "6c71ff111af9d7ca76c023d27dfd3f0bb59fbb8c3ab19e00f2a659bc8bbfb83f",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/catalog.wal"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-initialized"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "13baa420877a1da158af29303b48b329bfed983fedf583f3badc268cccedb3fc",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-root-descriptor"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "0a625fe81900f8fd6b5a4e9405393a62a610ec6a3b0d0e7717343776dd389146",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-serving-endpoint"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "ad1d728de480c3c20e9ad5f38c6bff898da10c2610f729450c15fe6e09f228b1",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-store-identity"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "107669eccda9710fd43c1fb38e4981448ba78b443769fb971702f2e7ec1f5659",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-store-lifecycle"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/kv9-store-lock"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/metrics.json": {
+      "bytes": 62589,
+      "sha256": "60c78b98ee330ce0a7bed3b2bb2705403d06da532ed5ec6b67c9b23b25182e3d",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/metrics.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/raft/raft.log": {
+      "bytes": 180122,
+      "sha256": "f5049bda8e1f5400091efbd48babc48629c8adb90b5dbfd81b452cce5f27dfb0",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/raft/raft.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/status": {
+      "bytes": 3463,
+      "sha256": "e61d5eed290d1b94757f2c698e726dd9df286f6975446b2ca9a345eafd25ec95",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/data/n3/status"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/fixture.json": {
+      "bytes": 3203,
+      "sha256": "e27d06087f7b40abb3b3e3eae29238e71959b775728c3bf4179815e68cc21316",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/fixture.json"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/n1-restart.log": {
+      "bytes": 122,
+      "sha256": "ce8e006205c9b401cec88dc727d2226c29fa6caf22a63a8487cfda3294570b85",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/n1-restart.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/n1.log": {
+      "bytes": 122,
+      "sha256": "ce8e006205c9b401cec88dc727d2226c29fa6caf22a63a8487cfda3294570b85",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/n1.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/n2-restart.log": {
+      "bytes": 122,
+      "sha256": "890cdccc745d58aa4c009247ad84c1b2da39f8ecc258b4888d8864d6723937ef",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/n2-restart.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/n2.log": {
+      "bytes": 122,
+      "sha256": "890cdccc745d58aa4c009247ad84c1b2da39f8ecc258b4888d8864d6723937ef",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/n2.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/n3.log": {
+      "bytes": 122,
+      "sha256": "f1544341d353cd5c3baa597b657ba45426b17dcfac0eced3f55bb96c21b64380",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/n3.log"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/fixture/root.bin": {
+      "bytes": 179,
+      "sha256": "13baa420877a1da158af29303b48b329bfed983fedf583f3badc268cccedb3fc",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/fixture/root.bin"
+    },
+    "kv9-crc-main-integration-recovery-20260914-first/summary.json": {
+      "bytes": 200125,
+      "sha256": "9454a3cd4add10ece04b45a03d5d0b94c51503b05d6523e4457dbd3d19f703ff",
+      "source": "/tmp/kv9-crc-main-integration-recovery-20260914-first/summary.json"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/audit.json": {
+      "bytes": 10540,
+      "sha256": "401f5bf62068ed44efbefc9e0b8b8b009b5996731b2f500936137eab46c58f4e",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/audit.json"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-history-checked.json": {
+      "bytes": 18673,
+      "sha256": "08d74c37bebd049c7b38c8a8295f46694d9899f6334ba5e6559aa85f8054ce76",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-history-checked.json"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-raw-history.stderr"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-raw-history.stdout": {
+      "bytes": 633,
+      "sha256": "1264f93a8b655da1c47c92ec9de6df6844c9d2fb8d26c83f89554bb07003db18",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-raw-history.stdout"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-report-checked.json": {
+      "bytes": 21409,
+      "sha256": "a9591f09692ed64fab6a670307a6e95fdea0fccb9e2fcaf05a26f5fbf09aee7e",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-report-checked.json"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-history-checked.json": {
+      "bytes": 18606,
+      "sha256": "16c359233827a3c769ddcd8a41e9b3748dbdd29dcd9fa2a1e50e3b50040d10fc",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-history-checked.json"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-raw-history.stderr"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-raw-history.stdout": {
+      "bytes": 750,
+      "sha256": "1b929e9c68aca2b26c0b4c5af0f2e3ebc18b203014e73f0d50be0c1bad8125ad",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-raw-history.stdout"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-report-checked.json": {
+      "bytes": 21329,
+      "sha256": "22bc0b92f1aabd93c6680106fcf2fa3e274aafe9d9849322d405860c2f066f48",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-report-checked.json"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/commands.json": {
+      "bytes": 1879,
+      "sha256": "770149db560a35e21d2810f5ec5dbf5dd1fa6106621fcbddc0d1b44af684f685",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/commands.json"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/original-inputs.json": {
+      "bytes": 12650,
+      "sha256": "4035fe7ba4cb23c8c09eb96c72cd5271ec0c0403d98cd32ed5668c6d44c4c5b0",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/original-inputs.json"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/source-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/source-head.stderr"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/source-head.stdout": {
+      "bytes": 41,
+      "sha256": "2ef785efe0b5e9b96439f39bef925e3c864b0d36b57e6cf7e2d7022e71dde877",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/source-head.stdout"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/source-status.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/source-status.stderr"
+    },
+    "kv9-crc-main-integration-recovery-audit-20260914-first/source-status.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/source-status.stdout"
+    },
+    "kv9-crc-main-integration-release-20260914-first/build.json": {
+      "bytes": 97718,
+      "sha256": "9005c064129e4a70b9de881e46074c4b7b5ec493e482095dd6fa7884fccdfb4a",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/build.json"
+    },
+    "kv9-crc-main-integration-release-20260914-first/cache-clean.stderr": {
+      "bytes": 3450,
+      "sha256": "1d2c0fdf480744d01e1873362e2b9047fd797087cd0c8dd2c013ad3a7dd2e9cf",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/cache-clean.stderr"
+    },
+    "kv9-crc-main-integration-release-20260914-first/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/cache-clean.stdout"
+    },
+    "kv9-crc-main-integration-release-20260914-first/cache-metadata.json": {
+      "bytes": 26067,
+      "sha256": "5a5f0c9a97f2db168a6af3c3e45a81345d68735974192f4b2cb8678277388ac0",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/cache-metadata.json"
+    },
+    "kv9-crc-main-integration-release-20260914-first/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/cache-metadata.log"
+    },
+    "kv9-crc-main-integration-release-20260914-first/cache-safety.json": {
+      "bytes": 20857,
+      "sha256": "5be48fbe500fb5d79ab25f213d055ecc963a40ec8b4f8814c9dcb5d407f716c8",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/cache-safety.json"
+    },
+    "kv9-crc-main-integration-release-20260914-first/kv9-build.log": {
+      "bytes": 8509,
+      "sha256": "ee6f53517723c8377b29158c145d46d498769a83a58e2fed1738af8013e455b8",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/kv9-build.log"
+    },
+    "kv9-crc-main-integration-release-20260914-first/kv9-cargo.jsonl": {
+      "bytes": 211318,
+      "sha256": "c9836bbda5a35f7cd9eb0ef7db8efea86ba4e99ebad1e62fe9a25f29966f3949",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/kv9-cargo.jsonl"
+    },
+    "kv9-crc-main-integration-release-20260914-first/workload/build.json": {
+      "bytes": 487,
+      "sha256": "0dd3b9462003786b359cb0c6d7eb26628bdda9958ae3ed70d4d52a8906ccdd10",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/workload/build.json"
+    },
+    "kv9-crc-main-integration-release-20260914-first/workload/build.log": {
+      "bytes": 19922,
+      "sha256": "8607588a3d19d3d847d66a625d87ba3dc722a9049eca7af78ce52865b08c670f",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/workload/build.log"
+    },
+    "kv9-crc-main-integration-release-20260914-first/workload/cargo.jsonl": {
+      "bytes": 208310,
+      "sha256": "1b5cf9df5c453335659b0336b9a79d81f8748d15ccb4733ae05238e1280c6948",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/workload/cargo.jsonl"
+    },
+    "kv9-crc-main-integration-release-20260914-first/workload/sources.json": {
+      "bytes": 92141,
+      "sha256": "4cdd31868410e5a61bb36a3978709a643f197f00c597168662e821cd94dc1c31",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/workload/sources.json"
+    },
+    "kv9-crc-main-integration-release-root-20260914-first/independent-release-readback.json": {
+      "bytes": 4549,
+      "sha256": "6e2348a6537e130291c1ff2661f957bf6bcbf965a5bc84c406f31318a9670bee",
+      "source": "/tmp/kv9-crc-main-integration-release-root-20260914-first/independent-release-readback.json"
+    },
+    "kv9-crc-main-integration-release-root-20260914-first/run-source.py": {
+      "bytes": 2252,
+      "sha256": "e28c9a67e00a7909f693d4bb4afcd9573b59705b1753ed882f91451f2c7de3a4",
+      "source": "/tmp/kv9-crc-main-integration-release-root-20260914-first/run-source.py"
+    },
+    "kv9-crc-main-integration-release-root-20260914-first/source-first.log": {
+      "bytes": 184,
+      "sha256": "4796c6e84182a7f56aa9126ca63825ada6b45a94f0f3c9655f8bd4f7c3839ebf",
+      "source": "/tmp/kv9-crc-main-integration-release-root-20260914-first/source-first.log"
+    },
+    "kv9-crc-main-integration-release-root-20260914-first/source-invocation.json": {
+      "bytes": 766,
+      "sha256": "d34c360bff49a55b47d4ae45a856b6af836dd6ecf040dbc14fc27332238cbcf2",
+      "source": "/tmp/kv9-crc-main-integration-release-root-20260914-first/source-invocation.json"
+    },
+    "kv9-crc-main-integration-release-root-20260914-first/source-result.json": {
+      "bytes": 1621,
+      "sha256": "8dc9384e51baeffb11f21cd6d88dcd99e282a9a9f3557ede98399c8ec69e132b",
+      "source": "/tmp/kv9-crc-main-integration-release-root-20260914-first/source-result.json"
+    },
+    "kv9-crc-main-integration-source-20260914-first/cache-clean.stderr": {
+      "bytes": 1053,
+      "sha256": "f7e4e14e3f7a564aa4663d0f1d35b98b42c5b53b48f31d78f22aba5d523fda73",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/cache-clean.stderr"
+    },
+    "kv9-crc-main-integration-source-20260914-first/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/cache-clean.stdout"
+    },
+    "kv9-crc-main-integration-source-20260914-first/cache-metadata.json": {
+      "bytes": 26067,
+      "sha256": "5a5f0c9a97f2db168a6af3c3e45a81345d68735974192f4b2cb8678277388ac0",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/cache-metadata.json"
+    },
+    "kv9-crc-main-integration-source-20260914-first/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/cache-metadata.log"
+    },
+    "kv9-crc-main-integration-source-20260914-first/cache-safety.json": {
+      "bytes": 37478,
+      "sha256": "9f85ede93892f624ef59293e85019761d44a2540cb7934addab6a03c8610f250",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/cache-safety.json"
+    },
+    "kv9-crc-main-integration-source-20260914-first/clippy.stderr": {
+      "bytes": 79293,
+      "sha256": "9ce8b3a98342fb78761b8b344b05fc38891f9200beb8857d6b181ea7803dd4a5",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/clippy.stderr"
+    },
+    "kv9-crc-main-integration-source-20260914-first/clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/clippy.stdout"
+    },
+    "kv9-crc-main-integration-source-20260914-first/commands.json": {
+      "bytes": 862,
+      "sha256": "29f5f1d5c9033816e5ebdb8d5fe7df227789a34436cc84ccba27224cea037856",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/commands.json"
+    },
+    "kv9-crc-main-integration-source-20260914-first/compile-tests.stderr": {
+      "bytes": 67103,
+      "sha256": "6c6014fa7b920b5b4b9336a74116fdf635ab521c3eb554a3d2a7690098f64c44",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/compile-tests.stderr"
+    },
+    "kv9-crc-main-integration-source-20260914-first/compile-tests.stdout": {
+      "bytes": 222019,
+      "sha256": "5cba48ee710d54d028ec064ea436db834ac4739439696a8642778f1d06a0faae",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/compile-tests.stdout"
+    },
+    "kv9-crc-main-integration-source-20260914-first/experimental-check.stderr": {
+      "bytes": 42078,
+      "sha256": "04b0ca16f6301144092d38ba6f682fd548e6779fc15ccddb782babd883e911ba",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/experimental-check.stderr"
+    },
+    "kv9-crc-main-integration-source-20260914-first/experimental-check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/experimental-check.stdout"
+    },
+    "kv9-crc-main-integration-source-20260914-first/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/format.stderr"
+    },
+    "kv9-crc-main-integration-source-20260914-first/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/format.stdout"
+    },
+    "kv9-crc-main-integration-source-20260914-first/result.json": {
+      "bytes": 3658,
+      "sha256": "69c54a32709f8d1a17bd81306f0a02b0a9bde83fd819be786c97368d0b6a13d4",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/result.json"
+    },
+    "kv9-crc-main-integration-source-20260914-first/source-after.json": {
+      "bytes": 96964,
+      "sha256": "f02a653cbbf60129dcfc4c618cc24d2d68996aa2f8ba8ae2e8e43caf83280822",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/source-after.json"
+    },
+    "kv9-crc-main-integration-source-20260914-first/source-before.json": {
+      "bytes": 96964,
+      "sha256": "f02a653cbbf60129dcfc4c618cc24d2d68996aa2f8ba8ae2e8e43caf83280822",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/source-before.json"
+    },
+    "kv9-crc-main-integration-source-20260914-first/workspace-tests.stderr": {
+      "bytes": 19105,
+      "sha256": "3b33a59c47bfc3e299bb21afe9f32c8f62b0035c4bc494472a91c86050ccc939",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/workspace-tests.stderr"
+    },
+    "kv9-crc-main-integration-source-20260914-first/workspace-tests.stdout": {
+      "bytes": 71445,
+      "sha256": "683baefdbbf777f046fcded52ebab6f7960a817c5e3929514ceba012d32a4926",
+      "source": "/tmp/kv9-crc-main-integration-source-20260914-first/workspace-tests.stdout"
+    },
+    "kv9-crc-main-integration-source-root-20260914-first/actual-proof-tool-terminal.json": {
+      "bytes": 96,
+      "sha256": "32ee5b4a7226f2aad2cd88f32b7774a5bd9952d1869bebf1aeee931c5da6bdc2",
+      "source": "/tmp/kv9-crc-main-integration-source-root-20260914-first/actual-proof-tool-terminal.json"
+    },
+    "kv9-crc-main-integration-source-root-20260914-first/actual-source-tool-terminal.json": {
+      "bytes": 96,
+      "sha256": "727ff86c1bb724d2f2c6167d1143b533bcd6c342614615db9506ab3fa72f98cc",
+      "source": "/tmp/kv9-crc-main-integration-source-root-20260914-first/actual-source-tool-terminal.json"
+    },
+    "kv9-crc-main-integration-source-root-20260914-first/check-source.py": {
+      "bytes": 2380,
+      "sha256": "1787ece9adb4264d6a9be9d179b8dfe643e49fc460723a7a4c73f5f1639eebb3",
+      "source": "/tmp/kv9-crc-main-integration-source-root-20260914-first/check-source.py"
+    },
+    "kv9-crc-main-integration-source-root-20260914-first/run-source.py": {
+      "bytes": 1986,
+      "sha256": "1fd9e000da4222430584f5c929cd5a732ae4a2f30dafdf436e6ac5fbfb1cf8d7",
+      "source": "/tmp/kv9-crc-main-integration-source-root-20260914-first/run-source.py"
+    },
+    "kv9-crc-main-integration-source-root-20260914-first/source-first.log": {
+      "bytes": 98,
+      "sha256": "8ad1c41473ccd501200b7dfc27cd0242a662078e86c1b84b7fff0060adb5299d",
+      "source": "/tmp/kv9-crc-main-integration-source-root-20260914-first/source-first.log"
+    },
+    "kv9-crc-main-integration-source-root-20260914-first/source-invocation.json": {
+      "bytes": 669,
+      "sha256": "0d2d4ac0828e570561a08e915dcb2c1a0db0a2a226f5cebbe2ce0a28cbfa7e1e",
+      "source": "/tmp/kv9-crc-main-integration-source-root-20260914-first/source-invocation.json"
+    },
+    "kv9-crc-main-integration-source-root-20260914-first/source-result.json": {
+      "bytes": 2058,
+      "sha256": "dc9c7bcce0224b578524f960e034353ac0a650541248dbf2f48417ae5c712e9b",
+      "source": "/tmp/kv9-crc-main-integration-source-root-20260914-first/source-result.json"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/actual-audit-tool-terminal.json": {
+      "bytes": 384,
+      "sha256": "e5c902f9965d99e59d6b62229f8eaaa8343bffed3c8d90dcc34e01c564251b43",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/actual-audit-tool-terminal.json"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/actual-process-tool-terminal.json": {
+      "bytes": 96,
+      "sha256": "09593e9414a6db108cca2c22c3e93feb146cd792c860fad57c8500e52c611f8c",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/actual-process-tool-terminal.json"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/audit.py"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/binding.final.json": {
+      "bytes": 4549,
+      "sha256": "6e2348a6537e130291c1ff2661f957bf6bcbf965a5bc84c406f31318a9670bee",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/binding.final.json"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/commands.source-pinned.json": {
+      "bytes": 2301,
+      "sha256": "251755fb6c18da3bce99662d0d19da7e4376005b4930eeab2345d1f8175dad52",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/commands.source-pinned.json"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/helper-equivalence.json": {
+      "bytes": 3078,
+      "sha256": "8a723707c1310be773f8269ad14dda994edb2bce3561c9a90c602fbe2c8bd12c",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/helper-equivalence.json"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/process-runner.py": {
+      "bytes": 705,
+      "sha256": "25bfa7ecdde63a57eaab8e98d40bfd69431115be14934843e6ffc39a3fc6bdc5",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/process-runner.py"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/run-process.py": {
+      "bytes": 2230,
+      "sha256": "16abf684a53532900bc183c569fc1121c011d2d8e6885ddf70136f5b91b0fa88",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/run-process.py"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/source-first.log": {
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/source-first.log"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/source-invocation.json": {
+      "bytes": 819,
+      "sha256": "bd8c71125565a066d4f98e01c56b2294da8857598a914bc75b5facbd56d9f3cd",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/source-invocation.json"
+    },
+    "kv9-crc-main-recovery-preparation-20260914-first/source-result.json": {
+      "bytes": 1140,
+      "sha256": "9301aa98c147025fdfe540c6fe0800c854bb834232e64d6d7cde302bde8a00c8",
+      "source": "/tmp/kv9-crc-main-recovery-preparation-20260914-first/source-result.json"
+    }
+  },
+  "omitted_executables": [
+    {
+      "bytes": 16153088,
+      "path": "/tmp/kv9-crc-main-integration-release-20260914-first/kv9",
+      "sha256": "106f517c84fabe790ea139f3c18661e14447abd9e257fdd6ba82bfabe6796eb9"
+    },
+    {
+      "bytes": 3420872,
+      "path": "/tmp/kv9-crc-main-integration-release-20260914-first/workload/kv9-batch-workload",
+      "sha256": "ec8002c00253fa6264a2f7bef3814e33dc871c7ef895e6163b7be38be2edffad"
+    }
+  ],
+  "parts": [
+    {
+      "bytes": 2097152,
+      "name": "source-recovery.tar.gz.001",
+      "sha256": "c1ac9fd451ad3c357a4566cb811156d6ab4407cd84794315fe02e53564f2b0a4"
+    },
+    {
+      "bytes": 2097152,
+      "name": "source-recovery.tar.gz.002",
+      "sha256": "74496dc50793663a449496faf4769baa6a2a4df5e74a975f99e74f5dfb52abf2"
+    },
+    {
+      "bytes": 2097152,
+      "name": "source-recovery.tar.gz.003",
+      "sha256": "a296f74abd06c6db9b9f4dbf7f7e0aff658d4f47837aa436c2a6f66183952986"
+    },
+    {
+      "bytes": 2097152,
+      "name": "source-recovery.tar.gz.004",
+      "sha256": "efde53eaf825705f001e220db4af8ebe976a0bae1a8c9af24a40f255bf083fb3"
+    },
+    {
+      "bytes": 2097152,
+      "name": "source-recovery.tar.gz.005",
+      "sha256": "08bd89cf1eda80f469b9d5ae2d0fcba42e3789cf5c47b8fd7f6ef4f34aba84f4"
+    },
+    {
+      "bytes": 2097152,
+      "name": "source-recovery.tar.gz.006",
+      "sha256": "b2809a575477a73944d8c132fb824917932f8b85887480c360727ee832b29047"
+    },
+    {
+      "bytes": 890288,
+      "name": "source-recovery.tar.gz.007",
+      "sha256": "5b2fcd446ee9cbc882572062b503cd29be2bcf3eab030fac436b74914de4f274"
+    }
+  ],
+  "scope": "Original source/proof/build/recovery artifacts, with full proof and recovery WAL bytes. Executables referenced by original hashes. No Chaos or performance acceptance.",
+  "source_revision": "bd42e60f84657e22e36e34924a5c80a08eac623a"
+}

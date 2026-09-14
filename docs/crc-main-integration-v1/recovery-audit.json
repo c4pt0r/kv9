@@ -1,0 +1,505 @@
+{
+  "accepted": true,
+  "audit_script_sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+  "build": "/tmp/kv9-crc-main-integration-release-20260914-first",
+  "cases": [
+    {
+      "client_pid": 1773967,
+      "fresh_drained_voters": 3,
+      "history_sha256": "f79724c0b60338ebf44dfb00c52fb93b765baff54305813b8756edb499ba5f47",
+      "native_checker_states": 220,
+      "operations": 178,
+      "outcomes": {
+        "ok": 164,
+        "unknown": 14
+      },
+      "point_batch_overlap_count": 118,
+      "point_batch_overlap_examples": [
+        [
+          7,
+          5
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          11,
+          9
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          11,
+          13
+        ],
+        [
+          18,
+          16
+        ],
+        [
+          18,
+          17
+        ],
+        [
+          22,
+          20
+        ],
+        [
+          22,
+          23
+        ],
+        [
+          22,
+          24
+        ],
+        [
+          22,
+          25
+        ],
+        [
+          26,
+          27
+        ],
+        [
+          26,
+          28
+        ]
+      ],
+      "raw_checker_states": 220,
+      "traffic_successes": {
+        "batch_get": 57,
+        "batch_put": 56,
+        "delete": 16,
+        "get": 17,
+        "put": 15
+      },
+      "transport": "tonic_stream",
+      "windows": [
+        {
+          "counts": {
+            "batch_get": 15,
+            "batch_put": 14,
+            "delete": 4,
+            "get": 4,
+            "put": 4
+          },
+          "label": "voter-lost",
+          "operation_ids": {
+            "batch_get": [
+              51,
+              58,
+              54,
+              62,
+              66,
+              65,
+              69,
+              73,
+              76,
+              77,
+              80,
+              84,
+              87,
+              88,
+              91
+            ],
+            "batch_put": [
+              53,
+              57,
+              60,
+              61,
+              64,
+              68,
+              71,
+              72,
+              75,
+              79,
+              82,
+              83,
+              86,
+              90
+            ],
+            "delete": [
+              55,
+              59,
+              70,
+              81
+            ],
+            "get": [
+              56,
+              52,
+              67,
+              78
+            ],
+            "put": [
+              63,
+              74,
+              85,
+              89
+            ]
+          }
+        },
+        {
+          "counts": {
+            "batch_get": 11,
+            "batch_put": 12,
+            "delete": 4,
+            "get": 3,
+            "put": 3
+          },
+          "label": "voter-restarted",
+          "operation_ids": {
+            "batch_get": [
+              143,
+              147,
+              151,
+              150,
+              154,
+              158,
+              162,
+              165,
+              166,
+              169,
+              173
+            ],
+            "batch_put": [
+              142,
+              145,
+              146,
+              149,
+              153,
+              157,
+              160,
+              161,
+              164,
+              168,
+              171,
+              172
+            ],
+            "delete": [
+              144,
+              155,
+              159,
+              170
+            ],
+            "get": [
+              152,
+              156,
+              167
+            ],
+            "put": [
+              148,
+              163,
+              174
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "client_pid": 1774080,
+      "fresh_drained_voters": 3,
+      "history_sha256": "19437bd40b4bf04772bccfd187740d2ac5551c7f337d40b73d28d2645bd13c2d",
+      "native_checker_states": 355,
+      "operations": 175,
+      "outcomes": {
+        "ok": 161,
+        "unknown": 14
+      },
+      "point_batch_overlap_count": 114,
+      "point_batch_overlap_examples": [
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          11,
+          13
+        ],
+        [
+          18,
+          16
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          18,
+          21
+        ],
+        [
+          22,
+          23
+        ],
+        [
+          22,
+          24
+        ],
+        [
+          22,
+          25
+        ],
+        [
+          26,
+          27
+        ],
+        [
+          26,
+          28
+        ],
+        [
+          26,
+          29
+        ],
+        [
+          33,
+          31
+        ]
+      ],
+      "raw_checker_states": 355,
+      "traffic_successes": {
+        "batch_get": 56,
+        "batch_put": 55,
+        "delete": 15,
+        "get": 17,
+        "put": 15
+      },
+      "transport": "tonic_unary",
+      "windows": [
+        {
+          "counts": {
+            "batch_get": 12,
+            "batch_put": 12,
+            "delete": 3,
+            "get": 3,
+            "put": 3
+          },
+          "label": "voter-lost",
+          "operation_ids": {
+            "batch_get": [
+              57,
+              62,
+              65,
+              66,
+              69,
+              73,
+              76,
+              77,
+              80,
+              84,
+              88,
+              87
+            ],
+            "batch_put": [
+              60,
+              58,
+              61,
+              64,
+              68,
+              71,
+              72,
+              75,
+              79,
+              82,
+              83,
+              86
+            ],
+            "delete": [
+              59,
+              70,
+              81
+            ],
+            "get": [
+              56,
+              67,
+              78
+            ],
+            "put": [
+              63,
+              74,
+              85
+            ]
+          }
+        },
+        {
+          "counts": {
+            "batch_get": 11,
+            "batch_put": 11,
+            "delete": 4,
+            "get": 4,
+            "put": 2
+          },
+          "label": "voter-restarted",
+          "operation_ids": {
+            "batch_get": [
+              140,
+              143,
+              147,
+              150,
+              151,
+              154,
+              158,
+              162,
+              166,
+              165,
+              169
+            ],
+            "batch_put": [
+              142,
+              145,
+              146,
+              149,
+              153,
+              157,
+              160,
+              161,
+              164,
+              168,
+              171
+            ],
+            "delete": [
+              144,
+              155,
+              159,
+              170
+            ],
+            "get": [
+              141,
+              152,
+              156,
+              167
+            ],
+            "put": [
+              148,
+              163
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "client_lifetimes": 2,
+  "client_sha256": "ec8002c00253fa6264a2f7bef3814e33dc871c7ef895e6163b7be38be2edffad",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/dongxu/kv9",
+      "ended_unix_ns": 1789406955031781801,
+      "exit_code": 0,
+      "name": "source-head",
+      "started_unix_ns": 1789406955030416526
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/dongxu/kv9",
+      "ended_unix_ns": 1789406955035621327,
+      "exit_code": 0,
+      "name": "source-status",
+      "started_unix_ns": 1789406955031881828
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/history/checker.py",
+        "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-stream/history.jsonl",
+        "--output",
+        "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-stream-history-checked.json",
+        "--acceptance",
+        "--require",
+        "get",
+        "put",
+        "delete",
+        "batch_get",
+        "batch_put",
+        "--max-states",
+        "400000",
+        "--seconds",
+        "60"
+      ],
+      "cwd": "/home/dongxu/kv9",
+      "ended_unix_ns": 1789406955230055201,
+      "exit_code": 0,
+      "name": "batch-tonic-stream-raw-history",
+      "started_unix_ns": 1789406955186833954
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/history/checker.py",
+        "/tmp/kv9-crc-main-integration-recovery-20260914-first/batch-tonic-unary/history.jsonl",
+        "--output",
+        "/tmp/kv9-crc-main-integration-recovery-audit-20260914-first/batch-tonic-unary-history-checked.json",
+        "--acceptance",
+        "--require",
+        "get",
+        "put",
+        "delete",
+        "batch_get",
+        "batch_put",
+        "--max-states",
+        "400000",
+        "--seconds",
+        "60"
+      ],
+      "cwd": "/home/dongxu/kv9",
+      "ended_unix_ns": 1789406955308097013,
+      "exit_code": 0,
+      "name": "batch-tonic-unary-raw-history",
+      "started_unix_ns": 1789406955266745936
+    }
+  ],
+  "complete": true,
+  "ended_unix_ns": 1789406955388243022,
+  "original_inputs_unchanged": true,
+  "owned_lifetimes_exited": true,
+  "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+  "run": "/tmp/kv9-crc-main-integration-recovery-20260914-first",
+  "scope": "Independent readback of one frozen default-feature native atomic batch process fixture, stream default plus explicit unary on normal endpoints; two complete atomic histories and source-bound SIGKILL/restart intervals. One local host, ordinary WAL, no benchmark or actual Chaos Mesh/native-batch Chaos acceptance. Interval timestamps and listener/proc records are retained observations from the source-bound fixture, not an external continuous observer.",
+  "server_lifetimes": 5,
+  "server_sha256": "106f517c84fabe790ea139f3c18661e14447abd9e257fdd6ba82bfabe6796eb9",
+  "source": "/home/dongxu/kv9",
+  "source_files": 859,
+  "source_tree_sha256": "055196fb39a243b749ccb0f6597df791110d693d347c561ab2d536e3de9bf588",
+  "source_unchanged": true,
+  "started_unix_ns": 1789406955029592875
+}

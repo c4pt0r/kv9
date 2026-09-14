@@ -1,0 +1,172 @@
+{
+  "complete": true,
+  "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+  "source_files_checked": 859,
+  "server_sha256": "106f517c84fabe790ea139f3c18661e14447abd9e257fdd6ba82bfabe6796eb9",
+  "workload_sha256": "ec8002c00253fa6264a2f7bef3814e33dc871c7ef895e6163b7be38be2edffad",
+  "build_sha256": "9005c064129e4a70b9de881e46074c4b7b5ec493e482095dd6fa7884fccdfb4a",
+  "workload_build_sha256": "0dd3b9462003786b359cb0c6d7eb26628bdda9958ae3ed70d4d52a8906ccdd10",
+  "default_feature_attestation": {
+    "kv9-cargo.jsonl:kv9": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "kv9-cargo.jsonl:kv9_engine": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9_raft": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "kv9-cargo.jsonl:kv9_server": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": true
+    },
+    "workload/cargo.jsonl:kv9-batch-workload": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_engine": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_raft": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    },
+    "workload/cargo.jsonl:kv9_server": {
+      "features": [],
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "fresh": false
+    }
+  },
+  "codegen": [
+    {
+      "log": "kv9-build.log",
+      "crate": "kv9",
+      "codegen_flags": [
+        "opt-level=3",
+        "lto=thin",
+        "codegen-units=1",
+        "metadata=800d2ce40bf9a59e",
+        "extra-filename=-24992454863049ad",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_engine",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=4f3de75385ccd8bb",
+        "extra-filename=-a138971bf33a8003",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_raft",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=75f910181dce7856",
+        "extra-filename=-bc2f622565ed93bb",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_server",
+      "codegen_flags": [
+        "opt-level=3",
+        "linker-plugin-lto",
+        "codegen-units=1",
+        "metadata=d902986ac937b8be",
+        "extra-filename=-c6aeba372df9a6d9",
+        "strip=debuginfo"
+      ]
+    },
+    {
+      "log": "workload/build.log",
+      "crate": "kv9_batch_workload",
+      "codegen_flags": [
+        "opt-level=3",
+        "lto=thin",
+        "codegen-units=1",
+        "metadata=e93d3a9a216dcdda",
+        "extra-filename=-5ed3126b19d7c2a0",
+        "strip=debuginfo"
+      ]
+    }
+  ],
+  "preparation_hashes": {
+    "commands.source-pinned.json": "251755fb6c18da3bce99662d0d19da7e4376005b4930eeab2345d1f8175dad52",
+    "run-process.py": "16abf684a53532900bc183c569fc1121c011d2d8e6885ddf70136f5b91b0fa88",
+    "process-runner.py": "25bfa7ecdde63a57eaab8e98d40bfd69431115be14934843e6ffc39a3fc6bdc5",
+    "audit.py": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+  },
+  "release_tool_terminal": {
+    "session_id": 61302,
+    "exit_code": 0,
+    "terminal_receipt": "52ceb2"
+  }
+}
