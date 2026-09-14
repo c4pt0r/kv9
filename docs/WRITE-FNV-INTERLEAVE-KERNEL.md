@@ -1,5 +1,10 @@
 # Four-lane legacy FNV kernel results
 
+Subsequent checkpoint: the [bounded writer integration](WRITE-FNV-WRITER.md) now
+passes source-bound composition proof and local workspace tests. Release, actual
+recovery/Chaos and database measurements remain pending. The kernel results
+below describe the original standalone experiment.
+
 The standalone four-lane kernel passes source-bound equivalence proof and
 tests. On this AMD Ryzen 9 9950X, four equal 10,601-byte bodies take **7.630 us**
 instead of **30.286 us** for four serial checksums, a **3.969x kernel speedup**.

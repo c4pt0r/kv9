@@ -58,6 +58,18 @@ empty groups cost more. Next integrate bounded four-body/64 KiB staging inside
 one existing Ready, preserving the original stream, sync/publication and failure
 semantics. The kernel is still unlinked; no database QPS gain is claimed.
 
+## Latest writer checkpoint (2026-09-14 UTC)
+
+The [bounded four-lane FNV writer](WRITE-FNV-WRITER.md), experimental runtime
+`12f44d3`, now passes 15 writer plus six kernel proof statements and the local
+workspace gate: 797 tests/doctests, 23 existing ignored, formatting, Clippy and
+explicit experimental-lease compilation. Five new persistence tests cover full
+frame-stream/budget boundaries and 1,512 deterministic failure combinations.
+Next qualify its clean default release with ordinary recovery and actual Chaos
+Mesh, then compare point/batch c1/c64 throughput and latency against CRC main.
+The standalone kernel speedup is not a database result; the candidate remains
+unselected. Preserve every sync, quorum, publication and acknowledgment fence.
+
 ## Comparison contract
 
 | Panel | Successful call requires | Interpretation |
