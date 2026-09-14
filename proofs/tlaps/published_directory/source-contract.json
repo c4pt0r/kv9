@@ -1,0 +1,8 @@
+{
+  "parent": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+  "files": {
+    "crates/engine/src/wal_segment.rs": "c3c6cc344c3eab3cccbc3872e60c467191fb93815567973769c3f92fec7fbd30",
+    "crates/engine/src/wal_stream.rs": "8dd2d5b6894afc0a2bfc40ae8efced3f34e98c5df943f93feeb997ffdbf79742"
+  },
+  "scope": "Conditional namespace-publication primitive under exclusive ownership and unchanged ancestor identities; not a proof of the filesystem, whole Rust, or Raft."
+}

@@ -311,11 +311,11 @@ impl SegmentedWal {
         // Fence before consuming the old owner. No branch below may restore
         // authority unless the full topology publication succeeds.
         self.poisoned = true;
-        let closed = self
+        let (closed, directory) = self
             .active
             .take()
             .ok_or_else(|| bad("active writer unavailable"))?
-            .seal()?;
+            .seal_for_rotation()?;
         next.closed.push(closed);
         let path = segment_path(&self.path, next.active);
         // A successor left before topology publication has no acknowledged
@@ -326,7 +326,8 @@ impl SegmentedWal {
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
             Err(e) => return Err(io(e)),
         }
-        let active = WalSegment::create(&path, next.active, self.metrics.clone())?;
+        let active =
+            WalSegment::create_successor(&path, next.active, self.metrics.clone(), directory)?;
         self.publish(&next)?;
         self.topology = next;
         self.active = Some(active);
