@@ -1,5 +1,9 @@
 # Equivalent byte-table CRC for the engine WAL
 
+Historical byte-table qualification. Current engine CRC uses the [slicing-by-eight proof](../proofs/lean/crc32-slicing8/README.md).
+The original source contract and checker below remain unchanged.
+
+
 This candidate replaces the engine's eight polynomial steps per byte with one
 lookup in a 256-entry table computed at compile time. It uses the same reflected
 IEEE polynomial `0xedb88320`, initial state `0xffffffff` and final complement.
