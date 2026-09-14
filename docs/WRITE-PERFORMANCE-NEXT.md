@@ -86,6 +86,16 @@ recompression. Complete performance smokes and timed cohorts remain pending.
 The standalone kernel speedup is not a database result; the candidate remains
 unselected. Preserve every sync, quorum, publication and acknowledgment fence.
 
+While FNV timing awaits capacity, the separate
+[validated receipt tail-hint candidate](WRITE-RECEIPT-TAIL-HINT.md), `a6ac335`,
+now passes 18 parameterized theorem statements / 158 fresh obligations and
+793 workspace tests/doctests (23 existing ignored), formatting and Clippy.
+It tests a constant-time checked slot lookup for consecutive indexes, with
+ordered-search and original first-match fallbacks. Default release, recovery,
+actual Chaos and database timing remain pending; it is not combined with FNV
+or selected on main. This advances the secondary receipt target without
+claiming that proof or a CPU percentage establishes performance gains.
+
 ## Comparison contract
 
 | Panel | Successful call requires | Interpretation |

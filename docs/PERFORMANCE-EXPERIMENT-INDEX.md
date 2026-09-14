@@ -6,30 +6,28 @@ main tree. Searching only current files missed prior rejected scheduling work.
 That omission caused unnecessary implementation/check work in the latest turn;
 the repeated prototypes are retained below and stopped before new timing.
 
-Main now selects [ThinLTO `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md), with
-the same executable bytes as qualified `02d0c01`. Each result below applies only to the
-source, client, workload and duration recorded in its linked report. Historical
-percentages must not be relabeled as current measurements. Accepted evidence
-does not itself imply a selected candidate or full industrial qualification.
+Main selects [slicing-by-eight CRC `bd42e60`](CRC32-SLICING-INTEGRATION.md)
+on the qualified ThinLTO/default Safe ReadIndex baseline. Each result applies
+only to its recorded source, client, workload and duration. Historical numbers
+must not be relabeled as current measurements or full industrial qualification.
 
-The current priority is [write performance against Redis with one primary and
-two replicas](WRITE-PERFORMANCE-NEXT.md). The [matched baseline](WRITE-REDIS3-BASELINE.md)
-now passes 12 smoke/24 timed cohorts and independent readback. At c64, selected
-KV9 reaches 136,519.558 point writes/s and 887,520.285 BatchPut(64) items/s;
-Redis WAIT 1/2 reach 229,760.166 / 232,465.084 point writes/s and about four
-million batch items/s. Preserve KV9's 9.437–9.568-ms loaded batch p99 and the
-volatile-storage/durability limits. This is a baseline, not a selected speedup.
-The CRC reapplication passes its [actual 21-window Chaos campaign](WRITE-CRC-CHAOS.md)
-and independent audit/cleanup: 9,833 complete operations. Its [matched write
-comparison](WRITE-CRC-PERFORMANCE.md) now passes eight smokes and sixteen timed
-cohorts: loaded BatchPut(64) improves 18.807% to 1,063,493.134 items/s, with p99
-of 6.947–7.012 ms; loaded point writes improve 2.786% to 139,402.831/s.
-Full point/batch and mixed-read regressions remain before default promotion.
-The separate frame-buffer candidate now passes source, release, ordinary
-recovery and [actual Chaos qualification](WRITE-RAFT-FRAME-BUFFER-CHAOS.md);
-its [comparison preparation](WRITE-RAFT-FRAME-BUFFER-PERFORMANCE-PLAN.md) passes
-28 local controls, but performance is still unmeasured pending capacity.
-Read optimization remains held; no lease performance result is established.
+The priority remains [writes against Redis with one primary and two replicas](WRITE-PERFORMANCE-NEXT.md).
+The [latest exact-main write screen](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md)
+records **139,188.639 point Put/s** and **1,065,680.142 BatchPut(64) items/s** at
+c64, with p99 0.737–0.745 ms and 6.947–7.012 ms per batch respectively. Redis
+was not rerun; its [earlier three-copy reference](WRITE-REDIS3-BASELINE.md)
+remains separately scoped. The CRC [full regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md)
+and exact-main proof/source/recovery/Chaos qualification have completed.
+The frame-buffer and vectored candidates do not establish a general write gain.
+
+The [bounded FNV writer](WRITE-FNV-WRITER.md) passes proof, source checks,
+default release, ordinary recovery, 21 Chaos windows and a separate 11-window
+client-link/quorum-loss campaign. Its matched performance screen remains
+pending [retention capacity](WRITE-FNV-CAPACITY.md). The separate
+[receipt tail-hint candidate](WRITE-RECEIPT-TAIL-HINT.md) passes source/proof
+qualification and awaits release/recovery/Chaos/timing. Neither is selected or
+combined with the other. Read optimization remains held; no lease performance
+result is established.
 
 The [leader-lease proof](LEADER-LEASE-PROOF.md) is a new design checkpoint:
 eight TLAPS lemmas / 23 obligations plus real-clock containment show how to
@@ -38,7 +36,7 @@ remove per-read quorum RTT under explicit additional premises. The subsequent
 finite fault-model evidence and the fail-closed expiration contract. There is no
 selected lease-enabled runtime or performance result yet. Do not relabel earlier Safe
 ReadIndex timings as lease performance; preserve the implementation/proof/Chaos
-gates and the selected `11113f6` baseline.
+gates and the current default Safe ReadIndex baseline.
 The subsequent [Rust controller](LEASE-CONTROLLER.md) passes local source/fault
 controls and integer-timing proofs; its feature does not enable a server read path.
 The [voting adapter](LEASE-VOTE-BINDING.md) adds durable policy/epochs and actual
@@ -56,9 +54,13 @@ adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
-| Segmented WAL vectored writes `cfd9c92` | Experimental on selected ThinLTO, separate from CRC and the Raft frame-buffer candidate. Three universal SMT checks, three countermodels, 714 workspace tests/doctests (23 existing ignored), formatting and Clippy pass. An actual file/replay probe records one `writev` plus the existing `fsync` per frame. [Exact release and 352-operation recovery](WRITE-SEGMENT-VECTORED-RECOVERY.md) pass: 29 unknowns, six fresh drains and seven exited lifetimes. Actual Chaos and performance remain pending. [Source qualification](https://github.com/c4pt0r/kv9/blob/cfd9c927f8ecd33974100f696e6b08b227d25a41/docs/WRITE-SEGMENT-VECTORED.md). |
+| Validated receipt tail hint `a6ac335` | Experimental on CRC main. [18 proof statements / 158 obligations and 793 workspace tests/doctests](WRITE-RECEIPT-TAIL-HINT.md) pass, with 23 existing ignored. Direct checked access for consecutive tail indexes; binary/first-match fallbacks preserve complete receipt semantics. Release, recovery, actual Chaos and throughput/p99 remain pending. |
+| Bounded four-lane FNV writer `12f44d3` | [Proof, 797 tests/doctests, exact default release and recovery](WRITE-FNV-WRITER.md) pass. Actual [21-window Chaos](WRITE-FNV-WRITER-CHAOS.md) and [11-window client-link/quorum-loss](WRITE-FNV-WRITER-LINK-CHAOS.md) acceptance pass. No database performance result; unselected pending capacity and matched timing. |
+| Integrated slicing-by-eight CRC `bd42e60` | Selected after [full regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md) and [exact-main proof/source/release/recovery/Chaos](CRC32-SLICING-INTEGRATION.md). Latest point/batch write numbers are above; historical e748 comparisons retain their own source attribution. |
+| Frame-buffer on CRC `e9249f2` | [Not selected](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md): loaded point -0.517%, batch +0.379% with worse pooled p99; both reverse across opposite orders. All 8 smokes / 16 timed cohorts pass. |
+| Segmented WAL vectored writes `cfd9c92` | Experimental on selected ThinLTO, separate from CRC and the Raft frame-buffer candidate. Three universal SMT checks, three countermodels, 714 workspace tests/doctests (23 existing ignored), formatting and Clippy pass. An actual file/replay probe records one `writev` plus the existing `fsync` per frame. [Exact release and 352-operation recovery](WRITE-SEGMENT-VECTORED-RECOVERY.md) pass: 29 unknowns, six fresh drains and seven exited lifetimes. Actual [Chaos](WRITE-SEGMENT-VECTORED-CHAOS.md) and [performance](WRITE-SEGMENT-VECTORED-PERFORMANCE.md) now pass; the measured candidate is not selected. [Source qualification](https://github.com/c4pt0r/kv9/blob/cfd9c927f8ecd33974100f696e6b08b227d25a41/docs/WRITE-SEGMENT-VECTORED.md). |
 | Single-buffer Raft WAL frame `01d128f` | Experimental on selected ThinLTO, separate from CRC. Removes one allocation/body copy. Three source-bound universal SMT checks, three counterexample controls, 710 workspace tests/doctests (23 existing ignored), formatting and Clippy pass. New compatibility test writes/replays 3,840 frames. [Exact release and 353-operation recovery](WRITE-RAFT-FRAME-BUFFER-RECOVERY.md) and [actual 21-window Chaos](WRITE-RAFT-FRAME-BUFFER-CHAOS.md) pass: 9,818 complete Chaos operations, four final drains and all 34 recorded server lifetimes exited. Performance remains unmeasured. [Source qualification](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md). |
-| Slicing-by-eight engine CRC `e5662bb`, reapplied as `e748620` | Experimental on selected ThinLTO. Fresh 47-theorem proof, 710 workspace tests/doctests (23 existing ignored), release, 363-operation ordinary recovery and [actual 21-window Chaos](WRITE-CRC-CHAOS.md) pass. [Matched write comparison](WRITE-CRC-PERFORMANCE.md) passes: loaded BatchPut(64) +18.807% with lower pooled p99; loaded point writes +2.786%. Full read/mixed regression remains pending capacity before promotion. [Current qualification](write-reference-qualification-v1/README.md); [historical qualification](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md). |
+| Slicing-by-eight engine CRC `e5662bb`, reapplied as `e748620` | Experimental on selected ThinLTO. Fresh 47-theorem proof, 710 workspace tests/doctests (23 existing ignored), release, 363-operation ordinary recovery and [actual 21-window Chaos](WRITE-CRC-CHAOS.md) pass. [Matched write comparison](WRITE-CRC-PERFORMANCE.md) passes: loaded BatchPut(64) +18.807% with lower pooled p99; loaded point writes +2.786%. The later [full regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md) and exact-main integration now pass, as recorded above. [Current qualification](write-reference-qualification-v1/README.md); [historical qualification](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md). |
 | Independent per-request stream tasks `f2c4e85` | Retained; older c64 GET +38.15–38.93%, with better mean/p99. [Original report](https://github.com/c4pt0r/kv9/blob/cf5c87e/docs/PARALLEL-STREAM-GET-PERFORMANCE.md). |
 | Linux jemalloc `629bee4` | Held: older c64 GET +4.47% / +6.24% and better mean/p99, with aggregate mean voter RSS +23.1% / +25.9%. Larger working sets and mixed/write qualification remain necessary. [Report](https://github.com/c4pt0r/kv9/blob/d79ea48/docs/JEMALLOC-SERVER-PERFORMANCE.md). |
 | One RPC runtime worker `711631b` | Rejected for throughput/latency regression. [Report](https://github.com/c4pt0r/kv9/blob/99993db/docs/RPC-WORKER-SCREENING.md). |
