@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "scripts/check-receipt-tail-hint-proof.py",
+    "--output",
+    "/tmp/kv9-receipt-tail-hint-proof-20260914-first",
+    "--tlapm",
+    "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+    "--jar",
+    "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar"
+  ],
+  "started_ns": 1789423114833024177,
+  "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+  "script_sha256": "5f9f712aee73eeacca1cf7c47050f60ccb55b09e6124e83e1f2411bf0dde2bae",
+  "tlapm_sha256": "1de5983ac393658362fe61882e270b65648fa07945453e971fcf9eeabf5ec579",
+  "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+}

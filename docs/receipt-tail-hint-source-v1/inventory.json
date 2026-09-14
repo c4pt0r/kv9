@@ -1,0 +1,829 @@
+{
+  "version": 1,
+  "source_revision": "a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9",
+  "files": [
+    {
+      "name": "proof/auditor/ProofAudit.class",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "name": "proof/bound-source/crates/raft/src/driver/applied_ring.rs",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/crates/raft/src/driver/applied_ring.rs",
+      "bytes": 8179,
+      "sha256": "c8cc68801388fa398e7addfd8b64b1eb91531aa69d9acd598f43b5a8b18fa2bf"
+    },
+    {
+      "name": "proof/bound-source/crates/raft/src/driver.rs",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/crates/raft/src/driver.rs",
+      "bytes": 155039,
+      "sha256": "b196d8af3450f1769b7d49b734572ad403f18e806fd0144ba34263d0496e63a1"
+    },
+    {
+      "name": "proof/bound-source/proofs/tlaps/receipt-tail-hint/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/proofs/tlaps/receipt-tail-hint/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/bound-source/proofs/tlaps/receipt-tail-hint/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/proofs/tlaps/receipt-tail-hint/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/bound-source/proofs/tlaps/receipt-tail-hint/ReceiptTailHint.cfg",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/proofs/tlaps/receipt-tail-hint/ReceiptTailHint.cfg",
+      "bytes": 206,
+      "sha256": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0"
+    },
+    {
+      "name": "proof/bound-source/proofs/tlaps/receipt-tail-hint/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/proofs/tlaps/receipt-tail-hint/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof/bound-source/proofs/tlaps/receipt-tail-hint/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/proofs/tlaps/receipt-tail-hint/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/bound-source/proofs/tlaps/receipt-tail-hint/inventory.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/proofs/tlaps/receipt-tail-hint/inventory.json",
+      "bytes": 1747,
+      "sha256": "6314f3925214209e73c6c20dba30fb0aa49513b9db3873a241fd4544937683d2"
+    },
+    {
+      "name": "proof/bound-source/scripts/ProofAudit.java",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/scripts/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "name": "proof/bound-source/scripts/check-receipt-tail-hint-proof.py",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/scripts/check-receipt-tail-hint-proof.py",
+      "bytes": 8131,
+      "sha256": "5f9f712aee73eeacca1cf7c47050f60ccb55b09e6124e83e1f2411bf0dde2bae"
+    },
+    {
+      "name": "proof/bound-source/scripts/check-tla.py",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/scripts/check-tla.py",
+      "bytes": 13049,
+      "sha256": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70"
+    },
+    {
+      "name": "proof/bound-source/scripts/check-tlaps.py",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/bound-source/scripts/check-tlaps.py",
+      "bytes": 16239,
+      "sha256": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+    },
+    {
+      "name": "proof/capacity-1/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/capacity-1/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/capacity-1/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof/capacity-1/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/capacity-1/Run.cfg",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1/Run.cfg",
+      "bytes": 206,
+      "sha256": "b01a42a1b1c46f7b686cd76836f741235c386746e2f93456c8da85554cdb8931"
+    },
+    {
+      "name": "proof/capacity-1/tlc-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1/tlc-terminal.json",
+      "bytes": 543,
+      "sha256": "a7110a87b1aa41d1e7237434b175ed8a7d836a6759cbd071712b026a5d3a43af"
+    },
+    {
+      "name": "proof/capacity-1/tlc.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1/tlc.log",
+      "bytes": 2453,
+      "sha256": "55e85e4b30782af54aaf7d23ace454cb3dd904bf653197f08d5ff988d1eca0e4"
+    },
+    {
+      "name": "proof/capacity-2/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/capacity-2/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/capacity-2/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof/capacity-2/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/capacity-2/Run.cfg",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2/Run.cfg",
+      "bytes": 206,
+      "sha256": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0"
+    },
+    {
+      "name": "proof/capacity-2/tlc-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2/tlc-terminal.json",
+      "bytes": 543,
+      "sha256": "16bc4d559386733a203660cd1bd45bc81c0691170ed680aa855a98b6877641c7"
+    },
+    {
+      "name": "proof/capacity-2/tlc.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2/tlc.log",
+      "bytes": 2463,
+      "sha256": "0aa546365f47ae56117ff9959eb5b134407dd9d46d25d90876153bb8064c05ad"
+    },
+    {
+      "name": "proof/compile-auditor-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/compile-auditor-terminal.json",
+      "bytes": 455,
+      "sha256": "f40b6dde88e84253b70ee5be50270b54e9b7d7bef2e6d49eed885127c5fe1f32"
+    },
+    {
+      "name": "proof/compile-auditor.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/compile-auditor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "proof/false-axiom/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/false-axiom/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/false-axiom/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/false-axiom/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/false-axiom/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/false-axiom/ReceiptTailHint.tla",
+      "bytes": 869,
+      "sha256": "2cdad462979d2ae29cb89ccfba51f419445736b2358fc9f92e6f87f8f5b32532"
+    },
+    {
+      "name": "proof/false-axiom/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/false-axiom/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/false-axiom/sany.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/false-axiom/sany.log",
+      "bytes": 3808,
+      "sha256": "850135d1c6b041598ea04097b8c085d6317ade400fdddafbb85fec8556fc8895"
+    },
+    {
+      "name": "proof/ignored-certificate/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/ignored-certificate/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/ignored-certificate/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/ReceiptTailHint.tla",
+      "bytes": 817,
+      "sha256": "f11f9c15db267eef07158f57fca205b744aff021256afd698388e96b718d1ce5"
+    },
+    {
+      "name": "proof/ignored-certificate/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/ignored-certificate/Run.cfg",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/Run.cfg",
+      "bytes": 206,
+      "sha256": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0"
+    },
+    {
+      "name": "proof/ignored-certificate/tlc-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/tlc-terminal.json",
+      "bytes": 562,
+      "sha256": "9584a52f8b1dcbc515aa71cc24503a964353e6e219157875e4ffdf61e036b7ad"
+    },
+    {
+      "name": "proof/ignored-certificate/tlc.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/tlc.log",
+      "bytes": 3141,
+      "sha256": "40b72403a6179f09de967d7010fef3cb6862ddaad4e768c92b479cc5ceffd63b"
+    },
+    {
+      "name": "proof/invocation.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/invocation.json",
+      "bytes": 624,
+      "sha256": "0884bd0be24895012a07906df5b5d5cf687b02fe2b17e5c4711dd347adfae4c4"
+    },
+    {
+      "name": "proof/missing-index-guard/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/missing-index-guard/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/missing-index-guard/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/ReceiptTailHint.tla",
+      "bytes": 818,
+      "sha256": "2cc3cde8ecfec382b432b3a9aef9fb1e2eb32a7aaf1723da8d19330773595b55"
+    },
+    {
+      "name": "proof/missing-index-guard/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/missing-index-guard/Run.cfg",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/Run.cfg",
+      "bytes": 206,
+      "sha256": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0"
+    },
+    {
+      "name": "proof/missing-index-guard/tlc-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/tlc-terminal.json",
+      "bytes": 562,
+      "sha256": "040d45b1ded669cac3322f10aa2bc8ec6c3e3f8f9773fb07d0e2148c384cb87c"
+    },
+    {
+      "name": "proof/missing-index-guard/tlc.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/tlc.log",
+      "bytes": 3136,
+      "sha256": "802aba2a1216e9e840b5ad7abb38f9031694db33db2425a86a0692122e30c0c4"
+    },
+    {
+      "name": "proof/proof-hole/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/proof-hole/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/proof-hole/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/proof-hole/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/proof-hole/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/proof-hole/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof/proof-hole/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/proof-hole/ReceiptTailHintProof.tla",
+      "bytes": 1830,
+      "sha256": "e5ccc1783951e4f0dd974ed398ad5bed9e6d7e4d938bf9969ff90b7487167751"
+    },
+    {
+      "name": "proof/proof-hole/sany.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/proof-hole/sany.log",
+      "bytes": 3709,
+      "sha256": "d15b6dafc135f5cbb7ab3c0d4723458a38ec592db97e18daf6c1a84921038214"
+    },
+    {
+      "name": "proof/restored/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/restored/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/restored/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof/restored/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/restored/Run.cfg",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/Run.cfg",
+      "bytes": 206,
+      "sha256": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0"
+    },
+    {
+      "name": "proof/restored/tlc-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/tlc-terminal.json",
+      "bytes": 539,
+      "sha256": "1ff57017fa7ab850deeeb14447b3f63ffab1ce3b6195a2f2edb6e9922a0f483a"
+    },
+    {
+      "name": "proof/restored/tlc.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/tlc.log",
+      "bytes": 2459,
+      "sha256": "4710375253514a8de7a3c6c8b1d118192e396c43e1bdbddd72c08a23f8dbf0bf"
+    },
+    {
+      "name": "proof/result.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/result.json",
+      "bytes": 8149,
+      "sha256": "7f9974c7b104233cf3d0538b045abe8a6755f29f610b077c8a32fa2afc07bd84"
+    },
+    {
+      "name": "proof/source/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/source/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/source/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/source/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/source/ReceiptTailHint.cfg",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/source/ReceiptTailHint.cfg",
+      "bytes": 206,
+      "sha256": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0"
+    },
+    {
+      "name": "proof/source/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/source/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof/source/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/source/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/source/inventory.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/source/inventory.json",
+      "bytes": 1747,
+      "sha256": "6314f3925214209e73c6c20dba30fb0aa49513b9db3873a241fd4544937683d2"
+    },
+    {
+      "name": "proof/source/source-contract.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/source/source-contract.json",
+      "bytes": 2398,
+      "sha256": "8daac230ca0057afed1b5b5de22eb63525739f7538457382fb587f300ffbba78"
+    },
+    {
+      "name": "proof/theorems/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/theorems/AppliedReceiptsProof-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/AppliedReceiptsProof-terminal.json",
+      "bytes": 568,
+      "sha256": "546893790c4e9e19f5d02dc174732749d09f70ae69fa297f79d3d5c9156fdee8"
+    },
+    {
+      "name": "proof/theorems/AppliedReceiptsProof.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/AppliedReceiptsProof.log",
+      "bytes": 485,
+      "sha256": "15272703f287bf664da7063ad87d006389c1c55cf0d8c8629c28270b47830d56"
+    },
+    {
+      "name": "proof/theorems/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/theorems/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof/theorems/ReceiptTailHintProof-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/ReceiptTailHintProof-terminal.json",
+      "bytes": 568,
+      "sha256": "51881f1050b3f247e5781d8d82e9575feb31bc6c1d4cc4552728de5effdc460c"
+    },
+    {
+      "name": "proof/theorems/ReceiptTailHintProof.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/ReceiptTailHintProof.log",
+      "bytes": 483,
+      "sha256": "a6359be7eb76ec1f41c28d3ffc422b2469c85f124e7e927113e8993c3f010bfb"
+    },
+    {
+      "name": "proof/theorems/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/theorems/cache-AppliedReceiptsProof/AppliedReceiptsProof.tlaps/AppliedReceiptsProof.thy",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-AppliedReceiptsProof/AppliedReceiptsProof.tlaps/AppliedReceiptsProof.thy",
+      "bytes": 9933,
+      "sha256": "b3a3533409d224e9bbb0506cbf3db123c5d64b755b38632ae1d71c49fa7ac8dc"
+    },
+    {
+      "name": "proof/theorems/cache-AppliedReceiptsProof/AppliedReceiptsProof.tlaps/fingerprints",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-AppliedReceiptsProof/AppliedReceiptsProof.tlaps/fingerprints",
+      "bytes": 7175,
+      "sha256": "8ef1cee131f45fbb02d3a7c61edf696eaacc4303ce97d854579865ac2b7c26fe"
+    },
+    {
+      "name": "proof/theorems/cache-AppliedReceiptsProof/AppliedReceiptsProof.tlaps/fingerprints.history/2026-09-14_14_58_35/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-AppliedReceiptsProof/AppliedReceiptsProof.tlaps/fingerprints.history/2026-09-14_14_58_35/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/theorems/cache-AppliedReceiptsProof/AppliedReceiptsProof.tlaps/fingerprints.history/2026-09-14_14_58_35/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-AppliedReceiptsProof/AppliedReceiptsProof.tlaps/fingerprints.history/2026-09-14_14_58_35/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/ReceiptTailHintProof.thy",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/ReceiptTailHintProof.thy",
+      "bytes": 419,
+      "sha256": "c69b8de37dc423b298ec432ad353b757108f382560e660731c878cabf07db473"
+    },
+    {
+      "name": "proof/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints",
+      "bytes": 2714,
+      "sha256": "49eb48bcecb7d3ed6957354831b3668bc7e934a7bd0573f04daad322633ee1ac"
+    },
+    {
+      "name": "proof/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_58_41/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_58_41/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_58_41/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_58_41/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_58_41/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_58_41/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_58_41/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-ReceiptTailHintProof/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_58_41/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof/theorems/sany.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/sany.log",
+      "bytes": 3694,
+      "sha256": "6013368990cffa2f7f01a82e2ef89bbcdb3522d604d7aaf92acc138d47aa83f8"
+    },
+    {
+      "name": "proof/theorems/semantic-audit.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/semantic-audit.json",
+      "bytes": 3907,
+      "sha256": "2ecc7014714ae78f5f0a78728935d3d2fa91b416e99dfaecbccb98e57611db12"
+    },
+    {
+      "name": "proof/tool-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/tool-terminal.json",
+      "bytes": 155,
+      "sha256": "a07874bc84e11b575918f2f85712320bd9764ce377ad1cfbf058a69713a623e3"
+    },
+    {
+      "name": "proof-draft/.tlacache/ReceiptTailHintProof.tlaps/ReceiptTailHintProof.thy",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/.tlacache/ReceiptTailHintProof.tlaps/ReceiptTailHintProof.thy",
+      "bytes": 419,
+      "sha256": "c69b8de37dc423b298ec432ad353b757108f382560e660731c878cabf07db473"
+    },
+    {
+      "name": "proof-draft/.tlacache/ReceiptTailHintProof.tlaps/fingerprints",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/.tlacache/ReceiptTailHintProof.tlaps/fingerprints",
+      "bytes": 2714,
+      "sha256": "189f567de253416fab6f3fdaf86b435304769460f0f762ecde60679dbbddba16"
+    },
+    {
+      "name": "proof-draft/.tlacache/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_55_41/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/.tlacache/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_55_41/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof-draft/.tlacache/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_55_41/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/.tlacache/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_55_41/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof-draft/.tlacache/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_55_41/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/.tlacache/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_55_41/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof-draft/.tlacache/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_55_41/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/.tlacache/ReceiptTailHintProof.tlaps/fingerprints.history/2026-09-14_14_55_41/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof-draft/AppliedReceipts.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "name": "proof-draft/AppliedReceiptsProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "name": "proof-draft/ReceiptTailHint.cfg",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/ReceiptTailHint.cfg",
+      "bytes": 206,
+      "sha256": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0"
+    },
+    {
+      "name": "proof-draft/ReceiptTailHint.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/ReceiptTailHint.tla",
+      "bytes": 848,
+      "sha256": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b"
+    },
+    {
+      "name": "proof-draft/ReceiptTailHintProof.tla",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/ReceiptTailHintProof.tla",
+      "bytes": 1864,
+      "sha256": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c"
+    },
+    {
+      "name": "proof-draft/invocation.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/invocation.json",
+      "bytes": 708,
+      "sha256": "37501a2719551c5df015d88c281e3d890eb2ac1255e200638c917e1b21e813ad"
+    },
+    {
+      "name": "proof-draft/live.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/live.json",
+      "bytes": 17,
+      "sha256": "2756c1e8361d3d70d5b6c20e9861079827ddfa5fc3841348838ccfea22ae94f6"
+    },
+    {
+      "name": "proof-draft/proof.log",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/proof.log",
+      "bytes": 280,
+      "sha256": "f0e12886aa03a9377116f4cd755c62213f7ab1f96866af006df18aba8513ebd6"
+    },
+    {
+      "name": "proof-draft/terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-proof-draft-20260914-first/terminal.json",
+      "bytes": 96,
+      "sha256": "ec0a5a9a494d8bb8f005283de0f104e0c3855b70411c0771c9f189ce27c7447a"
+    },
+    {
+      "name": "source-checks/cache-clean.stderr",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/cache-clean.stderr",
+      "bytes": 35993,
+      "sha256": "a8e9b65a1e0670e665e20bc1f160053d3643740ba6a26d1db8eda2c839fe5f97"
+    },
+    {
+      "name": "source-checks/cache-clean.stdout",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-checks/cache-metadata.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/cache-metadata.json",
+      "bytes": 28279,
+      "sha256": "aeb477c65206dc6e5ea3364f5f9583c00dc9336aa7821fefc0645d439bc8f378"
+    },
+    {
+      "name": "source-checks/cache-metadata.log",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-checks/cache-safety.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/cache-safety.json",
+      "bytes": 50308,
+      "sha256": "46e0d422730a3095c45d48d46b68e706564d954b01dada862f6fcb15af84a979"
+    },
+    {
+      "name": "source-checks/clippy.stderr",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/clippy.stderr",
+      "bytes": 83338,
+      "sha256": "3ed6a514bfa925c5577cef35b1605634d8038958b83c20012419299e7644696a"
+    },
+    {
+      "name": "source-checks/clippy.stdout",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-checks/commands.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/commands.json",
+      "bytes": 1246,
+      "sha256": "f5b889390943b4bac134a816ffb853ac4dda8c12e84b0cacc3e7e2d1d2c778cb"
+    },
+    {
+      "name": "source-checks/compile-tests.stderr",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/compile-tests.stderr",
+      "bytes": 104568,
+      "sha256": "a28e15cfecf6a1c4b6ef254e449e7686e3a25f0c1cf5a7c9d2764ad1e99b92e3"
+    },
+    {
+      "name": "source-checks/compile-tests.stdout",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/compile-tests.stdout",
+      "bytes": 224938,
+      "sha256": "5fffe3bf12b416efad5b47a610e7900faf0be06eebd81b9edab934562b186236"
+    },
+    {
+      "name": "source-checks/experimental-check.stderr",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/experimental-check.stderr",
+      "bytes": 270836,
+      "sha256": "e9b41d96d49c77f672e20615a734c00e860c647416ae33467a8b9384b6f81718"
+    },
+    {
+      "name": "source-checks/experimental-check.stdout",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/experimental-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-checks/format.stderr",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-checks/format.stdout",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-checks/raft-compile.stderr",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/raft-compile.stderr",
+      "bytes": 292193,
+      "sha256": "748570772ce638e09f515a75a5730d236ad2073860284bf78b0e30294c7e6d9e"
+    },
+    {
+      "name": "source-checks/raft-compile.stdout",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/raft-compile.stdout",
+      "bytes": 202004,
+      "sha256": "364cfd919f231c87d4ab5569a6f07a57bc65c649cafd1317777fd6f24c14fa5b"
+    },
+    {
+      "name": "source-checks/raft-driver-tests.stderr",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/raft-driver-tests.stderr",
+      "bytes": 7310,
+      "sha256": "553551ff4938d3ff722d101a712ebffe8f4083e11490963be106bc9bc7f87595"
+    },
+    {
+      "name": "source-checks/raft-driver-tests.stdout",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/raft-driver-tests.stdout",
+      "bytes": 5100,
+      "sha256": "ef25f56cbfdd6318a7e52d699eb66c4e6615d003d1eba0d83aba9f5d12e16874"
+    },
+    {
+      "name": "source-checks/result.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/result.json",
+      "bytes": 5388,
+      "sha256": "50fbb8f0b940e01b8da7f7e3d0ee46be56de2c296b1cd00869370fe125eb03f3"
+    },
+    {
+      "name": "source-checks/source-after.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/source-after.json",
+      "bytes": 98198,
+      "sha256": "a996332722097887450dfb580439cda9b80abe15c9c90899ef98ac5708c6fd81"
+    },
+    {
+      "name": "source-checks/source-before.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/source-before.json",
+      "bytes": 98198,
+      "sha256": "a996332722097887450dfb580439cda9b80abe15c9c90899ef98ac5708c6fd81"
+    },
+    {
+      "name": "source-checks/workspace-tests.stderr",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/workspace-tests.stderr",
+      "bytes": 19480,
+      "sha256": "907480784445d4f11ebf5689a3aa59af3c62121e7a7a11ce287a702528c1867d"
+    },
+    {
+      "name": "source-checks/workspace-tests.stdout",
+      "source": "/tmp/kv9-receipt-tail-hint-source-20260914-first/workspace-tests.stdout",
+      "bytes": 71849,
+      "sha256": "b3eacd53d7d794f132d48eb6164358cb41bd265fa75bb68c446d7e184fed8902"
+    },
+    {
+      "name": "source-root/committed-proof-binding.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-root-20260914-first/committed-proof-binding.json",
+      "bytes": 366,
+      "sha256": "2fd211e267e83ad47557183f9b80e17d20f2cd2ae2961c1b150a80b5a4898770"
+    },
+    {
+      "name": "source-root/invocation.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-root-20260914-first/invocation.json",
+      "bytes": 491,
+      "sha256": "8d142ea2e5decb3b29fb88ed63e76b6d671f71673a23d9805a803bf51d89a694"
+    },
+    {
+      "name": "source-root/result.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-root-20260914-first/result.json",
+      "bytes": 3323,
+      "sha256": "92f724b1d5689e7e13c215d9d9d7ce614e928bab8f77cbd234e459408729b6c0"
+    },
+    {
+      "name": "source-root/source.log",
+      "source": "/tmp/kv9-receipt-tail-hint-source-root-20260914-first/source.log",
+      "bytes": 143,
+      "sha256": "8ab4ddd32a3799321f89ef36b68dbfecdeacb305c1b471b8d38ff66ad2e6208f"
+    },
+    {
+      "name": "source-root/tool-terminal.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-root-20260914-first/tool-terminal.json",
+      "bytes": 155,
+      "sha256": "e751cb534132267ea2c1e456e7913cfb8461a9b92454ea206aff2edf94af3e13"
+    },
+    {
+      "name": "source-preparation/check-source.diff",
+      "source": "/tmp/kv9-receipt-tail-hint-source-preparation-20260914-first/check-source.diff",
+      "bytes": 2392,
+      "sha256": "9ceec157faa5b5b2a6fa810bef069860b146b698355a89c10ed6cd49b5b6fb90"
+    },
+    {
+      "name": "source-preparation/check-source.py",
+      "source": "/tmp/kv9-receipt-tail-hint-source-preparation-20260914-first/check-source.py",
+      "bytes": 4309,
+      "sha256": "8c0e134d4c1ec74707b9f3970fcab1256d14c9335d3c76ed0b30f22bb31173cc"
+    },
+    {
+      "name": "source-preparation/lineage.json",
+      "source": "/tmp/kv9-receipt-tail-hint-source-preparation-20260914-first/lineage.json",
+      "bytes": 272,
+      "sha256": "f145d7b82a4af38a8febffc4a31f48996c9fad6be46dd4a216a8850e59e13e7a"
+    },
+    {
+      "name": "source-preparation/original.py",
+      "source": "/tmp/kv9-receipt-tail-hint-source-preparation-20260914-first/original.py",
+      "bytes": 4310,
+      "sha256": "d3787692c56ef16868b5a8080365d383d0baa4f4751f60d057f3940dc65e1ce1"
+    }
+  ],
+  "total_bytes": 2042035
+}

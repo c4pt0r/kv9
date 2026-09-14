@@ -1,0 +1,138 @@
+{
+  "complete": true,
+  "argv": [
+    "python3",
+    "-B",
+    "/tmp/kv9-receipt-tail-hint-source-preparation-20260914-first/check-source.py",
+    "--expected-revision",
+    "a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9"
+  ],
+  "script_sha256": "8c0e134d4c1ec74707b9f3970fcab1256d14c9335d3c76ed0b30f22bb31173cc",
+  "initial_available_bytes": 122614931456,
+  "minimum_available_bytes": 103079215104,
+  "maximum_decrease_bytes": 8589934592,
+  "started_ns": 1789423256530705178,
+  "samples": [
+    {
+      "observed_ns": 1789423256531057858,
+      "available_bytes": 122614927360
+    },
+    {
+      "observed_ns": 1789423261531203075,
+      "available_bytes": 128475115520
+    },
+    {
+      "observed_ns": 1789423266531325933,
+      "available_bytes": 128296394752
+    },
+    {
+      "observed_ns": 1789423271531469443,
+      "available_bytes": 128110833664
+    },
+    {
+      "observed_ns": 1789423276531564003,
+      "available_bytes": 127992979456
+    },
+    {
+      "observed_ns": 1789423281531666069,
+      "available_bytes": 127960186880
+    },
+    {
+      "observed_ns": 1789423286531796150,
+      "available_bytes": 127343386624
+    },
+    {
+      "observed_ns": 1789423291531914620,
+      "available_bytes": 126760529920
+    },
+    {
+      "observed_ns": 1789423296532014704,
+      "available_bytes": 126563299328
+    },
+    {
+      "observed_ns": 1789423301532113086,
+      "available_bytes": 125677355008
+    },
+    {
+      "observed_ns": 1789423306532258455,
+      "available_bytes": 124413583360
+    },
+    {
+      "observed_ns": 1789423311532389526,
+      "available_bytes": 123446841344
+    },
+    {
+      "observed_ns": 1789423316532511379,
+      "available_bytes": 122440482816
+    },
+    {
+      "observed_ns": 1789423321532603034,
+      "available_bytes": 121753554944
+    },
+    {
+      "observed_ns": 1789423326532704808,
+      "available_bytes": 121753325568
+    },
+    {
+      "observed_ns": 1789423331532788805,
+      "available_bytes": 121753505792
+    },
+    {
+      "observed_ns": 1789423336532889040,
+      "available_bytes": 121753296896
+    },
+    {
+      "observed_ns": 1789423341532973002,
+      "available_bytes": 121752788992
+    },
+    {
+      "observed_ns": 1789423346533069323,
+      "available_bytes": 121752219648
+    },
+    {
+      "observed_ns": 1789423351533173455,
+      "available_bytes": 121751871488
+    },
+    {
+      "observed_ns": 1789423356533266001,
+      "available_bytes": 121752502272
+    },
+    {
+      "observed_ns": 1789423361533387928,
+      "available_bytes": 121752559616
+    },
+    {
+      "observed_ns": 1789423366533482208,
+      "available_bytes": 121647325184
+    },
+    {
+      "observed_ns": 1789423371533582305,
+      "available_bytes": 121520189440
+    },
+    {
+      "observed_ns": 1789423376533677596,
+      "available_bytes": 121520189440
+    },
+    {
+      "observed_ns": 1789423381533765769,
+      "available_bytes": 121510895616
+    },
+    {
+      "observed_ns": 1789423386533865768,
+      "available_bytes": 121328812032
+    },
+    {
+      "observed_ns": 1789423391533969708,
+      "available_bytes": 121046814720
+    },
+    {
+      "observed_ns": 1789423396534077208,
+      "available_bytes": 120925622272
+    }
+  ],
+  "pid": 1080341,
+  "exit_code": 0,
+  "pid_absent": true,
+  "ended_ns": 1789423400702932612,
+  "final_available_bytes": 120766885888
+}

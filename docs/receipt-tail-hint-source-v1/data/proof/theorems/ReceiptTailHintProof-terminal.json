@@ -1,0 +1,19 @@
+{
+  "label": "ReceiptTailHintProof",
+  "argv": [
+    "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+    "--strict",
+    "--nofp",
+    "--threads",
+    "1",
+    "--cache-dir",
+    "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-ReceiptTailHintProof",
+    "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/ReceiptTailHintProof.tla"
+  ],
+  "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems",
+  "started_ns": 1789423120996051153,
+  "pid": 1069973,
+  "exit_code": 0,
+  "ended_ns": 1789423121309845865,
+  "pid_absent": true
+}

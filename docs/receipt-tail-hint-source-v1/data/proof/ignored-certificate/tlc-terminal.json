@@ -1,0 +1,26 @@
+{
+  "label": "tlc",
+  "argv": [
+    "java",
+    "-Xmx512m",
+    "-cp",
+    "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+    "tlc2.TLC",
+    "-tool",
+    "-workers",
+    "1",
+    "-fp",
+    "0",
+    "-metadir",
+    "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/states",
+    "-config",
+    "Run.cfg",
+    "ReceiptTailHint.tla"
+  ],
+  "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate",
+  "started_ns": 1789423123155261423,
+  "pid": 1070412,
+  "exit_code": 12,
+  "ended_ns": 1789423123719374034,
+  "pid_absent": true
+}

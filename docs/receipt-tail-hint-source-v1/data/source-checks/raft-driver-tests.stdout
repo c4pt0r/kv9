@@ -1,0 +1,79 @@
+
+running 49 tests
+test driver::applied_ring::tests::a_gap_never_turns_the_hint_neighbor_into_a_receipt ... ok
+test driver::applied_ring::tests::tail_hint_preserves_all_receipts_across_dense_runs_and_gaps ... ok
+test driver::applied_ring::tests::indexed_receipts_preserve_vector_eviction_gaps_and_extreme_indexes ... ok
+test driver::applied_ring::tests::duplicate_or_reordered_receipts_keep_the_original_first_match ... ok
+test driver::lease_read::tests::a_valid_lease_cannot_bypass_the_existing_read_admission_limit ... ok
+test driver::lease_read::tests::expiry_after_snapshot_capture_discards_local_authority_and_queues_fallback ... ok
+test driver::lease_read::tests::expired_isolated_leader_times_out_without_returning_local_data ... ok
+test driver::lease_read::tests::a_read_ticket_from_another_peer_installation_cannot_authorize_a_view ... ok
+test driver::lease_read::tests::owner_and_apply_contention_transfer_one_slot_without_blocking_the_reader ... ok
+test driver::tests::a_fence_rejected_write_reports_its_verdict_not_success ... ok
+test driver::tests::a_poisoned_driver_answers_failed_not_unconfirmed ... ok
+test driver::tests::a_position_taken_by_another_leaders_command_is_replaced_not_applied ... ok
+test driver::tests::a_proposal_replaced_by_an_election_barrier_reports_replaced_not_deadline ... ok
+test driver::lease_read::tests::fresh_commit_frontier_cannot_authorize_an_unapplied_view ... ok
+test driver::tests::an_index_below_the_ring_floor_is_unconfirmed_not_replaced ... ok
+test driver::lease_read::tests::valid_lease_returns_the_exact_owned_view_without_a_read_quorum_round ... ok
+test driver::tests::apply_lag_requires_stable_commit_and_term_and_a_compatible_watermark ... ok
+test driver::tests::async_apply_capacity_is_reserved_before_any_proposal ... ok
+test driver::tests::async_apply_eviction_is_unknown_even_when_the_watermark_passed ... ok
+test driver::tests::async_apply_preserves_term_fence_manifest_and_fatal_outcomes ... ok
+test driver::tests::async_apply_registration_after_publication_wakes_an_idle_owner ... ok
+test driver::tests::async_apply_requires_application_and_preserves_the_exact_receipt ... ok
+test driver::tests::async_read_cannot_succeed_when_a_confirmed_ready_fails_apply ... ok
+test driver::tests::async_read_deferred_before_election_commit_progresses_without_a_tick ... ok
+test driver::tests::async_read_refuses_actual_follower_and_shared_context_counter_never_wraps ... ok
+test driver::tests::async_read_waits_for_unified_apply_and_keeps_its_exact_context ... ok
+test driver::tests::background_pump_records_returned_waits_and_no_first_spacing_sample ... ok
+test driver::tests::completion_notifications_require_the_exact_applied_receipt ... ok
+test driver::tests::control_healthy_driver_applies_and_reports_success ... ok
+test driver::lease_read::tests::stopped_and_failed_owners_never_authorize_a_new_lease_view ... ok
+test driver::tests::deferred_read_admission_respects_the_original_deadline ... ok
+test driver::tests::driver_applied_advances_through_all_three_entry_kinds ... ok
+test driver::tests::driver_applied_catches_up_across_restart_by_replay ... ok
+test driver::tests::driver_applied_never_advances_past_a_failed_item ... ok
+test driver::tests::failed_apply_poisons_the_driver ... ok
+test driver::tests::failed_background_pump_records_error_without_another_idle_wait ... ok
+test driver::tests::fatal_application_wakes_a_parked_completion_waiter ... ok
+test driver::tests::parked_owner_serves_a_read_before_its_next_tick_and_refuses_a_second_owner ... ok
+test driver::tests::pump_service_finishes_only_after_the_actual_transport_drain_returns ... ok
+test driver::tests::read_barrier_on_a_follower_is_typed_not_leader ... ok
+test driver::tests::read_barrier_on_a_healthy_leader_covers_committed_writes ... ok
+test driver::tests::read_barrier_survives_submission_before_current_term_commit ... ok
+test driver::tests::sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads ... ok
+test driver::tests::transport_and_campaign_wake_every_voter_without_election_tick_polling ... ok
+test driver::tests::undecodable_committed_entry_poisons_the_driver ... ok
+test driver::tests::watermark_publication_refuses_a_regressing_candidate ... ok
+test driver::tests::a_read_barrier_waits_for_apply_not_just_confirmation ... ok
+test driver::tests::deferred_read_admission_refuses_a_deposed_leader ... ok
+test driver::tests::an_isolated_leader_cannot_confirm_a_read_barrier ... ok
+
+test result: ok. 49 passed; 0 failed; 0 ignored; 0 measured; 205 filtered out; finished in 1.13s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+

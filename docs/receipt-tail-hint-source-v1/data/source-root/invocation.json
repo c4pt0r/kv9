@@ -1,0 +1,16 @@
+{
+  "complete": false,
+  "argv": [
+    "python3",
+    "-B",
+    "/tmp/kv9-receipt-tail-hint-source-preparation-20260914-first/check-source.py",
+    "--expected-revision",
+    "a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9"
+  ],
+  "script_sha256": "8c0e134d4c1ec74707b9f3970fcab1256d14c9335d3c76ed0b30f22bb31173cc",
+  "initial_available_bytes": 122614931456,
+  "minimum_available_bytes": 103079215104,
+  "maximum_decrease_bytes": 8589934592,
+  "started_ns": 1789423256530705178,
+  "samples": []
+}

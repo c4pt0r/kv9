@@ -1,0 +1,26 @@
+{
+  "label": "tlc",
+  "argv": [
+    "java",
+    "-Xmx512m",
+    "-cp",
+    "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+    "tlc2.TLC",
+    "-tool",
+    "-workers",
+    "1",
+    "-fp",
+    "0",
+    "-metadir",
+    "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/states",
+    "-config",
+    "Run.cfg",
+    "ReceiptTailHint.tla"
+  ],
+  "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard",
+  "started_ns": 1789423122590306227,
+  "pid": 1070297,
+  "exit_code": 12,
+  "ended_ns": 1789423123154587413,
+  "pid_absent": true
+}

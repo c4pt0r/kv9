@@ -1,0 +1,271 @@
+{
+  "complete": true,
+  "source_binding": {
+    "files": {
+      "crates/raft/src/driver.rs": "b196d8af3450f1769b7d49b734572ad403f18e806fd0144ba34263d0496e63a1",
+      "crates/raft/src/driver/applied_ring.rs": "c8cc68801388fa398e7addfd8b64b1eb91531aa69d9acd598f43b5a8b18fa2bf",
+      "scripts/check-receipt-tail-hint-proof.py": "5f9f712aee73eeacca1cf7c47050f60ccb55b09e6124e83e1f2411bf0dde2bae",
+      "scripts/check-tlaps.py": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8",
+      "scripts/check-tla.py": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70",
+      "scripts/ProofAudit.java": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a",
+      "proofs/tlaps/receipt-tail-hint/AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+      "proofs/tlaps/receipt-tail-hint/AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b",
+      "proofs/tlaps/receipt-tail-hint/ReceiptTailHint.cfg": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0",
+      "proofs/tlaps/receipt-tail-hint/ReceiptTailHint.tla": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b",
+      "proofs/tlaps/receipt-tail-hint/ReceiptTailHintProof.tla": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c",
+      "proofs/tlaps/receipt-tail-hint/inventory.json": "6314f3925214209e73c6c20dba30fb0aa49513b9db3873a241fd4544937683d2"
+    },
+    "parent": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+    "surrounding_driver_byte_identical": true
+  },
+  "commands": [
+    {
+      "label": "compile-auditor",
+      "argv": [
+        "javac",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "-d",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/auditor",
+        "/tmp/kv9-receipt-tail-hint-20260914-first/scripts/ProofAudit.java"
+      ],
+      "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first",
+      "started_ns": 1789423114846583329,
+      "pid": 1069328,
+      "exit_code": 0,
+      "ended_ns": 1789423115211232602,
+      "pid_absent": true
+    },
+    {
+      "label": "AppliedReceiptsProof",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+        "--strict",
+        "--nofp",
+        "--threads",
+        "1",
+        "--cache-dir",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-AppliedReceiptsProof",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/AppliedReceiptsProof.tla"
+      ],
+      "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems",
+      "started_ns": 1789423115376762970,
+      "pid": 1069455,
+      "exit_code": 0,
+      "ended_ns": 1789423120995650113,
+      "pid_absent": true
+    },
+    {
+      "label": "ReceiptTailHintProof",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+        "--strict",
+        "--nofp",
+        "--threads",
+        "1",
+        "--cache-dir",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/cache-ReceiptTailHintProof",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems/ReceiptTailHintProof.tla"
+      ],
+      "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/theorems",
+      "started_ns": 1789423120996051153,
+      "pid": 1069973,
+      "exit_code": 0,
+      "ended_ns": 1789423121309845865,
+      "pid_absent": true
+    },
+    {
+      "label": "tlc",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1/states",
+        "-config",
+        "Run.cfg",
+        "ReceiptTailHint.tla"
+      ],
+      "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-1",
+      "started_ns": 1789423121310329890,
+      "pid": 1070134,
+      "exit_code": 0,
+      "ended_ns": 1789423121924661596,
+      "pid_absent": true
+    },
+    {
+      "label": "tlc",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2/states",
+        "-config",
+        "Run.cfg",
+        "ReceiptTailHint.tla"
+      ],
+      "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/capacity-2",
+      "started_ns": 1789423121925413482,
+      "pid": 1070181,
+      "exit_code": 0,
+      "ended_ns": 1789423122589757131,
+      "pid_absent": true
+    },
+    {
+      "label": "tlc",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard/states",
+        "-config",
+        "Run.cfg",
+        "ReceiptTailHint.tla"
+      ],
+      "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/missing-index-guard",
+      "started_ns": 1789423122590306227,
+      "pid": 1070297,
+      "exit_code": 12,
+      "ended_ns": 1789423123154587413,
+      "pid_absent": true
+    },
+    {
+      "label": "tlc",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate/states",
+        "-config",
+        "Run.cfg",
+        "ReceiptTailHint.tla"
+      ],
+      "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/ignored-certificate",
+      "started_ns": 1789423123155261423,
+      "pid": 1070412,
+      "exit_code": 12,
+      "ended_ns": 1789423123719374034,
+      "pid_absent": true
+    },
+    {
+      "label": "tlc",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/states",
+        "-config",
+        "Run.cfg",
+        "ReceiptTailHint.tla"
+      ],
+      "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored",
+      "started_ns": 1789423123719949560,
+      "pid": 1070460,
+      "exit_code": 0,
+      "ended_ns": 1789423124384436690,
+      "pid_absent": true
+    }
+  ],
+  "cases": [
+    {
+      "theorems": 18,
+      "obligations": 158,
+      "output_rejection_controls": 6
+    },
+    {
+      "name": "capacity-1",
+      "expected_violation": null,
+      "statistics": {
+        "generated": 1831,
+        "distinct": 61,
+        "queued": 0
+      }
+    },
+    {
+      "name": "capacity-2",
+      "expected_violation": null,
+      "statistics": {
+        "generated": 38731,
+        "distinct": 1291,
+        "queued": 0
+      }
+    },
+    {
+      "name": "missing-index-guard",
+      "expected_violation": "RTHRefinement",
+      "statistics": {
+        "generated": 44,
+        "distinct": 44,
+        "queued": 41
+      }
+    },
+    {
+      "name": "ignored-certificate",
+      "expected_violation": "RTHRefinement",
+      "statistics": {
+        "generated": 33,
+        "distinct": 33,
+        "queued": 30
+      }
+    },
+    {
+      "name": "restored",
+      "expected_violation": null,
+      "statistics": {
+        "generated": 38731,
+        "distinct": 1291,
+        "queued": 0
+      }
+    },
+    {
+      "name": "proof-hole",
+      "semantic_rejection": "proof hole: ReceiptTailHintProof.RTHLookupAlways"
+    },
+    {
+      "name": "false-axiom",
+      "semantic_rejection": "unapproved module assumption: ReceiptTailHint"
+    }
+  ],
+  "scope": "Conditional receipt representation and lookup refinement; not whole Rust/Raft or performance acceptance.",
+  "source_unchanged": true,
+  "ended_ns": 1789423124693099123
+}

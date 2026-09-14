@@ -1,0 +1,26 @@
+{
+  "label": "tlc",
+  "argv": [
+    "java",
+    "-Xmx512m",
+    "-cp",
+    "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+    "tlc2.TLC",
+    "-tool",
+    "-workers",
+    "1",
+    "-fp",
+    "0",
+    "-metadir",
+    "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored/states",
+    "-config",
+    "Run.cfg",
+    "ReceiptTailHint.tla"
+  ],
+  "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first/restored",
+  "started_ns": 1789423123719949560,
+  "pid": 1070460,
+  "exit_code": 0,
+  "ended_ns": 1789423124384436690,
+  "pid_absent": true
+}

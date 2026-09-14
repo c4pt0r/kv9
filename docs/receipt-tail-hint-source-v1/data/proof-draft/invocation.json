@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+    "--threads",
+    "1",
+    "--nofp",
+    "--strict",
+    "ReceiptTailHintProof.tla"
+  ],
+  "started_ns": 1789422940989859491,
+  "sources": {
+    "ReceiptTailHint.cfg": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0",
+    "ReceiptTailHintProof.tla": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c",
+    "ReceiptTailHint.tla": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b",
+    "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+    "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+  }
+}

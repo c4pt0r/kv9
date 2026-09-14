@@ -1,0 +1,38 @@
+--- original.py
++++ check-source.py
+@@ -3,8 +3,8 @@
+ from pathlib import Path
+ import argparse,importlib.util,json,os,re,signal,time
+ 
+-root=Path('/tmp/kv9-raft-fnv-interleave-writer-20260914-first')
+-out=Path('/tmp/kv9-fnv-writer-source-20260914-first')
++root=Path('/tmp/kv9-receipt-tail-hint-20260914-first')
++out=Path('/tmp/kv9-receipt-tail-hint-source-20260914-first')
+ TARGET='/home/dongxu/kv9/target'
+ 
+ def main():
+@@ -13,13 +13,13 @@
+  assert re.fullmatch('[0-9a-f]{40}',args.expected_revision),'actual frozen source HEAD required'
+  out.mkdir(exist_ok=False)
+  os.environ.update(CARGO_TARGET_DIR=TARGET,CARGO_BUILD_JOBS='4',CARGO_NET_OFFLINE='true',CARGO_TERM_VERBOSE='true')
+- spec=importlib.util.spec_from_file_location('fnv_builder',root/'scripts/build-workload.py')
++ spec=importlib.util.spec_from_file_location('receipt_builder',root/'scripts/build-workload.py')
+  builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
+  def save(name,data):(out/name).write_text(json.dumps(data,indent=2)+'\n')
+  before=None;result=dict(complete=False,commands=[],source_root=str(root),expected_revision=args.expected_revision)
+  commands=[
+   ('raft-compile',['cargo','test','--locked','-p','kv9-raft','--no-run','--message-format=json-render-diagnostics'],True),
+-  ('raft-storage-tests',['cargo','test','--locked','-p','kv9-raft','storage::','--','--test-threads=4'],False),
++  ('raft-driver-tests',['cargo','test','--locked','-p','kv9-raft','driver::','--','--test-threads=4'],False),
+   ('compile-tests',['cargo','test','--locked','--workspace','--no-run','--message-format=json-render-diagnostics'],True),
+   ('workspace-tests',['cargo','test','--locked','--workspace','--','--test-threads=4'],False),
+   ('format',['cargo','fmt','--all','--','--check'],False),
+@@ -41,7 +41,7 @@
+      with (out/(name+'.stdout')).open('x') as stdout,(out/(name+'.stderr')).open('x') as stderr:
+       row['exit_code']=cache.run(argv,stdout=stdout,stderr=stderr,timeout=1200).returncode
+      if check:cache.check_artifacts(out/(name+'.stdout'))
+-     if name in ('raft-storage-tests','workspace-tests'):
++     if name in ('raft-driver-tests','workspace-tests'):
+       text=(out/(name+'.stdout')).read_text()
+       matched=re.findall(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;',text)
+       assert matched and all(entry[1]=='0' for entry in matched),matched

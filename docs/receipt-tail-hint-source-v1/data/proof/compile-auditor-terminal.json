@@ -1,0 +1,17 @@
+{
+  "label": "compile-auditor",
+  "argv": [
+    "javac",
+    "-cp",
+    "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+    "-d",
+    "/tmp/kv9-receipt-tail-hint-proof-20260914-first/auditor",
+    "/tmp/kv9-receipt-tail-hint-20260914-first/scripts/ProofAudit.java"
+  ],
+  "cwd": "/tmp/kv9-receipt-tail-hint-proof-20260914-first",
+  "started_ns": 1789423114846583329,
+  "pid": 1069328,
+  "exit_code": 0,
+  "ended_ns": 1789423115211232602,
+  "pid_absent": true
+}
