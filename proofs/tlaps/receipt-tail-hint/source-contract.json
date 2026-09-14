@@ -1,0 +1,39 @@
+{
+  "parent": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+  "reverse_driver_edits": [
+    [
+      "\n\nmod applied_ring;\nuse applied_ring::AppliedRing;",
+      ""
+    ],
+    [
+      "applied: Mutex<AppliedRing>",
+      "applied: Mutex<Vec<RingEntry>>"
+    ],
+    [
+      "applied: Mutex::new(AppliedRing::default())",
+      "applied: Mutex::new(Vec::new())"
+    ],
+    [
+      "applied.find_index(at.index.0)",
+      "applied.iter().find(|e| e.index == at.index.0)"
+    ],
+    [
+      "fn push_ring(applied: &mut AppliedRing, index: u64, term: u64, outcome: crate::ApplyOutcome) {\n    applied.push(RingEntry {\n        index,\n        term,\n        outcome,\n    });\n}",
+      "fn push_ring(applied: &mut Vec<RingEntry>, index: u64, term: u64, outcome: crate::ApplyOutcome) {\n    applied.push(RingEntry {\n        index,\n        term,\n        outcome,\n    });\n    let len = applied.len();\n    if len > APPLIED_RING {\n        applied.drain(..len - APPLIED_RING);\n    }\n}"
+    ]
+  ],
+  "files": {
+    "crates/raft/src/driver.rs": "b196d8af3450f1769b7d49b734572ad403f18e806fd0144ba34263d0496e63a1",
+    "crates/raft/src/driver/applied_ring.rs": "c8cc68801388fa398e7addfd8b64b1eb91531aa69d9acd598f43b5a8b18fa2bf",
+    "scripts/check-receipt-tail-hint-proof.py": "5f9f712aee73eeacca1cf7c47050f60ccb55b09e6124e83e1f2411bf0dde2bae",
+    "scripts/check-tlaps.py": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8",
+    "scripts/check-tla.py": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70",
+    "scripts/ProofAudit.java": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a",
+    "proofs/tlaps/receipt-tail-hint/AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+    "proofs/tlaps/receipt-tail-hint/AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b",
+    "proofs/tlaps/receipt-tail-hint/ReceiptTailHint.cfg": "bde0bb88a684a488c194e10f178a5c28f7ded8a745fd04a31dada20d0f4bd3d0",
+    "proofs/tlaps/receipt-tail-hint/ReceiptTailHint.tla": "65aa061817b6992342bd91c1b6fc6407c5ac6644093b1b6d465bafc70787011b",
+    "proofs/tlaps/receipt-tail-hint/ReceiptTailHintProof.tla": "cea06f8fb17b72c0217543e605d7895d92c4090cca2a9e20562b9a1304da275c",
+    "proofs/tlaps/receipt-tail-hint/inventory.json": "6314f3925214209e73c6c20dba30fb0aa49513b9db3873a241fd4544937683d2"
+  }
+}
