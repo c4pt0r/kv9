@@ -39,7 +39,9 @@ and mixed batch throughput 16.898%, with lower relevant p99 intervals.
 Its [actual Chaos Mesh qualification](WRITE-CRC-CHAOS.md) remains separate.
 
 Those measurements belong to the retained e748 executable, using three voters
-on one shared host with volatile tmpfs WAL. The current main integration needs
-its own source/build and ordinary recovery acceptance before publication;
-its new binary does not inherit the measured QPS by assertion. All validation
-runs locally. See the [write development order](WRITE-PERFORMANCE-NEXT.md).
+on one shared host with volatile tmpfs WAL. The [main integration](CRC32-SLICING-INTEGRATION.md)
+at `bd42e60` now passes its own 789-test, 47-statement, clean default-release,
+ordinary recovery and actual 21-window Chaos Mesh qualification. Complete
+histories, archive readback and scoped cleanup pass. This new binary has no
+newly measured QPS result. All validation runs locally. See the
+[write development order](WRITE-PERFORMANCE-NEXT.md).

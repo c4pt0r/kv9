@@ -29,8 +29,12 @@ now retains 84.59 GB and leaves about 117 GiB free at the post-campaign check.
 These observations supersede older available-space estimates below; they do
 not reserve another campaign. CRC improves loaded batch writes 17.119% and
 mixed batch throughput 16.898%, while the [vectored screen](WRITE-SEGMENT-VECTORED-PERFORMANCE.md)
-found no write gain. Prioritize exact-main CRC integration next. Recheck capacity
-before the still-unmeasured frame-buffer screen; keep all original guards.
+found no write gain. The [exact-main CRC integration](CRC32-SLICING-INTEGRATION.md)
+now passes source-bound proof, 789 tests/doctests, a clean default release,
+ordinary recovery and all 21 actual Chaos windows with complete independent
+histories and cleanup. It adds no new QPS measurement. Reapply the frame-buffer
+experiment to this CRC baseline, qualify that source and recheck capacity before
+its paired write screen; keep all original guards.
 
 ## Comparison contract
 
@@ -148,11 +152,14 @@ original failed audit and schema repair remain retained without workload reruns.
    separate. The [tools](WRITE-CRC-FULL-REGRESSION-TOOLS.md) retain 35 runtime
    and 13 reporting controls; full runtime, retained WAL and reporting acceptance
    now pass. The capacity blocker for this completed run is resolved.
-   Next integrate only CRC into current main and qualify that exact integration
-   with source-bound proof, local build/default/recovery checks. The measured
-   e748 binary already has applicable ordinary recovery and actual Chaos evidence;
-   do not attribute its measured QPS to a different main binary. Preserve every
-   Raft/sync/response fence and the remaining industrial proof/fault gates.
+   Completed: [CRC integration into main `bd42e60`](CRC32-SLICING-INTEGRATION.md),
+   with 789 tests/doctests (23 existing ignored), 47 distinct Lean statements,
+   clean default release and 353 ordinary-recovery operations (325 OK / 28 unknown).
+   Its own 21-window Chaos campaign retains 11,316 operations: 10,683 OK /
+   602 unknown / 31 refused. Independent full histories, four fresh final drains,
+   all 31 observed server lifetime exits, full archive readback and scoped cleanup
+   pass. Its new binary has not been timed; the e748 performance results remain
+   separate. Every Raft/sync/response fence and remaining industrial gate stays.
 
 5. Continue with measured checksum, allocation, batching and replication costs.
    The isolated [single-buffer Raft WAL experiment `01d128f`](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
@@ -170,8 +177,11 @@ original failed audit and schema repair remain retained without workload reruns.
    passes all 28 local driver/auditor/smoke-schema controls. Eight smokes and
    sixteen timed cohorts remain unrun: the unchanged retention/restore scenario
    needs 170.15 GB available against 120.13 GB observed, a 50.02 GB gap.
-   Resolve capacity, run the complete comparison, then qualify full regressions.
-   Keep these gates separate from CRC; no frame-buffer speedup is established.
+   These historical reservations apply to that original standalone candidate;
+   no frame-buffer speedup is established. Reapply it to the now-qualified CRC
+   main baseline, recheck proof/source/recovery and actual Chaos on the resulting
+   source, then compare that exact pair under freshly observed capacity. Do not
+   assume isolated gains compose or relabel old results as combined acceptance.
    The separate [segmented-WAL vectored-write candidate `cfd9c92`](https://github.com/c4pt0r/kv9/blob/cfd9c927f8ecd33974100f696e6b08b227d25a41/docs/WRITE-SEGMENT-VECTORED.md)
    now preserves the frame stream through a short-write-aware vectored loop.
    Three SMT checks, three countermodels, 714 tests/doctests, formatting and
@@ -191,9 +201,9 @@ original failed audit and schema repair remain retained without workload reruns.
    acceptance: 6,961,558 measured calls all succeed once. Loaded point throughput
    changes -0.612% and batch throughput -1.020%, with worse pooled p99 intervals.
    Keep the isolated candidate experimental; this screen establishes no write
-   gain and does not justify default promotion. Full CRC regressions now pass; next integrate CRC
-   into main, then run the still-unmeasured frame-buffer comparison with fresh
-   capacity qualification. Preserve the original vectored experiment for
+   gain and does not justify default promotion. Full CRC regressions and main
+   integration now pass; next qualify and measure frame-buffer on the integrated
+   CRC baseline with fresh capacity qualification. Preserve the original vectored experiment for
    a separately justified real-disk or combined-candidate study.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC

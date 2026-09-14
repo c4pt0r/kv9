@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/c4pt0r/kv9/issues/9",
+  "updated_at": "2026-09-14T17:38:14Z",
+  "body_bytes": 65532,
+  "body_sha256": "7ef4fa777a0bc2fc7b676e26beaef97474f26a972494b2bd2b505d33d17d3309",
+  "scope": "Exact original issue body before replacing accumulated progress notes with a current checkpoint. Original roadmap requirements and checkbox lines remain in the live issue."
+}
