@@ -1,9 +1,13 @@
 # CRC full regression tools: local controls qualified
 
+Update 2026-09-14: the [complete runtime and performance result](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md)
+now passes all 24 smokes, 48 timed cohorts, independent retained-WAL audit and
+reporting. The sections below preserve the earlier tool-qualification checkpoint.
+
 The [full regression plan](write-crc-full-regression-plan-v1/README.md) now has
 executable driver, auditor, smoke-reader and reporting derivatives. **48 local
-controls pass**: 35 runtime-tool controls and 13 reporting controls. No cohort
-has run, capacity remains unqualified, and the CRC candidate is not promoted.
+controls pass**: 35 runtime-tool controls and 13 reporting controls. At that checkpoint no cohort
+had run and capacity was unqualified. Default integration remains separate.
 
 The matrix retains selected `11113f6` versus CRC `e748620`, the exact retained
 server binaries and native v3 client `0be806d9`. It covers point and batch(64)

@@ -1,6 +1,6 @@
 # Write performance against three-copy Redis
 
-Updated: 2026-09-12. The current priority is write throughput and latency,
+Updated: 2026-09-14. The current priority is write throughput and latency,
 targeting Redis with one primary and two replicas. Read optimization is held at
 the selected ThinLTO/Safe ReadIndex baseline. The experimental lease work and
 its remaining clock/Chaos gates are retained; read parity is not claimed and is
@@ -16,14 +16,21 @@ historical benchmark payloads and Chaos/recovery evidence remain available.
 The initial Bun command required a package context; its successful retry is
 recorded separately. No RAID mount, Docker prune or hosted CI was needed.
 
-This supersedes the older free-space observations below. Available space now
-exceeds the 170.15 GB matched-comparison and 202.38 GB CRC empirical scenarios;
-it does not reserve both campaigns simultaneously or guarantee an unrun
-candidate's size. Recheck capacity before each campaign and retain every
-existing floor, cap and restore reserve. The subsequently completed vectored
-screen retained 45.49 GB and left approximately 162.67 GB available. Its
-[accepted result](WRITE-SEGMENT-VECTORED-PERFORMANCE.md) shows no write gain;
-prioritize CRC full regressions and refresh their capacity reservation first.
+The vectored screen subsequently retained 45.49 GB. Before full CRC regressions,
+native cleanup of unused default/ARM BuildKit caches reclaimed an additional
+**46,951,264,256 bytes**, raising available space from 162,362,454,016 to
+209,313,718,272 bytes. Images, containers, volumes, sources and historical
+benchmark/Chaos/recovery data were preserved. The corrected CRC whole-resident
+scenario required 203,271,221,248 available bytes; fresh smoke and timing
+capacity checks passed with the original floors and restore reserves.
+
+The [completed full CRC campaign](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md)
+now retains 84.59 GB and leaves about 117 GiB free at the post-campaign check.
+These observations supersede older available-space estimates below; they do
+not reserve another campaign. CRC improves loaded batch writes 17.119% and
+mixed batch throughput 16.898%, while the [vectored screen](WRITE-SEGMENT-VECTORED-PERFORMANCE.md)
+found no write gain. Prioritize exact-main CRC integration next. Recheck capacity
+before the still-unmeasured frame-buffer screen; keep all original guards.
 
 ## Comparison contract
 
@@ -129,21 +136,24 @@ original failed audit and schema repair remain retained without workload reruns.
    Its [actual 21-window Chaos histories](WRITE-CRC-CHAOS.md), independent audit
    and cleanup now pass: 9,833 complete operations, 600 unknowns and 28 refusals.
    Twenty-eight A/B environment controls and five summary arithmetic controls
-   pass. Next, qualify this improvement with full point/batch and mixed-read
-   regression coverage, applicable exact
-   source proofs, ordinary recovery and actual Chaos Mesh fault histories before
-   default promotion. Preserve loaded batch-write p99 and fixed-rate client-drop
-   limitations; an aggregate throughput gain alone is insufficient.
-   The [full regression preparation](write-crc-full-regression-plan-v1/README.md)
-   specifies 24 smokes and 48 timed native cohorts, with point/batch APIs,
-   0/50/100% reads, c1/c64 and two complete opposite orders. The [executable
-   tooling](WRITE-CRC-FULL-REGRESSION-TOOLS.md) now passes 35 runtime-tool and
-   13 reporting controls; the complete workload remains unrun. Its empirical
-   storage reservation is about 202.38 GB against 121.50 GB observed free,
-   leaving about 80.88 GB to qualify. This is a planning scenario, not a fit
-   guarantee or runtime-ready release. Keep all original caps/floors. The separate
-   frame-buffer source/release/recovery and actual Chaos gates now pass while
-   performance capacity is resolved.
+   pass. The [full regression campaign](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md)
+   now passes all 24 smokes and 48 timed cohorts, covering point/batch64,
+   0/50/100% reads, c1/c64 and both complete orders. All 35,103,005 measured
+   calls succeed once, without errors, unknowns or dropped slots. Loaded batch
+   writes reach 1,062,522.902 items/s (+17.119%), with p99 7.406–7.471 ms
+   versus 8.389–8.520 ms; point writes reach 139,532.275/s (+2.203%). Mixed
+   batch throughput improves 16.898%, with better separate read/write p99 in
+   both orders. Loaded pure GET changes -0.191%; no active operation has a
+   worse p99 bucket in either order. The earlier write-only results remain
+   separate. The [tools](WRITE-CRC-FULL-REGRESSION-TOOLS.md) retain 35 runtime
+   and 13 reporting controls; full runtime, retained WAL and reporting acceptance
+   now pass. The capacity blocker for this completed run is resolved.
+   Next integrate only CRC into current main and qualify that exact integration
+   with source-bound proof, local build/default/recovery checks. The measured
+   e748 binary already has applicable ordinary recovery and actual Chaos evidence;
+   do not attribute its measured QPS to a different main binary. Preserve every
+   Raft/sync/response fence and the remaining industrial proof/fault gates.
+
 5. Continue with measured checksum, allocation, batching and replication costs.
    The isolated [single-buffer Raft WAL experiment `01d128f`](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
    removes a body allocation/copy without changing frame bytes, checksums, sync
@@ -181,9 +191,9 @@ original failed audit and schema repair remain retained without workload reruns.
    acceptance: 6,961,558 measured calls all succeed once. Loaded point throughput
    changes -0.612% and batch throughput -1.020%, with worse pooled p99 intervals.
    Keep the isolated candidate experimental; this screen establishes no write
-   gain and does not justify default promotion. Next prioritize full CRC
-   regressions, then the still-unmeasured frame-buffer comparison, each with
-   fresh capacity qualification. Preserve the original vectored experiment for
+   gain and does not justify default promotion. Full CRC regressions now pass; next integrate CRC
+   into main, then run the still-unmeasured frame-buffer comparison with fresh
+   capacity qualification. Preserve the original vectored experiment for
    a separately justified real-disk or combined-candidate study.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
