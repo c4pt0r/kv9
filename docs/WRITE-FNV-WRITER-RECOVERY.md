@@ -4,8 +4,9 @@ The isolated FNV writer candidate now passes a clean default release,
 independent source/binary verification and ordinary three-voter recovery.
 Both streaming and unary transports retain checked histories across leader
 loss and restart from the original directories: **365 complete operations,
-337 OK and 28 unknown**. Actual Chaos Mesh and matched database measurements
-remain required; CRC main is still selected and no new QPS gain is claimed.
+337 OK and 28 unknown**. Subsequent [actual Chaos Mesh acceptance](WRITE-FNV-WRITER-CHAOS.md)
+also passes all 21 windows. Matched database measurements remain required;
+CRC main is still selected and no new QPS gain is claimed.
 
 ## Exact runtime and retained build
 
@@ -72,9 +73,9 @@ passes independent archive readback. The earlier [source qualification](WRITE-FN
 remains separate: 797 tests/doctests, 23 existing ignored, 15 writer plus six
 kernel proof statements and deterministic storage-failure matrices.
 
-Next run actual 21-window Chaos Mesh acceptance on this bound runtime, including
-the separately built pressure/test image and its feature isolation checks.
-Require independent full-history audits, original unknown outcomes, final drains
-and scoped cleanup before matched point/batch c1/c64 throughput and latency.
+Subsequent actual 21-window Chaos Mesh acceptance on this bound runtime passes,
+including pressure/test-image feature isolation, independent full-history
+audits, original unknown outcomes, final drains and scoped cleanup. Next qualify
+capacity and run matched point/batch c1/c64 throughput and latency.
 Hosted CI remains manual and was not dispatched. This checkpoint closes no
 original industrial roadmap work package.
