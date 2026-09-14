@@ -91,6 +91,11 @@ the table as an exact breakdown of request latency or causal speedup.
 
 ## Next implementation
 
+The subsequent [standalone FNV interleaving experiment](WRITE-FNV-INTERLEAVE-KERNEL.md)
+now passes its computation proof, Rust equivalence tests and fixed kernel
+measurements. Its database writer integration and end-to-end gains remain pending.
+The following describes the hypothesis established by this CPU checkpoint.
+
 Start with a bounded experiment that interleaves independent legacy FNV states
 for entries already present in one Raft Ready. Establish a finite memory bound
 and a scalar fallback for short or oversized groups. Prove each lane computes

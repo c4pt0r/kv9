@@ -49,8 +49,14 @@ profile](WRITE-CRC-MAIN-CPU-PROFILE.md) now passes both instrumented workloads a
 independent decode: 3,259 point and 3,106 batch samples, full interval coverage
 and zero sample loss. Fresh disassembly attributes 11.751% of batch samples to
 the legacy Raft WAL FNV loop and 5.094% of point samples to receipt linear search.
-Next evaluate bounded interleaving of independent FNV states, with exact checksum
-equivalence and unchanged frame/sync/failure semantics. No new QPS gain is claimed.
+The [standalone four-lane FNV kernel](WRITE-FNV-INTERLEAVE-KERNEL.md) now passes
+six source-bound Lean statements, four Rust equivalence tests in both debug and
+optimized builds, and six rejected controls. Its fixed 108-row kernel matrix
+improves equal four-body checksum throughput 3.342x at 206 bytes and 3.969x at
+10,601 bytes, with consistent opposite orders. Skewed inputs gain little and
+empty groups cost more. Next integrate bounded four-body/64 KiB staging inside
+one existing Ready, preserving the original stream, sync/publication and failure
+semantics. The kernel is still unlinked; no database QPS gain is claimed.
 
 ## Comparison contract
 
@@ -238,12 +244,20 @@ original failed audit and schema repair remain retained without workload reruns.
    cleanup pass. Fresh exact-binary disassembly identifies the legacy Raft FNV
    loop at 365/3,106 batch samples (11.751%), and receipt linear search at
    166/3,259 point samples (5.094%). The old byte-table profile stays historical.
-   Next test a bounded FNV interleaving kernel for independent records already
-   in one Ready, with lane equivalence proof and explicit allocation bounds.
-   Any integration must preserve frame bytes/order, sync/publication boundaries,
-   failure poisoning and scalar fallback, then pass actual recovery/Chaos and
-   paired throughput/latency acceptance. No new runtime candidate or speedup is
-   established by profiling. Keep receipt and persistent-map ownership as
+   Completed: [standalone four-lane FNV kernel proof and measurements](WRITE-FNV-INTERLEAVE-KERNEL.md).
+   Six universal Lean statements and six rejection controls pass; four Rust
+   equivalence tests pass in each of debug and optimized builds. The 108-row,
+   opposite-order kernel matrix shows 3.342x/3.969x speedups for equal four-body
+   206/10,601-byte groups, with much smaller skewed-input gains and higher
+   empty-group overhead. This is not database QPS or proof of Ready-group
+   frequency. The prototype remains unlinked to the database writer.
+   Next stage at most four entry bodies with a 64 KiB total body budget within
+   one existing write_entries_unsynced call; flush partial groups at the call
+   boundary, use scalar fallback, and never wait for future requests. Prove the
+   same frame stream and legal failure prefixes; preserve sync/publication
+   boundaries and failure poisoning. Require byte/budget/failure/recovery tests,
+   clean default release, actual recovery/Chaos and paired throughput/latency
+   acceptance before selection. Keep receipt and persistent-map ownership as
    secondary targets; do not repeat rejected worker/transport sweeps.
    DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
