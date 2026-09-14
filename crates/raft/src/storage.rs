@@ -45,6 +45,9 @@ use kv9_common::{Error, Result};
 use crate::lease_policy::{LeaseEpoch, LeasePolicy};
 use crate::rawnode::PersistentRaftStorage;
 
+mod fnv;
+use fnv::{fnv1a, fnv1a_four};
+
 const REC_CONF_STATE: u8 = 1;
 const REC_HARD_STATE: u8 = 2;
 const REC_ENTRY: u8 = 3;
@@ -60,13 +63,30 @@ const REC_LEASE_EPOCH: u8 = 5;
 /// Max record body; anything larger is corrupt (same spirit as the frame cap).
 const MAX_RECORD_LEN: u32 = 64 * 1024 * 1024;
 
-fn fnv1a(bytes: &[u8]) -> u32 {
-    let mut hash: u32 = 0x811c9dc5;
-    for &b in bytes {
-        hash ^= u32::from(b);
-        hash = hash.wrapping_mul(0x01000193);
+/// Logical body bytes retained for checksum interleaving, independent of Ready size.
+const ENTRY_BODY_BUDGET: usize = 64 * 1024;
+
+#[derive(Default)]
+struct EntryBodies {
+    bodies: [Vec<u8>; 4],
+    len: usize,
+    bytes: usize,
+}
+
+impl EntryBodies {
+    fn can_push(&self, payload_len: usize) -> bool {
+        self.len < 4 && payload_len < ENTRY_BODY_BUDGET - self.bytes
     }
-    hash
+
+    fn push(&mut self, payload: &[u8]) {
+        debug_assert!(self.can_push(payload.len()));
+        let mut body = Vec::with_capacity(1 + payload.len());
+        body.push(REC_ENTRY);
+        body.extend_from_slice(payload);
+        self.bytes += body.len();
+        self.bodies[self.len] = body;
+        self.len += 1;
+    }
 }
 
 /// Durable raft storage: an in-memory [`MemStorage`] runtime view backed by an
@@ -348,12 +368,50 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         file: &mut F::File,
         entries: &[Entry],
     ) -> Result<()> {
+        let mut staged = EntryBodies::default();
         for entry in entries {
             let bytes = entry
                 .write_to_bytes()
                 .map_err(|err| Error::Raft(format!("entry encode: {err}")))?;
-            Self::write_record_unsynced(metrics, file, REC_ENTRY, &bytes)?;
+            if bytes.len() >= ENTRY_BODY_BUDGET {
+                Self::flush_entry_bodies(metrics, file, &mut staged)?;
+                Self::write_record_unsynced(metrics, file, REC_ENTRY, &bytes)?;
+                continue;
+            }
+            if !staged.can_push(bytes.len()) {
+                Self::flush_entry_bodies(metrics, file, &mut staged)?;
+            }
+            staged.push(&bytes);
+            if staged.len == 4 {
+                Self::flush_entry_bodies(metrics, file, &mut staged)?;
+            }
         }
+        // Never wait for another Ready or retain its entries across calls.
+        Self::flush_entry_bodies(metrics, file, &mut staged)
+    }
+
+    fn flush_entry_bodies(
+        metrics: &WalIoMetrics,
+        file: &mut F::File,
+        staged: &mut EntryBodies,
+    ) -> Result<()> {
+        let sums = if staged.len == 4 {
+            fnv1a_four(staged.bodies.each_ref().map(Vec::as_slice))
+        } else {
+            [0; 4]
+        };
+        for (i, slot) in staged.bodies[..staged.len].iter_mut().enumerate() {
+            // Release each body after its ordered write; do not retain old capacity.
+            let body = std::mem::take(slot);
+            let sum = if staged.len == 4 {
+                sums[i]
+            } else {
+                fnv1a(&body)
+            };
+            Self::write_body_unsynced(metrics, file, &body, sum)?;
+        }
+        staged.len = 0;
+        staged.bytes = 0;
         Ok(())
     }
 
@@ -373,10 +431,19 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         let mut body = Vec::with_capacity(1 + payload.len());
         body.push(kind);
         body.extend_from_slice(payload);
+        Self::write_body_unsynced(metrics, file, &body, fnv1a(&body))
+    }
+
+    fn write_body_unsynced(
+        metrics: &WalIoMetrics,
+        file: &mut F::File,
+        body: &[u8],
+        sum: u32,
+    ) -> Result<()> {
         let mut rec = Vec::with_capacity(8 + body.len());
         rec.extend_from_slice(&(body.len() as u32).to_be_bytes());
-        rec.extend_from_slice(&fnv1a(&body).to_be_bytes());
-        rec.extend_from_slice(&body);
+        rec.extend_from_slice(&sum.to_be_bytes());
+        rec.extend_from_slice(body);
         metrics
             .write
             .measure(|| file.write_all(&rec))

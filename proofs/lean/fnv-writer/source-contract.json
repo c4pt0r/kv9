@@ -1,0 +1,57 @@
+{
+  "declarations": {
+    "const ENTRY_BODY_BUDGET:": "const ENTRY_BODY_BUDGET: usize = 64 * 1024;",
+    "fn append(": "fn append(&self, entries: &[Entry]) -> Result<()> {\n        self.with_writer(|file| {\n            Self::write_entries_unsynced(&self.io_metrics, file, entries)?;\n            if !entries.is_empty() {\n                Self::sync_records(&self.io_metrics, file)?;\n            }\n            self.mem\n                .wl()\n                .append(entries)\n                .map_err(|e| Error::Raft(e.to_string()))\n        })\n    }",
+    "fn can_push(": "fn can_push(&self, payload_len: usize) -> bool {\n        self.len < 4 && payload_len < ENTRY_BODY_BUDGET - self.bytes\n    }",
+    "fn flush_entry_bodies(": "fn flush_entry_bodies(\n        metrics: &WalIoMetrics,\n        file: &mut F::File,\n        staged: &mut EntryBodies,\n    ) -> Result<()> {\n        let sums = if staged.len == 4 {\n            fnv1a_four(staged.bodies.each_ref().map(Vec::as_slice))\n        } else {\n            [0; 4]\n        };\n        for (i, slot) in staged.bodies[..staged.len].iter_mut().enumerate() {\n            // Release each body after its ordered write; do not retain old capacity.\n            let body = std::mem::take(slot);\n            let sum = if staged.len == 4 {\n                sums[i]\n            } else {\n                fnv1a(&body)\n            };\n            Self::write_body_unsynced(metrics, file, &body, sum)?;\n        }\n        staged.len = 0;\n        staged.bytes = 0;\n        Ok(())\n    }",
+    "fn next_record(": "fn next_record(bytes: &[u8], at: usize) -> Option<(u8, &[u8], usize)> {\n    let header = bytes.get(at..at + 8)?;\n    let len = u32::from_be_bytes([header[0], header[1], header[2], header[3]]);\n    if len == 0 || len > MAX_RECORD_LEN {\n        return None;\n    }\n    let sum = u32::from_be_bytes([header[4], header[5], header[6], header[7]]);\n    let body = bytes.get(at + 8..at + 8 + len as usize)?;\n    if fnv1a(body) != sum {\n        return None;\n    }\n    Some((body[0], &body[1..], at + 8 + len as usize))\n}",
+    "fn persist_ready(": "fn persist_ready(&self, entries: &[Entry], hs: Option<&HardState>) -> Result<()> {\n        let mut operation = \"ready writer\";\n        let result = self.with_writer(|file| {\n            if entries.is_empty() && hs.is_none() {\n                return Ok(());\n            }\n            operation = \"append\";\n            Self::write_entries_unsynced(&self.io_metrics, file, entries)?;\n            if let Some(hs) = hs {\n                operation = \"hardstate\";\n                let bytes = hs\n                    .write_to_bytes()\n                    .map_err(|err| Error::Raft(format!(\"hardstate encode: {err}\")))?;\n                Self::write_record_unsynced(&self.io_metrics, file, REC_HARD_STATE, &bytes)?;\n            }\n            if !entries.is_empty() || hs.is_some() {\n                operation = \"ready sync\";\n                Self::sync_records(&self.io_metrics, file)?;\n            }\n            // One memory write lock publishes the complete successful Ready.\n            // No entry or vote/commit update is exposed before the common sync.\n            operation = \"ready memory publication\";\n            let mut memory = self.mem.wl();\n            if !entries.is_empty() {\n                memory\n                    .append(entries)\n                    .map_err(|err| Error::Raft(err.to_string()))?;\n            }\n            if let Some(hs) = hs {\n                memory.set_hardstate(hs.clone());\n            }\n            Ok(())\n        });\n        result.map_err(|cause| Error::Raft(format!(\"during {operation}: {cause}\")))\n    }",
+    "fn push(": "fn push(&mut self, payload: &[u8]) {\n        debug_assert!(self.can_push(payload.len()));\n        let mut body = Vec::with_capacity(1 + payload.len());\n        body.push(REC_ENTRY);\n        body.extend_from_slice(payload);\n        self.bytes += body.len();\n        self.bodies[self.len] = body;\n        self.len += 1;\n    }",
+    "fn sync_records(": "fn sync_records(metrics: &WalIoMetrics, file: &mut F::File) -> Result<()> {\n        let result = metrics.sync.measure(|| file.sync_data());\n        result.map_err(|e| Error::Raft(format!(\"raft log append: {e}\")))\n    }",
+    "fn with_writer(": "fn with_writer(&self, action: impl FnOnce(&mut F::File) -> Result<()>) -> Result<()> {\n        let mut writer = self.file.lock().expect(\"raft log file poisoned\");\n        let file = writer.as_mut().ok_or_else(|| {\n            Error::Raft(\n                \"raft log writer unavailable after persistence failure; reopen required\".into(),\n            )\n        })?;\n        let result = action(file);\n        if result.is_err() {\n            *writer = None;\n        }\n        result\n    }",
+    "fn write_body_unsynced(": "fn write_body_unsynced(\n        metrics: &WalIoMetrics,\n        file: &mut F::File,\n        body: &[u8],\n        sum: u32,\n    ) -> Result<()> {\n        let mut rec = Vec::with_capacity(8 + body.len());\n        rec.extend_from_slice(&(body.len() as u32).to_be_bytes());\n        rec.extend_from_slice(&sum.to_be_bytes());\n        rec.extend_from_slice(body);\n        metrics\n            .write\n            .measure(|| file.write_all(&rec))\n            .map_err(|e| Error::Raft(format!(\"raft log append: {e}\")))\n    }",
+    "fn write_entries_unsynced(": "fn write_entries_unsynced(\n        metrics: &WalIoMetrics,\n        file: &mut F::File,\n        entries: &[Entry],\n    ) -> Result<()> {\n        let mut staged = EntryBodies::default();\n        for entry in entries {\n            let bytes = entry\n                .write_to_bytes()\n                .map_err(|err| Error::Raft(format!(\"entry encode: {err}\")))?;\n            if bytes.len() >= ENTRY_BODY_BUDGET {\n                Self::flush_entry_bodies(metrics, file, &mut staged)?;\n                Self::write_record_unsynced(metrics, file, REC_ENTRY, &bytes)?;\n                continue;\n            }\n            if !staged.can_push(bytes.len()) {\n                Self::flush_entry_bodies(metrics, file, &mut staged)?;\n            }\n            staged.push(&bytes);\n            if staged.len == 4 {\n                Self::flush_entry_bodies(metrics, file, &mut staged)?;\n            }\n        }\n        // Never wait for another Ready or retain its entries across calls.\n        Self::flush_entry_bodies(metrics, file, &mut staged)\n    }",
+    "fn write_record_unsynced(": "fn write_record_unsynced(\n        metrics: &WalIoMetrics,\n        file: &mut F::File,\n        kind: u8,\n        payload: &[u8],\n    ) -> Result<()> {\n        if payload.len() >= MAX_RECORD_LEN as usize {\n            return Err(Error::Raft(\n                \"raft log record exceeds the replay format limit\".into(),\n            ));\n        }\n        let mut body = Vec::with_capacity(1 + payload.len());\n        body.push(kind);\n        body.extend_from_slice(payload);\n        Self::write_body_unsynced(metrics, file, &body, fnv1a(&body))\n    }"
+  },
+  "files": {
+    "crates/raft/src/storage.rs": "6c6cfa178563166f540ad1f627294a05ba0abe4dc6786c39346fd11f96628cb7",
+    "crates/raft/src/storage/fnv.rs": "896ed30921604399233758492b322f4c8a8288061d556eb805d208e8793896ec",
+    "crates/raft/src/storage/persistence_model.rs": "8bf4d3b62e5665e43451480bf43a70b153a91ba7316c6698aa558c9b6484da7f",
+    "proofs/lean/fnv-interleave/Interleave.lean": "238db37c0e58d402ff95e9575754c12587e269ba75e647c0842fef6e2a1ce94f",
+    "proofs/lean/fnv-interleave/source-contract.json": "a8479e2a75ec6e447b01d0121d1bdfada39bd2b781942635b645ff8a60ada508",
+    "proofs/lean/fnv-writer/Writer.lean": "bf626414985290037d291c25c55045f519728097c6da0c2338ea0debdab42cfa"
+  },
+  "foundations": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "parent_revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+  "scope": "Source-mapped ordered staging, logical body budget, checksum/frame equivalence and partial-write prefix; Rust primitives/serialization/file/compiler premises remain explicit. Original synchronization/publication functions compared byte-for-byte at declaration scope.",
+  "source": "crates/raft/src/storage.rs",
+  "theorems": [
+    "flush_view",
+    "push_view",
+    "finishGroup_view",
+    "stage_view",
+    "fold_view",
+    "complete_stream",
+    "flush_bound",
+    "push_bound",
+    "finishGroup_bound",
+    "stage_bound",
+    "fold_bound",
+    "payload_guard",
+    "written_prefix",
+    "partial_frame_prefix",
+    "four_frames"
+  ],
+  "unchanged_from_parent": [
+    "fn with_writer(",
+    "fn persist_ready(",
+    "fn append(",
+    "fn sync_records(",
+    "fn next_record("
+  ],
+  "version": 1
+}
