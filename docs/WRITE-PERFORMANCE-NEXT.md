@@ -91,10 +91,18 @@ point Put/s (+0.351%) and 1,096,549.396 batch items/s (+4.131%) at c64.
 However, pooled batch p99 worsens from 7.602–7.668 ms to 9.830–9.961 ms,
 including a 12.059–12.190 ms first-order candidate tail. Point throughput
 reverses direction between orders. Keep CRC main selected; do not run a full
-promotion matrix for this result. First inspect retained samples and use a
-separate bounded diagnostic for write queue age and actual Ready/checksum group
-sizes. The cause of the tail variation remains open. Preserve every sync,
-quorum, publication and acknowledgment fence; never discard the first order.
+promotion matrix for this result. The [completed retained-sample analysis](WRITE-FNV-TAIL-ANALYSIS.md)
+finds higher global IO pressure in the worst-tail FNV batch cohort, without
+establishing individual-call causality. The separate [WAL directory-publication
+candidate](WRITE-PUBLISHED-DIRECTORY.md), `483b8c3`, now passes 12 conditional
+TLAPS statements / 24 fresh obligations, 793 tests/doctests, formatting, Clippy,
+five actual syscall cases and four refusal controls. It retains full ancestor
+sync during creation/recovery and avoids repeating it during normal rotation.
+Next qualify its default release, recovery and actual Chaos before a matched
+throughput/latency screen. No performance gain is claimed yet. Queue age and
+Ready/checksum group diagnostics remain secondary if this does not explain the
+cost. Preserve every quorum, publication and acknowledgment fence, required file
+and parent sync, and the original first-order FNV tail.
 
 Prepared separately from the FNV timing campaign, the
 [validated receipt tail-hint candidate](WRITE-RECEIPT-TAIL-HINT.md), `a6ac335`,
@@ -303,8 +311,12 @@ original failed audit and schema repair remain retained without workload reruns.
    staging, scalar fallback and no wait for future requests. Composition proof,
    byte/budget/failure tests, clean default release, ordinary recovery and
    actual 21-window Chaos acceptance pass. Original sync/publication and
-   failure-poisoning boundaries remain unchanged. Next qualify disk capacity
-   and run paired throughput/latency acceptance before selection.
+   failure-poisoning boundaries remain unchanged. The paired write screen now
+   passes but does not justify promotion: pooled batch throughput gains 4.131%
+   with worse p99, while point throughput changes only 0.351%. Keep CRC selected.
+   Completed next source checkpoint: published-directory reuse (`483b8c3`),
+   with conditional proof, workspace tests and syscall-fault acceptance. Next
+   run its release/recovery/actual-Chaos gates, then a paired write screen.
    Keep receipt and persistent-map ownership as
    secondary targets; do not repeat rejected worker/transport sweeps.
    DPDK requires cross-host/NIC

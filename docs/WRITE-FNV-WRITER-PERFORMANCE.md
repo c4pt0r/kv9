@@ -115,12 +115,17 @@ acceptance audit was repeated.
 ## Next decision
 
 Keep CRC main selected. Do not launch a full read/mixed promotion campaign
-for this small point change and unstable batch tail. First examine the retained
-per-process samples and batch distributions, then use a separate bounded
-diagnostic to measure write queue age and actual Ready/checksum group sizes.
-The causal explanation remains open; preserve the original first-order tail
-instead of rerunning until it disappears. Use that evidence to choose the next
-batching or ownership change, preserving all quorum, sync and response fences.
+for this small point change and unstable batch tail. The [all-16 retained sample
+analysis](WRITE-FNV-TAIL-ANALYSIS.md) now shows elevated global IO pressure in the
+worst-tail FNV batch cohort, without a corresponding sampling-gap, CPU, RSS or
+thread-count anomaly. This does not establish per-call causality. Source
+inspection found repeated ancestor-directory fsync during every WAL rotation.
+A separate [published-directory candidate](WRITE-PUBLISHED-DIRECTORY.md) now
+passes conditional proof, 793 tests and actual syscall-result fault checks.
+Next qualify its default release, ordinary recovery and actual Chaos Mesh,
+then run a matched throughput/latency screen with every Raft fence retained.
+Queue age and Ready/checksum group diagnostics remain secondary if needed.
+Preserve the original first-order tail instead of rerunning until it disappears.
 The [receipt tail-hint candidate](WRITE-RECEIPT-TAIL-HINT.md) remains a separate
 source-qualified experiment, with release/recovery/Chaos/timing still pending.
 Dynamic multi-Raft and automatic splits retain their subsequent place in the
