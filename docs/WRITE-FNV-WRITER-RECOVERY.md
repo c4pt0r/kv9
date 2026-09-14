@@ -75,7 +75,9 @@ kernel proof statements and deterministic storage-failure matrices.
 
 Subsequent actual 21-window Chaos Mesh acceptance on this bound runtime passes,
 including pressure/test-image feature isolation, independent full-history
-audits, original unknown outcomes, final drains and scoped cleanup. Next qualify
-capacity and run matched point/batch c1/c64 throughput and latency.
+audits, original unknown outcomes, final drains and scoped cleanup. The
+subsequent [matched point/batch c1/c64 write comparison](WRITE-FNV-WRITER-PERFORMANCE.md)
+now passes eight smokes, sixteen timed cohorts and independent acceptance.
+Batch throughput improves 4.131%, but pooled p99 worsens; CRC main stays selected.
 Hosted CI remains manual and was not dispatched. This checkpoint closes no
 original industrial roadmap work package.

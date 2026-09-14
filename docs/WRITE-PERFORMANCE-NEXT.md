@@ -75,18 +75,28 @@ four fresh drains, full archive readback and all 31 server lifetimes exited.
 The separate [eleven-window client-link/reset/quorum-loss campaign](WRITE-FNV-WRITER-LINK-CHAOS.md)
 also passes, with 2,126 complete operations (1,835 OK / 63 unknown / 228 refused),
 independent full-history and packet-effect checks, and owned cleanup.
-Next qualify capacity and compare point/batch c1/c64 throughput and latency
-against CRC main. The prior screen's resident allocation plus unchanged floors
-requires 173,650,006,016 available bytes. The latest
-[cache cleanup and compression pilot](WRITE-FNV-CAPACITY.md) reclaim an observed
-11,491,069,952 bytes and leave 122,947,051,520 bytes at the cleanup checkpoint,
-an empirical gap of 50,702,954,496 bytes before subsequent evidence allocation.
-The two-object compression pilot saves only 1.6–1.8% and does not justify bulk
-recompression. Complete performance smokes and timed cohorts remain pending.
-The standalone kernel speedup is not a database result; the candidate remains
-unselected. Preserve every sync, quorum, publication and acknowledgment fence.
+The [cache cleanup and compression pilot](WRITE-FNV-CAPACITY.md) preserve
+historical payloads; stronger compression saves only 1.6–1.8% and does not
+justify bulk recompression. Review traces the inherited 96 GiB host floor to
+an operational policy rather than a Raft or codec requirement. The separate
+[storage policy v2](WRITE-FNV-STORAGE-POLICY.md) keeps the 64 GiB measured host
+floor, uses a 48 GiB retention floor with the same serial restore allowance,
+and passes 71 environment controls. Another inactive dev-cache cleanup releases
+6,261,227,520 bytes. The original preparation remains immutable; every workload,
+payload, synchronization fence and tmpfs guard remains. The complete
+[eight-smoke/sixteen-timed comparison](WRITE-FNV-WRITER-PERFORMANCE.md) and
+independent acceptance now pass: 7,283,648 successful one-attempt calls,
+65,259,587 items, zero errors/unknown writes/drops. FNV reaches 139,878.372
+point Put/s (+0.351%) and 1,096,549.396 batch items/s (+4.131%) at c64.
+However, pooled batch p99 worsens from 7.602–7.668 ms to 9.830–9.961 ms,
+including a 12.059–12.190 ms first-order candidate tail. Point throughput
+reverses direction between orders. Keep CRC main selected; do not run a full
+promotion matrix for this result. First inspect retained samples and use a
+separate bounded diagnostic for write queue age and actual Ready/checksum group
+sizes. The cause of the tail variation remains open. Preserve every sync,
+quorum, publication and acknowledgment fence; never discard the first order.
 
-While FNV timing awaits capacity, the separate
+Prepared separately from the FNV timing campaign, the
 [validated receipt tail-hint candidate](WRITE-RECEIPT-TAIL-HINT.md), `a6ac335`,
 now passes 18 parameterized theorem statements / 158 fresh obligations and
 793 workspace tests/doctests (23 existing ignored), formatting and Clippy.

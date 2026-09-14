@@ -3,8 +3,10 @@
 The experimental Raft writer now uses the proven four-lane checksum kernel
 for up to four already available entry bodies, with a **64 KiB total body
 budget**. Source `12f44d35590ede5f89337fe731dd950162865154` passes the composition
-proof and local workspace checks. It remains an isolated candidate; there is
-**no new database QPS or latency result**, and CRC main remains selected.
+proof and local workspace checks. The subsequent
+[matched database comparison](WRITE-FNV-WRITER-PERFORMANCE.md) improves c64
+batch throughput 4.131% but worsens pooled p99. It remains an isolated
+candidate, and CRC main remains selected.
 
 The [exact default release and ordinary recovery](WRITE-FNV-WRITER-RECOVERY.md)
 now also pass: 887 source files independently bound, 365 complete operations
@@ -14,8 +16,9 @@ passes: 9,872 complete operations (9,300 OK / 541 unknown / 31 refused), four
 fresh final drains, independent archive readback and all 31 server lifetimes
 exited. The separate [eleven-window client-link and quorum-loss campaign](WRITE-FNV-WRITER-LINK-CHAOS.md)
 also passes: 2,126 complete operations (1,835 OK / 63 unknown / 228 refused),
-independent packet-effect/history checks and owned cleanup. Paired database
-throughput and latency remain unmeasured.
+independent packet-effect/history checks and owned cleanup. The paired write
+screen now also passes accounting and retention acceptance; its tail result
+does not support default promotion.
 
 ## Implementation and correctness
 
@@ -91,18 +94,21 @@ readback. Hosted CI remains manual and was not dispatched.
 2. Completed: actual 21-window Chaos Mesh acceptance on this exact binary,
    complete histories, unknown outcomes, original failures, independent archive
    readback and all owned-process exits.
-3. Run the matched point Put and BatchPut(64), c1/c64, opposite-order throughput
-   and latency screen against selected CRC main. Preserve all quorum, sync,
-   apply and response fences and capacity checks. The unchanged full-retention
-   reservation currently exceeds available disk space. The latest
-   [cache cleanup and compression pilot](WRITE-FNV-CAPACITY.md) reclaim an
-   observed 11.49 GB, leaving an approximately 50.7 GB planning gap; the pilot
-   does not justify bulk recompression of retained histories.
-4. Select only from database results. The standalone equal-body checksum speedup
-   and CPU profile do not establish Ready-group frequency or database gains.
+3. Completed: matched point Put and BatchPut(64), c1/c64, opposite-order
+   throughput and latency screen against CRC main. All eight smokes and sixteen
+   timed cohorts pass, with 7,283,648 successful one-attempt calls and zero
+   errors/unknown writes/drops. The separate [storage policy v2](WRITE-FNV-STORAGE-POLICY.md)
+   is qualified; the original v1 preparation remains unchanged.
+4. Keep CRC main selected. FNV batch throughput improves 4.131% but pooled
+   p99 worsens; loaded point changes +0.351% with order reversal. Inspect the
+   retained evidence and separately measure queue age and actual Ready groups
+   before another implementation change. Do not promote from kernel speedup.
 
-Latest accepted database results remain **139,188.639 point Put/s** and
-**1,065,680.142 BatchPut(64) items/s** at c64, with respective p99 intervals
-**737.280–745.471 us** and **6.947–7.012 ms**. These are the existing shared-host
-volatile-tmpfs panel; Redis was not rerun, and equal durability is not claimed.
+The current candidate reaches **139,878.372 point Put/s** and
+**1,096,549.396 BatchPut(64) items/s** at c64, with respective p99 intervals
+**745.472–753.663 us** and **9.830–9.961 ms**. The paired selected CRC control
+reaches 139,388.631 and 1,053,049.319, with p99 737.280–745.471 us and
+7.602–7.668 ms. These are shared-host volatile-tmpfs diagnostics; Redis was
+not rerun and equal durability is not claimed. Earlier campaigns retain their
+own samples and are not pooled here.
 This source checkpoint closes no original industrial roadmap work package.

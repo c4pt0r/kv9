@@ -1,8 +1,12 @@
 # FNV write comparison: capacity work
 
 The exact FNV writer has passed source/proof, ordinary recovery and actual
-21-window Chaos Mesh acceptance. Its paired database performance screen remains
-pending capacity; no new throughput or latency result is available.
+21-window Chaos Mesh acceptance. The capacity work below records the original
+policy's unresolved gap. A subsequent, separately versioned
+[storage policy and cleanup](WRITE-FNV-STORAGE-POLICY.md) now pass 71 local
+controls. The [complete write comparison](WRITE-FNV-WRITER-PERFORMANCE.md) now
+passes: eight smokes, sixteen timed cohorts and independent audit. Batch
+throughput improves 4.131%, but pooled p99 worsens; CRC main stays selected.
 
 The previous screen retained 52,317,179,904 allocated bytes. Keeping the existing
 96 GiB floor, 16 GiB restoration reserve and 1 GiB margin gives an empirical
@@ -66,9 +70,10 @@ estimates are distinct. All six protected server/client executables retain their
 original sizes and SHA-256 values. Named locks, source, offline dependency inputs
 and every original test payload are preserved.
 
-The empirical full-screen reservation still exceeds that final observation by
-**50,702,954,496 bytes**. The performance campaign remains unreleased. A storage
-location was requested while independent correctness work continues.
+At this cleanup checkpoint, the original empirical full-screen reservation
+still exceeded available space by **50,702,954,496 bytes**, so that preparation
+remained unreleased. The subsequent policy review is linked above; it does not
+retroactively change this campaign's storage arithmetic or measured evidence.
 
 Next qualify enough storage for the complete eight-smoke/sixteen-timed-cohort
 comparison. Keep its workloads, duration, quorum/sync/response fences, retention
