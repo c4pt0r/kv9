@@ -1,10 +1,15 @@
-# Bounded FNV writer integration: source qualification
+# Bounded FNV writer integration
 
 The experimental Raft writer now uses the proven four-lane checksum kernel
 for up to four already available entry bodies, with a **64 KiB total body
 budget**. Source `12f44d35590ede5f89337fe731dd950162865154` passes the composition
 proof and local workspace checks. It remains an isolated candidate; there is
 **no new database QPS or latency result**, and CRC main remains selected.
+
+The [exact default release and ordinary recovery](WRITE-FNV-WRITER-RECOVERY.md)
+now also pass: 887 source files independently bound, 365 complete operations
+(337 OK / 28 unknown), six fresh drains and seven exited process lifetimes.
+Actual Chaos Mesh and paired database measurements remain the next gates.
 
 ## Implementation and correctness
 
@@ -75,9 +80,9 @@ readback. Hosted CI remains manual and was not dispatched.
 
 ## Next acceptance gates
 
-1. Build a clean exact-source default release and independently verify source,
-   feature, compiler and binary bindings.
-2. Run ordinary recovery and the actual 21-window Chaos Mesh campaign, retaining
+1. Completed: clean exact-source default release, independent source/feature/
+   compiler/binary readback and ordinary recovery on both transports.
+2. Run the actual 21-window Chaos Mesh campaign, retaining
    complete histories, unknown outcomes, original failures and all owned-process
    exits. Previous candidates' Chaos results do not qualify this binary.
 3. Run the matched point Put and BatchPut(64), c1/c64, opposite-order throughput

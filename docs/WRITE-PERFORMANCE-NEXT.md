@@ -65,8 +65,12 @@ The [bounded four-lane FNV writer](WRITE-FNV-WRITER.md), experimental runtime
 workspace gate: 797 tests/doctests, 23 existing ignored, formatting, Clippy and
 explicit experimental-lease compilation. Five new persistence tests cover full
 frame-stream/budget boundaries and 1,512 deterministic failure combinations.
-Next qualify its clean default release with ordinary recovery and actual Chaos
-Mesh, then compare point/batch c1/c64 throughput and latency against CRC main.
+Its [default release and ordinary recovery](WRITE-FNV-WRITER-RECOVERY.md) now
+pass on exact tested source: 365 complete operations (337 OK / 28 unknown),
+six fresh drains and seven exited lifetimes. The original evidence-inventory
+preflight failure is retained; the tested source worktree passes unchanged
+limits. Next run actual Chaos Mesh, then compare point/batch c1/c64 throughput
+and latency against CRC main.
 The standalone kernel speedup is not a database result; the candidate remains
 unselected. Preserve every sync, quorum, publication and acknowledgment fence.
 
