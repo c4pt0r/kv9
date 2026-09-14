@@ -58,6 +58,13 @@ values. A fresh post-run check also confirms the protected historical PodChaos
 UID is unchanged. Original histories, command outputs, source bindings,
 terminal records and failed preparations remain available locally.
 
+The [portable complete histories and audit evidence](https://github.com/c4pt0r/kv9/blob/642747635a38b38d1133cf10815f73a3639bf23d/docs/fnv-writer-link-v1/README.md)
+now preserve 8,421 members / 107,594,169 decoded bytes in four parts totaling
+6,317,411 compressed bytes. Packaging ends at `41511/c130fe/0`; independent
+byte verification ends at `d3e11f/0`. The original 12,789,760-byte owned-data
+archive remains local, with its full original readback and explicit hash/size
+references. The portable package does not replace that payload archive.
+
 Matched point/batch c1/c64 performance testing still needs
 [additional retention capacity](WRITE-FNV-CAPACITY.md). No original industrial
 roadmap work package closes at this checkpoint. All validation ran locally;
