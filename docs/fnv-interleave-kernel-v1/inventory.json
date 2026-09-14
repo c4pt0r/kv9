@@ -1,0 +1,567 @@
+{
+  "archive": {
+    "bytes": 52232,
+    "name": "original-evidence.tar.gz",
+    "sha256": "ea6a1dc0f65ff4dfb42b824ff2db1f1217b77343460c8d7feca9341d95d33bc5"
+  },
+  "complete": true,
+  "decoded_bytes": 285321,
+  "files": {
+    "kv9-raft-fnv-interleave-kernel-20260914-first/Interleave-development-first.lean": {
+      "bytes": 2789,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/Interleave-development-first.lean",
+      "sha256": "310a4881aa68628ef8963c4a2d93969af59d3089d347220afe21084c5f59df62"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/disassembly.json": {
+      "bytes": 965,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/disassembly.json",
+      "sha256": "857a8b9c240e8fc45e81ab64988ddbfd118c1ad22790c24788722ccc5fecab98"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/execution-receipts.json": {
+      "bytes": 851,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/execution-receipts.json",
+      "sha256": "3985a7844db5c75d29d0bede6c101936fa31d89735c4db26581901c10074e173"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/interleaved.asm": {
+      "bytes": 16927,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/interleaved.asm",
+      "sha256": "4a581d063dc218b6a82ff3582fdc1893c6bf17e76b2421d889bc0b6a0ac9f2c3"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-bounded.stderr": {
+      "bytes": 603,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-bounded.stderr",
+      "sha256": "8baff9c6426c11cadf7bb7cbe67ee6d0742fff31160edb6619cec7cdf048f3fd"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-bounded.stdout": {
+      "bytes": 815,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-bounded.stdout",
+      "sha256": "425c0fe8d97255ca755618786ff52fdb372792d0ddcffc2894085aad171f60e2"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-first-stop.json": {
+      "bytes": 1992,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-first-stop.json",
+      "sha256": "8c4314082707ed917e71ce8489024d567952f58d7e08a8715686dfa6465408e0"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-first.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-first.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-first.stdout": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-first.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-generic.stderr": {
+      "bytes": 595,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-generic.stderr",
+      "sha256": "553b4fe3d8a71defa786b0c3d444cc0d48e3d36f6369effd03eb58a008deded9"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-generic.stdout": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/lean-development-generic.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/microbenchmark-tool-launch.json": {
+      "bytes": 131,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/microbenchmark-tool-launch.json",
+      "sha256": "dcbf7fbd572652178651639445ac5b451b7e4d712a451d792136dabe98b59bcc"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/microbenchmark-tool-terminal.json": {
+      "bytes": 6188,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/microbenchmark-tool-terminal.json",
+      "sha256": "5588b5889355ebe919eb7f628ffff0bce66149c0a1667a4ad69692a48a13fdce"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/record-length-complete-headers.json": {
+      "bytes": 5053,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/record-length-complete-headers.json",
+      "sha256": "3ae3723e41cb95588f439c31b7981673298e0556800c9d11e8ad1770fa76551d"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/record-length-sample.json": {
+      "bytes": 5081,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/record-length-sample.json",
+      "sha256": "4655bfb8a3c28eecbc183a72542e86a487f4498ac28cac22efa4aa25327d95f1"
+    },
+    "kv9-raft-fnv-interleave-kernel-20260914-first/serial.asm": {
+      "bytes": 11941,
+      "path": "/tmp/kv9-raft-fnv-interleave-kernel-20260914-first/serial.asm",
+      "sha256": "15ec5e98e4cb34090b7785f3a095593b86be0086f854eea46311bd339be9c74f"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile-invocation.json": {
+      "bytes": 1095,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile-invocation.json",
+      "sha256": "fe075360e1241773a34d565ef5589f6720b4677e7ff9e6cc9640dac6378027ab"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile-result.json": {
+      "bytes": 1415,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile-result.json",
+      "sha256": "723dd373163d3a2e4d6804cae3d5186e02a2ba0d2164b3d73238cf5003ef6fd3"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile.stdout": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version-invocation.json": {
+      "bytes": 608,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version-invocation.json",
+      "sha256": "65e60188915fb71d945d6147cbfd36ab6442bd4a5bd98b38e3c2e09888cb6a19"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version-result.json": {
+      "bytes": 930,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version-result.json",
+      "sha256": "8f29cbd88678e4c06cec4e0107d79bf97379f16099d2e580b5f9618692f0e851"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version.stdout": {
+      "bytes": 196,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version.stdout",
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure-invocation.json": {
+      "bytes": 600,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure-invocation.json",
+      "sha256": "984a565a340d03f260ff1a45eafa7ef6149fb2a875ed1f5a6313e7e56de98f1c"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure-result.json": {
+      "bytes": 924,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure-result.json",
+      "sha256": "f4b304b02919b9f8dd1b93189947ec3d25e462577749e83508071831f60d008c"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure.stdout": {
+      "bytes": 31530,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure.stdout",
+      "sha256": "ae1ed83293647520770aca1fbe7fa715a2c40c6a31f3a18c43a3a146bfc908ba"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/result.json": {
+      "bytes": 7093,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/result.json",
+      "sha256": "f4b057ae824239586ae3577e6fae202699788ba09fcca4fabc198603451a09df"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/selected-cpuinfo.txt": {
+      "bytes": 1899,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/selected-cpuinfo.txt",
+      "sha256": "342a87fbb9a83316d0e7217c78b4a9ff44c54cbe959447961d6ca1ee4430717e"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision-invocation.json": {
+      "bytes": 266,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision-invocation.json",
+      "sha256": "44240e3e1cc70fa394ff1a96523d042d724bcd88bc4caf71f82364f67e0c1538"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision-result.json": {
+      "bytes": 587,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision-result.json",
+      "sha256": "70907719122fb20dee7ea69b064e58af477fda7c86d7b1a269bfc08fefdaccc8"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision.stdout": {
+      "bytes": 41,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision.stdout",
+      "sha256": "a3b7a086ec439fd51e12cb489a2f8156d6b92d49c32271ede3734a136ca36191"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status-invocation.json": {
+      "bytes": 525,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status-invocation.json",
+      "sha256": "c2469942693311c8f42f9716a96372b7b0f7a5e86905fc01dd77a62959a95842"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status-result.json": {
+      "bytes": 845,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status-result.json",
+      "sha256": "750085ce4f94fd6b2e1789421f2f85367412fc0a4fb3604581d6eb371ced876e"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status.stdout": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/sources-after.json": {
+      "bytes": 722,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/sources-after.json",
+      "sha256": "4774dfef2dc07651efb32078f0c30cc03bdbdadd5c3b94d2f606bfdf54919c0a"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/sources-before.json": {
+      "bytes": 722,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/sources-before.json",
+      "sha256": "4774dfef2dc07651efb32078f0c30cc03bdbdadd5c3b94d2f606bfdf54919c0a"
+    },
+    "kv9-raft-fnv-interleave-microbenchmark-20260914-first/summary.json": {
+      "bytes": 64431,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/summary.json",
+      "sha256": "4e76ccabe3e45791b7ef4da48900484971ed2a835bdd8cbf8f0bbe411f121653"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/Interleave.lean": {
+      "bytes": 3496,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/Interleave.lean",
+      "sha256": "042b6fac76a14d9314c1ae213ca483026433434adfe2fb57278dc1576dcd157d"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/lean.invocation.json": {
+      "bytes": 497,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/lean.invocation.json",
+      "sha256": "3d4e58216c6a351c821ff8174396e59ee1acb83455990f8a3bdc7fe21896bb3f"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/lean.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/lean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/lean.stdout": {
+      "bytes": 1422,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/lean.stdout",
+      "sha256": "2b3d54cb569a493105d737c684a3eebfb912767e0f61da5de712baead8773a8b"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/lean.terminal.json": {
+      "bytes": 591,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-cross-lane/lean.terminal.json",
+      "sha256": "26cafff6fa242065e16743d5e9b5ef52f8feca888b317f428c96bf3862a04ea2"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/Interleave.lean": {
+      "bytes": 3619,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/Interleave.lean",
+      "sha256": "c837cc4a338d74cf3515172be2c4cd55da0b8060ee564a6dc7f6297ccf188e70"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/lean.invocation.json": {
+      "bytes": 499,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/lean.invocation.json",
+      "sha256": "758a5b0e410ddaa8dafded0994ffba4fb6d65d3ca73bf482d9ab9d3050b596b8"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/lean.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/lean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/lean.stdout": {
+      "bytes": 556,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/lean.stdout",
+      "sha256": "09375851c577a5bfb584b13cc2355c3097a5019c42f67b4b8b207e1deb3f7afc"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/lean.terminal.json": {
+      "bytes": 593,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-custom-axiom/lean.terminal.json",
+      "sha256": "2e1fbd4f8841b0344abb43879063372c7bb2763daa4edcf1b3a911f0c1152390"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/Interleave.lean": {
+      "bytes": 3427,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/Interleave.lean",
+      "sha256": "9d3069f160a6f080dd8e9237877bf3423b3b60a0841ab29a1805f691e8c3c26b"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/lean.invocation.json": {
+      "bytes": 497,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/lean.invocation.json",
+      "sha256": "1039ef61f2abe681968bb5332a7d21cbd3cf3062fef532e48cdab10ff035046b"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/lean.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/lean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/lean.stdout": {
+      "bytes": 531,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/lean.stdout",
+      "sha256": "677e1e08f61a04b295c4451b5c9c7773b376798b9df1704e3cc812d5e81bba2d"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/lean.terminal.json": {
+      "bytes": 591,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-proof-hole/lean.terminal.json",
+      "sha256": "722064f49f5e5e144f5ceac8a4ebe28eb4920094c933dd917ca176bf5ef67026"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-lane/fnv.rs": {
+      "bytes": 4569,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-lane/fnv.rs",
+      "sha256": "8e36e9decdd8fcefffc6e175577c0e24917dd582627366d00999996500529f8c"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-lane/result.json": {
+      "bytes": 84,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-lane/result.json",
+      "sha256": "f80759883c01d50564fa6985d0fd1d383fcaccc59c1b7f9ba973eddff1b509ac"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-prime/fnv.rs": {
+      "bytes": 4569,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-prime/fnv.rs",
+      "sha256": "9451a8ca963d48a9c6be60748ca15b50d0b80d2fe214bd49d8898bf1e499ed82"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-prime/result.json": {
+      "bytes": 77,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-prime/result.json",
+      "sha256": "6c553686e638f765a33795a114e28f7bfabb5849bbc7e5a2dd44458fec1ed130"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-tail/fnv.rs": {
+      "bytes": 4569,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-tail/fnv.rs",
+      "sha256": "6ac75c4502c02fc4bdf5ca13c9dadb9f19e2dc72d97561170a60550d1d7c8887"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-tail/result.json": {
+      "bytes": 84,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/control-wrong-tail/result.json",
+      "sha256": "f80759883c01d50564fa6985d0fd1d383fcaccc59c1b7f9ba973eddff1b509ac"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/inputs.json": {
+      "bytes": 969,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/inputs.json",
+      "sha256": "c242babff6a2a3d2d9e5c2310e710cb0bcafcf60bb8dd5873a34c03febb07c79"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/inputs/Interleave.lean": {
+      "bytes": 3195,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/inputs/Interleave.lean",
+      "sha256": "238db37c0e58d402ff95e9575754c12587e269ba75e647c0842fef6e2a1ce94f"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/inputs/check-fnv-interleave-proof.py": {
+      "bytes": 12743,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/inputs/check-fnv-interleave-proof.py",
+      "sha256": "28a983b8c6ddaaf7cb6b37afbb58def97c59f0bf1dfc7ec30ad631736cfe3d42"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/inputs/fnv.rs": {
+      "bytes": 4569,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/inputs/fnv.rs",
+      "sha256": "a836a03afbf5080eea9d35e040896dd823b66954ed5db356a7de88cfc0d1945d"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/inputs/lean-toolchain": {
+      "bytes": 25,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/inputs/lean-toolchain",
+      "sha256": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/inputs/source-contract.json": {
+      "bytes": 2231,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/inputs/source-contract.json",
+      "sha256": "5ff6022b824f31eefe83a1bb104bea3f19cde13f4762cbb67488ed415a7f4f81"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/inventory.json": {
+      "bytes": 9883,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/inventory.json",
+      "sha256": "d81ae24130e2a602b062a36a2afebe2dbe59340de63f062e0515a7f3742e3b1b"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/lean-version.invocation.json": {
+      "bytes": 418,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/lean-version.invocation.json",
+      "sha256": "f68df4e3d4a33ecaf0009d74f1da418f20c9058bbed4e50ee4f1ae387fb5f361"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/lean-version.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/lean-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/lean-version.stdout": {
+      "bytes": 106,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/lean-version.stdout",
+      "sha256": "63f3e16bf0258e2cc0ab3010eb1830723df9bb85097b7b72b0137b9be25a78e9"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/lean-version.terminal.json": {
+      "bytes": 512,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/lean-version.terminal.json",
+      "sha256": "794eb224c27bb59da9dbd59e6fb2585402f8dbd12f58f8936df937dc6f4670ef"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/original-source.invocation.json": {
+      "bytes": 508,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/original-source.invocation.json",
+      "sha256": "12cd78f3f97d3271c87d2c75c7101f459c11c6aed019bbf3a57a149133a07f11"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/original-source.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/original-source.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/original-source.stdout": {
+      "bytes": 31637,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/original-source.stdout",
+      "sha256": "c21e69c48f5ae1d6439466c577f0f307068af138adba9c02034827163c2c00de"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/original-source.terminal.json": {
+      "bytes": 602,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/original-source.terminal.json",
+      "sha256": "fd8117a8295b2e5b8bb7ffeeeb3a8addb69bf861262b6d3b4b5eb6edcd83fe68"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/positive/Interleave.lean": {
+      "bytes": 3496,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/positive/Interleave.lean",
+      "sha256": "3e8537e9cf2f0f5b38257e6a4e19aa1ef2544ff5ce32e45f57068f74f7639ef3"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/positive/axioms.json": {
+      "bytes": 471,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/positive/axioms.json",
+      "sha256": "46bb303555079e42a07279efa38803c0e8b97e308c96e126876a825c101d3a63"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/positive/lean.invocation.json": {
+      "bytes": 487,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/positive/lean.invocation.json",
+      "sha256": "2490dae4f8e9d7dfd9d44cca3bcfd7db5d2cb5f344a482690b9551add19335bc"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/positive/lean.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/positive/lean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/positive/lean.stdout": {
+      "bytes": 468,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/positive/lean.stdout",
+      "sha256": "583414943f33bd9a228b92bd10e609fbd45bc168f5c806cc2561efddc850f9ba"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/positive/lean.terminal.json": {
+      "bytes": 581,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/positive/lean.terminal.json",
+      "sha256": "32e16e6e845647c61c33c44abfbd013ce5b4316d5f01c892faae624df998f9c6"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/result.json": {
+      "bytes": 1811,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/result.json",
+      "sha256": "5c7714c819df138c645e0ec38418055794c4b76df382ce355007f78236080f56"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-debug.invocation.json": {
+      "bytes": 589,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-debug.invocation.json",
+      "sha256": "8513d462ffb6716f93610bf2deca5aff63a3bb8dd09b1b8cb550b160b6119936"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-debug.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-debug.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-debug.stdout": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-debug.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-debug.terminal.json": {
+      "bytes": 683,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-debug.terminal.json",
+      "sha256": "546394a58c3b3428919ba80ca66e3009e1446c671cab90ccf640b08eea3745db"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-optimized.invocation.json": {
+      "bytes": 614,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-optimized.invocation.json",
+      "sha256": "409c1e1bb386e608b25cd10e6751af107f9baec7d1f69b59f0d7ec647ad1cefa"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-optimized.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-optimized.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-optimized.stdout": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-optimized.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-optimized.terminal.json": {
+      "bytes": 708,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/compile-optimized.terminal.json",
+      "sha256": "cd2e7c6eb2937471a4625607dcef63027636b79560ac0a86383e31b3b00e2a2b"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/fnv.rs": {
+      "bytes": 4569,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/fnv.rs",
+      "sha256": "a836a03afbf5080eea9d35e040896dd823b66954ed5db356a7de88cfc0d1945d"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/original.rs": {
+      "bytes": 192,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/original.rs",
+      "sha256": "e00e671b2222b1f0c78bcc678622ca04b8b04ada2c12ebc8083473cb7f557de8"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/test-debug.invocation.json": {
+      "bytes": 452,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/test-debug.invocation.json",
+      "sha256": "449b6e66a90b78a73d0365c3717de0e66ea5eec5b93ad8ca79c35741fe951ce7"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/test-debug.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/test-debug.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/test-debug.stdout": {
+      "bytes": 412,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/test-debug.stdout",
+      "sha256": "f679b1eea52532c25a98f3818402659c8230987d1ca5c220a7ae99d4c25960a0"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/test-debug.terminal.json": {
+      "bytes": 546,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/test-debug.terminal.json",
+      "sha256": "b2b3d414431fbb63474a914205142a6174ba77b286c9d64193688e885b092372"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/test-optimized.invocation.json": {
+      "bytes": 456,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/test-optimized.invocation.json",
+      "sha256": "3412cc0d39fc561ff8279247fb49660468ba6d5a9fe342d66a50928351acb419"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/test-optimized.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/test-optimized.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/test-optimized.stdout": {
+      "bytes": 412,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/test-optimized.stdout",
+      "sha256": "15c0fe614128a87a0d980bef0b753c2aa81c962930bf24eace5a1ea1204b82d9"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/test-optimized.terminal.json": {
+      "bytes": 550,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/test-optimized.terminal.json",
+      "sha256": "8ae6583e94191472221be25915b0bd1d38b1aeddc4d03e750827b4658a778fbe"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rust/tests.rs": {
+      "bytes": 577,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/tests.rs",
+      "sha256": "a140d5e6fe1e54e5e31dc8039184bd795e40b79e4db7f7ef54106ba8e70e86d9"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rustc-version.invocation.json": {
+      "bytes": 464,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rustc-version.invocation.json",
+      "sha256": "2fd9759a618025d40baae33b3089f2380486627c038a7e7a3ae9cb3189167e30"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rustc-version.stderr": {
+      "bytes": 0,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rustc-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rustc-version.stdout": {
+      "bytes": 196,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rustc-version.stdout",
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69"
+    },
+    "kv9-raft-fnv-interleave-proof-20260914-first/rustc-version.terminal.json": {
+      "bytes": 558,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rustc-version.terminal.json",
+      "sha256": "9f2a987971bfa1ae20ba3a44f45895365e5031031c19f1fa96f963cab760ba93"
+    }
+  },
+  "omitted": [
+    {
+      "bytes": 6348944,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/tests-debug",
+      "reason": "Original executable retained locally",
+      "sha256": "c1a90399feea93e1315ece4e41601ba424aadea941616515d0fce7ac0be7dc24"
+    },
+    {
+      "bytes": 6287296,
+      "path": "/tmp/kv9-raft-fnv-interleave-proof-20260914-first/rust/tests-optimized",
+      "reason": "Original executable retained locally",
+      "sha256": "93af7556aa3f917620b9e0c8d24f26ac3691974924a9f18b806165feb62ad118"
+    },
+    {
+      "bytes": 467168,
+      "path": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/fnv-interleave-bench",
+      "reason": "Original executable retained locally",
+      "sha256": "98a6db582606ebe1b99a5704c4e1acb31e4b5d3d7c9ed2bc8393621c7bdaf884"
+    }
+  ],
+  "scope": "Source-bound kernel proof/test and microbenchmark evidence; no database write integration or QPS acceptance."
+}

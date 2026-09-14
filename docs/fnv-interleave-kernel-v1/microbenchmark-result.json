@@ -1,0 +1,231 @@
+{
+  "all_recorded_children_reaped": true,
+  "available_after_bytes": 114787627008,
+  "available_before_bytes": 114788270080,
+  "binary_bytes": 467168,
+  "binary_sha256": "98a6db582606ebe1b99a5704c4e1acb31e4b5d3d7c9ed2bc8393621c7bdaf884",
+  "child_result_paths": [
+    "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compile-result.json",
+    "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/compiler-version-result.json",
+    "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/measure-result.json",
+    "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-revision-result.json",
+    "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/source-status-result.json"
+  ],
+  "children": [
+    {
+      "absent": true,
+      "argv": [
+        "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+        "-Vv"
+      ],
+      "complete": true,
+      "ended_ns": 1789415517820322144,
+      "exit_code": 0,
+      "identity": {
+        "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "cpu_affinity": [
+          6
+        ],
+        "executable": "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+        "executable_bytes": 656616,
+        "executable_device": 66306,
+        "executable_inode": 107366956,
+        "pid": 3871954,
+        "start_ticks": 170423014
+      },
+      "identity_capture_error": null,
+      "pid": 3871954,
+      "reaped": true,
+      "stage": "compiler-version",
+      "started_ns": 1789415517717278680,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 196,
+        "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69"
+      }
+    },
+    {
+      "absent": true,
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "complete": true,
+      "ended_ns": 1789415517822044790,
+      "exit_code": 0,
+      "identity": null,
+      "identity_capture_error": "FileNotFoundError(2, 'No such file or directory')",
+      "pid": 3871956,
+      "reaped": true,
+      "stage": "source-revision",
+      "started_ns": 1789415517820559168,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "sha256": "a3b7a086ec439fd51e12cb489a2f8156d6b92d49c32271ede3734a136ca36191"
+      }
+    },
+    {
+      "absent": true,
+      "argv": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "complete": true,
+      "ended_ns": 1789415517924348670,
+      "exit_code": 0,
+      "identity": {
+        "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "cpu_affinity": [
+          6
+        ],
+        "executable": "/usr/bin/git",
+        "executable_bytes": 4066232,
+        "executable_device": 66306,
+        "executable_inode": 12194883,
+        "pid": 3871957,
+        "start_ticks": 170423024
+      },
+      "identity_capture_error": null,
+      "pid": 3871957,
+      "reaped": true,
+      "stage": "source-status",
+      "started_ns": 1789415517822133726,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "absent": true,
+      "argv": [
+        "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2021",
+        "--crate-name",
+        "fnv_interleave_bench",
+        "/tmp/kv9-raft-fnv-interleave-20260914-first/experiments/fnv-interleave/bench.rs",
+        "-C",
+        "opt-level=3",
+        "-C",
+        "lto=thin",
+        "-C",
+        "codegen-units=1",
+        "-C",
+        "panic=unwind",
+        "-C",
+        "debuginfo=0",
+        "-C",
+        "debug-assertions=no",
+        "-C",
+        "overflow-checks=no",
+        "-C",
+        "strip=debuginfo",
+        "-o",
+        "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/fnv-interleave-bench"
+      ],
+      "complete": true,
+      "ended_ns": 1789415520155374691,
+      "exit_code": 0,
+      "identity": {
+        "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "cpu_affinity": [
+          6
+        ],
+        "executable": "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+        "executable_bytes": 656616,
+        "executable_device": 66306,
+        "executable_inode": 107366956,
+        "pid": 3871958,
+        "start_ticks": 170423034
+      },
+      "identity_capture_error": null,
+      "pid": 3871958,
+      "reaped": true,
+      "stage": "compile",
+      "started_ns": 1789415517924585193,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "absent": true,
+      "argv": [
+        "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/fnv-interleave-bench"
+      ],
+      "complete": true,
+      "ended_ns": 1789415523365424603,
+      "exit_code": 0,
+      "identity": {
+        "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "cpu_affinity": [
+          6
+        ],
+        "executable": "/tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first/fnv-interleave-bench",
+        "executable_bytes": 467168,
+        "executable_device": 66306,
+        "executable_inode": 119804424,
+        "pid": 3872246,
+        "start_ticks": 170423257
+      },
+      "identity_capture_error": null,
+      "pid": 3872246,
+      "reaped": true,
+      "stage": "measure",
+      "started_ns": 1789415520155745335,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 31530,
+        "sha256": "ae1ed83293647520770aca1fbe7fa715a2c40c6a31f3a18c43a3a146bfc908ba"
+      }
+    }
+  ],
+  "complete": true,
+  "cpu": 6,
+  "ended_ns": 1789415523368434549,
+  "harness_identity": {
+    "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "cpu_affinity": [
+      6
+    ],
+    "executable": "/usr/bin/python3.12",
+    "executable_bytes": 8020928,
+    "executable_device": 66306,
+    "executable_inode": 12191968,
+    "pid": 3871953,
+    "start_ticks": 170423010
+  },
+  "pid": 3871953,
+  "runtime_source_changes": false,
+  "rustc_sha256": "103b60e1b1339968c1d74202ea1d45686037e82c4ea3e0569de24b18a1e6836a",
+  "scope": "Standalone FNV kernel only; no database QPS, Ready grouping or promotion",
+  "selected_cpuinfo_sha256": "342a87fbb9a83316d0e7217c78b4a9ff44c54cbe959447961d6ca1ee4430717e",
+  "started_ns": 1789415517716113698,
+  "uname": [
+    "Linux",
+    "workstation",
+    "6.17.0-19-generic",
+    "#19~24.04.2-Ubuntu SMP PREEMPT_DYNAMIC Fri Mar  6 23:08:46 UTC 2",
+    "x86_64"
+  ]
+}

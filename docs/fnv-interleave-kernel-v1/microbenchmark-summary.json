@@ -1,0 +1,2737 @@
+{
+  "complete": true,
+  "input_scope": "Deterministic reused warm buffers; no original WAL payload reads or Ready-group claim",
+  "latency_scope": "Elapsed time per four-frame kernel group, no individual-call histogram/quantile",
+  "pooled": [
+    {
+      "case": "equal-0",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 14095893,
+          "groups": 3000000,
+          "input_bytes": 0,
+          "mib_per_second": null,
+          "ns_per_group": 4.698631
+        },
+        "serial": {
+          "elapsed_ns": 12353082,
+          "groups": 3000000,
+          "input_bytes": 0,
+          "mib_per_second": null,
+          "ns_per_group": 4.117694
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 0.8763603696480955
+    },
+    {
+      "case": "equal-32",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 35542010,
+          "groups": 1572864,
+          "input_bytes": 201326592,
+          "mib_per_second": 5402.058015289513,
+          "ns_per_group": 22.597001393636067
+        },
+        "serial": {
+          "elapsed_ns": 60481217,
+          "groups": 1572864,
+          "input_bytes": 201326592,
+          "mib_per_second": 3174.539295398107,
+          "ns_per_group": 38.45292218526205
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 1.7016825159860123
+    },
+    {
+      "case": "equal-205",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36430875,
+          "groups": 245520,
+          "input_bytes": 201326400,
+          "mib_per_second": 5270.249943064262,
+          "ns_per_group": 148.3825146627566
+        },
+        "serial": {
+          "elapsed_ns": 122070429,
+          "groups": 245520,
+          "input_bytes": 201326400,
+          "mib_per_second": 1572.8609989117942,
+          "ns_per_group": 497.19138563049853
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 3.3507410678442393
+    },
+    {
+      "case": "equal-206",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36456203,
+          "groups": 244326,
+          "input_bytes": 201324624,
+          "mib_per_second": 5266.5419700714665,
+          "ns_per_group": 149.21131193569246
+        },
+        "serial": {
+          "elapsed_ns": 122231752,
+          "groups": 244326,
+          "input_bytes": 201324624,
+          "mib_per_second": 1570.771260555484,
+          "ns_per_group": 500.28139453025875
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 3.352838253616264
+    },
+    {
+      "case": "equal-10600",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36480117,
+          "groups": 4746,
+          "input_bytes": 201230400,
+          "mib_per_second": 5260.6263340700425,
+          "ns_per_group": 7686.497471554993
+        },
+        "serial": {
+          "elapsed_ns": 143685433,
+          "groups": 4746,
+          "input_bytes": 201230400,
+          "mib_per_second": 1335.6139182192271,
+          "ns_per_group": 30275.0596291614
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 3.9387327897002087
+    },
+    {
+      "case": "equal-10601",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36214300,
+          "groups": 4746,
+          "input_bytes": 201249384,
+          "mib_per_second": 5299.73984623143,
+          "ns_per_group": 7630.488832701222
+        },
+        "serial": {
+          "elapsed_ns": 143610392,
+          "groups": 4746,
+          "input_bytes": 201249384,
+          "mib_per_second": 1336.4378861480923,
+          "ns_per_group": 30259.248209018122
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 3.965571390307144
+    },
+    {
+      "case": "equal-65536",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36211393,
+          "groups": 768,
+          "input_bytes": 201326592,
+          "mib_per_second": 5302.198675427924,
+          "ns_per_group": 47150.251302083336
+        },
+        "serial": {
+          "elapsed_ns": 144470662,
+          "groups": 768,
+          "input_bytes": 201326592,
+          "mib_per_second": 1328.989549449147,
+          "ns_per_group": 188112.84114583334
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 3.989646628617684
+    },
+    {
+      "case": "skew-point-batch",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 136133442,
+          "groups": 17949,
+          "input_bytes": 201298035,
+          "mib_per_second": 1410.1807983562658,
+          "ns_per_group": 7584.458298512452
+        },
+        "serial": {
+          "elapsed_ns": 142481549,
+          "groups": 17949,
+          "input_bytes": 201298035,
+          "mib_per_second": 1347.3517607711185,
+          "ns_per_group": 7938.13298791019
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 1.0466315029337172
+    },
+    {
+      "case": "skew-empty-point-batch",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 142783645,
+          "groups": 18576,
+          "input_bytes": 201308112,
+          "mib_per_second": 1344.5683929600818,
+          "ns_per_group": 7686.45806416882
+        },
+        "serial": {
+          "elapsed_ns": 142727880,
+          "groups": 18576,
+          "input_bytes": 201308112,
+          "mib_per_second": 1345.0937272986387,
+          "ns_per_group": 7683.456072351421
+        }
+      },
+      "order": "forward",
+      "serial_over_interleaved_ns_ratio": 0.9996094440648298
+    },
+    {
+      "case": "equal-0",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 14067551,
+          "groups": 3000000,
+          "input_bytes": 0,
+          "mib_per_second": null,
+          "ns_per_group": 4.689183666666667
+        },
+        "serial": {
+          "elapsed_ns": 11947601,
+          "groups": 3000000,
+          "input_bytes": 0,
+          "mib_per_second": null,
+          "ns_per_group": 3.982533666666667
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 0.8493021279965504
+    },
+    {
+      "case": "equal-32",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 35545667,
+          "groups": 1572864,
+          "input_bytes": 201326592,
+          "mib_per_second": 5401.5022421720205,
+          "ns_per_group": 22.599326451619465
+        },
+        "serial": {
+          "elapsed_ns": 60255536,
+          "groups": 1572864,
+          "input_bytes": 201326592,
+          "mib_per_second": 3186.429210421429,
+          "ns_per_group": 38.30943806966146
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 1.6951584000379007
+    },
+    {
+      "case": "equal-205",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36489764,
+          "groups": 245520,
+          "input_bytes": 201326400,
+          "mib_per_second": 5261.7445510069965,
+          "ns_per_group": 148.62236884978822
+        },
+        "serial": {
+          "elapsed_ns": 121998286,
+          "groups": 245520,
+          "input_bytes": 201326400,
+          "mib_per_second": 1573.7911014137628,
+          "ns_per_group": 496.89754806125774
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 3.3433563998934055
+    },
+    {
+      "case": "equal-206",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36646269,
+          "groups": 244326,
+          "input_bytes": 201324624,
+          "mib_per_second": 5239.22703206008,
+          "ns_per_group": 149.98923160040275
+        },
+        "serial": {
+          "elapsed_ns": 122044801,
+          "groups": 244326,
+          "input_bytes": 201324624,
+          "mib_per_second": 1573.1774036728145,
+          "ns_per_group": 499.51622422501083
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 3.33034724489961
+    },
+    {
+      "case": "equal-10600",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36374247,
+          "groups": 4746,
+          "input_bytes": 201230400,
+          "mib_per_second": 5275.937785328071,
+          "ns_per_group": 7664.190265486725
+        },
+        "serial": {
+          "elapsed_ns": 143744493,
+          "groups": 4746,
+          "input_bytes": 201230400,
+          "mib_per_second": 1335.0651573146267,
+          "ns_per_group": 30287.50379266751
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 3.9518204459325306
+    },
+    {
+      "case": "equal-10601",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36207957,
+          "groups": 4746,
+          "input_bytes": 201249384,
+          "mib_per_second": 5300.668267844521,
+          "ns_per_group": 7629.152338811631
+        },
+        "serial": {
+          "elapsed_ns": 143865551,
+          "groups": 4746,
+          "input_bytes": 201249384,
+          "mib_per_second": 1334.067588656988,
+          "ns_per_group": 30313.011167298777
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 3.973313131144074
+    },
+    {
+      "case": "equal-65536",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 36223526,
+          "groups": 768,
+          "input_bytes": 201326592,
+          "mib_per_second": 5300.422714232734,
+          "ns_per_group": 47166.049479166664
+        },
+        "serial": {
+          "elapsed_ns": 143765593,
+          "groups": 768,
+          "input_bytes": 201326592,
+          "mib_per_second": 1335.5073073708254,
+          "ns_per_group": 187194.78255208334
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 3.96884590969968
+    },
+    {
+      "case": "skew-point-batch",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 135750195,
+          "groups": 17949,
+          "input_bytes": 201298035,
+          "mib_per_second": 1414.161990135973,
+          "ns_per_group": 7563.106301186695
+        },
+        "serial": {
+          "elapsed_ns": 142205303,
+          "groups": 17949,
+          "input_bytes": 201298035,
+          "mib_per_second": 1349.9691071474767,
+          "ns_per_group": 7922.742381191153
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 1.0475513718414917
+    },
+    {
+      "case": "skew-empty-point-batch",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 142756064,
+          "groups": 18576,
+          "input_bytes": 201308112,
+          "mib_per_second": 1344.828168550744,
+          "ns_per_group": 7684.973298880275
+        },
+        "serial": {
+          "elapsed_ns": 142766853,
+          "groups": 18576,
+          "input_bytes": 201308112,
+          "mib_per_second": 1344.7265388600588,
+          "ns_per_group": 7685.5541020671835
+        }
+      },
+      "order": "reverse",
+      "serial_over_interleaved_ns_ratio": 1.0000755764742857
+    },
+    {
+      "case": "equal-0",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 28163444,
+          "groups": 6000000,
+          "input_bytes": 0,
+          "mib_per_second": null,
+          "ns_per_group": 4.693907333333334
+        },
+        "serial": {
+          "elapsed_ns": 24300683,
+          "groups": 6000000,
+          "input_bytes": 0,
+          "mib_per_second": null,
+          "ns_per_group": 4.0501138333333335
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 0.8628448637176618
+    },
+    {
+      "case": "equal-32",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 71087677,
+          "groups": 3145728,
+          "input_bytes": 402653184,
+          "mib_per_second": 5401.780114435305,
+          "ns_per_group": 22.598163922627766
+        },
+        "serial": {
+          "elapsed_ns": 120736753,
+          "groups": 3145728,
+          "input_bytes": 402653184,
+          "mib_per_second": 3180.473140602017,
+          "ns_per_group": 38.381180127461754
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 1.6984202902002272
+    },
+    {
+      "case": "equal-205",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 72920639,
+          "groups": 491040,
+          "input_bytes": 402652800,
+          "mib_per_second": 5265.993812657929,
+          "ns_per_group": 148.5024417562724
+        },
+        "serial": {
+          "elapsed_ns": 244068715,
+          "groups": 491040,
+          "input_bytes": 402652800,
+          "mib_per_second": 1573.325912700702,
+          "ns_per_group": 497.04446684587816
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 3.347045752026392
+    },
+    {
+      "case": "equal-206",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 73102472,
+          "groups": 488652,
+          "input_bytes": 402649248,
+          "mib_per_second": 5252.84899172617,
+          "ns_per_group": 149.6002717680476
+        },
+        "serial": {
+          "elapsed_ns": 244276553,
+          "groups": 488652,
+          "input_bytes": 402649248,
+          "mib_per_second": 1571.9734113731768,
+          "ns_per_group": 499.8988093776348
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 3.3415635110123225
+    },
+    {
+      "case": "equal-10600",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 72854364,
+          "groups": 9492,
+          "input_bytes": 402460800,
+          "mib_per_second": 5268.27093460472,
+          "ns_per_group": 7675.343868520859
+        },
+        "serial": {
+          "elapsed_ns": 287429926,
+          "groups": 9492,
+          "input_bytes": 402460800,
+          "mib_per_second": 1335.3394813882828,
+          "ns_per_group": 30281.281710914453
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 3.945267108501558
+    },
+    {
+      "case": "equal-10601",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 72422257,
+          "groups": 9492,
+          "input_bytes": 402498768,
+          "mib_per_second": 5300.204016380735,
+          "ns_per_group": 7629.820585756426
+        },
+        "serial": {
+          "elapsed_ns": 287475943,
+          "groups": 9492,
+          "input_bytes": 402498768,
+          "mib_per_second": 1335.2516854836713,
+          "ns_per_group": 30286.12968815845
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 3.969441921700949
+    },
+    {
+      "case": "equal-65536",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 72434919,
+          "groups": 1536,
+          "input_bytes": 402653184,
+          "mib_per_second": 5301.310546091727,
+          "ns_per_group": 47158.150390625
+        },
+        "serial": {
+          "elapsed_ns": 288236255,
+          "groups": 1536,
+          "input_bytes": 402653184,
+          "mib_per_second": 1332.2404567045182,
+          "ns_per_group": 187653.81184895834
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 3.9792445270767822
+    },
+    {
+      "case": "skew-point-batch",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 271883637,
+          "groups": 35898,
+          "input_bytes": 402596070,
+          "mib_per_second": 1412.168588303432,
+          "ns_per_group": 7573.782299849574
+        },
+        "serial": {
+          "elapsed_ns": 284686852,
+          "groups": 35898,
+          "input_bytes": 402596070,
+          "mib_per_second": 1348.659164087749,
+          "ns_per_group": 7930.437684550671
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 1.0470907890642938
+    },
+    {
+      "case": "skew-empty-point-batch",
+      "implementations": {
+        "interleaved": {
+          "elapsed_ns": 285539709,
+          "groups": 37152,
+          "input_bytes": 402616224,
+          "mib_per_second": 1344.6982682092234,
+          "ns_per_group": 7685.715681524548
+        },
+        "serial": {
+          "elapsed_ns": 285494733,
+          "groups": 37152,
+          "input_bytes": 402616224,
+          "mib_per_second": 1344.9101080168286,
+          "ns_per_group": 7684.5050872093025
+        }
+      },
+      "order": "both",
+      "serial_over_interleaved_ns_ratio": 0.9998424877571056
+    }
+  ],
+  "rows": [
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 4243226,
+      "groups": 1000000,
+      "implementation": "serial",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 4.243226,
+      "order": "forward",
+      "ordinal": 0,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 4688469,
+      "groups": 1000000,
+      "implementation": "interleaved",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 4.688469,
+      "order": "forward",
+      "ordinal": 1,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 20415847,
+      "groups": 524288,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 3134.819730967,
+      "ns_per_group": 38.940137863,
+      "order": "forward",
+      "ordinal": 2,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 11847825,
+      "groups": 524288,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 5401.835357967,
+      "ns_per_group": 22.597932816,
+      "order": "forward",
+      "ordinal": 3,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 40656667,
+      "groups": 81840,
+      "implementation": "serial",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 1574.156065593,
+      "ns_per_group": 496.782343597,
+      "order": "forward",
+      "ordinal": 4,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 12153808,
+      "groups": 81840,
+      "implementation": "interleaved",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 5265.83429365,
+      "ns_per_group": 148.506940371,
+      "order": "forward",
+      "ordinal": 5,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 40786721,
+      "groups": 81442,
+      "implementation": "serial",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 1569.122813027,
+      "ns_per_group": 500.806966921,
+      "order": "forward",
+      "ordinal": 6,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 12150772,
+      "groups": 81442,
+      "implementation": "interleaved",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 5267.103554379,
+      "ns_per_group": 149.195402863,
+      "order": "forward",
+      "ordinal": 7,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 47813278,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 1337.900768626,
+      "ns_per_group": 30223.310998736,
+      "order": "forward",
+      "ordinal": 8,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 12172352,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 5255.304922723,
+      "ns_per_group": 7694.280657396,
+      "order": "forward",
+      "ordinal": 9,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 47826803,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 1337.648603395,
+      "ns_per_group": 30231.860303413,
+      "order": "forward",
+      "ordinal": 10,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 12077725,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 5296.979045126,
+      "ns_per_group": 7634.465865992,
+      "order": "forward",
+      "ordinal": 11,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 48039471,
+      "groups": 256,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 1332.237817523,
+      "ns_per_group": 187654.18359375,
+      "order": "forward",
+      "ordinal": 12,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 12081011,
+      "groups": 256,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 5297.569880534,
+      "ns_per_group": 47191.44921875,
+      "order": "forward",
+      "ordinal": 13,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 47425532,
+      "groups": 5983,
+      "implementation": "serial",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1349.292654728,
+      "ns_per_group": 7926.714357346,
+      "order": "forward",
+      "ordinal": 14,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 45548237,
+      "groups": 5983,
+      "implementation": "interleaved",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1404.90447466,
+      "ns_per_group": 7612.942838041,
+      "order": "forward",
+      "ordinal": 15,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47522172,
+      "groups": 6192,
+      "implementation": "serial",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1346.616172472,
+      "ns_per_group": 7674.769379845,
+      "order": "forward",
+      "ordinal": 16,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47642198,
+      "groups": 6192,
+      "implementation": "interleaved",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1343.223613785,
+      "ns_per_group": 7694.153423773,
+      "order": "forward",
+      "ordinal": 17,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47563571,
+      "groups": 6192,
+      "implementation": "interleaved",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1345.444087161,
+      "ns_per_group": 7681.455264858,
+      "order": "reverse",
+      "ordinal": 0,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47604597,
+      "groups": 6192,
+      "implementation": "serial",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1344.28457332,
+      "ns_per_group": 7688.080910853,
+      "order": "reverse",
+      "ordinal": 1,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 45202018,
+      "groups": 5983,
+      "implementation": "interleaved",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1415.665158449,
+      "ns_per_group": 7555.075714524,
+      "order": "reverse",
+      "ordinal": 2,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 47382281,
+      "groups": 5983,
+      "implementation": "serial",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1350.524301989,
+      "ns_per_group": 7919.48537523,
+      "order": "reverse",
+      "ordinal": 3,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 12096019,
+      "groups": 256,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 5290.996980081,
+      "ns_per_group": 47250.07421875,
+      "order": "reverse",
+      "ordinal": 4,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 47865917,
+      "groups": 256,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 1337.068294336,
+      "ns_per_group": 186976.23828125,
+      "order": "reverse",
+      "ordinal": 5,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 12088385,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 5292.307966514,
+      "ns_per_group": 7641.204171934,
+      "order": "reverse",
+      "ordinal": 6,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 47881987,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 1336.106963101,
+      "ns_per_group": 30266.742730721,
+      "order": "reverse",
+      "ordinal": 7,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 12068287,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 5300.621487268,
+      "ns_per_group": 7628.5,
+      "order": "reverse",
+      "ordinal": 8,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 48067413,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 1330.827215243,
+      "ns_per_group": 30383.952591656,
+      "order": "reverse",
+      "ordinal": 9,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 12172162,
+      "groups": 81442,
+      "implementation": "interleaved",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 5257.847734006,
+      "ns_per_group": 149.458043761,
+      "order": "reverse",
+      "ordinal": 10,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 40643362,
+      "groups": 81442,
+      "implementation": "serial",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 1574.65748994,
+      "ns_per_group": 499.046708087,
+      "order": "reverse",
+      "ordinal": 11,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 12133990,
+      "groups": 81840,
+      "implementation": "interleaved",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 5274.434787308,
+      "ns_per_group": 148.264784946,
+      "order": "reverse",
+      "ordinal": 12,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 40697745,
+      "groups": 81840,
+      "implementation": "serial",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 1572.56720157,
+      "ns_per_group": 497.284274194,
+      "order": "reverse",
+      "ordinal": 13,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 11945407,
+      "groups": 524288,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 5357.707778395,
+      "ns_per_group": 22.78405571,
+      "order": "reverse",
+      "ordinal": 14,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 20068417,
+      "groups": 524288,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 3189.090599423,
+      "ns_per_group": 38.277467728,
+      "order": "reverse",
+      "ordinal": 15,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 4686455,
+      "groups": 1000000,
+      "implementation": "interleaved",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 4.686455,
+      "order": "reverse",
+      "ordinal": 16,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 3980343,
+      "groups": 1000000,
+      "implementation": "serial",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 3.980343,
+      "order": "reverse",
+      "ordinal": 17,
+      "repeat": 0
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 3973671,
+      "groups": 1000000,
+      "implementation": "serial",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 3.973671,
+      "order": "forward",
+      "ordinal": 0,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 4700481,
+      "groups": 1000000,
+      "implementation": "interleaved",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 4.700481,
+      "order": "forward",
+      "ordinal": 1,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 20019936,
+      "groups": 524288,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 3196.813416387,
+      "ns_per_group": 38.184997559,
+      "order": "forward",
+      "ordinal": 2,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 11830181,
+      "groups": 524288,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 5409.891868941,
+      "ns_per_group": 22.564279556,
+      "order": "forward",
+      "ordinal": 3,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 40788945,
+      "groups": 81840,
+      "implementation": "serial",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 1569.051098646,
+      "ns_per_group": 498.398643695,
+      "order": "forward",
+      "ordinal": 4,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 12137838,
+      "groups": 81840,
+      "implementation": "interleaved",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 5272.76265879,
+      "ns_per_group": 148.311803519,
+      "order": "forward",
+      "ordinal": 5,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 40625900,
+      "groups": 81442,
+      "implementation": "serial",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 1575.334316031,
+      "ns_per_group": 498.832297832,
+      "order": "forward",
+      "ordinal": 6,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 12145622,
+      "groups": 81442,
+      "implementation": "interleaved",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 5269.336917422,
+      "ns_per_group": 149.132167678,
+      "order": "forward",
+      "ordinal": 7,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 47958700,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 1333.843940447,
+      "ns_per_group": 30315.233881163,
+      "order": "forward",
+      "ordinal": 8,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 12083937,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 5293.756611502,
+      "ns_per_group": 7638.392541087,
+      "order": "forward",
+      "ordinal": 9,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 47930166,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 1334.763919612,
+      "ns_per_group": 30297.19721871,
+      "order": "forward",
+      "ordinal": 10,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 12062747,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 5303.556166584,
+      "ns_per_group": 7624.998103666,
+      "order": "forward",
+      "ordinal": 11,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 48129790,
+      "groups": 256,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 1329.737777788,
+      "ns_per_group": 188006.9921875,
+      "order": "forward",
+      "ordinal": 12,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 12057807,
+      "groups": 256,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 5307.764504773,
+      "ns_per_group": 47100.80859375,
+      "order": "forward",
+      "ordinal": 13,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 47606931,
+      "groups": 5983,
+      "implementation": "serial",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1344.151379432,
+      "ns_per_group": 7957.033428046,
+      "order": "forward",
+      "ordinal": 14,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 45219190,
+      "groups": 5983,
+      "implementation": "interleaved",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1415.127559211,
+      "ns_per_group": 7557.945846565,
+      "order": "forward",
+      "ordinal": 15,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47668216,
+      "groups": 6192,
+      "implementation": "serial",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1342.490462958,
+      "ns_per_group": 7698.355297158,
+      "order": "forward",
+      "ordinal": 16,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47494280,
+      "groups": 6192,
+      "implementation": "interleaved",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1347.407000721,
+      "ns_per_group": 7670.264857881,
+      "order": "forward",
+      "ordinal": 17,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47641617,
+      "groups": 6192,
+      "implementation": "interleaved",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1343.239994692,
+      "ns_per_group": 7694.059593023,
+      "order": "reverse",
+      "ordinal": 0,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47513767,
+      "groups": 6192,
+      "implementation": "serial",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1346.854383619,
+      "ns_per_group": 7673.411983204,
+      "order": "reverse",
+      "ordinal": 1,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 45326121,
+      "groups": 5983,
+      "implementation": "interleaved",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1411.789064725,
+      "ns_per_group": 7575.818318569,
+      "order": "reverse",
+      "ordinal": 2,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 47354419,
+      "groups": 5983,
+      "implementation": "serial",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1351.318912268,
+      "ns_per_group": 7914.828514123,
+      "order": "reverse",
+      "ordinal": 3,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 12068658,
+      "groups": 256,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 5302.9922631,
+      "ns_per_group": 47143.1953125,
+      "order": "reverse",
+      "ordinal": 4,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 48005698,
+      "groups": 256,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 1333.175074342,
+      "ns_per_group": 187522.2578125,
+      "order": "reverse",
+      "ordinal": 5,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 12064219,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 5302.909060072,
+      "ns_per_group": 7625.928571429,
+      "order": "reverse",
+      "ordinal": 6,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 47931499,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 1334.72679913,
+      "ns_per_group": 30298.039823009,
+      "order": "reverse",
+      "ordinal": 7,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 12229328,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 5230.820645805,
+      "ns_per_group": 7730.295828066,
+      "order": "reverse",
+      "ordinal": 8,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 47845568,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 1336.997846629,
+      "ns_per_group": 30243.721871049,
+      "order": "reverse",
+      "ordinal": 9,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 12149680,
+      "groups": 81442,
+      "implementation": "interleaved",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 5267.576955907,
+      "ns_per_group": 149.181994548,
+      "order": "reverse",
+      "ordinal": 10,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 40738771,
+      "groups": 81442,
+      "implementation": "serial",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 1570.969688547,
+      "ns_per_group": 500.218204366,
+      "order": "reverse",
+      "ordinal": 11,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 12203370,
+      "groups": 81840,
+      "implementation": "interleaved",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 5244.44796518,
+      "ns_per_group": 149.112536657,
+      "order": "reverse",
+      "ordinal": 12,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 40579934,
+      "groups": 81840,
+      "implementation": "serial",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 1577.132652923,
+      "ns_per_group": 495.844745846,
+      "order": "reverse",
+      "ordinal": 13,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 11806307,
+      "groups": 524288,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 5420.831425102,
+      "ns_per_group": 22.518743515,
+      "order": "reverse",
+      "ordinal": 14,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 20045675,
+      "groups": 524288,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 3192.708651617,
+      "ns_per_group": 38.234090805,
+      "order": "reverse",
+      "ordinal": 15,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 4691755,
+      "groups": 1000000,
+      "implementation": "interleaved",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 4.691755,
+      "order": "reverse",
+      "ordinal": 16,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 3979051,
+      "groups": 1000000,
+      "implementation": "serial",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 3.979051,
+      "order": "reverse",
+      "ordinal": 17,
+      "repeat": 1
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 4136185,
+      "groups": 1000000,
+      "implementation": "serial",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 4.136185,
+      "order": "forward",
+      "ordinal": 0,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 4706943,
+      "groups": 1000000,
+      "implementation": "interleaved",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 4.706943,
+      "order": "forward",
+      "ordinal": 1,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 20045434,
+      "groups": 524288,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 3192.747036557,
+      "ns_per_group": 38.233631134,
+      "order": "forward",
+      "ordinal": 2,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 11864004,
+      "groups": 524288,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 5394.468848797,
+      "ns_per_group": 22.628791809,
+      "order": "forward",
+      "ordinal": 3,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 40624817,
+      "groups": 81840,
+      "implementation": "serial",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 1575.390209508,
+      "ns_per_group": 496.393169599,
+      "order": "forward",
+      "ordinal": 4,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 12139229,
+      "groups": 81840,
+      "implementation": "interleaved",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 5272.158467794,
+      "ns_per_group": 148.328800098,
+      "order": "forward",
+      "ordinal": 5,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 40819131,
+      "groups": 81442,
+      "implementation": "serial",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 1567.876944505,
+      "ns_per_group": 501.204918838,
+      "order": "forward",
+      "ordinal": 6,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 12159809,
+      "groups": 81442,
+      "implementation": "interleaved",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 5263.189116675,
+      "ns_per_group": 149.306365266,
+      "order": "forward",
+      "ordinal": 7,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 47913455,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 1335.103498312,
+      "ns_per_group": 30286.634007585,
+      "order": "forward",
+      "ordinal": 8,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 12223828,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 5233.17420588,
+      "ns_per_group": 7726.819216182,
+      "order": "forward",
+      "ordinal": 9,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 47853423,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 1336.904493494,
+      "ns_per_group": 30248.68710493,
+      "order": "forward",
+      "ordinal": 10,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 12073828,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 5298.688720578,
+      "ns_per_group": 7632.002528445,
+      "order": "forward",
+      "ordinal": 11,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 48301401,
+      "groups": 256,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 1325.013326218,
+      "ns_per_group": 188677.34765625,
+      "order": "forward",
+      "ordinal": 12,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 12072575,
+      "groups": 256,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 5301.271683961,
+      "ns_per_group": 47158.49609375,
+      "order": "forward",
+      "ordinal": 13,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 47449086,
+      "groups": 5983,
+      "implementation": "serial",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1348.622858071,
+      "ns_per_group": 7930.651178339,
+      "order": "forward",
+      "ordinal": 14,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 45366015,
+      "groups": 5983,
+      "implementation": "interleaved",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1410.547564607,
+      "ns_per_group": 7582.486210931,
+      "order": "forward",
+      "ordinal": 15,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47537492,
+      "groups": 6192,
+      "implementation": "serial",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1346.182195859,
+      "ns_per_group": 7677.243540052,
+      "order": "forward",
+      "ordinal": 16,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47647167,
+      "groups": 6192,
+      "implementation": "interleaved",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1343.083532463,
+      "ns_per_group": 7694.955910853,
+      "order": "forward",
+      "ordinal": 17,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47550876,
+      "groups": 6192,
+      "implementation": "interleaved",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1345.803290064,
+      "ns_per_group": 7679.40503876,
+      "order": "reverse",
+      "ordinal": 0,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 10837,
+      "case": "skew-empty-point-batch",
+      "elapsed_ns": 47648489,
+      "groups": 6192,
+      "implementation": "serial",
+      "input_bytes": 67102704,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        205,
+        10600,
+        32
+      ],
+      "mib_per_second": 1343.046268817,
+      "ns_per_group": 7695.169412145,
+      "order": "reverse",
+      "ordinal": 1,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 45222056,
+      "groups": 5983,
+      "implementation": "interleaved",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1415.037873868,
+      "ns_per_group": 7558.424870466,
+      "order": "reverse",
+      "ordinal": 2,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 11215,
+      "case": "skew-point-batch",
+      "elapsed_ns": 47468603,
+      "groups": 5983,
+      "implementation": "serial",
+      "input_bytes": 67099345,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        10600,
+        205
+      ],
+      "mib_per_second": 1348.068363718,
+      "ns_per_group": 7933.91325422,
+      "order": "reverse",
+      "ordinal": 3,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 12058849,
+      "groups": 256,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 5307.305863105,
+      "ns_per_group": 47104.87890625,
+      "order": "reverse",
+      "ordinal": 4,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 262144,
+      "case": "equal-65536",
+      "elapsed_ns": 47893978,
+      "groups": 256,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        65536,
+        65536,
+        65536,
+        65536
+      ],
+      "mib_per_second": 1336.284908303,
+      "ns_per_group": 187085.8515625,
+      "order": "reverse",
+      "ordinal": 5,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 12055353,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 5306.809036433,
+      "ns_per_group": 7620.324273072,
+      "order": "reverse",
+      "ordinal": 6,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 42404,
+      "case": "equal-10601",
+      "elapsed_ns": 48052065,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67083128,
+      "kind": "measurement",
+      "lengths": [
+        10601,
+        10601,
+        10601,
+        10601
+      ],
+      "mib_per_second": 1331.377876014,
+      "ns_per_group": 30374.250948167,
+      "order": "reverse",
+      "ordinal": 7,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 12076632,
+      "groups": 1582,
+      "implementation": "interleaved",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 5296.958737065,
+      "ns_per_group": 7633.774968394,
+      "order": "reverse",
+      "ordinal": 8,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 42400,
+      "case": "equal-10600",
+      "elapsed_ns": 47831512,
+      "groups": 1582,
+      "implementation": "serial",
+      "input_bytes": 67076800,
+      "kind": "measurement",
+      "lengths": [
+        10600,
+        10600,
+        10600,
+        10600
+      ],
+      "mib_per_second": 1337.390743297,
+      "ns_per_group": 30234.836915297,
+      "order": "reverse",
+      "ordinal": 9,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 12324427,
+      "groups": 81442,
+      "implementation": "interleaved",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 5192.888431215,
+      "ns_per_group": 151.327656492,
+      "order": "reverse",
+      "ordinal": 10,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 824,
+      "case": "equal-206",
+      "elapsed_ns": 40662668,
+      "groups": 81442,
+      "implementation": "serial",
+      "input_bytes": 67108208,
+      "kind": "measurement",
+      "lengths": [
+        206,
+        206,
+        206,
+        206
+      ],
+      "mib_per_second": 1573.909867145,
+      "ns_per_group": 499.283760222,
+      "order": "reverse",
+      "ordinal": 11,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 12152404,
+      "groups": 81840,
+      "implementation": "interleaved",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 5266.442669684,
+      "ns_per_group": 148.489784946,
+      "order": "reverse",
+      "ordinal": 12,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 820,
+      "case": "equal-205",
+      "elapsed_ns": 40720607,
+      "groups": 81840,
+      "implementation": "serial",
+      "input_bytes": 67108800,
+      "kind": "measurement",
+      "lengths": [
+        205,
+        205,
+        205,
+        205
+      ],
+      "mib_per_second": 1571.684306298,
+      "ns_per_group": 497.563624145,
+      "order": "reverse",
+      "ordinal": 13,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 11793953,
+      "groups": 524288,
+      "implementation": "interleaved",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 5426.509669828,
+      "ns_per_group": 22.49518013,
+      "order": "reverse",
+      "ordinal": 14,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 128,
+      "case": "equal-32",
+      "elapsed_ns": 20141444,
+      "groups": 524288,
+      "implementation": "serial",
+      "input_bytes": 67108864,
+      "kind": "measurement",
+      "lengths": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "mib_per_second": 3177.527887276,
+      "ns_per_group": 38.416755676,
+      "order": "reverse",
+      "ordinal": 15,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 4689341,
+      "groups": 1000000,
+      "implementation": "interleaved",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 4.689341,
+      "order": "reverse",
+      "ordinal": 16,
+      "repeat": 2
+    },
+    {
+      "bytes_per_group": 0,
+      "case": "equal-0",
+      "elapsed_ns": 3988207,
+      "groups": 1000000,
+      "implementation": "serial",
+      "input_bytes": 0,
+      "kind": "measurement",
+      "lengths": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mib_per_second": null,
+      "ns_per_group": 3.988207,
+      "order": "reverse",
+      "ordinal": 17,
+      "repeat": 2
+    }
+  ],
+  "scope": "Standalone FNV kernel only; no database QPS, Ready grouping or promotion"
+}

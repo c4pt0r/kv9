@@ -1,0 +1,78 @@
+{
+  "accepted": true,
+  "complete": true,
+  "controls": [
+    {
+      "name": "cross-lane-proof",
+      "rejected": true
+    },
+    {
+      "name": "proof-hole",
+      "rejected": true
+    },
+    {
+      "name": "custom-axiom",
+      "rejected": true
+    },
+    {
+      "name": "wrong-prime",
+      "rejected": true
+    },
+    {
+      "name": "wrong-lane",
+      "rejected": true
+    },
+    {
+      "name": "wrong-tail",
+      "rejected": true
+    }
+  ],
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "distinct_theorems": 6,
+  "ended_unix_ns": 1789415366768551176,
+  "runner_pid": 3861066,
+  "rust_tests": {
+    "distinct_tests": 4,
+    "profiles": [
+      "debug",
+      "optimized"
+    ],
+    "total_passes": 8
+  },
+  "scope": "Universal independent-fold equivalence under explicit Rust primitive/iterator mapping; standalone kernel only, no writer/Raft integration proof.",
+  "source_unchanged": true,
+  "started_unix_ns": 1789415365041545591,
+  "tools": {
+    "lean": {
+      "path": "/tmp/kv9-p0-tools/lean-4.33.1-linux/bin/lean",
+      "sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+      "version": "Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)"
+    },
+    "rustc": {
+      "path": "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "103b60e1b1339968c1d74202ea1d45686037e82c4ea3e0569de24b18a1e6836a",
+      "version": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "complete": true,
+  "archive_tool": {
+    "chunk_id": "38c84d",
+    "exit_code": 0
+  },
+  "independent_byte_readback": {
+    "chunk_id": "c88ed2",
+    "exit_code": 0,
+    "files": 107,
+    "decoded_bytes": 285321,
+    "compressed_bytes": 52232
+  },
+  "table_rows_checked": 9
+}

@@ -1,4 +1,10 @@
-# Four-frame FNV kernel experiment — prepared, not executed
+# Four-frame FNV kernel experiment
+
+The first root execution now completes all 108 rows. See the
+[results and integration contract](../../docs/WRITE-FNV-INTERLEAVE-KERNEL.md).
+The exact source prototype is `c00b57452360464d8d67acd055fb92280ba834b9`;
+actual session 17991 ends at 326c39/0. The commands below reproduce the fixed
+protocol in a fresh directory after source/proof review.
 
 `bench.rs` includes the exact production candidate module with
 `#[path = "../../crates/raft/src/storage/fnv.rs"]`; no checksum implementation is
@@ -29,18 +35,18 @@ This benchmark reuses warm synthetic buffers and measures only the
 checksum kernels. It cannot establish database QPS, storage latency, workload
 percentiles, Ready grouping or an end-to-end speedup.
 
-Root may run the following **only after explicit timing authorization and terminal
-proof/source checks**, substituting the actual reviewed source hashes and installed
-compiler path. No compile, test, executable probe or timing has run during this
-preparation. The module hash remains pending while root implements it.
+Root runs the following after terminal proof/source checks, substituting the
+installed compiler path and using a fresh output directory. No compile, test or
+timing ran during source preparation; the subsequent root execution is recorded
+above. The module and benchmark hashes below are the measured source versions.
 
 ```sh
 env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 taskset -c 6-15,22-31 \
   /usr/bin/python3 scripts/benchmark-fnv-interleave.py \
   --output /tmp/kv9-raft-fnv-interleave-microbenchmark-20260914-first \
   --rustc /ABSOLUTE/INSTALLED/TOOLCHAIN/bin/rustc \
-  --expected-module-sha256 ACTUAL_FNV_MODULE_SHA256 \
-  --expected-bench-sha256 ACTUAL_BENCH_SOURCE_SHA256 --cpu 6
+  --expected-module-sha256 a836a03afbf5080eea9d35e040896dd823b66954ed5db356a7de88cfc0d1945d \
+  --expected-bench-sha256 9e58d740e85048be56901d18a0645d1911386db7b45fc42c2b378f711d6e36cb --cpu 6
 ```
 
 Run from this candidate source worktree. The runner compiles once using Rust 2021,

@@ -1,0 +1,39 @@
+{
+  "proof": {
+    "session_id": 81919,
+    "terminal_receipt": "6e45e3",
+    "exit_code": 0
+  },
+  "development_first": {
+    "session_id": 46615,
+    "terminal_receipt": "500e42",
+    "exit_code": 143,
+    "reason": "Owned Lean process deliberately terminated after excessive concrete-state normalization memory usage."
+  },
+  "development_bounded": {
+    "session_id": 57740,
+    "terminal_receipt": "bd255d",
+    "exit_code": 1
+  },
+  "development_generic": {
+    "terminal_receipt": "1cc8ad",
+    "exit_code": 0
+  },
+  "headers": {
+    "session_id": 93984,
+    "terminal_receipt": "93b209",
+    "exit_code": 0
+  },
+  "disassembly": {
+    "terminal_receipt": "3d7b98",
+    "exit_code": 0
+  },
+  "pre_timing": {
+    "terminal_receipt": "489e1c",
+    "exit_code": 0
+  },
+  "post_timing": {
+    "terminal_receipt": "56a872",
+    "exit_code": 0
+  }
+}
