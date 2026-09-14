@@ -98,8 +98,9 @@ candidate](WRITE-PUBLISHED-DIRECTORY.md), `483b8c3`, now passes 12 conditional
 TLAPS statements / 24 fresh obligations, 793 tests/doctests, formatting, Clippy,
 five actual syscall cases and four refusal controls. It retains full ancestor
 sync during creation/recovery and avoids repeating it during normal rotation.
-Next qualify its default release, recovery and actual Chaos before a matched
-throughput/latency screen. No performance gain is claimed yet. Queue age and
+Its [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.md)
+now pass, including 364 complete operations and six fresh drained voters. Next
+run actual Chaos before a matched throughput/latency screen. No performance gain is claimed yet. Queue age and
 Ready/checksum group diagnostics remain secondary if this does not explain the
 cost. Preserve every quorum, publication and acknowledgment fence, required file
 and parent sync, and the original first-order FNV tail.
@@ -316,7 +317,8 @@ original failed audit and schema repair remain retained without workload reruns.
    with worse p99, while point throughput changes only 0.351%. Keep CRC selected.
    Completed next source checkpoint: published-directory reuse (`483b8c3`),
    with conditional proof, workspace tests and syscall-fault acceptance. Next
-   run its release/recovery/actual-Chaos gates, then a paired write screen.
+   run actual Chaos, then a paired write screen; exact default release and
+   independently audited ordinary recovery now pass.
    Keep receipt and persistent-map ownership as
    secondary targets; do not repeat rejected worker/transport sweeps.
    DPDK requires cross-host/NIC
