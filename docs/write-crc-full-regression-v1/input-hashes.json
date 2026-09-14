@@ -1,0 +1,826 @@
+{
+  "/tmp/kv9-crc-full-campaign-root-20260914-first/actual-audit-tool-terminal.json": {
+    "bytes": 526,
+    "sha256": "89650b431f258ce907804d434ded73ff1458766254676777a4e0af6a62d5e3da"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/core.py": {
+    "bytes": 6438,
+    "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/cpu.py": {
+    "bytes": 1561,
+    "sha256": "fafa22c1e2a6e0f391e378232b8e3f2135b23019dde3ce2bc14f6b8392ce3e95"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/gates.py": {
+    "bytes": 6973,
+    "sha256": "3f6090a886abdf296a96728f5531ed415e1c97f5a6b3715db33418fb9659c669"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/reader-pins.json": {
+    "bytes": 675,
+    "sha256": "6bb0839499bed5759fb04c3596993c61d46855848d437ca5cda6ab10f27fa359"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/report.py": {
+    "bytes": 20531,
+    "sha256": "c5b06246a08d4579e220bb520c720f2b760c70a4811d8c3788bc5621896dc7c3"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/runtime-binding.json": {
+    "bytes": 772,
+    "sha256": "052b45ca7ab655c7bf38433725fb34c2041aed41b677fc1ad5e6af011e863325"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/audit.py": {
+    "bytes": 56503,
+    "sha256": "8e8c091c2c0dc4b7bbadde6590400dff9994175e3585b4d67bedd3f5a0395962"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/matched-driver.py": {
+    "bytes": 52007,
+    "sha256": "71eb72b7d6c68475fb51db2aac6558f0da50e5f1b68c80087ffa65c527121e61"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/protocol.json": {
+    "bytes": 48237,
+    "sha256": "b849b46085787a7a4512b771fd3d9bd967722b25cd0149f1d4cbdfe234445fd8"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/results-first/audit.json": {
+    "bytes": 1388777,
+    "sha256": "99e3912ae4463aff73d038ae7b054aa70c2a8b322e9e29619aff3aed3e731d34"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/results-first/input-inventory.json": {
+    "bytes": 1953855,
+    "sha256": "f97d13e83b92820fc6d3435f553ae2bca8bbcab74096577c8356a33a754b00e5"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-smoke-first/matrix.json": {
+    "bytes": 879037,
+    "sha256": "d48f036351bfdfc0789f69c10448bc2adf085af3166c2e52f8d9adc351bebeff"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/000-old-point-r000-p00001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "b39813a0af2a814c39b09c9ef860c8f628b2605810495a54b10888310c3f4922"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/000-old-point-r000-p00001/resource-coverage.json": {
+    "bytes": 1685,
+    "sha256": "b0d423710b99d85f824ac31456efb75a14cc1b8a79dfbd3f6dedf4c0748589d4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/000-old-point-r000-p00001/resource-samples.json": {
+    "bytes": 1488964,
+    "sha256": "7dd49594c27024d36fbe445aec5f42ebbb563d6cca20a1b5333315735c0ee35f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/000-old-point-r000-p00001/run/report.json": {
+    "bytes": 1431957,
+    "sha256": "93977fa5c8c8741883cb7ad3c9d3cd257061fa1aed6686afc757643ad0995977"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/001-new-point-r000-p00001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "a94a8a56a1a615662878b0ad1216f58b29a6656518b4f73f64fe8d075f861c33"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/001-new-point-r000-p00001/resource-coverage.json": {
+    "bytes": 1680,
+    "sha256": "c181a9f0959f5471b5b3063a5cb04c8f051d13c26d1f45337c2f6325adb16208"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/001-new-point-r000-p00001/resource-samples.json": {
+    "bytes": 1488964,
+    "sha256": "fe1380cba4a645183522a544acf2db1b6cc0f6bb9a7614683376e43d814f1aa4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/001-new-point-r000-p00001/run/report.json": {
+    "bytes": 1431949,
+    "sha256": "4bc98f21ab13c0901af000b91d23d0c811c691d2c8df770717091890856d0cbe"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/002-old-point-r050-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "40c33cbea1e22cb69451e7e069ed41869b05351aa611a17e62351ebd4504f944"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/002-old-point-r050-p00001/resource-coverage.json": {
+    "bytes": 1685,
+    "sha256": "f5e61e68a12808dcd2622b0e1d74d6d654e7fe5d6b722ce5ed4ea0e05683a1b5"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/002-old-point-r050-p00001/resource-samples.json": {
+    "bytes": 1488276,
+    "sha256": "12b882338fc2ec13c25acab534270f658654d8bf693301d789ace88e9e6d21f5"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/002-old-point-r050-p00001/run/report.json": {
+    "bytes": 1940156,
+    "sha256": "397d8bbfe46b945f306bd940388b75f35345a4d9165d918f82f9b368c87e344a"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/003-new-point-r050-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "1e7f30cc342e3c6507e2abe846334e1eeb56f2eba69c4dc3d820af7e3adc06b1"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/003-new-point-r050-p00001/resource-coverage.json": {
+    "bytes": 1683,
+    "sha256": "be94a874f691eccddf69f047fa305a555247659a6f222b29f19fd1ac4262486f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/003-new-point-r050-p00001/resource-samples.json": {
+    "bytes": 1488236,
+    "sha256": "01b0f4e2575e4acfd64904df321f8ff4e2e36fd1f801d64651f8e3b734d627c6"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/003-new-point-r050-p00001/run/report.json": {
+    "bytes": 1940179,
+    "sha256": "732395550eff7380a1b9720b00520f7fbfeb54d9f7991eb9535c87c606412efd"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/004-old-point-r100-p00001/requested-config.json": {
+    "bytes": 812,
+    "sha256": "eaba999ff1e023fc8cbd64495c8eb74f8944e8381571e89597bb62314e32914e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/004-old-point-r100-p00001/resource-coverage.json": {
+    "bytes": 1670,
+    "sha256": "644bf47ecdc5052de1b6cfaceb6c852d6e5fa438c3f5351782dbe5a4d73d64d7"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/004-old-point-r100-p00001/resource-samples.json": {
+    "bytes": 1486853,
+    "sha256": "0682ca9ed7183cc75e9a7202c9876cd4dd9db4d16a67fc1a3c30e70e4b87d353"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/004-old-point-r100-p00001/run/report.json": {
+    "bytes": 1431861,
+    "sha256": "2070e79887eeb773b6f12337cc4df18463adcfda08800d909e21bc9a973fb268"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/005-new-point-r100-p00001/requested-config.json": {
+    "bytes": 812,
+    "sha256": "6f908e6ec1fb9d90fe5fd6d5cd594db622d44589ec2dc5ce10a37b6c8b4e82cf"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/005-new-point-r100-p00001/resource-coverage.json": {
+    "bytes": 1669,
+    "sha256": "9e6f389b50e64649686a4b932ce6d6b087e4ad73f08895a186632ba3a7bbc1ed"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/005-new-point-r100-p00001/resource-samples.json": {
+    "bytes": 1486865,
+    "sha256": "b74b9740976f24519cef791e020f858c498c626e51aee6c12bf5fea7da307976"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/005-new-point-r100-p00001/run/report.json": {
+    "bytes": 1431846,
+    "sha256": "57c5e0b3e3e8e84f6b15f320f74be14f0203cf6c7ddb009cabf03c3840640a91"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/006-old-batch64-r000-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "673e0e62759ecba56e2bbbc277f28be97b415b6b8a135f12fa5e70380dbe66ca"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/006-old-batch64-r000-p00001/resource-coverage.json": {
+    "bytes": 1691,
+    "sha256": "5e78842bbf924f4817d2b26a1b7f6a282598e6b4036ac50fcd208f7e226eb780"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/006-old-batch64-r000-p00001/resource-samples.json": {
+    "bytes": 1396524,
+    "sha256": "3a3727fd89cc99d1fb0cdb77de55e62430c58af5e1ab61116073c1e7b5e6573f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/006-old-batch64-r000-p00001/run/report.json": {
+    "bytes": 1431296,
+    "sha256": "8d17e6b1a48f15e3880f57d7e6c79ea1bab111969c8e834c230f62fb74409df4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/007-new-batch64-r000-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "6d448cffe8657c9405b9cff311876d1c8a888403ab3ae836135541aa126f0fb2"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/007-new-batch64-r000-p00001/resource-coverage.json": {
+    "bytes": 1688,
+    "sha256": "59a4ff0493def8b3c73650e419770be3037dcf7832ea1b60d7c8aa48ef69312d"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/007-new-batch64-r000-p00001/resource-samples.json": {
+    "bytes": 1396677,
+    "sha256": "41a805e0f5febec4a8dd4c6a049bf46b3aef8ed612702f30776b14db18e1ffef"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/007-new-batch64-r000-p00001/run/report.json": {
+    "bytes": 1431310,
+    "sha256": "b0077021be59b52ab2c4a93fd8538478403ddc883c087b37b8577ffba1316768"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/008-old-batch64-r050-p00001/requested-config.json": {
+    "bytes": 812,
+    "sha256": "1fb9388fc27f07abcabf3aa5611922feb493372a872378a9a39185bedf341dce"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/008-old-batch64-r050-p00001/resource-coverage.json": {
+    "bytes": 1689,
+    "sha256": "367af430c587fe4d64763ee1d1046c817b0dd35e3a85202a1ed29b03c5dd334f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/008-old-batch64-r050-p00001/resource-samples.json": {
+    "bytes": 1396140,
+    "sha256": "5062726778b1ee0d382fb2f42432428dd41eb20eda0040a28dc7ad4b35fc3a7f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/008-old-batch64-r050-p00001/run/report.json": {
+    "bytes": 1939438,
+    "sha256": "55483ab7a17abde76ec78fcf23d759411c03d05eb173e655885582a3164943c5"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/009-new-batch64-r050-p00001/requested-config.json": {
+    "bytes": 812,
+    "sha256": "d9f54c9ca09b86e6fc7274f2e18cba96664f4ffaffa2b29bb7639ddc8587ef61"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/009-new-batch64-r050-p00001/resource-coverage.json": {
+    "bytes": 1684,
+    "sha256": "e5930b67325309a594e1f88bbc32693cbd8b9a99ec74b12b4dba14680814ed20"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/009-new-batch64-r050-p00001/resource-samples.json": {
+    "bytes": 1396106,
+    "sha256": "ad555b4480c10a0a2556d63e08f554c7ae34010c31ba3e602117f46073faedc5"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/009-new-batch64-r050-p00001/run/report.json": {
+    "bytes": 1939408,
+    "sha256": "f1b0c61b5c50bb6c29ce4cbc91a31f9d023bce436264d4f7a64ea596647e04de"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/010-old-batch64-r100-p00001/requested-config.json": {
+    "bytes": 813,
+    "sha256": "56e12cd3adb722ea98c3efe683a6d11ea32e1412f2219abdabcffaf06b525627"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/010-old-batch64-r100-p00001/resource-coverage.json": {
+    "bytes": 1648,
+    "sha256": "23ec93743406c2863b373152c1781b953702f314460baff687af4cfb3b6e8caa"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/010-old-batch64-r100-p00001/resource-samples.json": {
+    "bytes": 1399925,
+    "sha256": "d940e53f865529d505c7fa91097ce33ce81720f8a973afd79c2d2a7da3768529"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/010-old-batch64-r100-p00001/run/report.json": {
+    "bytes": 1431353,
+    "sha256": "8d3236a49bf015b807b0e0ac1d4220beddab0c4b9341df5b02ef07c01b7d217d"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/011-new-batch64-r100-p00001/requested-config.json": {
+    "bytes": 813,
+    "sha256": "e6c786bb4356f180d8504fcda779804fc71df2a9c219f77f84728b103b929d50"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/011-new-batch64-r100-p00001/resource-coverage.json": {
+    "bytes": 1647,
+    "sha256": "2d07eccef22c8bb6b54bdb3917dd0b0fe1ee109ef70ff68b1df6a73e72172f4c"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/011-new-batch64-r100-p00001/resource-samples.json": {
+    "bytes": 1399933,
+    "sha256": "53fac9a65c5183b3e8defba21c2ffeefa3dfecfd634081df86cf9c5d6c42e13d"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/011-new-batch64-r100-p00001/run/report.json": {
+    "bytes": 1431327,
+    "sha256": "d94025fc453175c74b623d07912963c5d7be0e7785f947b2832758e597880b79"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/012-old-point-r000-p00064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "908ef78ada981db9012581b613650f726713b69fac0fea58fa4eef4cf91221bb"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/012-old-point-r000-p00064/resource-coverage.json": {
+    "bytes": 3641,
+    "sha256": "9716f9efa53c7bfe260f3d2eae7fc21374170396eff0069b7419a6bf328af33e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/012-old-point-r000-p00064/resource-samples.json": {
+    "bytes": 4447852,
+    "sha256": "c3223039f68b0b8ccd6f765a2c36b20cdb374b7b94ef51d825b186b90eb40e98"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/012-old-point-r000-p00064/run/report.json": {
+    "bytes": 1445164,
+    "sha256": "f1a0423da97e7f7cc558ae4c81be1a9eb7d4dd8a4c9141e897c6cbdcf4ecced9"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/013-new-point-r000-p00064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "4dce974091a976b21c7b7cd1e1b1ac5d475f6b2dfea601932379b8a421e054c7"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/013-new-point-r000-p00064/resource-coverage.json": {
+    "bytes": 3697,
+    "sha256": "9d9f34b3583f60696a26b12059dedbb4b623f2f1e0f8b5554da70374127578d9"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/013-new-point-r000-p00064/resource-samples.json": {
+    "bytes": 4275158,
+    "sha256": "f62cd5e0818caac7655008b51263bdf16ab189787856bf81700c80a91cd3ccba"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/013-new-point-r000-p00064/run/report.json": {
+    "bytes": 1445098,
+    "sha256": "aa2ab8dff3d889643c72c7c4a902b08ef4732ce51d11360afc3ebbf8cf6135e8"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/014-old-point-r050-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "5aa63c5c73c7ca150babae388afb82710ac238d3fa44cb85c18481691f2d8f7a"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/014-old-point-r050-p00064/resource-coverage.json": {
+    "bytes": 2886,
+    "sha256": "a3c0d6bf798a56e8b743b9cb5a07dd3525ebcc90188378454ee0cdcd3d781fa4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/014-old-point-r050-p00064/resource-samples.json": {
+    "bytes": 3214394,
+    "sha256": "6b537c9521de30b6cc1bcf1108b5bcff892eb3254caa34e177521312de165a84"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/014-old-point-r050-p00064/run/report.json": {
+    "bytes": 1954432,
+    "sha256": "1f00679703ce1b618fe54759003ac9140d92e3249262c4f31b89e2237296fd05"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/015-new-point-r050-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "231468b5b07404b70214a330e2e3ad82414ed16a03bca3a603df9f3ef81e8548"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/015-new-point-r050-p00064/resource-coverage.json": {
+    "bytes": 2786,
+    "sha256": "b0e899d312cd4e4714ecb6bed77eb9dbdb1d2c817a1c6139ef5da46a33e9ed56"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/015-new-point-r050-p00064/resource-samples.json": {
+    "bytes": 3126936,
+    "sha256": "e69f1013c372e2d445d98822d6694f57ebaaab50eff1a7ae7e5ae6b2864c2518"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/015-new-point-r050-p00064/run/report.json": {
+    "bytes": 1954543,
+    "sha256": "66c950bd46c5776a41619015ea45a6c38c5fdd939a8518322a55c227a13488b3"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/016-old-point-r100-p00064/requested-config.json": {
+    "bytes": 814,
+    "sha256": "95f1590bec07875dfa556f15938e4f829472567ee0047073a9996ac35efbf174"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/016-old-point-r100-p00064/resource-coverage.json": {
+    "bytes": 1657,
+    "sha256": "8e9e4955fb5cef9f2102cdeeec38014fe789e9179e84cf4209d587d3f81de118"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/016-old-point-r100-p00064/resource-samples.json": {
+    "bytes": 1624664,
+    "sha256": "3be65829423fd794d9b0f07d32488a3fb76a1da227f4db5c31b926ef0d6a8d3f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/016-old-point-r100-p00064/run/report.json": {
+    "bytes": 1445270,
+    "sha256": "6d8f6580b53f60929b1853a03768024749f99a5f5660a51e51dc8cc8a997f75e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/017-new-point-r100-p00064/requested-config.json": {
+    "bytes": 814,
+    "sha256": "011e449f6bb7e6121265746f287aaf1760b05c4d5be48122b18b985fc962c7ca"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/017-new-point-r100-p00064/resource-coverage.json": {
+    "bytes": 1666,
+    "sha256": "ef7506ed35b931a1e42a8fda4c7688ee8168f020e1c0ff4911b327c04078a3e7"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/017-new-point-r100-p00064/resource-samples.json": {
+    "bytes": 1587636,
+    "sha256": "93b0e83aac2020b6f8ea2838cc30a0686d34bf5180cb1bcc86635ed66e21ca3d"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/017-new-point-r100-p00064/run/report.json": {
+    "bytes": 1445302,
+    "sha256": "f6f2fd458ec6d7bc98521f24f4ba7ec23c95c4be3da5c3d28e2db721f391f679"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/018-old-batch64-r000-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "d595b96e7503f8ff69650fbb068254c46b9c8380b459a4bba2f9736366af3053"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/018-old-batch64-r000-p00064/resource-coverage.json": {
+    "bytes": 4266,
+    "sha256": "d479a28a88a2c3becb965bac452abf57d17c1e42f19a6240b0aece913f6d12bb"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/018-old-batch64-r000-p00064/resource-samples.json": {
+    "bytes": 3827149,
+    "sha256": "96214de11d463ed3c0e8198be220be46f2b3130158b84392c10680566c68f3e1"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/018-old-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444023,
+    "sha256": "c5903f772cf023c504645ce1f90903cd59d1777acc810ff596010592f270d1d4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/019-new-batch64-r000-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "895a4ac95a5616d68df13fcb3cb8423ac81dd29b73cfa57b218b9d7909842be4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/019-new-batch64-r000-p00064/resource-coverage.json": {
+    "bytes": 4108,
+    "sha256": "b23e28fa34524df256b092516ebdf1ecc05a29820e00f360855d605cd5f7e583"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/019-new-batch64-r000-p00064/resource-samples.json": {
+    "bytes": 3779198,
+    "sha256": "793845c4811b541a07bb20c8acefa0d7c3e3e04b5f5d20d61fe351cff325182a"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/019-new-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444082,
+    "sha256": "c8984875701be100addafae7a95cf1adb8b02cc2bb870f73703ecb50d70817f1"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/020-old-batch64-r050-p00064/requested-config.json": {
+    "bytes": 814,
+    "sha256": "5e94b422e591491bac65a3681cb89536c56d59393d1694c96b5e1de7fdba6bc7"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/020-old-batch64-r050-p00064/resource-coverage.json": {
+    "bytes": 2749,
+    "sha256": "f6f32380c1c726ffc7c842d1a95740446ec858a359b73c02a6c0de988e6f0691"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/020-old-batch64-r050-p00064/resource-samples.json": {
+    "bytes": 2919996,
+    "sha256": "83c9d2438a6cc0e916414b6d4e80fae3815e0094caf44956e2a0ada3b19b4fd4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/020-old-batch64-r050-p00064/run/report.json": {
+    "bytes": 1952838,
+    "sha256": "64d438f948b82fcb905ad475325c51c8a5a87b25db1d26e163c82480e6f492cc"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/021-new-batch64-r050-p00064/requested-config.json": {
+    "bytes": 814,
+    "sha256": "c6b9de1baafa2d826950304bad45246e3d8cc33d6e0ae7390fdca13f770ff7e5"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/021-new-batch64-r050-p00064/resource-coverage.json": {
+    "bytes": 2730,
+    "sha256": "8c5957d382431984ca60af03e81e830602c79a6ef9f5ac9205b86d15888d448b"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/021-new-batch64-r050-p00064/resource-samples.json": {
+    "bytes": 3131407,
+    "sha256": "5d04a39f71e85dd01fa198def913e03c805d40ece41d23d5ce41bae5da4068fe"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/021-new-batch64-r050-p00064/run/report.json": {
+    "bytes": 1953015,
+    "sha256": "01c7bd8f30f130f0ee3c1b68719a5e2455621df26b3f135463b29ac8fcea8b03"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/022-old-batch64-r100-p00064/requested-config.json": {
+    "bytes": 815,
+    "sha256": "67d3f0c8ae1ef472104a35205669873845cf00358cdfa63463452ce02f98c220"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/022-old-batch64-r100-p00064/resource-coverage.json": {
+    "bytes": 1676,
+    "sha256": "7e287c9cc35decfa78bede5ecc7027b02f91459a46051bb4722b256aaecfad77"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/022-old-batch64-r100-p00064/resource-samples.json": {
+    "bytes": 1408486,
+    "sha256": "06a1f7f9b70dc79ffd0761d5002abede43582310e2f4d9215a4c1c29b91392a6"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/022-old-batch64-r100-p00064/run/report.json": {
+    "bytes": 1444331,
+    "sha256": "27fd9fb4e25c0c2e186da43b67cefb1ea87dca1e3c7beac8c25ffc6c99ef2396"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/023-new-batch64-r100-p00064/requested-config.json": {
+    "bytes": 815,
+    "sha256": "989c265b5311f1bf60154b57959b25356912da46cb5206d01f272839b2b02058"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/023-new-batch64-r100-p00064/resource-coverage.json": {
+    "bytes": 1670,
+    "sha256": "0ed24253d1c8872958544c61ab523ee919670cc7502919cf67d32c7773795915"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/023-new-batch64-r100-p00064/resource-samples.json": {
+    "bytes": 1393207,
+    "sha256": "2088a50c9660bad926ceee2c93c3e24e69e4af33c469b970a89518d87b94ce2c"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/023-new-batch64-r100-p00064/run/report.json": {
+    "bytes": 1444402,
+    "sha256": "4c3413508a90ff0e066057c2c3e4c6276a75876cdef4e8d4c4109a29db2dab79"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/024-new-batch64-r100-p10064/requested-config.json": {
+    "bytes": 815,
+    "sha256": "693ac6118084988e66c34ae7a967d41190c8e9ac4aff8ab5d68fd23bc8f5ac36"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/024-new-batch64-r100-p10064/resource-coverage.json": {
+    "bytes": 1674,
+    "sha256": "a6fbaeebe64de141b6dc4b2b2f991231992b30707f11cc1f59ae17838e801016"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/024-new-batch64-r100-p10064/resource-samples.json": {
+    "bytes": 1393112,
+    "sha256": "19a0d4f9ab60f7377b1cb6b0229714e4f3f5d4b1e833c4d410ce783e188e5a84"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/024-new-batch64-r100-p10064/run/report.json": {
+    "bytes": 1444345,
+    "sha256": "56217e18ef3f7213c92f1ced162b11ca1e3d99e1764e6241b0ee9c3d82b9e9f4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/025-old-batch64-r100-p10064/requested-config.json": {
+    "bytes": 815,
+    "sha256": "3a67a09f78c5c8f42f93e44bb5ca2b8fa201777e3ef95b22d1280fa094a928d2"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/025-old-batch64-r100-p10064/resource-coverage.json": {
+    "bytes": 1674,
+    "sha256": "830e3bf2c9c1a9b89154c23b73fb46132181f4c046477cde50d6cb14cc3ca268"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/025-old-batch64-r100-p10064/resource-samples.json": {
+    "bytes": 1393075,
+    "sha256": "6de093ed6ea6644a5ffe948e677747588fd99516a729ceb176e999f48902a974"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/025-old-batch64-r100-p10064/run/report.json": {
+    "bytes": 1444325,
+    "sha256": "fe5f7b9484deb98eeed722879dfd95c443a7f948675c92f4c34198bb225e3f17"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/026-new-batch64-r050-p10064/requested-config.json": {
+    "bytes": 814,
+    "sha256": "777d63bcf25153d490e75d0252fd23ba75de91e72e8cfeedda34619ff1b444c2"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/026-new-batch64-r050-p10064/resource-coverage.json": {
+    "bytes": 2095,
+    "sha256": "758b224c4213934ef090678260fcbefb798fe00304888bc40ead142d30d8b01b"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/026-new-batch64-r050-p10064/resource-samples.json": {
+    "bytes": 2987606,
+    "sha256": "1da606b6cf1c2aa95ebaa2461ce7ef182270f6475f3e3450e6b7de4ffcbc4e27"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/026-new-batch64-r050-p10064/run/report.json": {
+    "bytes": 1952873,
+    "sha256": "911befa04a7cb6836a5b6c6b0f049ee6d8c284d6be3d98e1691b890a3923b77a"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/027-old-batch64-r050-p10064/requested-config.json": {
+    "bytes": 814,
+    "sha256": "eeed3d321df21fc32c08234b87c9c798520abb5c2150afb1e9f7029db05658bf"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/027-old-batch64-r050-p10064/resource-coverage.json": {
+    "bytes": 2740,
+    "sha256": "cae016f04b42c839f3d3976a285e373a87ea452d716349ca4b95a2dec61fac92"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/027-old-batch64-r050-p10064/resource-samples.json": {
+    "bytes": 3039988,
+    "sha256": "c52aa53eea87a1f0b95d948ab306545ac5f2ae3d99ce4ee09718827b430f4888"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/027-old-batch64-r050-p10064/run/report.json": {
+    "bytes": 1952841,
+    "sha256": "03b2a126d26c664adc60efcc322c30deb8c06ca06ae80db9f80c9eb59c096211"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/028-new-batch64-r000-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "818f25f8b8b0eea013b5e903c541addd7f05c6ecc8c2518603988dabea77bd61"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/028-new-batch64-r000-p10064/resource-coverage.json": {
+    "bytes": 3984,
+    "sha256": "9b57c60886d894fdfc6eb88b29b75df60f2662e2ed01cc5bcd771b5dd0effd7e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/028-new-batch64-r000-p10064/resource-samples.json": {
+    "bytes": 3920882,
+    "sha256": "9d41f4442879f833788eba07dfdbe0a633194927529227107a6c656ffeb62f2b"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/028-new-batch64-r000-p10064/run/report.json": {
+    "bytes": 1444147,
+    "sha256": "a3ae41b56815a1546d6f7efbfd77222133bda8cc89f2ec150f2d019b13a6da73"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/029-old-batch64-r000-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "4033cd42283d21abf16fd66de2140ca70a5f9fd9226209d250ffaebcdbc58be5"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/029-old-batch64-r000-p10064/resource-coverage.json": {
+    "bytes": 3980,
+    "sha256": "381c18727e00a0d442f765bdfe2449af475f9d2e2123d7dd976a300713467878"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/029-old-batch64-r000-p10064/resource-samples.json": {
+    "bytes": 3866735,
+    "sha256": "653a42fb7540e576395fff74f16e47504b90ad17a984149e94f9998c4a91ace6"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/029-old-batch64-r000-p10064/run/report.json": {
+    "bytes": 1443927,
+    "sha256": "23ea71007eb479a35fd7343cfcc060048dfbeb0ed6b043ad9e8af339d7f6b2fe"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/030-new-point-r100-p10064/requested-config.json": {
+    "bytes": 814,
+    "sha256": "9f1c24d8aad8cf416c3e1d07ed17590024cc7b06e35f45eb86f65c29e07e280d"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/030-new-point-r100-p10064/resource-coverage.json": {
+    "bytes": 1675,
+    "sha256": "8f8a44b7cbcdba7b4a355f80fe002e35684565e76c8fcd7461e6242e4c33b97c"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/030-new-point-r100-p10064/resource-samples.json": {
+    "bytes": 1587183,
+    "sha256": "ad2528bfd283ff1bd68b4fe5cf113df3e5d2edcb41723575ca65857c8967cd8e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/030-new-point-r100-p10064/run/report.json": {
+    "bytes": 1445321,
+    "sha256": "b09927574e763065073f0359e514508bbd736556d3456864c58a2619e28ff0d6"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/031-old-point-r100-p10064/requested-config.json": {
+    "bytes": 814,
+    "sha256": "6d355e57631162dc1b29635a0fc41f4158b40173b5d44c88098d2427c96f72fe"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/031-old-point-r100-p10064/resource-coverage.json": {
+    "bytes": 1683,
+    "sha256": "388038f04dc9890bea36feaa07d0440623fc79966bcf54e452d91167200f2b1e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/031-old-point-r100-p10064/resource-samples.json": {
+    "bytes": 1631908,
+    "sha256": "3aae408ade53f62fda0333ae1485aa71b070338a31272658f5047347ce4dba89"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/031-old-point-r100-p10064/run/report.json": {
+    "bytes": 1445289,
+    "sha256": "a3e3b79b85e3ed36516d37d929bda0a6163025f6f6aa1366c7e2aaa9bfb5e2ac"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/032-new-point-r050-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "c64e3e5c1577ca2a605e1ca0f2912b1e5be01b98225524bfa22bf54994cd9f22"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/032-new-point-r050-p10064/resource-coverage.json": {
+    "bytes": 2887,
+    "sha256": "dfad3c1b5e4fcab12c0f903996eccb343cd1576a0a176f1165c762965d6c145c"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/032-new-point-r050-p10064/resource-samples.json": {
+    "bytes": 2987453,
+    "sha256": "255026e50080394ec5292f7b7ec8a3842b616dec2e260b3f222858554f29bfa9"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/032-new-point-r050-p10064/run/report.json": {
+    "bytes": 1954421,
+    "sha256": "a8819b04b67f5fa9409ea37cd898dd3d1c377a54daad2dbfa9f29384df9bf312"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/033-old-point-r050-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "5a64731c9a285f9fc159dd3c846821bdf8be295372c71eb1740c8cb4dc6976c0"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/033-old-point-r050-p10064/resource-coverage.json": {
+    "bytes": 2500,
+    "sha256": "126249dcd41dbcdc5808509110183c23a590b2c7779fbea3736227b61150b12f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/033-old-point-r050-p10064/resource-samples.json": {
+    "bytes": 3056130,
+    "sha256": "f3e90af7314e1393057b1a70bbe88511c183aad29c1149bfb6f297397f0174f7"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/033-old-point-r050-p10064/run/report.json": {
+    "bytes": 1954380,
+    "sha256": "a7f80de152d2ee1e33f326ba92aaf2d9ff637c465baf2ca62ffdf4737e90af5e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/034-new-point-r000-p10064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "f765db0eac9da579d9741fc3e111b5dd70869354241010256de106dd7bbeee18"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/034-new-point-r000-p10064/resource-coverage.json": {
+    "bytes": 4255,
+    "sha256": "2c34eb2c15253a3e7dfbcbac68b043a0a91fbff424b45500c8fe0e2e24b4edb4"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/034-new-point-r000-p10064/resource-samples.json": {
+    "bytes": 4311154,
+    "sha256": "a495e3222a14ae79889f5c768c41dfb350a068ebd7d0e7f856032d5804d40b50"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/034-new-point-r000-p10064/run/report.json": {
+    "bytes": 1445222,
+    "sha256": "e0d5b296b8d45895660558e5230b0f74e1662619809f448b9b965d06700d8d49"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "4eb3cf0f255c66a40e46129e4f108736525bbf265b16091d194579e848d87278"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/resource-coverage.json": {
+    "bytes": 4064,
+    "sha256": "8d4fa4b1cc1b1216f3c77ed2846e340a5e0e49d59528b20d713b2e249cd6cbd6"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/resource-samples.json": {
+    "bytes": 4134359,
+    "sha256": "fc81c6fb1f42bee495585ada9f66e78e7a780e2e9994995def5ee6aecfb80c89"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/run/report.json": {
+    "bytes": 1445126,
+    "sha256": "899a630ff41de41d372dd5c8e5f863e803ed772a6e3e787e761cb88eedff5745"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/036-new-batch64-r100-p10001/requested-config.json": {
+    "bytes": 813,
+    "sha256": "07715cbc31107a02d13972efc11327c89d2f62133382cdf9d1b96af61e2a1480"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/036-new-batch64-r100-p10001/resource-coverage.json": {
+    "bytes": 1653,
+    "sha256": "cbfdea3a513b55dde993927f250c9057ccb913aaed9221a132fc40c30516959e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/036-new-batch64-r100-p10001/resource-samples.json": {
+    "bytes": 1399928,
+    "sha256": "4508a8a26015fb3101b3f7ec8fb6bace7ab3bdf017be24ff2cd74f07b3574d0b"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/036-new-batch64-r100-p10001/run/report.json": {
+    "bytes": 1431333,
+    "sha256": "5fa7661f4f7d8360ba4b8f972a4f2f052f5562ac63daea6cc27ca782d7a1a66b"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/037-old-batch64-r100-p10001/requested-config.json": {
+    "bytes": 813,
+    "sha256": "0728c3d49900d8ab46b3812f00d08ded9f7d0d9697d3175e174bcf3dec20903f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/037-old-batch64-r100-p10001/resource-coverage.json": {
+    "bytes": 1648,
+    "sha256": "6fefe6b8df843b8d23e9b93dbc32528eb91a72c6dabdcadb76e989406820308c"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/037-old-batch64-r100-p10001/resource-samples.json": {
+    "bytes": 1399916,
+    "sha256": "7d4e4419f21a3d3498cfca48e2e793963614a3876bacd9a26d56b3c7a977daae"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/037-old-batch64-r100-p10001/run/report.json": {
+    "bytes": 1431337,
+    "sha256": "4cc637f867ddc534a38c4a9f1413c3195c1dafd7594a50f1941dc8c785021b45"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/038-new-batch64-r050-p10001/requested-config.json": {
+    "bytes": 812,
+    "sha256": "ba313c05a8c535e3f4f4ef10d3f1cc0572948b610c3d5a5989d53cd2dafdaeec"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/038-new-batch64-r050-p10001/resource-coverage.json": {
+    "bytes": 1689,
+    "sha256": "57579930bc0851315eb76a3c48c477fa33057b12ba3b4d7d9c05dad0ce44680a"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/038-new-batch64-r050-p10001/resource-samples.json": {
+    "bytes": 1396087,
+    "sha256": "928c6f462ade46518d4360f6f88667e8d3501b25aba9e4ab580dcab666289955"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/038-new-batch64-r050-p10001/run/report.json": {
+    "bytes": 1939390,
+    "sha256": "0f0378826c3d1dc19f8864546a060d1c011f2e50bd617ccdfa25e237f95496ab"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/039-old-batch64-r050-p10001/requested-config.json": {
+    "bytes": 812,
+    "sha256": "0e8e0603a1c4c20b306f8729aeb9f3175126a6713642e9bfa8b086f1b7eba982"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/039-old-batch64-r050-p10001/resource-coverage.json": {
+    "bytes": 1687,
+    "sha256": "e21b76d8486354d1be7983b52a16cab9d662b5b78085282395530ae486f59c41"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/039-old-batch64-r050-p10001/resource-samples.json": {
+    "bytes": 1396080,
+    "sha256": "6b61df5acbfa4b0a7e070e501f7a36a695ff456d2f42fd6e0dc6727bf8178daa"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/039-old-batch64-r050-p10001/run/report.json": {
+    "bytes": 1939451,
+    "sha256": "c1ce9eefc3223116d7abf74e2754fedad1db76a0eb9f15fbadc5b959ab42f34b"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/040-new-batch64-r000-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "e990e2857be2cacbc34000e07726a66b52f5a58446033f34e384e9cf55eb295e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/040-new-batch64-r000-p10001/resource-coverage.json": {
+    "bytes": 1693,
+    "sha256": "991e58c225edda4d113b7c302504041380e054401a114faa0122d76621847875"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/040-new-batch64-r000-p10001/resource-samples.json": {
+    "bytes": 1389503,
+    "sha256": "065b80bde5cc8147cad1f69fc9f0f4c86073a6a0866bc856259ab58409c0cdb3"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/040-new-batch64-r000-p10001/run/report.json": {
+    "bytes": 1431311,
+    "sha256": "f14053991c6e8c84835afbc76327673829c4fcf3a34a05ea241ca460e725d16a"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/041-old-batch64-r000-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "04fff8e4486a1baeb928c53e933df6d1f05ae216fcf0635774549615c80779c6"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/041-old-batch64-r000-p10001/resource-coverage.json": {
+    "bytes": 1686,
+    "sha256": "c88f33a062bfd1aa7c667fdbfa381b214cb01b2fc435f300b7b195bc9d625c32"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/041-old-batch64-r000-p10001/resource-samples.json": {
+    "bytes": 1396536,
+    "sha256": "8d264f254d3cc2abb664626c5a4bd01c208fc308fcd4f019eafb8da6349d041e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/041-old-batch64-r000-p10001/run/report.json": {
+    "bytes": 1431299,
+    "sha256": "349468781a7ec7d18a88b1501ad1474210357e847a899bfa2691560d5b064c7e"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/042-new-point-r100-p10001/requested-config.json": {
+    "bytes": 812,
+    "sha256": "2cb896c149a462cede819a78d05cae9ac4492a2a0e3ab2e2bbc8b81f913f5345"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/042-new-point-r100-p10001/resource-coverage.json": {
+    "bytes": 1673,
+    "sha256": "aa8d362dbec9acb18a9f60186f0170751ad987da83f42dfa0cfbaad7ebbdc14d"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/042-new-point-r100-p10001/resource-samples.json": {
+    "bytes": 1486862,
+    "sha256": "d4d2c7ae85f9502c209176fe4fe61f845b983bcd6481a2086c6322ff2405d76f"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/042-new-point-r100-p10001/run/report.json": {
+    "bytes": 1431841,
+    "sha256": "79057bcfc1099edab70724bc925f586e63c787563a5d4eeb75b73ad8aa0d6f96"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/043-old-point-r100-p10001/requested-config.json": {
+    "bytes": 812,
+    "sha256": "f63f52a0f3d4bfdf5ab146502f88df704a0dbda2950b26b425a1a26ba5353fc1"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/043-old-point-r100-p10001/resource-coverage.json": {
+    "bytes": 1676,
+    "sha256": "dcf0670f825ffc76750d33a8d484a683d9d15188e915cd15488ba108a17d0824"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/043-old-point-r100-p10001/resource-samples.json": {
+    "bytes": 1486868,
+    "sha256": "785a70656a847c766937d97a849cae691e75738a3c470f4d5403fc177d6eaf99"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/043-old-point-r100-p10001/run/report.json": {
+    "bytes": 1431824,
+    "sha256": "3ef7767a0f0d51696554f656016d42eaba12805b84246144b9f889815153b65d"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/044-new-point-r050-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "f8b128b3293e0202ff877cb58315226872ffccbc4bb919900149b38667efc496"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/044-new-point-r050-p10001/resource-coverage.json": {
+    "bytes": 1684,
+    "sha256": "721b32c13e65cb11b94666afd033bbf0eac06e417b48fe28b57aa46e27f600dc"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/044-new-point-r050-p10001/resource-samples.json": {
+    "bytes": 1488250,
+    "sha256": "f0165f3d62f98d1c98734ce7242ef58b5cecff7952dd60ec5d741f042f86ef57"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/044-new-point-r050-p10001/run/report.json": {
+    "bytes": 1940163,
+    "sha256": "7c941baa040395a59be88faa653af8a1fb3c733d7a5d0cf5f21e98bbe77e7126"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/045-old-point-r050-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "d6b2ee5b397239b83d563f0a4f4f3858d6226f73ca2e4ba2233352add895ee64"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/045-old-point-r050-p10001/resource-coverage.json": {
+    "bytes": 1683,
+    "sha256": "c830639ea67d9f93e1ebfa7f2713befc16165a0b9d30838078ba7aa7e153d6c2"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/045-old-point-r050-p10001/resource-samples.json": {
+    "bytes": 1488251,
+    "sha256": "c78b649c29d13884853be6b6837aaa0eb288ce0188fed582de2c45177489dd76"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/045-old-point-r050-p10001/run/report.json": {
+    "bytes": 1940148,
+    "sha256": "9b40030ded34534fa08a78cd88012849fcc0faa6e785b083fee2e1fc1ff7cddd"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/046-new-point-r000-p10001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "b0b988cbeb66eedd292565dbf65e4aba4c2db941e88c214b87922fe7cd6a61e7"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/046-new-point-r000-p10001/resource-coverage.json": {
+    "bytes": 1681,
+    "sha256": "2366d7b1120820766847a4078b77e993243e7187bc4a6b5db8f0fb88b1711e31"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/046-new-point-r000-p10001/resource-samples.json": {
+    "bytes": 1488960,
+    "sha256": "d216a3f17b6c215f0ce7fa28b6c0b8c3aa8b0b402624c69c700de58ae105687c"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/046-new-point-r000-p10001/run/report.json": {
+    "bytes": 1431964,
+    "sha256": "355087dcf1ad3dbe16f48d0ef906d36072e769cfe4a0f38cf48de3dc1fb47b4b"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/047-old-point-r000-p10001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "7d2273a34522485a19835695a360881d4b96b87fa2b79685c13312a403bd86a9"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/047-old-point-r000-p10001/resource-coverage.json": {
+    "bytes": 1685,
+    "sha256": "38d0e9b6a5f3ca24de50860bf1de7d49fa1464c9af809f2800d5e8125a86b375"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/047-old-point-r000-p10001/resource-samples.json": {
+    "bytes": 1481828,
+    "sha256": "ff5be991b2dd13891cab1f26e4df456220003580c65db00503d56ca28905f081"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/047-old-point-r000-p10001/run/report.json": {
+    "bytes": 1432012,
+    "sha256": "555e23dd6d3eaf2dfc3fd1e454cd3ffcbe5d53e77d95c86a60fd9c5651762a50"
+  },
+  "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/matrix.json": {
+    "bytes": 1524967,
+    "sha256": "c555944200189ba58535feceab78badd36987c5eaa149f4b79ce90c765ee02ab"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "-B",
+    "/tmp/kv9-crc-full-publication-preparation-20260914-first/verify.py",
+    "--root",
+    "/tmp/kv9-crc-full-evidence-worktree-20260914-first/docs/write-crc-full-regression-v1",
+    "--inventory-sha256",
+    "2422847486c6a5a56dcba53a4369938b2bc711e40fe69f4a186d792b51e0d212"
+  ],
+  "started_ns": 1789406163961545251
+}
