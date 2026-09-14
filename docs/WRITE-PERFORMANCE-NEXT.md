@@ -54,9 +54,9 @@ six source-bound Lean statements, four Rust equivalence tests in both debug and
 optimized builds, and six rejected controls. Its fixed 108-row kernel matrix
 improves equal four-body checksum throughput 3.342x at 206 bytes and 3.969x at
 10,601 bytes, with consistent opposite orders. Skewed inputs gain little and
-empty groups cost more. Next integrate bounded four-body/64 KiB staging inside
-one existing Ready, preserving the original stream, sync/publication and failure
-semantics. The kernel is still unlinked; no database QPS gain is claimed.
+empty groups cost more. The subsequent writer integration below preserves
+the original stream, sync/publication and failure semantics. The standalone
+kernel experiment remains a separate measurement; no database QPS gain is claimed.
 
 ## Latest writer checkpoint (2026-09-14 UTC)
 
@@ -69,8 +69,13 @@ Its [default release and ordinary recovery](WRITE-FNV-WRITER-RECOVERY.md) now
 pass on exact tested source: 365 complete operations (337 OK / 28 unknown),
 six fresh drains and seven exited lifetimes. The original evidence-inventory
 preflight failure is retained; the tested source worktree passes unchanged
-limits. Next run actual Chaos Mesh, then compare point/batch c1/c64 throughput
-and latency against CRC main.
+limits. Its [actual 21-window Chaos Mesh campaign](WRITE-FNV-WRITER-CHAOS.md)
+also passes: 9,872 complete operations (9,300 OK / 541 unknown / 31 refused),
+four fresh drains, full archive readback and all 31 server lifetimes exited.
+Next qualify capacity and compare point/batch c1/c64 throughput and latency
+against CRC main. The prior screen's resident allocation plus unchanged floors
+requires 173,650,006,016 available bytes; current post-run space is
+112,002,768,896 bytes. Known inactive build caches cannot cover the gap.
 The standalone kernel speedup is not a database result; the candidate remains
 unselected. Preserve every sync, quorum, publication and acknowledgment fence.
 
@@ -266,14 +271,14 @@ original failed audit and schema repair remain retained without workload reruns.
    opposite-order kernel matrix shows 3.342x/3.969x speedups for equal four-body
    206/10,601-byte groups, with much smaller skewed-input gains and higher
    empty-group overhead. This is not database QPS or proof of Ready-group
-   frequency. The prototype remains unlinked to the database writer.
-   Next stage at most four entry bodies with a 64 KiB total body budget within
-   one existing write_entries_unsynced call; flush partial groups at the call
-   boundary, use scalar fallback, and never wait for future requests. Prove the
-   same frame stream and legal failure prefixes; preserve sync/publication
-   boundaries and failure poisoning. Require byte/budget/failure/recovery tests,
-   clean default release, actual recovery/Chaos and paired throughput/latency
-   acceptance before selection. Keep receipt and persistent-map ownership as
+   frequency. The standalone prototype remains a separate experiment.
+   Completed: bounded writer integration at `12f44d3`, with four-body/64 KiB
+   staging, scalar fallback and no wait for future requests. Composition proof,
+   byte/budget/failure tests, clean default release, ordinary recovery and
+   actual 21-window Chaos acceptance pass. Original sync/publication and
+   failure-poisoning boundaries remain unchanged. Next qualify disk capacity
+   and run paired throughput/latency acceptance before selection.
+   Keep receipt and persistent-map ownership as
    secondary targets; do not repeat rejected worker/transport sweeps.
    DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
