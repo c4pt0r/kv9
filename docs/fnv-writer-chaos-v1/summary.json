@@ -1,0 +1,117 @@
+{
+  "archive_verified": true,
+  "audit_precedes_cleanup": true,
+  "bindings": {
+    "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/cleanup/all-server-lifetimes-exited.json": {
+      "bytes": 38361,
+      "path": "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/cleanup/all-server-lifetimes-exited.json",
+      "sha256": "cbf63efe464cc87bf5edb67cb0ad79d6355cdfce178e026824e7b04b767a6be0"
+    },
+    "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/cleanup/summary.json": {
+      "bytes": 14000,
+      "path": "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/cleanup/summary.json",
+      "sha256": "5c40c3b7519b56bf083cc2a5f3c006c461de7a4a33d2814bf3f0b20e737ef58b"
+    },
+    "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/independent/audit.json": {
+      "bytes": 471998,
+      "path": "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/independent/audit.json",
+      "sha256": "d3e152e4c7a8d3942c617eab378fbc72f23e31cbf1650a3839374f0f1a9223af"
+    },
+    "/tmp/kv9-fnv-writer-chaos-root-20260914-first/post-terminal.json": {
+      "bytes": 411,
+      "path": "/tmp/kv9-fnv-writer-chaos-root-20260914-first/post-terminal.json",
+      "sha256": "294397aba739c8ec4544aa8e8c83f37c1768f59f28d3698fbbc62722620af924"
+    },
+    "/tmp/kv9-fnv-writer-chaos-root-20260914-first/terminal.json": {
+      "bytes": 406,
+      "path": "/tmp/kv9-fnv-writer-chaos-root-20260914-first/terminal.json",
+      "sha256": "bc9e0be6e81dfebadacec214253c1cd125d446a7cf5a6ad3faea7cd35ab074e5"
+    }
+  },
+  "complete": true,
+  "containers": 25,
+  "fresh_drains": 4,
+  "full_archive": {
+    "all_inputs_rehashed": true,
+    "all_members_read_back": true,
+    "archive": "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/archive-first/evidence.tar.gz",
+    "bytes": 93282766,
+    "cleanup_in_separate_supplement": true,
+    "complete": true,
+    "ended_unix_ns": 1789419607246405327,
+    "file_bytes": 942123824,
+    "files": 4174,
+    "independent_retained_evidence_accepted": true,
+    "inventory": "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/archive-first/inventory.json",
+    "inventory_sha256": "5d313a6a260878d7facd55918339e6f5d1c89bfa5836ed6bbf556d256b7a7de5",
+    "members": 4468,
+    "original_fixture_exit_code": 0,
+    "roots": [
+      "/tmp/kv9-chaos-e2e.AUvOj7",
+      "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first",
+      "/tmp/kv9-fnv-writer-release-20260914-runtime-source",
+      "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/persistent-build",
+      "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/pressure-build-first",
+      "/tmp/kv9-fnv-writer-chaos-preparation-20260914-first/image-context-first",
+      "/tmp/kv9-thin-lto-delay-selection-repair-first"
+    ],
+    "scope": "Freeze, archive and independently read back current native Chaos evidence before cleanup.",
+    "sha256": "b00cd0b02bc8d9a87dbf0d009bd434bda78d4caee5602f66b7b4c82349e1830b",
+    "started_unix_ns": 1789419603137175152
+  },
+  "historical_namespaces_preserved": 8,
+  "histories": {
+    "cli": {
+      "bytes": 3196282,
+      "invokes": 5674,
+      "outcomes": {
+        "ok": 5152,
+        "refused": 15,
+        "unknown": 507
+      },
+      "returns": 5674,
+      "sha256": "45607548b6699a868ebe60ba2a7f194f59d0284a9c6d5f94befc0c5962affb1a"
+    },
+    "native": {
+      "bytes": 6824822,
+      "invokes": 2696,
+      "outcomes": {
+        "ok": 2661,
+        "refused": 14,
+        "unknown": 21
+      },
+      "returns": 2696,
+      "sha256": "3c41051e9197c54aa134dfa944865781a00192e4b351f4d32854d4db10594b53"
+    },
+    "persistent": {
+      "bytes": 1106060,
+      "invokes": 1502,
+      "outcomes": {
+        "ok": 1487,
+        "refused": 2,
+        "unknown": 13
+      },
+      "returns": 1502,
+      "sha256": "0d3a78ad0a2032813c9ffeee3d30cfe8afa952d32a67d6055fa268d6933ed364"
+    }
+  },
+  "image_id": "sha256:3358c794b30dd04ae5f514d1acb981e2c46bc5ab43f04dbd4a46900e94fd04a5",
+  "namespace_removed": true,
+  "native_sha256": "6b1867110dd7eaab5d3a8571b2227e77658ecb6b89f59dd4460836b691935ff3",
+  "operations": 9872,
+  "original_audit_scope": "Exact clean bd42e60 default-feature release server, ordinary-port tonic_stream point and native atomic batch clients, plus original CLI/catalog histories. Original 21 actual voter/storage/endpoint Chaos windows and effects; independent complete histories, source/executable/process identity and fresh final drains. Dedicated client-link/quorum acceptance, performance, cross-host, power-loss and whole-Rust proof are separate.",
+  "outcomes": {
+    "ok": 9300,
+    "refused": 31,
+    "unknown": 541
+  },
+  "point_sha256": "5929d06ab119e58b61e0fce23a857ef2eb1416fb9defd1cf8fb600dda784a44e",
+  "revision": "12f44d35590ede5f89337fe731dd950162865154",
+  "scope": "Exact 12f44d default-feature FNV-writer 21-window Chaos acceptance; no benchmark or promotion.",
+  "scope_prose_correction": "The immutable audit scope prose retains bd42e60 from its predecessor. Machine revision/runtime_revision, source map, build/image/executable identities bind 12f44d. Original evidence is unchanged.",
+  "server_lifetimes": 31,
+  "server_sha256": "d84b0ec8e466a9dc3f4953751605d91c90a90a66df1b03b57a3412e43e42603e",
+  "source_files": 887,
+  "source_tree_sha256": "ef5201783441fc0bff44fa0256f0ad473ab669dc5338ba5af7cfa4c7e71c562f",
+  "windows": 21
+}

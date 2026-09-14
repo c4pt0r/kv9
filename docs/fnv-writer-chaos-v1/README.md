@@ -1,0 +1,11 @@
+# FNV writer: original Chaos21 evidence
+
+Run `python3 verify.py` from this directory to verify every bounded part and decoded reporting member without extracting. The included `inventory.json` binds exact original paths, byte lengths, full SHA256 values and portable part identities. This verifies reporting integrity, not a new protocol audit or benchmark.
+
+Exact runtime: `12f44d35590ede5f89337fe731dd950162865154`. All 21 Chaos windows passed; complete histories contain 9,872 operations (9,300 OK, 541 unknown, 31 refused), with four fresh final drains, 31 server lifetimes and 25 containers exited. The owned namespace was removed; all eight historical namespace UIDs were preserved. Runtime session 18770 ended `6a6ff0/0`; all six post phases ended in session 60785, `93d95b/0`. See `summary.json` and original terminal/acceptance records inside the reporting archive.
+
+The immutable audit scope prose inherits `bd42e60`. Machine revision/runtime_revision, source map, executable and image identities bind `12f44d`; the summary explicitly documents this prose mismatch. Original `cleanup_complete=false` is retained because independent audit preceded archive and cleanup. Later original cleanup/lifetime records establish completion.
+
+The portable package contains complete original CLI/persistent/native histories and observer/fault reports once, plus source/helper/receipt and failure lineage. Literal links remain JSON metadata. Local ELF binaries, WAL/object payloads, Cargo/target, credentials, duplicate independent copies and the complete local archive are omitted, with original path/hash/size inventories. No source artifact was deleted. The retained independently verified full archive is 93,282,766 bytes, SHA256 `b00cd0b02bc8d9a87dbf0d009bd434bda78d4caee5602f66b7b4c82349e1830b`, covering 4,174 files / 942,123,824 decoded bytes. Its original inventory SHA256 is `5d313a6a260878d7facd55918339e6f5d1c89bfa5836ed6bbf556d256b7a7de5`.
+
+Source/proof and ordinary recovery are separate accepted prerequisites. The 28 performance-helper controls included here are tests of helpers only. This package contains no performance campaign, promotion, cross-host, power-loss or dedicated client-link/quorum acceptance claim.

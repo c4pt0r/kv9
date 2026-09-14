@@ -9,7 +9,10 @@ proof and local workspace checks. It remains an isolated candidate; there is
 The [exact default release and ordinary recovery](WRITE-FNV-WRITER-RECOVERY.md)
 now also pass: 887 source files independently bound, 365 complete operations
 (337 OK / 28 unknown), six fresh drains and seven exited process lifetimes.
-Actual Chaos Mesh and paired database measurements remain the next gates.
+The [actual 21-window Chaos Mesh campaign](WRITE-FNV-WRITER-CHAOS.md) also
+passes: 9,872 complete operations (9,300 OK / 541 unknown / 31 refused), four
+fresh final drains, independent archive readback and all 31 server lifetimes
+exited. Paired database throughput and latency remain unmeasured.
 
 ## Implementation and correctness
 
@@ -82,12 +85,14 @@ readback. Hosted CI remains manual and was not dispatched.
 
 1. Completed: clean exact-source default release, independent source/feature/
    compiler/binary readback and ordinary recovery on both transports.
-2. Run the actual 21-window Chaos Mesh campaign, retaining
-   complete histories, unknown outcomes, original failures and all owned-process
-   exits. Previous candidates' Chaos results do not qualify this binary.
+2. Completed: actual 21-window Chaos Mesh acceptance on this exact binary,
+   complete histories, unknown outcomes, original failures, independent archive
+   readback and all owned-process exits.
 3. Run the matched point Put and BatchPut(64), c1/c64, opposite-order throughput
    and latency screen against selected CRC main. Preserve all quorum, sync,
-   apply and response fences and capacity checks.
+   apply and response fences and capacity checks. The unchanged full-retention
+   reservation currently exceeds available disk space; known build caches alone
+   cannot close that gap.
 4. Select only from database results. The standalone equal-body checksum speedup
    and CPU profile do not establish Ready-group frequency or database gains.
 
