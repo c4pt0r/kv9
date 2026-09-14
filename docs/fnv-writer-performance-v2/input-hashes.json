@@ -1,0 +1,326 @@
+{
+  "/tmp/kv9-fnv-writer-budget-v2-reporting-20260914-first/controls-terminal.json": {
+    "bytes": 153,
+    "sha256": "1fdd990131fc7c1950f483ce8f2e35357f5b729bf45fabf45e3622725687d2cf"
+  },
+  "/tmp/kv9-fnv-writer-budget-v2-reporting-20260914-first/preparation-pins.json": {
+    "bytes": 2363,
+    "sha256": "1c9511df066d156afc1f92193fb7f0f845c72623c17d7ee7ce1971f9f5251879"
+  },
+  "/tmp/kv9-fnv-writer-budget-v2-reporting-20260914-first/source.diff": {
+    "bytes": 4418,
+    "sha256": "d77cc0d50287f1ceec5fb1f0c5e36840819fc3486a13716bd7f40ecb6e0a1fb3"
+  },
+  "/tmp/kv9-fnv-writer-budget-v2-reporting-20260914-first/summarize.py": {
+    "bytes": 19122,
+    "sha256": "82c144e2a45bcc36fdcf197bf3ca1d371ed18751c505af8e16b67ad30eeefd38"
+  },
+  "/tmp/kv9-fnv-writer-budget-v2-reporting-20260914-first/test_summary.py": {
+    "bytes": 3259,
+    "sha256": "a5dfcf66ef729dafda71aea97ecd39cd9682ecbebb06c74b296ce409fb93862d"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/audit.py": {
+    "bytes": 57929,
+    "sha256": "f9c4830950f9138fe81cca61fe0200abb3c3e1428b40b6f404c65b3793db43d3"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/commands.json": {
+    "bytes": 5166,
+    "sha256": "35b71e8b3553b1cce9fa66c1cdd39e946f0db3f5f2b2ef6492c0cde084952af0"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/inventory.json": {
+    "bytes": 14605,
+    "sha256": "2cfdbd6945e46ffff2e85638bbb6e023e18ed3e64b8bf0aba0f2932f55922ca2"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/matched-driver.py": {
+    "bytes": 53434,
+    "sha256": "48d93eb24d73ba33721efa5c6053d32c703d126c5842471fa50e081794e86708"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/protocol.json": {
+    "bytes": 21593,
+    "sha256": "d147fe582a489899c4fe582747c61115e2e2e7d2d9fd93d58755d70369ead2fd"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/results-first/audit.json": {
+    "bytes": 454988,
+    "sha256": "58635dc25e4efcd4007b54e4e0565398966e2083d1152c8a52566a3afcb04807"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/results-first/input-inventory.json": {
+    "bytes": 927384,
+    "sha256": "c6d22ddf569b89a9b87891569b085fe77269053b5fc290624b717d5af6eb3e23"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/retention_audit.py": {
+    "bytes": 17315,
+    "sha256": "c6c3beb177cdc63633d5efb324908b89edd269e2bdc871e5b91aef5b21ae502d"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/storage-policy.json": {
+    "bytes": 450,
+    "sha256": "6662377f04c3fec3e27b1ffdb275f8589c3fb009ebc38bcf4a52c8fab9a2dd9a"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-root-20260914-first/audit-terminal.json": {
+    "bytes": 710,
+    "sha256": "679b1d2ffc7777a8c6f3b9574eb0757db300d05c4a541b620c6e5b52e110d3f8"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-smoke-20260914-first/matrix.json": {
+    "bytes": 504511,
+    "sha256": "b228452aca623921c65e22037c1c4c3183823603750b89681f2aaf3a1f9efcba"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/000-old-point-r000-p00001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "3345e13b681d70af46f070ebbeca9196d433fcbc77de2ade5a8133deda6149d2"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/000-old-point-r000-p00001/resource-coverage.json": {
+    "bytes": 1683,
+    "sha256": "bd935f5129f8224df3876c5e89cd114da263b549bdf9dc7fee609992017ea70d"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/000-old-point-r000-p00001/resource-samples.json": {
+    "bytes": 1488944,
+    "sha256": "71e17429c14e19f3f3e18ce18e73c04f574d060ed0bfadd8fa8607e33fa0022e"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/000-old-point-r000-p00001/run/report.json": {
+    "bytes": 1431963,
+    "sha256": "598155ee4511338b0a6310b0b33cbab23fd1d19c6e31c4eb230494d78fb10dbe"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/001-new-point-r000-p00001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "598f5a179be600e9658502ea0d0cc7b65b15695dcd772d7ee1c0afe23793ef0c"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/001-new-point-r000-p00001/resource-coverage.json": {
+    "bytes": 1678,
+    "sha256": "2e0e9e31462bb29f95e230fbd81c3dcace6b6eda5e5ced464cecf1fbbfdd468c"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/001-new-point-r000-p00001/resource-samples.json": {
+    "bytes": 1488881,
+    "sha256": "f1ddbfd21982d624e471798d7f764757f9edffdc88bf34179cd28d85441eb059"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/001-new-point-r000-p00001/run/report.json": {
+    "bytes": 1431980,
+    "sha256": "db3e88888b8e12c2d9e065eaf8caf6a0b38622993d454e2667ceb28445ad3c2e"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/002-old-batch64-r000-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "876536c062f3d13e8bc00b4bd73e521a2e49ec9772b949b60310905b389a1a2f"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/002-old-batch64-r000-p00001/resource-coverage.json": {
+    "bytes": 1690,
+    "sha256": "2547760dec877b712979e5e6eb7c67639f3dc11ee1711c7632b39f589487fb79"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/002-old-batch64-r000-p00001/resource-samples.json": {
+    "bytes": 1396627,
+    "sha256": "600022fa42f376521bdac2d6852610aec650185d0c16f1f0e5e657a1df2931bc"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/002-old-batch64-r000-p00001/run/report.json": {
+    "bytes": 1431308,
+    "sha256": "7b8adc94cca1431f0234cd9dc2a577c104b7a2b45c46330e2032f25fd63fa10f"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/003-new-batch64-r000-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "c3b8239ce37c1ed465cd7a8507b20426975c68086342d71332d5810068721bae"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/003-new-batch64-r000-p00001/resource-coverage.json": {
+    "bytes": 1690,
+    "sha256": "1c4317a9ed4f6fa27606a700b6cf80e2bd5366dd6325fdc32652c0a4690b8a79"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/003-new-batch64-r000-p00001/resource-samples.json": {
+    "bytes": 1396542,
+    "sha256": "212f8b2c66289d0140cae49a072daede7cf7919f69aa5e4b3581748213d430ba"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/003-new-batch64-r000-p00001/run/report.json": {
+    "bytes": 1431274,
+    "sha256": "ccc468ddd14153ffee09f0488e3882a418d92a92264f84d83e3383b64389d9c4"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/004-old-point-r000-p00064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "0c5097ceddc6e8e7565e8f54ea6f4e8866a1f82f38e054f5606af22f212b383c"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/004-old-point-r000-p00064/resource-coverage.json": {
+    "bytes": 3407,
+    "sha256": "da8784606ae46e35302197d996d0d752aa81640858d413792d8b5c88277a939c"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/004-old-point-r000-p00064/resource-samples.json": {
+    "bytes": 4533605,
+    "sha256": "a2ad144721ea2fdf386bb413274afd8c163694d189ff477acd7d56a2bbc0596f"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/004-old-point-r000-p00064/run/report.json": {
+    "bytes": 1445184,
+    "sha256": "0024885ff1383dcc882d4623766039f2b9d929e528f96ebbf11a2b1b98c85d74"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/005-new-point-r000-p00064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "6e2031c3c3ca04f940dbd43ca826fa0725e0a1710a21b607db2a14d1a18c1743"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/005-new-point-r000-p00064/resource-coverage.json": {
+    "bytes": 3898,
+    "sha256": "46c858790542ea00ed1943afc21943fffb348f581a541146a50953850704ed75"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/005-new-point-r000-p00064/resource-samples.json": {
+    "bytes": 4142464,
+    "sha256": "67c93ea9e6f5a60be68f692ff14d361462371bee36076f6502dc4699633d8eb5"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/005-new-point-r000-p00064/run/report.json": {
+    "bytes": 1445182,
+    "sha256": "ad2c53f1ad92a11c99a3354318f3066e623a13d7b12a68d7ca995873ccf1a29d"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/006-old-batch64-r000-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "1ff1b3ee34ebb70870e5816d364fcea90d27696293b68a5acc220b53fb3bf72a"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/006-old-batch64-r000-p00064/resource-coverage.json": {
+    "bytes": 3755,
+    "sha256": "8c7300beb035bd7ab068db3c279145df25e11c1ed8651a55cb839603895c72dc"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/006-old-batch64-r000-p00064/resource-samples.json": {
+    "bytes": 3813593,
+    "sha256": "5dc13882fdbaa50b2c157d880c4a2f65c24a2b8697ae7c3a4bb77d11c0dcac50"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/006-old-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444130,
+    "sha256": "fa7b31e0f0429c30e4313aca10e8b91f88c4f99285297a2045278a35f24108e3"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "66405b0fa9ba325f836db772d45fd168664681f93d34593ad37ac47518b9e298"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/resource-coverage.json": {
+    "bytes": 3652,
+    "sha256": "e8c4f040210693c0a8bfe7a92fa6ee9dda5b3cf6c45097503738de9076b26c1d"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/resource-samples.json": {
+    "bytes": 3846903,
+    "sha256": "0267f0c6c77af12313692161cde10f2b428676ed38c7e4e9727185c3e6ab09e3"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444363,
+    "sha256": "74d7770fdde332fef055ab29a5a9d0462143604cbadfd418405b6037dd81b3e7"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/008-new-batch64-r000-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "5f2d946cc56957c1d6c7ebf3b9415df748c40d77306e12852ac4087a8c850008"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/008-new-batch64-r000-p10064/resource-coverage.json": {
+    "bytes": 3408,
+    "sha256": "14cb33aabad18e973caeff2a255e99db19fddedf85f2e467afc5469113c65544"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/008-new-batch64-r000-p10064/resource-samples.json": {
+    "bytes": 4027647,
+    "sha256": "731f8545ee0d656132c57ae3fa4bf19ae7dab9590090438d9bfef1bc8f23eaf7"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/008-new-batch64-r000-p10064/run/report.json": {
+    "bytes": 1444145,
+    "sha256": "abdccf5b2f469b36b49cb915e8bdb4f25d4bc9a9a99c611a228d77bcc871d9ec"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/009-old-batch64-r000-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "9e9c0adf65d9d9cfae64c50be606f9e5754db30cf2c58d2904ac5b0a66086cc8"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/009-old-batch64-r000-p10064/resource-coverage.json": {
+    "bytes": 3887,
+    "sha256": "68eae45d74bda8ea7d952715a678379fe5b5c6bd18756b5f57e268b4c1f64689"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/009-old-batch64-r000-p10064/resource-samples.json": {
+    "bytes": 3915500,
+    "sha256": "1d775f3b8927a6f0e1b73faa9a89733b26504fc4292c22bd1fd64c5899614c97"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/009-old-batch64-r000-p10064/run/report.json": {
+    "bytes": 1444072,
+    "sha256": "3de59c323c1b97210b20687a7e5b72481d5ef5304763afe91ea2f8305a4f39df"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/010-new-point-r000-p10064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "c2afc26e9cd8409a3502a9d4f753b839e96b8473626e7e3278ac439154b5cb70"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/010-new-point-r000-p10064/resource-coverage.json": {
+    "bytes": 3573,
+    "sha256": "ef74c47cfc6534b243c4e9a642792376d8a34e788711bd565d2594003e30d03c"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/010-new-point-r000-p10064/resource-samples.json": {
+    "bytes": 4676714,
+    "sha256": "4651bb239ef08886f7b9c3f654ae1295bf332f43363c11581ff4204c519e8559"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/010-new-point-r000-p10064/run/report.json": {
+    "bytes": 1445272,
+    "sha256": "76d3d8a8b438a77d0469d9a7a58edd17e6e01a374dbba33f12de517c528616e6"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/011-old-point-r000-p10064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "d273683ee818f478136aacd0e45443064f315d9b0cfea7a2adc3a1daf7e3ff46"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/011-old-point-r000-p10064/resource-coverage.json": {
+    "bytes": 4074,
+    "sha256": "5b4d4f77ba84da9046edd5045fd98d24a32f668e0a040936c21127e1080dd7d5"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/011-old-point-r000-p10064/resource-samples.json": {
+    "bytes": 4174188,
+    "sha256": "93a501e346b5106b1879c2c22d33baac61914fbf595a537c6a85539688f75bc2"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/011-old-point-r000-p10064/run/report.json": {
+    "bytes": 1445212,
+    "sha256": "09b2e374b61d2f5bee6b5b48517700ac3028a9e31d1a535f16a3baa2aa194f18"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/012-new-batch64-r000-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "998d9c77f714cd60aaa8cc92b3554d976b9ffdca9d92fb5e7b6382ea19fad912"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/012-new-batch64-r000-p10001/resource-coverage.json": {
+    "bytes": 1690,
+    "sha256": "b21139f3125afb3df8ff6d250dd17d686d1c8cb96e9fb16b9ecb72393778590d"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/012-new-batch64-r000-p10001/resource-samples.json": {
+    "bytes": 1396678,
+    "sha256": "36290962b94a3647f30b6d2fa0af28b577091ee5bdba0185b404d43bd98ae8c8"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/012-new-batch64-r000-p10001/run/report.json": {
+    "bytes": 1431301,
+    "sha256": "5f4b52c903d8fab46b0a6c9acef7158f822c6599483e3ec85aacbb0b155e4fcd"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/013-old-batch64-r000-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "708658ff56dee2b3f2f158f3dbb8f34be202af8bb33bbfa4d70458a39a5b3e4f"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/013-old-batch64-r000-p10001/resource-coverage.json": {
+    "bytes": 1694,
+    "sha256": "cd7c852da371df929ab8347a63cef2d78bca4747c5d5215439a6c65f4f7d1e83"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/013-old-batch64-r000-p10001/resource-samples.json": {
+    "bytes": 1396642,
+    "sha256": "4db18571b04eca435a6916181eda7e5bf221e9eff50535b1e966b432a1c5a7c2"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/013-old-batch64-r000-p10001/run/report.json": {
+    "bytes": 1431315,
+    "sha256": "bc3353d8b7802e6e030b64a5cdefeab64d251a76dbece3b69064638f738eb607"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/014-new-point-r000-p10001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "0dfc74feb6b789a21511b9c4b8c322f1064dce1b75f40d26f8b8dfbfde030c95"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/014-new-point-r000-p10001/resource-coverage.json": {
+    "bytes": 1688,
+    "sha256": "870a1ceead16a6e6b5e6a0607800b87e7cebb3bd60172f640ee545ef2a3e4168"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/014-new-point-r000-p10001/resource-samples.json": {
+    "bytes": 1488966,
+    "sha256": "85854bd934def60d73efa943061f2f991005c3fa1687f0a1a4d8618e95e0a3a4"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/014-new-point-r000-p10001/run/report.json": {
+    "bytes": 1431989,
+    "sha256": "dfe5883aff27b82af4202d2b67d1fa8ee0463346361505406ac98444d046bc00"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/015-old-point-r000-p10001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "55fe50b86286966080032ee63770a04322c0891323b740bc9219ab423e55592a"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/015-old-point-r000-p10001/resource-coverage.json": {
+    "bytes": 1681,
+    "sha256": "c0fde237b01c83aa997ee8940c52e531af8a6d02a152735d9f76d5225324dc37"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/015-old-point-r000-p10001/resource-samples.json": {
+    "bytes": 1488979,
+    "sha256": "bd6eb6ef57ccb8f24645f3a56b74dd201e16e936dbcb24ccf103edd4136abf2d"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/015-old-point-r000-p10001/run/report.json": {
+    "bytes": 1431993,
+    "sha256": "6c38fad1b8567393dce14f9fa2570be7118059e38bfe5e81f507b7ac196f87ed"
+  },
+  "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/matrix.json": {
+    "bytes": 718717,
+    "sha256": "afea20037caa774d4df62954d847b1a680b08fc3f505619d4b1ec97234308386"
+  }
+}

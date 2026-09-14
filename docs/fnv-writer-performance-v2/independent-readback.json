@@ -1,0 +1,11 @@
+{
+  "complete": true,
+  "execution_kind": "direct_tool_terminal",
+  "terminal_receipt": "d4fbb5",
+  "exit_code": 0,
+  "files": 2472,
+  "decoded_bytes": 319208049,
+  "compressed_bytes": 38598684,
+  "parts": 19,
+  "inventory_sha256": "8ab64f544ffa7d2e6d72f2ef5dfbc0cef656ee7965d910d4721b1e7ddb7ea6b0"
+}
