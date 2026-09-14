@@ -72,10 +72,17 @@ preflight failure is retained; the tested source worktree passes unchanged
 limits. Its [actual 21-window Chaos Mesh campaign](WRITE-FNV-WRITER-CHAOS.md)
 also passes: 9,872 complete operations (9,300 OK / 541 unknown / 31 refused),
 four fresh drains, full archive readback and all 31 server lifetimes exited.
+The separate [eleven-window client-link/reset/quorum-loss campaign](WRITE-FNV-WRITER-LINK-CHAOS.md)
+also passes, with 2,126 complete operations (1,835 OK / 63 unknown / 228 refused),
+independent full-history and packet-effect checks, and owned cleanup.
 Next qualify capacity and compare point/batch c1/c64 throughput and latency
 against CRC main. The prior screen's resident allocation plus unchanged floors
-requires 173,650,006,016 available bytes; current post-run space is
-112,002,768,896 bytes. Known inactive build caches cannot cover the gap.
+requires 173,650,006,016 available bytes. The latest
+[cache cleanup and compression pilot](WRITE-FNV-CAPACITY.md) reclaim an observed
+11,491,069,952 bytes and leave 122,947,051,520 bytes at the cleanup checkpoint,
+an empirical gap of 50,702,954,496 bytes before subsequent evidence allocation.
+The two-object compression pilot saves only 1.6–1.8% and does not justify bulk
+recompression. Complete performance smokes and timed cohorts remain pending.
 The standalone kernel speedup is not a database result; the candidate remains
 unselected. Preserve every sync, quorum, publication and acknowledgment fence.
 
