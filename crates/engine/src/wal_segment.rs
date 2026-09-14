@@ -155,6 +155,7 @@ pub struct RecoveryReport {
 pub struct WalSegment {
     path: PathBuf,
     file: File,
+    directory: PublishedSegmentDirectory,
     header: SegmentHeader,
     summary: SegmentSummary,
     poisoned: bool,
@@ -169,8 +170,29 @@ impl WalSegment {
         header: SegmentHeader,
         metrics: Arc<WalIoMetrics>,
     ) -> Result<Self> {
+        Self::create_with_directory(path.as_ref(), header, metrics, None)
+    }
+
+    /// Only a live, successfully sealed writer can supply this capability.
+    /// The stream owner must preserve the directory and all ancestor names.
+    pub(crate) fn create_successor(
+        path: &Path,
+        header: SegmentHeader,
+        metrics: Arc<WalIoMetrics>,
+        directory: PublishedSegmentDirectory,
+    ) -> Result<Self> {
+        directory.check_parent(path).map_err(io)?;
+        Self::create_with_directory(path, header, metrics, Some(directory))
+    }
+
+    fn create_with_directory(
+        path: &Path,
+        header: SegmentHeader,
+        metrics: Arc<WalIoMetrics>,
+        directory: Option<PublishedSegmentDirectory>,
+    ) -> Result<Self> {
         let encoded = header.encode()?;
-        let path = path.as_ref().to_path_buf();
+        let path = path.to_path_buf();
         let mut file = OpenOptions::new()
             .create_new(true)
             .read(true)
@@ -182,13 +204,17 @@ impl WalSegment {
             .measure(|| file.write_all(&encoded))
             .map_err(io)?;
         metrics.sync.measure(|| file.sync_all()).map_err(io)?;
-        metrics
+        let directory = metrics
             .namespace_publish
-            .measure(|| sync_namespace(&path))
+            .measure(|| match directory {
+                Some(directory) => directory.sync_successor(&path),
+                None => sync_namespace(&path),
+            })
             .map_err(io)?;
         Ok(Self {
             path,
             file,
+            directory,
             header,
             summary: SegmentSummary::default(),
             poisoned: false,
@@ -222,7 +248,7 @@ impl WalSegment {
             .recovery_sync
             .measure(|| file.sync_all())
             .map_err(io)?;
-        metrics
+        let directory = metrics
             .namespace_publish
             .measure(|| sync_namespace(&path))
             .map_err(io)?;
@@ -230,6 +256,7 @@ impl WalSegment {
             Self {
                 path,
                 file,
+                directory,
                 header,
                 summary: report.summary,
                 poisoned: false,
@@ -286,6 +313,10 @@ impl WalSegment {
     /// Returns a closed descriptor only after durability succeeds. No writer
     /// handle remains available through this API after sealing.
     pub fn seal(self) -> Result<ClosedSegment> {
+        self.seal_for_rotation().map(|(closed, _)| closed)
+    }
+
+    pub(crate) fn seal_for_rotation(self) -> Result<(ClosedSegment, PublishedSegmentDirectory)> {
         if self.poisoned {
             return Err(bad("failed writer cannot seal"));
         }
@@ -293,10 +324,13 @@ impl WalSegment {
             .sync
             .measure(|| self.file.sync_all())
             .map_err(io)?;
-        Ok(ClosedSegment {
-            header: self.header,
-            summary: self.summary,
-        })
+        Ok((
+            ClosedSegment {
+                header: self.header,
+                summary: self.summary,
+            },
+            self.directory,
+        ))
     }
 }
 
@@ -473,16 +507,69 @@ fn scan(
     })
 }
 
-fn sync_namespace(path: &Path) -> std::io::Result<()> {
-    let parent = path
-        .parent()
+/// Evidence that this directory's ancestor namespace was synchronized by this
+/// live owner. This is deliberately neither cloneable nor reconstructible from
+/// a serialized segment descriptor. It does not grant topology authority.
+#[derive(Debug)]
+pub(crate) struct PublishedSegmentDirectory {
+    canonical: PathBuf,
+    directory: File,
+}
+
+impl PublishedSegmentDirectory {
+    fn check_parent(&self, path: &Path) -> std::io::Result<()> {
+        if segment_parent(path).canonicalize()? != self.canonical {
+            return Err(std::io::Error::other("published segment directory changed"));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            let current = std::fs::metadata(&self.canonical)?;
+            let held = self.directory.metadata()?;
+            if (current.dev(), current.ino()) != (held.dev(), held.ino()) {
+                return Err(std::io::Error::other(
+                    "published segment directory replaced",
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    fn sync_successor(self, path: &Path) -> std::io::Result<Self> {
+        // Recheck after file creation before relying on the held descriptor.
+        // Concurrent namespace mutation is outside the exclusive-owner contract;
+        // these checks also refuse observed path or inode substitution.
+        self.check_parent(path)?;
+        #[cfg(unix)]
+        {
+            self.directory.sync_all()?;
+            Ok(self)
+        }
+        // Without the Unix inode check, retain the original full publication.
+        #[cfg(not(unix))]
+        {
+            sync_namespace(path)
+        }
+    }
+}
+
+fn segment_parent(path: &Path) -> &Path {
+    path.parent()
         .filter(|p| !p.as_os_str().is_empty())
-        .unwrap_or(Path::new("."));
-    let canonical = parent.canonicalize()?;
-    for ancestor in canonical.ancestors() {
+        .unwrap_or(Path::new("."))
+}
+
+fn sync_namespace(path: &Path) -> std::io::Result<PublishedSegmentDirectory> {
+    let canonical = segment_parent(path).canonicalize()?;
+    let directory = File::open(&canonical)?;
+    directory.sync_all()?;
+    for ancestor in canonical.ancestors().skip(1) {
         File::open(ancestor)?.sync_all()?;
     }
-    Ok(())
+    Ok(PublishedSegmentDirectory {
+        canonical,
+        directory,
+    })
 }
 
 fn bad(message: &str) -> Error {
@@ -524,6 +611,104 @@ mod tests {
     }
     fn recover(path: &Path) -> Result<(WalSegment, RecoveryReport)> {
         WalSegment::recover_active(path, header(), WalIoMetrics::shared(), |_, _| Ok(()))
+    }
+
+    #[test]
+    fn live_directory_capability_survives_successor_and_fresh_recovery() {
+        let first = path("directory-chain");
+        let mut writer = create(&first);
+        writer
+            .append(&batch(b"old", b"one"), Some(at(2, 4)))
+            .unwrap();
+        let (closed, directory) = writer.seal_for_rotation().unwrap();
+        let second = first.with_file_name("0000000000000002.wal");
+        let next_header = SegmentHeader {
+            sequence: 2,
+            previous: closed.summary().last,
+            ..header()
+        };
+        let mut next =
+            WalSegment::create_successor(&second, next_header, WalIoMetrics::shared(), directory)
+                .unwrap();
+        next.append(&batch(b"next", b"two"), Some(at(3, 5)))
+            .unwrap();
+        drop(next);
+        let (recovered, report) =
+            WalSegment::recover_active(&second, next_header, WalIoMetrics::shared(), |_, _| Ok(()))
+                .unwrap();
+        assert_eq!(report.summary.last, Some(at(3, 5)));
+        let (_, directory) = recovered.seal_for_rotation().unwrap();
+        let third = first.with_file_name("0000000000000003.wal");
+        let next = WalSegment::create_successor(
+            &third,
+            SegmentHeader {
+                sequence: 3,
+                previous: report.summary.last,
+                ..header()
+            },
+            WalIoMetrics::shared(),
+            directory,
+        )
+        .unwrap();
+        assert_eq!(next.summary().records, 0);
+        let mut seen = Vec::new();
+        closed
+            .replay(&first, |_, at| {
+                seen.push(at);
+                Ok(())
+            })
+            .unwrap();
+        assert_eq!(seen, [Some(at(2, 4))]);
+    }
+
+    #[test]
+    fn directory_capability_cannot_authorize_another_parent() {
+        let first = path("directory-origin");
+        let (_, directory) = create(&first).seal_for_rotation().unwrap();
+        let other = path("directory-other");
+        let error =
+            WalSegment::create_successor(&other, header(), WalIoMetrics::shared(), directory)
+                .unwrap_err();
+        assert!(error.to_string().contains("directory changed"));
+        assert!(!other.exists());
+        assert_eq!(recover(&first).unwrap().1.summary.records, 0);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn replacing_a_directory_at_the_same_path_invalidates_its_capability() {
+        let first = path("directory-replaced");
+        let (_, directory) = create(&first).seal_for_rotation().unwrap();
+        let parent = first.parent().unwrap();
+        // Retain the old inode under a child of the replacement directory;
+        // it cannot be reused while the capability holds its descriptor.
+        let moved = parent.with_extension("moved");
+        assert!(!moved.exists());
+        std::fs::rename(parent, &moved).unwrap();
+        std::fs::create_dir(parent).unwrap();
+        let second = first.with_file_name("0000000000000002.wal");
+        let error =
+            WalSegment::create_successor(&second, header(), WalIoMetrics::shared(), directory)
+                .unwrap_err();
+        assert!(error.to_string().contains("directory replaced"));
+        assert!(!second.exists());
+        std::fs::rename(&moved, parent.join("retained")).unwrap();
+    }
+
+    #[test]
+    fn successor_creation_never_overwrites_an_existing_file() {
+        let first = path("directory-existing");
+        let (_, directory) = create(&first).seal_for_rotation().unwrap();
+        let existing = first.with_file_name("existing.wal");
+        std::fs::write(&existing, b"preserve this file").unwrap();
+        assert!(WalSegment::create_successor(
+            &existing,
+            header(),
+            WalIoMetrics::shared(),
+            directory,
+        )
+        .is_err());
+        assert_eq!(std::fs::read(&existing).unwrap(), b"preserve this file");
     }
 
     #[test]
