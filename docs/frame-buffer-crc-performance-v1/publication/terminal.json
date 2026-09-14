@@ -1,0 +1,23 @@
+{
+  "complete": true,
+  "package": {
+    "session_id": 7627,
+    "terminal_receipt": "9d19e5",
+    "exit_code": 0
+  },
+  "independent_readback": {
+    "session_id": null,
+    "execution_kind": "direct_tool_terminal",
+    "terminal_receipt": "d4d29f",
+    "exit_code": 0,
+    "tool_result": {
+      "chunk_id": "d4d29f",
+      "exit_code": 0
+    }
+  },
+  "inventory_sha256": "356a8de20958357d56a22c56d6cb11399a5a3ac2e582ff335196e11b0e9414a0",
+  "files": 2291,
+  "decoded_bytes": 319523066,
+  "compressed_bytes": 38290587,
+  "parts": 19
+}
