@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/tmp/kv9-write-segment-vectored-ab-publication-preparation-first/package.py",
+    "--audit-terminal",
+    "/tmp/kv9-write-segment-vectored-ab-runtime-root-first/actual-audit-tool-terminal.json",
+    "--audit-terminal-sha256",
+    "8b30c4ed291468866e4f75df3c857aea23dcac0de5073e9a3f0b4b5df11d6c17",
+    "--summary-terminal",
+    "/tmp/kv9-write-segment-vectored-ab-runtime-root-first/actual-summary-tool-terminal.json",
+    "--summary-terminal-sha256",
+    "9374a5e2d3ac800c5a94fce635a9ffa85b514240bd3e001855b1225132c62ad7",
+    "--audit-sha256",
+    "41b4fe2cd5e7008a359ce25b002d5739000e985f0087aa5bdeeffa45976169f3",
+    "--summary-sha256",
+    "7289540a08b6fe7519acf0d8178857a70a182de304c2b86b7f158f2ffbd1b501",
+    "--output",
+    "/tmp/kv9-write-segment-vectored-ab-evidence-worktree-first/docs/write-segment-vectored-performance-v1",
+    "--receipts",
+    "/tmp/kv9-write-segment-vectored-ab-package-root-first"
+  ],
+  "complete": true,
+  "compressed_bytes": 38252019,
+  "decoded_bytes": 315866547,
+  "elapsed_seconds": 2.900161653989926,
+  "files": 2351,
+  "inventory_sha256": "b85c6afffffce7a4afa8eb57b3ba2155d4dcb84d0510efa3cb2f0b54bd3c6912",
+  "parts": 19,
+  "pid": 1229632,
+  "scope": "Portable evidence bytes only; no original runtime/source/WAL acceptance or performance promotion."
+}

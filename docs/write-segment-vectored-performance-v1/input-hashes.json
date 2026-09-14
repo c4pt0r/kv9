@@ -1,0 +1,310 @@
+{
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/audit.py": {
+    "bytes": 56330,
+    "sha256": "6bae910f90f2ed55098ce8b791981e5012b8155c4c3de83ed9364f48d540604d"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/build-bindings.json": {
+    "bytes": 5703,
+    "sha256": "6bc7102fda9d714ac4997b693caaee270b18c52c14a1acccba96e3630923694b"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/driver-arguments.json": {
+    "bytes": 539,
+    "sha256": "0e9604d7aea2fc47a9883f8d1dc0e52b0c10d37f6d44ca9c0058b1abc0de59f4"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/expected-descriptors.json": {
+    "bytes": 14156,
+    "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/inventory.json": {
+    "bytes": 23217,
+    "sha256": "90efa1c6dadeffcfbd81e2518abbac629707cdaad2350b82fe3c679f06e3205c"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/matched-driver.py": {
+    "bytes": 51906,
+    "sha256": "68050cd81727a8d3b7aafe3a8036c791de9d6bf5633e66dfadf65fcf67a633c8"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/protocol.json": {
+    "bytes": 20051,
+    "sha256": "0a841b04a175e654d48d3516b42a4840f38ca670c643d372d99e3bec1959a538"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/results-first/audit.json": {
+    "bytes": 454228,
+    "sha256": "41b4fe2cd5e7008a359ce25b002d5739000e985f0087aa5bdeeffa45976169f3"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-preparation-first/results-first/input-inventory.json": {
+    "bytes": 794832,
+    "sha256": "0abef10b0708ffc527997af1d20551fddfd0366da371733f15a90e56e4c52a6b"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-runtime-root-first/actual-audit-tool-terminal.json": {
+    "bytes": 492,
+    "sha256": "8b30c4ed291468866e4f75df3c857aea23dcac0de5073e9a3f0b4b5df11d6c17"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-smoke-first/matrix.json": {
+    "bytes": 448011,
+    "sha256": "9883400f4080118fc02d0e8cf3be87c4284cb0a387c0c3d4445c919a0503ae8b"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-summary-preparation-first/preparation-pins.json": {
+    "bytes": 1621,
+    "sha256": "0f3249214dcce4632fbc3764447617a71a03e2fb5d937f3cde1d4775e1de9e4d"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/000-old-point-r000-p00001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "aecbd27f310ff29c699e3a16ecf6aca509e24d2e403a2aa8f59f9b884fe23f38"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/000-old-point-r000-p00001/resource-coverage.json": {
+    "bytes": 1687,
+    "sha256": "f507b366c4b1a01412479e094ea9c713f3540bcfcb0e15c4164eb2a8bb43787f"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/000-old-point-r000-p00001/resource-samples.json": {
+    "bytes": 1481832,
+    "sha256": "7aa6b904cf8ae586fd8bee95b2274b38a7c548b7c5006cccdf116f0051f87776"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/000-old-point-r000-p00001/run/report.json": {
+    "bytes": 1432043,
+    "sha256": "8b626e2bc7b55a45f37b4fd8422f815306acf3b2dc2021ff7991f52ea3d67022"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/001-new-point-r000-p00001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "ec3d48403d7eacf4baae1e1218f03ee5b6b05cc6b94423a96b7f7302b9fffd1b"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/001-new-point-r000-p00001/resource-coverage.json": {
+    "bytes": 1688,
+    "sha256": "faa85d3beff4fd23e1611b7757bd40ed9b7d0f8d5c87fef3eb342f32f91d90cf"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/001-new-point-r000-p00001/resource-samples.json": {
+    "bytes": 1488880,
+    "sha256": "653a539c88db634c7577c34680ca352f14bf505e3157e0bc0b0a1559fed305ee"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/001-new-point-r000-p00001/run/report.json": {
+    "bytes": 1432029,
+    "sha256": "b04608039ef1f075d77a8d24ef6b1a06796c5fc5697b833ad16cabb571c0abe9"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/002-old-batch64-r000-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "0163876c653e399e9d63b27a6a40313ef965e111d70543b04e1c3c5555d57cf0"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/002-old-batch64-r000-p00001/resource-coverage.json": {
+    "bytes": 1690,
+    "sha256": "93c33a297940ffa6229e76f5e9c74f93800bd0726d772bbb9230f6568e959066"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/002-old-batch64-r000-p00001/resource-samples.json": {
+    "bytes": 1396564,
+    "sha256": "8b6907002b812998c6d9359cdc38b9123481e76a3afb64d46ea18952e3a33d56"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/002-old-batch64-r000-p00001/run/report.json": {
+    "bytes": 1431346,
+    "sha256": "c69f45a4e4533a861267fb54c475d02a12d5a71dd955a5f8d209ef4ec18f5671"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/003-new-batch64-r000-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "4b2a526cf503b53e35bdecde2886f180794616604f24e139362a71f1c961b87e"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/003-new-batch64-r000-p00001/resource-coverage.json": {
+    "bytes": 1685,
+    "sha256": "f57cb8f8771d4348af7f2314de8687c8997a7ce13de3fbf721f71d1f02cdbc07"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/003-new-batch64-r000-p00001/resource-samples.json": {
+    "bytes": 1396515,
+    "sha256": "c6912b666254935768e863196cd16a30552699995d2007102753cb52b1824f14"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/003-new-batch64-r000-p00001/run/report.json": {
+    "bytes": 1431341,
+    "sha256": "ce0012d5ac80140a4e470d5d8ff363548cb1d31fe0326fce83ea08d0bfcb3f1c"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/004-old-point-r000-p00064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "0ab398936b20a61af7a71f134cce2d577e69678db09e6c3f7c2f6b77c24a2d70"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/004-old-point-r000-p00064/resource-coverage.json": {
+    "bytes": 3567,
+    "sha256": "7d1f3fe0302eef0312b9b9a19f39dacfbc4548acec397d148e582d66e8c3c68e"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/004-old-point-r000-p00064/resource-samples.json": {
+    "bytes": 4162223,
+    "sha256": "1dc2ba6006aebbb63a10c5e74d6a3fc6345d57092e23a2b6f247fde9bff4449b"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/004-old-point-r000-p00064/run/report.json": {
+    "bytes": 1445153,
+    "sha256": "c752b861b740802a56081092337c4f8b0985fe90b231249ed29c4ff4b9acb996"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/005-new-point-r000-p00064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "6ce4b16272a7d94e68a53bc14e619f19dd1004aca8b31c350277ef4d386b9923"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/005-new-point-r000-p00064/resource-coverage.json": {
+    "bytes": 3564,
+    "sha256": "2a83556cca1a3fe8b2cd3312dcf9cc6c799258185f9775e9c0b2dc704c0ad7d9"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/005-new-point-r000-p00064/resource-samples.json": {
+    "bytes": 4267383,
+    "sha256": "8ffc82e59e86e996aafafd488307506bb3e10d411bef2dcd0f08d29eb3c3a146"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/005-new-point-r000-p00064/run/report.json": {
+    "bytes": 1445128,
+    "sha256": "4381683b7f2f23b148f6012146d37da9293babae2376b9d6fa8fbbc09d5fd4af"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/006-old-batch64-r000-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "60b928e4afb83112a2b39bbe82bdcc479268886b3219b3d2857b547481aed372"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/006-old-batch64-r000-p00064/resource-coverage.json": {
+    "bytes": 3449,
+    "sha256": "12ab9ff5ce0d5d3b96679e72df19806aa8593732d283921543f924eda998c84d"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/006-old-batch64-r000-p00064/resource-samples.json": {
+    "bytes": 4064349,
+    "sha256": "914f70d9a4e3fa80b6e367f22e8985f25bce4c1564ddad732730bfbc0d3fc014"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/006-old-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444013,
+    "sha256": "769d668f29890e27508ede5a910fff90e47a052ccfbe131aba6723ddb2e45d11"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/007-new-batch64-r000-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "2ad71032a717c5c02352801dcb7d930766513c5ff9a9a63e0d353412ce3c3781"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/007-new-batch64-r000-p00064/resource-coverage.json": {
+    "bytes": 3780,
+    "sha256": "cdaf12fce4aceb2134e3feab15a911f5396bdada21eddec6521c272166a3ea59"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/007-new-batch64-r000-p00064/resource-samples.json": {
+    "bytes": 3752295,
+    "sha256": "866095dd55e3e0268daa972f3dfa7ea8757e52ffcd7de0f594fd5c522c1bd375"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/007-new-batch64-r000-p00064/run/report.json": {
+    "bytes": 1443976,
+    "sha256": "b18c11389efc6166fb7baece31e1c27bea21d688499b274e03cfc459712df35b"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/008-new-batch64-r000-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "eae58acc02b1cf6acca94892f0f60a68756d98c59834e24ba3aea6bdc0b426ff"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/008-new-batch64-r000-p10064/resource-coverage.json": {
+    "bytes": 4180,
+    "sha256": "a9f63b58f3faa01462c8949500e438e93da324f10c03994b6e619399e84f1b8a"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/008-new-batch64-r000-p10064/resource-samples.json": {
+    "bytes": 3845462,
+    "sha256": "85b4cd1657f18fd7497c9be101582e02dd046ec7acf45b88a9cc036762f3fc92"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/008-new-batch64-r000-p10064/run/report.json": {
+    "bytes": 1444012,
+    "sha256": "183c6fa91456beb2eff4ebf0d9b62555319cd555d66d4fc434f8a71321633dfd"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/009-old-batch64-r000-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "d8b22e12da0f3828634479d11cf6e5852d2267722a8b05562707bde21cc75faa"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/009-old-batch64-r000-p10064/resource-coverage.json": {
+    "bytes": 3492,
+    "sha256": "a8070a951bb6a2e2bca21029403544831282b0a7977e8bdc1d14e657bc3b5972"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/009-old-batch64-r000-p10064/resource-samples.json": {
+    "bytes": 3788172,
+    "sha256": "30f60661027e06d7bf25b8a4b323a1c9eda2cf93b005215b0f87ab0badd34273"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/009-old-batch64-r000-p10064/run/report.json": {
+    "bytes": 1443963,
+    "sha256": "b3507032735722600ae738209b7ab2bb769adbce6bf0d75f81e5b9486e8c91dd"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/010-new-point-r000-p10064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "1ad17bc6349d8796f721ebd5bdb2839072e848d8b536efd5437d2b6159246913"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/010-new-point-r000-p10064/resource-coverage.json": {
+    "bytes": 3982,
+    "sha256": "03f3cc5fc46b47b392acad4810eb270b587c472331bdddddd5804a3225d20a8d"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/010-new-point-r000-p10064/resource-samples.json": {
+    "bytes": 4633575,
+    "sha256": "0700ef9a2560c4c4b251c26d83e34e9ae4a4e2bea1404e05504ce62d79fc7cf2"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/010-new-point-r000-p10064/run/report.json": {
+    "bytes": 1445198,
+    "sha256": "d332cee24257ddced9a6d41a510b4b9364dd7948ec6a4755bed84a599c98be88"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/011-old-point-r000-p10064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "3737c29095e6f4bb179593c3d7975f61190a41268cab98b5e1191eca447c909f"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/011-old-point-r000-p10064/resource-coverage.json": {
+    "bytes": 3652,
+    "sha256": "df27907674cf8aec8d1f3582976be2a17e92e2c93289c699fa7cbb2b31d3d7a0"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/011-old-point-r000-p10064/resource-samples.json": {
+    "bytes": 4787141,
+    "sha256": "cb1af7e478943a8e684df1fa14e2f6fb52ab4372846003ac269471ff435a47d6"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/011-old-point-r000-p10064/run/report.json": {
+    "bytes": 1445220,
+    "sha256": "d4f7b11f5d9d85f6ec4c2873118b3e6bcd7dce5d1a7fff3e07d93e8f61d39b53"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/012-new-batch64-r000-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "76abaade53ac7299c32366da020222375688f4acd199df925991acd49fdac5c4"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/012-new-batch64-r000-p10001/resource-coverage.json": {
+    "bytes": 1684,
+    "sha256": "f2501e76b53e44f5a482e2924c18aef40a9b7435151ab13bf6683744eb1ab62c"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/012-new-batch64-r000-p10001/resource-samples.json": {
+    "bytes": 1396509,
+    "sha256": "03a259f35600a5103d479e13b1af9522e33c99ae2c00c4c3495c741b33e3dbd5"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/012-new-batch64-r000-p10001/run/report.json": {
+    "bytes": 1431327,
+    "sha256": "1b645b0aca89eb74022f82738868145121f254d3405fd29b8dea069b1453a075"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/013-old-batch64-r000-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "a030ff2049cfb42cdde3686d6d476a67750f1308eafe2c2682b4f1d2af8191d9"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/013-old-batch64-r000-p10001/resource-coverage.json": {
+    "bytes": 1689,
+    "sha256": "e8838478d170986c0156ba66c8a59d18d509df67c9af3571190cfa30105bd921"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/013-old-batch64-r000-p10001/resource-samples.json": {
+    "bytes": 1396548,
+    "sha256": "abc2bdeb0a013f14c862f39e7b28614abebbe4b8b0df0b4ddff8c23940682fff"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/013-old-batch64-r000-p10001/run/report.json": {
+    "bytes": 1431350,
+    "sha256": "9ea35063fb012b3e4f080f5a5aa1c5e37a3447f06b3523df17699c0d3eed6051"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/014-new-point-r000-p10001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "5066e646995367e1c948cbc2c8dc30e9b2e862754ee8d758fdd90f66ab6f7dcc"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/014-new-point-r000-p10001/resource-coverage.json": {
+    "bytes": 1684,
+    "sha256": "62bd21d0f7bed57e2dd7a795c972b9c14805bf7dd5a6df72e8eaccdf25b2b959"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/014-new-point-r000-p10001/resource-samples.json": {
+    "bytes": 1481782,
+    "sha256": "adb66edb4fb31fa24fea9be3303551f97a69bc8e40ca6504fe0ab14ed4be37ad"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/014-new-point-r000-p10001/run/report.json": {
+    "bytes": 1432052,
+    "sha256": "cfee844bb75f538676b60b072082aa9c490be0b96abefd67c8a28b4bc35f00c1"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/015-old-point-r000-p10001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "112f9ec44ab4050f86545dd6eda029cf7d220eea8020d185e1428826afcdf0c9"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/015-old-point-r000-p10001/resource-coverage.json": {
+    "bytes": 1685,
+    "sha256": "6628f810ad2da02724d5de8f182b953d77b765ba68107d89eef2fd764bfb33a3"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/015-old-point-r000-p10001/resource-samples.json": {
+    "bytes": 1481820,
+    "sha256": "389100520af854b968353ce5a457e73d9ffcac84c9419b7027f83bed0fbbbfa3"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/015-old-point-r000-p10001/run/report.json": {
+    "bytes": 1432035,
+    "sha256": "85079c69d2af7210ba507a8ada738dd527d1b905656dde2feeb7e1f74cc736e0"
+  },
+  "/tmp/kv9-write-segment-vectored-ab-timing-first/cohorts/matrix.json": {
+    "bytes": 662048,
+    "sha256": "170beb426411b0cecb248d2a6b0509f2767e821c113cb248162f49df33aa7d1d"
+  }
+}
