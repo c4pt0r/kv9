@@ -9,6 +9,194 @@ use std::sync::Arc;
 
 const DIRECTORY: &str = "/new-parent/replica/raft";
 
+/// Independent legacy frame oracle: do not call the candidate checksum/writer.
+fn legacy_frame(kind: u8, payload: &[u8]) -> Vec<u8> {
+    let body: Vec<_> = std::iter::once(kind)
+        .chain(payload.iter().copied())
+        .collect();
+    let mut sum: u32 = 0x811c9dc5;
+    for &byte in &body {
+        sum ^= u32::from(byte);
+        sum = sum.wrapping_mul(0x01000193);
+    }
+    let mut frame = Vec::new();
+    frame.extend_from_slice(&(body.len() as u32).to_be_bytes());
+    frame.extend_from_slice(&sum.to_be_bytes());
+    frame.extend_from_slice(&body);
+    frame
+}
+
+fn exact_body_entry(index: u64, body_len: usize) -> Entry {
+    let mut entry = Entry {
+        index,
+        term: 2,
+        ..Default::default()
+    };
+    for data_len in body_len.saturating_sub(32)..body_len {
+        entry.data = vec![(index * 71) as u8; data_len].into();
+        if entry.compute_size() as usize + 1 == body_len {
+            return entry;
+        }
+    }
+    panic!("cannot construct requested test body length {body_len}");
+}
+
+#[test]
+fn interleaved_ready_bytes_match_legacy_across_lane_and_budget_boundaries() {
+    let shapes: &[&[usize]] = &[
+        &[206],
+        &[10601],
+        &[16384], // Four bodies exactly fill the budget.
+        &[16385], // The fourth body forces a scalar three-body flush.
+        &[206, 65536, 206, 65537, 10601, 10600, 206],
+    ];
+    for shape in shapes {
+        for count in 0..=13 {
+            let fs = ModelFs::default();
+            let store = open(&fs);
+            let mut expected = fs.visible_bytes(store.path()).unwrap();
+            let entries: Vec<_> = (0..count)
+                .map(|i| exact_body_entry(i as u64 + 1, shape[i % shape.len()]))
+                .collect();
+            for entry in &entries {
+                expected.extend(legacy_frame(REC_ENTRY, &entry.write_to_bytes().unwrap()));
+            }
+            let hs = HardState {
+                term: 2,
+                vote: 1,
+                commit: count as u64,
+                ..Default::default()
+            };
+            expected.extend(legacy_frame(REC_HARD_STATE, &hs.write_to_bytes().unwrap()));
+            fs.clear_events();
+            store.persist_ready(&entries, Some(&hs)).unwrap();
+            assert_eq!(fs.visible_bytes(store.path()).unwrap(), expected);
+            let operations: Vec<_> = fs.events().iter().map(|e| e.operation).collect();
+            assert_eq!(operations.len(), count + 2);
+            assert!(operations[..count + 1]
+                .iter()
+                .all(|op| *op == Operation::Write));
+            assert_eq!(operations[count + 1], Operation::SyncData);
+            drop(store);
+            fs.crash(Crash::LoseUnsynced);
+            let reopened = open(&fs);
+            assert_eq!(stored_entries(&reopened), entries);
+            assert_eq!(hard_state(&reopened), hs);
+        }
+    }
+}
+
+#[test]
+fn entry_body_budget_includes_kind_and_releases_capacity_after_flush() {
+    let fs = ModelFs::default();
+    let store = open(&fs);
+    let mut staged = EntryBodies::default();
+    assert!(!staged.can_push(usize::MAX));
+    assert!(!staged.can_push(ENTRY_BODY_BUDGET));
+    assert!(staged.can_push(ENTRY_BODY_BUDGET - 1));
+    for _ in 0..4 {
+        assert!(staged.can_push(16383));
+        staged.push(&vec![7; 16383]);
+    }
+    assert_eq!(staged.bytes, ENTRY_BODY_BUDGET);
+    assert_eq!(
+        staged.bodies.iter().map(Vec::len).sum::<usize>(),
+        ENTRY_BODY_BUDGET
+    );
+    assert!(!staged.can_push(0));
+    store
+        .with_writer(|file| {
+            DiskRaftStorage::<ModelFs>::flush_entry_bodies(&store.io_metrics, file, &mut staged)
+        })
+        .unwrap();
+    assert_eq!((staged.len, staged.bytes), (0, 0));
+    assert!(staged.bodies.iter().all(|body| body.capacity() == 0));
+    staged.push(&vec![9; ENTRY_BODY_BUDGET - 2]);
+    assert!(staged.can_push(0));
+    assert!(!staged.can_push(1));
+}
+
+#[test]
+fn interleaved_ready_faults_fence_publication_and_recover_only_legacy_prefixes() {
+    let lengths = [206, 206, 206, 206, 16384, 16384, 16384, 16385, 65537, 10601];
+    let entries: Vec<_> = lengths
+        .iter()
+        .enumerate()
+        .map(|(i, &len)| exact_body_entry(i as u64 + 1, len))
+        .collect();
+    let hs = HardState {
+        term: 2,
+        vote: 1,
+        commit: entries.len() as u64,
+        ..Default::default()
+    };
+    let frames: Vec<_> = entries
+        .iter()
+        .map(|entry| legacy_frame(REC_ENTRY, &entry.write_to_bytes().unwrap()))
+        .chain(std::iter::once(legacy_frame(
+            REC_HARD_STATE,
+            &hs.write_to_bytes().unwrap(),
+        )))
+        .collect();
+    let expected: Vec<_> = frames.concat();
+    let mut cases = 0;
+    for cut in 0..=frames.len() {
+        for errno in [5, 28] {
+            let mut faults = vec![Fault::Before(errno), Fault::After(errno)];
+            if cut < frames.len() {
+                for bytes in [1, 7, 9, frames[cut].len() / 2, frames[cut].len() - 1] {
+                    faults.push(Fault::ShortWrite { bytes, errno });
+                }
+            }
+            for fault in faults {
+                for crash in [
+                    Crash::LoseUnsynced,
+                    Crash::KeepUnsynced,
+                    Crash::Seeded(0),
+                    Crash::Seeded(19),
+                ] {
+                    let fs = ModelFs::default();
+                    let store = open(&fs);
+                    let old = fs.visible_bytes(store.path()).unwrap();
+                    let prior = hard_state(&store);
+                    fs.clear_events();
+                    fs.fail_at(cut, fault);
+                    assert!(store.persist_ready(&entries, Some(&hs)).is_err());
+                    assert!(fs.fault_arrived());
+                    assert!(stored_entries(&store).is_empty());
+                    assert_eq!(hard_state(&store), prior);
+                    let bytes = fs.visible_bytes(store.path()).unwrap();
+                    assert!(bytes.starts_with(&old));
+                    assert!(expected.starts_with(&bytes[old.len()..]));
+                    let after = fs.events().len();
+                    assert!(store.persist_ready(&entries, Some(&hs)).is_err());
+                    assert!(store.append(&[]).is_err());
+                    assert_eq!(fs.events().len(), after);
+                    drop(store);
+                    fs.crash(crash);
+                    let recovered = open(&fs);
+                    let log = stored_entries(&recovered);
+                    assert!(entries.starts_with(&log));
+                    let recovered_hs = hard_state(&recovered);
+                    assert!(recovered_hs == prior || recovered_hs == hs);
+                    if recovered_hs == hs
+                        || (cut == frames.len() && matches!(fault, Fault::After(_)))
+                    {
+                        assert_eq!(log, entries);
+                    }
+                    drop(recovered);
+                    fs.crash(Crash::LoseUnsynced);
+                    let recovered = open(&fs);
+                    assert_eq!(stored_entries(&recovered), log);
+                    assert_eq!(hard_state(&recovered), recovered_hs);
+                    cases += 1;
+                }
+            }
+        }
+    }
+    assert_eq!(cases, (frames.len() * 7 + 2) * 2 * 4);
+}
+
 fn lease_policy() -> crate::lease_policy::LeasePolicy {
     crate::lease_policy::LeasePolicy {
         node: 2,
@@ -177,15 +365,20 @@ fn append_batch_ack_survives_loss_of_unsynced_bytes() {
 
 #[test]
 fn every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix() {
-    batch_failure_matrix(false);
+    batch_failure_matrix(false, 3);
 }
 
 #[test]
 fn replacement_batch_cuts_preserve_committed_prefix_and_valid_suffix_identity() {
-    batch_failure_matrix(true);
+    batch_failure_matrix(true, 3);
 }
 
-fn batch_failure_matrix(replace_suffix: bool) {
+#[test]
+fn interleaved_replacement_cuts_preserve_committed_prefix_and_suffix_identity() {
+    batch_failure_matrix(true, 7);
+}
+
+fn batch_failure_matrix(replace_suffix: bool, count: u64) {
     fn prepared(old: &[Entry], term: u64) -> (ModelFs, DiskRaftStorage<ModelFs>) {
         let fs = ModelFs::default();
         let store = open(&fs);
@@ -202,7 +395,7 @@ fn batch_failure_matrix(replace_suffix: bool) {
         (fs, store)
     }
     let old = batch_entries(1, if replace_suffix { 5 } else { 1 });
-    let mut suffix = batch_entries(2, 3);
+    let mut suffix = batch_entries(2, count);
     let term = if replace_suffix { 3 } else { 2 };
     for entry in &mut suffix {
         entry.term = term;
@@ -278,7 +471,7 @@ fn batch_failure_matrix(replace_suffix: bool) {
             }
         }
     }
-    assert_eq!(cells, 396);
+    assert_eq!(cells, (count as usize * 3 + 2) * 2 * 18);
     println!("append batch matrix (replace_suffix={replace_suffix}): {cells} write/sync/error/crash cells");
 }
 
@@ -411,10 +604,19 @@ fn real_ready_combines_election_records_but_keeps_light_commit_durable() {
 
 #[test]
 fn combined_follower_ready_never_sends_an_append_ack_after_any_persistence_failure() {
-    fn prepare() -> (ModelFs, RaftPeer<DiskRaftStorage<ModelFs>>) {
+    follower_ready_failure_matrix(2);
+}
+
+#[test]
+fn interleaved_follower_ready_never_acknowledges_a_failed_group() {
+    follower_ready_failure_matrix(7);
+}
+
+fn follower_ready_failure_matrix(count: u64) {
+    fn prepare(count: u64) -> (ModelFs, RaftPeer<DiskRaftStorage<ModelFs>>) {
         let fs = ModelFs::default();
         let peer = RaftPeer::with_storage(NodeId(1), RegionId(1), open(&fs)).unwrap();
-        let entries: Vec<_> = batch_entries(1, 2)
+        let entries: Vec<_> = batch_entries(1, count)
             .into_iter()
             .map(|mut entry| {
                 entry.term = 3;
@@ -426,37 +628,34 @@ fn combined_follower_ready_never_sends_an_append_ack_after_any_persistence_failu
             from: 2,
             to: 1,
             term: 3,
-            commit: 2,
+            commit: count,
             entries: entries.into(),
             ..Default::default()
         });
         fs.clear_events();
         (fs, peer)
     }
-    let (fs, peer) = prepare();
+    let (fs, peer) = prepare(count);
     let replies = peer.pump().unwrap();
     assert!(replies
         .iter()
         .any(|m| m.msg_type == MessageType::MsgAppendResponse
             && m.to == 2
-            && m.index == 2
+            && m.index == count
             && !m.reject));
     let cuts = fs.events();
     assert_eq!(
         cuts.iter().map(|c| c.operation).collect::<Vec<_>>(),
-        [
-            Operation::Write,
-            Operation::Write,
-            Operation::Write,
-            Operation::SyncData
-        ]
+        std::iter::repeat_n(Operation::Write, count as usize + 1)
+            .chain(std::iter::once(Operation::SyncData))
+            .collect::<Vec<_>>()
     );
     drop(peer);
     fs.crash(Crash::LoseUnsynced);
     let recovered = open(&fs);
-    assert_eq!(hard_state(&recovered).commit, 2);
+    assert_eq!(hard_state(&recovered).commit, count);
     assert_eq!(hard_state(&recovered).term, 3);
-    assert_eq!(stored_entries(&recovered).len(), 2);
+    assert_eq!(stored_entries(&recovered).len(), count as usize);
     let mut cells = 0;
     for cut in cuts {
         for errno in [5, 28] {
@@ -465,7 +664,7 @@ fn combined_follower_ready_never_sends_an_append_ack_after_any_persistence_failu
                 faults.push(Fault::ShortWrite { bytes: 4, errno });
             }
             for fault in faults {
-                let (fs, peer) = prepare();
+                let (fs, peer) = prepare(count);
                 fs.fail_at(cut.number, fault);
                 assert!(
                     peer.pump().is_err(),
@@ -481,7 +680,7 @@ fn combined_follower_ready_never_sends_an_append_ack_after_any_persistence_failu
             }
         }
     }
-    assert_eq!(cells, 22);
+    assert_eq!(cells, count * 6 + 10);
 }
 
 #[derive(Clone, Copy, Debug)]

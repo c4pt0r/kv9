@@ -2,7 +2,7 @@
 //!
 //! The interleaved kernel borrows four bodies and allocates no memory. Each
 //! accumulator consumes only its own bytes, in order, then its scalar tail.
-//! This module is experimental and is not wired into the database writer yet.
+//! The experimental writer stages at most four bodies within one Ready call.
 
 const OFFSET: u32 = 0x811c9dc5;
 const PRIME: u32 = 0x01000193;

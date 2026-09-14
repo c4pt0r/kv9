@@ -12,7 +12,7 @@
     "Quot.sound",
     "propext"
   ],
-  "module_sha256": "a836a03afbf5080eea9d35e040896dd823b66954ed5db356a7de88cfc0d1945d",
+  "module_sha256": "896ed30921604399233758492b322f4c8a8288061d556eb805d208e8793896ec",
   "parent_fnv": "fn fnv1a(bytes: &[u8]) -> u32 {\n    let mut hash: u32 = 0x811c9dc5;\n    for &b in bytes {\n        hash ^= u32::from(b);\n        hash = hash.wrapping_mul(0x01000193);\n    }\n    hash\n}",
   "parent_revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
   "parent_sha256": "c21e69c48f5ae1d6439466c577f0f307068af138adba9c02034827163c2c00de",
