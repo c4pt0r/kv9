@@ -45,8 +45,8 @@ stage dominates or establish that vectored I/O is slower on physical disks.
 The [separate CRC screen](WRITE-CRC-PERFORMANCE.md) remains the strongest
 measured write candidate: 139,402.831 loaded point calls/s and 1,063,493.134
 loaded batch items/s. It was measured in an earlier campaign, so those numbers
-are not a same-recording CRC/vectored comparison. CRC still needs full read
-and mixed-workload regression acceptance before promotion.
+are not a same-recording CRC/vectored comparison. The subsequent [full CRC regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md)
+now passes read/write/mixed coverage; exact-main integration remains next.
 
 ## Configuration and acceptance
 
