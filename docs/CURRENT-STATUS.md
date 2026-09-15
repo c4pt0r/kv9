@@ -1,4 +1,35 @@
-# Development checkpoint — 2026-09-12
+# Current development status — 2026-09-15
+
+The current storage increment adds [automatic checkpoint ownership](CHECKPOINT-OWNERS.md):
+durable exact upload bytes before remote I/O, replicated Pending coverage,
+positive-settlement transfer to Version, and scheduling that excludes checkpoint
+bookkeeping. Local validation passes 731 library tests (four ignored), strict
+7-theorem / 43-obligation safety proof, four affected proof compositions, four
+compiled engine faults, and one actual default Chaos Mesh leader kill.
+Independent replay checks 286 Raw calls, exact automatic owners, the selected
+SST and all three full stopped-store Raft histories. Deterministic pre-upload
+crash injection, negative-attempt history/release and complete legacy/reference
+backfill remain next; C04 and S07 stay open.
+
+Write throughput and latency remain the performance priority. **CRC remains
+selected**; the upper-bound receipt candidate has not passed its full matched
+performance comparison. Its exact historical client ELF is missing. One rebuild
+from matching source and Rust/Cargo 1.94 produced a different ELF and remains
+unqualified. No new QPS or latency result follows from the storage tests.
+See the [current write plan](WRITE-PERFORMANCE-NEXT.md) and
+[development path](DEVELOPMENT-PATH.md).
+
+New retained output uses `/mnt/data/kv9-work`; active latency-sensitive fixtures
+and the reusable Cargo target remain on NVMe. The recent free-space observation
+is approximately 877 GB on root and 9.69 TB on the data volume, sufficient for
+the unchanged full performance envelope. Each run still checks fresh capacity.
+CI remains local; hosted workflows are dispatch-only.
+
+The report below is the retained September 12 checkpoint, including its then
+selected inputs and pending work. Its historical experiments are not a current
+candidate promotion decision.
+
+## Retained September 12 report
 
 Tracking: [#9](https://github.com/c4pt0r/kv9/issues/9). The target remains an
 industrial distributed database. The active priority is now write throughput and

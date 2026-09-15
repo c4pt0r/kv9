@@ -274,10 +274,15 @@ impl ReplicatedEngine for MemEngine {
             }
         }
         if batch.mutations().iter().any(|m| {
-            let key = match m {
-                Mutation::Put { key, .. } | Mutation::Delete { key, .. } => key,
+            let (cf, key) = match m {
+                Mutation::Put { cf, key, .. } | Mutation::Delete { cf, key } => (cf, key),
             };
-            !key.starts_with(b"\x00kv9\x00manifest_")
+            // These durable records are included in every frozen image and
+            // WAL replay, but cannot recursively schedule their own checkpoint.
+            // An identical byte prefix in a user column family is still data.
+            *cf != ColumnFamily::Default
+                || !(key.starts_with(b"\x00kv9\x00manifest_")
+                    || key.starts_with(b"\0kv9\0retention_v1\0"))
         }) {
             state.data_revision = state.data_revision.saturating_add(1);
         }
@@ -303,10 +308,11 @@ impl ReplicatedEngine for MemEngine {
 }
 
 impl MemEngine {
-    pub(crate) fn freeze_parts(&self) -> (MemSnapshot, Option<AppliedPosition>) {
+    pub(crate) fn freeze_parts(&self) -> (MemSnapshot, Option<AppliedPosition>, u64) {
         let state = self.read();
         let position = state.applied;
-        (MemSnapshot { state }, position)
+        let revision = state.data_revision;
+        (MemSnapshot { state }, position, revision)
     }
     pub fn data_revision(&self) -> u64 {
         self.state
@@ -915,5 +921,52 @@ mod tests {
         let engine = MemEngine::new();
         engine.write_applied(WriteBatch::new(), at(1, 10)).unwrap();
         assert_eq!(engine.volatile_applied_position(), Some(at(1, 10)));
+    }
+
+    #[test]
+    fn checkpoint_bookkeeping_does_not_schedule_itself_but_is_frozen() {
+        let engine = MemEngine::new();
+        for (index, key) in [
+            (1, b"\0kv9\0manifest_pair".as_slice()),
+            (2, b"\0kv9\0retention_v1\0owner"),
+        ] {
+            engine
+                .write_applied(one_put(key, b"durable"), at(1, index))
+                .unwrap();
+        }
+        assert_eq!(engine.data_revision(), 0);
+        let (snapshot, position, revision) = engine.freeze_parts();
+        assert_eq!(position, Some(at(1, 2)));
+        assert_eq!(revision, 0);
+        assert_eq!(
+            snapshot
+                .get(ColumnFamily::Default, b"\0kv9\0retention_v1\0owner")
+                .unwrap(),
+            Some(b"durable".to_vec())
+        );
+        let mut batch = WriteBatch::new();
+        batch.put(
+            ColumnFamily::Write,
+            b"\0kv9\0retention_v1\0owner".to_vec(),
+            b"user".to_vec(),
+        );
+        engine.write_applied(batch, at(1, 3)).unwrap();
+        assert_eq!(
+            engine.data_revision(),
+            1,
+            "reserved-looking user-column bytes must still trigger checkpoints"
+        );
+        engine
+            .write_applied(one_put(b"\0kv9\0retention_v2\0new", b"unknown"), at(1, 4))
+            .unwrap();
+        assert_eq!(
+            engine.data_revision(),
+            2,
+            "unknown maintenance versions cannot be silently excluded"
+        );
+        assert_eq!(
+            revision, 0,
+            "the frozen scheduling observation must stay at its own cut"
+        );
     }
 }

@@ -40,8 +40,8 @@ both floors, aggregate growth, cleanup and baseline inheritance.
 
 ## Current capacity and missing inputs
 
-The latest retained capacity observation has 879,960,866,816 bytes available on
-the NVMe root and 9,705,253,265,408 bytes on the data volume. An external cleanup
+The latest capacity observation has 877,491,748,864 bytes available on
+the NVMe root and 9,690,022,080,512 bytes on the data volume. An external cleanup
 changed capacity during development; this increment does not claim those bytes
 as its own cleanup result. Free space is a point-in-time observation, not a
 reservation. Subsequent runs must check again.
@@ -54,3 +54,11 @@ do not substitute a newly built client or a shorter workload without a separatel
 qualified plan. Old proof tools and kubeconfig also disappeared; exact pinned
 tools were restored under the data volume and kubeconfig was exported from the
 existing local Kind cluster. No cluster recreation was needed.
+
+One recorded offline rebuild restored all 581 original client source files and
+used the retained Rust/Cargo 1.94 toolchain. The new 5,592,624-byte ELF does not
+match the historical 5,594,104-byte client. Matching source and compiler-artifact
+records do not establish byte identity or qualify a replacement benchmark
+client. The rebuilt client remains unqualified; it has not produced new QPS
+results. Recovery inputs, comparison and build output are retained under
+`/mnt/data/kv9-work/performance-input-recovery-20260915-first`.

@@ -2,10 +2,14 @@
 
 This increment adds explicit retention registration and ownership transitions to
 the existing metadata Raft group. It is a prerequisite of C04/#14 and S07/#21.
-It does not close either issue. The ledger currently tracks only explicitly
-registered resources and owners; existing checkpoint writers, readers, pending
-attempts and legacy references have not been backfilled or fenced into it.
-There is no object deletion operation or complete-reference certificate.
+It does not close either issue. The ledger tracks registered resources and
+owners. Legacy checkpoints/pending references and live readers have not been
+completely backfilled or fenced into it. There is no object deletion operation
+or complete-reference certificate.
+The subsequent [automatic checkpoint-owner increment](CHECKPOINT-OWNERS.md)
+now connects the current worker to this ledger before remote I/O. The evidence
+below describes the original explicitly registered ledger stage; complete
+legacy/reference backfill and reader integration remain open.
 
 ## Committed operation path
 
@@ -171,9 +175,11 @@ physical power-loss acceptance. [Exact gates, original failures and evidence](re
 separate the runtime result from its independent audit. No performance promotion
 follows from these correctness results.
 
-Checkpoint-worker integration must acquire durable owners before external I/O,
-preserve unknown pending outcomes and bind settlement to actual publication.
-It must also avoid a feedback loop in which ledger bookkeeping marks the engine
-dirty and causes another checkpoint and another ledger write. Complete reference
-coverage, bounded aggregate reader guards, ownership transition history,
-destination admission and atomic installation remain on the C04/S03/S05 path.
+[Automatic checkpoint ownership](CHECKPOINT-OWNERS.md) now saves exact upload
+bytes durably, confirms the Pending owner before external I/O, and transfers to
+Version after positive typed settlement. Its scheduling filter prevents ledger
+bookkeeping from recursively triggering checkpoints. Negative settlements keep
+their owners pinned; certified abort/history release is still open. Complete
+reference coverage, bounded aggregate reader guards, ownership transition
+history, destination admission and atomic installation remain on the C04/S03/S05
+path.

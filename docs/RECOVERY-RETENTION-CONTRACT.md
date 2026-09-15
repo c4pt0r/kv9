@@ -36,8 +36,10 @@ registrations and whole-closure owner transitions in the existing metadata Raft
 group. Exact duplicate calls receive a new confirmation receipt; ambiguous
 outcomes remain ambiguous. The proof and new actual leader-failure recovery
 cover registered state, not complete reference discovery or physical deletion.
-Checkpoint writers, pending attempts and readers still need automatic owner
-integration and backfill before these records can supply retention authority.
+The [automatic checkpoint-owner increment](CHECKPOINT-OWNERS.md) now connects
+the current writer and its pending upload plan to the ledger. It conservatively
+retains negative-attempt owners; complete legacy/reference backfill, durable
+negative history and live-reader coverage still precede retention authority.
 
 ## Authority already implemented
 
@@ -50,7 +52,7 @@ restorable protocol anchor in an SST manifest. These are different authorities:
 | `DiskRaftStorage` | Durable protocol entries, term/vote, commit and indexed configuration changes | Remote state-machine snapshot installation or safe protocol-log truncation |
 | Positioned engine WAL | Applied data and its exact `(term,index)` in one durable record | Consensus commit without the Raft protocol state |
 | `CheckpointManifest` | Full-state cut, cluster/region/epoch, exact SST references and content hashes | Root digest, receiving store identity, `ConfState` or a complete backup |
-| `catalog.pending` | The original prepared attempt and predecessor generation survive restart | Applied manifest authority or permission to reclaim WAL/SSTs |
+| `catalog.pending` | Original pre-upload bytes or verified prepared attempt, with its exact predecessor generation, survive restart | Applied manifest authority or permission to reclaim WAL/SSTs |
 | Segmented topology | Selected active/closed files and the locally adopted checkpoint | Independent certification of that checkpoint by Raft |
 | Retained manifest generations | Exact historical CAS winner or positive effect evidence | A negative verdict from absent history |
 
@@ -98,6 +100,7 @@ authenticate a malicious object store or prove device persistence.
 | Segment / frame | `KV9SEG01` header; `KV9R` frame; header CRC plus frame CRC binding stream/header/payload, excluding inner CRC fields | Exact selected identity/sequence/predecessor; complete corruption refuses; only an incomplete active final frame is repairable |
 | Full checkpoint | `KV9CHECKPOINT\x01` plus JSON; 1 MiB descriptor bound; 48 MiB referenced serialized state bound | Descriptor itself has no trailing checksum; pending/topology/Raft containers provide integrity. Decode checks scope presence, position and ordered nonoverlapping content-addressed SST references |
 | Pending flush | `KV9PENDING\x01`, LE generation, checkpoint bytes, trailing SHA-256 over all preceding bytes | 1 MiB + 128 byte file bound; exhausted generation, malformed/truncated/corrupt published state refuses; a temporary file is not a pending slot |
+| Pre-upload pending plan | `KV9PENDING\x02`, LE generation, LE descriptor length, descriptor, exact SST bodies, trailing SHA-256 | 48 MiB + 1 MiB + 128 byte outer bound; all embedded objects are validated; only an identical remotely verified capability upgrades to v1; old readers refuse v2 |
 | SST | `KV9S`, version 1; CRC-32 over all bytes preceding the checksum; SHA-256 in object key/reference | Full fetch and parse; validate CF, unique sorted keys, bounds and footer; missing/corrupt bytes are errors, never an empty table |
 | Raft log | BE length, FNV-1a over kind + body; kinds 1–5 include indexed `ConfState` and experimental lease epoch | No outer version/capability envelope; 64 MiB body bound; unknown checksum-valid kind/invalid protobuf refuses; old builds refuse unknown kinds |
 

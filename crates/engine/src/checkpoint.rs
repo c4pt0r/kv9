@@ -39,10 +39,31 @@ pub struct FrozenFlush {
     pub(crate) view: crate::mem::MemSnapshot,
     pub(crate) position: AppliedPosition,
     pub(crate) scope: FlushScope,
+    pub(crate) data_revision: u64,
 }
 impl FrozenFlush {
     pub fn position(&self) -> AppliedPosition {
         self.position
+    }
+    /// Scheduling observation from this exact image; never a durability fence.
+    pub fn data_revision(&self) -> u64 {
+        self.data_revision
+    }
+}
+
+/// Exact bounded object bytes prepared without external I/O. This is not a
+/// remotely verified capability and cannot construct a manifest proposal.
+/// ```compile_fail
+/// fn prepared(p: kv9_engine::checkpoint::PlannedFlush) -> kv9_engine::checkpoint::PreparedFlush { p }
+/// ```
+#[derive(Debug)]
+pub struct PlannedFlush {
+    pub(crate) manifest: CheckpointManifest,
+    pub(crate) objects: Vec<Vec<u8>>,
+}
+impl PlannedFlush {
+    pub fn manifest(&self) -> &CheckpointManifest {
+        &self.manifest
     }
 }
 
@@ -201,6 +222,13 @@ impl RemoteUploader {
     pub fn upload(&self, frozen: FrozenFlush) -> Result<PreparedFlush> {
         upload(self.store.as_ref(), frozen)
     }
+    /// Plan every immutable object before registering an owner or performing I/O.
+    pub fn plan(frozen: FrozenFlush) -> Result<PlannedFlush> {
+        plan(frozen)
+    }
+    pub fn upload_planned(&self, planned: PlannedFlush) -> Result<PreparedFlush> {
+        upload_planned(self.store.as_ref(), planned)
+    }
     pub fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
         restore(self.store.as_ref(), manifest)
     }
@@ -211,7 +239,11 @@ impl RemoteUploader {
 }
 
 fn upload(store: &dyn ObjectStore, frozen: FrozenFlush) -> Result<PreparedFlush> {
+    upload_planned(store, plan(frozen)?)
+}
+fn plan(frozen: FrozenFlush) -> Result<PlannedFlush> {
     let mut files = Vec::new();
+    let mut objects = Vec::new();
     let mut total = 0usize;
     for (cf_id, cf) in ColumnFamily::ALL.into_iter().enumerate() {
         let mut writer = SstWriter::new(cf);
@@ -222,60 +254,54 @@ fn upload(store: &dyn ObjectStore, frozen: FrozenFlush) -> Result<PreparedFlush>
                 .checked_add(key.len() + value.len() + 8)
                 .ok_or_else(|| Error::Engine("checkpoint size overflow".into()))?;
             if size > SST_TARGET && !writer.is_empty() {
-                let sst = prepare(store, &frozen.scope, cf_id as u8, writer)?;
-                total += sst.reference.size as usize;
+                let (sst, bytes) = plan_sst(&frozen.scope, cf_id as u8, writer)?;
+                total += sst.size as usize;
                 if total > MAX_CHECKPOINT_BYTES {
                     return Err(Error::Engine(
                         "checkpoint exceeds resident engine limit".into(),
                     ));
                 }
                 files.push(sst);
+                objects.push(bytes);
                 writer = SstWriter::new(cf);
                 size = key.len() + value.len() + 8;
             }
             writer.add(key, value)?;
         }
         if !writer.is_empty() {
-            let sst = prepare(store, &frozen.scope, cf_id as u8, writer)?;
-            total += sst.reference.size as usize;
+            let (sst, bytes) = plan_sst(&frozen.scope, cf_id as u8, writer)?;
+            total += sst.size as usize;
             if total > MAX_CHECKPOINT_BYTES {
                 return Err(Error::Engine(
                     "checkpoint exceeds resident engine limit".into(),
                 ));
             }
             files.push(sst);
+            objects.push(bytes);
         }
     }
     if files.is_empty() {
         return Err(Error::Engine("refusing empty checkpoint".into()));
     }
-    Ok(PreparedFlush {
+    let manifest = CheckpointManifest {
         scope: frozen.scope,
-        position: frozen.position,
+        term: frozen.position.term,
+        index: frozen.position.index,
         files,
-    })
+    };
+    CheckpointManifest::decode(&manifest.encode()?)?;
+    Ok(PlannedFlush { manifest, objects })
 }
-fn prepare(
-    store: &dyn ObjectStore,
-    scope: &FlushScope,
-    cf: u8,
-    writer: SstWriter,
-) -> Result<PreparedSst> {
+fn plan_sst(scope: &FlushScope, cf: u8, writer: SstWriter) -> Result<(SstReference, Vec<u8>)> {
     let bytes = writer.finish()?;
     if bytes.len() > MAX_CHECKPOINT_BYTES {
         return Err(Error::Engine("SST exceeds checkpoint limit".into()));
     }
     let hash = digest(&bytes);
     let key = ObjectKey::new(object_name(scope, &hash))?;
-    store.put(&key, &bytes)?;
-    // A successful PUT followed by readable, hash-identical bytes is required.
-    // Ambiguous PUT failure returns no capability; retry uses the same content id.
-    if store.get(&key)?.as_deref() != Some(bytes.as_slice()) {
-        return Err(Error::Engine("uploaded SST was not durably visible".into()));
-    }
     let sst = Sst::parse(&bytes)?;
-    Ok(PreparedSst {
-        reference: SstReference {
+    Ok((
+        SstReference {
             key: key.as_str().into(),
             sha256: hash,
             cf,
@@ -284,6 +310,31 @@ fn prepare(
             size: bytes.len() as u64,
             count: sst.len() as u64,
         },
+        bytes,
+    ))
+}
+pub(crate) fn upload_planned(
+    store: &dyn ObjectStore,
+    planned: PlannedFlush,
+) -> Result<PreparedFlush> {
+    let mut files = Vec::with_capacity(planned.manifest.files.len());
+    for (reference, bytes) in planned.manifest.files.into_iter().zip(planned.objects) {
+        let key = ObjectKey::new(reference.key.clone())?;
+        store.put(&key, &bytes)?;
+        // An ambiguous PUT retains the original journal and owner. It cannot
+        // mint a prepared capability; retries use these exact bytes and keys.
+        if store.get(&key)?.as_deref() != Some(bytes.as_slice()) {
+            return Err(Error::Engine("uploaded SST was not durably visible".into()));
+        }
+        files.push(PreparedSst { reference });
+    }
+    Ok(PreparedFlush {
+        scope: planned.manifest.scope,
+        position: AppliedPosition {
+            term: planned.manifest.term,
+            index: planned.manifest.index,
+        },
+        files,
     })
 }
 fn restore(store: &dyn ObjectStore, manifest: &CheckpointManifest) -> Result<MemEngine> {
@@ -305,12 +356,15 @@ fn verified_sst(store: &dyn ObjectStore, file: &SstReference) -> Result<Sst> {
     let bytes = store
         .get(&ObjectKey::new(file.key.clone())?)?
         .ok_or_else(|| Error::Engine("checkpoint references a missing SST".into()))?;
-    if bytes.len() as u64 != file.size || digest(&bytes) != file.sha256 {
+    checked_sst_bytes(file, &bytes)
+}
+pub(crate) fn checked_sst_bytes(file: &SstReference, bytes: &[u8]) -> Result<Sst> {
+    if bytes.len() as u64 != file.size || digest(bytes) != file.sha256 {
         return Err(Error::Engine(
             "checkpoint SST checksum or size mismatch".into(),
         ));
     }
-    let sst = Sst::parse(&bytes)?;
+    let sst = Sst::parse(bytes)?;
     if sst.column_family() != ColumnFamily::ALL[file.cf as usize]
         || sst.smallest_key() != file.smallest
         || sst.largest_key() != file.largest

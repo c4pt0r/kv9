@@ -31,16 +31,22 @@ publication. Its bounded description and private local recovery observation pass
 684 library tests, strict binding proofs and new actual three-voter/Chaos Mesh
 recovery. The [tracking-only replicated ledger](RETENTION-LEDGER.md) now adds
 whole-closure ownership transitions, strict committed-state proofs and actual
-Chaos Mesh leader-failure acceptance. Next connect checkpoint/pending owners,
-backfill existing references and bind transition evidence, then implement
-destination admission and atomic installation.
-This storage work adds no operation to ordinary Raw writes and no new performance claim.
+Chaos Mesh leader-failure acceptance. [Automatic checkpoint ownership](CHECKPOINT-OWNERS.md)
+now connects the current worker's durable pre-upload plan to Pending/Version
+owners and excludes retention bookkeeping from checkpoint scheduling. That
+filter adds a prefix predicate during applied-batch scheduling; it has no new
+throughput/latency result. Next validate the pre-upload crash cut, retain typed
+negative history, backfill/fence references and bind transition evidence, then
+implement destination admission and atomic installation.
 
 New bulk output and proof tools now use `/mnt/data/kv9-work`; latency-sensitive
 test data keeps its original NVMe location. [Fresh capacity and input checks](LOCAL-ARTIFACTS.md)
 show enough space for the unchanged 79,455,850,496-byte full screen. The old fixed
 v3 benchmark client is missing after an external cleanup, so exact causal input
-restoration remains required. No new matched performance result is claimed.
+restoration remains required. One source/toolchain-matched rebuild produced a
+different client ELF and remains unqualified. Qualify any replacement explicitly
+before comparing the two server candidates with it. No new matched performance
+result is claimed.
 
 ## Local storage checkpoint (2026-09-14 UTC)
 

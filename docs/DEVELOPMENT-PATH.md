@@ -78,11 +78,17 @@ the original stage checkboxes and dependencies below are unchanged.
 The [tracking-only replicated ledger](RETENTION-LEDGER.md) now implements bounded
 registration, whole-closure ownership transfer, exact generations and fresh
 Raft confirmation receipts through authenticated administration. Its committed
-state proof and actual leader-kill recovery pass. Next integrate checkpoint and
-pending-attempt owners, prevent bookkeeping from continuously triggering new
-checkpoints, and backfill/fence existing references. Reader draining, transferable
-history authority, destination admission and atomic installation remain open.
-The ledger alone cannot authorize object deletion or close C04/S07.
+state proof and actual leader-kill recovery pass. The subsequent
+[automatic checkpoint-owner increment](CHECKPOINT-OWNERS.md) durably saves exact
+upload plans, confirms Pending ownership before remote I/O and transfers to
+Version after positive typed settlement. The complete local library suite,
+strict safety proof and one actual default leader-kill/recovery cell pass;
+independent replay checks the selected SST and all three complete Raft histories.
+Bookkeeping no longer continuously schedules checkpoints. Next exercise the
+deterministic pre-upload crash cut, persist negative-attempt settlement/history,
+and backfill/fence existing references. Reader draining, transferable history
+authority, destination admission and atomic installation remain open. Neither
+increment authorizes object deletion or closes C04/S07.
 
 - [x] [#10](https://github.com/c4pt0r/kv9/issues/10) **C00** - Integrate the takeover fixes and establish a reproducible acceptance baseline
 - [ ] [#11](https://github.com/c4pt0r/kv9/issues/11) **C01** - Build deterministic fault injection and a persistence recovery matrix

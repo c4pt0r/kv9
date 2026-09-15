@@ -151,6 +151,134 @@ impl Fixture {
     }
 }
 
+/// Inject uncertainty AFTER the real three-voter native administration has
+/// applied the command. Unused metadata methods cannot participate in this test.
+struct AfterCommitFailure {
+    inner: RuntimeBackend,
+    calls: std::sync::atomic::AtomicUsize,
+    fail_at: usize,
+}
+impl AdminApi for AfterCommitFailure {
+    fn apply_retention(
+        &self,
+        caller: &str,
+        request: Vec<u8>,
+    ) -> Result<crate::api::RetentionUpdateResult> {
+        let result = self.inner.apply_retention(caller, request)?;
+        let call = self.calls.fetch_add(1, Ordering::SeqCst) + 1;
+        if call == self.fail_at {
+            return Err(Error::Raft(
+                "injected unconfirmed response after exact application".into(),
+            ));
+        }
+        Ok(result)
+    }
+    fn get_retention_owner(
+        &self,
+        caller: &str,
+        root: RootDigest,
+        owner: OwnerId,
+    ) -> Result<Option<Vec<u8>>> {
+        self.inner.get_retention_owner(caller, root, owner)
+    }
+    fn create_keyspace(
+        &self,
+        _: &str,
+        _: &str,
+        _: TenantId,
+        _: ApiType,
+        _: TxnGroupId,
+    ) -> Result<crate::api::CreateKeyspaceResult> {
+        unreachable!()
+    }
+    fn list_keyspaces(&self, _: &str) -> Result<Vec<kv9_common::Keyspace>> {
+        unreachable!()
+    }
+    fn get_region(&self, _: &str, _: KeyspaceId, _: &[u8]) -> Result<crate::api::RegionLocation> {
+        unreachable!()
+    }
+    fn split_region(&self, _: &str, _: RegionId, _: UserKey) -> Result<()> {
+        unreachable!()
+    }
+    fn cluster_info(&self, _: &str) -> Result<crate::api::ClusterInfo> {
+        unreachable!()
+    }
+}
+
+#[test]
+fn retention_checkpoint_handoff_recovers_each_applied_but_unconfirmed_prefix() {
+    use crate::checkpoint_retention::CheckpointOwners;
+    use kv9_engine::checkpoint::RemoteUploader;
+    let mut f = Fixture::new("checkpoint-handoff-prefix");
+    let index = cluster_leader(&f.rts).unwrap();
+    let frozen = f.rts[index]
+        .node
+        .meta_raft
+        .store
+        .engine()
+        .freeze_with_scope(|view| {
+            Ok(kv9_meta::checkpoint::inspect_initial_checkpoint_base(view, &f.root)?.flush_scope())
+        })
+        .unwrap();
+    let plan = RemoteUploader::plan(frozen).unwrap();
+    for cut in 1..=8 {
+        let owners = CheckpointOwners::new(&f.root, plan.manifest(), cut as u64).unwrap();
+        let faulty = AfterCommitFailure {
+            inner: backend_view(&f.rts[cluster_leader(&f.rts).unwrap()], &f.root),
+            calls: std::sync::atomic::AtomicUsize::new(0),
+            fail_at: cut,
+        };
+        let first = owners
+            .before_io(&faulty)
+            .and_then(|()| owners.after_positive_settlement(&faulty));
+        assert!(first.is_err(), "cut {cut} did not expose uncertainty");
+        assert_eq!(
+            faulty.calls.load(Ordering::SeqCst),
+            cut,
+            "no operation may pass the uncertain boundary"
+        );
+        let backend = backend_view(&f.rts[cluster_leader(&f.rts).unwrap()], &f.root);
+        owners.before_io(&backend).unwrap();
+        owners.after_positive_settlement(&backend).unwrap();
+        let mut client = f.client();
+        let pending = client
+            .get(f.root.digest(), owners.pending_id())
+            .unwrap()
+            .unwrap();
+        let version = client
+            .get(f.root.digest(), owners.version_id())
+            .unwrap()
+            .unwrap();
+        assert_eq!(pending.phase, PinPhase::Released);
+        assert_eq!(version.phase, PinPhase::Published);
+        assert_eq!(pending.binding.generation.get(), 1);
+        assert_eq!(pending.binding.resources, version.binding.resources);
+        assert_eq!(
+            pending.binding.descriptor.subject,
+            version.binding.descriptor.subject
+        );
+    }
+    f.reopen();
+    wait_for(
+        &mut f.rts,
+        15,
+        "checkpoint handoff leader after reopen",
+        |rts| cluster_leader(rts).is_some(),
+    );
+    let owners = CheckpointOwners::new(&f.root, plan.manifest(), 8).unwrap();
+    let backend = backend_view(&f.rts[cluster_leader(&f.rts).unwrap()], &f.root);
+    owners.before_io(&backend).unwrap();
+    owners.after_positive_settlement(&backend).unwrap();
+    assert_eq!(
+        f.client()
+            .get(f.root.digest(), owners.pending_id())
+            .unwrap()
+            .unwrap()
+            .phase,
+        PinPhase::Released
+    );
+}
+
 #[test]
 fn retention_rpc_transfer_survives_leader_stop_and_all_store_reopen() {
     let mut f = Fixture::new("retention-rpc-recovery");
