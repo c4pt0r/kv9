@@ -188,7 +188,12 @@ This remains below the unchanged full-screen launch budget; continue the live
 capacity work before running the prepared benchmark commands.
 Actual restoration/readback
 now covers a [first cohort from all four reader families](cross-voter-multicohort-retention-v1/README.md#actual-coverage-of-all-four-reader-families),
-including independent full-CRC metadata review. After the migration exits and fresh capacity qualifies,
+including independent full-CRC metadata review.
+The [PID-corrected derivatives now also have actual coverage across all four families](retention-pid-identity-v1/family-completion/README.md):
+FNV013, full-CRC014, directory020 and frame021, with 947 successful current
+readback decoder receipts. New directory/frame metadata and lifetime validation
+passes independently; prior FNV/CRC evidence is reused without payload replay.
+After the migration exits and fresh capacity qualifies,
 the existing receipt commands run all eight smokes, complete smoke readback,
 all sixteen timed cohorts and independent final acceptance. The completed
 16 focused controls and role binder need no repeat. Keep timing exclusive of
