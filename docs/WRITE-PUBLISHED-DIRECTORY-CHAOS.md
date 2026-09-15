@@ -64,8 +64,12 @@ A separate supplement must cross the default threshold using the existing
 batch API, verify checksum-valid selected successor topology, inject an actual
 leader container-kill on the same store, verify acknowledged-value recovery,
 then verify another rotation after recovery. Full histories, drains and owned
-cleanup remain required. Preparation is in progress; no supplemental runtime
-success is claimed here. The [source-level syscall fault gate](WRITE-PUBLISHED-DIRECTORY.md)
+cleanup remain required. The [first supplement](WRITE-PUBLISHED-DIRECTORY-ROTATION.md)
+now independently establishes positive selected rotation on all three voters,
+but failed before fault injection because its namespace lacked the Chaos Mesh
+opt-in annotation. Its full failure evidence and exact cleanup are preserved;
+the corrected fixture still needs complete recovery acceptance. The
+[source-level syscall fault gate](WRITE-PUBLISHED-DIRECTORY.md)
 already covers explicit successor-file and parent-sync cuts, but does not
 replace this real cluster recovery check.
 
