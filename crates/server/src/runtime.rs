@@ -3076,7 +3076,7 @@ impl NodeRuntime {
                 .collect::<Vec<_>>(),
         );
         let voter_ids: Vec<u64> = voters.iter().map(|node| node.0).collect();
-        let storage = if recover_only {
+        let mut storage = if recover_only {
             DiskRaftStorage::recover(&data_dir.join("raft"))?
         } else {
             DiskRaftStorage::open(&data_dir.join("raft"), &voter_ids)?.0
@@ -3088,21 +3088,23 @@ impl NodeRuntime {
             &storage,
         )?;
         let catalog_path = data_dir.join("catalog.wal");
-        if let Some(checkpoint) = WalEngine::checkpoint_reference(&catalog_path)? {
-            let bytes = checkpoint.encode()?;
-            if checkpoint.scope.cluster != root.cluster_id.to_string()
-                || checkpoint.scope.region != META_REGION_0.0
-                || !storage.has_committed_checkpoint(&bytes)?
-            {
-                return Err(Error::Engine(
-                    "checkpoint is not certified by this cluster's committed Raft log".into(),
-                ));
-            }
+        let (engine, replay, recovered_checkpoint) =
+            kv9_raft::state_machine::checkpoint_recovery::open_checkpoint_engine(
+                &mut storage,
+                &catalog_path,
+                remote.as_ref().map(|config| config.uploader.as_ref()),
+                root.cluster_id.to_string(),
+                META_REGION_0.0,
+            )?;
+        if let Some(checkpoint) = recovered_checkpoint {
+            eprintln!(
+                "node {} recovered checkpoint generation={} cut={} publication={}",
+                id.0,
+                checkpoint.generation(),
+                checkpoint.manifest().index,
+                checkpoint.publication().index
+            );
         }
-        let (engine, replay) = WalEngine::open_with_uploader(
-            &catalog_path,
-            remote.as_ref().map(|config| config.uploader.as_ref()),
-        )?;
         // Upgrade the old in-band index exactly once, using the durable Raft log
         // for its term. Atomically rewrite legacy state into ONE v2 record.
         let legacy_key = b"\x00kv9\x00applied_index";

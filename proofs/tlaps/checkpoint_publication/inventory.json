@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "tlapm_version": "4600b24",
+  "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "modules": {
+    "CheckpointPublicationProof": {
+      "theorems": [
+        "CPCasLoserCreatesNoWitness",
+        "CPGrantRequiresActualWinner",
+        "CPInvariantAlways",
+        "CPInvariantInit",
+        "CPInvariantStep",
+        "CPNoPartialRecoveryGrant",
+        "CPRecoveryKeepsFirstWinner",
+        "CPRecoveryRankDecreases",
+        "CPRecoveryRankIsNatural"
+      ],
+      "obligations": 36
+    }
+  },
+  "standard_modules": {
+    "Naturals": "73f2a68412039aa86f37ad08f0d0fef50fa8327d0ad8806f515548c75e9d9d84",
+    "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
+  },
+  "models": {
+    "CheckpointPublication": {
+      "source": "proofs/tla/checkpoint_publication/CheckpointPublication.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "528239980568c18c61bab5753c0d9ec36d48960c6220f4176fcb7baeadb825c1"
+        }
+      ]
+    }
+  },
+  "roots": [
+    "CheckpointPublicationProof"
+  ],
+  "source_pins": {
+    "crates/engine/src/persist.rs": "eddad2cfc8eb6b9e9188b88170fc90a5cbaec0b98850f22c40b2f93b91f768d1",
+    "crates/raft/src/state_machine.rs": "ac6b9048056aeb869dcceaf0013292a4530338bb37715f290b054fc8651e9a86",
+    "crates/raft/src/state_machine/checkpoint_recovery.rs": "9d9deec49ae4e16e15ccae0b2da8f816ff5579012343ec3ba8e44a444b33dda1",
+    "crates/raft/src/storage/configuration.rs": "bdf0f0b441d97405ca8d41710248ec7ee6b9c6420539f46e2b6f955f1066db5a",
+    "crates/server/src/runtime.rs": "108dd35bf67eb62cb9ca41fe97c697c437f6ddf4860fedfd6046a7e6787a670c"
+  }
+}

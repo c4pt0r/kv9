@@ -146,3 +146,16 @@ local store authority and publication ordering; the latter establishes safe
 formation retries and conditional progress on an original store. Their explicit
 Raft, filesystem, and fairness interface assumptions remain part of the trust
 boundary; the two results are not a complete Rust refinement proof.
+
+## Retention and local checkpoint recovery
+
+Three separately inventoried C04 components have their own strict runners:
+[retention records](../../docs/RETENTION-RECORD.md) (10 declarations / 59
+obligations), [configuration at a committed cut](../../docs/CONFIGURATION-AT-CUT.md)
+(11 / 95), and [local checkpoint publication](../../docs/CHECKPOINT-PUBLICATION.md)
+(9 / 36). Their counts are separate from the families above. The latest runner
+is `scripts/check-checkpoint-publication.py`; it checks actual CAS winner
+selection, exact image/term binding, completion before granting authority and
+finite scan progress. Existing ordered apply, committed Raft history and intact
+atomic WAL batches are explicit premises. Complete portable anchor, owner-ledger
+and installation composition remains unfinished.

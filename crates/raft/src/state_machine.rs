@@ -20,6 +20,7 @@ use crate::command::Command;
 use crate::command::ManifestChangePayload;
 use crate::{CommittedEntry, LogIndex};
 
+pub mod checkpoint_recovery;
 pub(crate) mod raw_group;
 
 /// The apply-side storage capability (task #9, the capability-narrowing half

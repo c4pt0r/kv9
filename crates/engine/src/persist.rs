@@ -108,6 +108,20 @@ impl WalEngine {
         path: impl AsRef<Path>,
         uploader: Option<&RemoteUploader>,
     ) -> Result<(Self, EngineReplay)> {
+        Self::open_with_replay_observer(path, uploader, |_| Ok(()), |_, _| Ok(()))
+    }
+
+    /// Inspect the selected base and uncovered WAL batches during startup.
+    /// Observations are provisional: any later recovery error invalidates all
+    /// observer state. Only a successful return establishes completed recovery.
+    /// Callers retain their exclusive store guard and must validate observations
+    /// before publishing the returned engine to any serving or apply thread.
+    pub fn open_with_replay_observer(
+        path: impl AsRef<Path>,
+        uploader: Option<&RemoteUploader>,
+        mut checkpoint_observer: impl FnMut(Option<&CheckpointManifest>) -> Result<()>,
+        mut batch_observer: impl FnMut(&WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    ) -> Result<(Self, EngineReplay)> {
         let path = path.as_ref();
         if path
             .with_extension("segments")
@@ -137,6 +151,7 @@ impl WalEngine {
                 DEFAULT_SEGMENT_BYTES,
                 metrics.clone(),
                 |manifest| {
+                    checkpoint_observer(manifest)?;
                     if let Some(manifest) = manifest {
                         let uploader = uploader.ok_or_else(|| {
                             kv9_common::Error::Config(
@@ -147,9 +162,12 @@ impl WalEngine {
                     }
                     Ok(())
                 },
-                |batch, position| match position {
-                    Some(at) => index.borrow().write_applied(batch, at),
-                    None => index.borrow().write(batch),
+                |batch, position| {
+                    batch_observer(&batch, position)?;
+                    match position {
+                        Some(at) => index.borrow().write_applied(batch, at),
+                        None => index.borrow().write(batch),
+                    }
                 },
             )?;
             return Ok((
@@ -173,6 +191,7 @@ impl WalEngine {
         let (index, base) = match std::fs::read(&checkpoint_path) {
             Ok(bytes) => {
                 let manifest = CheckpointManifest::decode(&bytes)?;
+                checkpoint_observer(Some(&manifest))?;
                 let uploader = uploader.ok_or_else(|| {
                     kv9_common::Error::Config(
                         "remote checkpoint requires MinIO configuration".into(),
@@ -180,7 +199,10 @@ impl WalEngine {
                 })?;
                 (uploader.restore(&manifest)?, Some(manifest.position()))
             }
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => (MemEngine::new(), None),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                checkpoint_observer(None)?;
+                (MemEngine::new(), None)
+            }
             Err(e) => return Err(kv9_common::Error::Engine(format!("read checkpoint: {e}"))),
         };
         let (wal, replay) = Wal::open_strict(path)?;
@@ -197,6 +219,7 @@ impl WalEngine {
                     continue;
                 }
             }
+            batch_observer(batch, *position)?;
             match position {
                 Some(at) => index.write_applied(batch.clone(), *at)?,
                 None => index.write(batch.clone())?,
