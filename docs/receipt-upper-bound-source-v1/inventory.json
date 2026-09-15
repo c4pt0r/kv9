@@ -1,0 +1,784 @@
+{
+  "complete": true,
+  "archive_sha256": "d9d85b462bd30f469af4c789598e6e65380d549a9d38e56617e08eb4f3aa9d38",
+  "archive_bytes": 190128,
+  "members": 129,
+  "uncompressed_bytes": 732336,
+  "rows": [
+    {
+      "member": "kv9-upper-bound-development-20260915-first/check-0.log",
+      "path": "/tmp/kv9-upper-bound-development-20260915-first/check-0.log",
+      "bytes": 24480,
+      "sha256": "c46458c8ff2f4449cccf93dfb3622676dc241f8a438d779e04afd265859fa100"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-first/result.json",
+      "path": "/tmp/kv9-upper-bound-development-20260915-first/result.json",
+      "bytes": 1158,
+      "sha256": "2f025e042d9ede99f8a4677bfa2ac1e466c2441c3f12924250f4ad84232d0382"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-first/run.py",
+      "path": "/tmp/kv9-upper-bound-development-20260915-first/run.py",
+      "bytes": 3867,
+      "sha256": "fdf4b166aa398aa6288341b4063226dec534a4108a66ef40e0dfc72f67f7e485"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-first/runtime-inputs.json",
+      "path": "/tmp/kv9-upper-bound-development-20260915-first/runtime-inputs.json",
+      "bytes": 17240,
+      "sha256": "c7ea112e77f09fb0e1fda79df38198ebfc9e58dfc23a1e6ccd767855ebcac5a8"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/CHECKPOINT.md",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/CHECKPOINT.md",
+      "bytes": 3452,
+      "sha256": "3de179f3e48e7ef9629c52749bb9abe4bc5c3f7a40206dec43d4fca877ed7226"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/check-1.log",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/check-1.log",
+      "bytes": 75308,
+      "sha256": "6bcccd96c8253e9e36a704ed46b2ac9700562dc46e52db05a3e4bea473a5f7d9"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/check-2.log",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/check-2.log",
+      "bytes": 825,
+      "sha256": "d6f34dd8f012b343addb6ad1fe0ecad000221c6ee46d6ef4a6245152a07d0f0c"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/check-3.log",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/check-3.log",
+      "bytes": 695,
+      "sha256": "84feb8b2dfc9f4460f063293ccc49c1c3cde6e77e46f06403df8797f3cee7aa8"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/check-4.log",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/check-4.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/prior-run-reuse.json",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/prior-run-reuse.json",
+      "bytes": 538,
+      "sha256": "436769bf98cba238ffcaa4ecf79bd6d088113ced8b33af660bf91722e634bf8e"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/result.json",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/result.json",
+      "bytes": 4125,
+      "sha256": "a0dd2c1af988854f3839a4236dc0221cb840b4dfff0f51523a0f441f01c1fb69"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/run.py",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/run.py",
+      "bytes": 4228,
+      "sha256": "2bce133676deb494d60ee0a8413cc767872fd1868d26d5821fa62bf883e449f1"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-second/runtime-inputs.json",
+      "path": "/tmp/kv9-upper-bound-development-20260915-second/runtime-inputs.json",
+      "bytes": 17240,
+      "sha256": "9fd0bb57d0f75d96df909efefc0e5a0c042ea307785fbd0b039ddf933f881eca"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-third/check-5.log",
+      "path": "/tmp/kv9-upper-bound-development-20260915-third/check-5.log",
+      "bytes": 513,
+      "sha256": "000559e37637fe5b149e35004851e687848a825f13208a3064d25b4b50983da4"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-third/check-6.log",
+      "path": "/tmp/kv9-upper-bound-development-20260915-third/check-6.log",
+      "bytes": 695,
+      "sha256": "b782a93aa63fdd0724c23f93906408428d04e82e4150a78f3ee9c2769f9b2012"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-third/result.json",
+      "path": "/tmp/kv9-upper-bound-development-20260915-third/result.json",
+      "bytes": 1673,
+      "sha256": "03f7b0a1b2692b027fbf2248db02abbaf96e8e75bfefb4e511d57689cd322155"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-third/run.py",
+      "path": "/tmp/kv9-upper-bound-development-20260915-third/run.py",
+      "bytes": 4074,
+      "sha256": "05a9bca251aa97f90976d84a6f50d2579c4159673393283e17b60f501a245826"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-third/runtime-inputs.json",
+      "path": "/tmp/kv9-upper-bound-development-20260915-third/runtime-inputs.json",
+      "bytes": 17240,
+      "sha256": "9fd0bb57d0f75d96df909efefc0e5a0c042ea307785fbd0b039ddf933f881eca"
+    },
+    {
+      "member": "kv9-upper-bound-development-20260915-third/scope.txt",
+      "path": "/tmp/kv9-upper-bound-development-20260915-third/scope.txt",
+      "bytes": 236,
+      "sha256": "679fdd5c58316e078f53d3030b55e33aaf3126e599ee23ffb22f8c462c081b1f"
+    },
+    {
+      "member": "kv9-upper-bound-transport-check-20260915-first/README.md",
+      "path": "/tmp/kv9-upper-bound-transport-check-20260915-first/README.md",
+      "bytes": 2441,
+      "sha256": "223caf265fd64b0d5ceb2e2e1755b2cc0cf2336ef6b2a1bd55299a63ff502ed6"
+    },
+    {
+      "member": "kv9-upper-bound-transport-check-20260915-first/preflight.json",
+      "path": "/tmp/kv9-upper-bound-transport-check-20260915-first/preflight.json",
+      "bytes": 203,
+      "sha256": "2421b68f69ba7b758f34c67a06a1b941bf52baf9639e92f5a7d570bf27437eae"
+    },
+    {
+      "member": "kv9-upper-bound-transport-check-20260915-first/result.json",
+      "path": "/tmp/kv9-upper-bound-transport-check-20260915-first/result.json",
+      "bytes": 1988,
+      "sha256": "bf5283e2ec40d0637096925253f9b40cb0784c7227a3c30dcdb92222f2d1026f"
+    },
+    {
+      "member": "kv9-upper-bound-transport-check-20260915-first/run.py",
+      "path": "/tmp/kv9-upper-bound-transport-check-20260915-first/run.py",
+      "bytes": 5941,
+      "sha256": "7bd699466380ca155ab316e0cc693bb2e418681b013a8d38eb9222550291d359"
+    },
+    {
+      "member": "kv9-upper-bound-transport-check-20260915-first/runtime-inputs-after.json",
+      "path": "/tmp/kv9-upper-bound-transport-check-20260915-first/runtime-inputs-after.json",
+      "bytes": 17240,
+      "sha256": "c7ea112e77f09fb0e1fda79df38198ebfc9e58dfc23a1e6ccd767855ebcac5a8"
+    },
+    {
+      "member": "kv9-upper-bound-transport-check-20260915-first/runtime-inputs-before.json",
+      "path": "/tmp/kv9-upper-bound-transport-check-20260915-first/runtime-inputs-before.json",
+      "bytes": 17240,
+      "sha256": "c7ea112e77f09fb0e1fda79df38198ebfc9e58dfc23a1e6ccd767855ebcac5a8"
+    },
+    {
+      "member": "kv9-upper-bound-transport-check-20260915-first/terminal.json",
+      "path": "/tmp/kv9-upper-bound-transport-check-20260915-first/terminal.json",
+      "bytes": 1596,
+      "sha256": "fee6d7a00fc2c6efc727b72d957b21a7247c428594b9b44513c09fb85817d609"
+    },
+    {
+      "member": "kv9-upper-bound-transport-check-20260915-first/test.log",
+      "path": "/tmp/kv9-upper-bound-transport-check-20260915-first/test.log",
+      "bytes": 369,
+      "sha256": "d2d7e01941b07bce45f3943d58ed627445e3fd45064e9f9b597bf64938994a94"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-first/ReceiptUpperBound.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-first/ReceiptUpperBound.cfg",
+      "bytes": 258,
+      "sha256": "2bf5c6c64b3d35274aab4439b7195a7faf5b6b65e03ab26d8fcec528eb8f97b5"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-first/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-first/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-first/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-first/ReceiptUpperBoundProof.tla",
+      "bytes": 3097,
+      "sha256": "75d39226f00f8f52b8a259d01538634f0e3d92e22965b2bea8682a9ee9e9ef46"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-first/cache/ReceiptUpperBoundProof.tlaps/ReceiptUpperBoundProof.thy",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-first/cache/ReceiptUpperBoundProof.tlaps/ReceiptUpperBoundProof.thy",
+      "bytes": 421,
+      "sha256": "23c3a405e778f223f577ce9c3a8048811799995b352f9511fbdb682b5e72cf80"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-first/cache/ReceiptUpperBoundProof.tlaps/fingerprints",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-first/cache/ReceiptUpperBoundProof.tlaps/fingerprints",
+      "bytes": 4052,
+      "sha256": "f143a7549782f2307f76c5de809f6be281eaacb5fca6cc3564a09aa40dd8aadf"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-first/inputs.json",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-first/inputs.json",
+      "bytes": 293,
+      "sha256": "954d31a5bcda8e09d012f0902499ed722449c15820e4032cfd3f8d535d6b869a"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-first/proof.log",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-first/proof.log",
+      "bytes": 2968,
+      "sha256": "72f69c7e1ac38160379c048dbfd4739f8cc975f9f86ff9d6fb45f32ae5e5d4f5"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-second/ReceiptUpperBound.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-second/ReceiptUpperBound.cfg",
+      "bytes": 258,
+      "sha256": "2bf5c6c64b3d35274aab4439b7195a7faf5b6b65e03ab26d8fcec528eb8f97b5"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-second/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-second/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-second/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-second/ReceiptUpperBoundProof.tla",
+      "bytes": 3604,
+      "sha256": "442e3b4d0bc32cb8fadb21cf6df6baff2a1738757b70f791598e9e0bf17012e5"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-second/cache/ReceiptUpperBoundProof.tlaps/ReceiptUpperBoundProof.thy",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-second/cache/ReceiptUpperBoundProof.tlaps/ReceiptUpperBoundProof.thy",
+      "bytes": 421,
+      "sha256": "23c3a405e778f223f577ce9c3a8048811799995b352f9511fbdb682b5e72cf80"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-second/cache/ReceiptUpperBoundProof.tlaps/fingerprints",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-second/cache/ReceiptUpperBoundProof.tlaps/fingerprints",
+      "bytes": 5331,
+      "sha256": "99a586a2607636b835a6b2b82590e7ccbe13b39d16a5e982d44dab2dabc728b2"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-second/inputs.json",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-second/inputs.json",
+      "bytes": 293,
+      "sha256": "3849cbd3b77fa6202fa94f65c7557e4edd8f53f63da2380f2f6a64b9f8efd6b4"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-second/proof.log",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-second/proof.log",
+      "bytes": 1468,
+      "sha256": "1c93b38acd10277e44ea10eb9f6c296b735d4c25472877b474db35dd4f2017ef"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-third/ReceiptUpperBound.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-third/ReceiptUpperBound.cfg",
+      "bytes": 258,
+      "sha256": "2bf5c6c64b3d35274aab4439b7195a7faf5b6b65e03ab26d8fcec528eb8f97b5"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-third/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-third/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-third/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-third/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-third/cache/ReceiptUpperBoundProof.tlaps/ReceiptUpperBoundProof.thy",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-third/cache/ReceiptUpperBoundProof.tlaps/ReceiptUpperBoundProof.thy",
+      "bytes": 421,
+      "sha256": "23c3a405e778f223f577ce9c3a8048811799995b352f9511fbdb682b5e72cf80"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-third/cache/ReceiptUpperBoundProof.tlaps/fingerprints",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-third/cache/ReceiptUpperBoundProof.tlaps/fingerprints",
+      "bytes": 5327,
+      "sha256": "fc5aa2e1347ffde0bd600b0965ece61c5e3ee2ddd98787004dc3fa070a9a4061"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-third/inputs.json",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-third/inputs.json",
+      "bytes": 293,
+      "sha256": "2c7da615c54cdb49e09aa562ee258426ba7b8d6df6e8a43fe64dac1aff5dcc5a"
+    },
+    {
+      "member": "kv9-upper-bound-proof-draft-20260915-third/proof.log",
+      "path": "/tmp/kv9-upper-bound-proof-draft-20260915-third/proof.log",
+      "bytes": 422,
+      "sha256": "376043dd44ad33cefbaec73be78a480c868b1feece3b0a2160c1f0786d6a5e9a"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/auditor/ProofAudit.class",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/crates/raft/src/driver/applied_receipts.rs",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/crates/raft/src/driver/applied_receipts.rs",
+      "bytes": 6476,
+      "sha256": "2f1eba99776731da76422d2213ebe739fe64c0c8fef4e9a7c48267bba8e16154"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/crates/raft/src/driver.rs",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/crates/raft/src/driver.rs",
+      "bytes": 158593,
+      "sha256": "59fcf22c87f98dc888d9fbe5a07d9042eedcd31eb962aaa65dd7c1524271666f"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/crates/raft/src/write_diagnostics.rs",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/crates/raft/src/write_diagnostics.rs",
+      "bytes": 14347,
+      "sha256": "d52abc37f684690ff49b13246b4f4e0dcdc52a6ea170dd413bab7282a8ab9e9b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/crates/server/src/observability.rs",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/crates/server/src/observability.rs",
+      "bytes": 18880,
+      "sha256": "80f16cc3cc7e07637a3a5a7a7be265f3481e6a1ae2542b83ec770916c35b03db"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/README.md",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/README.md",
+      "bytes": 4941,
+      "sha256": "4f18bd2ab0971b7a3d086aecb74413367b7cc889bdcdc0ad42c4f349b72cef84"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/ReceiptUpperBound.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/ReceiptUpperBound.cfg",
+      "bytes": 258,
+      "sha256": "2bf5c6c64b3d35274aab4439b7195a7faf5b6b65e03ab26d8fcec528eb8f97b5"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/inventory.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/proofs/tlaps/receipt-upper-bound/inventory.json",
+      "bytes": 1402,
+      "sha256": "22e253bff644522968090ebadcddd290d373cd3d0a153ca738c570604acc717d"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/scripts/ProofAudit.java",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/scripts/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/scripts/check-receipt-upper-bound-proof.py",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/scripts/check-receipt-upper-bound-proof.py",
+      "bytes": 10233,
+      "sha256": "35bed36d4fa990bd6e3d3b1a69ded48b33a663ce60bb2be6cc70cea7656d7406"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/scripts/check-tla.py",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/scripts/check-tla.py",
+      "bytes": 13049,
+      "sha256": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/bound-source/scripts/check-tlaps.py",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/bound-source/scripts/check-tlaps.py",
+      "bytes": 16239,
+      "sha256": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/Run.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/Run.cfg",
+      "bytes": 258,
+      "sha256": "763935d56965badc376a601979fdd8615aec947291262b98eb22467b1ee5f978"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/tlc-terminal.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/tlc-terminal.json",
+      "bytes": 555,
+      "sha256": "1ad0476ecd5df008453c4ce5793e72c7482c28fbea45761e682240cbf740eeaf"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/tlc.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-1/tlc.log",
+      "bytes": 2321,
+      "sha256": "d8bfdaee1bfe85d43a1ac6c0a7ada551baa71e8f996435f89deca0eee3a7caa2"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/Run.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/Run.cfg",
+      "bytes": 258,
+      "sha256": "2bf5c6c64b3d35274aab4439b7195a7faf5b6b65e03ab26d8fcec528eb8f97b5"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/tlc-terminal.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/tlc-terminal.json",
+      "bytes": 555,
+      "sha256": "8f830f3d8fd456966d0d9e3ddd4a316f45b71d6fce62743aaff9d175675e5db4"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/tlc.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/capacity-2/tlc.log",
+      "bytes": 2329,
+      "sha256": "4789e76118892b17663692ebf764d7248bc59ddc324b6aa638fd32f324d70b1c"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/compile-auditor-terminal.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/compile-auditor-terminal.json",
+      "bytes": 467,
+      "sha256": "b93246ebca91e2579cf72e9267f3c04dfcd20e99b24f7c7570687b70c50ab9d0"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/compile-auditor.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/compile-auditor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/ReceiptUpperBound.tla",
+      "bytes": 1913,
+      "sha256": "bf44870dcfc39c457219ad2cd87dac3188efd79ae0be72e7f130062ddd5915c3"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/Run.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/Run.cfg",
+      "bytes": 236,
+      "sha256": "99a32721405eccca940cbb629c2955e5d968bb80e71a6abf083cda05a7a23029"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/tlc-terminal.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/tlc-terminal.json",
+      "bytes": 568,
+      "sha256": "bc2d575fc8695b508f3f06606ad95b0f17163611a44fee9494882945b9167fa1"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/tlc.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/decreasing-bound/tlc.log",
+      "bytes": 3013,
+      "sha256": "928b4a50577756de6d4863edce0a15dd71edc5bb0a86bde3e4fabf9bd7603a0d"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/false-axiom/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/false-axiom/ReceiptUpperBound.tla",
+      "bytes": 1961,
+      "sha256": "d638d078f19420c6a9cdd7c87bd1d8f267f1ccb45151c5f4671390a24571296b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/false-axiom/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/false-axiom/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/false-axiom/sany.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/false-axiom/sany.log",
+      "bytes": 2825,
+      "sha256": "a9f2ed555e134dbe4d17407a35e6ac85a58c1d02d4ff35e53090087cd191d8cf"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/invocation.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/invocation.json",
+      "bytes": 720,
+      "sha256": "a55b769e091fc179c68f34dac66d3f73260f889c9549879ec258f1748f5edd84"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/ReceiptUpperBound.tla",
+      "bytes": 1941,
+      "sha256": "6b41f2de2c95a957d412384c44ccf2e567fb193041c28d21314a2aad5d92768d"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/Run.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/Run.cfg",
+      "bytes": 236,
+      "sha256": "99a32721405eccca940cbb629c2955e5d968bb80e71a6abf083cda05a7a23029"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/tlc-terminal.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/tlc-terminal.json",
+      "bytes": 568,
+      "sha256": "a05d42c8442ebfa765c929e5a2b833a4a44d60343d49189891dcc34c3b53af9a"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/tlc.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/non-strict-guard/tlc.log",
+      "bytes": 2451,
+      "sha256": "643fd757536e418ced81748386329f89fcbea93f4235577206d757e54f5deee4"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/proof-hole/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/proof-hole/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/proof-hole/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/proof-hole/ReceiptUpperBoundProof.tla",
+      "bytes": 3598,
+      "sha256": "0633797c1a530c9f893e2eb210775be7ea0ace1c18cf06fba32f4ad02a5df16a"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/proof-hole/sany.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/proof-hole/sany.log",
+      "bytes": 2729,
+      "sha256": "4bd088681dd1c7d178d0de2ebd25f18414f64c0bb8550d94ea49e2fa1e60f90c"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/result.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/result.json",
+      "bytes": 7093,
+      "sha256": "58107ca1c8047ece2aea6e19c29fc61ec4c558b73519630bde7f30b2d3a55d3c"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/source/README.md",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/source/README.md",
+      "bytes": 4941,
+      "sha256": "4f18bd2ab0971b7a3d086aecb74413367b7cc889bdcdc0ad42c4f349b72cef84"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/source/ReceiptUpperBound.cfg",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/source/ReceiptUpperBound.cfg",
+      "bytes": 258,
+      "sha256": "2bf5c6c64b3d35274aab4439b7195a7faf5b6b65e03ab26d8fcec528eb8f97b5"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/source/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/source/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/source/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/source/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/source/inventory.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/source/inventory.json",
+      "bytes": 1402,
+      "sha256": "22e253bff644522968090ebadcddd290d373cd3d0a153ca738c570604acc717d"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/source/source-contract.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/source/source-contract.json",
+      "bytes": 7597,
+      "sha256": "ca55554e434b0fbfa494ed0e195455f3f5fa6e17e8eba8cfa3a64c78f3606b54"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/ReceiptUpperBoundProof-terminal.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/ReceiptUpperBoundProof-terminal.json",
+      "bytes": 589,
+      "sha256": "cb5b793a3270ce57134f0f42e7e022be15f23d687f7f34101ae95d2d4513ce71"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/ReceiptUpperBoundProof.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/ReceiptUpperBoundProof.log",
+      "bytes": 510,
+      "sha256": "dfcf01e9b8aa5ec7c79311f9c0d788522fee94d2ebb540afdfa61adfe9667ef4"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/cache-ReceiptUpperBoundProof/ReceiptUpperBoundProof.tlaps/ReceiptUpperBoundProof.thy",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/cache-ReceiptUpperBoundProof/ReceiptUpperBoundProof.tlaps/ReceiptUpperBoundProof.thy",
+      "bytes": 421,
+      "sha256": "23c3a405e778f223f577ce9c3a8048811799995b352f9511fbdb682b5e72cf80"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/cache-ReceiptUpperBoundProof/ReceiptUpperBoundProof.tlaps/fingerprints",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/cache-ReceiptUpperBoundProof/ReceiptUpperBoundProof.tlaps/fingerprints",
+      "bytes": 5327,
+      "sha256": "637a90c9bbeb5358412a3d2171b7eff254c1ae82ed536c017ac80c2af2d9777b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/cache-ReceiptUpperBoundProof/ReceiptUpperBoundProof.tlaps/fingerprints.history/2026-09-15_04_04_32/ReceiptUpperBound.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/cache-ReceiptUpperBoundProof/ReceiptUpperBoundProof.tlaps/fingerprints.history/2026-09-15_04_04_32/ReceiptUpperBound.tla",
+      "bytes": 1940,
+      "sha256": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/cache-ReceiptUpperBoundProof/ReceiptUpperBoundProof.tlaps/fingerprints.history/2026-09-15_04_04_32/ReceiptUpperBoundProof.tla",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/cache-ReceiptUpperBoundProof/ReceiptUpperBoundProof.tlaps/fingerprints.history/2026-09-15_04_04_32/ReceiptUpperBoundProof.tla",
+      "bytes": 3631,
+      "sha256": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/sany.log",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/sany.log",
+      "bytes": 2722,
+      "sha256": "4f636b6b70b7fe1401c4bab1eb448c1344e76b8e0ec3ae1322e1c8011943d4d7"
+    },
+    {
+      "member": "kv9-upper-bound-proof-acceptance-20260915-first/theorems/semantic-audit.json",
+      "path": "/tmp/kv9-upper-bound-proof-acceptance-20260915-first/theorems/semantic-audit.json",
+      "bytes": 2962,
+      "sha256": "f8876af5bfde08432986f92912742a9000709e62964fb7c16844b4f960372fbc"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/README.md",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/README.md",
+      "bytes": 5177,
+      "sha256": "e8ce225248e1955a1713ad54b884422299792b78cb799b5b23981d57b736bbe1"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/ROOT-COMMANDS.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/ROOT-COMMANDS.json",
+      "bytes": 507,
+      "sha256": "ceb957873b03a6e209cff3a877620af2322de3544f8fa0b10f67bb780eb309df"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/check.py",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/check.py",
+      "bytes": 19575,
+      "sha256": "acfbf3217583f363a7241cfe91b78095a7c7bbab8dd9902051c211dd82419d2a"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/check.py.diff",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/check.py.diff",
+      "bytes": 5214,
+      "sha256": "2d5061fb76abf4a724453fcbcf292d1c862b2cdb82afd4bb70a3f3bd8aac9981"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/controls-terminal.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/controls-terminal.json",
+      "bytes": 979,
+      "sha256": "6412abe7a4c3db205faf3d7fe75a623cecbea57ad95813d7833214bbdf05cc35"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/inventory.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/inventory.json",
+      "bytes": 3623,
+      "sha256": "04e07180ab6ff1f22c0e79338b640ff80f94d0103455ea56e13d6c5b12090f12"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/check.py",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/check.py",
+      "bytes": 18838,
+      "sha256": "4e1a62c6f26505be4a732cc818bcccdf384f1d68bd846cb0ef877a8db044b742"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/controls-initial/check.py",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/controls-initial/check.py",
+      "bytes": 18838,
+      "sha256": "4e1a62c6f26505be4a732cc818bcccdf384f1d68bd846cb0ef877a8db044b742"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/controls-initial/result.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/controls-initial/result.json",
+      "bytes": 504,
+      "sha256": "a88f11d6a0baa5dff97421416c55de8cd17b9f936912ca4c65ba231ef1049d85"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/controls-initial/test_check.py",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/controls-initial/test_check.py",
+      "bytes": 6474,
+      "sha256": "1836c72605751357ecffa781f3361254755470e3c0dd65d4d8b1ac9e4edc85fc"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/controls-terminal.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/controls-terminal.json",
+      "bytes": 1007,
+      "sha256": "aa69604ddb839c637678e82a702cba787de31dea09b0118525df30753c0ac962"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/inventory.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/inventory.json",
+      "bytes": 1609,
+      "sha256": "6400817b9385a4a1f85fbeca81a062f89cf353d35660e4eb67d460da523e9490"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/source-pins.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/source-pins.json",
+      "bytes": 1365,
+      "sha256": "d4154af4cd23fa1b93d3eab18d9528ff3e06405f61c0a23529bbdb52a57e4611"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/test_check.py",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/test_check.py",
+      "bytes": 6474,
+      "sha256": "df076eb08021289de1714f193b55c99e2561d2edf880f2a158b900e2b03b0f04"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/origin/test_check.py.diff",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/origin/test_check.py.diff",
+      "bytes": 1042,
+      "sha256": "2fb8c6365050997f2c7002ce45273d3d4265d66f4c94b14dc41693f29270054d"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/source-delta.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/source-delta.json",
+      "bytes": 1172,
+      "sha256": "9ec3fe3c46d76039490f82a472e6082734175b6af522f14d154eb5004a67691d"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/source-pins.json",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/source-pins.json",
+      "bytes": 1504,
+      "sha256": "aac1b0bcfc357ef6529eff3b11af1ed8316004ab62c32ae6aa1c2aee050ee41c"
+    },
+    {
+      "member": "kv9-upper-bound-observer-checker-20260915-first/test_schema2.py",
+      "path": "/tmp/kv9-upper-bound-observer-checker-20260915-first/test_schema2.py",
+      "bytes": 5740,
+      "sha256": "17dd847a91da50203aeeeffb23781fdde5de6a45bf0e8cfc6d217d783f2cf756"
+    },
+    {
+      "member": "kv9-upper-bound-source-publication-20260915-first/git-blob-readback.json",
+      "path": "/tmp/kv9-upper-bound-source-publication-20260915-first/git-blob-readback.json",
+      "bytes": 1682,
+      "sha256": "025bf2a402c2df1372b45e4b64616c56b5d68f8da6be723e6dc762cba2b4fabe"
+    },
+    {
+      "member": "kv9-upper-bound-source-publication-20260915-first/summary.json",
+      "path": "/tmp/kv9-upper-bound-source-publication-20260915-first/summary.json",
+      "bytes": 1490,
+      "sha256": "0108aae0ef776b11c06c66731dd211c35aef4e2d9c98a690a3972ac8ce16550a"
+    },
+    {
+      "member": "kv9-upper-bound-source-publication-20260915-first/tool-observations.json",
+      "path": "/tmp/kv9-upper-bound-source-publication-20260915-first/tool-observations.json",
+      "bytes": 1240,
+      "sha256": "c844bc12fe8b24e7a461fb318300530a4b929326907c3e9380ad86c5b2b20a94"
+    }
+  ],
+  "scope": "Original small local source, proof, development-check and synthetic-observer records, including failures. No retained server build, database run, live observer capture or performance acceptance."
+}

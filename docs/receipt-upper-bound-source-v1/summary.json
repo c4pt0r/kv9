@@ -1,0 +1,50 @@
+{
+  "candidate_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+  "parent_revision": "7f458bfba79a1ab654127bf1f63e76d2750abe79",
+  "promoted": false,
+  "new_performance_result": false,
+  "formal": {
+    "theorems": 14,
+    "obligations": 82,
+    "positive_finite_distinct_states": {
+      "capacity_1": 37,
+      "capacity_2": 523
+    },
+    "wrong_result_controls": [
+      "decreasing-bound",
+      "non-strict-guard"
+    ],
+    "semantic_rejection_controls": [
+      "proof-hole",
+      "false-axiom"
+    ],
+    "proof_output_rejection_controls": 3,
+    "source_bound_files": 13,
+    "inverse_driver_edits": 6
+  },
+  "development": {
+    "default_workspace_passed": 792,
+    "default_workspace_ignored": 23,
+    "initial_diagnostic_raft_passed": 258,
+    "initial_diagnostic_raft_failed": 1,
+    "scoped_failed_test_recheck_passed": 1,
+    "scoped_server_diagnostic_passed": 1,
+    "default_and_diagnostic_clippy": true,
+    "format_check": true,
+    "explicit_production_lease_check": true,
+    "original_failure_remains_failed": true
+  },
+  "observer_checker": {
+    "schema": 2,
+    "synthetic_controls": 11,
+    "live_capture_accepted": false
+  },
+  "remaining": [
+    "retained default and diagnostic release builds",
+    "ordinary recovery with exact candidate",
+    "actual Chaos Mesh candidate acceptance",
+    "original 8-smoke/16-ten-second matched performance gate",
+    "separate actual upper-bound observer capture",
+    "held tail-hint path-counter comparison"
+  ]
+}
