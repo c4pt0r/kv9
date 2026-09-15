@@ -175,7 +175,7 @@ The [qualified identity repair and actual reconciliation](retention-pid-identity
 preserve that failure and complete a new 344-object readback and final COLD,
 extending the prefix to 14 cohorts and observing 57.387 GB available. The
 [qualified continuation](cross-voter-multicohort-retention-v1/continuation/README.md)
-now executes from ordinal014 with a prospective 85 GB capacity stop; its 11
+executed from ordinal014 with a prospective 85 GB capacity stop; its 11
 distinct focused controls and independent source review pass. Its first actual
 cohort completes corrected full-CRC readback of 303 objects and final COLD,
 extending the accepted prefix to 15 cohorts: 34.087 GB conservative net recovery
@@ -184,8 +184,16 @@ guards stay intact.
 The [later completed-boundary snapshot](cross-voter-multicohort-retention-v1/continuation/progress-20260915.json)
 records 19 completed plan cohorts, 41.339 GB conservative net recovery and
 66.648 GB available at that boundary. Ordinal019 was executing finish at capture.
-This remains below the unchanged full-screen launch budget; continue the live
-capacity work before running the prepared benchmark commands.
+That snapshot remained below the unchanged full-screen launch budget.
+The [actual terminal capacity result](cross-voter-multicohort-retention-v1/continuation/completion/README.md)
+subsequently records successful exit (`85630/b96c6f/0`), **40 completed plan
+cohorts**, **59,995,123,712 bytes** conservative net recovery and
+**85,304,766,464 bytes available** at the final boundary, before subsequent
+reporting costs. No incomplete or restored cohorts remain. The raw controller
+counter is 39 because bootstrap000 is separately bound; accounting and the
+next ordinal both identify the complete 40-cohort prefix. The original failed
+controller and its ordinal013 failure remain unchanged. Capacity work is
+complete at its prospective target; benchmark acceptance remains separate.
 Actual restoration/readback
 now covers a [first cohort from all four reader families](cross-voter-multicohort-retention-v1/README.md#actual-coverage-of-all-four-reader-families),
 including independent full-CRC metadata review.
@@ -193,7 +201,7 @@ The [PID-corrected derivatives now also have actual coverage across all four fam
 FNV013, full-CRC014, directory020 and frame021, with 947 successful current
 readback decoder receipts. New directory/frame metadata and lifetime validation
 passes independently; prior FNV/CRC evidence is reused without payload replay.
-After the migration exits and fresh capacity qualifies,
+After fresh capacity and process checks,
 the existing receipt commands run all eight smokes, complete smoke readback,
 all sixteen timed cohorts and independent final acceptance. The completed
 16 focused controls and role binder need no repeat. Keep timing exclusive of
