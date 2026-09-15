@@ -29,6 +29,8 @@ pub mod storage;
 pub mod testing;
 pub mod transport;
 pub mod work;
+#[cfg(feature = "write-path-diagnostics")]
+pub mod write_diagnostics;
 pub use async_apply::AsyncApplySnapshot;
 pub use async_read::AsyncReadSnapshot;
 

@@ -14,6 +14,11 @@ use crate::work::WorkSignal;
 pub(crate) type ApplyResult = Result<ApplyWaitOutcome, ApplyWaitError>;
 const MAX_REQUESTS: usize = 128;
 
+#[cfg(feature = "write-path-diagnostics")]
+type ServiceObservation = crate::write_diagnostics::ServiceObservation;
+#[cfg(not(feature = "write-path-diagnostics"))]
+type ServiceObservation = ();
+
 fn failed(message: &str) -> ApplyWaitError {
     ApplyWaitError::Failed(Error::Raft(message.into()))
 }
@@ -198,13 +203,18 @@ impl AsyncApplies {
     pub(crate) fn service(
         &self,
         mut inspect: impl FnMut(ProposedAt, Duration) -> Option<ApplyResult>,
-    ) {
+    ) -> ServiceObservation {
         let requests = {
             let mut state = self.0.state.lock().expect("async apply queue poisoned");
             std::mem::take(&mut state.queued)
         };
+        #[cfg(feature = "write-path-diagnostics")]
+        let mut observation = ServiceObservation {
+            extracted: requests.len(),
+            ..Default::default()
+        };
         if requests.is_empty() {
-            return;
+            return ServiceObservation::default();
         }
         let mut pending = Vec::with_capacity(requests.len());
         for request in requests {
@@ -213,11 +223,30 @@ impl AsyncApplies {
                 .as_ref()
                 .is_none_or(|sender| sender.is_closed())
             {
+                #[cfg(feature = "write-path-diagnostics")]
+                {
+                    observation.canceled += 1;
+                }
                 continue;
             }
-            if let Some(result) = inspect(request.at, request.started.elapsed()) {
+            let waited = request.started.elapsed();
+            #[cfg(feature = "write-path-diagnostics")]
+            {
+                observation.inspected += 1;
+                observation.inspection_age.record_duration(waited);
+            }
+            if let Some(result) = inspect(request.at, waited) {
+                #[cfg(feature = "write-path-diagnostics")]
+                {
+                    observation.resolved += 1;
+                    observation.resolved_age.record_duration(waited);
+                }
                 request.finish(result);
             } else if Instant::now() >= request.deadline {
+                #[cfg(feature = "write-path-diagnostics")]
+                {
+                    observation.expired += 1;
+                }
                 let result = Err(expired(request.at, request.started.elapsed()));
                 request.finish(result);
             } else {
@@ -225,12 +254,22 @@ impl AsyncApplies {
             }
         }
         let mut state = self.0.state.lock().expect("async apply queue poisoned");
+        #[cfg(feature = "write-path-diagnostics")]
+        if state.stopped {
+            observation.closed = pending.len();
+        } else {
+            observation.pending = pending.len();
+        }
         if !state.stopped {
             state.queued.append(&mut pending);
         }
         drop(state);
         // Stop raced the extracted handoff: drop/send failure outside the lock.
         drop(pending);
+        #[cfg(feature = "write-path-diagnostics")]
+        {
+            observation
+        }
     }
 
     pub(crate) fn close(&self) {
@@ -360,5 +399,68 @@ mod tests {
             matches!(outcome, Err(ApplyWaitError::Failed(_))),
             "owner loss left a false or unresolved receipt"
         );
+    }
+
+    #[cfg(feature = "write-path-diagnostics")]
+    #[tokio::test]
+    async fn observations_conserve_actual_service_outcomes_and_repeated_inspections() {
+        let owner = AsyncApplies::new(Arc::new(WorkSignal::default()));
+        let mut tickets: Vec<_> = (0..4)
+            .map(|index| {
+                owner
+                    .reserve(deadline())
+                    .unwrap()
+                    .register(ProposedAt {
+                        term: 7,
+                        index: LogIndex(index),
+                    })
+                    .unwrap()
+            })
+            .collect();
+        // Index 3 is canceled and never inspected.
+        drop(tickets.pop());
+        // Deterministic expiry at the owner; keep the receiver alive.
+        owner.0.state.lock().unwrap().queued[2].deadline = Instant::now() - Duration::from_secs(1);
+        let observation =
+            owner.service(|at, _| (at.index.0 == 0).then_some(Ok(ApplyWaitOutcome::Replaced)));
+        assert_eq!(observation.extracted, 4);
+        assert_eq!(observation.inspected, 3);
+        assert_eq!(observation.resolved, 1);
+        assert_eq!(observation.expired, 1);
+        assert_eq!(observation.canceled, 1);
+        assert_eq!(observation.pending, 1);
+        assert_eq!(observation.closed, 0);
+        assert_eq!(observation.inspection_age.count, 3);
+        assert_eq!(observation.resolved_age.count, 1);
+        let expired = tickets.pop().unwrap();
+        assert!(matches!(
+            expired.wait().await,
+            Err(ApplyWaitError::Unconfirmed { index: 2, .. })
+        ));
+        let pending = tickets.pop().unwrap();
+        assert_eq!(
+            tickets.pop().unwrap().wait().await.unwrap(),
+            ApplyWaitOutcome::Replaced
+        );
+        let observation = owner.service(|_, _| {
+            owner.close();
+            None
+        });
+        assert_eq!(
+            (
+                observation.extracted,
+                observation.inspected,
+                observation.closed
+            ),
+            (1, 1, 1)
+        );
+        assert_eq!(observation.pending, 0);
+        assert!(matches!(
+            pending.wait().await,
+            Err(ApplyWaitError::Failed(_))
+        ));
+        assert_eq!(owner.snapshot().in_flight, 0);
+        let empty = owner.service(|_, _| panic!("empty queue inspected a request"));
+        assert_eq!(empty.extracted, 0);
     }
 }

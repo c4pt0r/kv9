@@ -93,6 +93,10 @@ the workload and earlier failed records remain unchanged.
 
 ## Next write experiment
 
+The [default-off baseline diagnostic implementation](WRITE-PATH-DIAGNOSTICS.md)
+now passes local default/diagnostic checks. Runtime capture and observer-overhead
+measurement remain open; no new performance measurement supersedes this table.
+
 Measure receipt-queue lengths and ages, actual checked-lookup/fallback use,
 entries resolved per apply, and their relationship to Ready/group-commit sizes
 in a bounded diagnostic capture. Quantify instrumentation overhead separately.

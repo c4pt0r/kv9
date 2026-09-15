@@ -4260,6 +4260,16 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        #[cfg(feature = "write-path-diagnostics")]
+        {
+            // Diagnostic JSON has a fixed metric inventory and no request/key
+            // labels. Encoding failure cannot change database service behavior.
+            if let Ok(diagnostics) = serde_json::to_string(&self.driver.write_diagnostics()) {
+                body.push_str("write_path_diagnostics=");
+                body.push_str(&diagnostics);
+                body.push('\n');
+            }
+        }
         let applies = self.driver.async_apply_snapshot();
         body.push_str(&format!("raft_async_apply_limit={}\nraft_async_apply_queued={}\nraft_async_apply_in_flight={}\nraft_async_apply_peak={}\nraft_async_apply_stopped={}\n",
             applies.limit, applies.queued, applies.in_flight, applies.peak, applies.stopped));

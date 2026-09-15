@@ -143,6 +143,13 @@ Next capture actual receipt-queue length/age, checked-lookup/fallback counts,
 entries resolved per apply and Ready/group-commit sizes in a bounded diagnostic.
 Measure observer overhead separately. These measurements must establish the
 next causal target before another lookup change or combination experiment.
+The [default-off write diagnostics](WRITE-PATH-DIAGNOSTICS.md) now implement
+the baseline observations and pass local default/diagnostic checks. They record
+actual linear scan lengths, queue ages, application groups and Ready sizes.
+The next runtime work is release qualification and bounded capture with a
+separate observer-overhead comparison. Candidate hint/fallback counters still
+need a separately bound instrumented receipt build; no new performance gain
+or explanation of the batch regression is claimed.
 
 The [receipt matched-screen preparation](receipt-tail-performance-preparation-v1/README.md)
 also passes its 16 focused controls and actual three-role source/binary/Cargo

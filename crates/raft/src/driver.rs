@@ -279,6 +279,8 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     pump_gate: Mutex<()>,
     completion: crate::work::CompletionSignal,
     metrics: Arc<DriverMetrics>,
+    #[cfg(feature = "write-path-diagnostics")]
+    write_diagnostics: crate::write_diagnostics::WriteDiagnostics,
     #[cfg(any(test, feature = "experimental-leader-lease"))]
     lease_read_hits: std::sync::atomic::AtomicU64,
 }
@@ -338,6 +340,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             pump_gate: Mutex::new(()),
             completion: crate::work::CompletionSignal::default(),
             metrics,
+            #[cfg(feature = "write-path-diagnostics")]
+            write_diagnostics: Default::default(),
             #[cfg(any(test, feature = "experimental-leader-lease"))]
             lease_read_hits: std::sync::atomic::AtomicU64::new(0),
         }))
@@ -389,8 +393,15 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     }
 
     fn step_observed(&self) -> Result<()> {
+        #[cfg(feature = "write-path-diagnostics")]
+        let mut observation = crate::write_diagnostics::PumpObservation::default();
         let result = self.metrics.pump_service.observe(
-            || self.step_inner(),
+            || {
+                self.step_inner(
+                    #[cfg(feature = "write-path-diagnostics")]
+                    &mut observation,
+                )
+            },
             |result| {
                 if result.is_ok() {
                     Outcome::Success
@@ -404,6 +415,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         if let Err(cause) = self.completion.publish() {
             if result.is_ok() {
                 self.drain.abort_lease();
+                #[cfg(feature = "write-path-diagnostics")]
+                self.write_diagnostics.record_pump(&observation, None);
                 return Err(self.poison_persistence(&cause));
             }
         }
@@ -418,8 +431,16 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             Ok(())
         });
         if result.is_ok() {
+            #[cfg(feature = "write-path-diagnostics")]
+            let _service = self
+                .async_applies
+                .service(|at, waited| self.inspect_applied(at, waited));
+            #[cfg(not(feature = "write-path-diagnostics"))]
             self.async_applies
                 .service(|at, waited| self.inspect_applied(at, waited));
+            #[cfg(feature = "write-path-diagnostics")]
+            self.write_diagnostics
+                .record_pump(&observation, Some(&_service));
             self.async_reads
                 .complete(self.driver_applied().map(|at| at.index));
             // A pump can commit this leader's election no-op after this turn's
@@ -429,6 +450,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 self.peer.work_signal.notify();
             }
         } else {
+            #[cfg(feature = "write-path-diagnostics")]
+            self.write_diagnostics.record_pump(&observation, None);
             self.drain.abort_lease();
             self.async_applies.close();
             self.async_reads.close();
@@ -436,7 +459,11 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         result
     }
 
-    fn step_inner(&self) -> Result<crate::rawnode::PumpPublication> {
+    fn step_inner(
+        &self,
+        #[cfg(feature = "write-path-diagnostics")]
+        observation: &mut crate::write_diagnostics::PumpObservation,
+    ) -> Result<crate::rawnode::PumpPublication> {
         if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
             return Err(Error::Raft(f.clone()));
         }
@@ -481,6 +508,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .drain
             .take_ready()
             .map_err(|cause| self.poison_persistence(&cause))?;
+        #[cfg(feature = "write-path-diagnostics")]
+        {
+            observation.committed_taken = entries.len();
+        }
         if entries.is_empty() {
             return Ok(publication);
         }
@@ -592,6 +623,12 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                             return Err(self.poison(last_term, last_seen, &e));
                         }
                     };
+                    #[cfg(feature = "write-path-diagnostics")]
+                    {
+                        observation.applied_commands += commands.len();
+                        observation.group_commands.record(commands.len() as u64);
+                        observation.group_bytes.record(bytes as u64);
+                    }
                     for ((at, _), result) in commands.iter().zip(results) {
                         push_ring(&mut applied, at.index, at.term, result.outcome);
                     }
@@ -918,7 +955,20 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .is_some_and(|wm| wm.index >= at.index.0);
         {
             let applied = self.applied.lock().expect("applied poisoned");
-            if let Some(entry) = applied.iter().find(|e| e.index == at.index.0) {
+            #[cfg(not(feature = "write-path-diagnostics"))]
+            let entry = applied.iter().find(|e| e.index == at.index.0);
+            #[cfg(feature = "write-path-diagnostics")]
+            let entry = {
+                let slot = applied.iter().position(|e| e.index == at.index.0);
+                self.write_diagnostics.record_linear_lookup(
+                    applied.len(),
+                    slot,
+                    applied.last().map(|entry| entry.index),
+                    at.index.0,
+                );
+                slot.map(|slot| &applied[slot])
+            };
+            if let Some(entry) = entry {
                 return Some(if entry.term == at.term {
                     // The receipt is the RING's recorded values — position
                     // AND verdict as the apply loop stored them, never the
@@ -1151,6 +1201,18 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 
     pub fn metrics(&self) -> &DriverMetrics {
         &self.metrics
+    }
+
+    #[cfg(feature = "write-path-diagnostics")]
+    pub fn write_diagnostics(&self) -> crate::write_diagnostics::WriteDiagnosticsSnapshot {
+        crate::write_diagnostics::WriteDiagnosticsSnapshot {
+            schema_version: 1,
+            snapshot_consistency: "coherent_per_component_independent_between_components",
+            bucket_rule: "0=[0,0]; i>0=[2^(i-1),2^i-1]",
+            joint_bucket_rule: "0=[0,0]; 1..7=[2^(i-1),2^i-1]; 8=[128,infinity)",
+            driver: self.write_diagnostics.snapshot(),
+            ready: self.peer.write_ready_diagnostics(),
+        }
     }
 
     pub fn apply_lag_observation(&self) -> ApplyLagObservation {
@@ -1961,6 +2023,30 @@ mod tests {
             Some(b"applied".to_vec())
         );
         assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+        #[cfg(feature = "write-path-diagnostics")]
+        {
+            let observation = driver.write_diagnostics();
+            let value = |name| {
+                observation
+                    .driver
+                    .distributions
+                    .iter()
+                    .find(|m| m.name == name)
+                    .unwrap()
+                    .sum
+            };
+            assert!(observation.driver.valid);
+            assert_eq!(value("applied_commands_per_pump"), 1);
+            assert_eq!(value("successful_apply_group_commands"), 1);
+            assert_eq!(value("async_requests_resolved_per_service"), 1);
+            assert!(value("async_requests_requeued_per_service") >= 1);
+            assert_eq!(observation.driver.lookup_hits, 1);
+            assert!(observation.driver.lookup_misses >= 1);
+            assert_eq!(
+                value("async_requests_inspected_per_service"),
+                observation.driver.lookup_hits + observation.driver.lookup_misses
+            );
+        }
     }
 
     #[tokio::test]
