@@ -3,8 +3,9 @@
 Status: C04 design increment, 2026-09-15. Tracks [#14](https://github.com/c4pt0r/kv9/issues/14)
 under [#9](https://github.com/c4pt0r/kv9/issues/9). Source audit: `d4a7ab782e5a057b40c6ea1099ee93059bdfc77e`.
 This defines the implementation contract for the remaining storage work. The
-common anchor codec, replicated retention ledger, deductive composition proof
-and new fault scenarios are still to be implemented. C04 remains open.
+initial common anchor codec and local recovery binding are now implemented;
+the replicated retention ledger, transferable authority and installation
+composition remain unfinished. C04 remains open.
 
 The [per-resource record increment](RETENTION-RECORD.md) now implements bounded
 pin transitions and their recovery codec, with a checked parameterized component
@@ -21,6 +22,13 @@ The subsequent [base identity check](CHECKPOINT-BASE-IDENTITY.md) binds upload
 scope to the exact frozen image and inspects the restored historical root,
 schema and initial owner epoch before tail replay. It does not yet mint a
 portable anchor or destination install capability.
+
+The [initial anchor envelope](RECOVERY-ANCHOR-ENVELOPE.md) now combines those
+observations from one complete local open. Its bounded canonical descriptor
+binds root, historical owner epoch, distinct image/configuration/publication
+positions, full joint configuration and manifest. Public decoding cannot mint
+the private local observation. Retention remains explicitly unbound and retained
+protocol history remains required; destination installation is still separate.
 
 ## Authority already implemented
 

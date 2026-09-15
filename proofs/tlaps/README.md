@@ -168,3 +168,13 @@ obligations for immutable scope derivation and base-before-tail recovery. Run
 instances, five unsafe model controls and three proof rejections accompany the
 proof. [Scope and source correspondence](../../docs/CHECKPOINT-BASE-IDENTITY.md)
 state its lower-layer premises and unfinished portable-anchor work.
+
+## Initial anchor binding
+
+`anchor_binding/AnchorBindingProof.tla` adds seven statements / 26 strict
+obligations for one completed local recovery, immutable image correspondence,
+public decoding without authority, and a bounded envelope. Run
+`scripts/check-anchor-binding.py` with the pinned tools. Five TLC configurations,
+seven unsafe model counterexamples and four proof rejections accompany it.
+[The source mapping and premises](../../docs/RECOVERY-ANCHOR-ENVELOPE.md) distinguish
+the local observation from plain data and future install/retention authority.

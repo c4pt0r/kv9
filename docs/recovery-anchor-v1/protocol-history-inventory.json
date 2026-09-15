@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "members": 4,
+  "decoded_bytes": 50368468,
+  "archive_bytes": 203083,
+  "archive_sha256": "6a2083bb77363c0ad5ad0d33bd66f4a7d6dee2a5332d8fa7a398d065e4cad8fa",
+  "complete_original_readback": true,
+  "known_fixture_secrets_absent": true,
+  "files": [
+    {
+      "name": "n1/raft/raft.log",
+      "original": "/tmp/kv9-c04-anchor-envelope-process-20260915-first/kv9-minio-kv-twvjyjso/n1/raft/raft.log",
+      "bytes": 16788834,
+      "sha256": "87d9c35e6b91f72edbaa1b90c1052cb2f4c693fc530659893f7bdf1f46f8b3c0"
+    },
+    {
+      "name": "n2/raft/raft.log",
+      "original": "/tmp/kv9-c04-anchor-envelope-process-20260915-first/kv9-minio-kv-twvjyjso/n2/raft/raft.log",
+      "bytes": 16788828,
+      "sha256": "a2a1899b2baa47b7792ebad51a05211c303f49e564d2f0b2ed65ad31b2a565eb"
+    },
+    {
+      "name": "n3/raft/raft.log",
+      "original": "/tmp/kv9-c04-anchor-envelope-process-20260915-first/kv9-minio-kv-twvjyjso/n3/raft/raft.log",
+      "bytes": 16788815,
+      "sha256": "c5f771e52a8072b8c49f634eeaf1dfc86266f6187cdda920d618081606e65973"
+    },
+    {
+      "name": "make-history-packet.py",
+      "original": "/tmp/kv9-c04-anchor-envelope-publication-20260915-first/make-history-packet.py",
+      "bytes": 1991,
+      "sha256": "3dc5c23151857c3a43cb8ca6aaa8dd93cadca96d80e1980dedb40a9d4fd881d5"
+    }
+  ]
+}

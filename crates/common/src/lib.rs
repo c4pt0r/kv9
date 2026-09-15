@@ -6,6 +6,7 @@
 //!
 //! This crate depends on no other kv9 crate.
 
+pub mod anchor;
 pub mod codec;
 pub mod config;
 pub mod error;

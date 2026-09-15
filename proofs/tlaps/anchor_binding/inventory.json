@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "tlapm_version": "4600b24",
+  "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "modules": {
+    "AnchorBindingProof": {
+      "theorems": [
+        "ADecodeCannotMintLocalObservation",
+        "AEncodedFrameBound",
+        "AInvariantAlways",
+        "AInvariantInit",
+        "AInvariantStep",
+        "ALocalObservationBindsOneImage",
+        "ALocalObservationRequiresCompletion"
+      ],
+      "obligations": 26
+    }
+  },
+  "standard_modules": {
+    "Naturals": "73f2a68412039aa86f37ad08f0d0fef50fa8327d0ad8806f515548c75e9d9d84",
+    "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
+  },
+  "models": {
+    "AnchorBinding": {
+      "source": "proofs/tla/anchor_binding/AnchorBinding.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "ca93eb376366c2a55ee29976d919a8de7e013eb8849a5171ff31fd885362b138"
+        }
+      ]
+    }
+  },
+  "roots": [
+    "AnchorBindingProof"
+  ],
+  "source_pins": {
+    "crates/common/src/anchor.rs": "97889516c25ce4b368ce2f4ef0982902908741053a31b0950139a248f1bc7d6a",
+    "crates/common/src/lib.rs": "667809901055df41b231e598c6b211a169ce5c46d5b514f5ef9b4d3d348225bd",
+    "crates/meta/src/recovery.rs": "6396ccb501869c390a73a854143365cac6a57dc0d977c1af4e674a6cfb97eeb4",
+    "crates/meta/src/lib.rs": "2ac7d71f6424679c7ba2f4188a6da9b83429803ba37aaf32aeca086048b7c6ca",
+    "crates/meta/src/checkpoint.rs": "79697c1e933f83cc417fd30c12861fdffad9c16ee30fcae75668c652c473d4c4",
+    "crates/raft/src/storage/configuration.rs": "20993e8c20c43fc22b47f5883f184dd40b2fe70298840b11d3491fda31e26b4a",
+    "crates/raft/src/state_machine/checkpoint_recovery.rs": "0751743f973bdf6caf270a75687388e65bd2d84b0d60d46fbb7965837a6bba0b",
+    "crates/engine/src/persist.rs": "56e9505eefad563d2db1549d434e56355b41ceaf18d008433f8aed0a45924593",
+    "crates/server/src/runtime.rs": "90f5873a1b4b3a1d49b198a685806c5b403ffbfd49a02b3a4611830fa8e44261",
+    "crates/server/src/remote_storage.rs": "2f433c7ed8b421d2e5d18c2d1d7dcafb8a74e480e83fb80e6c0f0d4e848a2f4c"
+  }
+}

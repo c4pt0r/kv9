@@ -3084,33 +3084,22 @@ impl NodeRuntime {
         let raft_io_metrics = storage.io_metrics();
         let remote = crate::remote_storage::prepare_remote(&data_dir, &root, &storage)?;
         let catalog_path = data_dir.join("catalog.wal");
-        let mut recovered_base = None;
-        let (engine, replay, recovered_checkpoint) =
-            kv9_raft::state_machine::checkpoint_recovery::open_checkpoint_engine_with_base(
+        let (engine, replay, recovered_anchor) =
+            kv9_meta::recovery::open_initial_checkpoint_engine(
                 &mut storage,
                 &catalog_path,
                 remote.as_ref().map(|config| config.uploader.as_ref()),
-                root.cluster_id.to_string(),
-                META_REGION_0.0,
-                |manifest, view| {
-                    let base = kv9_meta::checkpoint::inspect_initial_checkpoint_base(view, &root)?;
-                    base.check_manifest(manifest)?;
-                    recovered_base = Some(base);
-                    Ok(())
-                },
+                &root,
             )?;
-        if recovered_base.is_some() != recovered_checkpoint.is_some() {
-            return Err(Error::Engine(
-                "checkpoint recovery lacks matching base identity and publication".into(),
-            ));
-        }
-        if let Some(checkpoint) = recovered_checkpoint {
+        if let Some(anchor) = recovered_anchor {
+            let checkpoint = anchor.descriptor();
             eprintln!(
-                "node {} recovered checkpoint generation={} cut={} publication={}",
+                "node {} recovered checkpoint generation={} cut={} publication={} anchor={}",
                 id.0,
-                checkpoint.generation(),
-                checkpoint.manifest().index,
-                checkpoint.publication().index
+                checkpoint.generation,
+                checkpoint.image_cut.index,
+                checkpoint.publication.index,
+                anchor.digest()
             );
         }
         // Upgrade the old in-band index exactly once, using the durable Raft log
