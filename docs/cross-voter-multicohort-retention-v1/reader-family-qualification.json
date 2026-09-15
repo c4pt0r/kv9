@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "complete": true,
+  "observed_ns": 1789450275968018782,
+  "scope": "Metadata extraction and binding of one completed actual cohort for each of four retention-reader families. No payload decode, workload, or historical full performance acceptance rerun by this extraction.",
+  "plan": {
+    "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/group-plan.json",
+    "sha256": "e0e9956c1334149ded0f23f2989f90e2ef54d3510a25293d30f1d5b7d66a86de"
+  },
+  "rows": [
+    {
+      "ordinal": 0,
+      "screen": "fnv-writer",
+      "selected_targets": 226,
+      "whole_cohort_objects": 369,
+      "fresh_decoder_receipts": 369,
+      "logical_bytes_read": 11249173926,
+      "original_compressed_bytes": 7961430085,
+      "scope": "readback_only_current_capacity_policy_adaptation",
+      "reader": {
+        "bytes": 17461,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/fnv-writer.py",
+        "sha256": "2e2839721fce661cd3a8e93453f620f1360bf3911e5f8c4f364342c6ce6cb47b"
+      },
+      "original_reader": {
+        "bytes": 17315,
+        "path": "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/retention_audit.py",
+        "sha256": "c6c3beb177cdc63633d5efb324908b89edd269e2bdc871e5b91aef5b21ae502d"
+      },
+      "restore": {
+        "path": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first/restore-1/result.json",
+        "bytes": 1514379,
+        "sha256": "62adfcfc23178eba9c60e65636af5711b056513f38ae3d731fb0bcbc1c21344f"
+      },
+      "readback": {
+        "path": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first/readback-1/result.json",
+        "bytes": 853740,
+        "sha256": "0f1735197d2910bd2f5ce28c82a618c52de5aadec63f4f4682a942cf1d983b69"
+      },
+      "final_cold": {
+        "path": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first/retire-2/result.json",
+        "bytes": 118695,
+        "sha256": "52363b045612b30d7477d2d6b56694e06259986930a17ee5af112c052923b4f4"
+      },
+      "selection": {
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/000.json",
+        "bytes": 352642,
+        "sha256": "ed07cd6215eadec83f66ff4256cbd8c992cf42bbebbde577dfb6f8e52e1acf0a"
+      }
+    },
+    {
+      "ordinal": 1,
+      "screen": "frame-buffer-crc",
+      "selected_targets": 216,
+      "whole_cohort_objects": 355,
+      "fresh_decoder_receipts": 355,
+      "logical_bytes_read": 10784920007,
+      "original_compressed_bytes": 7632810798,
+      "scope": "readback_only_current_capacity_policy_adaptation",
+      "reader": {
+        "bytes": 16554,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/frame-buffer-crc.py",
+        "sha256": "56ab02e54e0aff6cf4801acaa9a6b240079f624790b51312d69361c213e2d90e"
+      },
+      "original_reader": {
+        "bytes": 16408,
+        "path": "/tmp/kv9-frame-crc-performance-preparation-20260914-first/retention_audit.py",
+        "sha256": "1987e4ba28e1c0ddea87b2865394bbb3d24c4dc35dda9d54791ef37a160063c5"
+      },
+      "restore": {
+        "path": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/restore-1/result.json",
+        "bytes": 1469458,
+        "sha256": "2ff5b90991b4c7722faa267bbe6d89ff47e337cd3b58f20ccace70032aef4b20"
+      },
+      "readback": {
+        "path": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/readback-1/result.json",
+        "bytes": 801725,
+        "sha256": "848080b806b2520641ed8ffbb87f72aa283b554c23836ca31926ea31232c3f32"
+      },
+      "final_cold": {
+        "path": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/result.json",
+        "bytes": 112415,
+        "sha256": "71d41a2f8d26f68e8d9b345b71ebf66223a8f9295edee0f28cc6eff601265683"
+      },
+      "selection": {
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/001.json",
+        "bytes": 335138,
+        "sha256": "865a5369c19791afe26226d9cefba091312976f4656ce06f646924124fcde972"
+      }
+    },
+    {
+      "ordinal": 2,
+      "screen": "published-directory",
+      "selected_targets": 215,
+      "whole_cohort_objects": 353,
+      "fresh_decoder_receipts": 353,
+      "logical_bytes_read": 10709293587,
+      "original_compressed_bytes": 7579299596,
+      "scope": "unchanged_original_directory_reader",
+      "reader": {
+        "bytes": 17317,
+        "path": "/tmp/kv9-published-directory-performance-v3-preparation-20260915-first/retention_audit.py",
+        "sha256": "88fe5866978679ffdb4a41cc571e0ca808d2ab8d187662b2f51669f4ca495148"
+      },
+      "original_reader": {
+        "bytes": 17317,
+        "path": "/tmp/kv9-published-directory-performance-v3-preparation-20260915-first/retention_audit.py",
+        "sha256": "88fe5866978679ffdb4a41cc571e0ca808d2ab8d187662b2f51669f4ca495148"
+      },
+      "restore": {
+        "path": "/tmp/kv9-cross-voter-group-002-published-directory-20260915-first/restore-1/result.json",
+        "bytes": 1473606,
+        "sha256": "40cc88ca64e43d97934e846ee7e0021c19d5d691141d7b7e69470a4bb6133b7e"
+      },
+      "readback": {
+        "path": "/tmp/kv9-cross-voter-group-002-published-directory-20260915-first/readback-1/result.json",
+        "bytes": 820188,
+        "sha256": "dd9ad033dee24cfcdd07e464a29b9a00290a2fc1cc1eedc1db66f24c81a9f964"
+      },
+      "final_cold": {
+        "path": "/tmp/kv9-cross-voter-group-002-published-directory-20260915-first/retire-2/result.json",
+        "bytes": 115340,
+        "sha256": "241d300e80ff2b193ad0a2cae68606007a2c580fa345cf9098da2771590cb00d"
+      },
+      "selection": {
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/002.json",
+        "bytes": 338614,
+        "sha256": "0eb45fd07ac9e08ac3db805a2bf2e50c175f7ac4f393beaebe086876314f0686"
+      }
+    },
+    {
+      "ordinal": 3,
+      "screen": "crc-full-regression",
+      "selected_targets": 215,
+      "whole_cohort_objects": 353,
+      "fresh_decoder_receipts": 353,
+      "logical_bytes_read": 10708617059,
+      "original_compressed_bytes": 7578626024,
+      "scope": "readback_only_current_capacity_policy_adaptation",
+      "reader": {
+        "bytes": 16562,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/crc-full-regression.py",
+        "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+      },
+      "original_reader": {
+        "bytes": 16416,
+        "path": "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py",
+        "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+      },
+      "restore": {
+        "path": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first/restore-1/result.json",
+        "bytes": 1473605,
+        "sha256": "55f57bf639baeeeb65a0122f7382a8593bd9fe99db75f84aa687cc4e88bc40fe"
+      },
+      "readback": {
+        "path": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first/readback-1/result.json",
+        "bytes": 804286,
+        "sha256": "a582540fe880877110efa6e63cc2f0a8e09e0debd726b82e860194a762c7386b"
+      },
+      "final_cold": {
+        "path": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first/retire-2/result.json",
+        "bytes": 113405,
+        "sha256": "4628b1abdb1b66fb25d7659c8b422ab9a3db96cdd40ffaa0b77ec34cb5a06133"
+      },
+      "selection": {
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/003.json",
+        "bytes": 335028,
+        "sha256": "6d2d535be4ec4eb4d56e9ef4a73ba93b029a49b8a04ab6bf5c9a85d2503541c0"
+      }
+    }
+  ],
+  "total_selected_targets": 872,
+  "total_whole_cohort_objects": 1430,
+  "total_logical_bytes_read": 43452004579,
+  "original_observed_times_and_codec_lifetimes_are_historical": true,
+  "scope_limit": "This does not qualify all96 cohorts or establish receipt performance/benchmark readiness. Raw payload and detailed original receipts stay at local paths; this file binds reporting evidence only."
+}

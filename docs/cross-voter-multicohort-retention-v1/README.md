@@ -120,8 +120,43 @@ Actual available space at that boundary is **30,024,470,528 bytes**. Ordinal 002
 has started under the same live tool session, `79586`; the overall campaign is
 not terminal. No new performance result or benchmark-readiness claim follows.
 
-A [later progress snapshot](campaign-progress-20260915.json) records four completed
-plan cohorts, **8,995,954,688 bytes** of conservative net recovery and
-**34,325,327,872 bytes available** at the last completed boundary. Ordinal 004 is
+A [later progress snapshot](campaign-progress-20260915.json) records six completed
+plan cohorts, **13,499,342,848 bytes** of conservative net recovery and
+**38,826,639,360 bytes available** at the last completed boundary. Ordinal 006 is
 running under the same session. The snapshot binds the completed controller
 records and does not count the in-progress transaction as recovered capacity.
+
+## Actual coverage of all four reader families
+
+The first completed cohort from each reader family now passes exact restoration,
+whole-cohort readback and final COLD. The [bound results](reader-family-qualification.json)
+cover the following actual executions, without rerunning their historical
+performance workloads:
+
+| Reader family | Ordinal | Restored targets | Whole-cohort objects | Logical bytes read |
+| --- | ---: | ---: | ---: | ---: |
+| FNV writer | 000 | 226 | 369 | 11,249,173,926 |
+| Frame-buffer / CRC | 001 | 216 | 355 | 10,784,920,007 |
+| Published directory | 002 | 215 | 353 | 10,709,293,587 |
+| Full CRC regression | 003 | 215 | 353 | 10,708,617,059 |
+| Total | | 872 | 1,430 | 43,452,004,579 |
+
+The directory reader is byte-identical to its original. The other three execute
+the explicitly identified current-floor adaptations, with their original
+historical validation intact. This qualifies an actual representative cohort
+for each reader path; it does not accept all 96 cohorts or a new performance run.
+
+The previously unreported full-CRC path also passes an
+[independent metadata review](reader-family-review.json), `f6ecc1/0`: all stage,
+verification, restoration, readback, final-COLD and controller-release hashes
+join; all 138 untouched object identities remain; all 215 retired targets are
+absent. Its 2,288 actual codec lifetimes, six phase children and two dispatcher
+children are successful and no recorded lifetime remains. The current full
+readback has 353 decoder receipts. Its inherited `observed.codec_lifetimes=706`
+and historical timestamps retain their original producer meaning and are not
+current execution counts/times. The initial nonprivileged review read refused
+access; privileged read-only inspection resolved that without a workload rerun.
+
+The four-family summary is a metadata extraction (`21b88f/0`), not another
+payload verification. Detailed original receipts and payloads remain at its
+recorded local paths. No new bytes are credited by publishing this coverage.

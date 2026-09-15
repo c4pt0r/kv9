@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "observed_ns": 1789449728244077776,
+  "observed_ns": 1789450574104593670,
   "scope": "Snapshot of completed per-cohort controller acceptance records; the overall campaign remains live. Original per-object payloads and receipts remain local. This does not reexecute their verification.",
   "completed_controller_ordinals": [
     {
@@ -50,17 +50,49 @@
         "state": "COLD",
         "verified_sha256": "9ca358b9b6dcc2a82c1ab888ece89695de262c364627d957da90d1cd027b1f9d"
       }
+    },
+    {
+      "ordinal": 4,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/004/complete.json",
+      "completion_bytes": 2826,
+      "completion_sha256": "2014c0fb29ba6161829151c771715c5953351a811dfba253795ca90dc0e585b4",
+      "acceptance": {
+        "cold_sha256": "ac70dc6ebe86b84dfeaf7e7631e1f65a3a6b5f719702d2616204f6ff429f8030",
+        "complete": true,
+        "ordinal": 4,
+        "readback_sha256": "72bf305c4bda8a85135240dc7625017fa733418d57096627681a8d0d36c634ba",
+        "restore_sha256": "8788fb1d737fbbba0eefff6121b1420c3ace898cffa5c1a8516b7fba8eaf694d",
+        "selection_sha256": "62654b0763f5e479fa927f3fc211d3b1e6a572c21ebc9514e1dec4b612c1f58e",
+        "state": "COLD",
+        "verified_sha256": "fd99ce6a1539c156b211546b4e9c6538c9e1eb721d4ba7407fe578748c0ce545"
+      }
+    },
+    {
+      "ordinal": 5,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/005/complete.json",
+      "completion_bytes": 3061,
+      "completion_sha256": "0fd53bb4e35ca1438f5791ec0e40c903593fdf3eed3d952b068c1ee2bacd7219",
+      "acceptance": {
+        "cold_sha256": "5d42d06146fad0cbbb76f6f3faa2d91b246cc4ce49d9c107c1ff276f96d2fea8",
+        "complete": true,
+        "ordinal": 5,
+        "readback_sha256": "0670bbd399100b959ea75e151a23314f3f94103c90828758f12648b35d7e1bc7",
+        "restore_sha256": "3bf7c90e5f0e20fe49372b108ffaa22af90ad4203e19de153dd7adc60f4af474",
+        "selection_sha256": "21b46d0d0b8d1752cb9175354c35dcae29516187e453023a33e6e7aba10b0b02",
+        "state": "COLD",
+        "verified_sha256": "04b1c70213e361d303ca19f1808ba2e9f6869f7dc3d320d03a950d312234b8b5"
+      }
     }
   ],
   "last_completed_boundary_accounting": {
-    "actual_available_bytes": 34325327872,
+    "actual_available_bytes": 38826639360,
     "all_selected_exhausted": false,
     "benchmark_runtime_ready": false,
-    "campaign_controller_allocated_bytes": 385024,
-    "cold_cohorts": 4,
+    "campaign_controller_allocated_bytes": 552960,
+    "cold_cohorts": 6,
     "complete": true,
-    "conservative_net_allocated_change_bytes": 8995954688,
-    "execution_allocated_bytes": 626688,
+    "conservative_net_allocated_change_bytes": 13499342848,
+    "execution_allocated_bytes": 937984,
     "incomplete_or_restored_cohorts": [],
     "preparation_allocated_bytes": 14376960,
     "rows": [
@@ -95,25 +127,41 @@
         "original_target_allocation": 2523504640,
         "root": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first",
         "transaction_allocated_bytes": 202170368
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 4,
+        "original_target_allocation": 2520895488,
+        "root": "/tmp/kv9-cross-voter-group-004-published-directory-20260915-first",
+        "transaction_allocated_bytes": 359305216
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 5,
+        "original_target_allocation": 2507677696,
+        "root": "/tmp/kv9-cross-voter-group-005-frame-buffer-crc-20260915-first",
+        "transaction_allocated_bytes": 165400576
       }
     ],
     "scope": "Metadata-only current allocation, not another payload acceptance. All existing selected transaction roots, retained scratch/toolchains/receipts, execution and preparation metadata charged. Prior first-cohort savings excluded. Additional campaign preparation and all campaign output are charged. Includes completed cohort000 as explicitly separate bootstrap history; actual f_bavail is authoritative.",
-    "target_gross_allocation_decrease_bytes": 10241085440,
+    "target_gross_allocation_decrease_bytes": 15269658624,
     "target_reached": false,
-    "transaction_allocated_bytes": 1229742080
+    "transaction_allocated_bytes": 1754447872
   },
   "campaign_tool_session": 79586,
-  "last_verified_live_poll": "404364",
+  "last_verified_live_poll": "c4ebda",
   "campaign_terminal_observed": false,
   "status_snapshot": {
-    "available_bytes": 34250092544,
+    "available_bytes": 40122920960,
     "child": {
       "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
-      "pid": 905403,
-      "start_ticks": 173826583
+      "pid": 985194,
+      "start_ticks": 173919583
     },
-    "observed_ns": 1789449724067803650,
-    "ordinal": 4,
+    "observed_ns": 1789450573781761915,
+    "ordinal": 6,
     "phase": "finish",
     "state": "RUNNING"
   },
