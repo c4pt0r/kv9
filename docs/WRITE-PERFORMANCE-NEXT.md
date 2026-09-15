@@ -64,9 +64,12 @@ already validated size with the same byte emitter and unchanged durability
 ordering. It is off by default. Source-bound capacity/CRC proofs and both local
 851-test workspace/Clippy configurations pass. Mean encoder time drops 27.339%
 on the original batch corpus; six small cases improve mean and both-order p99.
-Next retain matching current-source server builds, run actual recovery/Chaos,
-then compare end-to-end write throughput and latency with the same qualified
-client. These microbenchmarks establish no database QPS or Redis parity. Keep
+[Matching release and ordinary recovery](WAL-PREALLOCATION-RUNTIME.md) now pass:
+four complete histories / 728 operations (666 OK, 62 unknown), twelve fresh
+drains and fourteen exited lifetimes. The feature remains off by default.
+Next verify actual candidate Chaos Mesh, then compare end-to-end write
+throughput and latency with the same qualified client. These microbenchmarks
+and correctness runs establish no database QPS or Redis parity. Keep
 CRC selected and avoid replaying the completed index/capture/full matrices.
 
 During the earlier full-screen capacity constraint, the C04

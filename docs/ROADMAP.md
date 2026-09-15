@@ -57,9 +57,11 @@
 > theorems/seven controls, the existing 47 CRC theorems/eight controls, and
 > both 851-test workspace/Clippy configurations pass locally. Large-batch
 > encoder mean time improves 27.339%; all six small cases also improve mean/p99.
-> These are CPU microbenchmarks, not database QPS. Next qualify matching server
-> releases, real recovery/Chaos and end-to-end throughput plus latency before
-> selection. Retain prior rejected buffer/index experiments and the pending
+> These are CPU microbenchmarks, not database QPS. [Matching releases and ordinary
+> recovery](WAL-PREALLOCATION-RUNTIME.md) now pass: 728 complete operations
+> (666 OK / 62 unknown), twelve fresh drains and fourteen exited lifetimes.
+> Next qualify actual candidate Chaos Mesh and end-to-end throughput plus
+> latency before selection. Retain prior rejected buffer/index experiments and the pending
 > pre-upload crash acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
