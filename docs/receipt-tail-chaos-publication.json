@@ -1,0 +1,53 @@
+{
+  "complete": true,
+  "runtime_revision": "a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9",
+  "controls_tool_terminal": "9e62f3/0",
+  "binding_tool_terminal": "4403eb/0",
+  "selection_tool_terminal": "b23010/0",
+  "selection_freeze_tool_terminal": "c774d4/0",
+  "package_terminal": {
+    "complete": true,
+    "session_id": 93527,
+    "terminal_receipt": "eee8ee",
+    "exit_code": 0,
+    "result_path": "/tmp/kv9-receipt-tail-chaos-publication-preparation-20260915-first/result.json",
+    "result_sha256": "f7806fd032d5a10cf8a706340625b22f3e7b72459ed501e301536e207811248c"
+  },
+  "independent_readback": {
+    "complete": true,
+    "chunk_id": "74789c",
+    "exit_code": 0,
+    "members": 2304,
+    "parts": 11,
+    "decoded_bytes": 416355930,
+    "history_operations": 9360,
+    "outcomes": {
+      "ok": 8852,
+      "unknown": 484,
+      "refused": 24
+    },
+    "verifier_sha256": "d57cc5685a1dfe2212f11c623a775a2793d4807bb0f8ad42e6612faa0559647c"
+  },
+  "package_result": {
+    "complete": true,
+    "started_ns": 1789440332631078327,
+    "initial_available_bytes": 25164959744,
+    "maximum_added_bytes": 1073741824,
+    "reporting_policy": "kv9-receipt-tail-portable-v3",
+    "minimum_available_bytes": 8589934592,
+    "launch_metadata_reserve_bytes": 8388608,
+    "original_benchmark_guards_unchanged": true,
+    "members": 2304,
+    "decoded_bytes": 416355930,
+    "compressed_bytes": 21836739,
+    "compressed_sha256": "d45bcbace59577b3cb96076474d54f350fbe0684dce1ab565f3bb7782d05ce88",
+    "parts": 11,
+    "inventory_sha256": "43556076174aa39585995a490e40310eb62ac3742cc58727539237f8ad7f8549",
+    "credentials_pattern_scan_passed": true,
+    "ended_ns": 1789440335206376276,
+    "final_available_bytes": 25142370304
+  },
+  "preparation_inventory_sha256": "ea8b65b65a029408f130b1f3268331ec35629d1e3a7ac24206385eed8de36e8e",
+  "recorded_ns": 1789440436766680226,
+  "scope": "Actual completed local publication receipts, recorded after packaging and independent readback. Separate from the original archive members."
+}
