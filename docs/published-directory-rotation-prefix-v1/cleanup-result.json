@@ -1,0 +1,82 @@
+{
+  "archive_sha256": "4b204632bcbc7c0fffcf8642ce573b57f73ba037d8adae6a993236db8e11f8f2",
+  "complete": true,
+  "containers": [
+    {
+      "command": 8,
+      "container": "0a64df9d20bc58a2723b5b19b800839ca2befeb281392c02f3710cbf87402000",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    },
+    {
+      "command": 10,
+      "container": "4e35fadb6dcc6206eedeadf644440d57b2763941d717b3192f11c3d91cd5d09c",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    },
+    {
+      "command": 12,
+      "container": "0328f92d2d3b06c5ff5079d6af2c6dcefbda713272377efe8fd508baa06ba31a",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    },
+    {
+      "command": 14,
+      "container": "e37eda532abdb514dbffe7e8731010defb0e9ea79bb465cab722fab19e32e8bf",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    }
+  ],
+  "ended_ns": 1789433175022637494,
+  "fault_injection_observed": false,
+  "historical_namespaces_unchanged": {
+    "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+    "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+    "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+    "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+    "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+    "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+    "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+    "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+  },
+  "namespace": "kv9-pdrot-1789432467-2626851",
+  "namespace_absent": true,
+  "namespace_uid": "e647df5a-1bfa-45ec-8ceb-6ff96250b8ef",
+  "native_children_exited_before_archive": 1,
+  "original_runtime_exit_code": 1,
+  "processes": [
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 7,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1449985,
+      "start_ticks": 172120364
+    },
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 9,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1448564,
+      "start_ticks": 172118609
+    },
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 11,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1448945,
+      "start_ticks": 172119162
+    },
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 13,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1449360,
+      "start_ticks": 172119654
+    }
+  ],
+  "verified_result_sha256": "321b34605f4457f730c28c40b0532795a714986585f1cff2bf016e24d8fca07d"
+}

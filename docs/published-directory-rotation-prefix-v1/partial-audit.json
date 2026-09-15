@@ -1,0 +1,184 @@
+{
+  "accepted": false,
+  "complete": true,
+  "ended_ns": 1789433094397126581,
+  "fault_uid": "74f53097-29b5-425a-be96-cab0f8b5dec3",
+  "fresh_drains": {
+    "initial": {
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "committed": 2,
+      "identities": {
+        "1": [
+          "318b1852-8c69-4d81-bfa4-823515c3aee1",
+          1,
+          172118609,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "0e73d2bd-5b81-46ae-8a33-951deadde66c",
+          1,
+          172119162,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "df803790-44b5-4c4d-bd79-eed8d0c9d7ab",
+          1,
+          172119654,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "2"
+    },
+    "pre": {
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "committed": 51,
+      "identities": {
+        "1": [
+          "318b1852-8c69-4d81-bfa4-823515c3aee1",
+          1,
+          172118609,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "0e73d2bd-5b81-46ae-8a33-951deadde66c",
+          1,
+          172119162,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "df803790-44b5-4c4d-bd79-eed8d0c9d7ab",
+          1,
+          172119654,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "2"
+    }
+  },
+  "independent_native_full_history_checked": true,
+  "namespace": "kv9-pdrot-1789432467-2626851",
+  "namespace_uid": "e647df5a-1bfa-45ec-8ceb-6ff96250b8ef",
+  "original_runtime_complete": false,
+  "original_runtime_exit_code": 1,
+  "partial_prefix_valid": true,
+  "pre_burst": {
+    "acknowledged_batch_items": 2880,
+    "acknowledged_batches": 45,
+    "acknowledged_input_value_bytes": 23592960,
+    "calls": 56,
+    "outcomes": {
+      "ok": 56
+    },
+    "read_calls": 5,
+    "traffic_calls": 50
+  },
+  "runtime_result_sha256": "b3a66d2daebad4402d6bde35286325a57b96767c83a2837c7d5cd531d82120a2",
+  "runtime_terminal_path": "/tmp/kv9-published-directory-rotation-supplement-root-20260915-first/runtime-terminal.json",
+  "scope": "Only the retained pre-fault prefix is independently valid. Original attempt failed before target selection/injection. No leader-kill, DB recovery, second burst or supplement acceptance is claimed.",
+  "selected_topology": {
+    "1": {
+      "active": {
+        "previous": [
+          1,
+          36
+        ],
+        "sequence": 2,
+        "stream": "77c136f057e775a564d2995fe215a5e5"
+      },
+      "authority_sha256": "9e7f85dbea70ee68cd30980ba9ef25f9a7563e7df5f956f1327670b87a93771e",
+      "checkpoint": null,
+      "closed": [
+        {
+          "bytes": 16373816,
+          "first": [
+            1,
+            2
+          ],
+          "has_unpositioned": false,
+          "last": [
+            1,
+            36
+          ],
+          "previous": null,
+          "records": 35,
+          "sequence": 1,
+          "stream": "77c136f057e775a564d2995fe215a5e5"
+        }
+      ],
+      "generation": 2,
+      "kind": "segmented"
+    },
+    "2": {
+      "active": {
+        "previous": [
+          1,
+          36
+        ],
+        "sequence": 2,
+        "stream": "e7b5744747bff58c87ab805ca730fa3d"
+      },
+      "authority_sha256": "e36009e79abf729ef6ffd38b708e478f09ff31f6784cb193b04fdcb4b40ca5d1",
+      "checkpoint": null,
+      "closed": [
+        {
+          "bytes": 16373816,
+          "first": [
+            1,
+            2
+          ],
+          "has_unpositioned": false,
+          "last": [
+            1,
+            36
+          ],
+          "previous": null,
+          "records": 35,
+          "sequence": 1,
+          "stream": "e7b5744747bff58c87ab805ca730fa3d"
+        }
+      ],
+      "generation": 2,
+      "kind": "segmented"
+    },
+    "3": {
+      "active": {
+        "previous": [
+          1,
+          36
+        ],
+        "sequence": 2,
+        "stream": "3de124206dcd24abcc10a97864cd45fd"
+      },
+      "authority_sha256": "7f29802d1f96873a8313a6266b5bcc915e0b26ff72158b8854af196a54c07461",
+      "checkpoint": null,
+      "closed": [
+        {
+          "bytes": 16373816,
+          "first": [
+            1,
+            2
+          ],
+          "has_unpositioned": false,
+          "last": [
+            1,
+            36
+          ],
+          "previous": null,
+          "records": 35,
+          "sequence": 1,
+          "stream": "3de124206dcd24abcc10a97864cd45fd"
+        }
+      ],
+      "generation": 2,
+      "kind": "segmented"
+    }
+  }
+}

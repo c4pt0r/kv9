@@ -1,0 +1,15 @@
+{
+  "all_members_read_back": false,
+  "archive": "/tmp/kv9-published-directory-rotation-supplement-failure-post-20260915-first/archive/original-evidence.tar.gz",
+  "audit_sha256": "5efd42fbe374f0302a031fadead9c03f9922c04242c05aec25bc81aa29a3c336",
+  "baseline_available": 71647092736,
+  "bytes": 586169,
+  "complete": true,
+  "decoded_bytes": 112252546,
+  "ended_ns": 1789433131956878867,
+  "input_inventory_sha256": "10d822c68195bd7b2f2b589b53877a4f8b111e83d1c0d7350bf536921d042eb1",
+  "members": 821,
+  "runtime_result_sha256": "b3a66d2daebad4402d6bde35286325a57b96767c83a2837c7d5cd531d82120a2",
+  "scope": "FAILED original attempt and independently valid pre-fault prefix only: complete original client history including values, selected topology bytes and physical headers, commands, controller failure observations, actual root failure receipts and frozen helpers. No raw PVC WAL/SST backup; PVC data is retained until exact cleanup. Retained local ELF bytes omitted and source/build hashes retained.",
+  "sha256": "4b204632bcbc7c0fffcf8642ce573b57f73ba037d8adae6a993236db8e11f8f2"
+}

@@ -1,0 +1,43 @@
+{
+  "archive_decoded_bytes": 112252546,
+  "archive_members": 821,
+  "complete": true,
+  "files": {
+    "archive-result.json": {
+      "bytes": 1089,
+      "sha256": "30bbe09f7805c480730be16df6d138b6243aa1b0750bdf2862c8d3248dcbb8dd"
+    },
+    "archive-verify.json": {
+      "bytes": 353,
+      "sha256": "321b34605f4457f730c28c40b0532795a714986585f1cff2bf016e24d8fca07d"
+    },
+    "cleanup-result.json": {
+      "bytes": 2784,
+      "sha256": "d70e1a0c1897cc73c4a98fe76309dc74bb1103d0b881280cd0ff68fe80a5bca7"
+    },
+    "cleanup-terminal.json": {
+      "bytes": 302,
+      "sha256": "25cb184cb187c303f85d1a0ebf1a8a05c86a4cf4ab461f73c583100d710be3c5"
+    },
+    "failed-runtime-terminal.json": {
+      "bytes": 320,
+      "sha256": "a33a77a8da8d01beb9a727b1744e66f9585cf39b83e406f705b8430284ceaf3d"
+    },
+    "input-inventory.json": {
+      "bytes": 296783,
+      "sha256": "10d822c68195bd7b2f2b589b53877a4f8b111e83d1c0d7350bf536921d042eb1"
+    },
+    "original-evidence.tar.gz": {
+      "bytes": 586169,
+      "sha256": "4b204632bcbc7c0fffcf8642ce573b57f73ba037d8adae6a993236db8e11f8f2"
+    },
+    "partial-audit.json": {
+      "bytes": 4576,
+      "sha256": "5efd42fbe374f0302a031fadead9c03f9922c04242c05aec25bc81aa29a3c336"
+    }
+  },
+  "original_runtime_exit_code": 1,
+  "scope": "Original failed rotation attempt plus independently valid pre-fault prefix and verified failure cleanup; not recovery or performance acceptance.",
+  "supplement_accepted": false,
+  "version": 1
+}
