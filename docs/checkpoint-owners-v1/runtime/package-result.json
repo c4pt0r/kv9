@@ -1,0 +1,26 @@
+{
+  "archive": {
+    "bytes": 1711354,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-agent-packet-20260915-first/evidence.tar.gz",
+    "sha256": "3c3b0d5db2720f9a80aaf93b5ca13fe112c67512def2a0dc2b5a09bd682fb26b"
+  },
+  "complete": true,
+  "elapsed_seconds": 0.6999196521937847,
+  "gzip_member_count": 1,
+  "originals_retained": true,
+  "parts": [
+    {
+      "bytes": 1711354,
+      "path": "/mnt/data/kv9-work/checkpoint-owner-agent-packet-20260915-first/evidence.tar.gz.part-000",
+      "sha256": "3c3b0d5db2720f9a80aaf93b5ca13fe112c67512def2a0dc2b5a09bd682fb26b"
+    }
+  ],
+  "scope": "Reporting compression only; no database/codec acceptance replay.",
+  "selected_original_bytes": 122828910,
+  "selection": {
+    "bytes": 687064,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-agent-packet-20260915-first/selection.json",
+    "sha256": "918aacea6e7133a9eec644eb2951f343d600d62e3734808e222686517ca11cb9"
+  },
+  "tar_file_members": 2543
+}

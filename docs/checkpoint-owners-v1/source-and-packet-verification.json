@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "development": {
+    "archive_sha256": "bd3464ce63ddca6c826c06a9f8a6b6aacd6dcd9cae58a3532268e5e8d302a123",
+    "members": 1534,
+    "selected_bytes": 16971713,
+    "original_byte_equality": true,
+    "gzip_full_eof": true,
+    "nested_raft_logs": []
+  },
+  "runtime": {
+    "archive_sha256": "3c3b0d5db2720f9a80aaf93b5ca13fe112c67512def2a0dc2b5a09bd682fb26b",
+    "members": 2542,
+    "selected_bytes": 122828910,
+    "original_byte_equality": true,
+    "gzip_full_eof": true,
+    "nested_raft_logs": [
+      {
+        "node": 1,
+        "bytes": 17059202,
+        "sha256": "a0e6db5dd025714782533c9121990d40dc48d7c3a3b2ac86905e4d54d0f26734",
+        "frame_counts": {
+          "1": 1,
+          "2": 1542,
+          "3": 1540
+        },
+        "complete_frame_boundaries": true
+      },
+      {
+        "node": 2,
+        "bytes": 17059202,
+        "sha256": "c091389c77dcc8c468af795429bb09609a6bed3023e92aa770abef66d90eb5c1",
+        "frame_counts": {
+          "1": 1,
+          "2": 1542,
+          "3": 1540
+        },
+        "complete_frame_boundaries": true
+      },
+      {
+        "node": 3,
+        "bytes": 17058946,
+        "sha256": "afee4a62f7b070e1cdaaa3f701877be3fb3c55a5b6d7c49cc99349a6a9d35ed2",
+        "frame_counts": {
+          "1": 1,
+          "2": 1526,
+          "3": 1540
+        },
+        "complete_frame_boundaries": true
+      }
+    ]
+  },
+  "runtime_companion_files_checked": 25,
+  "frozen_source_pins_checked": 166,
+  "proof_source_inventories_checked": 5,
+  "elapsed_seconds": 2.3812478377949446,
+  "scope": "Root archive/member/original-byte readback and complete nested protocol frame checks. Independent owner replay is retained in the separate runtime audit; no workload repeated."
+}

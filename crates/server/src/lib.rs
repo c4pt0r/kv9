@@ -36,5 +36,6 @@ pub use node::{MetaPlane, MetaRaft, Node, Store};
 pub use routing::{route_request, Routed};
 pub use runtime::{NodeRuntime, RuntimeAuth};
 
+mod checkpoint_retention;
 mod observability;
 mod remote_storage;

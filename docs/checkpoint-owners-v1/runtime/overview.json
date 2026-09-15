@@ -1,0 +1,161 @@
+{
+  "actual_owner_protocol_transitions": {
+    "pending": [
+      {
+        "index": 1493,
+        "phase": 1,
+        "term": 2
+      },
+      {
+        "index": 1495,
+        "phase": 2,
+        "term": 2
+      },
+      {
+        "index": 1502,
+        "phase": 3,
+        "term": 2
+      },
+      {
+        "index": 1504,
+        "phase": 4,
+        "term": 2
+      }
+    ],
+    "version": [
+      {
+        "index": 1498,
+        "phase": 1,
+        "term": 2
+      },
+      {
+        "index": 1500,
+        "phase": 2,
+        "term": 2
+      }
+    ]
+  },
+  "actual_owner_reads": 4,
+  "archive": {
+    "bytes": 1711354,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-agent-packet-20260915-first/evidence.tar.gz",
+    "sha256": "3c3b0d5db2720f9a80aaf93b5ca13fe112c67512def2a0dc2b5a09bd682fb26b"
+  },
+  "archive_file_members": 2543,
+  "audit_tool_terminal": {
+    "bytes": 574,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-audit-20260915-first/tool-terminal.json",
+    "sha256": "91eb1695b4b54e98e2684d4a702beb5187db9d379f27fc4f5f3c2d08f17dcf3b"
+  },
+  "command_lifetimes_exited_absent": 477,
+  "complete": true,
+  "decoded_regular_bytes_including_manifest": 123515974,
+  "filler_writes": 270,
+  "full_stopped_store_archives": [
+    {
+      "archive": {
+        "bytes": 17489920,
+        "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/n1-stopped-data.tar",
+        "sha256": "4a32d7e631e1b8dacbb640003963fd5b357d5240773d2ac202cf3bfb2a9bb532"
+      },
+      "decoded_bytes": 17470137,
+      "members": 11,
+      "node": 1
+    },
+    {
+      "archive": {
+        "bytes": 17489920,
+        "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/n2-stopped-data.tar",
+        "sha256": "f6f66bc3651e169150e38a70275ac09e67b1d084c3cd72c44fed8c491055ea03"
+      },
+      "decoded_bytes": 17471293,
+      "members": 11,
+      "node": 2
+    },
+    {
+      "archive": {
+        "bytes": 17489920,
+        "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/n3-stopped-data.tar",
+        "sha256": "0cf1785e3f50727fa7095c9b489b6bbd2b67e69207c43da31ee66508cf9cac6b"
+      },
+      "decoded_bytes": 17469753,
+      "members": 11,
+      "node": 3
+    }
+  ],
+  "member_byte_readback": {
+    "bytes": 569,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-agent-packet-20260915-first/readback-result.json",
+    "sha256": "3ea94688800b1964177ff7afb60899aa2668417e32b180bc6084fb8c7b859cac"
+  },
+  "original_preparation_failure": "45093a/1 permission refusal before child launch; retained in packet",
+  "owner_audit": {
+    "bytes": 5308,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-audit-20260915-first/owner-result.json",
+    "sha256": "f23ee6314bd5753931ab7a08b36dfa66c861a0af96370d996a222fa7ad240bc1"
+  },
+  "performance_client_exact_recovery": false,
+  "raw_audit": {
+    "bytes": 545,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-audit-20260915-first/raw-result.json",
+    "sha256": "9ee2b185fe0f785a39b0d6c0f8b2cf080741a3c8e8025735bbdb0732e2640522"
+  },
+  "raw_counts": {
+    "create-keyspace": 1,
+    "raw-delete": 2,
+    "raw-get": 8,
+    "raw-put": 275
+  },
+  "raw_operations": 286,
+  "reporting_accounting_scope": "Separate later local packet/report bytes; runtime high-water accounting is historical and unchanged.",
+  "reporting_allocation_before_final_overview_inventory_bytes": 4182016,
+  "runtime_maximum_conservative_decrease_bytes": 614907904,
+  "runtime_result": {
+    "bytes": 1979,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/result.json",
+    "sha256": "eb0f567d8befdf3de9ee00eaa63945600e3a232e6627ea908de1d6e26a5df7e5"
+  },
+  "runtime_tool_terminal": {
+    "bytes": 356,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-preparation-20260915-first/launch-first/tool-terminal.json",
+    "sha256": "5ce747772d3ac3775ceda9487eda68524dd3c378ca6f82fd3bc30cac2acedd12"
+  },
+  "secret_scans": [
+    {
+      "bytes": 663,
+      "path": "/mnt/data/kv9-work/checkpoint-owner-agent-packet-20260915-first/known-secret-scan-result.json",
+      "sha256": "2b237288507d25a6164638698b605a828f099d91273f7259e79f60d764d5509a"
+    },
+    {
+      "bytes": 691,
+      "path": "/mnt/data/kv9-work/checkpoint-owner-agent-packet-20260915-first/development-secret-scan-result.json",
+      "sha256": "c2b988ad6c8b871bfeefa219bbb50f113aceaf4bb265e10f3a3366064a691a02"
+    }
+  ],
+  "selected_original_bytes": 122828910,
+  "selected_predecessor": 71,
+  "selected_recovery_publication": [
+    [
+      3,
+      72,
+      1487,
+      1496
+    ]
+  ],
+  "selected_sst_inventory": {
+    "bytes": 1376,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/selected-sst-inventory.json",
+    "sha256": "a7b35242daaf46b1f3fa1aa764f270d1c340ca08f706578db1f53bcf01c522f5"
+  },
+  "source_helper": {
+    "bytes": 14180,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/checkpoint-owner-chaos.py",
+    "sha256": "649a7c17a330a72eeea05e83cc3e78afdc1aaf83669a6697297c4b155d7ebeaa"
+  },
+  "tested_default_binary": {
+    "bytes": 46981864,
+    "path": "/mnt/data/kv9-work/checkpoint-owner-default-inputs-20260915-first/kv9",
+    "sha256": "0e7c335497e8f6bbe27c44073f579366bdc01d0742934f1af3f73a47a8735702"
+  },
+  "testing_preupload_cell_executed": false
+}

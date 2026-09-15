@@ -1,0 +1,10 @@
+{
+  "actual_terminal_receipt": "eaca5f",
+  "exit_code": 0,
+  "result": {
+    "path": "/mnt/data/kv9-work/checkpoint-owner-agent-packet-20260915-first/package-result.json",
+    "bytes": 946,
+    "sha256": "612f3f1ae8c6bbfff387a474992eb100214e6a1154654abbe35e7da454fd939d"
+  },
+  "recording_note": "Actual completed tool receipt; no operation replayed for recording."
+}

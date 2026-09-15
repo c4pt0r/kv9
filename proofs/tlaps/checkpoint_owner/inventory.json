@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "tlapm_version": "4600b24",
+  "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "standard_modules": {
+    "Naturals": "73f2a68412039aa86f37ad08f0d0fef50fa8327d0ad8806f515548c75e9d9d84",
+    "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
+  },
+  "modules": {
+    "CheckpointOwnerProof": {
+      "theorems": [
+        "CCrashKeepsIdentityAndOwners",
+        "CInvariantAlways",
+        "CInvariantInit",
+        "CInvariantStep",
+        "CNoIdentityReplacement",
+        "COnlySettledJournalClears",
+        "CRemoteIOCovered"
+      ],
+      "obligations": 43
+    }
+  },
+  "models": {
+    "CheckpointOwner": {
+      "source": "proofs/tla/checkpoint_owner/CheckpointOwner.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "985793ca6ceb7dc23f333375ed1739643842d701920276633da4963b3252f148"
+        }
+      ]
+    }
+  },
+  "roots": [
+    "CheckpointOwnerProof"
+  ],
+  "source_pins": {
+    "crates/engine/src/checkpoint.rs": "c56c6b0419962d20e6cf98cfc609316b57c2627395d4f8cfea4eccdb8e34793e",
+    "crates/engine/src/flush_journal.rs": "17d5968e0af91e5c844fc89b79e2c324c1bbcfbb0594984e78f01eb735d9801b",
+    "crates/engine/src/mem.rs": "dbf2890ae53314b84ba558cbee6009aa874c1e493a41eb62f0e0123b4bed5408",
+    "crates/engine/src/persist.rs": "49b7c0af87c6606a0a64f188164708fcc8134170c12d3750a3db313d5b274f47",
+    "crates/server/src/checkpoint_retention.rs": "a42c1c5aeb781c053f94e0d553c8f41f0f7d89991bea4448355fffac9e206488",
+    "crates/server/src/remote_storage.rs": "471bbb2c7b183b36d8167b94e63fbfc6c81a93008dc22812eb35740c954271cd",
+    "crates/server/src/runtime.rs": "acd5fa1f05787e2da1b5121ed82ccdf1611cfa2c1ff6c479f063a71c9816fafe",
+    "crates/server/src/runtime/tests/retention_tests.rs": "e3ecb530aa2e76448d48154c807751bf6be4a05013eef4e94d737a04a996cda6",
+    "crates/meta/src/retention.rs": "99475c99545f9c93a86de58fac6cb4c8a70a8bd93e5aaea1006838ec131927db",
+    "crates/region/src/manifest.rs": "ecbfb593fa561ec88fcadc2471c6f444416cbc3b0546f75fdfc4e46870076c96"
+  }
+}

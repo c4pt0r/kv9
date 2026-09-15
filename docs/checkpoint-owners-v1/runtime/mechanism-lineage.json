@@ -1,0 +1,13 @@
+{
+  "copied_unchanged": {
+    "pack.py": {
+      "path": "/mnt/data/kv9-work/ledger-agent-packet-20260915-first/pack.py",
+      "sha256": "366a67c1c84cc42a6da841947bf8af4370fa9d5a4e524d0b3a451c938df162df"
+    },
+    "verify.py": {
+      "path": "/mnt/data/kv9-work/ledger-agent-packet-20260915-first/verify.py",
+      "sha256": "7abcf916e1b5b944ce8b86e647e74ba9cba7b22c79506ff4f52bb59a89e8a035"
+    }
+  },
+  "scope": "Finite selector only changes current accepted artifact roots. Qualified archive producer and independent byte verifier unchanged."
+}

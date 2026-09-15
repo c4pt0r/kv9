@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "history_operations": 286,
+  "counts": {
+    "create-keyspace": 1,
+    "raw-put": 275,
+    "raw-delete": 2,
+    "raw-get": 8
+  },
+  "same_key_overwrites": 1,
+  "post_recovery_reads": 4,
+  "selected_sst_files": 1,
+  "filler_writes": 270,
+  "actual_fault": "container-kill",
+  "scope": "Complete serial successful-client history, actual injection/lifecycle evidence, selected SST hashes and all-voter fresh-write progress. Single-host process failure; no physical power loss, general concurrent-history or full21 claim."
+}

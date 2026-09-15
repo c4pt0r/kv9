@@ -281,7 +281,7 @@ impl WalEngine {
         &self,
         scope_for_view: impl FnOnce(&dyn crate::ReadView) -> Result<FlushScope>,
     ) -> Result<FrozenFlush> {
-        let (view, position) = {
+        let (view, position, data_revision) = {
             let wal = self.wal.lock().expect("wal lock poisoned");
             wal.ensure_available()?;
             self.index.freeze_parts()
@@ -293,6 +293,7 @@ impl WalEngine {
             view,
             position,
             scope,
+            data_revision,
         })
     }
 
@@ -416,7 +417,7 @@ impl WalEngine {
                 "legacy marker upgrade must precede segmentation".into(),
             ));
         };
-        let (view, position) = self.index.freeze_parts();
+        let (view, position, _) = self.index.freeze_parts();
         if position.is_some()
             || view.get(ColumnFamily::Default, marker)?.as_deref()
                 != Some(at.index.to_be_bytes().as_slice())

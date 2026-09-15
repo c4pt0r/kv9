@@ -1,0 +1,229 @@
+{
+  "complete": true,
+  "actual_owner_cli_observations": [
+    {
+      "name": "pending",
+      "phase": 4,
+      "stage": "automatic-owner-selected-checkpoint",
+      "command": 413
+    },
+    {
+      "name": "version",
+      "phase": 2,
+      "stage": "automatic-owner-selected-checkpoint",
+      "command": 414
+    },
+    {
+      "name": "pending",
+      "phase": 4,
+      "stage": "automatic-owner-after-leader-recovery",
+      "command": 443
+    },
+    {
+      "name": "version",
+      "phase": 2,
+      "stage": "automatic-owner-after-leader-recovery",
+      "command": 444
+    }
+  ],
+  "root_digest": "e09a4208d2de942dd3405bec3d610ca028e06764c87eb90e5b59cf7f16b1ec18",
+  "manifest_sha256": "0055206a1a3ff5ba220f5f971cdde1990a504ecb46d9060cd9d5796ada7c65da",
+  "predecessor": 71,
+  "selected_publication": [
+    [
+      3,
+      72,
+      1487,
+      1496
+    ]
+  ],
+  "raft": [
+    {
+      "node": 1,
+      "bytes": 17059202,
+      "sha256": "a0e6db5dd025714782533c9121990d40dc48d7c3a3b2ac86905e4d54d0f26734",
+      "frame_counts": {
+        "1": 1,
+        "2": 1542,
+        "3": 1540
+      },
+      "final_commit": 1540,
+      "selected_publication_index": 1496,
+      "owner_transitions": {
+        "pending": [
+          {
+            "index": 1493,
+            "term": 2,
+            "phase": 1
+          },
+          {
+            "index": 1495,
+            "term": 2,
+            "phase": 2
+          },
+          {
+            "index": 1502,
+            "term": 2,
+            "phase": 3
+          },
+          {
+            "index": 1504,
+            "term": 2,
+            "phase": 4
+          }
+        ],
+        "version": [
+          {
+            "index": 1498,
+            "term": 2,
+            "phase": 1
+          },
+          {
+            "index": 1500,
+            "term": 2,
+            "phase": 2
+          }
+        ]
+      }
+    },
+    {
+      "node": 2,
+      "bytes": 17059202,
+      "sha256": "c091389c77dcc8c468af795429bb09609a6bed3023e92aa770abef66d90eb5c1",
+      "frame_counts": {
+        "1": 1,
+        "2": 1542,
+        "3": 1540
+      },
+      "final_commit": 1540,
+      "selected_publication_index": 1496,
+      "owner_transitions": {
+        "pending": [
+          {
+            "index": 1493,
+            "term": 2,
+            "phase": 1
+          },
+          {
+            "index": 1495,
+            "term": 2,
+            "phase": 2
+          },
+          {
+            "index": 1502,
+            "term": 2,
+            "phase": 3
+          },
+          {
+            "index": 1504,
+            "term": 2,
+            "phase": 4
+          }
+        ],
+        "version": [
+          {
+            "index": 1498,
+            "term": 2,
+            "phase": 1
+          },
+          {
+            "index": 1500,
+            "term": 2,
+            "phase": 2
+          }
+        ]
+      }
+    },
+    {
+      "node": 3,
+      "bytes": 17058946,
+      "sha256": "afee4a62f7b070e1cdaaa3f701877be3fb3c55a5b6d7c49cc99349a6a9d35ed2",
+      "frame_counts": {
+        "1": 1,
+        "2": 1526,
+        "3": 1540
+      },
+      "final_commit": 1540,
+      "selected_publication_index": 1496,
+      "owner_transitions": {
+        "pending": [
+          {
+            "index": 1493,
+            "term": 2,
+            "phase": 1
+          },
+          {
+            "index": 1495,
+            "term": 2,
+            "phase": 2
+          },
+          {
+            "index": 1502,
+            "term": 2,
+            "phase": 3
+          },
+          {
+            "index": 1504,
+            "term": 2,
+            "phase": 4
+          }
+        ],
+        "version": [
+          {
+            "index": 1498,
+            "term": 2,
+            "phase": 1
+          },
+          {
+            "index": 1500,
+            "term": 2,
+            "phase": 2
+          }
+        ]
+      }
+    }
+  ],
+  "archives": [
+    {
+      "node": 1,
+      "archive": {
+        "bytes": 17489920,
+        "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/n1-stopped-data.tar",
+        "sha256": "4a32d7e631e1b8dacbb640003963fd5b357d5240773d2ac202cf3bfb2a9bb532"
+      },
+      "members": 11,
+      "decoded_bytes": 17470137
+    },
+    {
+      "node": 2,
+      "archive": {
+        "bytes": 17489920,
+        "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/n2-stopped-data.tar",
+        "sha256": "f6f66bc3651e169150e38a70275ac09e67b1d084c3cd72c44fed8c491055ea03"
+      },
+      "members": 11,
+      "decoded_bytes": 17471293
+    },
+    {
+      "node": 3,
+      "archive": {
+        "bytes": 17489920,
+        "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-20260915-first/n3-stopped-data.tar",
+        "sha256": "0cf1785e3f50727fa7095c9b489b6bbd2b67e69207c43da31ee66508cf9cac6b"
+      },
+      "members": 11,
+      "decoded_bytes": 17469753
+    }
+  ],
+  "lifecycle_commands": [
+    408,
+    432
+  ],
+  "gone_command_lifetimes": 477,
+  "command_exit_counts": {
+    "0": 477
+  },
+  "filesystem_samples": 1492,
+  "maximum_conservative_decrease_bytes": 614907904,
+  "scope": "Actual canonical automatic-owner CLI states and full committed Raft acquisition/publication/transfer phases on all three retained logs; exact original SST/archive bytes; process identity and additive resource accounting. No live acquired CLI phase or pre-upload kill claimed."
+}

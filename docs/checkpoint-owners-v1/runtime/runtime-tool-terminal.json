@@ -1,0 +1,11 @@
+{
+  "session_id": 23271,
+  "initial_chunk": "43e81b",
+  "actual_terminal_receipt": "32b9ce",
+  "exit_code": 0,
+  "child_terminal": {
+    "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-preparation-20260915-first/launch-first/child-terminal.json",
+    "bytes": 1562,
+    "sha256": "78f76321464eedd058bc51b918dd025096132093fadd2fa69dce5609da11e0dc"
+  }
+}

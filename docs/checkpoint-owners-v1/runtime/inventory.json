@@ -1,0 +1,107 @@
+{
+  "complete": true,
+  "file_count": 25,
+  "files": {
+    "OWNED-GATE.md": {
+      "bytes": 5142,
+      "sha256": "225e5e1fe671b0b07779ac5b285b68253a18866ceb97adad54a5a50727821842"
+    },
+    "README.md": {
+      "bytes": 3605,
+      "sha256": "a843eb2201af673133c7d7e7222e34671dd8e4a41e8aaaa10895f078a1d20461"
+    },
+    "audit-owner-result.json": {
+      "bytes": 5308,
+      "sha256": "f23ee6314bd5753931ab7a08b36dfa66c861a0af96370d996a222fa7ad240bc1"
+    },
+    "audit-raw-result.json": {
+      "bytes": 545,
+      "sha256": "9ee2b185fe0f785a39b0d6c0f8b2cf080741a3c8e8025735bbdb0732e2640522"
+    },
+    "audit-tool-terminal.json": {
+      "bytes": 574,
+      "sha256": "91eb1695b4b54e98e2684d4a702beb5187db9d379f27fc4f5f3c2d08f17dcf3b"
+    },
+    "development-secret-scan-result.json": {
+      "bytes": 691,
+      "sha256": "c2b988ad6c8b871bfeefa219bbb50f113aceaf4bb265e10f3a3366064a691a02"
+    },
+    "development-secret-scan-tool-terminal.json": {
+      "bytes": 384,
+      "sha256": "5bbbef5bf1c4d5c915ab6234565e14e3e82b4bd94c2d14e3ee365baecb672f46"
+    },
+    "evidence.tar.gz": {
+      "bytes": 1711354,
+      "sha256": "3c3b0d5db2720f9a80aaf93b5ca13fe112c67512def2a0dc2b5a09bd682fb26b"
+    },
+    "evidence.tar.gz.part-000": {
+      "bytes": 1711354,
+      "sha256": "3c3b0d5db2720f9a80aaf93b5ca13fe112c67512def2a0dc2b5a09bd682fb26b"
+    },
+    "known-secret-scan-result.json": {
+      "bytes": 663,
+      "sha256": "2b237288507d25a6164638698b605a828f099d91273f7259e79f60d764d5509a"
+    },
+    "known-secret-scan-tool-terminal.json": {
+      "bytes": 378,
+      "sha256": "f3f2a5a0132e25d5df92b837d3e46d4cdad4e29af05b0eb205643b6a2c3468e8"
+    },
+    "mechanism-lineage.json": {
+      "bytes": 551,
+      "sha256": "fdc4410ae7a23e0ab39bd13dadd4acd97dfb732702d06856631d2b90abd3b34d"
+    },
+    "overview.json": {
+      "bytes": 5262,
+      "sha256": "61feafc3f50072dc82cc53d0b0806da2032c1346754fcd15d97a878094c2389c"
+    },
+    "pack.py": {
+      "bytes": 2533,
+      "sha256": "366a67c1c84cc42a6da841947bf8af4370fa9d5a4e524d0b3a451c938df162df"
+    },
+    "package-result.json": {
+      "bytes": 946,
+      "sha256": "612f3f1ae8c6bbfff387a474992eb100214e6a1154654abbe35e7da454fd939d"
+    },
+    "package-tool-terminal.json": {
+      "bytes": 368,
+      "sha256": "9d86f4f4e439c421b1f63e9495d8dcf957c66bd753227ff7d3bb07d8ffe84ef8"
+    },
+    "prepare.py": {
+      "bytes": 4277,
+      "sha256": "ab92db769b96e2e7ed58a6d65110ceda44a0a1ac0523e471a649588549c0fed6"
+    },
+    "readback-result.json": {
+      "bytes": 569,
+      "sha256": "3ea94688800b1964177ff7afb60899aa2668417e32b180bc6084fb8c7b859cac"
+    },
+    "readback-tool-terminal.json": {
+      "bytes": 369,
+      "sha256": "44764627486e3adadda483af1c0e4b1d303e539b80ebc7ace2b220b146258fee"
+    },
+    "runtime-tool-terminal.json": {
+      "bytes": 356,
+      "sha256": "5ce747772d3ac3775ceda9487eda68524dd3c378ca6f82fd3bc30cac2acedd12"
+    },
+    "scan-development.py": {
+      "bytes": 2254,
+      "sha256": "46523cd943fb1b434f5744391d5a0c374a30d6c098a1365ec1b774ec794fae17"
+    },
+    "scan-known-secrets.py": {
+      "bytes": 1881,
+      "sha256": "70352588afe56fc4acee8d54c972b2c121c36a4277d5a70703b941b24842fba9"
+    },
+    "selection-tool-terminal.json": {
+      "bytes": 366,
+      "sha256": "87bd0c6cb6a0aa0ae6b96ab8431047bdf992594e1c4853b2aee560e116c2e58d"
+    },
+    "selection.json": {
+      "bytes": 687064,
+      "sha256": "918aacea6e7133a9eec644eb2951f343d600d62e3734808e222686517ca11cb9"
+    },
+    "verify.py": {
+      "bytes": 3068,
+      "sha256": "7abcf916e1b5b944ce8b86e647e74ba9cba7b22c79506ff4f52bb59a89e8a035"
+    }
+  },
+  "scope": "Immutable compact packet, standalone readback/secret scan evidence and later reporting records; excludes this inventory itself."
+}

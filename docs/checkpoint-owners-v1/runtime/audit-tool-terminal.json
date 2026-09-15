@@ -1,0 +1,18 @@
+{
+  "session_id": 94289,
+  "initial_chunk": "c50be8",
+  "actual_terminal_receipt": "2c5d7a",
+  "exit_code": 0,
+  "results": {
+    "raw": {
+      "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-audit-20260915-first/raw-result.json",
+      "bytes": 545,
+      "sha256": "9ee2b185fe0f785a39b0d6c0f8b2cf080741a3c8e8025735bbdb0732e2640522"
+    },
+    "owner": {
+      "path": "/mnt/data/kv9-work/checkpoint-owner-chaos-audit-20260915-first/owner-result.json",
+      "bytes": 5308,
+      "sha256": "f23ee6314bd5753931ab7a08b36dfa66c861a0af96370d996a222fa7ad240bc1"
+    }
+  }
+}

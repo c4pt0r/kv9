@@ -3398,7 +3398,7 @@ impl NodeRuntime {
             catchup: catchup_capability.clone(),
         });
         let raft_service = RaftGrpcService::new(id, transport.inbox_sender(), discovery.clone())
-            .with_registration(backend as Arc<dyn RegistrationBackend>);
+            .with_registration(backend.clone() as Arc<dyn RegistrationBackend>);
         let raft_service = tonic::service::interceptor::InterceptedService::new(
             Kv9RaftServer::new(raft_service),
             AuthInterceptor::new(cluster_authenticator),
@@ -3473,7 +3473,12 @@ impl NodeRuntime {
 
         let remote_storage = remote
             .map(|uploader| {
-                crate::remote_storage::RemoteStorage::start(node.clone(), driver.clone(), uploader)
+                crate::remote_storage::RemoteStorage::start(
+                    node.clone(),
+                    driver.clone(),
+                    uploader,
+                    backend.clone(),
+                )
             })
             .transpose()?;
 

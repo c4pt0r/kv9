@@ -5,13 +5,15 @@ use std::sync::{mpsc, Arc};
 use std::time::Duration;
 
 use kv9_common::{Error, Result, RootDescriptor, META_REGION_0};
-use kv9_engine::checkpoint::{CheckpointManifest, FlushJournal, RemoteUploader};
+use kv9_engine::checkpoint::{CheckpointManifest, FlushJournal, PendingFlush, RemoteUploader};
 use kv9_engine::{MinioConfig, MinioObjectStore, WalEngine};
 use kv9_raft::driver::NodeDriver;
 use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::Role;
 use kv9_region::manifest::{ManifestAttempt, ManifestProposalState, ManifestSeam, SettledManifest};
 
+use crate::api::AdminApi;
+use crate::checkpoint_retention::CheckpointOwners;
 use crate::node::Node;
 
 pub(crate) struct PreparedRemote {
@@ -87,6 +89,7 @@ struct CheckpointWorker {
     last_revision: u64,
     in_flight_revision: Option<u64>,
     adopted: u64,
+    retention: Arc<dyn AdminApi + Send + Sync>,
 }
 impl CheckpointWorker {
     fn tick(&mut self, stopped: &mpsc::Receiver<()>) -> Result<()> {
@@ -123,19 +126,7 @@ impl CheckpointWorker {
         // A restarted process (or an ambiguous stage fsync) must recover the
         // exact previous identity BEFORE it can mint another attempt.
         if let Some(pending) = self.remote.journal.load()? {
-            let cut = pending.manifest().index;
-            let (prepared, generation) = pending.recover(&self.remote.uploader)?;
-            let attempt = ManifestAttempt::from_prepared(prepared, generation)?;
-            eprintln!(
-                "node {} checkpoint pending generation={} through={} resuming",
-                self.node.id.0, generation, cut
-            );
-            self.pause_for_test("recovering", stopped)?;
-            let state = self
-                .seam
-                .resume_in_flight(attempt, Duration::from_secs(1))
-                .map_err(seam_error)?;
-            return self.settle(state, stopped);
+            return self.resume_pending(pending, stopped);
         }
         if self.driver.status().role != Role::Leader {
             return Ok(());
@@ -150,14 +141,47 @@ impl CheckpointWorker {
                     .flush_scope(),
             )
         })?;
-        let prepared = self.remote.uploader.upload(frozen)?;
-        self.remote.journal.stage(&prepared, pair.generation)?;
+        let frozen_revision = frozen.data_revision();
+        let planned = RemoteUploader::plan(frozen)?;
+        // Validate the complete prospective owner before writing a durable plan.
+        CheckpointOwners::new(&self.remote.root, planned.manifest(), pair.generation)?;
+        self.in_flight_revision = Some(frozen_revision);
+        self.remote
+            .journal
+            .stage_planned(&planned, pair.generation)?;
+        self.pause_for_test("planned", stopped)?;
+        let pending = self
+            .remote
+            .journal
+            .load()?
+            .ok_or_else(|| Error::Engine("staged checkpoint plan disappeared".into()))?;
+        self.resume_pending(pending, stopped)
+    }
+
+    fn resume_pending(
+        &mut self,
+        pending: PendingFlush,
+        stopped: &mpsc::Receiver<()>,
+    ) -> Result<()> {
+        let cut = pending.manifest().index;
+        let generation = pending.expected_generation();
+        let owners = CheckpointOwners::new(&self.remote.root, pending.manifest(), generation)?;
+        owners.before_io(self.retention.as_ref())?;
+        eprintln!("node {} checkpoint through={} owners pending={:?} version={:?} confirmed before remote I/O",
+            self.node.id.0, cut, owners.pending_id(), owners.version_id());
+        self.pause_for_test("owned", stopped)?;
+        let (prepared, generation) = pending.recover(&self.remote.uploader)?;
+        self.remote.journal.stage(&prepared, generation)?;
         self.pause_for_test("prepared", stopped)?;
-        self.in_flight_revision = Some(revision);
-        let attempt = ManifestAttempt::from_prepared(prepared, pair.generation)?;
+        let attempt = ManifestAttempt::from_prepared(prepared, generation)?;
+        eprintln!(
+            "node {} checkpoint pending generation={} through={} resuming",
+            self.node.id.0, generation, cut
+        );
+        self.pause_for_test("recovering", stopped)?;
         let state = self
             .seam
-            .propose_manifest_change(attempt, Duration::from_secs(1))
+            .resume_in_flight(attempt, Duration::from_secs(1))
             .map_err(seam_error)?;
         self.settle(state, stopped)
     }
@@ -171,7 +195,19 @@ impl CheckpointWorker {
                     | SettledManifest::EffectSettled
             ) {
                 self.pause_for_test("applied", stopped)?;
+                let pending = self.remote.journal.load()?.ok_or_else(|| {
+                    Error::Engine("settled checkpoint journal disappeared".into())
+                })?;
+                CheckpointOwners::new(
+                    &self.remote.root,
+                    pending.manifest(),
+                    pending.expected_generation(),
+                )?
+                .after_positive_settlement(self.retention.as_ref())?;
             }
+            // Typed negative settlement clears local scheduling only. Its durable
+            // owner stays pinned until a later certified abort/history protocol;
+            // a local refusal or absent object never releases global ownership.
             // If clearing fails, the on-disk slot remains recoverable. Do not
             // start another attempt just because the in-memory seam cleared.
             self.remote.journal.clear_settled()?;
@@ -234,6 +270,7 @@ impl RemoteStorage {
         node: Arc<Node<WalEngine>>,
         driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
         remote: PreparedRemote,
+        retention: Arc<dyn AdminApi + Send + Sync>,
     ) -> Result<Self> {
         let interval = remote.interval;
         let seam = ManifestSeam::mint(driver.mint_seam_handle()?);
@@ -245,6 +282,7 @@ impl RemoteStorage {
             last_revision: 0,
             in_flight_revision: None,
             adopted: 0,
+            retention,
         };
         let (stop, stopped) = mpsc::channel();
         let thread = std::thread::Builder::new()
