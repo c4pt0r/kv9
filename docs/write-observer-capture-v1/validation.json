@@ -1,0 +1,28 @@
+{
+  "complete": true,
+  "scope": "Matched write-observer capture and offline report; no candidate promotion.",
+  "terminals": {
+    "release_pair": "83432/e70fbd/0",
+    "continuation_controls": "ba08cb/0",
+    "capture": "7565/275fe1/0",
+    "capture_metadata_freeze": "1559ab/0",
+    "independent_analysis": "9465de/0",
+    "pooled_summary": "08a7db/0",
+    "archive_readback": "167e9f/0",
+    "documentation_and_artifacts": "e950f3/0"
+  },
+  "cohorts": 16,
+  "reused_original_cohorts": 1,
+  "new_cohorts": 15,
+  "instrumented_cohorts": 8,
+  "instrumented_node_deltas": 24,
+  "measured_calls": 1417714,
+  "measured_input_items": 12742027,
+  "measured_other_outcomes": 0,
+  "initialization_not_leader_read_retries": 16,
+  "exited_client_voter_lifetimes": 64,
+  "fresh_drains": 48,
+  "original_failed_capture_preserved": true,
+  "default_runtime_algorithm_changed": false,
+  "hosted_ci_dispatched": false
+}

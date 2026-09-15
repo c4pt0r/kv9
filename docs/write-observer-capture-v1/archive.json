@@ -1,0 +1,1944 @@
+{
+  "complete": true,
+  "archive": {
+    "bytes": 1924954,
+    "sha256": "3680268bd17199bc9a7c71bce0c6a40aaa3386c770da755badb5ea22f7c50c88"
+  },
+  "member_count": 386,
+  "uncompressed_member_bytes": 62590563,
+  "all_members_and_gzip_stream_read_back": true,
+  "source_inputs_unchanged": true,
+  "excluded": "Server/client executables, source checkouts and retained database payloads. Their identities remain in the original records.",
+  "members": {
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/README.md": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/README.md",
+      "bytes": 5789,
+      "sha256": "1b91f8706a68105aaa32473df1ad5392a5dd68df64092469364d2144211714d1"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/ROOT-COMMANDS.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/ROOT-COMMANDS.json",
+      "bytes": 509,
+      "sha256": "ba2cb124994ef0b5787e7010888baebf3b13702b78240cf4dd2f3929caa1380d"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/check.py": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/check.py",
+      "bytes": 18838,
+      "sha256": "4e1a62c6f26505be4a732cc818bcccdf384f1d68bd846cb0ef877a8db044b742"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/controls-initial/check.py": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/controls-initial/check.py",
+      "bytes": 18838,
+      "sha256": "4e1a62c6f26505be4a732cc818bcccdf384f1d68bd846cb0ef877a8db044b742"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/controls-initial/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/controls-initial/result.json",
+      "bytes": 504,
+      "sha256": "a88f11d6a0baa5dff97421416c55de8cd17b9f936912ca4c65ba231ef1049d85"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/controls-initial/test_check.py": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/controls-initial/test_check.py",
+      "bytes": 6474,
+      "sha256": "1836c72605751357ecffa781f3361254755470e3c0dd65d4d8b1ac9e4edc85fc"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/controls-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/controls-terminal.json",
+      "bytes": 1007,
+      "sha256": "aa69604ddb839c637678e82a702cba787de31dea09b0118525df30753c0ac962"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/inventory.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/inventory.json",
+      "bytes": 1609,
+      "sha256": "6400817b9385a4a1f85fbeca81a062f89cf353d35660e4eb67d460da523e9490"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/README.md": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/README.md",
+      "bytes": 3316,
+      "sha256": "a9fd47dead9b6d105046a47dcaa39c3c5e072df92d4aa01fe39297742c2ba6cc"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/input-hashes.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/input-hashes.json",
+      "bytes": 32389,
+      "sha256": "5cb742a875f87134ccc82f084c1a07c4204a0530441e929fc4c4638e1fb7d524"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/observations.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/observations.json",
+      "bytes": 27447,
+      "sha256": "96c2015f4a4aadee1cd4f646b6f05a1aaa663858c799ae343b0e5802fc19a6cc"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/result.json",
+      "bytes": 1242493,
+      "sha256": "11311dee4d8a31ff20dbc18f5d52038296ae2a4677591f2a00d699af81e928de"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/terminal.json",
+      "bytes": 1426,
+      "sha256": "a7b6bfe0702e625fff402a9739473cac4625f4df552e4affa5f836eca84688f3"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/source-pins.json": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/source-pins.json",
+      "bytes": 1365,
+      "sha256": "d4154af4cd23fa1b93d3eab18d9528ff3e06405f61c0a23529bbdb52a57e4611"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/test_check.py": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/test_check.py",
+      "bytes": 6474,
+      "sha256": "df076eb08021289de1714f193b55c99e2561d2edf880f2a158b900e2b03b0f04"
+    },
+    "tmp/kv9-write-diagnostics-analysis-20260915-first/test_check.py.diff": {
+      "path": "/tmp/kv9-write-diagnostics-analysis-20260915-first/test_check.py.diff",
+      "bytes": 1042,
+      "sha256": "2fb8c6365050997f2c7002ce45273d3d4265d66f4c94b14dc41693f29270054d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/after.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/after.json",
+      "bytes": 41423,
+      "sha256": "4e88e64a0401c01d5410190a157f6d2e7571ef76f9a9f58eb564670c8ec5592d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/before.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/before.json",
+      "bytes": 41330,
+      "sha256": "623b33afa2bc5fe21d3f04ef3adad3f72171121a68293c76aa27700ae1d78db0"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/after-metrics.json",
+      "bytes": 931178,
+      "sha256": "105b4678d03f806373f6a4d57624ad228080bd4a783c504d90e1fce55d172f64"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/after-status.json",
+      "bytes": 12822,
+      "sha256": "ef6c988fa369961fc64116c198e05c63d4dac34cbcc410e386ae32981f842f2a"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/before-fresh-drain.json",
+      "bytes": 40568,
+      "sha256": "23514ab5876380b61ba0f9de8b20f5918474be40a188ab9ea4fa1aeaf67217ee"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/before-metrics.json",
+      "bytes": 928603,
+      "sha256": "116e05ec90668245c60cd16969e3e6973a6647b364fd80481ab2d094300441db"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/before-status.json",
+      "bytes": 12752,
+      "sha256": "19e8c833a66ed2b124dc9d7a63ced55c8edea1470e4088b50cce5de4a2350011"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/cleanup.json",
+      "bytes": 6191,
+      "sha256": "846628229841cf97a2a95fa0d4521d83bf7d201b4faf78a453fa1998a54bb5fe"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/client-exit.json",
+      "bytes": 64,
+      "sha256": "72d987a045876373dcb0afe93fe15e2b2c10fea949773a855d7ad6a9022a357d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/client-identity.json",
+      "bytes": 912,
+      "sha256": "3ef775c4d98e497e9af4bd8cbb3890deca2944d3c6d12774c5a261ed9121e84f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/fixture/diagnostic-retention-budget.json",
+      "bytes": 445,
+      "sha256": "27d447c557a758350f51fec40eb1e02fe773912871ea7d7120d21f9fe743e01c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/fixture/tmpfs-retention.json",
+      "bytes": 5141,
+      "sha256": "b9881e1a3a42dc7858e85f04af092dd1bff49a6e66c42568805bb33378e051ba"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/post-client-fresh-drain.json",
+      "bytes": 40775,
+      "sha256": "eac50400acc184ae42cf2d8f8f3e0d86fac68747dae6b4c0f64e8bc6943e68eb"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/post-readback-fresh-drain.json",
+      "bytes": 40778,
+      "sha256": "973bf9bf7d85f9ff4f1a6c988f3b2348e875fade186cb807387eea3943dc57af"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/requested-config.json",
+      "bytes": 809,
+      "sha256": "292c6bb44301c63a7bdb1ab9572e3cde50e0c78271ba0c833c5c469696de0a94"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/result.json",
+      "bytes": 21583,
+      "sha256": "77423db82494d5f3765681b03541c8cb3bf2d0cfd2e2828fc6c182866d49fb44"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/cohorts/00-default-point-r000-c1/run/report.json",
+      "bytes": 1431824,
+      "sha256": "dac88a2ccda5d062416852d1d27d79567670dc329a1c6494f2853b5b8fd1e835"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/invocation.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/invocation.json",
+      "bytes": 1112,
+      "sha256": "aa3dffb48aeae3c712b3ebc98a4519a9463e77cc2cc5b45f59c6b67732dd0cf3"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/isolation.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/isolation.json",
+      "bytes": 2114,
+      "sha256": "9604750ac0d813c6c15eb26e0f183e1be703de0b38df80feed2718cdd1046f19"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "bytes": 845,
+      "sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/kv9-chaos-control-plane-isolated.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/kv9-chaos-control-plane-isolated.json",
+      "bytes": 829,
+      "sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/kv9-minio-dev-isolated.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/kv9-minio-dev-isolated.json",
+      "bytes": 11065,
+      "sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-first/summary.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-first/summary.json",
+      "bytes": 249,
+      "sha256": "b872c62ec857859ecfbda0fa2e1a7f32005465d85950fa444288d283ca58287e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/after.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/after.json",
+      "bytes": 41558,
+      "sha256": "54c8a00c92d4bd3f88044e09ae59b1094ced8d7970b0d029680425e751bdfa6c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/before.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/before.json",
+      "bytes": 41350,
+      "sha256": "c7247fd68b74a9ee2260a9f9cae6869f05f7c49123ff9257d094ed263354c3a4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/after-metrics.json",
+      "bytes": 931167,
+      "sha256": "5c34a9fd1c00f53be906a6e8440fbde9952785564967edb029f41dae47597dc6"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/after-status.json",
+      "bytes": 31537,
+      "sha256": "5a067d75d8ee3bc169ae19206c61756caa4e434a13fb16fa3bf8c28d48baa02d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/before-fresh-drain.json",
+      "bytes": 94955,
+      "sha256": "e9220c1c07d4b7b8b76665f9cefd9a21d3e42275feca504c6b4bda90745518b4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/before-metrics.json",
+      "bytes": 928581,
+      "sha256": "e05dbf77e5830e168524f8cbf22ba1335eb11fe1a9eb886ce752dea32985a0ff"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/before-status.json",
+      "bytes": 30910,
+      "sha256": "419d0e63c9d7137ff03a5469865483b200d4fadc9ad0dca8fd91d375123f3484"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/cleanup.json",
+      "bytes": 6194,
+      "sha256": "b38e42e3da436fa243ab02283f70f675a9315c6d5d2a52b3fb6624011219d81e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/client-exit.json",
+      "bytes": 64,
+      "sha256": "a95d7196013d4048d9a0167238c15fe805d7eff4c11b44f9570de6ad86e43e84"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/client-identity.json",
+      "bytes": 913,
+      "sha256": "77ece77e2305bc50dac3c8e203d0fea3881122b1a30c92842d5e49542d0dd1b5"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/fixture/diagnostic-retention-budget.json",
+      "bytes": 445,
+      "sha256": "e9170088894b66bf2f543b3eea196a1fb333796bd9bf186b9f5d40d79a5ef5f3"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/fixture/tmpfs-retention.json",
+      "bytes": 5145,
+      "sha256": "2082ece4ba011baf2627090d9d079169efa39ce02e64ca0d04de63012031a890"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/post-client-fresh-drain.json",
+      "bytes": 96944,
+      "sha256": "4d71786fa342617073e1e4f8855ed50c8cf1e3e4de105f39a8323cce5a65966c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/post-readback-fresh-drain.json",
+      "bytes": 96947,
+      "sha256": "944a4d19f16a22bcaf834394373ea539c97b2726b755a12851f3fc0503177985"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/requested-config.json",
+      "bytes": 809,
+      "sha256": "d759f08120547c2c24601cb74c0cafea53c70bd3f516a95488a6ada01fe8c68d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/result.json",
+      "bytes": 21582,
+      "sha256": "36e613037179df49b83980de36a94dc00decc2169bdd25e10e387b0484053775"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/01-diagnostic-point-r000-c1/run/report.json",
+      "bytes": 1431820,
+      "sha256": "ef1e2be4b66f224de3ee1a4d6928ce84a52407bf722a9cbb6ef790da7b5327c4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/after-metrics.json",
+      "bytes": 931253,
+      "sha256": "ad6591ca208d803f87d351c9ebd8d56bf4ab328e4e7167dceb03e6e7e457447d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/after-status.json",
+      "bytes": 12819,
+      "sha256": "b082be9fd39de8c4c0872171ac7d8f8505e64792ef924a59941a8a76f3737853"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/before-fresh-drain.json",
+      "bytes": 40567,
+      "sha256": "facbdb8f53d9ebc71d7c8c341debb682df8aacc05156942e2510fe1c1430cc65"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/before-metrics.json",
+      "bytes": 928650,
+      "sha256": "4e7273df4f4b2dac9950f077188009ef0a5a1e90efb1a0a17838dacb938989a4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/before-status.json",
+      "bytes": 12752,
+      "sha256": "e712041a549ec858339e541b93a190b2c2c9d969029d33b607e435c76f8b794b"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/cleanup.json",
+      "bytes": 6193,
+      "sha256": "f26c94db97fbd5dd61ee3d7758bd8e3f2084e85670cbd83d6aa82549820b52aa"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/client-exit.json",
+      "bytes": 64,
+      "sha256": "16a5ecb451989d2ada47ebf36aa6fea8536096c835c5856b1787d76f0f919264"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/client-identity.json",
+      "bytes": 913,
+      "sha256": "28b7ac1114d041a781c427552884ec51a32c31a07c836c7c8782660144c6af80"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/fixture/diagnostic-retention-budget.json",
+      "bytes": 446,
+      "sha256": "c4b001c0cb1babcad2195e6aaffd66bfaf74ebc18a6b7756a8ecd82d7e9eacd0"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/fixture/tmpfs-retention.json",
+      "bytes": 9395,
+      "sha256": "bb4547f864555fa98df92f58cc6b460f2d350290a651b971970f1c4e32ad0ae4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/post-client-fresh-drain.json",
+      "bytes": 40766,
+      "sha256": "1e824978eccf82163b2e660941f149c39bf7c4334605dc26af86a88492a54703"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/post-readback-fresh-drain.json",
+      "bytes": 40769,
+      "sha256": "21a899742be98a8903382944be57985ea524cc86eedb6ffdffc7398fe5bb7975"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/requested-config.json",
+      "bytes": 810,
+      "sha256": "2be204850869587f6130fcd00c49932f84d5eefd6de6e9516d855b18d3418f57"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/result.json",
+      "bytes": 21601,
+      "sha256": "6dfbfb6b4e2aea8271e52d5cd921a0562e02488ef6e86418b25790f09a64c09f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/02-default-batch64-r000-c1/run/report.json",
+      "bytes": 1431231,
+      "sha256": "df93a431cb4770269a80a3c4bbe584db2d5ad5abcbad01b0d46fa1a16576d5ec"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/after-metrics.json",
+      "bytes": 931221,
+      "sha256": "666d609d2b008e029021252baa40982ab7532f76865f249e8e6cd2c426362dda"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/after-status.json",
+      "bytes": 31502,
+      "sha256": "4458a9f5b2f99da3e8c2e346d5907cad1d3b6c1430478b2cc678b63bf39bb0c5"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/before-fresh-drain.json",
+      "bytes": 94958,
+      "sha256": "9e39443405bb2d3909f193698e930c78196896a17c678126f8bc091f30b16dfa"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/before-metrics.json",
+      "bytes": 928589,
+      "sha256": "65ace15212233de88a78dd602f43d37f48481aa0fa8cf9b898a66f47649a291d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/before-status.json",
+      "bytes": 30910,
+      "sha256": "8c837ca0dfc82812cef769a56c0efb3cde4b8340c0a1531a8ceb73270459f5a2"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/cleanup.json",
+      "bytes": 6194,
+      "sha256": "76423b1ecefdf4179173e513dead1feb279f122234de20cb57601654f2fd09ba"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/client-exit.json",
+      "bytes": 64,
+      "sha256": "edefceb005ad916b9b677be25782c692cfbec8ca7b2bc39ebce195f181ce2979"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/client-identity.json",
+      "bytes": 915,
+      "sha256": "2c11b71f06223ae82c56d871d3f5c8b273649336ee4821b0b96edebc54af406f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/fixture/diagnostic-retention-budget.json",
+      "bytes": 446,
+      "sha256": "eb6c7bce5696499a53b59f3a106cdb9c751204331dc8394539f998590f42b0e5"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/fixture/tmpfs-retention.json",
+      "bytes": 9398,
+      "sha256": "203e3c16e1fd51e280a70adeb49171a085ddddec4bda07c442f8fe8d073ebfc5"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/post-client-fresh-drain.json",
+      "bytes": 96839,
+      "sha256": "174dcf4cfb8e49d58fbbcb48bef01f4c8c4c20bd4c614ee1169c76600c89ba0b"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/post-readback-fresh-drain.json",
+      "bytes": 96842,
+      "sha256": "af0a8a167bfdd988a313cc8b1e9fc00eaa2ab2a29a8e0cca4725093ce2d829bd"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/requested-config.json",
+      "bytes": 810,
+      "sha256": "e1cbf4c6cada23201003d3e6aac16f10c84425622f6098e86a41bf2e25114a55"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/result.json",
+      "bytes": 21600,
+      "sha256": "702608a9aadb8d24c84f82da9a1ff26f5c8629ca4f097975b493f3ffec84de46"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/03-diagnostic-batch64-r000-c1/run/report.json",
+      "bytes": 1431237,
+      "sha256": "bfff121dc8ffce499481029e68c2c61df1f20b6322de4f02802f3d6ce1695f92"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/after-metrics.json",
+      "bytes": 931595,
+      "sha256": "1c18d5b8410177db81f59d739fab64a22f1848ad18f5959507db2c3e84e0d85c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/after-status.json",
+      "bytes": 12837,
+      "sha256": "ba450610f8c17a293bbfa3c63766eae4383d09f9e61509ce6cdb7aa24ba1d864"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/before-fresh-drain.json",
+      "bytes": 40568,
+      "sha256": "3e129c9a78b615352fab2a64e32eacd18c702f0dff5b68f1e3ee2e468468ea73"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/before-metrics.json",
+      "bytes": 928595,
+      "sha256": "0ad5eaf0d8fc3b8943203e72be5754a5892c094be22f3b64f3635aecf9d332b4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/before-status.json",
+      "bytes": 12752,
+      "sha256": "78cd9f704ca038cc2c2bd9612dc21f9d8d962b719d64987fcbfc540597e67c77"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/cleanup.json",
+      "bytes": 6193,
+      "sha256": "0246419c54801bc2a80652bd9ff8a96586dcb7ce2f0ae71eb913bd780c562fac"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "99b162f56c8632006e19e7eb03dce2637bd9ae355e71103cc60671aaf78723df"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/client-identity.json",
+      "bytes": 912,
+      "sha256": "a1788744f8cacc7d202925f791c8cf3214b9158994bb354f75821542d0266f96"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 446,
+      "sha256": "69716e060764a6ff4611dfd6f29d700a766a7462d9ccb0267e356b300d9bdcc1"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 6361,
+      "sha256": "d2bd3e5615d3c49b81dbd5efc5d60dad2213dd63ce2e86d273c3762bbd29c9f9"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/post-client-fresh-drain.json",
+      "bytes": 40820,
+      "sha256": "0f22bb099de3755db79e52c76cefc3b1936f5f9b46c04af721c9b2914dae7c53"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 40823,
+      "sha256": "775bcc249bc3b9810e7741f6b59d9e34a6ab66662831a1f71ee97b5ed295f58e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/requested-config.json",
+      "bytes": 811,
+      "sha256": "47ed56aac18b581dac6df11bb231aa69665a41c39da8112308fec095042d2f3f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/result.json",
+      "bytes": 21629,
+      "sha256": "ed9d1a1a067e59fc6ad849e46cb1301f72a5a2a228e1313d5d0058ac397cdd87"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/04-default-point-r000-c64/run/report.json",
+      "bytes": 1444379,
+      "sha256": "5fb6b81fd2c1405c85a349ffd80d699e4846e3ce895e942d0fa90047fa432217"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/after-metrics.json",
+      "bytes": 931623,
+      "sha256": "49deb63f750ad12b3342b38c2a35dd6d15836157728ea5c529c93707f58794ec"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/after-status.json",
+      "bytes": 32148,
+      "sha256": "976e0bb8db75f3aefea5ebe9ddb7462a3ddd5d44b0b01b33b520bba6b740aaef"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/before-fresh-drain.json",
+      "bytes": 94955,
+      "sha256": "70215fa151b69c90af9612f938d13eca97d15759aff70c49c9a2cda509dc2278"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/before-metrics.json",
+      "bytes": 928594,
+      "sha256": "22ab26916bce6221954a9d545041482b65378674809d1d73ccceec0a2fbb43b1"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/before-status.json",
+      "bytes": 30910,
+      "sha256": "c3d38bd4451fdb1cca537f728767d6c21de431b5d2c657f32393d848eac3a216"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/cleanup.json",
+      "bytes": 6192,
+      "sha256": "a289d772bbf1b3df355750b3c43c6b0c2bb4fb25f0b6bae16457c8cf83476075"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "72da3a1caeb30d42a51fccd82c6a81b78023afdf0985b31b17c8e4a5bc000622"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/client-identity.json",
+      "bytes": 910,
+      "sha256": "489d96a3934516623d28c3dec771b48e48ef67addc1c9619b117604c2e3caec4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 446,
+      "sha256": "aee22b47aabb7af38c57176ae8e34f21661be283c0674d0e8fda89d5e97e4bd0"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 6364,
+      "sha256": "74012dfc91b91b99171123aaf6fd1d61049e923279c8399bbefd51aeed9ebd31"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/post-client-fresh-drain.json",
+      "bytes": 98777,
+      "sha256": "fc0b645ec07cefced745c59e06277c6640c2ae90bbe07c5498a6af6808e4d738"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 98780,
+      "sha256": "9bf8c28faea54c67a001564b4d9f238c21b9f4c63828c66f5fb49c39a5a4c257"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/requested-config.json",
+      "bytes": 811,
+      "sha256": "e10cb93e144ae54b163b521ca2b47e0ec4cdb70c64f27378aa09caa58d0a7a6e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/result.json",
+      "bytes": 21629,
+      "sha256": "cc3dca28b7d82425b9ec997b96f83dade0c1b90bc98e8f95a6d7882b381867af"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/05-diagnostic-point-r000-c64/run/report.json",
+      "bytes": 1444361,
+      "sha256": "90f0bfd7625cc2c9d6d5ad71baa96921c1de7909c044cd50e36f5db0f2ad589f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/after-metrics.json",
+      "bytes": 931589,
+      "sha256": "b71825b8cf66b96f4068c5fd23d93471058917c38efc3941b47ddea2262859d7"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/after-status.json",
+      "bytes": 12822,
+      "sha256": "30c976e599b9250a3f2e0730541d390d9207be43a893c6169dd2e5b182533c15"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/before-fresh-drain.json",
+      "bytes": 40567,
+      "sha256": "9fb8ebe4277bda9db1cd18a42a38f927e6f996aec0d427d8bf057517252954be"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/before-metrics.json",
+      "bytes": 928599,
+      "sha256": "39f2d56fcdba66235dc0ae8f7e64222d9b2312d3930424ea68dcef4d696e3328"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/before-status.json",
+      "bytes": 12752,
+      "sha256": "ff1fcdcd4ae58c9aea3a1821cf3ad14222963f86b51309df157bbceb8eb9ac04"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/cleanup.json",
+      "bytes": 6192,
+      "sha256": "667a00b846cc72135008c689bd25b652d76a29f1eaf9dbc875cccc37011845ac"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "cbf0087c2fc4decb4a266b5f2906269da73a579e21774fdc8c1f5bfed2abdaa9"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/client-identity.json",
+      "bytes": 913,
+      "sha256": "76c0fd60c3aeba88c3f858b57073e44816584f93363f58370bac8e423dd7fdd0"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 447,
+      "sha256": "123432c59f886781a24c2eb90c22c548517ae1862a37dc594e07451d0a432ba9"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 17880,
+      "sha256": "a47a9fe0c0ca0808c08ce35a0d3397e10f299998e861b5a802c81d2fcb8be074"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/post-client-fresh-drain.json",
+      "bytes": 40775,
+      "sha256": "9126fee28227d61d43269f112961236647676e350956783d0f7d0aa1732dda61"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 40778,
+      "sha256": "24cb08f22634e236f8d60c7bc719d287dbf403160c2af39ff615e4efaaef3228"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/requested-config.json",
+      "bytes": 812,
+      "sha256": "fccad4d29bb02e0aaf42e250d1b5ef6b9dd716259250ecefaa8175d81bb950a7"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/result.json",
+      "bytes": 21631,
+      "sha256": "c1119a30b8743bedd26b4a913a302ef0914dac5a97646c491d6ad69c069dd558"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/run/report.json",
+      "bytes": 1443358,
+      "sha256": "22f2c61e130dcbc24cd67fda1bb29cd2cee8a1663cc7e1abcfb89d9342514461"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/after-metrics.json",
+      "bytes": 931615,
+      "sha256": "7d50b6bea5c11011efc706ee11b854e69dff952d0a07dc22abea812c8293513d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/after-status.json",
+      "bytes": 31773,
+      "sha256": "c5ff0403546a2a6e1a4d3e6f759893f2dce23e2cb1af0d7ae120b05a97b7c776"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/before-fresh-drain.json",
+      "bytes": 94941,
+      "sha256": "9f652142f7603c2efcaff24693acda04cdea929b04e2a04c3dba780cde1c5786"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/before-metrics.json",
+      "bytes": 928638,
+      "sha256": "bfdf3611c2e239c8d54e0c553ea2a8a536345bc9b8098b30981deba644d6270d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/before-status.json",
+      "bytes": 30910,
+      "sha256": "1eb16288af63aaafd3f50a780a2533e221a72a6c1e3ca0a36a4af6c9c64f9c8a"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/cleanup.json",
+      "bytes": 5871,
+      "sha256": "b9ab0f1bfb60a64d88cafd0bd08a7bdce5af7b93c1f81736f32ab42e9aa673d2"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "9776f7875a0059a84346bd7ad4a3dba72776e1b4d940965aabe852543fec899c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/client-identity.json",
+      "bytes": 912,
+      "sha256": "811655e9577ed146cce46e6fbe758e43bc072168c65a6c5d851b2e5fd8fd483d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 447,
+      "sha256": "e18ec01ddd67ca3d6c9929f4f876c3bc9d30c7a0ff6bae9c96c7a268816407c3"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 17480,
+      "sha256": "826c6bbe5a5da4ffe96e52b891bfacaf101546075f70acb8993c6f0d818ef8fe"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/post-client-fresh-drain.json",
+      "bytes": 97652,
+      "sha256": "521feea6bfdbe2ca1bd3e3076766b186493b8e21b7b46ca726c6c2652c5e9328"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 97655,
+      "sha256": "6c8bc4774ba52ccf6ec4b7baec3c33e2a0b0aa898526a7f2e55c9696f2773dc5"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/requested-config.json",
+      "bytes": 812,
+      "sha256": "a750e129313e614d5bc879b47c10319e1a1b6d4adf253aba5621b1292ffcbe83"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/result.json",
+      "bytes": 21631,
+      "sha256": "6a0b9a3caa1f023646f7acfb236b17d05c4e064c397dbda50b54c582901c03c1"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/run/report.json",
+      "bytes": 1443397,
+      "sha256": "f1cce5f7e1fc92453ba7353b5303a203212ed499671cd993b7c4e57c7470343c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/after-metrics.json",
+      "bytes": 931592,
+      "sha256": "3c6233d1780ce1d15ab5453505ab509c32815495531d5e038839d47cc41c9654"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/after-status.json",
+      "bytes": 31768,
+      "sha256": "91b6dc3ec2a37d3588d8858a090ae94c789671c15621fd2e5652cdb341287328"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/before-fresh-drain.json",
+      "bytes": 94955,
+      "sha256": "1c6873e4f51f023d5a0675d88b3880bf73657981737e0a0e427531713804ae7c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/before-metrics.json",
+      "bytes": 928588,
+      "sha256": "276700664ba7a32044349f1f65f7804b721b9d41174abbbb4cd4eed31d60490f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/before-status.json",
+      "bytes": 30910,
+      "sha256": "469d8c5b4b9be64899c9083e41ace9ac806e378649fabff34ebd9b096f684c87"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/cleanup.json",
+      "bytes": 6194,
+      "sha256": "9c69d8a61d9f0e39154be522ef3897e377ffa0b38c9023db33cdb74fe247251b"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "2328fc0a31e1b505b28a6f53d3096750b26bb69058a87856c66680809cb8560f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/client-identity.json",
+      "bytes": 915,
+      "sha256": "581d6d6a3c78e3533910b2ad7d4a1d9a322289a9a2573b74bc61b3e7e16b8528"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 447,
+      "sha256": "df1c6cb0d062430f60426e91479dcbc04cd50422f19725265a0f70a76a8a8046"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 17280,
+      "sha256": "fd80b61b89241b06019543a1cf8721f8481b4df830d36285a9272e980ea3f58f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/post-client-fresh-drain.json",
+      "bytes": 97637,
+      "sha256": "66e68880a6edf7764565fa483e517ba7da5a94a0869967136e5d71faff2a861c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 97640,
+      "sha256": "5db72693adc0c8865ae88ebf33e519b80d617f02302250d1db0b204710ff6c9b"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/requested-config.json",
+      "bytes": 812,
+      "sha256": "a4fe5fa5132d18e0372077fd6d838f17c466b8bb8dca84c7060e9e0d2e7a8b3e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/result.json",
+      "bytes": 21632,
+      "sha256": "eebb3eb47a8eea15c4a53a1bcae3515af489b636cb73c17ce190dd7c1ea85ce9"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/run/report.json",
+      "bytes": 1443420,
+      "sha256": "bd17cec5fece198a28edfbb07a9bba71b067bbd3df3095286139d98ba9d9a5ae"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/after-metrics.json",
+      "bytes": 931592,
+      "sha256": "0627d070e0950cb251662ed76f8625fb2ee56ffa1707c0cb914f8a165f8e7657"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/after-status.json",
+      "bytes": 12822,
+      "sha256": "8d15388ea3588df2563379a242198d670c12e70e7315f994ffe3770767429234"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/before-fresh-drain.json",
+      "bytes": 40567,
+      "sha256": "b8ffa88479971774db8256b995eeac0b00dab950f1b591dcf1ef794ad6661884"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/before-metrics.json",
+      "bytes": 928597,
+      "sha256": "851e33a257a0ef15d7b3051252253872914b730b498b932dc485d2ac28b25a4d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/before-status.json",
+      "bytes": 12752,
+      "sha256": "68b0c4258ac8b47b338ac720195d916c449497ee4e90d4d2e8e2189cd697bc2e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/cleanup.json",
+      "bytes": 6195,
+      "sha256": "ffd3ec20420378922d78bf5dc83b4f40d61f8a0c9c10a8b57b6a3eef9ec038ad"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "fa11714d331b09e1ebf85160f9c90399eb25f1ff857a664345e6692740573d6c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/client-identity.json",
+      "bytes": 913,
+      "sha256": "8a7d482fa8812b6fddc4a9814df843f2b5f41f2609223e1712126e6d96393085"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 447,
+      "sha256": "b138f0cad0598529de20b571bb6978f9a1c1235c6a1303fb6c0c338336d291c6"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 17277,
+      "sha256": "b889fd2a65dffb29c6a5b3fa1ec1fa15f8ec124aa0eea1bc34f3a52b736fd579"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/post-client-fresh-drain.json",
+      "bytes": 40775,
+      "sha256": "0b744f05181dd7d3835072178836aa66ad7b9a3ac2c894cb20d95276bcf22127"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 40778,
+      "sha256": "9e2e95c135239091a4befe0433bd6f36f6e27eaee37c7491abba4e2641659d0c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/requested-config.json",
+      "bytes": 812,
+      "sha256": "c63fd182f3b7f17c27c4c120dc81116d305d631ab85f355940376a7fd28b1d11"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/result.json",
+      "bytes": 21633,
+      "sha256": "32f6320368c1c50affef79cc8771b55f1787279994396b97d08d11013efd6cc1"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/run/report.json",
+      "bytes": 1443398,
+      "sha256": "0350f89e8604e9aa7151778a7c2cd3d72d8d6e37d7faffc1b584d55f9a52b26e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/after-metrics.json",
+      "bytes": 931623,
+      "sha256": "c6cf86a292e17406597f16107a86aae8679ccd1025dba28265330a4e1476b48e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/after-status.json",
+      "bytes": 32146,
+      "sha256": "954af8e69416323c2aa3ed094a14b3ffb38ad6a426306ff4cf1984c723b76e80"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/before-fresh-drain.json",
+      "bytes": 94957,
+      "sha256": "6459b3a8dd16533169d01d88d5d7cfa4032b9bbd676cf8e8bfc2e6b02871ce03"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/before-metrics.json",
+      "bytes": 928597,
+      "sha256": "d693900b34eb8914d719fd5bdadc3b4ec70531374b64a5ae31215f7c46a5e80f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/before-status.json",
+      "bytes": 30910,
+      "sha256": "19745b5973f8df069668ae89cb1b1a477cf0ae218c625c58132874489b95e29b"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/cleanup.json",
+      "bytes": 6197,
+      "sha256": "1a9b08720e456a744ccdb03af4e732ce3a618056572661dd7098b9e963bea0a7"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "3a5a6f3a0c7ee0e5634957a6d50b083a4aee644b7e964b4592c307f750a2d23f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/client-identity.json",
+      "bytes": 915,
+      "sha256": "3acab164b1a66167c5ebd7734a59be91cc796874a09ca87e5955162509ff5b85"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 446,
+      "sha256": "7793f3b4cfe8d69e81f16e98c4b39934197a70e18438ae91fc8e61ce6f50311c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 6364,
+      "sha256": "034060001aa326be8933244bcf574dd48249364e5fb68dce710dfed6f022ce98"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/post-client-fresh-drain.json",
+      "bytes": 98771,
+      "sha256": "004dde4e2898f39d46f1d350178028cc59ca16f6037802f404633d694b09d90d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 98774,
+      "sha256": "2b338a7d2294b9bdcf6aa391c5836b4eeab527730c81687cc955db0c94b0c929"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/requested-config.json",
+      "bytes": 811,
+      "sha256": "6541333fa71050c97c37dfc830612d2252c4b2ae8c2ea33f0138a9a4272a3f49"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/result.json",
+      "bytes": 21627,
+      "sha256": "129fd392192f95b9c17325ae8de395f8b08fad315a73219fad5a815549556e0a"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/10-diagnostic-point-r000-c64/run/report.json",
+      "bytes": 1444407,
+      "sha256": "4fde03bf8660a3ceb88affc3a27e25d513176b5c5d04a118595c41cb07d4a38b"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/after-metrics.json",
+      "bytes": 931617,
+      "sha256": "59ab4ce7dae253f6004e4c154f9a3d9d640685f91d2b2d4cd2f7fa7cc6dda386"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/after-status.json",
+      "bytes": 12837,
+      "sha256": "9d3a57cfd18ded05b47c19ffa0b53f6b47c08abeda1a92c20de3c2ba5309b721"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/before-fresh-drain.json",
+      "bytes": 40568,
+      "sha256": "4f8b8c93cb6ac6308afe81cd4348a90f8abb1062806f963d6a027e44ca362f3a"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/before-metrics.json",
+      "bytes": 928596,
+      "sha256": "719a6d6c33ec3395f96283d98dec9b78394f3b050c20eb5522af0ad985ab5b79"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/before-status.json",
+      "bytes": 12752,
+      "sha256": "f27a5ae6240fe635c63560a487c9d3c938a586429627669052c482413ca6e740"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/cleanup.json",
+      "bytes": 6193,
+      "sha256": "1ef75881cab195008d93b9eeeb06c123e96b3a498f3d57bc3fa30e985f36910a"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "882237ba2738fd649f17dfa8dcd77d0d93a4026c50bb53fa4d0d22755f083794"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/client-identity.json",
+      "bytes": 913,
+      "sha256": "7497795bf0da232f3bad7a133bb4feb99e10a0923a1e4045798af931bd16fe69"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 446,
+      "sha256": "87e4618a4c845485d1253efc6a16e8c384e54b501405650796865cbb1160372f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 6361,
+      "sha256": "ebabddf0639371eabfa0d544ef02b2e67168d1e9bfd699defeedf28c9bba607e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/post-client-fresh-drain.json",
+      "bytes": 40820,
+      "sha256": "844f0e68b413d14fcf6c9f9ac2764233fd0c12be0b216339a1f49be784cf32e5"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 40823,
+      "sha256": "0e876d10739b068e45fb3c31a8bc11609fd073183d76da82683189fc84266fb5"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/requested-config.json",
+      "bytes": 811,
+      "sha256": "edf8b7a99b449ea03997d88f5e04298ad2489a8fa462dd7c348505ae443e268d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/result.json",
+      "bytes": 21627,
+      "sha256": "8049d050c7408c5eff691555dee7cad912be760ac8235f2f4921cf1eaffc690d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/11-default-point-r000-c64/run/report.json",
+      "bytes": 1444395,
+      "sha256": "0bb6382948d615cb3b0e837a04d0c59f7dc86af5769d074bf7e38f85a18e1c3c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/after-metrics.json",
+      "bytes": 931238,
+      "sha256": "db3b7fa60a88e88b5484b10ed8d29a8af0313d92927e2bebb8ba460f4a6c0269"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/after-status.json",
+      "bytes": 31508,
+      "sha256": "e6cb3601e571bad361cadbe039f955932b1b16d69f2ce654fc294a6f6a418dab"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/before-fresh-drain.json",
+      "bytes": 94958,
+      "sha256": "6e202f04a8c573b7a446e3493d0927889403b527d25e49b2893a8581665c36cf"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/before-metrics.json",
+      "bytes": 928593,
+      "sha256": "8b934664b123015cae2175f36df726f6edfa438f17409b6d4fdc056cd6692f03"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/before-status.json",
+      "bytes": 30910,
+      "sha256": "cd7631adf1688f080467af2abe955841053f200b560db1ffb4f26ca04a5bb5ba"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/cleanup.json",
+      "bytes": 6194,
+      "sha256": "0e43b7f402383994d0b3d71f0eb46b9672c40ec9b6549af5025666bbf36fd659"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/client-exit.json",
+      "bytes": 64,
+      "sha256": "d78d9a76bc5f81c33f7081b13d09f9dfb055c9290d837a0aea65918ff2e358b0"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/client-identity.json",
+      "bytes": 913,
+      "sha256": "ef8e665df3b5f32c0a7d5de73160dbda3a8c6000f4eb8042cf9ff013659a2aa1"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/fixture/diagnostic-retention-budget.json",
+      "bytes": 446,
+      "sha256": "aee6a590f5e0d4eeb3ce8e49bd0ec4c313894ca2120a7fbf7fb4c68ab5a51c9c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/fixture/tmpfs-retention.json",
+      "bytes": 9398,
+      "sha256": "15ae68d49dfabf02d95877429d8dafbe5ed6011fe545ff407de73d67b2cc2503"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/post-client-fresh-drain.json",
+      "bytes": 96857,
+      "sha256": "65f482a97d330cb8534b727818ada5551a3d901ee26cf96e3743d9019549c257"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/post-readback-fresh-drain.json",
+      "bytes": 96860,
+      "sha256": "287637459e91fbb2b715492cdee366445f842c1862b3d1d0ac09a6dcb66809d3"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/requested-config.json",
+      "bytes": 810,
+      "sha256": "57477562ebe90873022ee494abf4622f4b2b3194a49dd48e7536ee5e1f6b1265"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/result.json",
+      "bytes": 21599,
+      "sha256": "9f56b589d4165d7f68a197ba00d9699448dd015243c5fe0ec7b65d28085924ff"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/12-diagnostic-batch64-r000-c1/run/report.json",
+      "bytes": 1431230,
+      "sha256": "d0e1e5db7111cdb8beb3500c7e97b1386f6554e18595bd9e3b1f0abc6bdd0994"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/after-metrics.json",
+      "bytes": 931268,
+      "sha256": "2e28691482297732840f43d44eb695d455d0abb282051211427b05580126e8e4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/after-status.json",
+      "bytes": 12819,
+      "sha256": "0f7675b5523180b0bde130ed21c055c1750cbec5e7dd273a25f0a4d08f4e5c73"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/before-fresh-drain.json",
+      "bytes": 40567,
+      "sha256": "e1fbc4ed66c4a3b3c48996ff1ab912c6da9910328ecb1ce0eb04b1d923bd7b47"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/before-metrics.json",
+      "bytes": 928597,
+      "sha256": "80166b1dbfb28ae06b250190502e57da350a0d18a304654103bce73f80cf95c9"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/before-status.json",
+      "bytes": 12752,
+      "sha256": "0e32e4be79619db508295098e2c0184f806fd972f633e951fbb0479b81b70916"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/cleanup.json",
+      "bytes": 6191,
+      "sha256": "28c5853a182aa7ae82a003813339892e1bc3c90e922fda9b735e4b8c18baf681"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/client-exit.json",
+      "bytes": 64,
+      "sha256": "c768436cbbd165332165444d3592e3ff6ec576194f6e3aad292cbfbecd7a3a1c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/client-identity.json",
+      "bytes": 913,
+      "sha256": "1e14721702c8078ad14d374dc5d92ce77f4949d92de7ca591d57820de1f1ed31"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/fixture/diagnostic-retention-budget.json",
+      "bytes": 446,
+      "sha256": "e697e9c61ca295c30f357e7013fb05bab8805eb0260edd0784aa086b11606d51"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/fixture/tmpfs-retention.json",
+      "bytes": 9395,
+      "sha256": "f88ee32ca12acaa35c55612a95778bdf8fb4b01fa7f0f3073deae5e3f63222cf"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/post-client-fresh-drain.json",
+      "bytes": 40766,
+      "sha256": "925b926e130a87e4cff1764cb34003688b9dc19f5214c4a55b7337e39fcde6f5"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/post-readback-fresh-drain.json",
+      "bytes": 40769,
+      "sha256": "33e400dc372c554d481a118c164fc19dd15d3d46f1b92309b77811bcf19126cd"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/requested-config.json",
+      "bytes": 810,
+      "sha256": "35dc9d7297175ea24b8690634df7274a1dec13c4379d69c90e0270a75ebf11a7"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/result.json",
+      "bytes": 21603,
+      "sha256": "bf893ab0aa2fac9e51031d212ff66413513df3a14f9292925a060a2488f5c21f"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/13-default-batch64-r000-c1/run/report.json",
+      "bytes": 1431231,
+      "sha256": "59cefdfe776df572d35c9c1d39483205b1fa74f5f2e2890491a3d6f66ca70fec"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/after-metrics.json",
+      "bytes": 931171,
+      "sha256": "e8bb0df6144aa5a0919ae96417742763adc994175e06f5a7273f59be339edfe3"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/after-status.json",
+      "bytes": 31542,
+      "sha256": "b29c15d3fb4bb1f9620bf2f2a99dd1153d29ad5a3d1f0376ed9376118d480bd3"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/before-fresh-drain.json",
+      "bytes": 94958,
+      "sha256": "377929ae44cc19057c260b8bf86a4963416abddeadc6871f8538b3d186b2fe64"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/before-metrics.json",
+      "bytes": 928594,
+      "sha256": "3ecfe697c346241b089050e24344ff962e48590ff2fe810a5d571920a6dc9a18"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/before-status.json",
+      "bytes": 30910,
+      "sha256": "0e3c9aa73a2d4ee1263fb1c395e208003a4059629df64b9252ba1944efb2110e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/cleanup.json",
+      "bytes": 6194,
+      "sha256": "fddbea85849080935259a4b50b78b159d50dd3ff18ca84d609ebe280f2d7c2fe"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/client-exit.json",
+      "bytes": 64,
+      "sha256": "9ad329fa8f548cdebee1185add6dc03230bdf0ef777655f59b879c3dce6cc779"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/client-identity.json",
+      "bytes": 913,
+      "sha256": "9738bbd793696f5cb2e01c2feba95df2d536f4b8859004729431c69dc77e22c8"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/fixture/diagnostic-retention-budget.json",
+      "bytes": 445,
+      "sha256": "3e2991907d1349f69768139cf28d2ace35aa3548ff053ab50c295aac6708539b"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/fixture/tmpfs-retention.json",
+      "bytes": 5145,
+      "sha256": "60af459d1dac0eb1d37f66a74f03246da7537c6cd885e3f082dd8a264a5b6140"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/post-client-fresh-drain.json",
+      "bytes": 96959,
+      "sha256": "e29b2a4f5c609b9197ab22e5d9c225d506c8466bb56a1d1eba43305914e77f3e"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/post-readback-fresh-drain.json",
+      "bytes": 96962,
+      "sha256": "a9e74b05c24cbaf25003fa4d0aaaabcfb1a760dd3d1c6eaa08a419146c246127"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/requested-config.json",
+      "bytes": 809,
+      "sha256": "8bf01bdd280f43af37c5af72ba621058633f7cf32d0adef563267fe01a3e6a38"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/result.json",
+      "bytes": 21580,
+      "sha256": "15e0df1a7f43c9175952c1930e6b96b2fdcc9806ed9ee6acc1568fcf860924f1"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/14-diagnostic-point-r000-c1/run/report.json",
+      "bytes": 1431801,
+      "sha256": "e212f8344d85ebc6ac0842e9ad76450292134daa42da3b8592620b10352be98d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/after-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/after-metrics.json",
+      "bytes": 931211,
+      "sha256": "7d513d6e5f3582e35130775df71f61a0ddabb1e01fef2d170ab5d1e2338374ae"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/after-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/after-status.json",
+      "bytes": 12822,
+      "sha256": "de439b3b175ccc3d12f7ffa1ef313e29ff9f3576d209d665aea01d7b9ff1d111"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/before-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/before-fresh-drain.json",
+      "bytes": 40567,
+      "sha256": "ac4ebc68fadd190137faed9790a45fd74b33e32e7321e6464a249e11db6537cc"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/before-metrics.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/before-metrics.json",
+      "bytes": 928647,
+      "sha256": "36d6c2996ade6183cfe24b342a3268e5c0e11215226da270cb3ba04ab1d29965"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/before-status.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/before-status.json",
+      "bytes": 12752,
+      "sha256": "0574cca73410ab4587a6489c77e87d7954e6dd9a0adb680fe698a70a3ccf2f5d"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/cleanup.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/cleanup.json",
+      "bytes": 6194,
+      "sha256": "d5c8395335839618add5bef46713c2af3c317a24f2dbfc60d91bf59eac058458"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/client-exit.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/client-exit.json",
+      "bytes": 64,
+      "sha256": "48971d657eda79d560e4d41e7aadb14f1fb976c2173805650d1d278cafc2919c"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/client-identity.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/client-identity.json",
+      "bytes": 913,
+      "sha256": "e1a12391421f6b3e3c846711aa11a11e411022c1e3778c1ac5db385968b3dfca"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/fixture/diagnostic-retention-budget.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/fixture/diagnostic-retention-budget.json",
+      "bytes": 445,
+      "sha256": "41f06ee94198936299a69a316d7a946f079c59b17e54f6f4cd5c37dd04f3b631"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/fixture/tmpfs-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/fixture/tmpfs-retention.json",
+      "bytes": 5142,
+      "sha256": "9630c2f03acc3789924a7b479549fec590116ab7be7eeb860a192b5269c39cf3"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/post-client-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/post-client-fresh-drain.json",
+      "bytes": 40775,
+      "sha256": "d080025696e49398066e7b457aac1ec8ba26596fedfaa0ee99785a51fe895748"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/post-readback-fresh-drain.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/post-readback-fresh-drain.json",
+      "bytes": 40778,
+      "sha256": "5b089791b7250365c21a546ceb0fc412d9c61be2577a7ba2801796cf111aa085"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/requested-config.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/requested-config.json",
+      "bytes": 809,
+      "sha256": "ee195e0621ba3396fd4ce239a4e16fb7c8806a10c6e7b0f385c37abcf0146a02"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/result.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/result.json",
+      "bytes": 21584,
+      "sha256": "af46f1892c63b69a8c450be47e06c937431f1b2041acdd20bd28ac6a312301c4"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/run/report.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/15-default-point-r000-c1/run/report.json",
+      "bytes": 1431819,
+      "sha256": "b46598b1a149887a9c1407df93478fa1b879ce2aa77830439360ab9191011d32"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/matrix.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/matrix.json",
+      "bytes": 805291,
+      "sha256": "aba2edf2018650ee8366a9bb5f4b770c6b81190d2407a14fd89a78a892dfe936"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/plan.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/plan.json",
+      "bytes": 397451,
+      "sha256": "9a4b57644e4b78022e4077882ae32bcb8d27e618a3314a58f470e5bd6ecb225b"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/invocation.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/invocation.json",
+      "bytes": 1115,
+      "sha256": "8b464bfb6191303d7e40173e9d1d4ec36c7222f71f370f68303190257f9ca4f9"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/isolation.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/isolation.json",
+      "bytes": 2115,
+      "sha256": "570c8e85126b5d7ee6b3b749e324f5f1f706d28f3f7b411ca05396577f4a7cf9"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/kv9-chaos-ci-p0-20260908-control-plane-isolated.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "bytes": 845,
+      "sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/kv9-chaos-control-plane-isolated.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/kv9-chaos-control-plane-isolated.json",
+      "bytes": 829,
+      "sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/kv9-minio-dev-isolated.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/kv9-minio-dev-isolated.json",
+      "bytes": 11065,
+      "sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa"
+    },
+    "tmp/kv9-write-diagnostics-capture-20260915-second/summary.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-20260915-second/summary.json",
+      "bytes": 170,
+      "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/arguments.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/arguments.json",
+      "bytes": 594,
+      "sha256": "af7682dc564a88242470640a6b15a084d82f84528af0865aa5ebf039d5f5bb48"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/build-preflight.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/build-preflight.json",
+      "bytes": 1139,
+      "sha256": "39ddfed8ef6f4caea809027a050320b64a1157cea9bdec33dec1370019213086"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/capture.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/capture.py",
+      "bytes": 13045,
+      "sha256": "c193c5367d17e4801cc0fbfe50c711964b5b531967c2863a26796be26ec43e72"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/inherited-driver.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/inherited-driver.py",
+      "bytes": 53430,
+      "sha256": "632e536c045c892e532c2346548c128c7b44eab329dcbf677f34b66943de44a7"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/inherited-inputs.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/inherited-inputs.json",
+      "bytes": 431,
+      "sha256": "860b807efab73ceb74037b62ca69fae33703a355f7157bb6668d5911be72c39c"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/inventory.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/inventory.json",
+      "bytes": 1038,
+      "sha256": "5bb8ecddbae964d292dac16c5c736014c7227a93f2d1c63bbfa99115367d2c86"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/isolate-and-run.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/isolate-and-run.py",
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/protocol.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/protocol.json",
+      "bytes": 1452,
+      "sha256": "ee07eb941260b044edc11d980e17bac2c3f7ec4459b6f0f4b462ffdfc9beb9c6"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-first/test_capture.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-first/test_capture.py",
+      "bytes": 2369,
+      "sha256": "add9be32e6ec3b9f94acec11c22607425e0d005d5369e6b8160ddc7b4c96c7f3"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/README.md": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/README.md",
+      "bytes": 1615,
+      "sha256": "9b92ab8577f635ba0b9f64ce610d020cd2f60b5bc5f912b50bf11eba8269fc2b"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/ROOT-COMMANDS.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/ROOT-COMMANDS.json",
+      "bytes": 1003,
+      "sha256": "6fb2eef2e0118cf475fea5b8deb991153da8bc996bd692a9cc15488c42472954"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/analysis-inputs.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/analysis-inputs.json",
+      "bytes": 57131,
+      "sha256": "0521ecb080f631628fdfcef99920d5a6e3d57cb693d94d27f21887652c17e2c4"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/analysis-manifest.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/analysis-manifest.json",
+      "bytes": 4194,
+      "sha256": "4a30e107b35d7157321fe74f85a38e530b36704290a1c89d816d5da03765d4a7"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/arguments.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/arguments.json",
+      "bytes": 594,
+      "sha256": "af7682dc564a88242470640a6b15a084d82f84528af0865aa5ebf039d5f5bb48"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/capture.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/capture.py",
+      "bytes": 13662,
+      "sha256": "77e15f17b788ac1ec2067c61e3de5de4d21af15864c9e5516efa7b4a2bc46521"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/completed-capture.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/completed-capture.json",
+      "bytes": 19076,
+      "sha256": "c24cdcc4bfa422c887c0ba67472cb7697b7162a58b858c5688716b5596b41aa8"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/completion-inventory.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/completion-inventory.json",
+      "bytes": 1793,
+      "sha256": "02b53612692116b75ecbe5593f0feb30a3e0cd24aa86f66cd4e3b87b01bbae31"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/continuation-before-controls-repair.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/continuation-before-controls-repair.py",
+      "bytes": 8273,
+      "sha256": "961dbe74372fa36922054a94ff2fc09aeae0c44e9fd572e3550fd8392eb69d7a"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/continuation-before-controls-second-repair.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/continuation-before-controls-second-repair.py",
+      "bytes": 8283,
+      "sha256": "893a9e2719656f2d5ec729da83e875223afd9eb10ecaa8ad2bbbb55ff07d5624"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/continuation.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/continuation.py",
+      "bytes": 8704,
+      "sha256": "cc600bafd59b9bc97795cc7f233aaab7fdacac2cbaf7e5d6a7258d669d329ed5"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-first-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-first-terminal.json",
+      "bytes": 253,
+      "sha256": "b9c841fe4e8f72d8d8c774490d308cf357024d76ee22c7a729c0d966b0340a8d"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-first.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-first.stderr",
+      "bytes": 2403,
+      "sha256": "dd6f3d8457914bbff69a27af48f72176e09e65733fd0ac387d2eebea0175ae98"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-first.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-first.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-second-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-second-terminal.json",
+      "bytes": 242,
+      "sha256": "8a53fad4cc48f019441fcc0bc1b27cf6e290c386557db540cab8bfb3fa9a9cca"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-second.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-second.stderr",
+      "bytes": 2373,
+      "sha256": "a72b2975077b172b482ad30264596efda4861307c7e3d01140308dada52ab346"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-second.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-second.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-third-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-third-terminal.json",
+      "bytes": 623,
+      "sha256": "db566baed9188445649c0b022b0f9b557eea4a7a95dde8c440ed73e78a680a96"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-third.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-third.stderr",
+      "bytes": 1326,
+      "sha256": "e51718c8f746c6a58d65182f59042d2dc37d614b44ec099bf4b6020fa15f61e5"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-third.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/controls-third.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/freeze-completed-inputs.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/freeze-completed-inputs.py",
+      "bytes": 4931,
+      "sha256": "fb3fcd2d214b51d0183fb75d5d122ec141260d7c7969e31a99520b3465c9ba29"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/freeze-tool-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/freeze-tool-terminal.json",
+      "bytes": 391,
+      "sha256": "162824a109626db655ec0d08818c13b42cfcb6b14b5bec770288110dc65a4c9e"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/freeze.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/freeze.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/freeze.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/freeze.stdout",
+      "bytes": 385,
+      "sha256": "956f99469e7705b095d391de808dd261350460fb4c72e8ef4ac79fcf45f6860e"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/inherited-driver.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/inherited-driver.py",
+      "bytes": 53430,
+      "sha256": "632e536c045c892e532c2346548c128c7b44eab329dcbf677f34b66943de44a7"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/inherited-inputs.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/inherited-inputs.json",
+      "bytes": 431,
+      "sha256": "860b807efab73ceb74037b62ca69fae33703a355f7157bb6668d5911be72c39c"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/inventory.final.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/inventory.final.json",
+      "bytes": 4725,
+      "sha256": "1b6e9ec40704d5e65330fe3349721a401babd4b8ff7ccb45c6f2cf85957b7d2f"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/isolate-and-run.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/isolate-and-run.py",
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/launch-child-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/launch-child-terminal.json",
+      "bytes": 848,
+      "sha256": "15a5d7dc886f19442bca30b7bf9ac3e6448b62e0e25368aaa5a033ba67c6ee10"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/launch.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/launch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/launch.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/launch.stdout",
+      "bytes": 3066,
+      "sha256": "f0f755a5faeacd19aba8c8c2170996aaf4f63c60aeee742efe3eaaa2b3ed7019"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/arguments.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/arguments.json",
+      "bytes": 594,
+      "sha256": "af7682dc564a88242470640a6b15a084d82f84528af0865aa5ebf039d5f5bb48"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/build-preflight.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/build-preflight.json",
+      "bytes": 1139,
+      "sha256": "39ddfed8ef6f4caea809027a050320b64a1157cea9bdec33dec1370019213086"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/capture.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/capture.py",
+      "bytes": 13045,
+      "sha256": "c193c5367d17e4801cc0fbfe50c711964b5b531967c2863a26796be26ec43e72"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/inherited-driver.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/inherited-driver.py",
+      "bytes": 53430,
+      "sha256": "632e536c045c892e532c2346548c128c7b44eab329dcbf677f34b66943de44a7"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/inherited-inputs.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/inherited-inputs.json",
+      "bytes": 431,
+      "sha256": "860b807efab73ceb74037b62ca69fae33703a355f7157bb6668d5911be72c39c"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/inventory.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/inventory.json",
+      "bytes": 1038,
+      "sha256": "5bb8ecddbae964d292dac16c5c736014c7227a93f2d1c63bbfa99115367d2c86"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/isolate-and-run.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/isolate-and-run.py",
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/protocol.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/protocol.json",
+      "bytes": 1452,
+      "sha256": "ee07eb941260b044edc11d980e17bac2c3f7ec4459b6f0f4b462ffdfc9beb9c6"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/test_capture.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/original/test_capture.py",
+      "bytes": 2369,
+      "sha256": "add9be32e6ec3b9f94acec11c22607425e0d005d5369e6b8160ddc7b4c96c7f3"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/protocol.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/protocol.json",
+      "bytes": 1452,
+      "sha256": "ee07eb941260b044edc11d980e17bac2c3f7ec4459b6f0f4b462ffdfc9beb9c6"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/row-zero-binding.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/row-zero-binding.json",
+      "bytes": 10666,
+      "sha256": "2e60e2e05fcadcb216cbc46fdf73544f43e19097de677936d949495dfa7ca056"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/runtime-tool-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/runtime-tool-terminal.json",
+      "bytes": 461,
+      "sha256": "f43210707e8a50a4ea3a61cc0aeb2a0f6c6af6d3b83dce4bae1e61b804944999"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/source-delta.diff": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/source-delta.diff",
+      "bytes": 3459,
+      "sha256": "f8ad8409f659d471e8a825fe169f73bb4e65c745aa37974900faac7f183ba24a"
+    },
+    "tmp/kv9-write-diagnostics-capture-preparation-20260915-second/test_continuation.py": {
+      "path": "/tmp/kv9-write-diagnostics-capture-preparation-20260915-second/test_continuation.py",
+      "bytes": 3780,
+      "sha256": "4b75a9ce5a4ad10f25605b3b76ac24d0484be7cd7309baf6750cf0ec372ab1dd"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-first/build.log": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-first/build.log",
+      "bytes": 33649,
+      "sha256": "dd6bd13782693f6ce79596d20365a6dddffddbbc41c48fb5c989a66becdb4815"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-first/cargo.jsonl": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-first/cargo.jsonl",
+      "bytes": 212803,
+      "sha256": "97f9b922c38893636f912783f35b4b2f0387bc1120fc1b3403c84104dd49ef0c"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-first/invocation.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-first/invocation.json",
+      "bytes": 333,
+      "sha256": "35b67877868dacec489aa86e760820f255cbddf9e127e0ab7e73a638a17249cd"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-first/unqualified-retention.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-first/unqualified-retention.json",
+      "bytes": 758,
+      "sha256": "a793fe49f66a7fb5144c9364a3c9b57f18ef4adc376d89278c796d1930a6f9e0"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-second/build.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-second/build.json",
+      "bytes": 147743,
+      "sha256": "036b429fcc6895bf44cbac51936228c80f32503f4f7f66f4b59cae9e041a66e3"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-second/build.log": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-second/build.log",
+      "bytes": 19802,
+      "sha256": "d71aabdc64195247799e90cd0a1ba87b159cb9e049edede70ab4376229a9d1ef"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-second/invocation.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-second/invocation.json",
+      "bytes": 333,
+      "sha256": "9c33c47f0883d8755d4cf42e87c55707a1bdf20fa32ed374c0d924b58315c0e5"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-second/kv9-cargo.jsonl": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-second/kv9-cargo.jsonl",
+      "bytes": 212611,
+      "sha256": "17cebb65186d272ca4c172a73d6bce136cdd5f65d8743a48d94fae841740fc18"
+    },
+    "tmp/kv9-write-diagnostics-release-default-20260915-second/source-after.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-default-20260915-second/source-after.json",
+      "bytes": 131410,
+      "sha256": "7591f30e835bc93f5f5e9af30cc2394f867dc74d8855cd5c11525c0a8eb16651"
+    },
+    "tmp/kv9-write-diagnostics-release-instrumented-20260915-second/build.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-instrumented-20260915-second/build.json",
+      "bytes": 148267,
+      "sha256": "0d5ad0a6bcc60dff6e1d5292309125e772504d5cd1dec12b789a1e1a45d2d75c"
+    },
+    "tmp/kv9-write-diagnostics-release-instrumented-20260915-second/build.log": {
+      "path": "/tmp/kv9-write-diagnostics-release-instrumented-20260915-second/build.log",
+      "bytes": 17764,
+      "sha256": "1aa6cab21433246ccfef156c59d1316888dff5890c7b6a4c1d47cbad450c555f"
+    },
+    "tmp/kv9-write-diagnostics-release-instrumented-20260915-second/invocation.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-instrumented-20260915-second/invocation.json",
+      "bytes": 391,
+      "sha256": "536cd9ad98f83400786617ed3874319266040bbe30494ecf042b7a905ac876db"
+    },
+    "tmp/kv9-write-diagnostics-release-instrumented-20260915-second/kv9-cargo.jsonl": {
+      "path": "/tmp/kv9-write-diagnostics-release-instrumented-20260915-second/kv9-cargo.jsonl",
+      "bytes": 212729,
+      "sha256": "c873e628757ae32faad8e9f6f0ce679405d1fbe6ba5fe9f34d35c04e1cb0aeab"
+    },
+    "tmp/kv9-write-diagnostics-release-instrumented-20260915-second/source-after.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-instrumented-20260915-second/source-after.json",
+      "bytes": 131410,
+      "sha256": "7591f30e835bc93f5f5e9af30cc2394f867dc74d8855cd5c11525c0a8eb16651"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/build-pair.py": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/build-pair.py",
+      "bytes": 5887,
+      "sha256": "aaf39e3581cd81efe30b6b6f0d8c7267daa4b3cace4c77a34e9f9b1d645c1a37"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/build-result.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/build-result.json",
+      "bytes": 752,
+      "sha256": "50837fd5406aff1689b934ab5966e2ea0f208312b156536271dd91e474b96ea1"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/cache-clean.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/cache-clean.stderr",
+      "bytes": 3450,
+      "sha256": "8369024e7fc6c65d6b9373b9a8ec409cfcc4a9e1e46ecae566f0bfa311522520"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/cache-clean.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/cache-metadata.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/cache-metadata.json",
+      "bytes": 29978,
+      "sha256": "b7922959f0f1eecc7615036cdc2ab1e2a295e3d61c489bbe62b97f5be86b4f79"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/cache-metadata.log": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/cache-safety.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/cache-safety.json",
+      "bytes": 2294,
+      "sha256": "80056ef04bf3c0a59b3f4f1571164b8b37dbbb866f3ec5812893e261b3845d4e"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/invocation-inputs.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/invocation-inputs.json",
+      "bytes": 1981,
+      "sha256": "285a34c1352b0b554ec9be20eb0ce5be706fcc245f45ebbf5e12d7bd776b69a0"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/preflight.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/preflight.json",
+      "bytes": 696,
+      "sha256": "ecd05708aadf7e229d0617166efd760fbc9089becaa2218ecef0dd4ca31cc592"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/run-builds.py": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/run-builds.py",
+      "bytes": 3594,
+      "sha256": "781f310e09ea70e030c9aec7ab23d114264b469362798bd54ff2d9d450058906"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/source-before.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/source-before.json",
+      "bytes": 131410,
+      "sha256": "7591f30e835bc93f5f5e9af30cc2394f867dc74d8855cd5c11525c0a8eb16651"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/supervisor-result.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/supervisor-result.json",
+      "bytes": 7738,
+      "sha256": "f38c6ffbf58d70cf8f3fc5c99537e35d6f4c4f5d9b76940fd868a964e450bfbb"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/tool-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/tool-terminal.json",
+      "bytes": 261,
+      "sha256": "9acbc71563b6c9cabeb7f394d2f5f2605a6b0cf456225ab4c3b9384116fbfdaa"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/toolchain.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/toolchain.json",
+      "bytes": 1003,
+      "sha256": "fd599b7a61bf323937ccbd35f3580b84d62275bd17165149559b7c3003b81b1e"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/worker.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/worker.stderr",
+      "bytes": 1100,
+      "sha256": "7032f397fc955264f9f911d97e399a1981c85c728ba604e350ae07f2ed84e7cf"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-first/worker.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-first/worker.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/README.md": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/README.md",
+      "bytes": 1785,
+      "sha256": "b378e0d08e25c381659a5e3b1d181763208928092d61b1b2b489cbb0a271428f"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/build-pair.py": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/build-pair.py",
+      "bytes": 6058,
+      "sha256": "193876dce9bf70118e04215b081443229a88285f4d4458d533cd6226df3132db"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/build-result.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/build-result.json",
+      "bytes": 1602,
+      "sha256": "b47545f3dd7edc1e525dfe31ed2c6b75f1b0b2590c9d05f2408c3e2a83071247"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/cache-clean.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/cache-clean.stderr",
+      "bytes": 3358,
+      "sha256": "11173bdb4e5daeaca0d5dd164956b9680854906a283402cf3e64f5ad884879d4"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/cache-clean.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/cache-metadata.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/cache-metadata.json",
+      "bytes": 29978,
+      "sha256": "b7922959f0f1eecc7615036cdc2ab1e2a295e3d61c489bbe62b97f5be86b4f79"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/cache-metadata.log": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/cache-safety.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/cache-safety.json",
+      "bytes": 22944,
+      "sha256": "9bc035a1aa64aeee590bf2f884db42484f609250488a1a9a7ef1f0a1d290df37"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/independent-readback.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/independent-readback.json",
+      "bytes": 2984,
+      "sha256": "c39dc8a79926a2958015bce90fc6a01e068b23c225388e813a6031efc3008a2e"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/inventory.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/inventory.json",
+      "bytes": 6914,
+      "sha256": "0557932084cb961e2b90eaa5cacc9e62c0521387f561bffd1b1e6c919c9d8fa2"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/invocation-inputs.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/invocation-inputs.json",
+      "bytes": 1155,
+      "sha256": "54d404a1f5af21d20188147040ecf5a9610f35204f926260a7f676ec93534998"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/preflight.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/preflight.json",
+      "bytes": 1070,
+      "sha256": "d72bf2146d39eaa13f8f5b3b33af09c6baf3109f8bfde8f847fec201f167ebc8"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/readback-tool-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/readback-tool-terminal.json",
+      "bytes": 373,
+      "sha256": "343250293d9f821c53d40b2b6bbc8879400c5ee47bd682d2a65cbe2b2db2b1df"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/readback.py": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/readback.py",
+      "bytes": 5116,
+      "sha256": "b9063878239d47353b17263f53b620291c3e504ba13b70126e3a8701328ca0ab"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/run-builds.py": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/run-builds.py",
+      "bytes": 3594,
+      "sha256": "781f310e09ea70e030c9aec7ab23d114264b469362798bd54ff2d9d450058906"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/source-before.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/source-before.json",
+      "bytes": 131410,
+      "sha256": "7591f30e835bc93f5f5e9af30cc2394f867dc74d8855cd5c11525c0a8eb16651"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/supervisor-result.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/supervisor-result.json",
+      "bytes": 13633,
+      "sha256": "24b53019c7add1bb2debadb52ac48cd0817c15440200a340114e625d13d97451"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/tool-terminal.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/tool-terminal.json",
+      "bytes": 355,
+      "sha256": "e617a236a042ce9b0a364ae4bbaa5935a9716a1e58cf38ab32fb4b92ff7c4a57"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/toolchain.json": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/toolchain.json",
+      "bytes": 1003,
+      "sha256": "fd599b7a61bf323937ccbd35f3580b84d62275bd17165149559b7c3003b81b1e"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/worker.stderr": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/worker.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/worker.stdout": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/worker.stdout",
+      "bytes": 1107,
+      "sha256": "601e2ca36a2ab89cd68af76e4755961859aaf600e15b91721d1952f341953cec"
+    },
+    "tmp/kv9-write-diagnostics-release-root-20260915-second/wrapper.diff": {
+      "path": "/tmp/kv9-write-diagnostics-release-root-20260915-second/wrapper.diff",
+      "bytes": 3958,
+      "sha256": "3818788c7772e6a443c612d2bb98be052b78b0617903d47994a412ef38e04c2e"
+    },
+    "tmp/kv9-write-observer-report-20260915-first/controls.json": {
+      "path": "/tmp/kv9-write-observer-report-20260915-first/controls.json",
+      "bytes": 436,
+      "sha256": "4c14f8ff643012a7b5b18018915fb2961e9b12265f9d3b0346506c11a498560e"
+    },
+    "tmp/kv9-write-observer-report-20260915-first/package.py": {
+      "path": "/tmp/kv9-write-observer-report-20260915-first/package.py",
+      "bytes": 3171,
+      "sha256": "dbe3c95f5c15e1cc0be50ac394430261a15d69f8e587d66a1f155502a9442dcf"
+    },
+    "tmp/kv9-write-observer-report-20260915-first/review.json": {
+      "path": "/tmp/kv9-write-observer-report-20260915-first/review.json",
+      "bytes": 673,
+      "sha256": "448645a5d1ef341b7010478680f4d8737051fd05655615eaa4153a5be6184630"
+    },
+    "tmp/kv9-write-observer-report-20260915-first/summarize.py": {
+      "path": "/tmp/kv9-write-observer-report-20260915-first/summarize.py",
+      "bytes": 6840,
+      "sha256": "bdb36993cc3749d23b3cf5403b52a9f2dc16eda6e380df71f611a7bcd919f64b"
+    },
+    "tmp/kv9-write-observer-report-20260915-first/summary.json": {
+      "path": "/tmp/kv9-write-observer-report-20260915-first/summary.json",
+      "bytes": 304479,
+      "sha256": "fd849a2e8ecb7a94fda2623b72991d0b2b1f23f59479fa606501de599f44ebc6"
+    },
+    "tmp/kv9-write-observer-report-20260915-first/terminal.json": {
+      "path": "/tmp/kv9-write-observer-report-20260915-first/terminal.json",
+      "bytes": 172,
+      "sha256": "f2a7afba364beb243b44bad71aa2c6163ca85b097edc36c5f94d8bd81b929364"
+    }
+  }
+}

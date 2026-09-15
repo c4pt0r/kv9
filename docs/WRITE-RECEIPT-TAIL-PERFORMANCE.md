@@ -93,18 +93,20 @@ the workload and earlier failed records remain unchanged.
 
 ## Next write experiment
 
-The [default-off baseline diagnostic implementation](WRITE-PATH-DIAGNOSTICS.md)
-now passes local default/diagnostic checks. Runtime capture and observer-overhead
-measurement remain open; no new performance measurement supersedes this table.
+The [complete default-off observer capture](WRITE-OBSERVER-CAPTURE.md) now passes
+matched release, all 16 short cohorts and independent distribution checks.
+Loaded Put has 86.00–86.11% receipt misses and about 1,022 comparisons per lookup;
+its mean nonempty service queue is about 27 requests. Diagnostic Put throughput
+is about 1% lower, and batch timing remains order-sensitive with worse p99.
+These observations do not supersede this ten-second performance table.
 
-Measure receipt-queue lengths and ages, actual checked-lookup/fallback use,
-entries resolved per apply, and their relationship to Ready/group-commit sizes
-in a bounded diagnostic capture. Quantify instrumentation overhead separately.
-The present throughput differences alone do not prove a short-queue cost or
-justify another lookup implementation. Use those observations to select one
-change, then retain the same proof, recovery, Chaos and complete performance
-requirements. Do not combine the held FNV, directory and receipt candidates
-before their interaction has evidence.
+Next bind actual checked-hint and fallback counts to the held candidate.
+Investigate skipping redundant pending inspections only with a proof covering
+every relevant receipt, watermark, fatal-state and deadline transition.
+The cause of this candidate's batch regressions remains unproven. Retain the
+same proof, recovery, Chaos and complete performance requirements. Do not
+combine the held FNV, directory and receipt candidates before their interaction
+has evidence.
 
 Read optimization remains held. Bounded dynamic multi-Raft, routing,
 recoverable membership and automatic range splits follow the write phase.
