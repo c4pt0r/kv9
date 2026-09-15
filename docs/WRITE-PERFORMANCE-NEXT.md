@@ -145,9 +145,14 @@ the frozen commands; preparation does not count as new performance evidence.
 The [bounded WAL patch pilot](cross-voter-retention-pilot-v1/README.md) passes
 six full original-byte reconstructions and eight refusal controls. It supports
 testing a lossless retention migration, but has reclaimed no bytes. The follow-up
-also reproduces all six old compressed-object identities. Next qualify one
-complete cohort's migration, original-path restoration and unchanged legacy
-reader before wider retirement; retain all workload and consistency requirements.
+also reproduces all six old compressed-object identities. The subsequent
+[whole-cohort transaction](cross-voter-cohort-retention-v1/README.md) now passes
+19 controls, 80 exact original-object reconstructions, original-path restoration
+and unchanged-reader acceptance of all 150 objects. Its final COLD state recovers
+924,991,488 allocated bytes after transaction overhead, with all 870 fresh codec
+lifetimes exited. Extend this qualified migration in bounded groups until actual
+capacity covers the receipt screen; preserve original historical checks while
+separately reviewing live readback-floor changes for older readers.
 
 ## Comparison contract
 
@@ -354,9 +359,9 @@ original failed audit and schema repair remain retained without workload reruns.
    Chaos and positive rotations before/after same-store leader recovery. Its
    complete paired write screen improves loaded batch throughput 1.941% and
    p99, while loaded point throughput regresses 0.518%. Keep CRC selected and
-   retain the directory candidate as a batch improvement. Next complete the
-   source/proof-qualified receipt tail hint's default release, recovery and
-   actual Chaos before an independent matched screen. Consider combinations
+   retain the directory candidate as a batch improvement. The receipt tail hint's
+   default release, recovery and actual full21 Chaos now pass. Next recover
+   capacity for its prepared independent matched screen. Consider combinations
    only after those separate results. Persistent-map work remains secondary;
    do not repeat rejected owned-buffer or worker/transport sweeps without new
    causal evidence.

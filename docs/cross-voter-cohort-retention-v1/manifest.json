@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "members": 3759,
+  "logical_bytes": 18815272,
+  "archive_bytes": 1513284,
+  "archive_sha256": "d8d168c81bff40d4ffae29c6cd30ff8c33ab7523dcc6c70633c7015cb8471a1c",
+  "inventory_sha256": "65a9cb88f8edbb8ace77b73d25fde593339aae127a62d755d8c614fa2f214153",
+  "scope": "Exact original source and reporting. Original base objects, patches and retained executable payloads remain local; this archive alone cannot restore WAL objects."
+}

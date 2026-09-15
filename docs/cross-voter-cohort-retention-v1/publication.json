@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "package_tool": {
+    "chunk_id": "2bfaea",
+    "exit_code": 0
+  },
+  "readback_tool": {
+    "chunk_id": "949a79",
+    "exit_code": 0
+  },
+  "archive_sha256": "d8d168c81bff40d4ffae29c6cd30ff8c33ab7523dcc6c70633c7015cb8471a1c",
+  "verifier_sha256": "0ac91bfa1f4561f577a681f294c049653b616f92fb83646dd6dc00ad3eaef738",
+  "scope": "Portable original source and reporting; actual local migration results retained, no database performance rerun."
+}
