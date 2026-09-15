@@ -120,11 +120,14 @@ Actual available space at that boundary is **30,024,470,528 bytes**. Ordinal 002
 has started under the same live tool session, `79586`; the overall campaign is
 not terminal. No new performance result or benchmark-readiness claim follows.
 
-A [later progress snapshot](campaign-progress-20260915.json) records six completed
-plan cohorts, **13,499,342,848 bytes** of conservative net recovery and
-**38,826,639,360 bytes available** at the last completed boundary. Ordinal 006 is
-running under the same session. The snapshot binds the completed controller
-records and does not count the in-progress transaction as recovered capacity.
+A [later progress snapshot](campaign-progress-20260915.json) records 13 completed
+plan cohorts, **29,876,060,160 bytes** of conservative net recovery and
+**55,200,915,456 bytes available** at the last completed boundary. Ordinal 013 was
+running under the same session at capture. The snapshot binds completed controller
+records 001 through 012 and includes the separately qualified bootstrap cohort
+000 in its accounting. It does not count the in-progress transaction as recovered
+capacity or reexecute payload verification. The overall campaign and the receipt
+performance screen remain incomplete.
 
 ## Actual coverage of all four reader families
 

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "observed_ns": 1789450574104593670,
+  "observed_ns": 1789453619880300025,
   "scope": "Snapshot of completed per-cohort controller acceptance records; the overall campaign remains live. Original per-object payloads and receipts remain local. This does not reexecute their verification.",
   "completed_controller_ordinals": [
     {
@@ -82,17 +82,129 @@
         "state": "COLD",
         "verified_sha256": "04b1c70213e361d303ca19f1808ba2e9f6869f7dc3d320d03a950d312234b8b5"
       }
+    },
+    {
+      "ordinal": 6,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/006/complete.json",
+      "completion_bytes": 3291,
+      "completion_sha256": "00097cfdc225b0c820f669147c91c9afc178e4d133ce269800f3b52b00e8b629",
+      "acceptance": {
+        "cold_sha256": "182566c7cb62457678a555dc787dd9946d77b186a8afa642049057f95c2b1172",
+        "complete": true,
+        "ordinal": 6,
+        "readback_sha256": "cd55f82bebab9511d59a71e2e731e627f591e9e7b6deffe1a3bc556f70143abc",
+        "restore_sha256": "51af37d1feed887ef1e3c9ca8f64bda4463c4bf2d057e2bff06a001c1d9965f9",
+        "selection_sha256": "ac778c82f938b45bfc216dd2e7e986ba174fba3467085823d7c6849862a5a140",
+        "state": "COLD",
+        "verified_sha256": "c7f351a43452afb18a710be87bad9fdc2883dbc764c2d65bb24f42b3f4a75d13"
+      }
+    },
+    {
+      "ordinal": 7,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/007/complete.json",
+      "completion_bytes": 3526,
+      "completion_sha256": "3bbf32e8f4a728df01b5ec4f508698359a72813c1095eb704ac536335756d92b",
+      "acceptance": {
+        "cold_sha256": "78bc6280de321d8a842adbac50fe36fdf92012caa984a37aa2e0af415768fc18",
+        "complete": true,
+        "ordinal": 7,
+        "readback_sha256": "337e1ee14065a61c08d49e52e7a5cc36560999995657f63cd3d85c319b393e32",
+        "restore_sha256": "d903f88c5e9e63040a59c08bd3cddab2a7007bf1af4ecd2c44fbdb2d5af872b6",
+        "selection_sha256": "9f6a76695f4a2e1204648d8ed854606fbfa406aadd9658d3737e5850c4e685e7",
+        "state": "COLD",
+        "verified_sha256": "624da200b2d6d3721289463116f820021605ee668e92c3fc2d7a6fc5bbdb7baf"
+      }
+    },
+    {
+      "ordinal": 8,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/008/complete.json",
+      "completion_bytes": 3755,
+      "completion_sha256": "40ba99f90b40b1f151d6465da5c58f2ff4f86a5501a841c4f132fde0641a7fc3",
+      "acceptance": {
+        "cold_sha256": "9a29606c0bde296d29cd88257b4e0e7eea5a772c71108943ec6f3a514522b867",
+        "complete": true,
+        "ordinal": 8,
+        "readback_sha256": "41ee1b3c5f7444e166980a83794a12cfdcb030d0845f2f6ab3524de93d3a09e4",
+        "restore_sha256": "8288daba766cace2fed9f6c76e2ae0c5d4ca8aa83d565e002eb885c2aa559147",
+        "selection_sha256": "4c7cec83b1409e246a138b51303cbc3c75940c6805b2125261cb9eab2d0d455e",
+        "state": "COLD",
+        "verified_sha256": "2d05fec318cdfc443ecaa9ab69071fa5d3e630c317646379da4650823d9e1bb9"
+      }
+    },
+    {
+      "ordinal": 9,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/009/complete.json",
+      "completion_bytes": 3994,
+      "completion_sha256": "1adb4abd3ec7075e8c2a4a032ce3df7e1a339404be6094a9734355e87446c0aa",
+      "acceptance": {
+        "cold_sha256": "f649fb32bdcf15c62a4a40d4a19a0319652edb99c0d451fdbea765e9a871ad59",
+        "complete": true,
+        "ordinal": 9,
+        "readback_sha256": "d914eddc70a734171820fece00d24a66f9da98f53f9ed5e6ad0b8931d4cafcf0",
+        "restore_sha256": "d359ed1e6de969cdc95c20d7ea3a27242f6345c72ad507c399d13eb0cd1a63ef",
+        "selection_sha256": "0928ee64973a8c7c40bb8079faae94422c83efee094d54df6fd30681720cfce8",
+        "state": "COLD",
+        "verified_sha256": "ed57f682c68480d755a51459438087f4b4e2a03c9ca2be376a10c60aeb4ce6cf"
+      }
+    },
+    {
+      "ordinal": 10,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/010/complete.json",
+      "completion_bytes": 4234,
+      "completion_sha256": "984ddfdf2c9f4b6e7aab9bbbfc782ab26016f95ee1ee8197018137c03bcbe8d2",
+      "acceptance": {
+        "cold_sha256": "a4ed315719173ead4f409838444bd572fa5fdcdf66c4765d1faa0099d035d976",
+        "complete": true,
+        "ordinal": 10,
+        "readback_sha256": "58067b56d2ce6a4434aba2e33a277a32ff07a31dae34637ec83d84248ad1e3f5",
+        "restore_sha256": "2a9df494e4ee589e2df5fe868b99ecaf074453670a03767a2494a8686142f247",
+        "selection_sha256": "0a7a376455f946434516c8d41ebc48f2828e62d06e5f239e089d692d378145ad",
+        "state": "COLD",
+        "verified_sha256": "de8b92520e29cd7ad03883ab4bc1de722568537459813b8e8df6c2446360f59e"
+      }
+    },
+    {
+      "ordinal": 11,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/011/complete.json",
+      "completion_bytes": 4470,
+      "completion_sha256": "b1ca638830f00feec5d8e7750ed52917223d4e2d3081ba1e85fb996e7ea44a90",
+      "acceptance": {
+        "cold_sha256": "c05d871416ab2a9c5d1c8e56898b9a4d1bff6841d12e83c984a4bcbfe2143aac",
+        "complete": true,
+        "ordinal": 11,
+        "readback_sha256": "d59843a74b08d4c2653a0192757b1ce4abcf8498611e36312087e51401653486",
+        "restore_sha256": "96d2d4a9a18f6bacc0f258461c5d3a0612435620ea6f02049a7b3b7661eb7cfa",
+        "selection_sha256": "ad028619162015dd8cd7498077cafbb7ab22fd2306041051c4843ab340db902b",
+        "state": "COLD",
+        "verified_sha256": "8478e8eae8534af7c849335366cf8a265a335d7f704f29d23f3424075f4fa47b"
+      }
+    },
+    {
+      "ordinal": 12,
+      "completion_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/012/complete.json",
+      "completion_bytes": 4708,
+      "completion_sha256": "0deb8a37ffc2bfa2331923c2f6bff01c370984c476d7ec23783a5379cbaaf0fc",
+      "acceptance": {
+        "cold_sha256": "c5ef96b2082d4a2a1d53ea8b31f8e97e6d8a205fffb8873f29a1b24abbda4886",
+        "complete": true,
+        "ordinal": 12,
+        "readback_sha256": "293d4189e72ecf627f9f8cf14e5b9809061b4b955bcb82eec8ecb681f9a6dc32",
+        "restore_sha256": "715555904049fa38527f00342fd692bd9904abf0010d004c4b5341b5c00e1bd1",
+        "selection_sha256": "3ca20771671e90f63f70c946db77860506e483c0f144815438707bb638fd7133",
+        "state": "COLD",
+        "verified_sha256": "3d7b64300adfcd60600e527cec6c63365b0f167c20506baee3dd02d654b58976"
+      }
     }
   ],
   "last_completed_boundary_accounting": {
-    "actual_available_bytes": 38826639360,
+    "actual_available_bytes": 55200915456,
     "all_selected_exhausted": false,
     "benchmark_runtime_ready": false,
-    "campaign_controller_allocated_bytes": 552960,
-    "cold_cohorts": 6,
+    "campaign_controller_allocated_bytes": 1138688,
+    "cold_cohorts": 13,
     "complete": true,
-    "conservative_net_allocated_change_bytes": 13499342848,
-    "execution_allocated_bytes": 937984,
+    "conservative_net_allocated_change_bytes": 29876060160,
+    "execution_allocated_bytes": 2031616,
     "incomplete_or_restored_cohorts": [],
     "preparation_allocated_bytes": 14376960,
     "rows": [
@@ -143,26 +255,82 @@
         "original_target_allocation": 2507677696,
         "root": "/tmp/kv9-cross-voter-group-005-frame-buffer-crc-20260915-first",
         "transaction_allocated_bytes": 165400576
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 6,
+        "original_target_allocation": 2485563392,
+        "root": "/tmp/kv9-cross-voter-group-006-fnv-writer-20260915-first",
+        "transaction_allocated_bytes": 199147520
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 7,
+        "original_target_allocation": 2483888128,
+        "root": "/tmp/kv9-cross-voter-group-007-frame-buffer-crc-20260915-first",
+        "transaction_allocated_bytes": 190832640
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 8,
+        "original_target_allocation": 2481725440,
+        "root": "/tmp/kv9-cross-voter-group-008-fnv-writer-20260915-first",
+        "transaction_allocated_bytes": 179613696
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 9,
+        "original_target_allocation": 2478395392,
+        "root": "/tmp/kv9-cross-voter-group-009-published-directory-20260915-first",
+        "transaction_allocated_bytes": 101683200
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 10,
+        "original_target_allocation": 2471063552,
+        "root": "/tmp/kv9-cross-voter-group-010-published-directory-20260915-first",
+        "transaction_allocated_bytes": 81297408
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 11,
+        "original_target_allocation": 2469474304,
+        "root": "/tmp/kv9-cross-voter-group-011-frame-buffer-crc-20260915-first",
+        "transaction_allocated_bytes": 93536256
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 12,
+        "original_target_allocation": 2454212608,
+        "root": "/tmp/kv9-cross-voter-group-012-crc-full-regression-20260915-first",
+        "transaction_allocated_bytes": 99815424
       }
     ],
     "scope": "Metadata-only current allocation, not another payload acceptance. All existing selected transaction roots, retained scratch/toolchains/receipts, execution and preparation metadata charged. Prior first-cohort savings excluded. Additional campaign preparation and all campaign output are charged. Includes completed cohort000 as explicitly separate bootstrap history; actual f_bavail is authoritative.",
-    "target_gross_allocation_decrease_bytes": 15269658624,
+    "target_gross_allocation_decrease_bytes": 32593981440,
     "target_reached": false,
-    "transaction_allocated_bytes": 1754447872
+    "transaction_allocated_bytes": 2700374016
   },
   "campaign_tool_session": 79586,
-  "last_verified_live_poll": "c4ebda",
+  "last_verified_live_poll": "6fc6ca",
   "campaign_terminal_observed": false,
   "status_snapshot": {
-    "available_bytes": 40122920960,
+    "available_bytes": 54966956032,
     "child": {
       "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
-      "pid": 985194,
-      "start_ticks": 173919583
+      "pid": 1239197,
+      "start_ticks": 174218159
     },
-    "observed_ns": 1789450573781761915,
-    "ordinal": 6,
-    "phase": "finish",
+    "observed_ns": 1789453614902637562,
+    "ordinal": 13,
+    "phase": "stage-verify",
     "state": "RUNNING"
   },
   "benchmark_runtime_ready": false
