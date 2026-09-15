@@ -1,0 +1,15 @@
+{
+  "authorization": "Root explicitly approved selected-original metadata cap 64 to 80 MiB, conditional on exact finite selection and USTAR projection fitting all unchanged bounds; no packaging yet.",
+  "complete": true,
+  "new_selected_original_cap_bytes": 83886080,
+  "old_selected_original_cap_bytes": 67108864,
+  "projected_exceedance_not_executed_failure": true,
+  "runtime_campaign_storage_codec_limits_changed": false,
+  "scope": "Reporting metadata only. Original 64 MiB preparatory sources retained under origin/prepared-64MiB-*.",
+  "unchanged_caps": {
+    "compressed_bytes": 33554432,
+    "decoded_tar_bytes": 83886080,
+    "member_bytes": 8388608,
+    "original_member_count_less_than": 512
+  }
+}

@@ -1,0 +1,2137 @@
+{
+  "actual_stage_terminals": {
+    "audit": {
+      "exit_code": 0,
+      "session_id": 48940,
+      "terminal_receipt": "2f82fd"
+    },
+    "report": {
+      "exit_code": 0,
+      "session_id": null,
+      "terminal_receipt": "aad8c9"
+    },
+    "smoke": {
+      "exit_code": 0,
+      "session_id": 45876,
+      "terminal_receipt": "559f87"
+    },
+    "smoke_readback": {
+      "exit_code": 0,
+      "session_id": null,
+      "terminal_receipt": "905b8a"
+    },
+    "timing": {
+      "exit_code": 0,
+      "session_id": 14114,
+      "terminal_receipt": "1182dd"
+    }
+  },
+  "audit_sha256": "7f60d63edbfaa3580160b3e80bf5ed97ba01aafe4faeb8e1342a6ba82daedb4f",
+  "client_binary_sha256": "1b8060eb168610328c10a27480de16bd8b2d6805166d8169638f85ceef0992c4",
+  "compressed_cap_bytes": 33554432,
+  "decoded_tar_cap_bytes": 83886080,
+  "member_cap_bytes": 8388608,
+  "members": [
+    {
+      "bytes": 487,
+      "member": "mnt/data/kv9-work/performance-input-recovery-20260915-first/rebuild-first/native/build.json",
+      "sha256": "eaef25789234170e999fab3746f6d29db403d6df556a82a7c373f572daf04e16",
+      "source": "/mnt/data/kv9-work/performance-input-recovery-20260915-first/rebuild-first/native/build.json"
+    },
+    {
+      "bytes": 1246,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/audit-invocation.json",
+      "sha256": "0c86acce01dd535f0318b06749b5261f9e525ad5a7e535cde63f46780838bd56",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/audit-invocation.json"
+    },
+    {
+      "bytes": 1125,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/audit-process-terminal.json",
+      "sha256": "c9fc355d024a1db5f7e518265292974613b95d68f8275084291355d85d15f54b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/audit-process-terminal.json"
+    },
+    {
+      "bytes": 525,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/audit-terminal.json",
+      "sha256": "6e357d3d08dfc0054dedcd3633dc45e36c11dce879606c0ce191ddf86876a584",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/audit-terminal.json"
+    },
+    {
+      "bytes": 7539,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/publication-manifest.json",
+      "sha256": "17700235706bb823347e43afb8f9f603047d4031f801fd0d8f8dff7c771a60ec",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/publication-manifest.json"
+    },
+    {
+      "bytes": 862,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/report-invocation.json",
+      "sha256": "423a5d5c14dff88ffb6cef2d12b6e5c98e5d019fbc30840f5d31b5a653a5623e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/report-invocation.json"
+    },
+    {
+      "bytes": 877,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/report-process-terminal.json",
+      "sha256": "2e62903731ca61e526e85d5cb195de32975f338e55fd848dc20c8814e4ea5268",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/report-process-terminal.json"
+    },
+    {
+      "bytes": 658,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/report-publication-terminal.json",
+      "sha256": "09bfacee27fd51e1f86f69a76812f63830cd758a46ac317e2445c3686154b308",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/report-publication-terminal.json"
+    },
+    {
+      "bytes": 447,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/report-terminal.json",
+      "sha256": "ce28223cb42806431bc0380110fc30b83a8bcc186f995ef0bd48b17e5a554596",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/report-terminal.json"
+    },
+    {
+      "bytes": 707,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-launch.json",
+      "sha256": "4286849b31d8e49e7803edadd3bb64afcd21a2ad29bc27c992992ed070c98e3d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-launch.json"
+    },
+    {
+      "bytes": 780,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-readback-terminal.json",
+      "sha256": "9f56bc049650408f63f45c6cf7bae143fdaf8adb688c0432f53ccec6b55ec127",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-readback-terminal.json"
+    },
+    {
+      "bytes": 447,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-readback-tool-terminal.json",
+      "sha256": "7fcfaa194a0cb74b9c275c76ce2239edaab8c1bfd4422abdb322d2fdcbbd39ba",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-readback-tool-terminal.json"
+    },
+    {
+      "bytes": 1487,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-terminal.json",
+      "sha256": "282d49eb6bd2a3c5a2f71aaa866bf45ec0ffdb226d81cfc3b4afb5256d49738b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-terminal.json"
+    },
+    {
+      "bytes": 327,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-tool-terminal.json",
+      "sha256": "662e39536c427d81b904a268061cd79dd55a3c15611f822be2ba8d2a85905f41",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/smoke-tool-terminal.json"
+    },
+    {
+      "bytes": 1617,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/timing-launch.json",
+      "sha256": "d7c1bd33150f110c337a590a421b8fe1b40e35708123fb270d10fc53a2089708",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/timing-launch.json"
+    },
+    {
+      "bytes": 1058,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/timing-terminal.json",
+      "sha256": "fdad2467254e8c980e3b5a31001d8a3c075f830cfba74ef672936b6d18b8a5eb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/timing-terminal.json"
+    },
+    {
+      "bytes": 289,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/timing-tool-terminal.json",
+      "sha256": "7cb7b6f2325d03531b0feb1ceb6e14683a19c9c9112c4119499c0770d3221464",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-execution-20260915-first/timing-tool-terminal.json"
+    },
+    {
+      "bytes": 5516,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/README.md",
+      "sha256": "457bd364c0354ec5221aebfd25ae05517013c24ffb809b7b54cbcacbb4d3a10c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/README.md"
+    },
+    {
+      "bytes": 10306,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/ROOT-COMMANDS.json",
+      "sha256": "fddf0f18c2594b2a469b6eea8018726bbf4ff6436d0cd5748353f78f4b895bbf",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/ROOT-COMMANDS.json"
+    },
+    {
+      "bytes": 2225,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/actual-chaos-binding.json",
+      "sha256": "5abd945cdfc88809195bc00e93f8e84cf248d1fb7fc76a97a020acc3f6d86b3e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/actual-chaos-binding.json"
+    },
+    {
+      "bytes": 58534,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/audit.py",
+      "sha256": "cc3cc0982b4f63046a5d8dbf36833105987976f22a1fbec0bd1a22a66fddd07f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/audit.py"
+    },
+    {
+      "bytes": 2878,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/capacity.json",
+      "sha256": "03851a5b9c517a7f315f2190f75250b71dd6906e240a8e6ddc76b869a406f771",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/capacity.json"
+    },
+    {
+      "bytes": 343,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/first/preflight-terminal.json",
+      "sha256": "d325b9bf88da3b54d027243b59e252b1718ab23552326990ee552dc7ad16b85a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/first/preflight-terminal.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/benchmark-binary-tests-terminal.json",
+      "sha256": "c59d159502016df564e6eeec0041884dee48ddc9b4b95347442769b404869f34",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/benchmark-binary-tests-terminal.json"
+    },
+    {
+      "bytes": 2517,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/benchmark-binary-tests.log",
+      "sha256": "cb62c5633edccd510f21a1353cefcc164db47dff88d66f580bb3d959d5424961",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/benchmark-binary-tests.log"
+    },
+    {
+      "bytes": 64078,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/client-inputs.json",
+      "sha256": "09679a8ce1cbffd88af5d4ecd01eac2553bd6a1952434cb6dbd131c38007238d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/client-inputs.json"
+    },
+    {
+      "bytes": 1014,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/client-library-tests-terminal.json",
+      "sha256": "1bcea19df6de2f62092fc102959e2afd4552004726abe0575fdd1c6a3f685f97",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/client-library-tests-terminal.json"
+    },
+    {
+      "bytes": 2889,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/client-library-tests.log",
+      "sha256": "86a38ba660a0fd50143700c91bbe20e90853b63553af920572605b596ba25cb3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/client-library-tests.log"
+    },
+    {
+      "bytes": 988,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/report-tests-terminal.json",
+      "sha256": "b3f5c5af1024c7aaac38f02d3466ebcf44767059818c20e813af04b7e1b45f33",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/report-tests-terminal.json"
+    },
+    {
+      "bytes": 118,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/report-tests.log",
+      "sha256": "14fc79938c7570978258f4906ee9c744f650f768a3cb826404bb4acef959578a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/report-tests.log"
+    },
+    {
+      "bytes": 3079,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/run.py",
+      "sha256": "6dbf152bdb1aab31fa59b140cca05c99bef90093d48eba4ba0995784fd31c43e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/run.py"
+    },
+    {
+      "bytes": 376,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/test-qualification.json",
+      "sha256": "c0d3107febfe7530beb0827d3be6e4efbe4ff1de4741ffb03a33b7116bbe7291",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/client-qualification/second/test-qualification.json"
+    },
+    {
+      "bytes": 692,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/commands.json",
+      "sha256": "52bfbdc46b1467668460322b1fa84cf985b186ee689dc043a42037ae121d21be",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/commands.json"
+    },
+    {
+      "bytes": 27161,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/compressed_retention.py",
+      "sha256": "00a2ccc16fd6a8ac57480b0b14eab5151cd2eb08f011a415d34f891f6376143b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/compressed_retention.py"
+    },
+    {
+      "bytes": 1356,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/controls-result.json",
+      "sha256": "f6ce05994daf1e596262e170fb21610298ea50a09718b9472dba734876c792b1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/controls-result.json"
+    },
+    {
+      "bytes": 16333,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/derive.py",
+      "sha256": "f3414b701071a5a98449519010e1296003921798a193ef2167ed120d7fc09cf9",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/derive.py"
+    },
+    {
+      "bytes": 10224,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/audit.py.diff",
+      "sha256": "cda92f799e7815d7672e8bc4a2e88f50c86fcbec5a41eebb492be929ad8afb07",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/audit.py.diff"
+    },
+    {
+      "bytes": 10012,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/commands.json.diff",
+      "sha256": "bf17f580df1d2aea7b4af0df360b4e24e4bd5b10751f6d61377ec6c6eb8e527c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/commands.json.diff"
+    },
+    {
+      "bytes": 5944,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/compressed_retention.py.diff",
+      "sha256": "5a778b7f15e2df492182fa9cbc1d5bae073caca0452ffda9d8e5edb3aa761728",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/compressed_retention.py.diff"
+    },
+    {
+      "bytes": 619,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/driver-arguments.json.diff",
+      "sha256": "c8fe56f9e1114233a0b736b24dbc0291d705c45f21bf26da09ef6f017de7b066",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/driver-arguments.json.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/isolate-and-run.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/isolate-and-run.py.diff"
+    },
+    {
+      "bytes": 5035,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/matched-driver.py.diff",
+      "sha256": "dfee61666be4abb606dbfbc449422d8580126b29ee618310fcbf117cb370c5e2",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/matched-driver.py.diff"
+    },
+    {
+      "bytes": 7870,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/protocol.json.diff",
+      "sha256": "a2a4411b944567f8f2349033f2ed22d7e925d514ae893360bc596bfc4a99bca4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/protocol.json.diff"
+    },
+    {
+      "bytes": 748,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/bind-roles.py.diff",
+      "sha256": "220cc4f64d9e7f7007293dd34f2a2db5e1dd213a751069633f059bae35b3dceb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/bind-roles.py.diff"
+    },
+    {
+      "bytes": 3862,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/check-smoke-v3.py.diff",
+      "sha256": "118a3ef462f894e71a332ecd3bd87552d598f9ab2f5607ffacfb41bf94b6d1b9",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/check-smoke-v3.py.diff"
+    },
+    {
+      "bytes": 5942,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/runtime-commands.json.diff",
+      "sha256": "73bf72c5326c44bd2fa029491f772a27f34864faf184a27066607bbc699f9df5",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/runtime-commands.json.diff"
+    },
+    {
+      "bytes": 1069,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/test_smoke_v3_bindings.py.diff",
+      "sha256": "1282bb489404c110d6897dd49f62a135dd83e69c71863e2e2b59b61636ab0485",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/test_smoke_v3_bindings.py.diff"
+    },
+    {
+      "bytes": 1682,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/test_source_bindings.py.diff",
+      "sha256": "9466b37c1e1c79a8c13316ab98f2a07fd3961f023a9d029b043e58fb4e624507",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/readiness/test_source_bindings.py.diff"
+    },
+    {
+      "bytes": 6947,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/retention_audit.py.diff",
+      "sha256": "b415f9d038124e78248c7fe45cad9ce8f940acaa40acc873f1df6c4d860dab48",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/retention_audit.py.diff"
+    },
+    {
+      "bytes": 918,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/storage-policy.json.diff",
+      "sha256": "993e62e1bb315852488c22bb11499ab41cbd9e3b20463e5273cf839bc37c4f6d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/storage-policy.json.diff"
+    },
+    {
+      "bytes": 1488,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_audit_contract.py.diff",
+      "sha256": "743d163e34d56b66da764075b8cd6cd72e527c6b72c18b6ff844c87d8c5e48bf",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_audit_contract.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_cleanup_metadata.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_cleanup_metadata.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_compressed_retention.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_compressed_retention.py.diff"
+    },
+    {
+      "bytes": 2310,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_driver.py.diff",
+      "sha256": "04415c7653719aef26f0b955000160d8d4909eee6f24089e812f849538201db4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_driver.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_smoke_schema.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/diffs/test_smoke_schema.py.diff"
+    },
+    {
+      "bytes": 628,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/driver-arguments.json",
+      "sha256": "e38313b55adf352de165d3d2277698adcd3bf1a5095a5125495a63505a62db9a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/driver-arguments.json"
+    },
+    {
+      "bytes": 58534,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/audit.py",
+      "sha256": "92652abf0fddaf737f92afafa07c7619169d4ce00011c36a02f453bb0d859d87",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/audit.py"
+    },
+    {
+      "bytes": 27136,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/compressed_retention.py",
+      "sha256": "4397fc9b29165b5e8d1e984f769578e988331b8b4e86d1659ea3ccc10964f67f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/compressed_retention.py"
+    },
+    {
+      "bytes": 16308,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/derive.py",
+      "sha256": "1c0fb5245c0591eb77b0907d18025dc06086eec2dbd958b9e67b68dfe2dc1c15",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/derive.py"
+    },
+    {
+      "bytes": 53868,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/matched-driver.py",
+      "sha256": "e6145edf0c19d5cc112b480e8cde14fae68e4554576883d2bd38a48cb0ae9f12",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/matched-driver.py"
+    },
+    {
+      "bytes": 19834,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/retention_audit.py",
+      "sha256": "e0a621e2d8a6de034a9195905ca76a2f65521de4f196a66f6a0a374ae4fd495f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/retention_audit.py"
+    },
+    {
+      "bytes": 1417,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/terminal.json",
+      "sha256": "880ace90c6f1b36f2b20b86436ab30c083b4613c246a8458768057764aa663ac",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/terminal.json"
+    },
+    {
+      "bytes": 9174,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/test_data_volume.py",
+      "sha256": "49fe902ddd3dbc3444418defca56f3a548f95dc6b626f59f691393e52f2972be",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/failures/controls-first/test_data_volume.py"
+    },
+    {
+      "bytes": 35101,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/inventory.json",
+      "sha256": "b5911e32c94289ae52a320d513aa3e81a8da320e635e876ba39031b491883e54",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/inventory.json"
+    },
+    {
+      "bytes": 12873,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/isolate-and-run.py",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/isolate-and-run.py"
+    },
+    {
+      "bytes": 53868,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/matched-driver.py",
+      "sha256": "d494ae312ae4bf0a476bd4d6c58137cf66ba1ebf042880b4d11670d32f058a3e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/matched-driver.py"
+    },
+    {
+      "bytes": 302,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/metadata-query-failure.json",
+      "sha256": "92390587c508a1d7bd0ca1681a7cf1b21e6739de37e9daad6b909f9a1c00fdae",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/metadata-query-failure.json"
+    },
+    {
+      "bytes": 12873,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/origins/isolate-and-run.py",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/origins/isolate-and-run.py"
+    },
+    {
+      "bytes": 51906,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/origins/matched-driver.py",
+      "sha256": "4dbde74a51cb87174e859e00c1f2bda8fe4c3c4285d1bfd9a124c6e529b0d6fc",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/origins/matched-driver.py"
+    },
+    {
+      "bytes": 56523,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/origins/repaired-redis3-audit.py",
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/origins/repaired-redis3-audit.py"
+    },
+    {
+      "bytes": 5686,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/README.md",
+      "sha256": "75c0202b702676310fe515eae79bfe1fe316ba56c2b1348f23ed49cde0183a3b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/README.md"
+    },
+    {
+      "bytes": 9006,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/ROOT-COMMANDS.json",
+      "sha256": "03a6f9bf186902aa0b37ec93ab9f6fa904996ec1aa5d54843a9ba18832055908",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/ROOT-COMMANDS.json"
+    },
+    {
+      "bytes": 57883,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/audit.py",
+      "sha256": "2f7e51a5032281f9ac88f9bce6fe1c3d2c43bf1f4e29921d90decba78e30416a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/audit.py"
+    },
+    {
+      "bytes": 3771,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/capacity.json",
+      "sha256": "7c7b5ecc2a647ba31f1afc9af29674a3e8463b335087831fd7f01c128f455439",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/capacity.json"
+    },
+    {
+      "bytes": 8914,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/commands.json",
+      "sha256": "e15c7fc007674ba96e17cbf9d3988879ac84857a60021fbfb36216a60723073f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/commands.json"
+    },
+    {
+      "bytes": 25682,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/compressed_retention.py",
+      "sha256": "57808d3ac0adb8ac5789e1ef7f28b19743373c2ea89df3dba4ce00c036a9ca9f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/compressed_retention.py"
+    },
+    {
+      "bytes": 13710,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/derive.py",
+      "sha256": "20febc19a274644b77e98ffa0d27e200eadbd72d0c0d39ecb184b5fc4ff9169e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/derive.py"
+    },
+    {
+      "bytes": 6440,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/audit.py.diff",
+      "sha256": "3a7ed0bc1ce3479966552299324f821e89da2900ae4930469fd1548c8bb1a965",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/audit.py.diff"
+    },
+    {
+      "bytes": 14792,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/commands.json.diff",
+      "sha256": "b463f35c05fb43b0b9039bdb509f1c3aca83e9ecbafdcd0030861f2ce7083193",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/commands.json.diff"
+    },
+    {
+      "bytes": 897,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/compressed_retention.py.diff",
+      "sha256": "71184198a86d653eb05dc2e2957e7cee95cc8ccb3480c0540be8f28b8c8b03df",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/compressed_retention.py.diff"
+    },
+    {
+      "bytes": 568,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/driver-arguments.json.diff",
+      "sha256": "edd8c40117604634a6fb4d5d392d2b923561d9d24d88b4c185dbd288af5357a6",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/driver-arguments.json.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/isolate-and-run.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/isolate-and-run.py.diff"
+    },
+    {
+      "bytes": 3576,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/matched-driver.py.diff",
+      "sha256": "c7871bf08d0c7840a046aa39a5186c69e1f224c9deb4c9f43a20b7f0d04237c3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/matched-driver.py.diff"
+    },
+    {
+      "bytes": 5031,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/protocol.json.diff",
+      "sha256": "e95feb7a1853ab362178976a79f6301552ab4fa19152e711d953dda0f64c42cf",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/protocol.json.diff"
+    },
+    {
+      "bytes": 949,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/retention_audit.py.diff",
+      "sha256": "0dcaad1d9bbff5c13e52947ac13f32d869d7aa158ecb05cc5e95ab6dbfc9e7e8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/retention_audit.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/storage-policy.json.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/storage-policy.json.diff"
+    },
+    {
+      "bytes": 2298,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_audit_contract.py.diff",
+      "sha256": "8ee9e3def3396c9504c31fad8667ca932388ae3f926d54d8f3f934967f4f2183",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_audit_contract.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_cleanup_metadata.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_cleanup_metadata.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_compressed_retention.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_compressed_retention.py.diff"
+    },
+    {
+      "bytes": 1738,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_driver.py.diff",
+      "sha256": "fa152e818a68410e7f6e9adf0811d2e44f628a9be2e0817d310006de47c36d36",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_driver.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_smoke_schema.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_smoke_schema.py.diff"
+    },
+    {
+      "bytes": 883,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_storage_policy.py.diff",
+      "sha256": "d21ad0fbeead2b311119bdfa36da317b9a95be36e4369b8565b0d4acc66bcc37",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/helpers/test_storage_policy.py.diff"
+    },
+    {
+      "bytes": 736,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/bind-roles.py.diff",
+      "sha256": "1093e9389e5c00f733dc46e641bb800874cbca3b530e1331760441cf6966c19f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/bind-roles.py.diff"
+    },
+    {
+      "bytes": 2712,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/check-smoke-v3.py.diff",
+      "sha256": "601ff7fd03c0652b518e390e6b244f889aa85c801d1fa946bc5e56a858831ebe",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/check-smoke-v3.py.diff"
+    },
+    {
+      "bytes": 6016,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/runtime-commands.json.diff",
+      "sha256": "a26ab7f693f60a07f1d02d34ece512c64d9d0bafb38b46f184bb7fdc7a3bf143",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/runtime-commands.json.diff"
+    },
+    {
+      "bytes": 1045,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/test_smoke_v3_bindings.py.diff",
+      "sha256": "fbe8e248a14406fe8f6771a8f9e9be462f3905e1d502f468f0b6cb40f88b2d29",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/test_smoke_v3_bindings.py.diff"
+    },
+    {
+      "bytes": 3330,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/test_source_bindings.py.diff",
+      "sha256": "9cb19500863b57ec02cd47c0881b535feb9b926c9e4fd2c9de30661224c34529",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/diffs/readiness/test_source_bindings.py.diff"
+    },
+    {
+      "bytes": 545,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/driver-arguments.json",
+      "sha256": "fbab48df8f077ab6170ae957dfae822a4fa6df23c46017828e2e7ddc77b568e9",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/driver-arguments.json"
+    },
+    {
+      "bytes": 6635,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/input-hashes.json",
+      "sha256": "a345d4311263b99304a32b88b129db3da220e4d6ce861f95fcf5f4ab5686bd3c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/input-hashes.json"
+    },
+    {
+      "bytes": 23389,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/inventory.json",
+      "sha256": "26e7e04e3b7a63e9d154f941f4b01593c50fb5951882d6661fe2ce04de38baa3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/inventory.json"
+    },
+    {
+      "bytes": 12873,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/isolate-and-run.py",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/isolate-and-run.py"
+    },
+    {
+      "bytes": 53420,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/matched-driver.py",
+      "sha256": "915ed58ae32ade4b088b3e3922b6241a7d0bf8b341a5d1488f42720040a948a5",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/matched-driver.py"
+    },
+    {
+      "bytes": 12873,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/origins/isolate-and-run.py",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/origins/isolate-and-run.py"
+    },
+    {
+      "bytes": 51906,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/origins/matched-driver.py",
+      "sha256": "4dbde74a51cb87174e859e00c1f2bda8fe4c3c4285d1bfd9a124c6e529b0d6fc",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/origins/matched-driver.py"
+    },
+    {
+      "bytes": 56523,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/origins/repaired-redis3-audit.py",
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/origins/repaired-redis3-audit.py"
+    },
+    {
+      "bytes": 2342,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/README.md",
+      "sha256": "8552941aefc3fd42618a6994d3b3a0355924df97ecf84dae1f199984b7aad732",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/README.md"
+    },
+    {
+      "bytes": 8819,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/ROOT-COMMANDS.json",
+      "sha256": "f023be5f2fb4d562a277b77ca9ba5f24c28fc5c12ca7258648a9c88ca292766a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/ROOT-COMMANDS.json"
+    },
+    {
+      "bytes": 2064,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/bind-roles.py",
+      "sha256": "c7f90475d7ede689e830d97fd05c67e5c72cae5818f8f8997cb46ef82805b1a8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/bind-roles.py"
+    },
+    {
+      "bytes": 780,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/capacity-observation.json",
+      "sha256": "3f984b05d7aae857ce8ad5faf5a73fa9a119e1c278ca922c04c78c148c13a928",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/capacity-observation.json"
+    },
+    {
+      "bytes": 5643,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/check-smoke-v3.py",
+      "sha256": "80f900eeb69821d4aa4b1816350976df72598abbf598f3e534fa1bd88725368b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/check-smoke-v3.py"
+    },
+    {
+      "bytes": 3047,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/completed-prerequisites.json",
+      "sha256": "af39740bb677053721d8b0e429ed9fbc0d556f4b51b835ac513bd7dca7d00db7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/completed-prerequisites.json"
+    },
+    {
+      "bytes": 2756,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/diffs/check-smoke-v3.py.diff",
+      "sha256": "ab3a08b723d90627201ca8cc3c46faa4e855f2cacb60234109f00b1182fe5512",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/diffs/check-smoke-v3.py.diff"
+    },
+    {
+      "bytes": 1089,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/diffs/test_smoke_v3_bindings.py.diff",
+      "sha256": "35aa240eaaab1152a7c01eaffa030d6446fdaaa81b3844c9fbb2e5cf6268002b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/diffs/test_smoke_v3_bindings.py.diff"
+    },
+    {
+      "bytes": 3263,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/inventory.json",
+      "sha256": "45c266f8821a466a219ee3ccdbc17992e5c50908da7bed4a6c5e5c562a9e81ca",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/inventory.json"
+    },
+    {
+      "bytes": 3675,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor-lineage.json",
+      "sha256": "c793bda04e289e6dac653b64f5d5b2ece55079f7f6e031dc420151a66ace84f3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor-lineage.json"
+    },
+    {
+      "bytes": 5664,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor/check-smoke-v3.py",
+      "sha256": "ef39fb6e9c169de59c84ade07b7facbe54dbb66dbceec991f38f2fa9a81a41b0",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor/check-smoke-v3.py"
+    },
+    {
+      "bytes": 5665,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor/original-check-smoke-corrected.py",
+      "sha256": "d59669f8330d55681a990a90194311207577871c1fa0d5ff8a7f476754228e63",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor/original-check-smoke-corrected.py"
+    },
+    {
+      "bytes": 1777,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor/smoke-reader.diff",
+      "sha256": "e8dac7b07f765ae9879417f9b185cba40617e810e2f0b6a9ae046edc2eb0ba7b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor/smoke-reader.diff"
+    },
+    {
+      "bytes": 4418,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor/test_smoke_v3_bindings.py",
+      "sha256": "e59d8bb983b7145e8630f8571120a335736ac928b4716f312483d2f4915a299d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/predecessor/test_smoke_v3_bindings.py"
+    },
+    {
+      "bytes": 432,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/preparation-binding.json",
+      "sha256": "daa5568aa863bde62133b0e7f4a82b6bb719c8b69e2473e8a6a7d229d1f434e5",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/preparation-binding.json"
+    },
+    {
+      "bytes": 3862,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/role-inputs.json",
+      "sha256": "720c791dc11fc4337c75be8e1d3488d925157995c31b1ba36081ba5930d2a622",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/role-inputs.json"
+    },
+    {
+      "bytes": 4639,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/runtime-commands.json",
+      "sha256": "eb060d8907e51a685f02fefa7088ea9f30be41794e56c04ca3b00bbd43c2a8e4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/runtime-commands.json"
+    },
+    {
+      "bytes": 4397,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/test_smoke_v3_bindings.py",
+      "sha256": "f18313224df54a28001510fa277ccf22ff2ac6c9b39040d39070ddd00541191d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/test_smoke_v3_bindings.py"
+    },
+    {
+      "bytes": 6674,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/test_source_bindings.py",
+      "sha256": "c846e04c54fe435f47f0b34fbb8c0190953e801344797fa82553739f036f4f5e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor-readiness/test_source_bindings.py"
+    },
+    {
+      "bytes": 2227,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/README.md",
+      "sha256": "5ca51e4723e7e142423313d86ddacd340e7622599b5e1b371c7ccffa445c51b2",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/README.md"
+    },
+    {
+      "bytes": 57910,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/audit.py",
+      "sha256": "14922d90896f656c1d71fc0b4c747f1eb617b032606c771302ad6e3670f3c955",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/audit.py"
+    },
+    {
+      "bytes": 9079,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/commands.json",
+      "sha256": "2a9f907ff98ddcdf74e52d6205d6c506452822564fcb483a377a486456dc62c3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/commands.json"
+    },
+    {
+      "bytes": 25690,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/compressed_retention.py",
+      "sha256": "855f8d39428d48d12324ca0954d62b23ec7b4b5180ac7589dcccd7b0a2cf1ef4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/compressed_retention.py"
+    },
+    {
+      "bytes": 8184,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/derive-receipt.py",
+      "sha256": "dcd1acbfc32615b8cc70a041876ac8939abbf261c302c3365f59f611f74eace8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/derive-receipt.py"
+    },
+    {
+      "bytes": 6527,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/audit.py.diff",
+      "sha256": "a294e919f613c716cae22aba13853ac529f6dc6589427210926361cd652a8ec3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/audit.py.diff"
+    },
+    {
+      "bytes": 12683,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/commands.json.diff",
+      "sha256": "8419acbf863b7436b9186bbfd4c49500d9e0dd157bb29dd3df14e62d64eb9371",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/commands.json.diff"
+    },
+    {
+      "bytes": 930,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/compressed_retention.py.diff",
+      "sha256": "aee6673977fac7599a2c322c28a216d78a1623d67599c29ef3cb3a051b1688b7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/compressed_retention.py.diff"
+    },
+    {
+      "bytes": 602,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/driver-arguments.json.diff",
+      "sha256": "720d61c1f262cd11b1a4a2ad19baa80fa2b84edceae2e22cff09762f914334ea",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/driver-arguments.json.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/isolate-and-run.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/isolate-and-run.py.diff"
+    },
+    {
+      "bytes": 3618,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/matched-driver.py.diff",
+      "sha256": "93aae50279981334e869b8b0ade339df47f3bdeb54daad4ccbffea4cf109dca9",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/matched-driver.py.diff"
+    },
+    {
+      "bytes": 4958,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/protocol.json.diff",
+      "sha256": "93b643badb522b81a412960ef4afdaab2e7d2a0060d4bec9231161ac90413042",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/protocol.json.diff"
+    },
+    {
+      "bytes": 982,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/retention_audit.py.diff",
+      "sha256": "1242672f275801037ecbab616904e3796dca6761bf29a74f54763cebba92694e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/retention_audit.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/storage-policy.json.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/storage-policy.json.diff"
+    },
+    {
+      "bytes": 2317,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_audit_contract.py.diff",
+      "sha256": "439ec9ad1ee831e5f4df5217bd6a3b5d12bd6b96f2e23c5c058c015c245118aa",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_audit_contract.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_cleanup_metadata.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_cleanup_metadata.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_compressed_retention.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_compressed_retention.py.diff"
+    },
+    {
+      "bytes": 1780,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_driver.py.diff",
+      "sha256": "83c36f2c331409d6e46feb6be72b29b514fe20681f976dac64de4fe3cca083d0",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_driver.py.diff"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_smoke_schema.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_smoke_schema.py.diff"
+    },
+    {
+      "bytes": 902,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_storage_policy.py.diff",
+      "sha256": "6e92da08144b04815a4963f935e5836db20ea9018d07f302273fb4d06c8cf920",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/diffs/test_storage_policy.py.diff"
+    },
+    {
+      "bytes": 554,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/driver-arguments.json",
+      "sha256": "e86c5ab9be121ddbf62c728ea66ee7a4cfac091bf9232b04f64fff93a6aea946",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/driver-arguments.json"
+    },
+    {
+      "bytes": 10077,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/inventory.json",
+      "sha256": "2406a1582300d6357429e10c53f471440c5a078e170fa7492249caaa19f22552",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/inventory.json"
+    },
+    {
+      "bytes": 12873,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/isolate-and-run.py",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/isolate-and-run.py"
+    },
+    {
+      "bytes": 53430,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/matched-driver.py",
+      "sha256": "632e536c045c892e532c2346548c128c7b44eab329dcbf677f34b66943de44a7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/matched-driver.py"
+    },
+    {
+      "bytes": 12873,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/origins/isolate-and-run.py",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/origins/isolate-and-run.py"
+    },
+    {
+      "bytes": 51906,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/origins/matched-driver.py",
+      "sha256": "4dbde74a51cb87174e859e00c1f2bda8fe4c3c4285d1bfd9a124c6e529b0d6fc",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/origins/matched-driver.py"
+    },
+    {
+      "bytes": 56523,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/origins/repaired-redis3-audit.py",
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/origins/repaired-redis3-audit.py"
+    },
+    {
+      "bytes": 1808,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/accepted-controls.json",
+      "sha256": "a7eb6ec8ba36bc8d39748181ac293f162eb31077f8e5bdeb41572afd0f53f478",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/accepted-controls.json"
+    },
+    {
+      "bytes": 57959,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/audit.py",
+      "sha256": "a78b64b21972c2881e068b10b9278abf173832028fcaceca603e317d4af13ae1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/audit.py"
+    },
+    {
+      "bytes": 5209,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/commands.json",
+      "sha256": "35e924f0214ed4e6816658de98cc32d248dc7078fe8aa9646d796a892ed9515e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/commands.json"
+    },
+    {
+      "bytes": 25704,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/compressed_retention.py",
+      "sha256": "1f87075106081831d689ddcb5d21ad744f2a1ea3c8554e1d048045ff74fdec6a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/compressed_retention.py"
+    },
+    {
+      "bytes": 568,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/driver-arguments.json",
+      "sha256": "c69813371ecdb8787bc990e8e16214c1848e3e3cf4e1f02f2ff88d1227c398d1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/driver-arguments.json"
+    },
+    {
+      "bytes": 207,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/first-derivation-failure.json",
+      "sha256": "b09d6b3f4a8564a1ad61ebdd3c79b70ccdd4f67f5cc522aaf38138c1cbffcaf5",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/first-derivation-failure.json"
+    },
+    {
+      "bytes": 12873,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/isolate-and-run.py",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/isolate-and-run.py"
+    },
+    {
+      "bytes": 53451,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/matched-driver.py",
+      "sha256": "fe3e693fe38791c5fc23bb66831f409ae480131c0effb9c3d606edfe95bfe61f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/matched-driver.py"
+    },
+    {
+      "bytes": 21467,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/protocol.json",
+      "sha256": "0359e79a807fa6e013311e1e7d2666aa6d33ad747c6beddd01ed13e2887c5fb5",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/protocol.json"
+    },
+    {
+      "bytes": 17317,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/retention_audit.py",
+      "sha256": "88fe5866978679ffdb4a41cc571e0ca808d2ab8d187662b2f51669f4ca495148",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/retention_audit.py"
+    },
+    {
+      "bytes": 197,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/second-derivation-failure.json",
+      "sha256": "e71ea3e6f1bdf9d0caecf9dacc1331f1a454e3353eee56d0c5e5cbf4aed02c23",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/second-derivation-failure.json"
+    },
+    {
+      "bytes": 449,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/storage-policy.json",
+      "sha256": "cebdc41bbed8fd7000ef11fc5de29aa10722fc1112008366ef24e2e7d8924ba1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/storage-policy.json"
+    },
+    {
+      "bytes": 18293,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_audit_contract.py",
+      "sha256": "e49ca9bc9cfa3b97d300213aec5592d291ffb82b1e2a5215b294dc6e9681667e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_audit_contract.py"
+    },
+    {
+      "bytes": 2805,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_cleanup_metadata.py",
+      "sha256": "9c5d16eb59698c8d350681559fdc373452421293fdddc20b6b90aad2823c1bd3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_cleanup_metadata.py"
+    },
+    {
+      "bytes": 17508,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_compressed_retention.py",
+      "sha256": "277b0d0a752b56c5033f34c15daff522e26dd9375ab3f3a933abc7063f691041",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_compressed_retention.py"
+    },
+    {
+      "bytes": 10675,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_driver.py",
+      "sha256": "a5ddd8d4335ccb75a91a991e6e8200ff7f712d2d709f21e5813b03733eae14ab",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_driver.py"
+    },
+    {
+      "bytes": 4614,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_smoke_schema.py",
+      "sha256": "4e70513a4110f90abaeeb85a2e530b90339750f680d1c72744b02f6383e12807",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_smoke_schema.py"
+    },
+    {
+      "bytes": 8648,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_storage_policy.py",
+      "sha256": "538eced59d38cb5b2f8848f8d9b6b2c6587a25772a7d0628c675f90e6c38c6a2",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/test_storage_policy.py"
+    },
+    {
+      "bytes": 227,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/third-derivation-failure.json",
+      "sha256": "9ae0898b9ff9e5607bd3fc193e9bdcbe46589c554019d123fb5ff35f925f5d18",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/predecessor/third-derivation-failure.json"
+    },
+    {
+      "bytes": 21499,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/protocol.json",
+      "sha256": "554ad00afa43025f06c3d88ebae0fac46f4295f9fcd7e94d24dc91f4f50905a0",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/protocol.json"
+    },
+    {
+      "bytes": 17303,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/retention_audit.py",
+      "sha256": "f411651d9be90956e6b346f66f392b755156069d78afed4a7bc6985f052e0e66",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/retention_audit.py"
+    },
+    {
+      "bytes": 9237,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/source-delta.json",
+      "sha256": "e218698d7c50cc9de85ffc5957fbf59f15a031a51d5f4f1d08f423e3896c257e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/source-delta.json"
+    },
+    {
+      "bytes": 1423,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/static-review.json",
+      "sha256": "a20aae5d33dab2ff07f7451322bc174523fbd2b74fb8e20283eed4569546c59b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/static-review.json"
+    },
+    {
+      "bytes": 449,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/storage-policy.json",
+      "sha256": "cebdc41bbed8fd7000ef11fc5de29aa10722fc1112008366ef24e2e7d8924ba1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/storage-policy.json"
+    },
+    {
+      "bytes": 1266,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/substitutions.json",
+      "sha256": "748d1dc23ab9a71981f5adf8d59b90e06c1419960982c68ee267724509e2e7af",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/substitutions.json"
+    },
+    {
+      "bytes": 18286,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_audit_contract.py",
+      "sha256": "9f63ba4f8986ee6490512dc22515ce63ae977b1031f6f8fe9454f1d3c9090bf4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_audit_contract.py"
+    },
+    {
+      "bytes": 2805,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_cleanup_metadata.py",
+      "sha256": "9c5d16eb59698c8d350681559fdc373452421293fdddc20b6b90aad2823c1bd3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_cleanup_metadata.py"
+    },
+    {
+      "bytes": 17508,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_compressed_retention.py",
+      "sha256": "277b0d0a752b56c5033f34c15daff522e26dd9375ab3f3a933abc7063f691041",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_compressed_retention.py"
+    },
+    {
+      "bytes": 10654,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_driver.py",
+      "sha256": "ea18d986fc6747bdefb1cd3b0caa54008478547a7361de5a0dd203c2130999cc",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_driver.py"
+    },
+    {
+      "bytes": 4614,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_smoke_schema.py",
+      "sha256": "4e70513a4110f90abaeeb85a2e530b90339750f680d1c72744b02f6383e12807",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_smoke_schema.py"
+    },
+    {
+      "bytes": 8641,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_storage_policy.py",
+      "sha256": "9dc5c8d66d07c7deea61529162f77aaf08e7fab76717f6b3b2a900d11b347a86",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/test_storage_policy.py"
+    },
+    {
+      "bytes": 24620,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/v1-original/compressed_retention.py",
+      "sha256": "5ffff9476f3efa4f096d836ee93d9c54b1692efac38ede97d48d3c8a0e395227",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/v1-original/compressed_retention.py"
+    },
+    {
+      "bytes": 51920,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/v1-original/matched-driver.py",
+      "sha256": "83c123b93edf48c14c5b86ca5db19b468d93020059e0612ec61a974d8037f7dc",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/v1-original/matched-driver.py"
+    },
+    {
+      "bytes": 16410,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/v1-original/retention_audit.py",
+      "sha256": "ada7cb3d5d4da8cc05e5519d6c6a86b4d432523c82c69ee396d91a52598c1f83",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/predecessor/v1-original/retention_audit.py"
+    },
+    {
+      "bytes": 2939,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/prerequisites.json",
+      "sha256": "23372af4e9a6b477c24f449b00cb9a891b89963e8a2d18522af4245f51f54378",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/prerequisites.json"
+    },
+    {
+      "bytes": 21532,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/protocol.json",
+      "sha256": "9fd612458a081097ce38d66c756e098ab7665d8f6dc641d6bc3afa57b4456114",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/protocol.json"
+    },
+    {
+      "bytes": 2060,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/bind-roles.py",
+      "sha256": "df0e2be595ac24d416aa11dcb598545481575c8cea704b79731b60ac00067d86",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/bind-roles.py"
+    },
+    {
+      "bytes": 5631,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/check-smoke-v3.py",
+      "sha256": "34f04dcd31a671f964a2176ad8a1c49214aa6356f3d9e598267a9a77fdd52d11",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/check-smoke-v3.py"
+    },
+    {
+      "bytes": 3844,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/role-inputs.json",
+      "sha256": "0b9dbcdd36bdaef6b13d581c7c143cc1aefb20ac52cabb11ef292e6f9a3b4f29",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/role-inputs.json"
+    },
+    {
+      "bytes": 4542,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/runtime-commands.json",
+      "sha256": "3c717bbbfd0c3c82ce9ed05dda2b0e8633a376bbe985758b584637539c87a5b0",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/runtime-commands.json"
+    },
+    {
+      "bytes": 4385,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/test_smoke_v3_bindings.py",
+      "sha256": "036f54f069367665062f6f58b2cb6ff8be1f2efa16875a3808c4583e3080b376",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/test_smoke_v3_bindings.py"
+    },
+    {
+      "bytes": 6654,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/test_source_bindings.py",
+      "sha256": "695f901c892b363949a2cb0c1eac1fccd8ee20ba86f1d258eaf7663e2a1e8b6c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/readiness/test_source_bindings.py"
+    },
+    {
+      "bytes": 17295,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/retention_audit.py",
+      "sha256": "05c382dcc7f38105bc0ae0ce5c6d4f55163413fa17ca38c8f4da162dbc9bd4b8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/retention_audit.py"
+    },
+    {
+      "bytes": 13420,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/source-delta.json",
+      "sha256": "cbf7e8410f4d2fc42ae5b4a7fe484d618a8bd39bbd80b0e85e06f516039674a1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/source-delta.json"
+    },
+    {
+      "bytes": 369,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/static-terminal.json",
+      "sha256": "0b39d88bd457c3f89445cbacfd62330f5ce0fdfea7c0e8c2ea4383c6744c429e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/static-terminal.json"
+    },
+    {
+      "bytes": 449,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/storage-policy.json",
+      "sha256": "cebdc41bbed8fd7000ef11fc5de29aa10722fc1112008366ef24e2e7d8924ba1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/storage-policy.json"
+    },
+    {
+      "bytes": 1191,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/substitutions.json",
+      "sha256": "d74fb7840603c99fd1943e6520eff9d61245ab9774eb0b7e368ce582b6bd3f42",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/substitutions.json"
+    },
+    {
+      "bytes": 18285,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_audit_contract.py",
+      "sha256": "b54dc3e4ceb364a1c6ad90c85c1d403eaf73bebdd40dbee72b41ea153d6192fd",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_audit_contract.py"
+    },
+    {
+      "bytes": 2805,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_cleanup_metadata.py",
+      "sha256": "9c5d16eb59698c8d350681559fdc373452421293fdddc20b6b90aad2823c1bd3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_cleanup_metadata.py"
+    },
+    {
+      "bytes": 17508,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_compressed_retention.py",
+      "sha256": "277b0d0a752b56c5033f34c15daff522e26dd9375ab3f3a933abc7063f691041",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_compressed_retention.py"
+    },
+    {
+      "bytes": 10644,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_driver.py",
+      "sha256": "d7ef2589d3366e4245117e64461e6eb57a5294ab981055f576bb78ec0caf1445",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_driver.py"
+    },
+    {
+      "bytes": 4614,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_smoke_schema.py",
+      "sha256": "4e70513a4110f90abaeeb85a2e530b90339750f680d1c72744b02f6383e12807",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_smoke_schema.py"
+    },
+    {
+      "bytes": 8640,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_storage_policy.py",
+      "sha256": "13ad35ecba91322feead366e76781dc6d39de308881504eefda0b60c0239318e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/test_storage_policy.py"
+    },
+    {
+      "bytes": 24620,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/v1-original/compressed_retention.py",
+      "sha256": "5ffff9476f3efa4f096d836ee93d9c54b1692efac38ede97d48d3c8a0e395227",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/v1-original/compressed_retention.py"
+    },
+    {
+      "bytes": 51920,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/v1-original/matched-driver.py",
+      "sha256": "83c123b93edf48c14c5b86ca5db19b468d93020059e0612ec61a974d8037f7dc",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/v1-original/matched-driver.py"
+    },
+    {
+      "bytes": 16410,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/v1-original/retention_audit.py",
+      "sha256": "ada7cb3d5d4da8cc05e5519d6c6a86b4d432523c82c69ee396d91a52598c1f83",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/predecessor/v1-original/retention_audit.py"
+    },
+    {
+      "bytes": 2411,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/prerequisites.json",
+      "sha256": "eb23fc3efbd47a2679a7651e3e0661c24c643c82ef205d54c2fb160dab69419f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/prerequisites.json"
+    },
+    {
+      "bytes": 22342,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/protocol.json",
+      "sha256": "3d3af8877ea07fac569814b6471267a5ae8b20cd07758c97a6fa3881d5117c05",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/protocol.json"
+    },
+    {
+      "bytes": 2070,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/bind-roles.py",
+      "sha256": "b5cae20e48ac5756f13279d0242aaf578d421b09e3373ec0d0a2b1f64944f838",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/bind-roles.py"
+    },
+    {
+      "bytes": 5744,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/check-smoke-v3.py",
+      "sha256": "74f392cb79680b38723411c9325cce06b0f1ca47828fcf3573fd165882bfa3e4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/check-smoke-v3.py"
+    },
+    {
+      "bytes": 322140,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/role-bindings-first.json",
+      "sha256": "b97e29c7a438e5ef1f0eb18312706a39fbe51cfca3243f8918e34bcb6471b8a7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/role-bindings-first.json"
+    },
+    {
+      "bytes": 4129,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/role-inputs.json",
+      "sha256": "3601662a6ed6bb32d7e0eba65a506a726d449f24d078f0917964c1cab7e4bca4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/role-inputs.json"
+    },
+    {
+      "bytes": 4949,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/runtime-commands.json",
+      "sha256": "dde8e8863f8ac2040044968108bd354f38df1dd8ba7bf6988bb684e97b161130",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/runtime-commands.json"
+    },
+    {
+      "bytes": 5976,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/smoke-readback/result.json",
+      "sha256": "cfe1b40f5345d2d0c4b556928c7bb03826bee104ad700ba99d4e5effc46d1b33",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/smoke-readback/result.json"
+    },
+    {
+      "bytes": 4415,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/test_smoke_v3_bindings.py",
+      "sha256": "a1fe130c91a2784dd04ebd7c3631747cdadf99cd207d1cc29711e32a251eb830",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/test_smoke_v3_bindings.py"
+    },
+    {
+      "bytes": 6710,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/test_source_bindings.py",
+      "sha256": "4815d122342f207a777bf613f8920081bcd2e71af2c7b2fa428ca9fc774bcb89",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/readiness/test_source_bindings.py"
+    },
+    {
+      "bytes": 455909,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/audit.json",
+      "sha256": "7f60d63edbfaa3580160b3e80bf5ed97ba01aafe4faeb8e1342a6ba82daedb4f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/audit.json"
+    },
+    {
+      "bytes": 1719897,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/combined-physical-retention.json",
+      "sha256": "3775c19c608534c9215f5df1ab716dfa6e6093347a5440d86b58008b6a5566d8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/combined-physical-retention.json"
+    },
+    {
+      "bytes": 914624,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/input-inventory.json",
+      "sha256": "7966dec3c4ac1f1f28a7797a4176bf92e95295014abb2d156eb55b4535929a2c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/input-inventory.json"
+    },
+    {
+      "bytes": 2400787,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/logical-original-inventory.json",
+      "sha256": "1d92791bad9f81c5135fc21b45065f3a48867b5c8a05c71f5ba0521118e9eb05",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/logical-original-inventory.json"
+    },
+    {
+      "bytes": 3392666,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/retention-decoder-receipts.json",
+      "sha256": "1b71235aa33f14eec708c0aaf76de80d222f022341a53e3f0a4a262b0f9f383f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/retention-decoder-receipts.json"
+    },
+    {
+      "bytes": 19834,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/retention_audit.py",
+      "sha256": "e0a621e2d8a6de034a9195905ca76a2f65521de4f196a66f6a0a374ae4fd495f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/retention_audit.py"
+    },
+    {
+      "bytes": 1369,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/role-binding-terminal.json",
+      "sha256": "377321e6e9ed64b65f619099bac53b74964db56a5981b082e38dc992d047ec8f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/role-binding-terminal.json"
+    },
+    {
+      "bytes": 26410,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/run_fixture.py",
+      "sha256": "008c5bea0640a4a5a092feb6617798a84e9dd4889fd11bf8c6791cfe0852864a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/run_fixture.py"
+    },
+    {
+      "bytes": 12356,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/source-delta.json",
+      "sha256": "8b050fe517d3134e1889cfd0ffd6b18424ee031455bca9b3a0087d342bf09d49",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/source-delta.json"
+    },
+    {
+      "bytes": 400,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/static-freeze-first-failure.json",
+      "sha256": "1af8b55909c1a184ed3015694e7ca4c6350c8b9c6c528c61fc5f230ba6e2d3cb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/static-freeze-first-failure.json"
+    },
+    {
+      "bytes": 382,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/static-freeze.json",
+      "sha256": "788cc6da1cffc75dbd915c805028c332a3b8db4fa396bb382826be1014ab331a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/static-freeze.json"
+    },
+    {
+      "bytes": 822,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/storage-policy.json",
+      "sha256": "593d2ac290287ee8fafd000beff61dbe388759b5fc81dada34b29a042b59a14c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/storage-policy.json"
+    },
+    {
+      "bytes": 1190,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/substitutions.json",
+      "sha256": "0e035d07b99a7cfb1f20fc05b0be38bc619d5637844f34f46a02b3aa733a6ba9",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/substitutions.json"
+    },
+    {
+      "bytes": 18298,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_audit_contract.py",
+      "sha256": "501e238d6e3afc587a36e2d38284027e20edd23eff586d4707f1c4ef913ae8c6",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_audit_contract.py"
+    },
+    {
+      "bytes": 2805,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_cleanup_metadata.py",
+      "sha256": "9c5d16eb59698c8d350681559fdc373452421293fdddc20b6b90aad2823c1bd3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_cleanup_metadata.py"
+    },
+    {
+      "bytes": 17508,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_compressed_retention.py",
+      "sha256": "277b0d0a752b56c5033f34c15daff522e26dd9375ab3f3a933abc7063f691041",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_compressed_retention.py"
+    },
+    {
+      "bytes": 9354,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_data_volume.py",
+      "sha256": "1bdd8627c42134d8533123d691fea30655f68a41f52603b094b39189b72c3d1c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_data_volume.py"
+    },
+    {
+      "bytes": 10767,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_driver.py",
+      "sha256": "86b18626f40694d772e8fca6f57f1a6a0dacfdc64d1cf99d6d830962d539020e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_driver.py"
+    },
+    {
+      "bytes": 4614,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_smoke_schema.py",
+      "sha256": "4e70513a4110f90abaeeb85a2e530b90339750f680d1c72744b02f6383e12807",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/test_smoke_schema.py"
+    },
+    {
+      "bytes": 24620,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/v1-original/compressed_retention.py",
+      "sha256": "5ffff9476f3efa4f096d836ee93d9c54b1692efac38ede97d48d3c8a0e395227",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/v1-original/compressed_retention.py"
+    },
+    {
+      "bytes": 51920,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/v1-original/matched-driver.py",
+      "sha256": "83c123b93edf48c14c5b86ca5db19b468d93020059e0612ec61a974d8037f7dc",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/v1-original/matched-driver.py"
+    },
+    {
+      "bytes": 16410,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/v1-original/retention_audit.py",
+      "sha256": "ada7cb3d5d4da8cc05e5519d6c6a86b4d432523c82c69ee396d91a52598c1f83",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/v1-original/retention_audit.py"
+    },
+    {
+      "bytes": 6806,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/README.md",
+      "sha256": "1528d8fbb6e4dd7f0e4c1e68cfe284b98ba85bfae4e25f713e0d051f393522bb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/README.md"
+    },
+    {
+      "bytes": 1953,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/ROOT-COMMANDS.json",
+      "sha256": "7f68810cbbf6600748f56f29b9ba33b230dddea2647af4be36acf284c24abbc8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/ROOT-COMMANDS.json"
+    },
+    {
+      "bytes": 43713,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/capacity-projection.json",
+      "sha256": "b27bbd2bc92b5bbd16d73a648319948d8e899eaa673c07baac6370257d96d9e7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/capacity-projection.json"
+    },
+    {
+      "bytes": 3623,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/execution-manifest.template.json",
+      "sha256": "5b0c49e3a18751e2b56bc52b0a365b216f05503555d44fe95c7ad47ae0455941",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/execution-manifest.template.json"
+    },
+    {
+      "bytes": 2308,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/inventory.json",
+      "sha256": "416e9b76bea6a7dc0b8d018dbafb073454fcc52ba361167aa35110b44fd94845",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/inventory.json"
+    },
+    {
+      "bytes": 6290,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/origin/package.py",
+      "sha256": "3c244f23b2599dfe4fee1cdd82411d93a1740b69fc9dd0ef4ebec5f98fb74c5b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/origin/package.py"
+    },
+    {
+      "bytes": 12340,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/origin/prepared-64MiB-package.py",
+      "sha256": "9ad40260cd8b95a27c90a7bbf9bca767b3597b245b241ff87988c63273a866d7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/origin/prepared-64MiB-package.py"
+    },
+    {
+      "bytes": 3551,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/origin/prepared-64MiB-verify.py",
+      "sha256": "4606ce3415ad743f600b24ca4e8b6de8b668bdabe48d73adc317d7206609936c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/origin/prepared-64MiB-verify.py"
+    },
+    {
+      "bytes": 2623,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/origin/verify.py",
+      "sha256": "6d5a2dd2a47c2e9f1476cbcb68c2ef617fb6339fcec0973b02cecafbb32e13ef",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/origin/verify.py"
+    },
+    {
+      "bytes": 12635,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package.py",
+      "sha256": "4cf0c5de39011cf9bc2ebc5b02cd3e9d948335bd473d3587f85d2a2423fc701a",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package.py"
+    },
+    {
+      "bytes": 19237,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package.py.diff",
+      "sha256": "b2ce4d1b768c0d77697d8807d1483e1039220e0d1c597784b7c3b2da19f10a1b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package.py.diff"
+    },
+    {
+      "bytes": 5865,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/project.py",
+      "sha256": "863d2166cdbd6532c301676ee1f478e9080a1b5d3221e3c74cc00df40f25cd17",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/project.py"
+    },
+    {
+      "bytes": 710,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/reporting-cap-revision.json",
+      "sha256": "8b4e403ec4e155464f51646965147278f0dea2c154ebf5b189ff0fd9b576d716",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/reporting-cap-revision.json"
+    },
+    {
+      "bytes": 2242,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/source-delta.json",
+      "sha256": "1001027752d862449bf34045516e74c60d78b510fd3b6a447c52d4736ebcbf8b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/source-delta.json"
+    },
+    {
+      "bytes": 3551,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/verify.py",
+      "sha256": "4c475dbfbbcdd1cd40fa8e46ec8226d983984e9a6d17d45ffd566ec80d639f55",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/verify.py"
+    },
+    {
+      "bytes": 6407,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/verify.py.diff",
+      "sha256": "34ed60b2c55e233f9e2a8e38d6b423c9a2c8609e29aacb04616b24af8caa2951",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/verify.py.diff"
+    },
+    {
+      "bytes": 3505,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/README.md",
+      "sha256": "1491d0e5d9e2ec80e7f0cdc5f1a692a8cd7f1cea835076ea9d0bce588de37d17",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/README.md"
+    },
+    {
+      "bytes": 1773,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/ROOT-COMMANDS.json",
+      "sha256": "56b04d09932136a62d9fdb338b71040810c4774ab12e3f56e274b156f4e48ff1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/ROOT-COMMANDS.json"
+    },
+    {
+      "bytes": 1238,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/inventory.json",
+      "sha256": "093c33024b41873fcd67e413e8eb704b4fd80255edba39bb53bcbd39094e92e6",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/inventory.json"
+    },
+    {
+      "bytes": 19122,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/native16-original.py",
+      "sha256": "82c144e2a45bcc36fdcf197bf3ca1d371ed18751c505af8e16b67ad30eeefd38",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/native16-original.py"
+    },
+    {
+      "bytes": 1638,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/preparation-pins.json",
+      "sha256": "54a5b73c8bf606007048be14caa7dc8eaacd47c386979db8b9f47a31130a81c4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/preparation-pins.json"
+    },
+    {
+      "bytes": 222,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/preparation-terminal.json",
+      "sha256": "57bb11c82b8dccb32d9a9428f5bbc5e09d3f9e405457d1784ea9df1b67ff2d93",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/preparation-terminal.json"
+    },
+    {
+      "bytes": 1505,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/COMPARISONS.md",
+      "sha256": "44b2b664b5442d30ed2dbb34e6163450363aaf3d6729bcc43ef999cb687d02e2",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/COMPARISONS.md"
+    },
+    {
+      "bytes": 5199,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/PER-REPEAT.md",
+      "sha256": "36bb15fc9af2761a98e3444a9b489a37bd46f461722f05c24732b45ae2de076c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/PER-REPEAT.md"
+    },
+    {
+      "bytes": 3112,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/README.md",
+      "sha256": "be33d0129a4779d98d06f65bba7a05d41e8dd48d7d48c4852e0b5f82e007c902",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/README.md"
+    },
+    {
+      "bytes": 17609,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/input-hashes.json",
+      "sha256": "d2955484ad7b6bcc740c02ffb027d50615671437a3ea75276c29d6faaf708d32",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/input-hashes.json"
+    },
+    {
+      "bytes": 507162,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/summary.json",
+      "sha256": "b345767bc8a710f4b6b2a925601fce2035ca69248ebba991d02745c7353cad14",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/summary.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/source-delta.json",
+      "sha256": "541ac3ddf2cc5230f5004a01e549a13025c068739dd25f10ac2ea98617030439",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/source-delta.json"
+    },
+    {
+      "bytes": 20463,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/summarize.py",
+      "sha256": "b908f62bb0ec2314bd1ceda9389e96da8014247a16d4ab117355810f6a0655c3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/summarize.py"
+    },
+    {
+      "bytes": 8762,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/summarize.py.diff",
+      "sha256": "d42545c928839931545c7c8cb653d652c2e8f86b3e5d956ff4de491cd5f8c6ab",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/summarize.py.diff"
+    },
+    {
+      "bytes": 19960,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-smoke-20260915-first/host.json",
+      "sha256": "bb92acd333bd957c51830eb45b1cfde036e52fb5b51ed0bbfcb509cbb42f7881",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-smoke-20260915-first/host.json"
+    },
+    {
+      "bytes": 540266,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-smoke-20260915-first/matrix.json",
+      "sha256": "d3f60eaf897f5b24cabd79e2d56188d45889ac708b5c6c61bd77481dbc3ae9c6",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-smoke-20260915-first/matrix.json"
+    },
+    {
+      "bytes": 333324,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-smoke-20260915-first/plan.json",
+      "sha256": "5acd40ca90c55ed21cedc9bddc26fdead3617fe543a8d569d61764769a3bf52c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-smoke-20260915-first/plan.json"
+    },
+    {
+      "bytes": 41927,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/after.json",
+      "sha256": "36148cc443d2fa98d66d75b264cf375bfbbcd290cfcdc674fd347a4665dc2e88",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/after.json"
+    },
+    {
+      "bytes": 43131,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/before.json",
+      "sha256": "1ab3ba420f53e63e3c69678be061846c16fd9beba788edab6e17138331ee7115",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/before.json"
+    },
+    {
+      "bytes": 810,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/000-old-point-r000-p00001/requested-config.json",
+      "sha256": "3b8287ae3c96c7a9e9b29a136bebe285b99b9986460188a6a157bfead6afcbd1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/000-old-point-r000-p00001/requested-config.json"
+    },
+    {
+      "bytes": 1678,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/000-old-point-r000-p00001/resource-coverage.json",
+      "sha256": "ab7f869f6e4d5092a24fa496609b8d841727061d0a8b323d30172ca2f0024135",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/000-old-point-r000-p00001/resource-coverage.json"
+    },
+    {
+      "bytes": 1474676,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/000-old-point-r000-p00001/resource-samples.json",
+      "sha256": "a12c55b8019e8e3d7babfc27a2bfbfc551d325a34d7421eb781013af0a74b0cf",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/000-old-point-r000-p00001/resource-samples.json"
+    },
+    {
+      "bytes": 1432035,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/000-old-point-r000-p00001/run/report.json",
+      "sha256": "60aaf5c0e814bb8b555f702c6febe456375e28e77ad8100415c52fb1f75c8c97",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/000-old-point-r000-p00001/run/report.json"
+    },
+    {
+      "bytes": 810,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/001-new-point-r000-p00001/requested-config.json",
+      "sha256": "a951034a2764da1a8214960296a3f6c4a3d75f1d0b1edc4180bc04012244df27",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/001-new-point-r000-p00001/requested-config.json"
+    },
+    {
+      "bytes": 1689,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/001-new-point-r000-p00001/resource-coverage.json",
+      "sha256": "4fad1c03270bf5ce2d51bc144b47add94c923b21e7c1dbc86097eb5e1aa72077",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/001-new-point-r000-p00001/resource-coverage.json"
+    },
+    {
+      "bytes": 1488949,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/001-new-point-r000-p00001/resource-samples.json",
+      "sha256": "37009a53c8216675554d0409638494d24cba5808e9117114b2c374ea64e658f5",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/001-new-point-r000-p00001/resource-samples.json"
+    },
+    {
+      "bytes": 1432012,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/001-new-point-r000-p00001/run/report.json",
+      "sha256": "b9e9108d70531a0cb471a430a37e3afa24b076632a0b194cd9631bda6752f153",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/001-new-point-r000-p00001/run/report.json"
+    },
+    {
+      "bytes": 811,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/requested-config.json",
+      "sha256": "76d4f4eb93b6d84d2b0206ea1b58599e057e6ca3ef6dcf3b38067cfb8867ef5e",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/requested-config.json"
+    },
+    {
+      "bytes": 1683,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/resource-coverage.json",
+      "sha256": "7f33974bc559cd359e6647cc3c3a4e2162ba3c865cba1e7132b4fb6b02e9fb91",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/resource-coverage.json"
+    },
+    {
+      "bytes": 1389551,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/resource-samples.json",
+      "sha256": "e9bf49f2693ff339f2290739e5b2df3f58e34c39e83a855c08416a5ae4152fa2",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/resource-samples.json"
+    },
+    {
+      "bytes": 1431287,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/run/report.json",
+      "sha256": "2b82a7ecb8ab34de559d3ba6a9bc7ed391f92bf475f0f68ace823f97e83be773",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/run/report.json"
+    },
+    {
+      "bytes": 811,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/requested-config.json",
+      "sha256": "38998e46c4bdf3b438fbd14cbd0031f94028a8af16b372c77526f960492192d7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/requested-config.json"
+    },
+    {
+      "bytes": 1690,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/resource-coverage.json",
+      "sha256": "4176f52b823aa0c6740467938baab2940376cba57d556f8a3e9d1a09c40a44ad",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/resource-coverage.json"
+    },
+    {
+      "bytes": 1389623,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/resource-samples.json",
+      "sha256": "fc2d105b400d568e5dd06e51be3bcde0fec979361a64a9131ecba8fcd85be86d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/resource-samples.json"
+    },
+    {
+      "bytes": 1431303,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/run/report.json",
+      "sha256": "dde47b4e8c2e6384edf825ba3adee48fe984dc1d7faece56413208a5f7780007",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/run/report.json"
+    },
+    {
+      "bytes": 812,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/004-old-point-r000-p00064/requested-config.json",
+      "sha256": "80313efafeb58d9187c0273837dab0fc7bd97df8fa8d6b280983fe3ec33b5ef0",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/004-old-point-r000-p00064/requested-config.json"
+    },
+    {
+      "bytes": 3944,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/004-old-point-r000-p00064/resource-coverage.json",
+      "sha256": "eb4086ea6d4ba0425c4761c51491e95e8d1b77ebc2604b21b8c6261a101f5b9d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/004-old-point-r000-p00064/resource-coverage.json"
+    },
+    {
+      "bytes": 4761180,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/004-old-point-r000-p00064/resource-samples.json",
+      "sha256": "c799c856d8756269490576baa1bc287dc1a1354bda3335bb5126f506363cc733",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/004-old-point-r000-p00064/resource-samples.json"
+    },
+    {
+      "bytes": 1445320,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/004-old-point-r000-p00064/run/report.json",
+      "sha256": "0782d619b8f37e7d9a9dd30efad136b639b5e9810a6b3a4e8b594edd36ae08e7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/004-old-point-r000-p00064/run/report.json"
+    },
+    {
+      "bytes": 812,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/005-new-point-r000-p00064/requested-config.json",
+      "sha256": "fb32cd8e55d0233c9e9acb0a7818445e610371ba4ba1841d52feab2f0a33a330",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/005-new-point-r000-p00064/requested-config.json"
+    },
+    {
+      "bytes": 3668,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/005-new-point-r000-p00064/resource-coverage.json",
+      "sha256": "ef497b6a58162879b7ace23c553858b45b4cb27e4d732ed384f86d52b4584c9d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/005-new-point-r000-p00064/resource-coverage.json"
+    },
+    {
+      "bytes": 4426189,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/005-new-point-r000-p00064/resource-samples.json",
+      "sha256": "117c5066766052d8e52276f0ae0887a1142894066d420ef88a1c0881252db8b1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/005-new-point-r000-p00064/resource-samples.json"
+    },
+    {
+      "bytes": 1445317,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/005-new-point-r000-p00064/run/report.json",
+      "sha256": "3307b97d60f157cecbde75dc0b1f90cefde5f4277d24fa49a4d770f1c91d5448",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/005-new-point-r000-p00064/run/report.json"
+    },
+    {
+      "bytes": 813,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/requested-config.json",
+      "sha256": "d5155b43f6c08a5d66d8e0861976bdb99035511b24e86e23645c8ef7b78ec156",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/requested-config.json"
+    },
+    {
+      "bytes": 4107,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/resource-coverage.json",
+      "sha256": "0e0a609499eb482365892642ec5161f01b861e5614f3c6011fefe69266d5d79b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/resource-coverage.json"
+    },
+    {
+      "bytes": 3846063,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/resource-samples.json",
+      "sha256": "509f355cca5a4e8748fe470ce3c833888bca260cc56709ad3dfc4c3184d1b77c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/resource-samples.json"
+    },
+    {
+      "bytes": 1444083,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/run/report.json",
+      "sha256": "9db6bd0b56f472f96f203cbd5ffc18fbb705343caf2aecb021972358ae6ed61f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/run/report.json"
+    },
+    {
+      "bytes": 813,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/requested-config.json",
+      "sha256": "f64427ab7c29711eb0151e903080f4541a35a0a954f8d24f0310ceefc907a8f2",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/requested-config.json"
+    },
+    {
+      "bytes": 3568,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/resource-coverage.json",
+      "sha256": "b5c5a3f79ab4016b9c010ce73c5e1c435b0af949598f1cc60e724b316c5eda31",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/resource-coverage.json"
+    },
+    {
+      "bytes": 3845929,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/resource-samples.json",
+      "sha256": "892f700b4c37d2a8ccb486da096a5afc1e838dba04672fc7190c486077588b82",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/resource-samples.json"
+    },
+    {
+      "bytes": 1444167,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/run/report.json",
+      "sha256": "a50b275984928fe691cf10bfb1bc53ee601fab022b68cff70ab0da65c40e46c8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/run/report.json"
+    },
+    {
+      "bytes": 813,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/requested-config.json",
+      "sha256": "48838735ebcf2d78969515bb664f6725292e9d023c2e25d11bb8e256348b7d84",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/requested-config.json"
+    },
+    {
+      "bytes": 3941,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/resource-coverage.json",
+      "sha256": "3d87c97eb895e675553afef912a6b65ea8ba1b4c8cdd22617e4ff08849cb9844",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/resource-coverage.json"
+    },
+    {
+      "bytes": 3819680,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/resource-samples.json",
+      "sha256": "81bfbc3302c2d7e74076a087eb0eff6f6fb8d2d5ed274699cb5f4c9adb1be783",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/resource-samples.json"
+    },
+    {
+      "bytes": 1444150,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/run/report.json",
+      "sha256": "cc0bf6b8dc2ff96003994e7e921f148da5cc3e86431cd9c9740038d3320535eb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/run/report.json"
+    },
+    {
+      "bytes": 813,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/requested-config.json",
+      "sha256": "a7b845e71f32a7ea283da27de51523aee9b4959f82fcb2c379373ba7c47eacf4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/requested-config.json"
+    },
+    {
+      "bytes": 4314,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/resource-coverage.json",
+      "sha256": "c816ef4441c23d3ea643ddf0c31114faaa33e8d797153dd6d1e175df452b60f8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/resource-coverage.json"
+    },
+    {
+      "bytes": 3851287,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/resource-samples.json",
+      "sha256": "db7cc15ec37081c6c057b974078805ff99374dc448801eb57ac44daf37ebdb43",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/resource-samples.json"
+    },
+    {
+      "bytes": 1444120,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/run/report.json",
+      "sha256": "217ecf08a00713f4120a869d602c786965a776bf328140762e7566bfa651b3fa",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/run/report.json"
+    },
+    {
+      "bytes": 812,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/010-new-point-r000-p10064/requested-config.json",
+      "sha256": "28c8d66b7f71508d4adfe6b4214383faa801a25062b6f4bf589091227836de9d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/010-new-point-r000-p10064/requested-config.json"
+    },
+    {
+      "bytes": 4409,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/010-new-point-r000-p10064/resource-coverage.json",
+      "sha256": "9b7454912791c8d697463829c7b728844cf7ea6761f3033f21179c056911250d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/010-new-point-r000-p10064/resource-coverage.json"
+    },
+    {
+      "bytes": 4266944,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/010-new-point-r000-p10064/resource-samples.json",
+      "sha256": "25877dbcce30e47cdb6ed8f407c5b97973d0cb94b2fc5732752a97dcb53e87e7",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/010-new-point-r000-p10064/resource-samples.json"
+    },
+    {
+      "bytes": 1445132,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/010-new-point-r000-p10064/run/report.json",
+      "sha256": "cdf4fcc56c2ea496fb0aaa9bc2d68852740f8f1bbfafb80d46273880e2f0ceaf",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/010-new-point-r000-p10064/run/report.json"
+    },
+    {
+      "bytes": 812,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/011-old-point-r000-p10064/requested-config.json",
+      "sha256": "dd8c822ad501156c2abb01fd7d928829205632fa5778fce97f813d8b962767e8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/011-old-point-r000-p10064/requested-config.json"
+    },
+    {
+      "bytes": 4035,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/011-old-point-r000-p10064/resource-coverage.json",
+      "sha256": "a782977ed09ca435627795ee760cc23b98e3aded418c766a079922bdd6b64140",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/011-old-point-r000-p10064/resource-coverage.json"
+    },
+    {
+      "bytes": 4230648,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/011-old-point-r000-p10064/resource-samples.json",
+      "sha256": "847989008c3f54cfed7927d0ee54ad08a0e73e96f82d299fd49762d42436af42",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/011-old-point-r000-p10064/resource-samples.json"
+    },
+    {
+      "bytes": 1445234,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/011-old-point-r000-p10064/run/report.json",
+      "sha256": "8d0d7eeae01680ee53c0ee99d14b3371795e2dfbe499144ca1a427f2c8cd9c41",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/011-old-point-r000-p10064/run/report.json"
+    },
+    {
+      "bytes": 811,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/requested-config.json",
+      "sha256": "bcdf18de5ea68dde5d1b17c74890773cf10691fb9d98d37285a4dd53bf148796",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/requested-config.json"
+    },
+    {
+      "bytes": 1685,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/resource-coverage.json",
+      "sha256": "1c2e59e5815070f471a1721c04947399392b9a76cff70fccaf923a21308ffedb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/resource-coverage.json"
+    },
+    {
+      "bytes": 1389518,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/resource-samples.json",
+      "sha256": "2ef340944dbdabfbf2b0969b1de2275c24f39d387e793f140f778d4b517400d1",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/resource-samples.json"
+    },
+    {
+      "bytes": 1431303,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/run/report.json",
+      "sha256": "23237fc2c5114c97fcb381ff3c089d955b04d4dda95a6a84b106d32b76177643",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/run/report.json"
+    },
+    {
+      "bytes": 811,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/requested-config.json",
+      "sha256": "28207da74952e5282ff8ec48195e968f846b92277d2e05e00feb9a68cd4d9352",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/requested-config.json"
+    },
+    {
+      "bytes": 1695,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/resource-coverage.json",
+      "sha256": "2e98191642086ef2839989c20aefd5af8824e7215b8f7c749c04a7abf556358b",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/resource-coverage.json"
+    },
+    {
+      "bytes": 1389446,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/resource-samples.json",
+      "sha256": "2e4a619d52e9289fa548417b39d5caa79a60ed587504d2935cb47b4f6d399c00",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/resource-samples.json"
+    },
+    {
+      "bytes": 1431319,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/run/report.json",
+      "sha256": "e4a4648dcc6601e1c6cb804c8da258eb525037b9cd6c7048df175db696e8e5b3",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/run/report.json"
+    },
+    {
+      "bytes": 810,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/014-new-point-r000-p10001/requested-config.json",
+      "sha256": "a726f390bedaea544024d97a5a9155a84f27c7cec3f3b7974da6adf0550b5690",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/014-new-point-r000-p10001/requested-config.json"
+    },
+    {
+      "bytes": 1682,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/014-new-point-r000-p10001/resource-coverage.json",
+      "sha256": "851cdd5f3aaa4d323375c600bc26ae4fcc60df7fd6467e29ab65a6fe0d098833",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/014-new-point-r000-p10001/resource-coverage.json"
+    },
+    {
+      "bytes": 1481810,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/014-new-point-r000-p10001/resource-samples.json",
+      "sha256": "e34f19731eee9d16cd64c86e1e4abc4fc994c91508dddeb4ef5b3075bee17515",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/014-new-point-r000-p10001/resource-samples.json"
+    },
+    {
+      "bytes": 1431963,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/014-new-point-r000-p10001/run/report.json",
+      "sha256": "0b6f43729c56c3f30e4ae3e554fd7689c284849105a6c630baf73bf16320fb10",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/014-new-point-r000-p10001/run/report.json"
+    },
+    {
+      "bytes": 810,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/015-old-point-r000-p10001/requested-config.json",
+      "sha256": "d4a8ea5b746dfe372d0ed39e8572cb21b868066918876f01aae3b70c9187c1f6",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/015-old-point-r000-p10001/requested-config.json"
+    },
+    {
+      "bytes": 1684,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/015-old-point-r000-p10001/resource-coverage.json",
+      "sha256": "5fa47c2ce14934fe2ce3c4416bc5cf64dd731bcee9d1f87cf68a90c2ef4db423",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/015-old-point-r000-p10001/resource-coverage.json"
+    },
+    {
+      "bytes": 1481836,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/015-old-point-r000-p10001/resource-samples.json",
+      "sha256": "04c4b4ab91c0112fad06c44b9a12f8640338353866851388ceb7c747b4317d65",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/015-old-point-r000-p10001/resource-samples.json"
+    },
+    {
+      "bytes": 1431957,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/015-old-point-r000-p10001/run/report.json",
+      "sha256": "f0891390395177360701ecd190680d356c9aed1dcf7ac7bd7c0b9c8c52b5443d",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/015-old-point-r000-p10001/run/report.json"
+    },
+    {
+      "bytes": 19969,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/host.json",
+      "sha256": "e2dbbb0d13094541095376e87609e652a49707df3ae12b88454de5e5554d357f",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/host.json"
+    },
+    {
+      "bytes": 754476,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/matrix.json",
+      "sha256": "9ba555e3339c2d4225c38bbf24763b579dadff4404df648576fc5948f0c9e6a4",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/matrix.json"
+    },
+    {
+      "bytes": 340210,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/plan.json",
+      "sha256": "385e7737eede972056cebbbff0ccdff9420f4089d7d182349d49d9c670a352a5",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/plan.json"
+    },
+    {
+      "bytes": 1191,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/invocation.json",
+      "sha256": "4d0f5b9fa5c0d190153a04f47f117f45a2f44ecedc4a731e72228233c4fab4ac",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/invocation.json"
+    },
+    {
+      "bytes": 2129,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/isolation.json",
+      "sha256": "7496145ab93c5cc2930e19dc26c8caf8b0f95e38117f6022e2834bad309f9c47",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/isolation.json"
+    },
+    {
+      "bytes": 845,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json"
+    },
+    {
+      "bytes": 829,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/kv9-chaos-control-plane-isolated.json",
+      "sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/kv9-chaos-control-plane-isolated.json"
+    },
+    {
+      "bytes": 11065,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/kv9-minio-dev-isolated.json",
+      "sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/kv9-minio-dev-isolated.json"
+    },
+    {
+      "bytes": 170,
+      "member": "mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/summary.json",
+      "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/summary.json"
+    },
+    {
+      "bytes": 97718,
+      "member": "tmp/kv9-crc-main-integration-release-20260914-first/build.json",
+      "sha256": "9005c064129e4a70b9de881e46074c4b7b5ec493e482095dd6fa7884fccdfb4a",
+      "source": "/tmp/kv9-crc-main-integration-release-20260914-first/build.json"
+    },
+    {
+      "bytes": 133869,
+      "member": "tmp/kv9-upper-bound-release-20260915-first/build.json",
+      "sha256": "e6f3ebab9510cdf87c1e521d5b64578c224a08842956998cb2c9690f67498cb7",
+      "source": "/tmp/kv9-upper-bound-release-20260915-first/build.json"
+    }
+  ],
+  "original_bytes": 82358333,
+  "original_files": 349,
+  "report_inputs_included": 77,
+  "report_sha256": "b345767bc8a710f4b6b2a925601fce2035ca69248ebba991d02745c7353cad14",
+  "scope": "Exact report/acceptance metadata only. Raw/compressed WAL objects, ELFs and full source trees are excluded. This is not standalone complete WAL replay. Original absolute paths are historical provenance.",
+  "source_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+  "total_cap_bytes": 83886080
+}

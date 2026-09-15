@@ -129,6 +129,9 @@ src/                   the single `kv9` binary
 ```
 
 Build: `cargo build --workspace`. Test: `cargo test --workspace`; real MinIO tests are explicitly selected in CI.
+Local automation and experiment output placement follow
+[LOCAL-ARTIFACTS](docs/LOCAL-ARTIFACTS.md): new retained bulk output on this
+development host uses `/mnt/data/kv9-work`, with active test storage selected separately.
 
 ## License
 

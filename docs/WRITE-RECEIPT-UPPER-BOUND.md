@@ -116,10 +116,12 @@ including 614 unknowns and 43 refusals, four fresh final drains, 36 exited
 server lifetimes and 25 exited containers. All six independent/archive/cleanup
 post phases complete. The original failures remain preserved.
 
-1. Qualify fresh full-campaign capacity and run the original
-   eight-smoke/sixteen-ten-second point/batch matched screen
-   with the fixed native v3 client and selected CRC reference. Judge throughput
-   and latency by both opposite orders; no diagnostic sweep replaces this gate.
+1. The [original eight-smoke/sixteen-ten-second matched screen](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
+   now passes with one explicitly requalified client and the retained CRC
+   reference. Loaded Put improves 3.169% with better mean/p99 in both orders,
+   while loaded batch loses 1.419% pooled and has worse pooled p99. Keep CRC
+   selected and hold promotion. Retain both orders; do not repeat the unchanged
+   matrix or replace it with short observer rates.
 2. Keep the accepted actual upper-bound observations and the pending
    held tail-hint comparison distinct. Promote only after the complete
    correctness/performance decision, then continue the industrial storage and

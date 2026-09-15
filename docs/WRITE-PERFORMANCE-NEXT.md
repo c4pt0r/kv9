@@ -9,10 +9,15 @@ no longer a prerequisite for this write phase.
 The latest [complete write-observer capture](WRITE-OBSERVER-CAPTURE.md) measures
 queue/group distributions and diagnostic overhead across all 16 planned cells.
 Loaded Put repeatedly inspects pending receipts: 86.00–86.11% of lookups miss,
-averaging about 1,022 logical comparisons. Next bind the held candidate's actual
-lookup paths and prove whether unchanged pending results can avoid repeated
-inspection. The [complete ten-second baseline](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
-remains selected; the two-second observer sweep does not replace that gate.
+averaging about 1,022 logical comparisons. The separately proved upper-bound
+candidate now has actual path counts and a
+[complete ten-second matched result](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md).
+Loaded Put improves 3.169% with better mean/p99 in both orders. Loaded batch
+loses 1.419% pooled and its p99 worsens to 8.651–8.782 ms; direction changes
+between orders. Keep CRC selected and hold promotion. Analyze the retained
+batch-tail, group/writer and queue evidence before another rewrite; introduce
+bounded timestamped observation only for intervals the existing data cannot
+resolve. The two-second observer sweep is not a performance-selection gate.
 
 During the earlier full-screen capacity constraint, the C04
 [checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local
@@ -46,9 +51,11 @@ v3 benchmark client is missing after an external cleanup. One source/toolchain-
 matched rebuild produced a different ELF. Its [explicit qualification](WRITE-CLIENT-REQUALIFICATION.md)
 now passes source tests and all eight actual smokes with independent dataset,
 report and lifetime checks. Both server candidates use that same new client;
-historical measurements are not pooled with it. Complete the original sixteen
-timed cohorts and enclosing audit before assessing throughput and latency.
-No new matched performance result is claimed by the smoke qualification.
+historical measurements are not pooled with it. All sixteen timed cohorts and
+the enclosing audit now pass: 7,154,151 calls / 62,959,110 items, with no failed
+or uncertain measured call, hidden data retry or dropped slot. This completes
+the original comparison, not candidate promotion. Preserve the batch tradeoff
+and original input failures; do not repeat the unchanged matrix.
 
 ## Local storage checkpoint (2026-09-14 UTC)
 

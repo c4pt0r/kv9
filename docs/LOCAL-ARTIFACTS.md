@@ -59,10 +59,12 @@ conservative global free-space observations, not exact attribution to one run.
 Ten deterministic controls exercise the same-device and separate-device cases,
 both floors, aggregate growth, cleanup and baseline inheritance.
 
-## Current capacity and missing inputs
+## Current capacity and historical input recovery
 
-The latest capacity observation has 877,491,748,864 bytes available on
-the NVMe root and 9,690,022,080,512 bytes on the data volume. An external cleanup
+The [2026-09-15 20:14 UTC observation](write-receipt-upper-bound-performance-v1/capacity-observation.json)
+has 877,209,255,936 bytes available on the NVMe root (about 817 GiB) and
+9,638,572,486,656 bytes on the data volume (about 8.77 TiB), after the completed
+performance campaign and its reporting packet. An earlier external cleanup
 changed capacity during development; this increment does not claim those bytes
 as its own cleanup result. Free space is a point-in-time observation, not a
 reservation. Subsequent runs must check again.
@@ -83,6 +85,8 @@ records do not establish byte identity or qualify a replacement benchmark
 client by themselves. Subsequent source tests and all eight actual smokes with
 independent dataset/report/lifetime checks have
 [qualified that specific replacement](WRITE-CLIENT-REQUALIFICATION.md). The
-complete matched timing and retention audit remain separate gates. Recovery
+[complete matched timing and retention audit](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
+subsequently pass with 50,835,156,992 allocated bytes retained on the data
+volume; candidate promotion remains held because of the batch tradeoff. Recovery
 inputs, comparison and build output are retained under
 `/mnt/data/kv9-work/performance-input-recovery-20260915-first`.

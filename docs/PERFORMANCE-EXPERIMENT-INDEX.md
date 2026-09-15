@@ -12,12 +12,22 @@ only to its recorded source, client, workload and duration. Historical numbers
 must not be relabeled as current measurements or full industrial qualification.
 
 The priority remains [writes against Redis with one primary and two replicas](WRITE-PERFORMANCE-NEXT.md).
-The latest [complete directory-candidate screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
+The latest [complete upper-bound screen](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
+uses one explicitly requalified client for both retained servers. CRC reaches
+**135,562.425 point Put/s** and **1,030,729.153 batch items/s** at c64. Candidate
+`e2e23cc` reaches 139,858.145 / 1,016,106.575: point **+3.169%** with better
+mean/p99 in both orders, but batch **-1.419%** pooled and p99 worsens to
+8.651–8.782 ms. All eight smokes, sixteen timed cohorts and independent audit
+pass. Keep CRC selected and hold promotion. Analyze retained batch-tail evidence
+before another rewrite; do not repeat the unchanged screen. Historical clients
+and runs below remain separately scoped.
+
+The earlier [complete directory-candidate screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
 records CRC main at **139,457.016 point Put/s** and **1,056,344.501 batch items/s**
 at c64. Candidate `483b8c3` reaches 138,734.094 / 1,076,849.048 respectively:
 point -0.518%, batch +1.941%, with batch p99 improving from 7.537–7.602 ms to
 6.554–6.619 ms. Both orders retain batch gains and loaded point regression.
-Keep CRC selected and evaluate the receipt tail hint separately next.
+Keep CRC selected; the subsequent receipt-tail screen also remains held below.
 The [earlier exact-main/frame-buffer write screen](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md)
 records **139,188.639 point Put/s** and **1,065,680.142 BatchPut(64) items/s** at
 c64, with p99 0.737–0.745 ms and 6.947–7.012 ms per batch respectively. Redis
@@ -38,7 +48,9 @@ qualification plus an independently checked default release and ordinary
 three-voter recovery (359 complete calls, six fresh drains, seven exited
 lifetimes). Its [actual 21-window Chaos campaign](WRITE-RECEIPT-TAIL-CHAOS.md)
 also passes: 9,360 complete calls, four final drains and 32 exited server
-lifetimes. Matched timing remains pending. Neither is selected or
+lifetimes. Its [complete matched timing](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
+improves loaded point writes 2.971%, but has low-concurrency batch and order
+tradeoffs. Neither is selected or
 combined with the other. Read optimization remains held; no lease performance
 result is established.
 
@@ -67,8 +79,9 @@ adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
+| Conservative receipt upper bound `e2e23cc` | [Source-bound proof](WRITE-RECEIPT-UPPER-BOUND.md), [default release/recovery](WRITE-RECEIPT-UPPER-BOUND-RUNTIME.md), [actual full21 Chaos](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md) and [all 8 smokes / 16 timed cohorts](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md) pass. One explicitly requalified client is shared by both arms. Loaded Put +3.169% with better mean/p99 in both orders; loaded batch -1.419% pooled with worse p99 and an order reversal. Keep CRC selected, hold promotion and preserve the original input failures. |
 | Published WAL directory capability `483b8c3` | Experimental on CRC main. [Conditional proof, 793 tests and syscall fault checks](WRITE-PUBLISHED-DIRECTORY.md), [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.md), and the [actual 21-window Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md) pass. The latter retains 9,372 operations and 33 exited server lifetimes. The [complete rotation supplement](WRITE-PUBLISHED-DIRECTORY-ROTATION.md) now passes selected rotations before and after an actual leader kill, same-store acknowledged-value recovery, five fresh drains, independent audit and exact cleanup. Both earlier fixture failures are preserved. [All 8 smokes / 16 timed cohorts](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md) pass: c64 point -0.518%, batch +1.941%, and batch p99 improves to 6.554–6.619 ms. Both orders retain loaded point regression and batch gains. Hold the candidate as a batch improvement; keep CRC main selected. Initial creation/recovery retain full ancestor sync; rotation reuses the live validated parent directory. |
-| Validated receipt tail hint `a6ac335` | Experimental on CRC main. [18 proof statements / 158 obligations, 793 workspace tests/doctests, exact default release and ordinary recovery](WRITE-RECEIPT-TAIL-HINT.md) pass, with 23 existing ignored. Recovery checks 359 complete calls, six fresh drains and seven exited lifetimes. [Actual full21 Chaos](WRITE-RECEIPT-TAIL-CHAOS.md) also passes: 9,360 complete calls, four final drains and 32 exited server lifetimes. Direct checked access for consecutive tail indexes; binary/first-match fallbacks preserve complete receipt semantics. [Matched-screen preparation](receipt-tail-performance-preparation-v1/README.md) passes 16 focused controls and three-role binding; fresh capacity and throughput/p99 remain pending. |
+| Validated receipt tail hint `a6ac335` | Experimental on CRC main. [18 proof statements / 158 obligations, 793 workspace tests/doctests, exact default release and ordinary recovery](WRITE-RECEIPT-TAIL-HINT.md) pass, with 23 existing ignored. Recovery checks 359 complete calls, six fresh drains and seven exited lifetimes. [Actual full21 Chaos](WRITE-RECEIPT-TAIL-CHAOS.md) also passes: 9,360 complete calls, four final drains and 32 exited server lifetimes. [All 8 smokes / 16 timed cohorts](WRITE-RECEIPT-TAIL-PERFORMANCE.md) pass: loaded Put +2.971% with better mean/p99 in both orders, c1 batch -0.698%, and loaded batch changes direction between orders. Keep CRC selected and hold promotion. Direct checked access and fallback semantics remain separately proved. |
 | Bounded four-lane FNV writer `12f44d3` | [Proof, 797 tests/doctests, exact default release and recovery](WRITE-FNV-WRITER.md) pass. Actual [21-window Chaos](WRITE-FNV-WRITER-CHAOS.md) and [11-window client-link/quorum-loss](WRITE-FNV-WRITER-LINK-CHAOS.md) acceptance pass. [Eight smokes and sixteen timed cohorts](WRITE-FNV-WRITER-PERFORMANCE.md) pass: c64 point +0.351%, batch +4.131%, but pooled p99 worsens for both. CRC main stays selected. |
 | Integrated slicing-by-eight CRC `bd42e60` | Selected after [full regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md) and [exact-main proof/source/release/recovery/Chaos](CRC32-SLICING-INTEGRATION.md). Latest point/batch write numbers are above; historical e748 comparisons retain their own source attribution. |
 | Owned mutation buffers in the resident index `9be0c19` | Previously rejected by the [complete 72-cohort comparison](https://github.com/c4pt0r/kv9/blob/c706b93/docs/OWNED-BUFFER-PERFORMANCE.md) on historical CRC `ca0002c7`: c64 point writes -0.696%, batch writes +0.729% with worse pooled p99, batch reads -2.586%; all c1 batch workloads lose throughput. Existing process/Chaos acceptance does not override the measured tradeoffs. Do not repeat removal of these clones without new causal evidence and an explicitly changed variable. |

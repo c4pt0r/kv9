@@ -1,0 +1,21 @@
+{
+  "filesystems": [
+    {
+      "available_bytes": 877209255936,
+      "device": 66306,
+      "path": "/"
+    },
+    {
+      "available_bytes": 9638572486656,
+      "device": 2304,
+      "path": "/mnt/data"
+    },
+    {
+      "available_bytes": 66274992128,
+      "device": 29,
+      "path": "/dev/shm"
+    }
+  ],
+  "observed_at_utc": "2026-09-15T20:14:28.314925+00:00",
+  "scope": "Point-in-time available bytes, not reserved capacity or attributed cleanup."
+}

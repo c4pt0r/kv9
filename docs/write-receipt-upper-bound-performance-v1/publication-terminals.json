@@ -1,0 +1,17 @@
+{
+  "complete": true,
+  "package": {
+    "exit_code": 0,
+    "result_sha256": "50c4942a3a72e4017de4b8d49623147c94cd75820c5c8c7e73f9bb2a2fa928b0",
+    "session_id": null,
+    "terminal_receipt": "7607c0"
+  },
+  "schema": 1,
+  "scope": "Actual publication terminals, recorded after each tool returned. No benchmark, audit or proof rerun.",
+  "verification": {
+    "exit_code": 0,
+    "result_sha256": "4dbdfa0557b5d27077fecf6680ae8d8713abaf9c014050f83a66aae060100017",
+    "session_id": null,
+    "terminal_receipt": "dc1c40"
+  }
+}

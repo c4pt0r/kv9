@@ -1,0 +1,12 @@
+{
+  "archive_bytes": 4212385,
+  "archive_members": 350,
+  "archive_sha256": "d13c1966dcef25347e003418b9241673244ea753f217dcd8cb8d5ab65ec2a035",
+  "complete": true,
+  "elapsed_seconds": 0.8439917489886284,
+  "members_sha256": "c91c0c7ffa46f26a81cb30b347b8d8403f8bb5b936c85c52ddb4b0cdb99f56fc",
+  "original_bytes": 82358333,
+  "original_files": 349,
+  "planned_decoded_tar_bytes": 82759680,
+  "report_inputs_included": 77
+}

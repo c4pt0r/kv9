@@ -1,0 +1,78 @@
+{
+  "complete": true,
+  "files": [
+    {
+      "bytes": 4212385,
+      "file": "evidence.tar.gz",
+      "sha256": "d13c1966dcef25347e003418b9241673244ea753f217dcd8cb8d5ab65ec2a035",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package-first/evidence.tar.gz"
+    },
+    {
+      "bytes": 131939,
+      "file": "members.json",
+      "sha256": "c91c0c7ffa46f26a81cb30b347b8d8403f8bb5b936c85c52ddb4b0cdb99f56fc",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package-first/members.json"
+    },
+    {
+      "bytes": 3551,
+      "file": "verify.py",
+      "sha256": "4c475dbfbbcdd1cd40fa8e46ec8226d983984e9a6d17d45ffd566ec80d639f55",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package-first/verify.py"
+    },
+    {
+      "bytes": 422,
+      "file": "package-result.json",
+      "sha256": "50c4942a3a72e4017de4b8d49623147c94cd75820c5c8c7e73f9bb2a2fa928b0",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package-first/package-result.json"
+    },
+    {
+      "bytes": 6806,
+      "file": "PREPARATION.md",
+      "sha256": "1528d8fbb6e4dd7f0e4c1e68cfe284b98ba85bfae4e25f713e0d051f393522bb",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/package-first/README.md"
+    },
+    {
+      "bytes": 695,
+      "file": "verification.json",
+      "sha256": "4dbdfa0557b5d27077fecf6680ae8d8713abaf9c014050f83a66aae060100017",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/verification-first.json"
+    },
+    {
+      "bytes": 710,
+      "file": "reporting-cap-revision.json",
+      "sha256": "8b4e403ec4e155464f51646965147278f0dea2c154ebf5b189ff0fd9b576d716",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-publication-preparation-20260915-first/reporting-cap-revision.json"
+    },
+    {
+      "bytes": 3112,
+      "file": "ANALYSIS.md",
+      "sha256": "be33d0129a4779d98d06f65bba7a05d41e8dd48d7d48c4852e0b5f82e007c902",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/README.md"
+    },
+    {
+      "bytes": 507162,
+      "file": "summary.json",
+      "sha256": "b345767bc8a710f4b6b2a925601fce2035ca69248ebba991d02745c7353cad14",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/summary.json"
+    },
+    {
+      "bytes": 17609,
+      "file": "input-hashes.json",
+      "sha256": "d2955484ad7b6bcc740c02ffb027d50615671437a3ea75276c29d6faaf708d32",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/input-hashes.json"
+    },
+    {
+      "bytes": 1505,
+      "file": "COMPARISONS.md",
+      "sha256": "44b2b664b5442d30ed2dbb34e6163450363aaf3d6729bcc43ef999cb687d02e2",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/COMPARISONS.md"
+    },
+    {
+      "bytes": 5199,
+      "file": "PER-REPEAT.md",
+      "sha256": "36bb15fc9af2761a98e3444a9b489a37bd46f461722f05c24732b45ae2de076c",
+      "source": "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/PER-REPEAT.md"
+    }
+  ],
+  "scope": "Exact byte comparison of publication copies to original retained files."
+}

@@ -1,0 +1,15 @@
+{
+  "complete": true,
+  "copy_and_link_review": {
+    "copies_bound_by_archive_inventory": 6,
+    "exact_publication_copies": 12,
+    "exit_code": 0,
+    "local_links_checked": 205,
+    "terminal_receipt": "3da209"
+  },
+  "scope": "Publication copy integrity, local documentation links and whitespace only; no new workload or proof acceptance.",
+  "whitespace_review": {
+    "exit_code": 0,
+    "terminal_receipt": "1c5529"
+  }
+}
