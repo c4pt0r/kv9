@@ -6,17 +6,23 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BINARY = 512 * 1024 * 1024
-# Published raw evidence remains part of the source identity. Account for its
-# opaque archives separately without relaxing ordinary source-file limits.
+# Every input remains in the source identity. Published documentation and raw
+# evidence have their own finite budget; runtime/source files keep these limits.
 MAX_SOURCE_FILE = 2 * 1024 * 1024
 MAX_SOURCE_TOTAL = 64 * 1024 * 1024
-MAX_EVIDENCE_FILE = 32 * 1024 * 1024
-MAX_EVIDENCE_TOTAL = 64 * 1024 * 1024
+MAX_DOCUMENTATION_FILE = 32 * 1024 * 1024
+# The published corpus is approximately 167 MB as of 2026-09-15. This prospective
+# 256 MiB allowance includes its split archives and JSON inventories, with bounded
+# growth; it does not exempt them from hashing or extend ordinary source limits.
+MAX_DOCUMENTATION_TOTAL = 256 * 1024 * 1024
+DOCUMENTATION_SUFFIXES = frozenset({'.md', '.json', '.jsonl', '.csv', '.tsv',
+                                  '.txt', '.log', '.stdout', '.stderr'})
 HASH_CHUNK = 64 * 1024
 _cache_spec = importlib.util.spec_from_file_location('kv9_build_cache', ROOT / 'scripts/build_cache.py')
 cache = importlib.util.module_from_spec(_cache_spec)
@@ -29,6 +35,15 @@ def canonical(value):
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def documentation_input(name):
+    """Only top-level docs data formats qualify; code and unknown formats do not."""
+    path = Path(name)
+    if path.is_absolute() or len(path.parts) < 2 or path.parts[0] != 'docs' or '..' in path.parts:
+        return False
+    return (path.suffix in DOCUMENTATION_SUFFIXES or path.name.endswith('.tar.gz')
+            or re.fullmatch(r'.+\.tar\.gz\.[0-9]{3}', path.name) is not None)
 
 
 def snapshot():
@@ -47,16 +62,16 @@ def snapshot():
             continue
         if not path.is_file():
             raise RuntimeError("source inventory requires regular files")
-        evidence = name.startswith('docs/') and name.endswith('/original-evidence.tar.gz')
-        file_limit = MAX_EVIDENCE_FILE if evidence else MAX_SOURCE_FILE
-        total_limit = MAX_EVIDENCE_TOTAL if evidence else MAX_SOURCE_TOTAL
+        documentation = documentation_input(name)
+        file_limit = MAX_DOCUMENTATION_FILE if documentation else MAX_SOURCE_FILE
+        total_limit = MAX_DOCUMENTATION_TOTAL if documentation else MAX_SOURCE_TOTAL
         digest = hashlib.sha256()
         size = 0
         with path.open("rb") as stream:
             while data := stream.read(min(HASH_CHUNK, file_limit - size + 1)):
                 size += len(data)
-                totals[evidence] += len(data)
-                if size > file_limit or totals[evidence] > total_limit:
+                totals[documentation] += len(data)
+                if size > file_limit or totals[documentation] > total_limit:
                     raise RuntimeError("source inventory exceeds its byte bound")
                 digest.update(data)
         sources[name] = digest.hexdigest()
