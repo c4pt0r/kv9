@@ -1,0 +1,15 @@
+{
+  "archive_sha256": "2c696f7eee38f9da62e05c4e822bd23519bbaac9b8551f75f110269f33bf7d45",
+  "complete": true,
+  "decoded_tar_bytes": 13977600,
+  "elapsed_seconds": 0.06964811193756759,
+  "exact_members_and_sha256": true,
+  "extracted_files": 0,
+  "file_bytes": 12641592,
+  "full_gzip_eof": true,
+  "manifest_sha256": "b39e369bc7c72290052ee7163a38ed09785625087bba78ebb248629ff3b99f78",
+  "members": 1213,
+  "original_payloads_read": false,
+  "package_result_sha256": "bb7902f1c7cc77cbd422872a1f38d5639b37addddc2805d4adde88fa3678259a",
+  "scope": "Portable metadata integrity only; original runtime/readback acceptance remains historical."
+}

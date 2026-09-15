@@ -1,0 +1,8 @@
+{
+  "execution_kind": "direct_tool_terminal",
+  "terminal_receipt": "609904",
+  "exit_code": 1,
+  "source_sha256": "0d647989cf49fa502a44f7087074f457a623a38279257106dd92afb09f17888c",
+  "error": "Metadata stability assertion compared atime, which can change during a read. No summary/archive was created and no payload/runtime action occurred.",
+  "correction": "Compare device/inode/mode/uid/gid/size/blocks/mtime/ctime and exclude access time."
+}

@@ -1,0 +1,204 @@
+{
+  "cache_observed_global_available_increase_sum_bytes": 10384965632,
+  "complete": true,
+  "concurrent_dev_interval": {
+    "conservative_retention_net_bytes": 7291015168,
+    "difference_bytes": 6364147712,
+    "interpretation": "Parent development Cargo/proof work overlapped this interval and rebuilt caches. This difference also includes other host/report allocation and timing boundaries; it is not an independently measured build-only byte count.",
+    "observed_global_available_delta_bytes": 926867456,
+    "stage": "tranche-040-055"
+  },
+  "failures": [
+    {
+      "bytes": 222,
+      "path": "/tmp/kv9-write-release-capacity-tranche-20260915-first/freeze-first-failure.json",
+      "sha256": "1ca7b754f75df3cca4c26faf9d6d971da08c091c0fa754b5a493cb20201167d0"
+    },
+    {
+      "bytes": 292,
+      "path": "/tmp/kv9-write-release-capacity-tranche-20260915-second/initial-metadata-read-failure.json",
+      "sha256": "e0a20d0693f3ac34c13c84582df8aa4ab2c6c35e035c385e9c2cf370fef85f0e"
+    }
+  ],
+  "limitations": [
+    "No new payload decode, codec lifetime check, source test, benchmark or cleanup. Original completed readbacks and per-cohort complete/release/phase terminals are reused.",
+    "Original WAL/data, retained compressed objects, patch objects, ELF binaries, generated build payloads, full original retention transaction directories and large resource samples stay local. Their exact source/selection/result hash bindings are retained.",
+    "Final available space was a historical observation, never a reservation. Root has since resumed release builds. Refresh actual capacity under the next gate.",
+    "This reporting root and archive add new separately measured metadata allocation; no historical accounting is rewritten."
+  ],
+  "report_kind": "Completed capacity evidence only; no current reservation or new runtime acceptance.",
+  "retention_conservative_net_allocated_recovery_sum_bytes": 8893403136,
+  "retention_whole_readback_logical_sum_bytes": 41196202717,
+  "stages": [
+    {
+      "actual_session": 88997,
+      "actual_terminal_receipt": "b93a42",
+      "available_after_bytes": 18603966464,
+      "available_before_bytes": 14757380096,
+      "conservative_cache_regular_allocation_bytes": 3845914624,
+      "deleted_files": 6919,
+      "kind": "generated_cache_retirement",
+      "observed_global_available_increase_bytes": 3846586368,
+      "protected_after": {
+        "bytes": 5034,
+        "path": "/tmp/kv9-write-next-cache-cleanup-20260915-first/protected-after.json",
+        "sha256": "8da543a410f439bf963475e071b38c388ad10ab29a6510502a88f10fa9965e48"
+      },
+      "protected_before": {
+        "bytes": 5034,
+        "path": "/tmp/kv9-write-next-cache-cleanup-20260915-first/protected-before.json",
+        "sha256": "8da543a410f439bf963475e071b38c388ad10ab29a6510502a88f10fa9965e48"
+      },
+      "result": {
+        "bytes": 543,
+        "path": "/tmp/kv9-write-next-cache-cleanup-20260915-first/result.json",
+        "sha256": "ac4feb7e5d58127e8c40fe027b9392d1e52f1861c38c5fcf3dabff9224ddaafa"
+      },
+      "source_heads": {
+        "/home/dongxu/kv9": "7f458bfba79a1ab654127bf1f63e76d2750abe79"
+      },
+      "source_inventory": {
+        "bytes": 125450,
+        "path": "/tmp/kv9-write-next-cache-cleanup-20260915-first/source-before.json",
+        "sha256": "b0ab750a215a7ab0ab883e9d9efc63a41dde2bcc0db2286092913e3efdd01ebb"
+      },
+      "stage": "initial-cache",
+      "terminal": {
+        "bytes": 317,
+        "path": "/tmp/kv9-write-next-cache-cleanup-20260915-first/tool-terminal.json",
+        "sha256": "ce1fc5386be8e6643f08156a5180b7958b786b6ff343bed27b04b0696d6c83d1"
+      }
+    },
+    {
+      "actual_session": 87032,
+      "actual_terminal_receipt": "825382",
+      "baseline_available_bytes": 17988681728,
+      "completed_ordinals": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55
+      ],
+      "conservative_net_allocated_recovery_bytes": 7291015168,
+      "engine_wal_targets": 650,
+      "final_accounting_boundary_available_bytes": 18915549184,
+      "final_controller_available_bytes": 18915426304,
+      "kind": "lossless_retention_representation",
+      "new_reporting_not_in_original_accounting": true,
+      "next_ordinal": 56,
+      "original_objects": 1456,
+      "post_report_historical_available_bytes": 18915090432,
+      "prefix_integration": {
+        "bytes": 58587,
+        "path": "/tmp/kv9-write-release-capacity-tranche-20260915-first/result-1789470763791659315.json",
+        "sha256": "b99f641f8b0163a2993d3094fa822aab75557f60d1e17a54a085ac53a6d5fbbe"
+      },
+      "reason": "finite_040_055_exhaustion",
+      "result": {
+        "bytes": 43045,
+        "path": "/tmp/kv9-write-release-capacity-tranche-20260915-first/accepted-summary.json",
+        "sha256": "85fe78ed93fc9f7dd54e16f66a04b43580bb5d35e53ac7a9c48dec4c61571e3a"
+      },
+      "stage": "tranche-040-055",
+      "successful_fresh_codec_receipts": 7306,
+      "terminal": {
+        "bytes": 383,
+        "path": "/tmp/kv9-write-release-capacity-tranche-20260915-first/tool-terminal.json",
+        "sha256": "d088e8d14048554f9ffd9387a637160dd09928f3143b86c66d7c1939d6c28b64"
+      },
+      "whole_readback_logical_bytes": 33205479634
+    },
+    {
+      "actual_session": 33114,
+      "actual_terminal_receipt": "e70b2e",
+      "available_after_bytes": 25446240256,
+      "available_before_bytes": 18907860992,
+      "conservative_cache_regular_allocation_bytes": 6539509760,
+      "deleted_files": 6780,
+      "kind": "generated_cache_retirement",
+      "observed_global_available_increase_bytes": 6538379264,
+      "protected_after": {
+        "bytes": 5034,
+        "path": "/tmp/kv9-write-post-dev-cache-cleanup-20260915-first/protected-after.json",
+        "sha256": "8da543a410f439bf963475e071b38c388ad10ab29a6510502a88f10fa9965e48"
+      },
+      "protected_before": {
+        "bytes": 5034,
+        "path": "/tmp/kv9-write-post-dev-cache-cleanup-20260915-first/protected-before.json",
+        "sha256": "8da543a410f439bf963475e071b38c388ad10ab29a6510502a88f10fa9965e48"
+      },
+      "result": {
+        "bytes": 543,
+        "path": "/tmp/kv9-write-post-dev-cache-cleanup-20260915-first/result.json",
+        "sha256": "48af46e26d3556bd115d241365d4f82176f921f0bd39068efcb8ece6715d14c5"
+      },
+      "source_heads": {
+        "/home/dongxu/kv9": "5f78457277b6a0cdc7cde5a30067b2461d96a817",
+        "/tmp/kv9-receipt-upper-bound-20260915-first": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27"
+      },
+      "source_inventory": {
+        "bytes": 252493,
+        "path": "/tmp/kv9-write-post-dev-cache-cleanup-20260915-first/source-before.json",
+        "sha256": "24a7e04d17a85841403ded2dcf4795c2971d5e90ccacb5b6d96c2e30c0145fe0"
+      },
+      "stage": "post-dev-cache",
+      "terminal": {
+        "bytes": 340,
+        "path": "/tmp/kv9-write-post-dev-cache-cleanup-20260915-first/tool-terminal.json",
+        "sha256": "0bd1beae8a6a3156ecb057c2b87641a9caa61afb228e1a0b3ec8af7bdba64e3a"
+      }
+    },
+    {
+      "actual_session": 86445,
+      "actual_terminal_receipt": "d61c44",
+      "baseline_available_bytes": 25444163584,
+      "completed_ordinals": [
+        56,
+        57,
+        58,
+        59,
+        60
+      ],
+      "conservative_net_allocated_recovery_bytes": 1602387968,
+      "engine_wal_targets": 140,
+      "final_accounting_boundary_available_bytes": 27046207488,
+      "final_controller_available_bytes": 27046117376,
+      "kind": "lossless_retention_representation",
+      "new_reporting_not_in_original_accounting": true,
+      "next_ordinal": 61,
+      "original_objects": 360,
+      "post_report_historical_available_bytes": 27046080512,
+      "prefix_integration": {
+        "bytes": 43010,
+        "path": "/tmp/kv9-write-release-capacity-tranche-20260915-second/result-1789472166055108240.json",
+        "sha256": "86b4440ce26ad00aeb8292bf20d68d9a7c30152e5f49782caa7d0d0a892f3949"
+      },
+      "reason": "actual_release_envelope_plus_margin",
+      "result": {
+        "bytes": 14367,
+        "path": "/tmp/kv9-write-release-capacity-tranche-20260915-second/accepted-summary.json",
+        "sha256": "9b7bdd242dd5cdbe402f104d5e3e5c44d1eee00868c445123e95a2f346d21c87"
+      },
+      "stage": "tranche-056-060",
+      "successful_fresh_codec_receipts": 1620,
+      "terminal": {
+        "bytes": 408,
+        "path": "/tmp/kv9-write-release-capacity-tranche-20260915-second/tool-terminal.json",
+        "sha256": "6067fb67685e26ab7971d14e0f5962aa53e88313776aceb3ab8a0af8c2fdcd0c"
+      },
+      "whole_readback_logical_bytes": 7990723083
+    }
+  ]
+}

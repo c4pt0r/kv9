@@ -1,0 +1,45 @@
+{
+  "independent_readback": {
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result": {
+      "bytes": 640,
+      "sha256": "1ad6ba7c3cd443c60a4dd1ad214859bb82f9735ac3a772e64bb8edd395fa71a3"
+    },
+    "source": {
+      "bytes": 2648,
+      "sha256": "05ba8f44a907ada84842430d3ad2a7f8a0eb39f8d6326dd80c007a3c6df9a4f7"
+    },
+    "terminal_receipt": "03d347"
+  },
+  "original_reporting_failure": {
+    "exit_code": 1,
+    "record": {
+      "bytes": 448,
+      "sha256": "c65864135a98b741bdeeb85d4193ab3e575f646b68fa805f551bc9e36a1140df"
+    },
+    "terminal_receipt": "609904"
+  },
+  "package": {
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result": {
+      "bytes": 558,
+      "sha256": "bb7902f1c7cc77cbd422872a1f38d5639b37addddc2805d4adde88fa3678259a"
+    },
+    "source": {
+      "bytes": 2694,
+      "sha256": "c4475bb9090827a4f36a25fac3270f696d53b478478d528393fe06caf43caa1d"
+    },
+    "terminal_receipt": "261edb"
+  },
+  "selection": {
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "source": {
+      "bytes": 7540,
+      "sha256": "bb6e68263d2452ae94146a41c815e199a4f2e5429c67a30653914440417c728c"
+    },
+    "terminal_receipt": "8806e5"
+  }
+}

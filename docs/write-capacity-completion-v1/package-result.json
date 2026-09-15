@@ -1,0 +1,16 @@
+{
+  "archive": {
+    "bytes": 1709578,
+    "path": "/tmp/kv9-write-capacity-completion-report-20260915-first/metadata.tar.gz",
+    "sha256": "2c696f7eee38f9da62e05c4e822bd23519bbaac9b8551f75f110269f33bf7d45"
+  },
+  "available_after": 27066494976,
+  "available_before": 27068612608,
+  "complete": true,
+  "elapsed_seconds": 0.17651494801975787,
+  "file_bytes": 12641592,
+  "manifest_sha256": "b39e369bc7c72290052ee7163a38ed09785625087bba78ebb248629ff3b99f78",
+  "member_count": 1213,
+  "original_roots_modified": false,
+  "payload_decode_or_reaudit": false
+}

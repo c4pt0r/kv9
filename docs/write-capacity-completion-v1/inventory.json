@@ -1,0 +1,69 @@
+{
+  "archive_verified": true,
+  "complete": true,
+  "files": {
+    "COMPLETION.md": {
+      "bytes": 1115,
+      "sha256": "205f70214cc53437a3eea6c3274e0f9a0d46534f3af78b5a701735b18df00bea"
+    },
+    "README.md": {
+      "bytes": 5011,
+      "sha256": "c4c072fa96ffcc5dda4008ff6d11123f12febc76c2d4104ba52acb293db3c057"
+    },
+    "archive-manifest.json": {
+      "bytes": 397853,
+      "sha256": "b39e369bc7c72290052ee7163a38ed09785625087bba78ebb248629ff3b99f78"
+    },
+    "metadata.tar.gz": {
+      "bytes": 1709578,
+      "sha256": "2c696f7eee38f9da62e05c4e822bd23519bbaac9b8551f75f110269f33bf7d45"
+    },
+    "package-result.json": {
+      "bytes": 558,
+      "sha256": "bb7902f1c7cc77cbd422872a1f38d5639b37addddc2805d4adde88fa3678259a"
+    },
+    "package.py": {
+      "bytes": 2694,
+      "sha256": "c4475bb9090827a4f36a25fac3270f696d53b478478d528393fe06caf43caa1d"
+    },
+    "prepare-first-failure.json": {
+      "bytes": 448,
+      "sha256": "c65864135a98b741bdeeb85d4193ab3e575f646b68fa805f551bc9e36a1140df"
+    },
+    "prepare-tool-terminal.json": {
+      "bytes": 230,
+      "sha256": "91c23023be61046f3cea14fc12ba347c1953261ae79200d99407ed48c11e44f0"
+    },
+    "prepare.first.py": {
+      "bytes": 7395,
+      "sha256": "0d647989cf49fa502a44f7087074f457a623a38279257106dd92afb09f17888c"
+    },
+    "prepare.py": {
+      "bytes": 7540,
+      "sha256": "bb6e68263d2452ae94146a41c815e199a4f2e5429c67a30653914440417c728c"
+    },
+    "publication-terminals.json": {
+      "bytes": 1226,
+      "sha256": "e478e8003f4b0854dcd3a5349654a88654a3bfaabc73633a375f98af370903dd"
+    },
+    "readback.json": {
+      "bytes": 640,
+      "sha256": "1ad6ba7c3cd443c60a4dd1ad214859bb82f9735ac3a772e64bb8edd395fa71a3"
+    },
+    "source-selection.json": {
+      "bytes": 395922,
+      "sha256": "8867a628d82b7b2d272040f5573d321bb83a2cc3b28ba3f23d28e32999f568b4"
+    },
+    "summary.json": {
+      "bytes": 8706,
+      "sha256": "9f1036e7e4489e9a6ce518e3ec59225db7cbdb8c15cd8953929a55cbffefde85"
+    },
+    "verify.py": {
+      "bytes": 2648,
+      "sha256": "05ba8f44a907ada84842430d3ad2a7f8a0eb39f8d6326dd80c007a3c6df9a4f7"
+    }
+  },
+  "observed_reporting_allocated_bytes_excluding_inventory": 2584576,
+  "scope": "New finite metadata reporting only; no current capacity reservation or original-root mutation.",
+  "source_selection_sha256": "8867a628d82b7b2d272040f5573d321bb83a2cc3b28ba3f23d28e32999f568b4"
+}
