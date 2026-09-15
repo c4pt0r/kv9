@@ -52,6 +52,13 @@ reachable under the corrected authority. Both preparation revisions and their
 control results are preserved. Runtime acceptance comes from the new actual
 readback, not the metadata controls.
 
+The [later four-family completion](family-completion/README.md) also records
+actual corrected full-CRC014, directory020 and frame021 readback and final COLD.
+New independent metadata/lifetime checks pass for directory020 and frame021;
+the combined report reuses accepted FNV013/CRC014 evidence. These four actual
+readbacks contain 947 successful current decoder receipts. Historical producer
+counters are not fresh execution counts, and this audit does not replay payloads.
+
 ## Actual recovery and remaining capacity work
 
 The new command reuses the successful first retirement and restoration. It

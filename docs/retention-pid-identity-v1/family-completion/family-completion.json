@@ -1,0 +1,253 @@
+{
+  "complete": true,
+  "exact_new_validation": {
+    "bytes": 172052,
+    "path": "/tmp/kv9-retention-corrected-reader-family-completion-20260915-first/result.json",
+    "sha256": "5e8279f2abbdbe730965ca9888aa8c3fe35fda253c394246c96e96ad023acf30"
+  },
+  "families": [
+    {
+      "acceptance": {
+        "bytes": 987659,
+        "path": "/tmp/kv9-retention-013-independent-acceptance-20260915-first/accepted-summary.json",
+        "sha256": "4b957a568e9fb516cdc10312dee27abe5bd31efef22bfe6dc38579dd7fb7afd7"
+      },
+      "catalog": {
+        "bytes": 1346068,
+        "path": "/tmp/kv9-fnv-writer-performance-budget-v2-timing-20260914-first/cohorts/006-old-batch64-r000-p00064/fixture/retention-catalog.json",
+        "sha256": "c8692e00121e516da3512dae14281aa0d76540703e9463e69fa122f98b1cc93f"
+      },
+      "cold_sha256": "1214b0c5d70b79ae0edfb59b3c0341f958c63b48c95fffe3f2617ed1885d52ab",
+      "corrected_reader": {
+        "bytes": 19204,
+        "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/fnv-writer.py",
+        "sha256": "5cdbea84ed22148c75a9bd3118a7c300b5cedf4f36af8f27e392782d4a1cca6b"
+      },
+      "encoded_bytes": 7362155494,
+      "family": "fnv-writer",
+      "historical_producer_counter": 688,
+      "logical_bytes": 10402566933,
+      "ordinal": 13,
+      "original_reader": {
+        "bytes": 17315,
+        "path": "/tmp/kv9-fnv-writer-performance-budget-v2-preparation-20260914-first/retention_audit.py",
+        "sha256": "c6c3beb177cdc63633d5efb324908b89edd269e2bdc871e5b91aef5b21ae502d"
+      },
+      "prior_selected_reader": {
+        "bytes": 17461,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/fnv-writer.py",
+        "sha256": "2e2839721fce661cd3a8e93453f620f1360bf3911e5f8c4f364342c6ce6cb47b"
+      },
+      "readback_sha256": "69845f4e24f6df43efc5932f802a23a770e0485c25f5f42c05033db64e8ec7ad",
+      "selection_sha256": "66bf03896100ca431aff0ae802708b422224267e585245ccbbbcd58658fb0ff4",
+      "state": "COLD",
+      "successful_current_readback_decoders": 344,
+      "validation": "Previously independently accepted; no old payload or lifetime re-audit in this report."
+    },
+    {
+      "acceptance": {
+        "bytes": 321575,
+        "path": "/tmp/kv9-retention-corrected-reader-coverage-20260915-first/result.json",
+        "sha256": "6da05e72b4f122cf2299bb82eb02b5e1172f97adb209950e2cd58015236e1145"
+      },
+      "catalog": {
+        "bytes": 1179937,
+        "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/029-old-batch64-r000-p10064/fixture/retention-catalog.json",
+        "sha256": "85bff8b488d8a049e175d912c3c6cf04a8b7cae3cc5913e518ab4af65e350684"
+      },
+      "cold": {
+        "bytes": 98135,
+        "path": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first/retire-2/result.json",
+        "sha256": "da2df7f768f95457ccdbd6080062013d3a8dc75faeae4ee38eac7d6c33e0e1af"
+      },
+      "controller_complete": {
+        "bytes": 7659,
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/complete.json",
+        "sha256": "8ff96ad6b439101d1238217935753346d3ede0345d808613e59cc345465d8ce3"
+      },
+      "corrected_reader": {
+        "bytes": 18305,
+        "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/crc-full-regression.py",
+        "sha256": "8ccef04d24c794ee8f0c2eda6c900bfe52478cda2c08ca9b7983384197e788ea"
+      },
+      "encoded_bytes": 6387947218,
+      "family": "crc-full-regression",
+      "historical_producer_counter": 606,
+      "logical_bytes": 9026238780,
+      "ordinal": 14,
+      "original_reader": {
+        "bytes": 16416,
+        "path": "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py",
+        "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+      },
+      "prior_selected_reader": {
+        "bytes": 16562,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/crc-full-regression.py",
+        "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+      },
+      "readback": {
+        "bytes": 691316,
+        "path": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+        "sha256": "928971ffa6d6f38811cb0396c8822814e779d63fa29109defd2f3a75b1191ea2"
+      },
+      "release": {
+        "bytes": 992,
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/release.json",
+        "sha256": "4d0640447f27c4a19e676307005170259358e88748d5a7cb4e4405a70827eb44"
+      },
+      "selection": {
+        "bytes": 289138,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/014.json",
+        "sha256": "0cbff1a97f4ad226ba5aa222213097d301cbc40ad18cf0c6ff7eccc55c2e1e02"
+      },
+      "state": "COLD",
+      "successful_current_readback_decoders": 303,
+      "validation": "Previously independently checked metadata; no old payload or lifetime re-audit in this report."
+    },
+    {
+      "acceptance": {
+        "bytes": 172052,
+        "path": "/tmp/kv9-retention-corrected-reader-family-completion-20260915-first/result.json",
+        "sha256": "5e8279f2abbdbe730965ca9888aa8c3fe35fda253c394246c96e96ad023acf30"
+      },
+      "catalog": {
+        "bytes": 591573,
+        "path": "/tmp/kv9-published-directory-performance-v3-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/fixture/retention-catalog.json",
+        "sha256": "ea9a5b288cbebe3d6b4e57b6d249bfd7df104f6d2d8663f0dffc6e0fb0fb0216"
+      },
+      "cold": {
+        "bytes": 45581,
+        "path": "/tmp/kv9-cross-voter-group-020-published-directory-20260915-first/retire-2/result.json",
+        "sha256": "c73d6607080e6f49dc026b1670d774cba1671b1310ead246d3331b43970e2fb3"
+      },
+      "controller_complete": {
+        "bytes": 9064,
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/complete.json",
+        "sha256": "1f260809625f0afce74ce5d5b740b4c610f183484858b762e9a1adc0e55cc42e"
+      },
+      "corrected_reader": {
+        "bytes": 19060,
+        "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/published-directory.py",
+        "sha256": "e3b1d33fbc21675f586d57b8decc4b25d9fc5aa441000f0f14b7fabc7b2b8775"
+      },
+      "encoded_bytes": 2837068390,
+      "family": "published-directory",
+      "historical_producer_counter": 300,
+      "logical_bytes": 4013951192,
+      "ordinal": 20,
+      "original_reader": {
+        "bytes": 17317,
+        "path": "/tmp/kv9-published-directory-performance-v3-preparation-20260915-first/retention_audit.py",
+        "sha256": "88fe5866978679ffdb4a41cc571e0ca808d2ab8d187662b2f51669f4ca495148"
+      },
+      "prior_selected_reader": {
+        "bytes": 17317,
+        "path": "/tmp/kv9-published-directory-performance-v3-preparation-20260915-first/retention_audit.py",
+        "sha256": "88fe5866978679ffdb4a41cc571e0ca808d2ab8d187662b2f51669f4ca495148"
+      },
+      "readback": {
+        "bytes": 348765,
+        "path": "/tmp/kv9-cross-voter-group-020-published-directory-20260915-first/readback-1-repaired-first/result.json",
+        "sha256": "5a097ac6d948b1a431e5da90c22ad9a1fbbd99fa8b97d358a6dfa7c99a50522d"
+      },
+      "release": {
+        "bytes": 990,
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/release.json",
+        "sha256": "2ea0a22af6b9d34ea56c2014733b71a6cdc08f28b874ad5b575ddae451b2d91f"
+      },
+      "selection": {
+        "bytes": 150434,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/020.json",
+        "sha256": "8274466007a34357370539980f4881046b143ac2807f18a75bc0e50c1c393987"
+      },
+      "state": "COLD",
+      "successful_current_readback_decoders": 150,
+      "validation": "New completed-cohort metadata and actual current decoder lifetime validation."
+    },
+    {
+      "acceptance": {
+        "bytes": 172052,
+        "path": "/tmp/kv9-retention-corrected-reader-family-completion-20260915-first/result.json",
+        "sha256": "5e8279f2abbdbe730965ca9888aa8c3fe35fda253c394246c96e96ad023acf30"
+      },
+      "catalog": {
+        "bytes": 585075,
+        "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/003-new-batch64-r000-p00001/fixture/retention-catalog.json",
+        "sha256": "22c6ce6c5f8739af28e3cd330c941f88b1aa08f892f8ad91f2087a7e5d1ce08a"
+      },
+      "cold": {
+        "bytes": 44303,
+        "path": "/tmp/kv9-cross-voter-group-021-frame-buffer-crc-20260915-first/retire-2/result.json",
+        "sha256": "9afe9c5a24e8f9f9579b967f66653a2881a8eefac0083965f5b3c1f64000e47c"
+      },
+      "controller_complete": {
+        "bytes": 9300,
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/complete.json",
+        "sha256": "149217bedef487bf59f622e374caf1350f3a1141feb0554f608486e6bd07b399"
+      },
+      "corrected_reader": {
+        "bytes": 18297,
+        "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/frame-buffer-crc.py",
+        "sha256": "e24f468640b3c37873be78e9e8c13dc645f285aa03ddd4cc63f46265fb3daaba"
+      },
+      "encoded_bytes": 2837825404,
+      "family": "frame-buffer-crc",
+      "historical_producer_counter": 300,
+      "logical_bytes": 4015034020,
+      "ordinal": 21,
+      "original_reader": {
+        "bytes": 16408,
+        "path": "/tmp/kv9-frame-crc-performance-preparation-20260914-first/retention_audit.py",
+        "sha256": "1987e4ba28e1c0ddea87b2865394bbb3d24c4dc35dda9d54791ef37a160063c5"
+      },
+      "prior_selected_reader": {
+        "bytes": 16554,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/frame-buffer-crc.py",
+        "sha256": "56ab02e54e0aff6cf4801acaa9a6b240079f624790b51312d69361c213e2d90e"
+      },
+      "readback": {
+        "bytes": 338963,
+        "path": "/tmp/kv9-cross-voter-group-021-frame-buffer-crc-20260915-first/readback-1-repaired-first/result.json",
+        "sha256": "896028216835d5f290ee3223e7f093dec8d857a68bdb838840719dcea1a19703"
+      },
+      "release": {
+        "bytes": 987,
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/release.json",
+        "sha256": "30894219b01fff634e3c6499c660ad3b5659d30ca5c0a54fafd4984663018061"
+      },
+      "selection": {
+        "bytes": 147797,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/021.json",
+        "sha256": "4a5f34d9defaf5fa4c0fce72a22baf61bc0e98f7c7bcb23344543a35f78c9a0a"
+      },
+      "state": "COLD",
+      "successful_current_readback_decoders": 150,
+      "validation": "New completed-cohort metadata and actual current decoder lifetime validation."
+    }
+  ],
+  "four_reader_families_complete": true,
+  "historical_counter_warning": "Historical producer counters and original observed timestamps are never labeled fresh decoder observations. Prior013/014 acceptance is reused and not re-audited.",
+  "newly_checked_ordinals": [
+    20,
+    21
+  ],
+  "newly_checked_successful_decoders": 300,
+  "prior_crc_validation": {
+    "bytes": 321575,
+    "path": "/tmp/kv9-retention-corrected-reader-coverage-20260915-first/result.json",
+    "sha256": "6da05e72b4f122cf2299bb82eb02b5e1172f97adb209950e2cd58015236e1145"
+  },
+  "prior_fnv_acceptance": {
+    "bytes": 987659,
+    "path": "/tmp/kv9-retention-013-independent-acceptance-20260915-first/accepted-summary.json",
+    "sha256": "4b957a568e9fb516cdc10312dee27abe5bd31efef22bfe6dc38579dd7fb7afd7"
+  },
+  "reporting_allocation_policy": {
+    "cap_bytes": 4194304,
+    "charged_in_running_controller_nine_root_accounting": false,
+    "scope": "Record separately; no existing controller accounting is rewritten."
+  },
+  "scope": "Four first accepted corrected-reader families, with newly validated actual020/021 and unchanged prior013/014 metadata authorities. This is representation-readback coverage, not new benchmark acceptance.",
+  "total_successful_current_readback_decoders_across_four_accepted_runs": 947,
+  "validation_failures": []
+}

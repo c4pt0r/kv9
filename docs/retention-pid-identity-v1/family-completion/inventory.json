@@ -1,0 +1,51 @@
+{
+  "bytes": 217791,
+  "files": 9,
+  "rows": [
+    {
+      "bytes": 1478,
+      "path": "README.md",
+      "sha256": "137140a144dff95d93980a0452ff61041bf04c3d75526fd6bb8a5a537031ba7b"
+    },
+    {
+      "bytes": 4096,
+      "path": "allocation.json",
+      "sha256": "70e184341b3199152b28646da748bb053b1f7387247038836c33660790fe1eab"
+    },
+    {
+      "bytes": 9753,
+      "path": "check_coverage.py",
+      "sha256": "28521718109f46ff9b673ed32976cc029423c2cff7e3d77ffef93f5e388857c3"
+    },
+    {
+      "bytes": 4603,
+      "path": "combine.py",
+      "sha256": "72d35b147f3897b568d7f26857100ab16a311437ea39a3582c70dced9a8f598c"
+    },
+    {
+      "bytes": 2221,
+      "path": "coverage-source.diff",
+      "sha256": "d5c971f452a2591b3c15193bfce2d58038ba7be8c82db09de0a18915d796be7a"
+    },
+    {
+      "bytes": 12181,
+      "path": "family-completion.json",
+      "sha256": "19f626fc61d73739b27e90ca65f803ec26be2b8871943e3a72ceef83f653a342"
+    },
+    {
+      "bytes": 9657,
+      "path": "original_check_coverage.py",
+      "sha256": "0d98c0890d254f7132e7776ed219747a8d20d6576f611913bf358b37a49e03e5"
+    },
+    {
+      "bytes": 172052,
+      "path": "result.json",
+      "sha256": "5e8279f2abbdbe730965ca9888aa8c3fe35fda253c394246c96e96ad023acf30"
+    },
+    {
+      "bytes": 1750,
+      "path": "tool-terminals.json",
+      "sha256": "707854e25ef388e7979e9f68b1f20d048e092a99dcaadded34fe529b67d21bf0"
+    }
+  ]
+}

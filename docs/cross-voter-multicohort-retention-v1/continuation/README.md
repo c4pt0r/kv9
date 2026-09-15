@@ -25,7 +25,11 @@ All **303 original objects / 9,026,238,780 logical bytes / 6,387,947,218 compres
 bytes** pass readback, with 303 fresh decoder receipts. The reader's inherited
 `observed.codec_lifetimes=606` and timestamps describe the historical producer,
 not this readback. This adds actual corrected full-CRC execution to corrected
-FNV ordinal013. Corrected frame/directory runtime coverage remains pending.
+FNV ordinal013. Corrected frame/directory coverage was pending at this snapshot;
+the [later independent four-family audit](../../retention-pid-identity-v1/family-completion/README.md)
+now accepts directory020 and frame021 as well, with 150 fresh decoder receipts
+each and 947 across the four accepted readbacks. Historical producer counters
+remain separately labeled; prior FNV/CRC acceptance is reused without replay.
 
 The [reporting extraction](first-cohort-014.json) binds and archives the actual
 verification, restoration, readback, COLD, release and child terminals. Full

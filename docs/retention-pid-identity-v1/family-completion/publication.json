@@ -1,0 +1,19 @@
+{
+  "scope": "Exact reporting publication; no payload decode, benchmark, source qualification or runtime acceptance replay.",
+  "original_root": "/tmp/kv9-retention-corrected-reader-family-completion-20260915-first",
+  "archive": {
+    "path": "independent-evidence.tar.gz",
+    "bytes": 34118,
+    "sha256": "0c0c65d0c8d9eb45c0e13c5b7c30282de5340534924f8f3015d5c83fa3148fe2",
+    "files": 10,
+    "original_bytes": 221887
+  },
+  "full_gzip_eof_and_every_member_readback": true,
+  "original_inventory_sha256": "9dd4eb981d3f1a28f2cbc30a9aa567e4b9a4a87bf26a4a7defd1839dcea90d7d",
+  "reporting_overhead": "Original report allocation is 245760 bytes, outside the live controller nine-root accounting; publication costs are additional and not claimed as recovered capacity.",
+  "readable_json_views": [
+    "inventory.json",
+    "allocation.json"
+  ],
+  "publication_readback_tool_terminal": "952d91/0"
+}

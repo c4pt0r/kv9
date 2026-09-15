@@ -1,0 +1,9 @@
+{
+  "actual_allocated_bytes": 245760,
+  "cap_bytes": 4194304,
+  "charged_in_existing_controller_nine_root_accounting": false,
+  "includes_allocation_and_inventory_files": true,
+  "observed_ns": 1789459608694247882,
+  "path": "/tmp/kv9-retention-corrected-reader-family-completion-20260915-first",
+  "scope": "Separately observed reporting allocation; do not count this as existing controller cost or reclaimed capacity."
+}

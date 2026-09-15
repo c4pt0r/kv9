@@ -1,0 +1,24 @@
+{
+  "current_family_validation": {
+    "actual_terminal_receipt": "bb2219",
+    "exit_code": 0,
+    "tool_result": {
+      "chunk_id": "bb2219",
+      "wall_time_seconds": 0.000003897,
+      "exit_code": 0,
+      "original_token_count": 144,
+      "output": "{\"complete\": true, \"snapshot_completed_ordinals\": [20, 21], \"coverage\": {\"fnv-writer\": {\"status\": \"pending_in_this_continuation_snapshot\", \"completed_cohorts\": []}, \"frame-buffer-crc\": {\"status\": \"complete\", \"completed_cohorts\": [21]}, \"published-directory\": {\"status\": \"complete\", \"completed_cohorts\": [20]}, \"crc-full-regression\": {\"status\": \"pending_in_this_continuation_snapshot\", \"completed_cohorts\": []}}, \"actual_current_decoder_count\": 300, \"new_reader_families_beyond_prior_fnv013_and_crc014\": [\"published-directory\", \"frame-buffer-crc\"], \"validation_failures\": []}\n"
+    }
+  },
+  "four_family_combination": {
+    "actual_terminal_receipt": "289851",
+    "exit_code": 0,
+    "tool_result": {
+      "chunk_id": "289851",
+      "wall_time_seconds": 0.000003737,
+      "exit_code": 0,
+      "original_token_count": 134,
+      "output": "{\"complete\": true, \"newly_checked_successful_decoders\": 300, \"four_family_decoders\": 947, \"families\": [{\"family\": \"fnv-writer\", \"ordinal\": 13, \"current_decoders\": 344, \"historical_producer_counter\": 688}, {\"family\": \"crc-full-regression\", \"ordinal\": 14, \"current_decoders\": 303, \"historical_producer_counter\": 606}, {\"family\": \"published-directory\", \"ordinal\": 20, \"current_decoders\": 150, \"historical_producer_counter\": 300}, {\"family\": \"frame-buffer-crc\", \"ordinal\": 21, \"current_decoders\": 150, \"historical_producer_counter\": 300}]}\n"
+    }
+  }
+}
