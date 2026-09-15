@@ -12,6 +12,12 @@ only to its recorded source, client, workload and duration. Historical numbers
 must not be relabeled as current measurements or full industrial qualification.
 
 The priority remains [writes against Redis with one primary and two replicas](WRITE-PERFORMANCE-NEXT.md).
+The latest [complete directory-candidate screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
+records CRC main at **139,457.016 point Put/s** and **1,056,344.501 batch items/s**
+at c64. Candidate `483b8c3` reaches 138,734.094 / 1,076,849.048 respectively:
+point -0.518%, batch +1.941%, with batch p99 improving from 7.537–7.602 ms to
+6.554–6.619 ms. Both orders retain batch gains and loaded point regression.
+Keep CRC selected and evaluate the receipt tail hint separately next.
 The [earlier exact-main/frame-buffer write screen](WRITE-FRAME-BUFFER-CRC-PERFORMANCE.md)
 records **139,188.639 point Put/s** and **1,065,680.142 BatchPut(64) items/s** at
 c64, with p99 0.737–0.745 ms and 6.947–7.012 ms per batch respectively. Redis
@@ -57,7 +63,7 @@ adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
-| Published WAL directory capability `483b8c3` | Experimental on CRC main. [Conditional proof, 793 tests and syscall fault checks](WRITE-PUBLISHED-DIRECTORY.md), [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.md), and the [actual 21-window Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md) pass. The latter retains 9,372 operations and 33 exited server lifetimes. The [complete rotation supplement](WRITE-PUBLISHED-DIRECTORY-ROTATION.md) now passes selected rotations before and after an actual leader kill, same-store acknowledged-value recovery, five fresh drains, independent audit and exact cleanup. Both earlier fixture failures are preserved. [Local capacity recovery](LOCAL-CAPACITY-RECOVERY.md) reaches the empirical launch budget; matched throughput/p99 remain pending. Initial creation/recovery retain full ancestor sync; rotation reuses the live validated parent directory. |
+| Published WAL directory capability `483b8c3` | Experimental on CRC main. [Conditional proof, 793 tests and syscall fault checks](WRITE-PUBLISHED-DIRECTORY.md), [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.md), and the [actual 21-window Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md) pass. The latter retains 9,372 operations and 33 exited server lifetimes. The [complete rotation supplement](WRITE-PUBLISHED-DIRECTORY-ROTATION.md) now passes selected rotations before and after an actual leader kill, same-store acknowledged-value recovery, five fresh drains, independent audit and exact cleanup. Both earlier fixture failures are preserved. [All 8 smokes / 16 timed cohorts](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md) pass: c64 point -0.518%, batch +1.941%, and batch p99 improves to 6.554–6.619 ms. Both orders retain loaded point regression and batch gains. Hold the candidate as a batch improvement; keep CRC main selected. Initial creation/recovery retain full ancestor sync; rotation reuses the live validated parent directory. |
 | Validated receipt tail hint `a6ac335` | Experimental on CRC main. [18 proof statements / 158 obligations and 793 workspace tests/doctests](WRITE-RECEIPT-TAIL-HINT.md) pass, with 23 existing ignored. Direct checked access for consecutive tail indexes; binary/first-match fallbacks preserve complete receipt semantics. Release, recovery, actual Chaos and throughput/p99 remain pending. |
 | Bounded four-lane FNV writer `12f44d3` | [Proof, 797 tests/doctests, exact default release and recovery](WRITE-FNV-WRITER.md) pass. Actual [21-window Chaos](WRITE-FNV-WRITER-CHAOS.md) and [11-window client-link/quorum-loss](WRITE-FNV-WRITER-LINK-CHAOS.md) acceptance pass. [Eight smokes and sixteen timed cohorts](WRITE-FNV-WRITER-PERFORMANCE.md) pass: c64 point +0.351%, batch +4.131%, but pooled p99 worsens for both. CRC main stays selected. |
 | Integrated slicing-by-eight CRC `bd42e60` | Selected after [full regression](WRITE-CRC-FULL-REGRESSION-PERFORMANCE.md) and [exact-main proof/source/release/recovery/Chaos](CRC32-SLICING-INTEGRATION.md). Latest point/batch write numbers are above; historical e748 comparisons retain their own source attribution. |
