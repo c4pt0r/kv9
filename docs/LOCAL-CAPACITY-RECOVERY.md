@@ -79,6 +79,16 @@ shared preparation and dispatcher allocation; publication has separate overhead.
 Its final audit observes 27,713,499,136 bytes available. Twelve focused controls
 and independent review qualify the finite 96-cohort extension. Older reader
 copies change only the current decode floor to 8 GiB; their original historical
-checks remain intact. Only cohort 000 has run; the remaining 95 and receipt
-performance are pending. The 100 GB stop target is a planning margin and does
-not replace the unchanged benchmark guards.
+checks remain intact. At that checkpoint only cohort 000 had run. The 100 GB
+stop target is a planning margin and does not replace the unchanged benchmark guards.
+
+The [continuous controller](cross-voter-multicohort-retention-v1/controller/README.md)
+subsequently passes 15 controls and independent review, then completes
+[ordinal 001](cross-voter-multicohort-retention-v1/controller-execution-001/README.md):
+216 exact restorations and full readback of 355 frame-buffer objects / 10.785 GB
+logical bytes. Two of the 96 plan cohorts are now complete. Their conservative
+combined net recovery is **4,691,595,264 bytes**, including controller allocation
+and excluding the separate predecessor and later publication. The completed
+boundary observes **30,024,470,528 bytes available**. Ordinal 002 has started;
+the overall run and receipt performance remain pending. Restoration temporarily
+consumes space again, so intermediate free-space peaks are not net recovery.
