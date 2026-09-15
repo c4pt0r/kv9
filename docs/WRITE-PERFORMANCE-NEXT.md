@@ -124,9 +124,12 @@ Prepared separately from the FNV timing campaign, the
 now passes 18 parameterized theorem statements / 158 fresh obligations and
 793 workspace tests/doctests (23 existing ignored), formatting and Clippy.
 It tests a constant-time checked slot lookup for consecutive indexes, with
-ordered-search and original first-match fallbacks. Default release, recovery,
-actual Chaos and database timing remain pending; it is not combined with FNV
-or selected on main. This advances the secondary receipt target without
+ordered-search and original first-match fallbacks. Its exact default release
+and ordinary three-voter recovery now also pass independent checks: 359 complete
+operations (329 OK / 30 unknown), six fresh drains and seven exited lifetimes.
+[Original release/recovery evidence](receipt-tail-recovery-v1/README.md) is
+retained with complete byte readback. Actual Chaos and database timing remain
+pending; it is not combined with FNV or selected on main. This advances the secondary receipt target without
 claiming that proof or a CPU percentage establishes performance gains.
 
 ## Comparison contract

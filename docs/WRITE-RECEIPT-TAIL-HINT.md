@@ -2,9 +2,12 @@
 
 Candidate `a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9` adds a checked tail-offset
 hint to receipt lookup, based on selected CRC runtime `bd42e60`. The candidate
-passes source-mapped proof and local source checks. It remains experimental:
+passes source-mapped proof, local source checks, its exact default release and
+ordinary three-voter recovery. It remains experimental:
 there is no database throughput or latency result, and CRC main remains selected.
-The unmeasured FNV writer is a separate candidate and is not combined here.
+The [FNV writer](WRITE-FNV-WRITER-PERFORMANCE.md) and
+[published-directory candidate](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md) have
+completed their separate matched screens. Neither is combined here.
 
 ## Why this experiment
 
@@ -67,11 +70,52 @@ preserves all 137 reporting files / 2,042,035 bytes, with independent size/SHA
 readback. Original logs and diff whitespace remain unedited. Runtime source
 and all local records remain separately available.
 
+## Default release and ordinary recovery
+
+The detached `a6ac335` source reproduces all 869 qualified source-file hashes
+and all 12 proof-bound committed blobs. Its fresh default release passes
+independent Cargo/artifact/codegen readback: first-party production features
+are empty, optimization is level 3 with ThinLTO and one codegen unit, and
+source and protected earlier binaries remain unchanged. The shared build-cache
+lock and explicit first-party invalidation remain in force.
+
+The exact server SHA-256 is
+`d83b4e2ede7bcd81e4a6c4adbc407d2fbd6790d9fcab5851314ed907a6fb0a8c`;
+the native batch client is
+`64aa434166ce05deac8fa6e3d6359c8b13d3dbbc432280ca275701feb499429c`.
+Release session `18954` terminates at `924704/0`, and independent readback
+terminates at `9ade34/0`.
+
+The three-voter ordinary WAL fixture passes both default stream and explicit
+unary transport histories with concurrent point/batch operations, actual
+leader SIGKILL and original-directory restart. Independent full-history and
+process checks accept **359 complete operations: 329 OK / 30 unknown**.
+Unknown outcomes remain in the checked histories. Both lost-voter and
+restarted-voter intervals retain successful operations of all five API kinds.
+Six fresh voter drains pass; all five server and two client lifetimes exit.
+Recovery session `57860` terminates at `f5f864/0`; independent audit is
+`23d005/0`. This is ordinary local process recovery; actual Chaos Mesh remains
+a separate required gate.
+
+[Portable original release/recovery evidence](receipt-tail-recovery-v1/README.md)
+retains 160 members / 4,381,993 decoded bytes, including both complete histories,
+small fixture WALs, original build/checker records and frozen preparation. The
+451,551-byte archive has SHA-256
+`41f16ed42dbfdd6283a7eb1f568ba809191b65c2a3c9f5661deaadde8255859c`.
+Independent portable readback (`163612/0`) verifies all bytes and recomputes the
+history populations. Original release executables remain locally retained.
+
+The prospective release/recovery storage policy uses an 8 GiB host floor plus
+the unchanged 16 GiB maximum sampled decrease and 8 MiB launch allowance.
+Six focused floor, boundary and original-baseline controls pass (`34b3e0/0`).
+The release's lowest observed available space is 26,451,251,200 bytes. These
+operational limits do not change quorum, synchronization, workload or history
+requirements; each subsequent stage requires a fresh capacity check.
+
 ## Next gates
 
-Retain this source checkpoint and finish FNV's matched screen when its storage
-prerequisite is resolved. Before selecting this receipt candidate, build and
-bind its exact default release, run ordinary recovery and actual Chaos Mesh,
-then measure point/batch throughput and whole-call tails against CRC main.
+Retain this source and release checkpoint. Run the complete actual Chaos Mesh
+campaign with independently bound image and test clients, then measure
+point/batch throughput and whole-call tails against CRC main.
 Small kernel costs or the profile percentage cannot establish an end-to-end
 gain. Main's accepted performance numbers remain unchanged. All CI is local.
