@@ -1,0 +1,32 @@
+{
+  "complete": true,
+  "exit_code": 0,
+  "pid": 3069429,
+  "started_ns": 1789435354581555169,
+  "ended_ns": 1789435356791483454,
+  "argv": [
+    "sudo",
+    "-n",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "-B",
+    "/tmp/kv9-published-directory-rotation-supplement-fence-preparation-20260915-first/audit.py",
+    "--run",
+    "/tmp/kv9-published-directory-rotation-supplement-fence-20260915-first",
+    "--runtime-terminal",
+    "/tmp/kv9-published-directory-rotation-supplement-fence-root-20260915-first/runtime-terminal.json",
+    "--runtime-terminal-sha256",
+    "18e3cfd014a0ca660ee7e47b07322f3e6dcb687f448b869d55f02b366d76733f",
+    "--output",
+    "/tmp/kv9-published-directory-rotation-supplement-fence-audit-20260915-first"
+  ],
+  "result_path": "/tmp/kv9-published-directory-rotation-supplement-fence-audit-20260915-first/audit.json",
+  "result_sha256": "1852a1d1c566e4892887e91cc6ce82828732adffd1f334e75e14cbfea24002a8",
+  "session_id": 15025,
+  "terminal_receipt": "2cf21d/0"
+}

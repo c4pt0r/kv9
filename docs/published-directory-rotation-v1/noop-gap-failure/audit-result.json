@@ -1,0 +1,200 @@
+{
+  "accepted": false,
+  "complete": true,
+  "diagnostic_public_readback": {
+    "full_dataset_equal": true,
+    "keys": 65,
+    "value_bytes": 524288
+  },
+  "ended_ns": 1789435133355089178,
+  "fault": {
+    "exit_code": 137,
+    "fault_uid": "1f2e3cce-db3f-4f0e-b21c-e8dde743f4ca",
+    "new_container": "containerd://e3fc15f04da6856d99abc23ce8d6b2caddc26a041ea255038f4d915f45bbf347",
+    "old_container": "containerd://f76cde210399ce955fa5c84fae8abef17da046454ec78ffbdb246f2a2e9128d8",
+    "pod_uid": "298b3fbd-0203-4d33-b32c-12c0f01c4243",
+    "victim": "2"
+  },
+  "fault_uid": "1f2e3cce-db3f-4f0e-b21c-e8dde743f4ca",
+  "fresh_drains": {
+    "initial": {
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "committed": 2,
+      "identities": {
+        "1": [
+          "9165460b-c15b-462a-b220-baa92f6f870c",
+          1,
+          172252865,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "298b3fbd-0203-4d33-b32c-12c0f01c4243",
+          1,
+          172253438,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "d740cd74-d54d-4c1e-8d26-57d26b413a74",
+          1,
+          172253951,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "2"
+    },
+    "pre": {
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "committed": 51,
+      "identities": {
+        "1": [
+          "9165460b-c15b-462a-b220-baa92f6f870c",
+          1,
+          172252865,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "298b3fbd-0203-4d33-b32c-12c0f01c4243",
+          1,
+          172253438,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "d740cd74-d54d-4c1e-8d26-57d26b413a74",
+          1,
+          172253951,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "2"
+    }
+  },
+  "independent_native_full_history_checked": true,
+  "namespace": "kv9-pdrot-1789433810-2820318",
+  "namespace_uid": "d790c27d-a3c6-4ca1-89fe-5f6064e30c9b",
+  "original_failed_samples": 16,
+  "original_leader_processes_exited": 1,
+  "original_runtime_complete": false,
+  "original_runtime_exit_code": 1,
+  "partial_prefix_valid": true,
+  "pre_burst": {
+    "acknowledged_batch_items": 2880,
+    "acknowledged_batches": 45,
+    "acknowledged_input_value_bytes": 23592960,
+    "calls": 56,
+    "outcomes": {
+      "ok": 56
+    },
+    "read_calls": 5,
+    "traffic_calls": 50
+  },
+  "recovered_drain_original_accepted": false,
+  "runtime_result_sha256": "a0b011dd6089effddf87cebfb42409d603a4be9fa9fb4ec66a93acc013b9fb40",
+  "runtime_terminal_path": "/tmp/kv9-published-directory-rotation-supplement-corrected-root-20260915-first/runtime-terminal.json",
+  "scope": "Valid retained pre-burst prefix, actual injected leader-container kill and separate public read-only recovery diagnosis. Original recovered-drain gate failed; no second burst, second rotation or supplement acceptance.",
+  "selected_topology": {
+    "1": {
+      "active": {
+        "previous": [
+          1,
+          36
+        ],
+        "sequence": 2,
+        "stream": "a77f24769724fc5b29c8a64239a18d07"
+      },
+      "authority_sha256": "711d428a2289795c785a208ddb91eb41fc3471416281cedbcc3341fc28764fbf",
+      "checkpoint": null,
+      "closed": [
+        {
+          "bytes": 16373816,
+          "first": [
+            1,
+            2
+          ],
+          "has_unpositioned": false,
+          "last": [
+            1,
+            36
+          ],
+          "previous": null,
+          "records": 35,
+          "sequence": 1,
+          "stream": "a77f24769724fc5b29c8a64239a18d07"
+        }
+      ],
+      "generation": 2,
+      "kind": "segmented"
+    },
+    "2": {
+      "active": {
+        "previous": [
+          1,
+          36
+        ],
+        "sequence": 2,
+        "stream": "ed41c887277048fa89df227a62da83cd"
+      },
+      "authority_sha256": "e8070e8faf7d3e57f0065ade7a65ea5da4d11e138ca15dc61c80513d9bb69ec2",
+      "checkpoint": null,
+      "closed": [
+        {
+          "bytes": 16373816,
+          "first": [
+            1,
+            2
+          ],
+          "has_unpositioned": false,
+          "last": [
+            1,
+            36
+          ],
+          "previous": null,
+          "records": 35,
+          "sequence": 1,
+          "stream": "ed41c887277048fa89df227a62da83cd"
+        }
+      ],
+      "generation": 2,
+      "kind": "segmented"
+    },
+    "3": {
+      "active": {
+        "previous": [
+          1,
+          36
+        ],
+        "sequence": 2,
+        "stream": "83ea01610d32f89cf732fa028da39572"
+      },
+      "authority_sha256": "83f22cd24893e93f1ac765928cdc6740066954404ea4a77cbbac30e4df8620c2",
+      "checkpoint": null,
+      "closed": [
+        {
+          "bytes": 16373816,
+          "first": [
+            1,
+            2
+          ],
+          "has_unpositioned": false,
+          "last": [
+            1,
+            36
+          ],
+          "previous": null,
+          "records": 35,
+          "sequence": 1,
+          "stream": "83ea01610d32f89cf732fa028da39572"
+        }
+      ],
+      "generation": 2,
+      "kind": "segmented"
+    }
+  }
+}

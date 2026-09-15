@@ -1,0 +1,15 @@
+{
+  "all_members_read_back": false,
+  "archive": "/tmp/kv9-published-directory-rotation-supplement-noop-gap-failure-post-20260915-first/archive/original-evidence.tar.gz",
+  "audit_sha256": "df7ef598e0ddce54c91cc1724f79200d3fa473e64a8709656b2adb0ef820cec1",
+  "baseline_available": 77656289280,
+  "bytes": 888660,
+  "complete": true,
+  "decoded_bytes": 115917336,
+  "ended_ns": 1789435183124244025,
+  "input_inventory_sha256": "5b037b07ec8acae5d4eb800d558ed22c7c550c9bfd145e6d7d7b608324bfdf63",
+  "members": 1324,
+  "runtime_result_sha256": "a0b011dd6089effddf87cebfb42409d603a4be9fa9fb4ec66a93acc013b9fb40",
+  "scope": "FAILED second attempt and independently valid pre-fault prefix, actual leader kill/restart and separate read-only public recovery diagnosis: complete original client history including values, selected topology bytes and physical headers, all runtime/diagnostic commands, both failed observations, actual root receipts and frozen helpers. No second burst or supplement acceptance. No raw PVC WAL/SST backup; PVC data is retained until exact cleanup. Retained local ELF bytes omitted and source/build hashes retained.",
+  "sha256": "b01b6e27ec74557df2b0fa4879fd06819935d411d6546e7d0511c784216219d7"
+}

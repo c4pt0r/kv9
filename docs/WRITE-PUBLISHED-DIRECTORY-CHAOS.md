@@ -51,7 +51,7 @@ resource samples, with a minimum 71,846,604,800 bytes available. Original
 payload, fault, history, process and deadline requirements remain. This
 operational policy is separate from the benchmark and release/recovery policies.
 
-## Coverage still required before timing
+## Additional rotation coverage
 
 The baseline does not establish positive engine WAL segment-rotation coverage.
 The production threshold remains 16 MiB. A read-only review of the predecessor's
@@ -64,11 +64,12 @@ A separate supplement must cross the default threshold using the existing
 batch API, verify checksum-valid selected successor topology, inject an actual
 leader container-kill on the same store, verify acknowledged-value recovery,
 then verify another rotation after recovery. Full histories, drains and owned
-cleanup remain required. The [first supplement](WRITE-PUBLISHED-DIRECTORY-ROTATION.md)
-now independently establishes positive selected rotation on all three voters,
-but failed before fault injection because its namespace lacked the Chaos Mesh
-opt-in annotation. Its full failure evidence and exact cleanup are preserved;
-the corrected fixture still needs complete recovery acceptance. The
+cleanup remain required. The [completed supplement](WRITE-PUBLISHED-DIRECTORY-ROTATION.md)
+now independently establishes selected generation 2 topology on all three
+voters, actual leader container-kill and same-store value recovery, followed
+by selected generation 3 topology on all three voters. Both 56-call histories,
+five fresh drains, archive/readback and exact cleanup pass. Earlier namespace
+opt-in and no-op watermark fixture failures remain preserved. The
 [source-level syscall fault gate](WRITE-PUBLISHED-DIRECTORY.md)
 already covers explicit successor-file and parent-sync cuts, but does not
 replace this real cluster recovery check.

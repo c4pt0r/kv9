@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "revision": "483b8c3629b033734f5d7a2b8653a1352304a4b5",
+  "created_ns": 1789435652869176723,
+  "runs": {
+    "accepted": {
+      "members": 1314,
+      "decoded_bytes": 227025332,
+      "archive_sha256": "21181453a2b0d30fa4ed05b8ffcb7d96f6082ba05adbbd0bec47ab8380308d1f",
+      "original_runtime_exit_code": 0,
+      "supplement_accepted": true
+    },
+    "noop-gap-failure": {
+      "members": 1324,
+      "decoded_bytes": 115917336,
+      "archive_sha256": "b01b6e27ec74557df2b0fa4879fd06819935d411d6546e7d0511c784216219d7",
+      "original_runtime_exit_code": 1,
+      "supplement_accepted": false
+    }
+  },
+  "files": {
+    "README.md": {
+      "bytes": 1488,
+      "sha256": "512b9733b5c6b17526102763d6f49d4f8ff7c3abbad7cfec59cd14ee9654ddec"
+    },
+    "accepted/archive-result.json": {
+      "bytes": 991,
+      "sha256": "bb55574e230763fbf3a685fd3ca95018541f913bb4743f691e0f5fcf80421bb9"
+    },
+    "accepted/archive-terminal.json": {
+      "bytes": 1188,
+      "sha256": "bd665c2c20a50145289c59c0f4fb03975c44f3ab1f85a0ff8e222975c5af753d"
+    },
+    "accepted/audit-result.json": {
+      "bytes": 16969,
+      "sha256": "1852a1d1c566e4892887e91cc6ce82828732adffd1f334e75e14cbfea24002a8"
+    },
+    "accepted/audit-terminal.json": {
+      "bytes": 1077,
+      "sha256": "1c645170930caf339a20ecfc1eb79096f2f3068822661855c17554a124a2230a"
+    },
+    "accepted/cleanup-result.json": {
+      "bytes": 3525,
+      "sha256": "031339435a293d2cb82504071f794d0c34009c482de18561bc00ff71ca3a9dc5"
+    },
+    "accepted/cleanup-terminal.json": {
+      "bytes": 1403,
+      "sha256": "582266e1a9acf517ded64c7c75faf8f23786ff25f9147342b5eae0a2541e3612"
+    },
+    "accepted/input-inventory.json": {
+      "bytes": 477385,
+      "sha256": "a680a24655b1c4f5fbc4950dd8a4e6fefd92fd6195a57828e8674f46737fc021"
+    },
+    "accepted/original-evidence.tar.gz": {
+      "bytes": 1044182,
+      "sha256": "21181453a2b0d30fa4ed05b8ffcb7d96f6082ba05adbbd0bec47ab8380308d1f"
+    },
+    "accepted/runtime-terminal.json": {
+      "bytes": 962,
+      "sha256": "18e3cfd014a0ca660ee7e47b07322f3e6dcb687f448b869d55f02b366d76733f"
+    },
+    "accepted/verify-result.json": {
+      "bytes": 354,
+      "sha256": "50247133e42a5b7db69d231545846a1a4a996221dcf66f6c9e43a446184c36cd"
+    },
+    "accepted/verify-terminal.json": {
+      "bytes": 886,
+      "sha256": "c38a16b26cbed146808d8153d05f6a4d59b7829cd574542623639f6c9d95f3af"
+    },
+    "noop-gap-failure/archive-result.json": {
+      "bytes": 1219,
+      "sha256": "e06dcd526a519a9997b2083ced089b3dbe32fc92ff426e52827aee36d3c9fd34"
+    },
+    "noop-gap-failure/archive-terminal.json": {
+      "bytes": 1391,
+      "sha256": "1a68c2ed50cff61a5d6633404a487815418627401537f2cfb57350bb597ed317"
+    },
+    "noop-gap-failure/audit-result.json": {
+      "bytes": 5214,
+      "sha256": "df7ef598e0ddce54c91cc1724f79200d3fa473e64a8709656b2adb0ef820cec1"
+    },
+    "noop-gap-failure/audit-terminal.json": {
+      "bytes": 824,
+      "sha256": "4bcb925449bfbdd62c21ad37b1e7cdfad4663583dd80737e1a67e4c7b95d2ed2"
+    },
+    "noop-gap-failure/cleanup-result.json": {
+      "bytes": 2842,
+      "sha256": "9db350e296f1fc9afd018b81206ae51bc66dc2491b35a6b4de6db791353f13ce"
+    },
+    "noop-gap-failure/cleanup-terminal.json": {
+      "bytes": 1645,
+      "sha256": "67999cbb51be729cbe7975ccd77ccc3c98021b034b0c97d2ff5c1d7308552710"
+    },
+    "noop-gap-failure/input-inventory.json": {
+      "bytes": 491067,
+      "sha256": "5b037b07ec8acae5d4eb800d558ed22c7c550c9bfd145e6d7d7b608324bfdf63"
+    },
+    "noop-gap-failure/original-evidence.tar.gz": {
+      "bytes": 888660,
+      "sha256": "b01b6e27ec74557df2b0fa4879fd06819935d411d6546e7d0511c784216219d7"
+    },
+    "noop-gap-failure/runtime-terminal.json": {
+      "bytes": 330,
+      "sha256": "95c2bfe8548f3146fb522c4233005606e0d47fc6b22e57439fff87d9c64288a6"
+    },
+    "noop-gap-failure/verify-result.json": {
+      "bytes": 354,
+      "sha256": "d6fa3f6f49916f1168918e06c1cc85117a9e16060b13b9e53b41fec695f30c43"
+    },
+    "noop-gap-failure/verify-terminal.json": {
+      "bytes": 919,
+      "sha256": "f7c0b4b1ee5e3b20212f0f066f9deb95acdcb1f1f102d97810dd4fc74dbd0de8"
+    },
+    "verify.py": {
+      "bytes": 4315,
+      "sha256": "ecbef1fb85f16ad5f94dc43493786911af5f888722c24ac4ed4462a7a52ae9b2"
+    }
+  }
+}

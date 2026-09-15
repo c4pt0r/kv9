@@ -1,0 +1,26 @@
+{
+  "complete": true,
+  "exit_code": 0,
+  "pid": 3019599,
+  "started_ns": 1789435132124112229,
+  "ended_ns": 1789435133366753753,
+  "argv": [
+    "sudo",
+    "-n",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "-B",
+    "/tmp/kv9-published-directory-rotation-supplement-noop-gap-failure-post-preparation-20260915-first/partial_audit.py",
+    "--output",
+    "/tmp/kv9-published-directory-rotation-supplement-noop-gap-failure-post-20260915-first/partial-audit"
+  ],
+  "result_path": "/tmp/kv9-published-directory-rotation-supplement-noop-gap-failure-post-20260915-first/partial-audit/audit.json",
+  "result_sha256": "df7ef598e0ddce54c91cc1724f79200d3fa473e64a8709656b2adb0ef820cec1",
+  "session_id": 52527,
+  "terminal_receipt": "fe1ea7/0"
+}

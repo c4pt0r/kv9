@@ -1,0 +1,731 @@
+{
+  "accepted": true,
+  "bursts": {
+    "post": {
+      "acknowledged_batch_items": 2880,
+      "acknowledged_batches": 45,
+      "acknowledged_input_value_bytes": 23592960,
+      "acknowledged_write_fence": {
+        "index": 101,
+        "term": 2
+      },
+      "calls": 56,
+      "outcomes": {
+        "ok": 56
+      },
+      "read_calls": 5,
+      "traffic_calls": 50
+    },
+    "pre": {
+      "acknowledged_batch_items": 2880,
+      "acknowledged_batches": 45,
+      "acknowledged_input_value_bytes": 23592960,
+      "acknowledged_write_fence": {
+        "index": 51,
+        "term": 1
+      },
+      "calls": 56,
+      "outcomes": {
+        "ok": 56
+      },
+      "read_calls": 5,
+      "traffic_calls": 50
+    }
+  },
+  "cleanup_pending": true,
+  "complete": true,
+  "default_segment_target_bytes": 16777216,
+  "ended_ns": 1789435356784179924,
+  "fault": {
+    "exit_code": 137,
+    "fault_uid": "54483260-4566-4c89-aca2-433c9fee48a2",
+    "new_container": "containerd://0405b843dd90eb509d80f7b52976e8749a1d58ff8850601967cfd3c4be230629",
+    "old_container": "containerd://af3e51d69ca37e501fd828aea69b0770b40d2e16d930733007d48d147acf62e4",
+    "pod_uid": "f1ce1ee6-64a2-4e75-94d6-18ca585696e7",
+    "victim": "2"
+  },
+  "fresh_drains": {
+    "final": {
+      "acknowledged_write_fence": {
+        "index": 101,
+        "term": 2
+      },
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "command_positions": {
+        "1": {
+          "index": 101,
+          "term": 2
+        },
+        "2": {
+          "index": 101,
+          "term": 2
+        },
+        "3": {
+          "index": 101,
+          "term": 2
+        }
+      },
+      "committed": 101,
+      "driver_positions": {
+        "1": {
+          "index": 101,
+          "term": 2
+        },
+        "2": {
+          "index": 101,
+          "term": 2
+        },
+        "3": {
+          "index": 101,
+          "term": 2
+        }
+      },
+      "identities": {
+        "1": [
+          "deac147a-bf51-4aa3-a0cb-df7e018145ae",
+          1,
+          172396642,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "f1ce1ee6-64a2-4e75-94d6-18ca585696e7",
+          1,
+          172400391,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "3b489540-e9a6-43fe-929e-ea1da342fdc0",
+          1,
+          172397653,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "3"
+    },
+    "initial": {
+      "acknowledged_write_fence": null,
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "command_positions": {
+        "1": {
+          "index": 2,
+          "term": 1
+        },
+        "2": {
+          "index": 2,
+          "term": 1
+        },
+        "3": {
+          "index": 2,
+          "term": 1
+        }
+      },
+      "committed": 2,
+      "driver_positions": {
+        "1": {
+          "index": 2,
+          "term": 1
+        },
+        "2": {
+          "index": 2,
+          "term": 1
+        },
+        "3": {
+          "index": 2,
+          "term": 1
+        }
+      },
+      "identities": {
+        "1": [
+          "deac147a-bf51-4aa3-a0cb-df7e018145ae",
+          1,
+          172396642,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "f1ce1ee6-64a2-4e75-94d6-18ca585696e7",
+          1,
+          172397158,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "3b489540-e9a6-43fe-929e-ea1da342fdc0",
+          1,
+          172397653,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "2"
+    },
+    "post": {
+      "acknowledged_write_fence": {
+        "index": 101,
+        "term": 2
+      },
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "command_positions": {
+        "1": {
+          "index": 101,
+          "term": 2
+        },
+        "2": {
+          "index": 101,
+          "term": 2
+        },
+        "3": {
+          "index": 101,
+          "term": 2
+        }
+      },
+      "committed": 101,
+      "driver_positions": {
+        "1": {
+          "index": 101,
+          "term": 2
+        },
+        "2": {
+          "index": 101,
+          "term": 2
+        },
+        "3": {
+          "index": 101,
+          "term": 2
+        }
+      },
+      "identities": {
+        "1": [
+          "deac147a-bf51-4aa3-a0cb-df7e018145ae",
+          1,
+          172396642,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "f1ce1ee6-64a2-4e75-94d6-18ca585696e7",
+          1,
+          172400391,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "3b489540-e9a6-43fe-929e-ea1da342fdc0",
+          1,
+          172397653,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "3"
+    },
+    "pre": {
+      "acknowledged_write_fence": {
+        "index": 51,
+        "term": 1
+      },
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "command_positions": {
+        "1": {
+          "index": 51,
+          "term": 1
+        },
+        "2": {
+          "index": 51,
+          "term": 1
+        },
+        "3": {
+          "index": 51,
+          "term": 1
+        }
+      },
+      "committed": 51,
+      "driver_positions": {
+        "1": {
+          "index": 51,
+          "term": 1
+        },
+        "2": {
+          "index": 51,
+          "term": 1
+        },
+        "3": {
+          "index": 51,
+          "term": 1
+        }
+      },
+      "identities": {
+        "1": [
+          "deac147a-bf51-4aa3-a0cb-df7e018145ae",
+          1,
+          172396642,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "f1ce1ee6-64a2-4e75-94d6-18ca585696e7",
+          1,
+          172397158,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "3b489540-e9a6-43fe-929e-ea1da342fdc0",
+          1,
+          172397653,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "2"
+    },
+    "recovered": {
+      "acknowledged_write_fence": {
+        "index": 51,
+        "term": 1
+      },
+      "advances": {
+        "1": 2,
+        "2": 2,
+        "3": 2
+      },
+      "command_positions": {
+        "1": {
+          "index": 51,
+          "term": 1
+        },
+        "2": {
+          "index": 51,
+          "term": 1
+        },
+        "3": {
+          "index": 51,
+          "term": 1
+        }
+      },
+      "committed": 52,
+      "driver_positions": {
+        "1": {
+          "index": 52,
+          "term": 2
+        },
+        "2": {
+          "index": 52,
+          "term": 2
+        },
+        "3": {
+          "index": 52,
+          "term": 2
+        }
+      },
+      "identities": {
+        "1": [
+          "deac147a-bf51-4aa3-a0cb-df7e018145ae",
+          1,
+          172396642,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "f1ce1ee6-64a2-4e75-94d6-18ca585696e7",
+          1,
+          172400391,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "3b489540-e9a6-43fe-929e-ea1da342fdc0",
+          1,
+          172397653,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      },
+      "leader": "3"
+    }
+  },
+  "full_history_checked": true,
+  "minimum_observed_available": 79292305408,
+  "namespace": "kv9-pdrot-1789435249-3038063",
+  "namespace_uid": "38f1d21d-c777-4b1d-abf3-fac32687f51b",
+  "protocol_id": "kv9-published-directory-rotation-supplement-v1",
+  "recovery_readback": {
+    "final-post-values": {
+      "full_dataset_equal": true,
+      "keys": 65,
+      "value_bytes": 524288
+    },
+    "final-pre-values": {
+      "full_dataset_equal": true,
+      "keys": 65,
+      "value_bytes": 524288
+    },
+    "recovered-pre-values": {
+      "full_dataset_equal": true,
+      "keys": 65,
+      "value_bytes": 524288
+    }
+  },
+  "revision": "483b8c3629b033734f5d7a2b8653a1352304a4b5",
+  "runtime_result_sha256": "468bae80cf6dfbda742db91051731f8247b93af6527fbf0deecd44918e3b593a",
+  "runtime_terminal_path": "/tmp/kv9-published-directory-rotation-supplement-fence-root-20260915-first/runtime-terminal.json",
+  "runtime_terminal_sha256": "18e3cfd014a0ca660ee7e47b07322f3e6dcb687f448b869d55f02b366d76733f",
+  "scope": "Closed-loop correctness supplement. Final acknowledged value per key and empty sentinel recovered; overwritten intermediate versions remain in complete client histories. No QPS claim or instruction-boundary crash claim.",
+  "topology": {
+    "post": {
+      "1": {
+        "active": {
+          "previous": [
+            2,
+            71
+          ],
+          "sequence": 3,
+          "stream": "45874d067ef5f5851e5d6b18a85f635d"
+        },
+        "authority_sha256": "872ea4b2977b087bee357ee536af07524b705b5770dc511379ab5c7cb59f5355",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "45874d067ef5f5851e5d6b18a85f635d"
+          },
+          {
+            "bytes": 16372995,
+            "first": [
+              1,
+              37
+            ],
+            "has_unpositioned": false,
+            "last": [
+              2,
+              71
+            ],
+            "previous": [
+              1,
+              36
+            ],
+            "records": 34,
+            "sequence": 2,
+            "stream": "45874d067ef5f5851e5d6b18a85f635d"
+          }
+        ],
+        "generation": 3,
+        "kind": "segmented"
+      },
+      "2": {
+        "active": {
+          "previous": [
+            2,
+            71
+          ],
+          "sequence": 3,
+          "stream": "0be1c7000acb8bee82b7e28a307e2d77"
+        },
+        "authority_sha256": "00a83a6d5ef400a75c9450cb42ccbff56498813a51238ce36f7cf08400bb89e8",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "0be1c7000acb8bee82b7e28a307e2d77"
+          },
+          {
+            "bytes": 16372995,
+            "first": [
+              1,
+              37
+            ],
+            "has_unpositioned": false,
+            "last": [
+              2,
+              71
+            ],
+            "previous": [
+              1,
+              36
+            ],
+            "records": 34,
+            "sequence": 2,
+            "stream": "0be1c7000acb8bee82b7e28a307e2d77"
+          }
+        ],
+        "generation": 3,
+        "kind": "segmented"
+      },
+      "3": {
+        "active": {
+          "previous": [
+            2,
+            71
+          ],
+          "sequence": 3,
+          "stream": "459ebddd3a2f77816186e63c6e2cdc5b"
+        },
+        "authority_sha256": "15437feb0b899c372ef9a6baeea692c50c0c69f87c6b82919f87a7fb6f0d6c33",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "459ebddd3a2f77816186e63c6e2cdc5b"
+          },
+          {
+            "bytes": 16372995,
+            "first": [
+              1,
+              37
+            ],
+            "has_unpositioned": false,
+            "last": [
+              2,
+              71
+            ],
+            "previous": [
+              1,
+              36
+            ],
+            "records": 34,
+            "sequence": 2,
+            "stream": "459ebddd3a2f77816186e63c6e2cdc5b"
+          }
+        ],
+        "generation": 3,
+        "kind": "segmented"
+      }
+    },
+    "pre": {
+      "1": {
+        "active": {
+          "previous": [
+            1,
+            36
+          ],
+          "sequence": 2,
+          "stream": "45874d067ef5f5851e5d6b18a85f635d"
+        },
+        "authority_sha256": "d48a40094a486ff23b58294a8c51c2d1e995cc98af76192d11ad70fc64227276",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "45874d067ef5f5851e5d6b18a85f635d"
+          }
+        ],
+        "generation": 2,
+        "kind": "segmented"
+      },
+      "2": {
+        "active": {
+          "previous": [
+            1,
+            36
+          ],
+          "sequence": 2,
+          "stream": "0be1c7000acb8bee82b7e28a307e2d77"
+        },
+        "authority_sha256": "d3374d1e424ec9570d23f95c98ddedb1d6247033395354b0b258e68c5abe998b",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "0be1c7000acb8bee82b7e28a307e2d77"
+          }
+        ],
+        "generation": 2,
+        "kind": "segmented"
+      },
+      "3": {
+        "active": {
+          "previous": [
+            1,
+            36
+          ],
+          "sequence": 2,
+          "stream": "459ebddd3a2f77816186e63c6e2cdc5b"
+        },
+        "authority_sha256": "63db5d6667e6fce9e6b0747a074030abf7118952edd6c03e5b2e556f8c964481",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "459ebddd3a2f77816186e63c6e2cdc5b"
+          }
+        ],
+        "generation": 2,
+        "kind": "segmented"
+      }
+    },
+    "recovered": {
+      "1": {
+        "active": {
+          "previous": [
+            1,
+            36
+          ],
+          "sequence": 2,
+          "stream": "45874d067ef5f5851e5d6b18a85f635d"
+        },
+        "authority_sha256": "d48a40094a486ff23b58294a8c51c2d1e995cc98af76192d11ad70fc64227276",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "45874d067ef5f5851e5d6b18a85f635d"
+          }
+        ],
+        "generation": 2,
+        "kind": "segmented"
+      },
+      "2": {
+        "active": {
+          "previous": [
+            1,
+            36
+          ],
+          "sequence": 2,
+          "stream": "0be1c7000acb8bee82b7e28a307e2d77"
+        },
+        "authority_sha256": "d3374d1e424ec9570d23f95c98ddedb1d6247033395354b0b258e68c5abe998b",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "0be1c7000acb8bee82b7e28a307e2d77"
+          }
+        ],
+        "generation": 2,
+        "kind": "segmented"
+      },
+      "3": {
+        "active": {
+          "previous": [
+            1,
+            36
+          ],
+          "sequence": 2,
+          "stream": "459ebddd3a2f77816186e63c6e2cdc5b"
+        },
+        "authority_sha256": "63db5d6667e6fce9e6b0747a074030abf7118952edd6c03e5b2e556f8c964481",
+        "checkpoint": null,
+        "closed": [
+          {
+            "bytes": 16373815,
+            "first": [
+              1,
+              2
+            ],
+            "has_unpositioned": false,
+            "last": [
+              1,
+              36
+            ],
+            "previous": null,
+            "records": 35,
+            "sequence": 1,
+            "stream": "459ebddd3a2f77816186e63c6e2cdc5b"
+          }
+        ],
+        "generation": 2,
+        "kind": "segmented"
+      }
+    }
+  }
+}

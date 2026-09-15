@@ -1,0 +1,15 @@
+{
+  "all_members_read_back": false,
+  "archive": "/tmp/kv9-published-directory-rotation-supplement-fence-archive-20260915-first/original-evidence.tar.gz",
+  "audit_sha256": "1852a1d1c566e4892887e91cc6ce82828732adffd1f334e75e14cbfea24002a8",
+  "baseline_available": 79924695040,
+  "bytes": 1044182,
+  "complete": true,
+  "decoded_bytes": 227025332,
+  "ended_ns": 1789435384007641958,
+  "input_inventory_sha256": "a680a24655b1c4f5fbc4950dd8a4e6fefd92fd6195a57828e8674f46737fc021",
+  "members": 1314,
+  "runtime_result_sha256": "468bae80cf6dfbda742db91051731f8247b93af6527fbf0deecd44918e3b593a",
+  "scope": "Complete original client histories including values, selected topology bytes and physical headers, command outputs, process/fault/config evidence, and frozen helpers. No raw PVC WAL/SST backup; PVC data is retained until exact cleanup. Retained local ELF bytes omitted and source/build hashes retained.",
+  "sha256": "21181453a2b0d30fa4ed05b8ffcb7d96f6082ba05adbbd0bec47ab8380308d1f"
+}

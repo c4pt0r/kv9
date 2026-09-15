@@ -1,0 +1,102 @@
+{
+  "archive_sha256": "21181453a2b0d30fa4ed05b8ffcb7d96f6082ba05adbbd0bec47ab8380308d1f",
+  "complete": true,
+  "containers": [
+    {
+      "command": 8,
+      "container": "00d99bcc0285cbf8605c2abd65aec935d4997c71bf93721e815aa1402011a740",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    },
+    {
+      "command": 10,
+      "container": "cd2fa58cb288d336c2e6cd7b22a25170723621835eb089a355b35182db8f2ba9",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    },
+    {
+      "command": 12,
+      "container": "3120176ccb574c64cba06d82d0a77c7650fb33ef00dbe7fe6c44c5383712f22b",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    },
+    {
+      "command": 14,
+      "container": "0405b843dd90eb509d80f7b52976e8749a1d58ff8850601967cfd3c4be230629",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    },
+    {
+      "command": 16,
+      "container": "388cacd405263cb6aab49aa441d4a4544ca48891788df7a351d1269d49c986d3",
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "state": "removed"
+    }
+  ],
+  "ended_ns": 1789435487084878218,
+  "historical_namespaces_unchanged": {
+    "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+    "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+    "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+    "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+    "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+    "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+    "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+    "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+  },
+  "namespace": "kv9-pdrot-1789435249-3038063",
+  "namespace_absent": true,
+  "namespace_uid": "38f1d21d-c777-4b1d-abf3-fac32687f51b",
+  "native_children_exited_before_archive": 2,
+  "previous_leader_exit": {
+    "exit_code": 137,
+    "fault_uid": "54483260-4566-4c89-aca2-433c9fee48a2",
+    "new_container": "containerd://0405b843dd90eb509d80f7b52976e8749a1d58ff8850601967cfd3c4be230629",
+    "old_container": "containerd://af3e51d69ca37e501fd828aea69b0770b40d2e16d930733007d48d147acf62e4",
+    "pod_uid": "f1ce1ee6-64a2-4e75-94d6-18ca585696e7",
+    "victim": "2"
+  },
+  "processes": [
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 7,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1467540,
+      "start_ticks": 172401337
+    },
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 9,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1463566,
+      "start_ticks": 172398363
+    },
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 11,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1461641,
+      "start_ticks": 172396642
+    },
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 13,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1464625,
+      "start_ticks": 172400391
+    },
+    {
+      "absent": true,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "command": 15,
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 1462428,
+      "start_ticks": 172397653
+    }
+  ],
+  "verified_result_sha256": "50247133e42a5b7db69d231545846a1a4a996221dcf66f6c9e43a446184c36cd"
+}
