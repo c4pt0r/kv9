@@ -1,0 +1,49 @@
+{
+  "rows": [
+    {
+      "batches": 13568,
+      "mean_ns": 8043.768204599057,
+      "p99_ns": 21160,
+      "payload_bytes": 2114081792,
+      "reserved": false,
+      "scope": "validation, encoding and buffer drop only; no CRC, WAL I/O or database throughput",
+      "sum_final_capacity_bytes": 3015327744,
+      "total_ns": 109137847
+    },
+    {
+      "batches": 13568,
+      "mean_ns": 5473.896152712264,
+      "p99_ns": 15028,
+      "payload_bytes": 2114081792,
+      "reserved": true,
+      "scope": "validation, encoding and buffer drop only; no CRC, WAL I/O or database throughput",
+      "sum_final_capacity_bytes": 2114081792,
+      "total_ns": 74269823
+    },
+    {
+      "batches": 13568,
+      "mean_ns": 5325.551665683963,
+      "p99_ns": 14648,
+      "payload_bytes": 2114081792,
+      "reserved": true,
+      "scope": "validation, encoding and buffer drop only; no CRC, WAL I/O or database throughput",
+      "sum_final_capacity_bytes": 2114081792,
+      "total_ns": 72257085
+    },
+    {
+      "batches": 13568,
+      "mean_ns": 6818.917010613208,
+      "p99_ns": 17533,
+      "payload_bytes": 2114081792,
+      "reserved": false,
+      "scope": "validation, encoding and buffer drop only; no CRC, WAL I/O or database throughput",
+      "sum_final_capacity_bytes": 3015327744,
+      "total_ns": 92519066
+    }
+  ],
+  "pooled_mean_baseline_ns": 7431.342607606132,
+  "pooled_mean_candidate_ns": 5399.723909198113,
+  "mean_change_percent": -27.338514797159476,
+  "decision": "Proceed to source-bound proof and runtime qualification; keep feature disabled by default. Microbenchmark is not database performance acceptance.",
+  "scope": "One large-batch corpus, one shared-host ABBA process, actual jemalloc allocator, CPU4. Includes validated size calculation, encoding and buffer drop. Excludes CRC, I/O, Raft and RPC. No single-operation latency or Redis comparison."
+}

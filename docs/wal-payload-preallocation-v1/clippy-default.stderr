@@ -1,0 +1,9 @@
+    Checking kv9-common v0.0.0 (/home/dongxu/kv9/crates/common)
+   Compiling kv9-raft v0.0.0 (/home/dongxu/kv9/crates/raft)
+   Compiling kv9-server v0.0.0 (/home/dongxu/kv9/crates/server)
+    Checking kv9-engine v0.0.0 (/home/dongxu/kv9/crates/engine)
+    Checking kv9-region v0.0.0 (/home/dongxu/kv9/crates/region)
+    Checking kv9-meta v0.0.0 (/home/dongxu/kv9/crates/meta)
+    Checking kv9-txn v0.0.0 (/home/dongxu/kv9/crates/txn)
+    Checking kv9 v0.0.0 (/home/dongxu/kv9)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.26s

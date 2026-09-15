@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--release",
+    "--offline",
+    "--locked",
+    "-j4",
+    "-p",
+    "kv9-engine",
+    "--features",
+    "wal-payload-preallocation",
+    "--lib",
+    "--no-run",
+    "--message-format=json"
+  ],
+  "cwd": "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first/source",
+  "env_override": {
+    "CARGO_TARGET_DIR": "/home/dongxu/kv9/target",
+    "CARGO_BUILD_JOBS": "4"
+  },
+  "started_ns": 1789513408880503296,
+  "exit_code": 0,
+  "finished_ns": 1789513421674921489
+}

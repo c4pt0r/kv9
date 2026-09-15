@@ -1,0 +1,10 @@
+
+running 1 test
+test wal::preallocation_tests::retained_corpus_encoder_microbenchmark ... WAL_ENCODER_MICRO={"batches":13568,"mean_ns":8043.768204599057,"p99_ns":21160,"payload_bytes":2114081792,"reserved":false,"scope":"validation, encoding and buffer drop only; no CRC, WAL I/O or database throughput","sum_final_capacity_bytes":3015327744,"total_ns":109137847}
+WAL_ENCODER_MICRO={"batches":13568,"mean_ns":5473.896152712264,"p99_ns":15028,"payload_bytes":2114081792,"reserved":true,"scope":"validation, encoding and buffer drop only; no CRC, WAL I/O or database throughput","sum_final_capacity_bytes":2114081792,"total_ns":74269823}
+WAL_ENCODER_MICRO={"batches":13568,"mean_ns":5325.551665683963,"p99_ns":14648,"payload_bytes":2114081792,"reserved":true,"scope":"validation, encoding and buffer drop only; no CRC, WAL I/O or database throughput","sum_final_capacity_bytes":2114081792,"total_ns":72257085}
+WAL_ENCODER_MICRO={"batches":13568,"mean_ns":6818.917010613208,"p99_ns":17533,"payload_bytes":2114081792,"reserved":false,"scope":"validation, encoding and buffer drop only; no CRC, WAL I/O or database throughput","sum_final_capacity_bytes":3015327744,"total_ns":92519066}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 146 filtered out; finished in 0.37s
+

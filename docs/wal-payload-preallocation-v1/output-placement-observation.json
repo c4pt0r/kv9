@@ -1,0 +1,14 @@
+{
+  "recorded_ns": 1789513101630715811,
+  "bulk_output": "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first",
+  "actual_reused_cargo_target": "/home/dongxu/kv9/target",
+  "test_fixtures": "Existing NVMe /tmp; new boundary-test directory is removed after success. No global TMPDIR change.",
+  "free_bytes": {
+    "/tmp": 867570061312,
+    "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first": 9621581225984
+  },
+  "preserved_existing_evidence": true,
+  "process_observation": "Scoped /proc cmdline and cwd inspection found no active kv9 workload or compiler child at the start of this continuation. This does not establish the absence of every system background writer.",
+  "root_process_inspection_receipt": "5ecbca/0",
+  "initial_capacity_receipt": "132cd8/0"
+}

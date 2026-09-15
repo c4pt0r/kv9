@@ -1,0 +1,9 @@
+
+running 4 tests
+test wal::preallocation_tests::capacity_does_not_change_golden_bytes_or_mutation_order ... ok
+test wal::preallocation_tests::record_limit_is_checked_before_reserving_or_writing_payload ... ok
+test wal::preallocation_tests::retained_corpus_encoder_microbenchmark ... ignored, local encoder CPU experiment; requires KV9_WAL_CORPUS and recorded allocator configuration
+test wal::preallocation_tests::validated_size_matches_mixed_binary_batches_and_growing_values ... ok
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 143 filtered out; finished in 0.04s
+

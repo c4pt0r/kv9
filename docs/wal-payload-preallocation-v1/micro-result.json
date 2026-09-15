@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "4",
+    "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first/jemalloc-test-executable",
+    "wal::preallocation_tests::retained_corpus_encoder_microbenchmark",
+    "--exact",
+    "--ignored",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "env_override": {
+    "KV9_WAL_CORPUS": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/batches.bin"
+  },
+  "started_ns": 1789512912552918626,
+  "cpu": 4,
+  "host_loadavg": [
+    1.494140625,
+    1.23876953125,
+    0.7177734375
+  ],
+  "scope": "same-process jemalloc validation/encoding/drop experiment; shared host, no CRC or I/O or database QPS",
+  "exit_code": 0,
+  "finished_ns": 1789512912924496095
+}

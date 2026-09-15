@@ -1,0 +1,19 @@
+{
+  "isolated_release_build": "41658/210a5b/0",
+  "large_executable_retention": "f435f0/0",
+  "initial_boundary_tests": "5edba5/0",
+  "large_corpus_micro": "07fca8/0",
+  "isolated_engine_tests": "17131/cb622a/0",
+  "capacity_prototype_failed": "c0beef/1; initial unfinished induction draft, not an acceptance result",
+  "capacity_prototype_compiles": "178e45/0; not the strict acceptance gate",
+  "strict_capacity_proof": "77125/fa4d15/0",
+  "unchanged_crc_declaration_check": "068990/0",
+  "strict_crc_proof": "98453/6443b1/0",
+  "workspace_default_feature_and_clippy": "25060/d24a58/0; prior default completion f225db",
+  "small_release_build": "48127/9234fa/0",
+  "small_executable_retention": "d79eeb/0",
+  "small_corpus_micro": "b4dd4e/0",
+  "reproduction_preparation": "7f7b7d/0",
+  "resident_static_disassembly": "8ac638/0",
+  "scope": "Actual tool terminal handles; per-command argv/time/exit details are in adjacent original records. No server performance or actual Chaos ran in this increment."
+}

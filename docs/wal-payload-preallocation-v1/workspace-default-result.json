@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--workspace"
+  ],
+  "cwd": "/home/dongxu/kv9",
+  "env_override": {
+    "CARGO_TARGET_DIR": "/tmp/kv9-c04-configuration-development-20260915-first/target",
+    "CARGO_BUILD_JOBS": "4"
+  },
+  "started_ns": 1789513371604232948,
+  "exit_code": 0,
+  "finished_ns": 1789513433183655713
+}

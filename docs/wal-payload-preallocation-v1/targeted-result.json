@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first/jemalloc-test-executable",
+    "wal::preallocation_tests",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "started_ns": 1789512897180697665,
+  "finished_ns": 1789512897217389680,
+  "exit_code": 0
+}

@@ -56,8 +56,18 @@ snapshots in differential checks. Under jemalloc, its prepopulated overwrite
 index time falls 12.269%, while pure insertion grows 12.121%; it remains held.
 All changes are isolated experiments, with reproducible source patches and the
 exact corpus. No runtime integration, new QPS, proof/Chaos acceptance or repeated
-full matrix is claimed. Inspect the new-key cost before any further kernel
-change; keep the selected runtime and existing consistency gates.
+full matrix is claimed. Static follow-up found no justified fix for the new-key
+regression; stop advancing that variant and retain its original evidence.
+
+The [WAL payload preallocation candidate](WAL-PAYLOAD-PREALLOCATION.md) reuses
+already validated size with the same byte emitter and unchanged durability
+ordering. It is off by default. Source-bound capacity/CRC proofs and both local
+851-test workspace/Clippy configurations pass. Mean encoder time drops 27.339%
+on the original batch corpus; six small cases improve mean and both-order p99.
+Next retain matching current-source server builds, run actual recovery/Chaos,
+then compare end-to-end write throughput and latency with the same qualified
+client. These microbenchmarks establish no database QPS or Redis parity. Keep
+CRC selected and avoid replaying the completed index/capture/full matrices.
 
 During the earlier full-screen capacity constraint, the C04
 [checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local

@@ -1,0 +1,41 @@
+   Compiling kv9-engine v0.0.0 (/home/dongxu/kv9/crates/engine)
+   Compiling tikv-jemalloc-sys v0.6.1+5.3.0-1-ge13ca993e8ccb9ba9847cc330696e02839f328f7
+   Compiling kv9-raft v0.0.0 (/home/dongxu/kv9/crates/raft)
+   Compiling kv9-region v0.0.0 (/home/dongxu/kv9/crates/region)
+   Compiling kv9-meta v0.0.0 (/home/dongxu/kv9/crates/meta)
+   Compiling kv9-txn v0.0.0 (/home/dongxu/kv9/crates/txn)
+   Compiling kv9-server v0.0.0 (/home/dongxu/kv9/crates/server)
+   Compiling tikv-jemallocator v0.6.1
+   Compiling kv9 v0.0.0 (/home/dongxu/kv9)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.62s
+     Running unittests src/main.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9-a51359568b72752d)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_common-2e9ff5feb6428737)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_engine-847e48ae88a1fde1)
+     Running tests/batch_atomicity.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/batch_atomicity-9440b63d97edbaf0)
+     Running tests/minio_backend.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/minio_backend-c99bbdc2246dccb6)
+     Running tests/minio_checkpoint.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/minio_checkpoint-49373be9ceaf5efb)
+     Running tests/object_safety.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/object_safety-d35406e5d2bfc4fd)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_meta-3b4057887e431df4)
+     Running tests/admission.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/admission-a63ed9998dbe44e4)
+     Running tests/catalog.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/catalog-7491d3c40094271c)
+     Running tests/catalog_facade.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/catalog_facade-d9b03b06c6dd1ada)
+     Running tests/endpoint.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/endpoint-d7726d04d3da906e)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_raft-8ea2b0b206f6a389)
+     Running tests/driver_lock_order.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/driver_lock_order-2b47682a5a10eafb)
+     Running tests/frame_bad_input.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/frame_bad_input-783559f594545477)
+     Running tests/lease_clock_pause.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/lease_clock_pause-9094a9d7fd5cdd68)
+     Running tests/lease_restart.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/lease_restart-1893ba8e898e2a8b)
+     Running tests/membership.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/membership-aac5c4092a7cf7b1)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_region-ec3442ed58c0e7bc)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_server-1050362b997798f9)
+     Running unittests src/bin/kv9-batch-benchmark.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_batch_benchmark-190c59bf875ae59e)
+     Running unittests src/bin/kv9-batch-workload.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_batch_workload-d414e09f94964ddd)
+     Running unittests src/bin/kv9-workload.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_workload-b2024714c7c3fa03)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_txn-4be87da3d0e89e65)
+   Doc-tests kv9_common
+   Doc-tests kv9_engine
+   Doc-tests kv9_meta
+   Doc-tests kv9_raft
+   Doc-tests kv9_region
+   Doc-tests kv9_server
+   Doc-tests kv9_txn

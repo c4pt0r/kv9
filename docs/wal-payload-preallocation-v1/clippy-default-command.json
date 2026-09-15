@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "cargo",
+    "clippy",
+    "--offline",
+    "--locked",
+    "--workspace",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/home/dongxu/kv9",
+  "env_override": {
+    "CARGO_TARGET_DIR": "/tmp/kv9-c04-configuration-development-20260915-first/target",
+    "CARGO_BUILD_JOBS": "4"
+  },
+  "started_ns": 1789513490790188308
+}

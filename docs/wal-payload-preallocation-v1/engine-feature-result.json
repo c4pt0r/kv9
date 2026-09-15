@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first/jemalloc-test-executable",
+    "--test-threads=1"
+  ],
+  "started_ns": 1789512990945105120,
+  "exit_code": 0,
+  "finished_ns": 1789512994819183998
+}

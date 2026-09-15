@@ -1,0 +1,39 @@
+{
+  "default_off": true,
+  "selected_runtime": "CRC on ThinLTO and Safe ReadIndex",
+  "source_base": "0fc27535b42a79c97fac4be50e1e79817bcd80c5",
+  "tests": {
+    "workspace-default": {
+      "passed": 851,
+      "failed": 0,
+      "ignored": 28,
+      "suite_summaries": 31
+    },
+    "workspace-feature": {
+      "passed": 851,
+      "failed": 0,
+      "ignored": 28,
+      "suite_summaries": 31
+    }
+  },
+  "proofs": {
+    "capacity-proof-first": {
+      "theorems": 11,
+      "rejected_controls": 7
+    },
+    "crc-proof-first": {
+      "theorems": 47,
+      "rejected_controls": 8
+    }
+  },
+  "corpus_sha256": "ccb8790572eea92f20bc0cf8ef1a8bd66bfecb0c6106514551d4439b6869ab7e",
+  "corpus_packet": "../resident-index-experiments-v1/batches.bin.gz",
+  "micro_mean_change_percent": -27.338514797159476,
+  "proof_archive": {
+    "members": 170,
+    "bytes": 368231,
+    "sha256": "9240fc3b0aef48e035a92fc1587b6b42b8133fb693c2d78df9a4f8fc0655fdac"
+  },
+  "large_binaries_remain_local": "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first",
+  "preparation_note": "preparation.json recorded the initial planned NVMe target. Actual isolated release builds used /home/dongxu/kv9/target, as bound by their command/result records. Workspace checks used the reusable /tmp target. No global TMPDIR change."
+}

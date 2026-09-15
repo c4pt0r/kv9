@@ -23,7 +23,7 @@
     "pub(crate) fn crc32(": "pub(crate) fn crc32(bytes: &[u8]) -> u32 {\n    crc32_parts(&[bytes])\n}",
     "pub(crate) fn crc32_parts(": "pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {\n    let mut crc: u32 = 0xFFFF_FFFF;\n    for part in parts {\n        let mut chunks = part.chunks_exact(8);\n        for chunk in &mut chunks {\n            let low = crc ^ u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]);\n            crc = CRC32_SLICING[7][(low & 0xff) as usize]\n                ^ CRC32_SLICING[6][((low >> 8) & 0xff) as usize]\n                ^ CRC32_SLICING[5][((low >> 16) & 0xff) as usize]\n                ^ CRC32_SLICING[4][(low >> 24) as usize]\n                ^ CRC32_SLICING[3][usize::from(chunk[4])]\n                ^ CRC32_SLICING[2][usize::from(chunk[5])]\n                ^ CRC32_SLICING[1][usize::from(chunk[6])]\n                ^ CRC32_SLICING[0][usize::from(chunk[7])];\n        }\n        for &byte in chunks.remainder() {\n            crc = (crc >> 8) ^ CRC32_TABLE[((crc ^ u32::from(byte)) & 0xff) as usize];\n        }\n    }\n    !crc\n}"
   },
-  "candidate_wal_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+  "candidate_wal_sha256": "3ae0d6c9f505bf852be25a50370a7877137146f8a3d385be4dc2c6ca9c1a0d7a",
   "mapping": {
     "boundary": "Manually reviewed Rust-to-model mapping and Rust standard-library/compiler semantics; not a machine-checked Rust/iterator/compiler/WAL/IO refinement",
     "fragments": "outer parts loop carries the same accumulator without reset; compiledSlicingParts; arbitrary empty parts admitted",

@@ -1,0 +1,39 @@
+   Compiling kv9-engine v0.0.0 (/home/dongxu/kv9/crates/engine)
+   Compiling kv9-raft v0.0.0 (/home/dongxu/kv9/crates/raft)
+   Compiling kv9-region v0.0.0 (/home/dongxu/kv9/crates/region)
+   Compiling kv9-meta v0.0.0 (/home/dongxu/kv9/crates/meta)
+   Compiling kv9-txn v0.0.0 (/home/dongxu/kv9/crates/txn)
+   Compiling kv9-server v0.0.0 (/home/dongxu/kv9/crates/server)
+   Compiling kv9 v0.0.0 (/home/dongxu/kv9)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 17.12s
+     Running unittests src/main.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9-6824600dfe81dad3)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_common-2e9ff5feb6428737)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_engine-400ab320c8474a16)
+     Running tests/batch_atomicity.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/batch_atomicity-c99aa829fb4f0a91)
+     Running tests/minio_backend.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/minio_backend-f4b50cec13122742)
+     Running tests/minio_checkpoint.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/minio_checkpoint-f5f6ad5fdaf6240d)
+     Running tests/object_safety.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/object_safety-cc11bde408743468)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_meta-5825d1ec46bde4a4)
+     Running tests/admission.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/admission-40a17b37bad88658)
+     Running tests/catalog.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/catalog-1df4d8ff4ec248f0)
+     Running tests/catalog_facade.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/catalog_facade-fa8bc02b6747da6c)
+     Running tests/endpoint.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/endpoint-63108646a2f82b38)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_raft-329a220b21bd66a3)
+     Running tests/driver_lock_order.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/driver_lock_order-080a1bdded1d070c)
+     Running tests/frame_bad_input.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/frame_bad_input-c8d3de5247e8fea3)
+     Running tests/lease_clock_pause.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/lease_clock_pause-82ee7086123d929b)
+     Running tests/lease_restart.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/lease_restart-9333b9c9ab5b0a37)
+     Running tests/membership.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/membership-fa6f991d051b7a59)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_region-0c5d9b9802010af6)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_server-724b30a57b061fe6)
+     Running unittests src/bin/kv9-batch-benchmark.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_batch_benchmark-ee0875309b0ee1e8)
+     Running unittests src/bin/kv9-batch-workload.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_batch_workload-b35e3423e85207e4)
+     Running unittests src/bin/kv9-workload.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_workload-61a769a668073a0e)
+     Running unittests src/lib.rs (/tmp/kv9-c04-configuration-development-20260915-first/target/debug/deps/kv9_txn-17d725b561216ff8)
+   Doc-tests kv9_common
+   Doc-tests kv9_engine
+   Doc-tests kv9_meta
+   Doc-tests kv9_raft
+   Doc-tests kv9_region
+   Doc-tests kv9_server
+   Doc-tests kv9_txn

@@ -1,0 +1,7 @@
+{
+  "build_path": "/home/dongxu/kv9/target/release/deps/kv9_engine-8ef770db93f54c47",
+  "retained_path": "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first/small-jemalloc-test-executable",
+  "bytes": 11224184,
+  "sha256": "0bac1c3c6e15e39f5fe48b40c847213b951167c9f856cd58d4a1bc2bda857155",
+  "harness_sha256": "5462e9c2c91f087bc0bba326608fc9de4af3f1f6474ebaee09ab2326d9a1f25e"
+}

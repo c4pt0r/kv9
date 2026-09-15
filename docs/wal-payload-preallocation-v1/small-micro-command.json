@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "4",
+    "/mnt/data/kv9-work/wal-payload-preallocation-development-20260915-first/small-jemalloc-test-executable",
+    "wal::preallocation_tests::small_batch_encoder_microbenchmark",
+    "--exact",
+    "--ignored",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "started_ns": 1789513524894507711,
+  "loadavg": [
+    2.1181640625,
+    1.78173828125,
+    1.07275390625
+  ]
+}

@@ -1,0 +1,361 @@
+{
+  "rows": [
+    {
+      "batches": 20000,
+      "mean_ns": 93.8883,
+      "mutations": 1,
+      "p99_ns": 121,
+      "payload_bytes": 46,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 1877766,
+      "value_bytes": 0
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 31.9942,
+      "mutations": 1,
+      "p99_ns": 41,
+      "payload_bytes": 46,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 639884,
+      "value_bytes": 0
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 31.82675,
+      "mutations": 1,
+      "p99_ns": 41,
+      "payload_bytes": 46,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 636535,
+      "value_bytes": 0
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 92.59695,
+      "mutations": 1,
+      "p99_ns": 110,
+      "payload_bytes": 46,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 1851939,
+      "value_bytes": 0
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 112.73795,
+      "mutations": 1,
+      "p99_ns": 151,
+      "payload_bytes": 302,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 2254759,
+      "value_bytes": 256
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 32.0666,
+      "mutations": 1,
+      "p99_ns": 41,
+      "payload_bytes": 302,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 641332,
+      "value_bytes": 256
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 31.9979,
+      "mutations": 1,
+      "p99_ns": 41,
+      "payload_bytes": 302,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 639958,
+      "value_bytes": 256
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 113.07175,
+      "mutations": 1,
+      "p99_ns": 140,
+      "payload_bytes": 302,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 2261435,
+      "value_bytes": 256
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 144.42955,
+      "mutations": 1,
+      "p99_ns": 171,
+      "payload_bytes": 4142,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 2888591,
+      "value_bytes": 4096
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 64.88375,
+      "mutations": 1,
+      "p99_ns": 90,
+      "payload_bytes": 4142,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 1297675,
+      "value_bytes": 4096
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 65.02595,
+      "mutations": 1,
+      "p99_ns": 81,
+      "payload_bytes": 4142,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 1300519,
+      "value_bytes": 4096
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 144.19825,
+      "mutations": 1,
+      "p99_ns": 171,
+      "payload_bytes": 4142,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 2883965,
+      "value_bytes": 4096
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 604.77195,
+      "mutations": 64,
+      "p99_ns": 642,
+      "payload_bytes": 2692,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 12095439,
+      "value_bytes": 0
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 352.0003,
+      "mutations": 64,
+      "p99_ns": 380,
+      "payload_bytes": 2692,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 7040006,
+      "value_bytes": 0
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 355.50025,
+      "mutations": 64,
+      "p99_ns": 521,
+      "payload_bytes": 2692,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 7110005,
+      "value_bytes": 0
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 602.7347,
+      "mutations": 64,
+      "p99_ns": 642,
+      "payload_bytes": 2692,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 12054694,
+      "value_bytes": 0
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 771.1062,
+      "mutations": 64,
+      "p99_ns": 881,
+      "payload_bytes": 19076,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 15422124,
+      "value_bytes": 256
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 336.18025,
+      "mutations": 64,
+      "p99_ns": 381,
+      "payload_bytes": 19076,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 6723605,
+      "value_bytes": 256
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 333.174,
+      "mutations": 64,
+      "p99_ns": 371,
+      "payload_bytes": 19076,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 6663480,
+      "value_bytes": 256
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 683.11395,
+      "mutations": 64,
+      "p99_ns": 751,
+      "payload_bytes": 19076,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 13662279,
+      "value_bytes": 256
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 4351.2614,
+      "mutations": 64,
+      "p99_ns": 5070,
+      "payload_bytes": 264836,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 87025228,
+      "value_bytes": 4096
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 2546.9863,
+      "mutations": 64,
+      "p99_ns": 2735,
+      "payload_bytes": 264836,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 50939726,
+      "value_bytes": 4096
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 2547.80545,
+      "mutations": 64,
+      "p99_ns": 3196,
+      "payload_bytes": 264836,
+      "reserved": true,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 50956109,
+      "value_bytes": 4096
+    },
+    {
+      "batches": 20000,
+      "mean_ns": 3851.09765,
+      "mutations": 64,
+      "p99_ns": 4298,
+      "payload_bytes": 264836,
+      "reserved": false,
+      "scope": "hot fixed batch validation, encoding and buffer drop only; timer overhead included; no I/O or database throughput",
+      "total_ns": 77021953,
+      "value_bytes": 4096
+    }
+  ],
+  "cases": [
+    {
+      "mutations": 1,
+      "value_bytes": 0,
+      "baseline_mean_ns": 93.242625,
+      "candidate_mean_ns": 31.910475,
+      "mean_change_percent": -65.77694482539505,
+      "baseline_p99_ns": [
+        121,
+        110
+      ],
+      "candidate_p99_ns": [
+        41,
+        41
+      ]
+    },
+    {
+      "mutations": 1,
+      "value_bytes": 256,
+      "baseline_mean_ns": 112.90485,
+      "candidate_mean_ns": 32.03225,
+      "mean_change_percent": -71.62898670871978,
+      "baseline_p99_ns": [
+        151,
+        140
+      ],
+      "candidate_p99_ns": [
+        41,
+        41
+      ]
+    },
+    {
+      "mutations": 1,
+      "value_bytes": 4096,
+      "baseline_mean_ns": 144.3139,
+      "candidate_mean_ns": 64.95485,
+      "mean_change_percent": -54.990579563022,
+      "baseline_p99_ns": [
+        171,
+        171
+      ],
+      "candidate_p99_ns": [
+        90,
+        81
+      ]
+    },
+    {
+      "mutations": 64,
+      "value_bytes": 0,
+      "baseline_mean_ns": 603.753325,
+      "candidate_mean_ns": 353.750275,
+      "mean_change_percent": -41.40814462595299,
+      "baseline_p99_ns": [
+        642,
+        642
+      ],
+      "candidate_p99_ns": [
+        380,
+        521
+      ]
+    },
+    {
+      "mutations": 64,
+      "value_bytes": 256,
+      "baseline_mean_ns": 727.110075,
+      "candidate_mean_ns": 334.677125,
+      "mean_change_percent": -53.971601204948236,
+      "baseline_p99_ns": [
+        881,
+        751
+      ],
+      "candidate_p99_ns": [
+        381,
+        371
+      ]
+    },
+    {
+      "mutations": 64,
+      "value_bytes": 4096,
+      "baseline_mean_ns": 4101.179525,
+      "candidate_mean_ns": 2547.395875,
+      "mean_change_percent": -37.886262733158446,
+      "baseline_p99_ns": [
+        5070,
+        4298
+      ],
+      "candidate_p99_ns": [
+        2735,
+        3196
+      ]
+    }
+  ],
+  "scope": "Six hot synthetic encoder cases, ABBA once each, CPU4 jemalloc; per-arm p99 retained separately, not averaged. Timer overhead included. No database QPS."
+}

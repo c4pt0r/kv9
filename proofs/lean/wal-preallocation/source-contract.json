@@ -1,0 +1,31 @@
+{
+  "baseline_revision": "0fc27535b42a79c97fac4be50e1e79817bcd80c5",
+  "mapping": "Reviewed safe-Rust Vec append semantics and checked size arithmetic; not a mechanized Rust/compiler/allocator/I/O refinement.",
+  "sources": {
+    "crates/engine/src/wal.rs": {
+      "sha256": "3ae0d6c9f505bf852be25a50370a7877137146f8a3d385be4dc2c6ca9c1a0d7a",
+      "baseline_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+      "declarations": {
+        "fn put_u32(": "fn put_u32(out: &mut Vec<u8>, v: u32) {\n    out.extend_from_slice(&v.to_le_bytes());\n}",
+        "fn cf_code(": "fn cf_code(cf: ColumnFamily) -> u8 {\n    match cf {\n        ColumnFamily::Default => 0,\n        ColumnFamily::Lock => 1,\n        ColumnFamily::Write => 2,\n    }\n}",
+        "pub(crate) fn encode_batch(": "pub(crate) fn encode_batch(batch: &WriteBatch) -> Vec<u8> {\n    encode_batch_with_capacity(batch, 0)\n}",
+        "pub(crate) fn encode_batch_with_capacity(": "pub(crate) fn encode_batch_with_capacity(batch: &WriteBatch, capacity: usize) -> Vec<u8> {\n    let mut out = Vec::with_capacity(capacity);\n    put_u32(&mut out, batch.mutations().len() as u32);\n    for m in batch.mutations() {\n        match m {\n            Mutation::Put { cf, key, value } => {\n                out.push(0);\n                out.push(cf_code(*cf));\n                put_u32(&mut out, key.len() as u32);\n                out.extend_from_slice(key);\n                put_u32(&mut out, value.len() as u32);\n                out.extend_from_slice(value);\n            }\n            Mutation::Delete { cf, key } => {\n                out.push(1);\n                out.push(cf_code(*cf));\n                put_u32(&mut out, key.len() as u32);\n                out.extend_from_slice(key);\n            }\n        }\n    }\n    out\n}"
+      }
+    },
+    "crates/engine/src/wal_segment.rs": {
+      "sha256": "996a32a6d73ff8e06dcfd26b5d4be7f9648f749184b69265cee7fcb40f5926de",
+      "baseline_sha256": "8b4dcf628e065390a381cddd82bc9487a53713636f6d2974862e03d3147f1c6b",
+      "declarations": {
+        "pub fn append(": "pub fn append(&mut self, batch: &WriteBatch, position: Option<AppliedPosition>) -> Result<()> {\n        if self.poisoned {\n            return Err(bad(\"failed writer requires recovery\"));\n        }\n        check_position(self.summary.last.or(self.header.previous), position)?;\n        let _frame_size = encoded_size(batch)?;\n        #[cfg(feature = \"wal-payload-preallocation\")]\n        let payload = encode_batch_with_capacity(\n            batch,\n            usize::try_from(_frame_size - FRAME_HEADER_BYTES as u64 - 4)\n                .map_err(|_| bad(\"record length overflow\"))?,\n        );\n        #[cfg(not(feature = \"wal-payload-preallocation\"))]\n        let payload = encode_batch(batch);\n        let length = u32::try_from(payload.len()).map_err(|_| bad(\"record length overflow\"))?;\n        if length > MAX_RECORD_LEN {\n            return Err(bad(\"record exceeds the size limit\"));\n        }\n        let header = frame_header(length, position);\n        let crc = frame_crc(&self.header.encode()?, &header, &payload).to_le_bytes();\n        let mut next = self.summary;\n        next.add(\n            FRAME_HEADER_BYTES as u64 + payload.len() as u64 + 4,\n            position,\n        )?;\n        let result = self\n            .metrics\n            .write\n            .measure(|| {\n                self.file.write_all(&header)?;\n                self.file.write_all(&payload)?;\n                self.file.write_all(&crc)\n            })\n            .and_then(|_| self.metrics.sync.measure(|| self.file.sync_all()));\n        if let Err(error) = result {\n            self.poisoned = true;\n            return Err(io(error));\n        }\n        self.summary = next;\n        Ok(())\n    }",
+        "pub(crate) fn encoded_size(": "pub(crate) fn encoded_size(batch: &WriteBatch) -> Result<u64> {\n    let mut payload = 4u64;\n    for mutation in batch.mutations() {\n        let extra = match mutation {\n            crate::Mutation::Put { key, value, .. } => 10u64\n                .checked_add(key.len() as u64)\n                .and_then(|n| n.checked_add(value.len() as u64)),\n            crate::Mutation::Delete { key, .. } => 6u64.checked_add(key.len() as u64),\n        }\n        .ok_or_else(|| bad(\"record length overflow\"))?;\n        payload = payload\n            .checked_add(extra)\n            .ok_or_else(|| bad(\"record length overflow\"))?;\n        if payload > u64::from(MAX_RECORD_LEN) {\n            return Err(bad(\"record exceeds the size limit\"));\n        }\n    }\n    Ok(payload + FRAME_HEADER_BYTES as u64 + 4)\n}"
+      }
+    },
+    "crates/engine/src/wal_v2.rs": {
+      "sha256": "7bcf311600cd56000c91d9bfffa30bf25440d330c50cc79f1de2fb7b572b3295"
+    },
+    "crates/engine/src/cf.rs": {
+      "sha256": "fca152624381e4e2ce0df1419af0b933063c0c19eec0c9b2d45c683ab3e9bf3c"
+    }
+  },
+  "proof_sha256": "2870262cb728ccd3ddcbf29ab724494c4a20afb2d56a854f782af96916d2640e"
+}

@@ -6,6 +6,15 @@ overwrites, but its pure-insert regression still prevents integration. The
 production engine, dependencies, WAL and Raft behavior remain unchanged. The
 only production-file edit corrects inaccurate snapshot-cost documentation.
 
+Follow-up: static inspection of the retained jemalloc executable shows that
+the borrowed insertion function contains allocation/copy work performed by the
+old caller. Its larger symbol has different responsibilities, so symbol size
+does not identify the cause of the insertion regression. No supported corrective
+change was found; stop advancing this variant and preserve all completed runs.
+The next [WAL payload allocation experiment](WAL-PAYLOAD-PREALLOCATION.md) changes
+a different, explicit allocation site. No new resident-index profile or timing
+was collected for this follow-up.
+
 ## Evidence and input
 
 The corrected write-stage capture locates a larger apply interval, but does not
