@@ -1,50 +1,72 @@
-# Published-directory rotation supplement
+# Published-directory rotation and recovery
 
-On 2026-09-15 UTC, the first supplement established positive selected engine
-WAL rotation on all three voters of candidate `483b8c3`, then failed during
-Chaos Mesh target selection. The failed attempt is preserved. Leader-kill
-recovery and rotation after recovery are still unverified by this supplement.
-CRC main remains selected and there is no new performance result.
+On 2026-09-15 UTC, candidate `483b8c3` completed the actual Chaos Mesh
+rotation supplement: selected WAL rotation on all three voters, leader
+container-kill, same-store acknowledged-value recovery, and a second rotation
+on all three voters after recovery. Independent full-history audit, archive
+readback and exact cleanup pass. CRC main remains selected; this correctness
+workload provides no new throughput or latency measurement.
 
-The exact default server/image and 16 MiB segment target are unchanged from
-the [accepted full21 baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md). A finite
-single-worker burst uses 64 keys, 8,192-byte values and batches of 64. All
-56 setup/traffic/verification calls succeeded. Traffic contains 45 BatchPut
-and five BatchGet calls: 2,880 acknowledged write items / 23,592,960 input
-value bytes. The complete atomic history passes the unchanged independent
-reader. Initial and pre-fault drains each establish two fresh publications
-on every voter; all three replicas reach applied/committed index 51.
+The exact default server/image and 16 MiB segment target match the
+[accepted 21-window baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md).
+Two finite single-worker bursts each use a fresh keyspace, 64 keys,
+8,192-byte values and batches of 64. Both complete 56-call histories pass
+the original atomic-history validator with every call successful. Combined
+traffic contains 90 BatchPut and ten BatchGet calls: 5,760 acknowledged write
+items and 47,185,920 input value bytes, excluding initialization writes.
 
-Every store's checksum-valid selected topology names closed segment 1 and
-active segment 2 at generation 2. Selected physical headers match stream,
-sequence and predecessor, and topology bytes agree before/after header
-capture. This provides positive rotation evidence beyond filenames or
-offered-byte counts. It is a correctness workload, not a QPS measurement.
+| Checkpoint | Every voter's selected topology | Acknowledged write fence |
+| --- | --- | --- |
+| Before the fault | Generation 2; closed segment 1, active segment 2 | Term 1, index 51 |
+| After same-store recovery | Same streams and generation 2 topology | Term 1, index 51 |
+| After the second burst | Generation 3; closed segments 1 and 2, active segment 3 | Term 2, index 101 |
 
-The fresh namespace omitted the installed controller's required annotation
-`chaos-mesh.org/inject=enabled`. The controller reported that the namespace
-was not enabled and selected no Pod. `Selected` and `AllInjected` remained
-false, and all voter restart counts remained zero. The original 30-second
-wait failed; no database crash or recovery was observed.
+The selected topology checksum, stream identity, sequence, predecessor and
+physical segment headers are independently checked; filenames and offered
+bytes alone are insufficient. Chaos Mesh killed the observed leader's exact
+container, which exited 137. The replacement kept its Pod UID, PVC and store
+lifecycle; the old server process was observed absent. Complete public reads
+recover the 65-key dataset, including the empty sentinel, after restart.
+Final reads verify both keyspaces, each with 524,288 value bytes. Five drains
+require two new status publications on every voter, empty queues, healthy
+serving state, agreed leadership and fully applied committed progress.
 
-A separate corrected fixture adds that annotation during namespace creation,
-reads it back immediately, and checks it again in the independent audit.
-Its focused local control passes (`b1c398/0`). The existing 14 parser controls
-are reused unchanged. Fault identity, AllInjected, exact container death,
-same-PVC recovery, full value readback, subsequent rotation, fresh drains,
-resource bounds and cleanup requirements are retained. The corrected runtime
-has not yet executed at this checkpoint.
+The successful runtime is `91616/8d6682/0`, independent audit
+`15025/2cf21d/0`, archive/readback `98295/355350/0`, and cleanup
+`99235/092c9f/0`. All five remaining containers and their process trees exit;
+both native workload children had already exited. The previously killed
+leader is accounted for separately. The namespace is absent and all eight
+historical namespace UIDs are unchanged.
 
-The failed run underwent a separate partial audit, complete reporting archive,
-independent full-member/hash/EOF readback and exact owned cleanup. All four
-remaining containers and their process trees exited, the namespace is absent,
-and all eight historical namespace UIDs are unchanged. The partial reader
-explicitly keeps `accepted=false` and the original runtime exit code 1.
-[Portable original evidence and verifier](published-directory-rotation-prefix-v1/README.md)
-retain the failure and these distinct successful preservation checks.
+Two earlier attempts remain failed. The first lacked the installed Chaos
+controller's required namespace annotation, `chaos-mesh.org/inject=enabled`,
+and failed before injection. Its [original prefix evidence](published-directory-rotation-prefix-v1/README.md)
+is preserved. The second injected the fault but hit a test-script error:
+command-only applied position `(1,51)` was incorrectly required to equal
+unified driver/commit position `(2,52)` after an election no-op. A separate
+read-only diagnosis recovered all acknowledged values; it did not accept
+that incomplete attempt. Its failed result and subsequent exact cleanup are
+preserved with the successful attempt.
 
-After complete corrected supplement acceptance, run the unchanged eight-smoke /
-sixteen-timed matched write screen and report both throughput and latency.
-The separately versioned storage v3 controls pass 71 local cases; actual net
-capacity recovery and fresh full-campaign headroom remain execution gates.
-No original industrial roadmap work package closes at this checkpoint.
+The corrected checker follows the existing driver's documented semantics:
+unified driver-applied index must equal committed index, while every voter's
+command watermark must cover the maximum successful native write receipt
+derived independently from the complete history. Coherent term/index pairs,
+queue, freshness, identity and deadline requirements remain. No extra write
+forces the no-op gap closed. Five focused controls pass (`7c096d/0`), including
+rejection of unapplied commits and progress below the acknowledged prefix.
+No production source or consistency rule changed to make the test pass.
+
+[Portable original histories, failure records and verifier](published-directory-rotation-v1/README.md)
+retain both later attempts. The successful archive contains 1,314 members /
+227,025,332 decoded bytes; the second failed attempt contains 1,324 members /
+115,917,336 decoded bytes. Every original member was independently read back
+before cleanup. The archives include selected topology and segment headers,
+but are not complete raw PVC WAL/SST or executable backups.
+
+Next is the complete eight-smoke / sixteen-timed matched write screen with
+CRC main, reporting throughput and latency together. [Local capacity recovery](LOCAL-CAPACITY-RECOVERY.md)
+has reached its empirical launch budget; fresh guards still apply. Dynamic
+multi-Raft, routing, membership and automatic splits remain on the subsequent
+route. This checkpoint closes the rotation supplement, not an entire original
+industrial roadmap work package. All work ran locally; no hosted CI was dispatched.
