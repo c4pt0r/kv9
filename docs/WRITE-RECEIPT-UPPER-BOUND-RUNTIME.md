@@ -58,7 +58,7 @@ admission/Raft queues. All five server and two client lifetimes exit. Recovery
 terminates at `81788/4be379/0`; independent audit is `e09584/0`.
 
 Each phase retains its original 24 GiB + 8 MiB launch minimum, 8 GiB available
-floor and 16 GiB maximum sampled decline. Capacity cleanup completed before
+floor and 16 GiB maximum sampled decline. [Capacity cleanup](WRITE-CAPACITY-COMPLETION.md) completed before
 the builds; every subsequent phase checked fresh availability. These sampled
 guards are not hard disk reservations.
 
