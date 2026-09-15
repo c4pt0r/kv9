@@ -9,9 +9,11 @@
 > writes but has batch/order tradeoffs; promotion remains held.
 > The [completed observer capture](WRITE-OBSERVER-CAPTURE.md) identifies repeated
 > receipt misses. The independent [upper-bound candidate](WRITE-RECEIPT-UPPER-BOUND.md)
-> now passes 14 source-bound theorem statements / 82 obligations and local
-> development checks. Its exact release, recovery, actual Chaos and full matched
-> performance gates remain open; no new speedup is claimed.
+> now passes 14 source-bound theorem statements / 82 obligations, local
+> development checks and [retained releases/ordinary recovery](WRITE-RECEIPT-UPPER-BOUND-RUNTIME.md).
+> Both complete recovery histories pass: 360 operations, including 30 explicit
+> unknowns, six fresh drains and seven exited lifetimes. Actual Chaos and the full
+> matched performance gates remain open; no new speedup is claimed.
 > Next: complete that candidate's acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton

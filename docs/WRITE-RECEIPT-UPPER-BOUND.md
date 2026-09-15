@@ -2,9 +2,10 @@
 
 Candidate [`e2e23cc`](https://github.com/c4pt0r/kv9/commit/e2e23cca5e70a9ea0cc241877b3b35b5b6433d27)
 adds a conservative negative-lookup filter to the applied-receipt vector.
-Its source-bound proof and local development checks pass. **It is experimental:
-no retained release, ordinary recovery, actual Chaos Mesh or performance screen
-has yet run for this candidate. CRC remains selected.**
+Its source-bound proof, local development checks, retained default/diagnostic
+releases and ordinary three-voter recovery pass. **It is experimental: actual
+Chaos Mesh and the full matched performance screen remain open. CRC remains
+selected.**
 
 ## Why this candidate
 
@@ -97,15 +98,21 @@ made beyond the available counters.
 
 ## Next gates
 
-1. Qualify fresh capacity and build retained default/diagnostic executables
-   from the exact candidate, with local source/feature/codegen checks.
-2. Run ordinary three-voter recovery and independent complete-history checks,
-   then actual Chaos Mesh against the same candidate. Preserve unknown outcomes
-   and all original failures.
-3. Run the original eight-smoke/sixteen-ten-second point/batch matched screen
+The [release and ordinary recovery checkpoint](WRITE-RECEIPT-UPPER-BOUND-RUNTIME.md)
+binds the same 1,116-file candidate to retained default server/native client and
+diagnostic server builds. Actual Cargo records and compiler invocations confirm
+the intended features and release settings. Both stream and unary leader-loss/
+original-directory-restart histories pass independent checks: 360 completed
+operations, 330 successes and 30 explicit unknowns. Six fresh drains and all
+seven owned client/voter lifetimes are checked. This is ordinary process
+recovery on one host, not actual Chaos Mesh or physical power-loss evidence.
+
+1. Complete actual full21 Chaos Mesh against the retained default candidate.
+   Preserve unknown outcomes and all original failures.
+2. Run the original eight-smoke/sixteen-ten-second point/batch matched screen
    with the fixed native v3 client and selected CRC reference. Judge throughput
    and latency by both opposite orders; no diagnostic sweep replaces this gate.
-4. Capture actual upper-bound skip/fallback populations separately and keep
+3. Capture actual upper-bound skip/fallback populations separately and keep
    the held tail-hint comparison distinct. Promote only after the complete
    correctness/performance decision, then continue the industrial storage and
    dynamic multi-Raft/split route recorded in issue #9.
