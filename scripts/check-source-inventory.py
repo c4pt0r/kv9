@@ -72,7 +72,8 @@ class SourceInventoryTests(unittest.TestCase):
         for name in ['source.rs', 'crates/raft/large.json', 'scripts/large.json',
                      'data/original-evidence.tar.gz', 'docs-other/large.json',
                      'docs/source.rs', 'docs/helper.py', 'docs/opaque.bin',
-                     'docs/archive.gz', 'docs/archive.tar.gz.001.rs']:
+                     'docs/archive.gz', 'docs/archive.tar.gz.001.rs',
+                     'scripts/corpus.bin.gz', 'docs/corpus.bin.gz.py']:
             with self.subTest(name=name):
                 self.names = []
                 self.file(name, b'a' * (BUILDER.MAX_SOURCE_FILE + 1))
@@ -82,7 +83,8 @@ class SourceInventoryTests(unittest.TestCase):
         for name in ['docs/report.md', 'docs/capture/input-inventory.json',
                      'docs/capture/original-evidence.tar.gz', 'docs/capture/evidence.tar.gz',
                      'docs/capture/evidence.tar.gz.001', 'docs/capture/cargo.jsonl',
-                     'docs/capture/samples.csv', 'docs/capture/run.stderr']:
+                     'docs/capture/samples.csv', 'docs/capture/run.stderr',
+                     'docs/capture/corpus.bin.gz']:
             with self.subTest(name=name):
                 self.names = []
                 path = self.file(name, b'a' * 128)
@@ -119,6 +121,14 @@ class SourceInventoryTests(unittest.TestCase):
         self.file('source.rs', b'a' * 128)
         self.file('docs/helper.py', b'b')
         with patch.object(BUILDER, 'MAX_SOURCE_TOTAL', 128):
+            self.rejected()
+
+    def test_compressed_corpus_consumes_the_documentation_aggregate(self):
+        self.file('docs/corpus.bin.gz', b'a' * 128)
+        with patch.object(BUILDER, 'MAX_SOURCE_FILE', 64), \
+                patch.object(BUILDER, 'MAX_DOCUMENTATION_TOTAL', 128):
+            self.assertEqual(len(BUILDER.snapshot()['sources']), 1)
+            self.file('docs/extra.json', b'b')
             self.rejected()
 
     def test_live_and_dangling_symlinks_are_rejected(self):

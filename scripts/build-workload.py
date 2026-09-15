@@ -42,7 +42,7 @@ def documentation_input(name):
     path = Path(name)
     if path.is_absolute() or len(path.parts) < 2 or path.parts[0] != 'docs' or '..' in path.parts:
         return False
-    return (path.suffix in DOCUMENTATION_SUFFIXES or path.name.endswith('.tar.gz')
+    return (path.suffix in DOCUMENTATION_SUFFIXES or path.name.endswith(('.tar.gz', '.bin.gz'))
             or re.fullmatch(r'.+\.tar\.gz\.[0-9]{3}', path.name) is not None)
 
 
