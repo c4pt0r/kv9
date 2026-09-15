@@ -83,6 +83,9 @@ pub struct NodeStatus {
 /// verification (correlation is by term+index, never position alone).
 const APPLIED_RING: usize = 1024;
 
+mod applied_receipts;
+use applied_receipts::AppliedReceipts;
+
 /// How many conf-change receipts are retained (membership changes are rare;
 /// a waiter that lags 64 changes behind has bigger problems).
 const CONF_RECEIPTS: usize = 64;
@@ -223,7 +226,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// advanced, nothing written) and enters WITH its rejection verdict, so
     /// the receipt reaches the proposer instead of dying at this boundary
     /// (the silent-lost-write blocker Ren's layer-3 test caught).
-    applied: Mutex<Vec<RingEntry>>,
+    applied: Mutex<AppliedReceipts>,
     /// Conf-change receipts by exact (index, term) — the correlation store for
     /// [`Self::wait_conf_applied`]. Conf entries NEVER enter the command ring:
     /// `applied_index`/`applied_term` must remain a same-entry pair.
@@ -310,7 +313,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             drain,
             transport,
             sm: Mutex::new(sm),
-            applied: Mutex::new(Vec::new()),
+            applied: Mutex::new(AppliedReceipts::default()),
             conf_receipts: Mutex::new(Vec::new()),
             read_receipts: Mutex::new(Vec::new()),
             read_incarnation: {
@@ -955,19 +958,11 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .is_some_and(|wm| wm.index >= at.index.0);
         {
             let applied = self.applied.lock().expect("applied poisoned");
-            #[cfg(not(feature = "write-path-diagnostics"))]
-            let entry = applied.iter().find(|e| e.index == at.index.0);
-            #[cfg(feature = "write-path-diagnostics")]
-            let entry = {
-                let slot = applied.iter().position(|e| e.index == at.index.0);
-                self.write_diagnostics.record_linear_lookup(
-                    applied.len(),
-                    slot,
-                    applied.last().map(|entry| entry.index),
-                    at.index.0,
-                );
-                slot.map(|slot| &applied[slot])
-            };
+            let entry = applied.find_index(
+                at.index.0,
+                #[cfg(feature = "write-path-diagnostics")]
+                &self.write_diagnostics,
+            );
             if let Some(entry) = entry {
                 return Some(if entry.term == at.term {
                     // The receipt is the RING's recorded values — position
@@ -1206,7 +1201,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     #[cfg(feature = "write-path-diagnostics")]
     pub fn write_diagnostics(&self) -> crate::write_diagnostics::WriteDiagnosticsSnapshot {
         crate::write_diagnostics::WriteDiagnosticsSnapshot {
-            schema_version: 1,
+            schema_version: 2,
             snapshot_consistency: "coherent_per_component_independent_between_components",
             bucket_rule: "0=[0,0]; i>0=[2^(i-1),2^i-1]",
             joint_bucket_rule: "0=[0,0]; 1..7=[2^(i-1),2^i-1]; 8=[128,infinity)",
@@ -1762,16 +1757,12 @@ pub struct ConfChangeReceipt {
     pub learners: Vec<u64>,
 }
 
-fn push_ring(applied: &mut Vec<RingEntry>, index: u64, term: u64, outcome: crate::ApplyOutcome) {
+fn push_ring(applied: &mut AppliedReceipts, index: u64, term: u64, outcome: crate::ApplyOutcome) {
     applied.push(RingEntry {
         index,
         term,
         outcome,
     });
-    let len = applied.len();
-    if len > APPLIED_RING {
-        applied.drain(..len - APPLIED_RING);
-    }
 }
 
 fn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {

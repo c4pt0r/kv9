@@ -117,7 +117,7 @@ pub(crate) struct PumpObservation {
     pub group_bytes: Distribution,
 }
 
-const METRICS: [(&str, &str); 17] = [
+const METRICS: [(&str, &str); 18] = [
     ("committed_entries_taken_per_pump", "entries"),
     ("applied_commands_per_pump", "commands"),
     ("successful_apply_group_commands", "commands"),
@@ -135,6 +135,7 @@ const METRICS: [(&str, &str); 17] = [
     ("receipt_linear_probes_per_lookup", "receipts"),
     ("receipt_hit_slots_behind_tail", "receipts"),
     ("receipt_hit_index_distance_from_tail", "log_indexes"),
+    ("receipt_upper_bound_skipped_ring_length", "receipts"),
 ];
 
 #[derive(Clone)]
@@ -215,18 +216,24 @@ impl WriteDiagnostics {
         });
     }
 
-    /// The caller reports the actual first-match linear scan. There is no
-    /// hypothetical hint hit or inferred binary-search count in this schema.
-    pub(crate) fn record_linear_lookup(
+    /// Count actual fallback linear probes, or zero probes for a bound rejection.
+    /// The skipped ring length makes the absent scan explicit and accountable.
+    pub(crate) fn record_bounded_lookup(
         &self,
         len: usize,
         slot: Option<usize>,
         tail_index: Option<u64>,
         requested: u64,
+        upper_bound_miss: bool,
     ) {
         self.update(|state| {
             state.distributions[13].record(len as u64);
-            state.distributions[14].record(slot.map_or(len, |slot| slot + 1) as u64);
+            if upper_bound_miss {
+                state.distributions[14].record(0);
+                state.distributions[17].record(len as u64);
+            } else {
+                state.distributions[14].record(slot.map_or(len, |slot| slot + 1) as u64);
+            }
             if let Some(slot) = slot {
                 add(&mut state.lookup_hits, 1, &mut state.saturated);
                 state.distributions[15].record((len - 1 - slot) as u64);
@@ -253,7 +260,7 @@ impl WriteDiagnostics {
         DriverSnapshot {
             valid: state.valid,
             saturated: state.saturated,
-            lookup_algorithm: "first_match_linear_scan",
+            lookup_algorithm: "upper_bound_then_first_match_linear_scan",
             successful_pumps: state.successful_pumps,
             failed_pumps: state.failed_pumps,
             lookup_hits: state.lookup_hits,
@@ -373,10 +380,10 @@ mod tests {
     #[test]
     fn lookup_counts_measure_the_actual_scan_and_do_not_assume_dense_indexes() {
         let metrics = WriteDiagnostics::default();
-        metrics.record_linear_lookup(3, Some(0), Some(100), 1);
-        metrics.record_linear_lookup(3, Some(2), Some(100), 100);
-        metrics.record_linear_lookup(3, None, Some(100), 2);
-        metrics.record_linear_lookup(0, None, None, 1);
+        metrics.record_bounded_lookup(3, Some(0), Some(100), 1, false);
+        metrics.record_bounded_lookup(3, Some(2), Some(100), 100, false);
+        metrics.record_bounded_lookup(3, None, Some(100), 2, false);
+        metrics.record_bounded_lookup(0, None, None, 1, false);
         let snapshot = metrics.snapshot();
         assert_eq!((snapshot.lookup_hits, snapshot.lookup_misses), (2, 2));
         assert_eq!(snapshot.distributions[14].sum, 7);
@@ -391,7 +398,7 @@ mod tests {
             let _held = metrics.0.lock().unwrap();
             panic!("injected observer failure");
         });
-        metrics.record_linear_lookup(1, Some(0), Some(7), 7);
+        metrics.record_bounded_lookup(1, Some(0), Some(7), 7, false);
         let snapshot = metrics.snapshot();
         assert!(!snapshot.valid);
         assert_eq!(snapshot.lookup_hits, 1);

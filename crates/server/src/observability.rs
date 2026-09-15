@@ -372,8 +372,8 @@ mod tests {
     fn write_diagnostic_snapshot_has_fixed_inventory_and_bounded_json() {
         let (_, driver) = fixture();
         let mut snapshot = driver.write_diagnostics();
-        assert_eq!(snapshot.schema_version, 1);
-        assert_eq!(snapshot.driver.distributions.len(), 17);
+        assert_eq!(snapshot.schema_version, 2);
+        assert_eq!(snapshot.driver.distributions.len(), 18);
         assert_eq!(snapshot.ready.len(), 3);
         let mut names = std::collections::BTreeSet::new();
         for metric in snapshot
@@ -402,7 +402,7 @@ mod tests {
         let value: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
         assert_eq!(
             value["driver"]["lookup_algorithm"],
-            "first_match_linear_scan"
+            "upper_bound_then_first_match_linear_scan"
         );
         assert_eq!(value["driver"]["lookup_hits"].as_u64(), Some(u64::MAX));
     }
