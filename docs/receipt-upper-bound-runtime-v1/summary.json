@@ -1,0 +1,87 @@
+{
+  "actual_terminals": {
+    "default-root": {
+      "complete": true,
+      "exit_code": 0,
+      "launch_receipt": "017171",
+      "recorded_ns": 1789472572325345182,
+      "result_path": "/tmp/kv9-upper-bound-release-root-20260915-first/source-result.json",
+      "result_sha256": "3b4cf2280a9023cbba2a3aacde230ea794010d38a38e0756248749d7b4534b6b",
+      "session_id": 3119,
+      "terminal_receipt": "78ef53"
+    },
+    "diagnostic-root": {
+      "complete": true,
+      "exit_code": 0,
+      "launch_receipt": "a5258d",
+      "recorded_ns": 1789472641571243563,
+      "result_path": "/tmp/kv9-upper-bound-diagnostic-release-root-20260915-first/supervisor-result.json",
+      "result_sha256": "2b307ee196d5af7e1552edd48d1fc79c3310097e4f118648f889aa4dd9ff495e",
+      "session_id": 56645,
+      "terminal_receipt": "df82cf"
+    },
+    "recovery-root": {
+      "complete": true,
+      "exit_code": 0,
+      "launch_receipt": "27ee36",
+      "recorded_ns": 1789472737188462763,
+      "result_path": "/tmp/kv9-upper-bound-recovery-root-20260915-first/source-result.json",
+      "result_sha256": "1f2c3efb01fb2dfe0612045c19d4df4078d17937fd3872b3a6a567aed52d07b1",
+      "session_id": 81788,
+      "terminal_receipt": "4be379"
+    }
+  },
+  "archive": {
+    "bytes": 694922,
+    "decoded_bytes": 5055583,
+    "members": 176,
+    "path": "/home/dongxu/kv9/docs/receipt-upper-bound-runtime-v1/evidence.tar.gz",
+    "sha256": "ddfa5af24cfb60dfbdc8b1903e3251b73a0408e41b4c9d9fa98128e20c280dae"
+  },
+  "cases": [
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "3d60f2e70e5528a33af3f9aefbd49ce8f985afcbac4bb44d2fe372a22e045fd7",
+      "operations": 180,
+      "outcomes": {
+        "ok": 162,
+        "unknown": 18
+      },
+      "point_batch_overlap_count": 117,
+      "transport": "tonic_stream"
+    },
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "56c0767e333be641185ca942fbfb964814b6e79acc5e11d2ecb02ee8e6212b42",
+      "operations": 180,
+      "outcomes": {
+        "ok": 168,
+        "unknown": 12
+      },
+      "point_batch_overlap_count": 123,
+      "transport": "tonic_unary"
+    }
+  ],
+  "client_lifetimes": 2,
+  "complete": true,
+  "created_ns": 1789472864693178598,
+  "diagnostic_sha256": "dbfb271302cc079c5fdd249a4c011a28aa759f4ad036b5e3707d446e078bc2e5",
+  "every_archive_member_read_back": true,
+  "fresh_drains": 6,
+  "native_workload_sha256": "44d0f6429fd549fc7d0fac6e71ba67b413a2a8aca0e3e3f0386a64058ac06769",
+  "ok": 330,
+  "operations": 360,
+  "original_inputs_unchanged": true,
+  "pending": [
+    "actual full21 Chaos Mesh",
+    "original 8-smoke/16-ten-second matched performance screen",
+    "separate live schema-2 observer capture",
+    "promotion decision"
+  ],
+  "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+  "scope": "Default/native and diagnostic release provenance plus ordinary three-voter recovery only. No actual Chaos Mesh, performance, physical power-loss, cross-host or whole-Raft proof claim.",
+  "server_lifetimes": 5,
+  "server_sha256": "6f074e867eae45274c17b54aa763888e92db2c45d5757974fa52ee0f15936d49",
+  "source_files": 1116,
+  "unknown": 30
+}
