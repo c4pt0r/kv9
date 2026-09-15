@@ -14,6 +14,14 @@ lookup paths and prove whether unchanged pending results can avoid repeated
 inspection. The [complete ten-second baseline](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
 remains selected; the two-second observer sweep does not replace that gate.
 
+While full-screen capacity is unavailable, the C04
+[checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local
+restart authority: an actual atomic winning manifest apply must match the exact
+committed command; a committed CAS loser cannot certify recovery. This consumes
+the historical configuration-at-cut provider without adding work to online
+apply or changing the selected write candidate. Complete portable anchors and
+the replicated retention ledger remain the next storage prerequisites.
+
 ## Local storage checkpoint (2026-09-14 UTC)
 
 The [completed cache cleanup](write-storage-cache-cleanup-v1/result.json) increased

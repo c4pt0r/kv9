@@ -15,6 +15,11 @@ anchor envelope, root/range binding, manifest publication authority, outer
 durable retention ledger and atomic snapshot installation remain unfinished.
 C04 remains open.
 
+Subsequent integration: [checkpoint publication validation](CHECKPOINT-PUBLICATION.md)
+now consumes this provider during local engine startup. The component evidence
+below remains its original acceptance; the new consumer has separate process
+and fault validation. Portable anchor binding and the owner ledger remain open.
+
 ## Implemented contract
 
 The existing protocol log stores an initial full `ConfState` and subsequent
@@ -141,10 +146,10 @@ its one-state stuttering trace. The checker now permits that explicit shape only
 when requested for a temporal counterexample; other callers keep their existing
 two-state threshold. The original rejection remains retained.
 
-No existing performance or Chaos cohorts were rerun. This API has no production
-anchor consumer yet. Actual Chaos Mesh publication/recovery/installation faults
-remain mandatory when that integration is implemented; previous runs do not
-qualify this component as complete E2E anchor acceptance.
+No existing performance or Chaos cohorts were rerun for this component-only
+acceptance. At that checkpoint the API had no production anchor consumer.
+Actual Chaos Mesh publication/recovery/installation faults remain mandatory
+for integrations; these original runs do not qualify complete E2E anchors.
 
 ## Reproduce locally
 

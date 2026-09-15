@@ -12,8 +12,10 @@ proof. It does not yet implement the enclosing durable ledger or complete anchor
 
 The [configuration-at-cut component](CONFIGURATION-AT-CUT.md) now supplies the
 actual full membership at an exact retained committed cut, with refusal for
-missing or ambiguous authority. It is a recovery-only input; complete anchor
-identity/publication binding and bounded online snapshot capture remain open.
+missing or ambiguous authority. The [local checkpoint publication validator](CHECKPOINT-PUBLICATION.md)
+now consumes that input during startup and matches an actual winning apply batch
+to its exact committed manifest command. Complete portable anchor identity,
+retention binding and bounded online snapshot capture remain open.
 
 ## Authority already implemented
 
@@ -39,14 +41,17 @@ The source boundaries are [root identity](../crates/common/src/root.rs),
 [manifest state machine](../crates/raft/src/state_machine.rs) and
 [reconciliation](../crates/region/src/manifest.rs).
 
-Startup in [runtime](../crates/server/src/runtime.rs) checks checkpoint
-cluster/region and exact descriptor presence in the committed Raft log before
-restoring SSTs. It subsequently checks the recovered applied term against
-committed history. `has_committed_checkpoint` establishes descriptor presence;
-it does not independently replay generation/epoch CAS to prove that proposal
-won. Current publication relies on the worker selecting a locally ordered-applied
-manifest before writing the pointer. Copying that presence check into a new
-snapshot installer would omit an essential premise.
+Startup in [runtime](../crates/server/src/runtime.rs) checks the selected
+checkpoint's cluster/region and configuration at its exact committed cut before
+restoring SSTs. It observes the retained uncovered WAL, requires an atomic
+winning manifest pair and descriptor, and matches their publication position to
+the exact committed Raft command. Only successful complete engine recovery and
+final history checks return a local publication observation. The runtime also
+checks the recovered applied term against committed history before serving.
+The old `has_committed_checkpoint` helper only establishes proposal presence;
+a committed CAS loser passes it. It is no longer startup authority. This local
+validator still relies on ordered apply and retained history; it is not a
+portable certificate for a new store or a replacement for full anchor binding.
 
 The [remote worker](../crates/server/src/remote_storage.rs) adopts on every
 replica; upload scheduling runs on leaders. Pending recovery validates
