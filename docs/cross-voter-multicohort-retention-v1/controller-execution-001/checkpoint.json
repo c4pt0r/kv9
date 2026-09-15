@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "observed_ns": 1789448531064905447,
+  "complete": true,
+  "scope": "Completed controller ordinal001, not completion of the remaining finite campaign or benchmark readiness. Original migration payloads and per-object migration receipts remain at the recorded local paths.",
+  "ordinal": 1,
+  "selected_targets": 216,
+  "whole_cohort_objects": 355,
+  "whole_cohort_logical_bytes": 10784920007,
+  "selected_reader_scope": "readback_only_current_capacity_policy_adaptation",
+  "completed_plan_cohorts_including_bootstrap": 2,
+  "accounting": {
+    "actual_available_bytes": 30024470528,
+    "all_selected_exhausted": false,
+    "benchmark_runtime_ready": false,
+    "campaign_controller_allocated_bytes": 221184,
+    "cold_cohorts": 2,
+    "complete": true,
+    "conservative_net_allocated_change_bytes": 4691595264,
+    "execution_allocated_bytes": 315392,
+    "incomplete_or_restored_cohorts": [],
+    "preparation_allocated_bytes": 14376960,
+    "rows": [
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 0,
+        "original_target_allocation": 2651586560,
+        "root": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first",
+        "transaction_allocated_bytes": 276627456
+      },
+      {
+        "current_target_allocated_bytes": 0,
+        "currently_cold": true,
+        "ordinal": 1,
+        "original_target_allocation": 2541572096,
+        "root": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first",
+        "transaction_allocated_bytes": 210022400
+      }
+    ],
+    "scope": "Metadata-only current allocation, not another payload acceptance. All existing selected transaction roots, retained scratch/toolchains/receipts, execution and preparation metadata charged. Prior first-cohort savings excluded. Additional campaign preparation and all campaign output are charged. Includes completed cohort000 as explicitly separate bootstrap history; actual f_bavail is authoritative.",
+    "target_gross_allocation_decrease_bytes": 5193158656,
+    "target_reached": false,
+    "transaction_allocated_bytes": 486649856
+  },
+  "acceptance": {
+    "cold_sha256": "71d41a2f8d26f68e8d9b345b71ebf66223a8f9295edee0f28cc6eff601265683",
+    "complete": true,
+    "ordinal": 1,
+    "readback_sha256": "848080b806b2520641ed8ffbb87f72aa283b554c23836ca31926ea31232c3f32",
+    "restore_sha256": "2ff5b90991b4c7722faa267bbe6d89ff47e337cd3b58f20ccace70032aef4b20",
+    "selection_sha256": "865a5369c19791afe26226d9cefba091312976f4656ce06f646924124fcde972",
+    "state": "COLD",
+    "verified_sha256": "a4f4fccbc80458e0c39e8c75fa741c2a8abbf980af9729bf8ed5c2838cd53245"
+  },
+  "campaign_tool_session": 79586,
+  "campaign_tool_terminal_observed": false,
+  "benchmark_runtime_ready": false,
+  "readback_reader": {
+    "bytes": 16554,
+    "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/frame-buffer-crc.py",
+    "sha256": "56ab02e54e0aff6cf4801acaa9a6b240079f624790b51312d69361c213e2d90e"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "sudo",
+    "-n",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "-B",
+    "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/test_campaign.py"
+  ],
+  "cwd": null,
+  "started_ns": 1789447481673806533,
+  "command_manifest_sha256": "b6d210e0fc522fec0d928e3ff757f0a961c485e75b895f35b0ce5e25ccf06fd7"
+}

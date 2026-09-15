@@ -1,0 +1,38 @@
+{
+  "all_exact_copies_retained": true,
+  "complete": true,
+  "copy_receipt": "8b4f4b/0",
+  "explicit_new_file_check": {
+    "diagnostic_files": [
+      {
+        "diagnostic": "trailing whitespace",
+        "exit_code": 3,
+        "lines": [
+          6,
+          66,
+          78,
+          89
+        ],
+        "meaning": "Exact original unified-diff blank context lines contain a required single context-marker space; original source bytes and hashes are preserved. No other file has whitespace diagnostics.",
+        "path": "review/campaign.py.reviewed.diff"
+      }
+    ],
+    "files_checked": 34,
+    "ordinary_difference_exit_code": 1
+  },
+  "git_check_receipt": "b33d3e/0",
+  "git_diff_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "docs/cross-voter-multicohort-retention-v1/controller"
+    ],
+    "exit_code": 0,
+    "limitation": "The newly published files were untracked, so each was additionally checked with git diff --no-index --check against /dev/null."
+  },
+  "global_git_settings_changed": false,
+  "scope": "Publication source/copy and whitespace checks only; no control or campaign execution.",
+  "source_or_evidence_whitespace_rewritten": false
+}

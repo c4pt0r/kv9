@@ -1,0 +1,11 @@
+{
+  "scope": "Actual root-only controls; no campaign mutation or codec execution.",
+  "result": {
+    "path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/controls-first/result.json",
+    "bytes": 169,
+    "sha256": "89628904603b005b20145774a6cebbf3c0d78afd3b7dbd7b30d4d675e4cb426d"
+  },
+  "reported_terminal": "143615/0",
+  "tests": 15,
+  "source_hash_recheck": "176d78/0"
+}

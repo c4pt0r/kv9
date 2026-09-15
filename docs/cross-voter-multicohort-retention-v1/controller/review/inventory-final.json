@@ -1,0 +1,82 @@
+{
+  "bytes": 104606,
+  "complete": true,
+  "files": 15,
+  "rows": [
+    {
+      "bytes": 1115,
+      "path": "README.md",
+      "sha256": "e986ffeef3f9662bb6173ba86c8d8f10374d32e08c35597603984e1d35235b4b"
+    },
+    {
+      "bytes": 2132,
+      "path": "bootstrap-metadata.json",
+      "sha256": "a22bd2cd093df4e286993a8cdb1c9e88f1f3798cbd468d1e88542869a08ae1ac"
+    },
+    {
+      "bytes": 13001,
+      "path": "campaign.py.reviewed.diff",
+      "sha256": "3ba86a424c279a20b768d71c71bb7661291fe8493e5afb976a112f741dbffb5c"
+    },
+    {
+      "bytes": 863,
+      "path": "completion-regression-first.json",
+      "sha256": "a06471b301fba260d4a166e3b191ba2a8915b1f73eb8ad4501307c73e659e70c"
+    },
+    {
+      "bytes": 24220,
+      "path": "draft-first-campaign.py",
+      "sha256": "bb5b6c4445c04bc59ee7938bb64bf684800dd922056881372d2bf87c00910b07"
+    },
+    {
+      "bytes": 1002,
+      "path": "draft-first-cohort-zero-binding.json",
+      "sha256": "6e62d455f4deca310d9f66534a5b8c1f0403ed5ea702be73814a37c1efa533b0"
+    },
+    {
+      "bytes": 6170,
+      "path": "draft-first-test_campaign.py",
+      "sha256": "0ec6bef20d215e4467cf7c96b2ad9d9fd0f15152e7f7f6464b7194d72bf5b1cd"
+    },
+    {
+      "bytes": 1817,
+      "path": "findings-first.json",
+      "sha256": "4983b7f2a3e39e53ed5ca7abb244236d27cee128076319af15258e6477544d75"
+    },
+    {
+      "bytes": 3374,
+      "path": "result-final.json",
+      "sha256": "7d6a591b4f20d008c9f4ed76f826b878354caf94f41322d2d6673b24cb8cb39c"
+    },
+    {
+      "bytes": 29439,
+      "path": "reviewed-campaign.py",
+      "sha256": "4d162d0a6ca48027b6de98fd174ba611f9cc72625e47d7787afc061895d94c97"
+    },
+    {
+      "bytes": 1002,
+      "path": "reviewed-cohort-zero-binding.json",
+      "sha256": "6e62d455f4deca310d9f66534a5b8c1f0403ed5ea702be73814a37c1efa533b0"
+    },
+    {
+      "bytes": 10678,
+      "path": "reviewed-test_campaign.py",
+      "sha256": "96a906d05ffab8d384eee1fed5f0a9cb3166eccd9e1147bf042935788a7388fd"
+    },
+    {
+      "bytes": 720,
+      "path": "reviewer-correction.json",
+      "sha256": "6ef6761d6e5e4b8491d331b907cdfb88896063a2dcd3703075eb85b6e6b8e025"
+    },
+    {
+      "bytes": 3789,
+      "path": "source-review-complete.json",
+      "sha256": "1d8fe6915eada3e804f545a3c5ba7144e6fd62aa5fdb8bbab7814bd503cb295a"
+    },
+    {
+      "bytes": 5284,
+      "path": "test_campaign.py.reviewed.diff",
+      "sha256": "4dbe8d550bfc4b65d767f7d43e67d02bcd9f977845c36367e46e75738db1e0df"
+    }
+  ]
+}

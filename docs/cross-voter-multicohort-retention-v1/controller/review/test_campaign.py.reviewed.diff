@@ -1,0 +1,65 @@
+--- draft-first/test_campaign.py
++++ reviewed/test_campaign.py
+@@ -56,6 +56,14 @@
+    with self.assertRaises(RuntimeError):c.check(p,pin)
+    p.unlink();p.symlink_to('/absent')
+    with self.assertRaises(RuntimeError):c.pin(p)
++ def test_floor_output_and_deadline_guards(self):
++  with patch.object(c,'available',lambda:c.FLOOR),patch.object(c,'allocated',lambda root:c.CAP):c.resource_guard()
++  with patch.object(c,'available',lambda:c.FLOOR-1),patch.object(c,'allocated',lambda root:0):
++   with self.assertRaises(RuntimeError):c.resource_guard()
++  with patch.object(c,'available',lambda:c.FLOOR),patch.object(c,'allocated',lambda root:c.CAP+1):
++   with self.assertRaises(RuntimeError):c.resource_guard()
++  with patch.object(c,'available',lambda:c.FLOOR),patch.object(c,'allocated',lambda root:0),patch.object(c.time,'monotonic',lambda:11):
++   with self.assertRaises(RuntimeError):c.resource_guard(0,10)
+  def test_parent_death_gap_and_failure(self):
+   libc=types.SimpleNamespace(prctl=lambda *a:0)
+   with patch.object(c.ctypes,'CDLL',lambda *a,**k:libc),patch.object(c.os,'getppid',lambda:12),patch.object(c.os,'kill')as kill:
+@@ -81,4 +89,47 @@
+    with patch.object(c,'OUT',root),patch.object(c.subprocess,'Popen')as spawn:
+     with self.assertRaisesRegex(RuntimeError,'never restart'):c.invoke(1,'stage-verify')
+     spawn.assert_not_called()
++class ReleaseClosure(unittest.TestCase):
++ def fixture(self):
++  base=dict(bytes=3,device=1,inode=2,mode=33188);target=dict(bytes=4,device=1,inode=3,mode=33188)
++  pair=dict(id='t',base='b',target='t',patch_limit=100)
++  raw=dict(bytes=10,sha256='raw');enc=dict(bytes=4,sha256='encoded')
++  s=dict(root='/tx',codec=dict(path='/usr/bin/zstd'),target_count=1,original_object_count=2,pairs=[pair],members=[dict(id='b',identity=base,original=raw,compressed=enc,decode_argv=['/usr/bin/zstd','-d'],encode_argv=['/usr/bin/zstd','-c']),dict(id='t',identity=target,original=raw,compressed=enc,decode_argv=['/usr/bin/zstd','-d'],encode_argv=['/usr/bin/zstd','-c'])])
++  patchrow=dict(path='/tx/patches/t.zst',pin=dict(bytes=1,sha256='patch'),identity={})
++  a=dict(rows=[dict(id='t',pair=pair,patch=patchrow,children=[dict(label=x)for x in ['base-t','target-t','patch-t']])])
++  v=dict(rows=[dict(id='t',base='b',patch=patchrow,original=raw,compressed=enc,decoded_to_eof=True,original_compressed_exact=True)],children=[dict(label=x)for x in ['independent-base-t','independent-patch-t','original-encode-t']])
++  return c.codec_roles(s,a,v)[0]
++ def record(self,e):
++  a={k:copy.deepcopy(e[k])for k in ['label','argv','output','stderr','limit_bytes','decoded']};a.update(started_ns=1,rlimit_as_bytes=512*c.MIB,cpu_affinity=sorted(c.CPUS),resource_before=dict(available_bytes=c.FLOOR))
++  if e['stdin']is not None:a.update(stdin_mode='regular_file_descriptor',stdin_identity=dict(device=1,inode=2,mode=33188,**{k:v for k,v in e['stdin'].items()if k not in ['device','inode','mode']}));a['stdin_identity'].update(e['stdin'])
++  start=dict(a,pid=999999999,start_ticks=2,boot_id='boot');intent=dict(a,parent_pid=1,reserved_decoded_bytes=e['limit_bytes']if e['decoded']else 0);final=dict(start,complete=True,exit_code=0,reaped=True,error=None,ended_ns=2,output_bytes=e['output_bytes'])
++  return final,intent,start
++ def test_all_six_exact_roles_and_mutated_self_consistent_argv(self):
++  roles=self.fixture();self.assertEqual(len(roles),6)
++  with patch.object(c,'lifetime',lambda pid:None):
++   for e in roles:
++    r,a,b=self.record(e);c.codec_receipt(e,r,a,b,copy.deepcopy(r))
++    for key,value in [('argv',['/wrong-codec']),('output','/wrong/output'),('output_bytes',e['output_bytes']+1),('limit_bytes',e['limit_bytes']+1)]:
++     x,y,z=copy.deepcopy((r,a,b));x[key]=value
++     if key in y:y[key]=value
++     if key in z:z[key]=value
++     with self.assertRaises(RuntimeError):c.codec_receipt(e,x,y,z,copy.deepcopy(x))
++ def test_embedded_mismatch_and_orphan_sidecar(self):
++  roles=self.fixture();e=roles[0];r,a,b=self.record(e)
++  with patch.object(c,'lifetime',lambda pid:None):
++   with self.assertRaises(RuntimeError):c.codec_receipt(e,r,a,b,{})
++  finals=[x['output']+'.child.json'for x in roles];intents=[x['output']+'.child-intent.json'for x in roles];starts=[x['output']+'.child-start.json'for x in roles]
++  c.sidecar_closure(roles,finals,intents,starts)
++  with self.assertRaises(RuntimeError):c.sidecar_closure(roles,finals,intents+['/orphan.child-intent.json'],starts)
++  with self.assertRaises(RuntimeError):c.sidecar_closure(roles,finals[:-1],intents,starts)
++ def test_global_transaction_and_handle_prefix(self):
++  with tempfile.TemporaryDirectory(prefix='kv9-campaign-control-')as d:
++   p=Path(d);execution=p/'exec';execution.mkdir();rows=[dict(ordinal=i,root=str(p/f'tx{i}'))for i in range(3)];g=dict(rows=rows);Path(rows[0]['root']).mkdir();(execution/'000').mkdir()
++   with patch.object(c,'EXEC',execution):
++    c.global_prefix(g,0);Path(rows[2]['root']).mkdir();(execution/'002').mkdir()
++    with self.assertRaises(RuntimeError):c.global_prefix(g,0)
++    Path(rows[2]['root']).rmdir();(execution/'002').rmdir();(execution/'001').mkdir()
++    with self.assertRaises(RuntimeError):c.global_prefix(g,0)
++    Path(rows[1]['root']).mkdir();c.global_prefix(g,1)
++
+ if __name__=='__main__':unittest.main(verbosity=2)

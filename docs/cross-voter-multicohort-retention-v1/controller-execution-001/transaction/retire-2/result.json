@@ -1,0 +1,2837 @@
+{
+  "complete": true,
+  "state": "COLD",
+  "selection_sha256": "865a5369c19791afe26226d9cefba091312976f4656ce06f646924124fcde972",
+  "verified_sha256": "a4f4fccbc80458e0c39e8c75fa741c2a8abbf980af9729bf8ed5c2838cd53245",
+  "cycle": 2,
+  "rows": [
+    {
+      "id": "000128",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000128.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000128.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448356183628429
+      }
+    },
+    {
+      "id": "000129",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000129.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000129.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448356369093141
+      }
+    },
+    {
+      "id": "000130",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000130.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000130.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448356549086139
+      }
+    },
+    {
+      "id": "000131",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000131.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000131.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448356736243436
+      }
+    },
+    {
+      "id": "000132",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000132.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000132.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448356920612989
+      }
+    },
+    {
+      "id": "000133",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000133.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000133.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448357101915757
+      }
+    },
+    {
+      "id": "000134",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000134.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000134.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448357286925217
+      }
+    },
+    {
+      "id": "000135",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000135.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000135.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448357467205632
+      }
+    },
+    {
+      "id": "000136",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000136.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000136.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448357647502449
+      }
+    },
+    {
+      "id": "000137",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000137.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000137.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448357826663571
+      }
+    },
+    {
+      "id": "000138",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000138.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000138.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448358007602227
+      }
+    },
+    {
+      "id": "000139",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000139.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000139.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448358193163680
+      }
+    },
+    {
+      "id": "000140",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000140.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000140.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448358372729439
+      }
+    },
+    {
+      "id": "000141",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000141.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000141.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448358553198447
+      }
+    },
+    {
+      "id": "000142",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000142.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000142.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448358732546338
+      }
+    },
+    {
+      "id": "000143",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000143.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000143.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448358911579230
+      }
+    },
+    {
+      "id": "000144",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000144.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000144.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448359095992105
+      }
+    },
+    {
+      "id": "000145",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000145.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000145.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448359277539800
+      }
+    },
+    {
+      "id": "000146",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000146.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000146.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448359457309972
+      }
+    },
+    {
+      "id": "000147",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000147.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000147.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448359637618269
+      }
+    },
+    {
+      "id": "000148",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000148.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000148.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448359820445107
+      }
+    },
+    {
+      "id": "000149",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000149.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000149.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448359999894889
+      }
+    },
+    {
+      "id": "000150",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000150.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000150.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448360182599819
+      }
+    },
+    {
+      "id": "000151",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000151.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000151.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448360363103843
+      }
+    },
+    {
+      "id": "000152",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000152.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000152.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448360554128513
+      }
+    },
+    {
+      "id": "000153",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000153.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000153.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448360736504999
+      }
+    },
+    {
+      "id": "000154",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000154.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000154.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448360917309294
+      }
+    },
+    {
+      "id": "000155",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000155.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000155.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448361098555566
+      }
+    },
+    {
+      "id": "000156",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000156.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000156.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448361277835470
+      }
+    },
+    {
+      "id": "000157",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000157.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000157.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448361458284141
+      }
+    },
+    {
+      "id": "000158",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000158.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000158.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448361643910735
+      }
+    },
+    {
+      "id": "000159",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000159.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000159.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448361823868247
+      }
+    },
+    {
+      "id": "000160",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000160.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000160.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448362004007097
+      }
+    },
+    {
+      "id": "000161",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000161.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000161.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448362187362384
+      }
+    },
+    {
+      "id": "000162",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000162.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000162.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448362373164326
+      }
+    },
+    {
+      "id": "000163",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000163.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000163.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448362561400431
+      }
+    },
+    {
+      "id": "000164",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000164.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000164.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448362740975327
+      }
+    },
+    {
+      "id": "000165",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000165.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000165.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448362918455325
+      }
+    },
+    {
+      "id": "000166",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000166.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000166.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448363099666912
+      }
+    },
+    {
+      "id": "000167",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000167.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000167.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448363281824969
+      }
+    },
+    {
+      "id": "000168",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000168.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000168.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448363462504260
+      }
+    },
+    {
+      "id": "000169",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000169.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000169.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448363641660413
+      }
+    },
+    {
+      "id": "000170",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000170.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000170.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448363821618246
+      }
+    },
+    {
+      "id": "000171",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000171.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000171.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448364005509935
+      }
+    },
+    {
+      "id": "000172",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000172.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000172.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448364189789400
+      }
+    },
+    {
+      "id": "000173",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000173.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000173.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448364369875442
+      }
+    },
+    {
+      "id": "000174",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000174.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000174.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448364552229165
+      }
+    },
+    {
+      "id": "000175",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000175.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000175.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448364731151431
+      }
+    },
+    {
+      "id": "000176",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000176.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000176.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448364919017413
+      }
+    },
+    {
+      "id": "000177",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000177.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000177.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448365101966550
+      }
+    },
+    {
+      "id": "000178",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000178.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000178.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448365279838281
+      }
+    },
+    {
+      "id": "000179",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000179.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000179.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448365459059325
+      }
+    },
+    {
+      "id": "000180",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000180.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000180.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448365637458142
+      }
+    },
+    {
+      "id": "000181",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000181.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000181.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448365819756792
+      }
+    },
+    {
+      "id": "000182",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000182.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000182.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448365999338040
+      }
+    },
+    {
+      "id": "000183",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000183.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000183.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448366181539378
+      }
+    },
+    {
+      "id": "000184",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000184.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000184.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448366361595614
+      }
+    },
+    {
+      "id": "000185",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000185.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000185.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448366540465882
+      }
+    },
+    {
+      "id": "000186",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000186.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000186.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448366731956695
+      }
+    },
+    {
+      "id": "000187",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000187.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000187.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448366911732656
+      }
+    },
+    {
+      "id": "000188",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000188.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000188.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448367093047126
+      }
+    },
+    {
+      "id": "000189",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000189.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000189.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448367274220752
+      }
+    },
+    {
+      "id": "000190",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000190.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000190.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448367454936843
+      }
+    },
+    {
+      "id": "000191",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000191.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000191.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448367636718556
+      }
+    },
+    {
+      "id": "000192",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000192.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000192.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448367816232508
+      }
+    },
+    {
+      "id": "000193",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000193.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000193.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448367996212912
+      }
+    },
+    {
+      "id": "000194",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000194.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000194.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448368179061231
+      }
+    },
+    {
+      "id": "000195",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000195.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000195.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448368363148306
+      }
+    },
+    {
+      "id": "000196",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000196.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000196.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448368544699328
+      }
+    },
+    {
+      "id": "000197",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000197.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000197.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448368723699258
+      }
+    },
+    {
+      "id": "000198",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000198.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000198.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448368901243346
+      }
+    },
+    {
+      "id": "000199",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000199.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000199.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448369082380845
+      }
+    },
+    {
+      "id": "000200",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000200.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000200.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448369267489170
+      }
+    },
+    {
+      "id": "000201",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000201.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000201.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448369447563300
+      }
+    },
+    {
+      "id": "000202",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000202.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000202.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448369628097670
+      }
+    },
+    {
+      "id": "000203",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000203.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000203.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448369807599249
+      }
+    },
+    {
+      "id": "000204",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000204.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000204.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448369987498602
+      }
+    },
+    {
+      "id": "000205",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000205.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000205.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448370174579466
+      }
+    },
+    {
+      "id": "000206",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000206.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000206.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448370355079913
+      }
+    },
+    {
+      "id": "000207",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000207.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000207.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448370550431577
+      }
+    },
+    {
+      "id": "000208",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000208.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000208.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448370730540421
+      }
+    },
+    {
+      "id": "000209",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000209.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000209.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448370913850192
+      }
+    },
+    {
+      "id": "000210",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000210.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000210.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448371094644579
+      }
+    },
+    {
+      "id": "000211",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000211.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000211.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448371277215128
+      }
+    },
+    {
+      "id": "000212",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000212.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000212.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448371456680219
+      }
+    },
+    {
+      "id": "000213",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000213.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000213.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448371636455139
+      }
+    },
+    {
+      "id": "000214",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000214.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000214.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448371821429063
+      }
+    },
+    {
+      "id": "000215",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000215.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000215.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448372002594053
+      }
+    },
+    {
+      "id": "000216",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000216.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000216.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448372186913843
+      }
+    },
+    {
+      "id": "000217",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000217.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000217.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448372366971893
+      }
+    },
+    {
+      "id": "000218",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000218.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000218.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448372547243502
+      }
+    },
+    {
+      "id": "000219",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000219.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000219.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448372731330988
+      }
+    },
+    {
+      "id": "000220",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000220.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000220.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448372915409497
+      }
+    },
+    {
+      "id": "000221",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000221.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000221.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448373097946463
+      }
+    },
+    {
+      "id": "000222",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000222.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000222.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448373286827144
+      }
+    },
+    {
+      "id": "000223",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000223.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000223.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448373465590843
+      }
+    },
+    {
+      "id": "000224",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000224.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000224.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448373647763127
+      }
+    },
+    {
+      "id": "000225",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000225.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000225.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448373829186650
+      }
+    },
+    {
+      "id": "000226",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000226.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000226.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448374008546344
+      }
+    },
+    {
+      "id": "000227",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000227.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000227.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448374190698560
+      }
+    },
+    {
+      "id": "000228",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000228.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000228.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448374373852991
+      }
+    },
+    {
+      "id": "000229",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000229.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000229.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448374554153564
+      }
+    },
+    {
+      "id": "000230",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000230.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000230.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448374742804174
+      }
+    },
+    {
+      "id": "000231",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000231.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000231.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448374924885168
+      }
+    },
+    {
+      "id": "000232",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000232.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000232.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448375107018248
+      }
+    },
+    {
+      "id": "000233",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000233.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000233.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448375290834507
+      }
+    },
+    {
+      "id": "000234",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000234.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000234.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448375471613896
+      }
+    },
+    {
+      "id": "000235",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000235.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000235.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448375650094075
+      }
+    },
+    {
+      "id": "000246",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000246.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000246.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448375828457114
+      }
+    },
+    {
+      "id": "000247",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000247.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000247.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448376008042870
+      }
+    },
+    {
+      "id": "000248",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000248.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000248.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448376193110750
+      }
+    },
+    {
+      "id": "000249",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000249.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000249.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448376373356962
+      }
+    },
+    {
+      "id": "000250",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000250.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000250.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448376552316236
+      }
+    },
+    {
+      "id": "000251",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000251.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000251.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448376743317453
+      }
+    },
+    {
+      "id": "000252",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000252.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000252.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448376922490518
+      }
+    },
+    {
+      "id": "000253",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000253.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000253.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 435,
+        "checked_unix_ns": 1789448377112899436
+      }
+    },
+    {
+      "id": "000254",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000254.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000254.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448377310232125
+      }
+    },
+    {
+      "id": "000255",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000255.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000255.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448377488268944
+      }
+    },
+    {
+      "id": "000256",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000256.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000256.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448377669465764
+      }
+    },
+    {
+      "id": "000257",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000257.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000257.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448377853222541
+      }
+    },
+    {
+      "id": "000258",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000258.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000258.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448378033820951
+      }
+    },
+    {
+      "id": "000259",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000259.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000259.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448378216745182
+      }
+    },
+    {
+      "id": "000260",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000260.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000260.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448378395655445
+      }
+    },
+    {
+      "id": "000261",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000261.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000261.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448378574735456
+      }
+    },
+    {
+      "id": "000262",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000262.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000262.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448378775149206
+      }
+    },
+    {
+      "id": "000263",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000263.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000263.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448378956577729
+      }
+    },
+    {
+      "id": "000264",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000264.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000264.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448379141194184
+      }
+    },
+    {
+      "id": "000265",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000265.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000265.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448379322031692
+      }
+    },
+    {
+      "id": "000266",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000266.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000266.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448379504146198
+      }
+    },
+    {
+      "id": "000267",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000267.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000267.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448379682984927
+      }
+    },
+    {
+      "id": "000268",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000268.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000268.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448379861790384
+      }
+    },
+    {
+      "id": "000269",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000269.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000269.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448380040235577
+      }
+    },
+    {
+      "id": "000270",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000270.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000270.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448380222993086
+      }
+    },
+    {
+      "id": "000271",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000271.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000271.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448380406689020
+      }
+    },
+    {
+      "id": "000272",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000272.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000272.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448380595946776
+      }
+    },
+    {
+      "id": "000273",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000273.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000273.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448380774079494
+      }
+    },
+    {
+      "id": "000274",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000274.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000274.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448380953813328
+      }
+    },
+    {
+      "id": "000275",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000275.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000275.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448381138529379
+      }
+    },
+    {
+      "id": "000276",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000276.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000276.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448381323796702
+      }
+    },
+    {
+      "id": "000277",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000277.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000277.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448381501226005
+      }
+    },
+    {
+      "id": "000278",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000278.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000278.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448381679833202
+      }
+    },
+    {
+      "id": "000279",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000279.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000279.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448381860013931
+      }
+    },
+    {
+      "id": "000280",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000280.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000280.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448382044119090
+      }
+    },
+    {
+      "id": "000281",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000281.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000281.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448382225829169
+      }
+    },
+    {
+      "id": "000282",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000282.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000282.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448382406047810
+      }
+    },
+    {
+      "id": "000283",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000283.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000283.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448382587002807
+      }
+    },
+    {
+      "id": "000284",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000284.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000284.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448382766389161
+      }
+    },
+    {
+      "id": "000285",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000285.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000285.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448382948176615
+      }
+    },
+    {
+      "id": "000286",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000286.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000286.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 412,
+        "checked_unix_ns": 1789448383130183069
+      }
+    },
+    {
+      "id": "000287",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000287.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000287.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448383311370290
+      }
+    },
+    {
+      "id": "000288",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000288.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000288.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448383499328556
+      }
+    },
+    {
+      "id": "000289",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000289.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000289.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448383683169370
+      }
+    },
+    {
+      "id": "000290",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000290.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000290.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 397,
+        "checked_unix_ns": 1789448383863634572
+      }
+    },
+    {
+      "id": "000291",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000291.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000291.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448384043651905
+      }
+    },
+    {
+      "id": "000292",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000292.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000292.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448384226275073
+      }
+    },
+    {
+      "id": "000293",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000293.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000293.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448384406131706
+      }
+    },
+    {
+      "id": "000294",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000294.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000294.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448384590424446
+      }
+    },
+    {
+      "id": "000295",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000295.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000295.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448384769921556
+      }
+    },
+    {
+      "id": "000296",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000296.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000296.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448384950368984
+      }
+    },
+    {
+      "id": "000297",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000297.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000297.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 436,
+        "checked_unix_ns": 1789448385141659091
+      }
+    },
+    {
+      "id": "000298",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000298.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000298.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448385326150413
+      }
+    },
+    {
+      "id": "000299",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000299.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000299.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448385506833862
+      }
+    },
+    {
+      "id": "000300",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000300.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000300.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448385685061839
+      }
+    },
+    {
+      "id": "000301",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000301.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000301.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448385866273396
+      }
+    },
+    {
+      "id": "000302",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000302.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000302.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448386047955594
+      }
+    },
+    {
+      "id": "000303",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000303.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000303.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448386234516716
+      }
+    },
+    {
+      "id": "000304",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000304.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000304.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448386416415740
+      }
+    },
+    {
+      "id": "000305",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000305.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000305.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448386597866504
+      }
+    },
+    {
+      "id": "000306",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000306.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000306.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448386779469042
+      }
+    },
+    {
+      "id": "000307",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000307.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000307.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448386962664089
+      }
+    },
+    {
+      "id": "000308",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000308.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000308.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448387145875307
+      }
+    },
+    {
+      "id": "000309",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000309.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000309.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448387328367609
+      }
+    },
+    {
+      "id": "000310",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000310.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000310.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448387509101633
+      }
+    },
+    {
+      "id": "000311",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000311.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000311.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448387691334661
+      }
+    },
+    {
+      "id": "000312",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000312.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000312.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448387875897196
+      }
+    },
+    {
+      "id": "000313",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000313.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000313.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448388059359783
+      }
+    },
+    {
+      "id": "000314",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000314.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000314.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448388242312446
+      }
+    },
+    {
+      "id": "000315",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000315.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000315.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448388424031643
+      }
+    },
+    {
+      "id": "000316",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000316.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000316.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448388609787640
+      }
+    },
+    {
+      "id": "000317",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000317.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000317.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448388792518218
+      }
+    },
+    {
+      "id": "000318",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000318.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000318.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448388976190988
+      }
+    },
+    {
+      "id": "000319",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000319.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000319.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448389160305795
+      }
+    },
+    {
+      "id": "000320",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000320.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000320.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448389340087939
+      }
+    },
+    {
+      "id": "000321",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000321.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000321.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448389523507807
+      }
+    },
+    {
+      "id": "000322",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000322.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000322.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448389715322414
+      }
+    },
+    {
+      "id": "000323",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000323.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000323.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448389896348224
+      }
+    },
+    {
+      "id": "000324",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000324.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000324.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448390081092419
+      }
+    },
+    {
+      "id": "000325",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000325.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000325.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448390264254474
+      }
+    },
+    {
+      "id": "000326",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000326.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000326.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448390464651303
+      }
+    },
+    {
+      "id": "000327",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000327.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000327.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448390647935196
+      }
+    },
+    {
+      "id": "000328",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000328.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000328.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448390827562781
+      }
+    },
+    {
+      "id": "000329",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000329.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000329.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448391016787685
+      }
+    },
+    {
+      "id": "000330",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000330.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000330.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448391203910388
+      }
+    },
+    {
+      "id": "000331",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000331.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000331.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448391388882379
+      }
+    },
+    {
+      "id": "000332",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000332.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000332.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448391569506136
+      }
+    },
+    {
+      "id": "000333",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000333.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000333.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448391752039856
+      }
+    },
+    {
+      "id": "000334",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000334.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000334.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448391933028707
+      }
+    },
+    {
+      "id": "000335",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000335.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000335.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 423,
+        "checked_unix_ns": 1789448392119958139
+      }
+    },
+    {
+      "id": "000336",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000336.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000336.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448392303033271
+      }
+    },
+    {
+      "id": "000337",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000337.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000337.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448392484864377
+      }
+    },
+    {
+      "id": "000338",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000338.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000338.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448392686213147
+      }
+    },
+    {
+      "id": "000339",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000339.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000339.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448392869202529
+      }
+    },
+    {
+      "id": "000340",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000340.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000340.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448393050336832
+      }
+    },
+    {
+      "id": "000341",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000341.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000341.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448393231342604
+      }
+    },
+    {
+      "id": "000342",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000342.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000342.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448393412326806
+      }
+    },
+    {
+      "id": "000343",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000343.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000343.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448393592783762
+      }
+    },
+    {
+      "id": "000344",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000344.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000344.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448393776501487
+      }
+    },
+    {
+      "id": "000345",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000345.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000345.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448393957510956
+      }
+    },
+    {
+      "id": "000346",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000346.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000346.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448394139357932
+      }
+    },
+    {
+      "id": "000347",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000347.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000347.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448394319895669
+      }
+    },
+    {
+      "id": "000348",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000348.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000348.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448394499981140
+      }
+    },
+    {
+      "id": "000349",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000349.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000349.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448394685951257
+      }
+    },
+    {
+      "id": "000350",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000350.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000350.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448394865304729
+      }
+    },
+    {
+      "id": "000351",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000351.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000351.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448395046259557
+      }
+    },
+    {
+      "id": "000352",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000352.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000352.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 395,
+        "checked_unix_ns": 1789448395228946834
+      }
+    },
+    {
+      "id": "000353",
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/007-new-batch64-r000-p00064/fixture/retention-objects/000353.zst",
+      "absent": true,
+      "authorized_intent": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/000353.retire-intent.json",
+      "reference_observation": {
+        "complete": true,
+        "references": [],
+        "errors": [],
+        "vanished": 396,
+        "checked_unix_ns": 1789448395412507274
+      }
+    }
+  ],
+  "accounting": {
+    "original_target_allocated_bytes": 2541572096,
+    "current_target_allocated_bytes": 0,
+    "transaction_allocated_bytes": 209907712,
+    "gross_target_decrease_bytes": 2541572096,
+    "conservative_net_allocated_change_bytes": 2331664384,
+    "available_bytes": 30024622080,
+    "scope": "All transaction files/directories including patches, scratch and receipts are charged; original free-space movement is separately observed, not attributed exclusively."
+  },
+  "resource": {
+    "available_bytes": 30024622080,
+    "pilot_allocated_bytes": 209907712,
+    "external_restore_allowance_bytes": 2767596434,
+    "accounted_allocation_bytes": 2977504146,
+    "observed_ns": 1789448395565476771,
+    "observed_minimum_available_bytes": 27484651520,
+    "observed_maximum_pilot_allocation_bytes": 209907712,
+    "guard_observations": 217
+  },
+  "legacy_reader_requires_original_object_restoration": true
+}

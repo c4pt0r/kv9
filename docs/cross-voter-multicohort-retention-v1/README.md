@@ -74,12 +74,14 @@ recorded codec lifetimes and actual allocation. Cumulative decoded charging is
 33,696,395,574 bytes. The actual stage/verify and finish terminals are
 `52821/11fb5e/0` and `56949/ba03d0/0`; final audit is `88896/109415/0`.
 
-Only **one of these 96 cohorts** has run at this checkpoint. Exact stage/verify,
+Only **one of these 96 cohorts** had run at that checkpoint. Exact stage/verify,
 released finish and future restoration/readback commands for all selections are
-frozen locally. A controller for the remaining 95 cohorts is under review; it
-must validate each actual independent verification before passing that hash to
-finish, serialize work, preserve partial failures and stop on actual capacity
-or finite exhaustion. Original reader use requires restoring original compressed
+frozen locally. The [remaining-cohort controller](controller/README.md) subsequently
+passed 15 controls and independent review, then completed its
+[first actual iteration](controller-execution-001/README.md). It validates each
+actual independent verification before passing that hash to finish, serializes
+work, preserves partial failures and stops on actual capacity or finite
+exhaustion. Original reader use requires restoring original compressed
 paths first. Final restoration/readback commands are prepared, not claimed run.
 
 The local preparation is
@@ -100,3 +102,20 @@ retained executable payloads stay local; this reporting archive alone cannot
 restore the WAL objects. This is not a power-loss or database performance test.
 
 CI stays local. No original industrial roadmap checkbox closes.
+
+## Continuous execution checkpoint
+
+The controller has completed ordinal 001, a frame-buffer cohort with 216 selected
+targets and 355 original objects. Exact restoration and the adapted full reader
+pass over all 10,784,920,007 logical bytes, followed by final COLD. Both actual
+controller children exit successfully and are reaped. This extends actual reader
+qualification beyond the earlier FNV cohort; full-CRC reader execution is still
+pending at this checkpoint.
+
+The completed boundary accounts for **two of 96 plan cohorts**, including the
+earlier bootstrap, with **4,691,595,264 bytes** of conservative net recovery after
+transaction, shared preparation, dispatcher and controller allocation. It excludes
+the separate 924,991,488-byte predecessor and subsequent portable publication.
+Actual available space at that boundary is **30,024,470,528 bytes**. Ordinal 002
+has started under the same live tool session, `79586`; the overall campaign is
+not terminal. No new performance result or benchmark-readiness claim follows.

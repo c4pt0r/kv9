@@ -1,0 +1,20 @@
+test_actual_space_stop_and_finite_exhaustion (__main__.CampaignGuards.test_actual_space_stop_and_finite_exhaustion) ... ok
+test_changed_bytes_and_metadata_rejected (__main__.CampaignGuards.test_changed_bytes_and_metadata_rejected) ... ok
+test_exact_verification_proof_binding (__main__.CampaignGuards.test_exact_verification_proof_binding) ... ok
+test_failed_prefix_never_retried (__main__.CampaignGuards.test_failed_prefix_never_retried) ... ok
+test_floor_output_and_deadline_guards (__main__.CampaignGuards.test_floor_output_and_deadline_guards) ... ok
+test_no_automatic_existing_phase_restart (__main__.CampaignGuards.test_no_automatic_existing_phase_restart) ... ok
+test_only_exact_completed_prefix_resumes (__main__.CampaignGuards.test_only_exact_completed_prefix_resumes) ... ok
+test_parent_death_gap_and_failure (__main__.CampaignGuards.test_parent_death_gap_and_failure) ... ok
+test_serial_owner_lock (__main__.CampaignGuards.test_serial_owner_lock) ... ok
+test_stage_pair_change_refused (__main__.CampaignGuards.test_stage_pair_change_refused) ... ok
+test_unknown_failed_live_child_refused (__main__.CampaignGuards.test_unknown_failed_live_child_refused) ... ok
+test_zero_finish_requires_actual_matching_terminal (__main__.CampaignGuards.test_zero_finish_requires_actual_matching_terminal) ... ok
+test_all_six_exact_roles_and_mutated_self_consistent_argv (__main__.ReleaseClosure.test_all_six_exact_roles_and_mutated_self_consistent_argv) ... ok
+test_embedded_mismatch_and_orphan_sidecar (__main__.ReleaseClosure.test_embedded_mismatch_and_orphan_sidecar) ... ok
+test_global_transaction_and_handle_prefix (__main__.ReleaseClosure.test_global_transaction_and_handle_prefix) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.005s
+
+OK

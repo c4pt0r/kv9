@@ -1,0 +1,112 @@
+--- draft-first/campaign.py
++++ reviewed/campaign.py
+@@ -83,6 +83,38 @@
+  if next_ordinal==96:return 'finite_exhaustion'
+  return None
+ 
++def codec_roles(s,stage,verified):
++ sr,vr,mm=pair_proofs(s,stage,verified);root=Path(s['root']);prefix=[str(root/'toolchain/ld-linux-x86-64.so.2'),'--library-path',str(root/'toolchain'),str(root/'toolchain/zstd')];rows=[]
++ for pair in s['pairs']:
++  rid=pair['id'];base=mm[pair['base']];target=mm[pair['target']];w=root/'work'/('stage-'+rid+'-0');v=root/'work'/('verify-'+rid+'-0')
++  recipes=[('base-'+rid,base['decode_argv'],w/'base.raw',base['original']['bytes'],base['original']['bytes'],True,base['identity']),('target-'+rid,target['decode_argv'],w/'target.raw',target['original']['bytes'],target['original']['bytes'],True,target['identity']),('patch-'+rid,[s['codec']['path'],'-q','--no-progress','--single-thread','-3','--check','--zstd=wlog=26','--patch-from='+str(w/'base.raw'),'-c',str(w/'target.raw')],w/'patch.zst',pair['patch_limit'],sr[rid]['patch']['pin']['bytes'],False,None),('independent-base-'+rid,prefix+base['decode_argv'][1:],v/'base.raw',base['original']['bytes'],base['original']['bytes'],True,base['identity']),('independent-patch-'+rid,prefix+['-q','-d','--single-thread','--memory=512MiB','--patch-from='+str(v/'base.raw'),'-c',str(root/'patches'/(rid+'.zst'))],v/'target.raw',target['original']['bytes'],target['original']['bytes'],True,None),('original-encode-'+rid,prefix+target['encode_argv'][1:],v/'original.zst',min(128*MIB,target['original']['bytes']+MIB),target['compressed']['bytes'],False,dict(bytes=target['original']['bytes'],device=target['identity']['device']))]
++  for label,argv,output,limit,count,decoded,stdin in recipes:rows.append(dict(label=label,argv=argv,output=str(output),stderr=str(output)+'.stderr',limit_bytes=limit,output_bytes=count,decoded=decoded,stdin=stdin))
++ embedded=[x for r in stage['rows']for x in r['children']]+verified['children'];by={r['label']:r for r in embedded}
++ need(len(by)==len(embedded)==len(rows)and set(by)=={r['label']for r in rows},'exact embedded six-role child set')
++ return rows,by
++
++def sidecar_closure(expected,finals,intents,starts):
++ paths={r['output'] for r in expected};need(len(paths)==len(expected),'duplicate codec output path')
++ need(set(map(str,finals))=={x+'.child.json'for x in paths}and set(map(str,intents))=={x+'.child-intent.json'for x in paths}and set(map(str,starts))=={x+'.child-start.json'for x in paths},'orphan/missing/extra child sidecar')
++
++def codec_receipt(expected,r,intent,start,embedded):
++ need(r==embedded,'sidecar differs from actual embedded verifier/producer receipt')
++ for key in ['label','argv','output','stderr','limit_bytes','output_bytes','decoded']:need(r[key]==expected[key],'exact expected codec role differs: '+key)
++ need(r['error']is None and set(r['cpu_affinity'])==CPUS and r['rlimit_as_bytes']==512*MIB,'codec execution boundary')
++ need(r['resource_before']['available_bytes']>=FLOOR and r['ended_ns']>=r['started_ns'],'codec resource/time evidence')
++ for k,v in intent.items():
++  if k not in ['parent_pid','reserved_decoded_bytes']:need(r.get(k)==v,'intent/final codec binding')
++ need(intent['reserved_decoded_bytes']==(r['limit_bytes']if r['decoded']else 0),'durable decoded reservation')
++ for k,v in start.items():need(r.get(k)==v,'start/final codec binding')
++ stdin=expected['stdin']
++ if stdin is None:need('stdin_mode'not in r and 'stdin_identity'not in r,'unexpected stdin mode')
++ else:
++  need(r['stdin_mode']=='regular_file_descriptor'and stat.S_ISREG(r['stdin_identity']['mode']),'exact original stdin encoding mode')
++  for k in ['device','inode','bytes','mode']:
++   if k in stdin:need(r['stdin_identity'][k]==stdin[k],'stdin source identity differs')
++ outcome(r)
++
++
+ def original_modules():
+  need(pin(OLD/'code-pins.json')['sha256']==CODE and pin(OLD/'group-plan.json')['sha256']==GROUP and pin(OLD/'ROOT-COMMANDS.json')['sha256']==COMMANDS,'frozen original preparation changed')
+  for name,expected in js(OLD/'code-pins.json').items():check(OLD/name,expected)
+@@ -125,13 +157,17 @@
+   need(identity(m['path'])==m['identity'],'complete resident original inventory differs')
+  for r in s['metadata']+s['authorities']:check(r['path'],r)
+  tc=root/'toolchain.json';need(pin(tc)['sha256']==verified['toolchain_sha256'],'toolchain manifest pin');tool=js(tc);need(tool['complete']and tool['selection_sha256']==sp,'toolchain lineage')
+- for f in tool['files']:need(identity(f['path'])==f['identity'],'retained toolchain identity');check(f['path'],f['pin'])
+- expected_names={r['name']for r in s['retained_codec_dependencies']};need({r['name']for r in tool['files']}==expected_names and len(tool['files'])==len(expected_names),'complete exact codec dependency set')
+- child_paths=sorted(root.rglob('*.child.json'));need(len(child_paths)==6*s['target_count'],'exact successful stage/verify codec count')
+- for f in child_paths:
+-  r=js(f);outcome(r);need(r['output_bytes']<=r['limit_bytes']<=128*MIB,'codec output limit');need(set(r['cpu_affinity'])==CPUS and r['rlimit_as_bytes']==512*MIB,'codec runtime limits')
+-  intent=f.with_name(f.name.replace('.child.json','.child-intent.json'));start=f.with_name(f.name.replace('.child.json','.child-start.json'));a=js(intent);b=js(start)
+-  need(a['argv']==r['argv']==b['argv']and a['output']==r['output']==b['output']and all(b[k]==r[k]for k in ['pid','start_ticks','boot_id']),'durable codec invocation/lifetime chain')
++ dependencies={r['name']:r for r in s['retained_codec_dependencies']}
++ for f in tool['files']:
++  need(f['path']==str(root/'toolchain'/f['name'])and f['source']==dependencies[f['name']],'exact retained dependency path/source');need(identity(f['path'])==f['identity'],'retained toolchain identity');check(f['path'],f['pin']);need(identity(f['source']['path'])==f['source']['identity'],'source dependency identity changed');check(f['source']['path'],f['pin'])
++ expected_names={r['name']for r in s['retained_codec_dependencies']};need({r['name']for r in tool['files']}==expected_names and len(tool['files'])==len(expected_names),'complete exact codec dependency set');need(next(r['pin']['sha256']for r in tool['files']if r['name']=='zstd')==s['codec']['sha256'],'retained zstd exact source pin')
++ roles,embedded=codec_roles(s,stage,verified);child_paths=sorted(root.rglob('*.child.json'));sidecar_closure(roles,child_paths,root.rglob('*.child-intent.json'),root.rglob('*.child-start.json'))
++ lifetimes=set();intervals=[]
++ for expected in roles:
++  out=Path(expected['output']);r=js(Path(str(out)+'.child.json'));codec_receipt(expected,r,js(Path(str(out)+'.child-intent.json')),js(Path(str(out)+'.child-start.json')),embedded[expected['label']])
++  life=(r['pid'],r['start_ticks'],r['boot_id']);need(life not in lifetimes,'duplicate codec lifetime');lifetimes.add(life);intervals.append((r['started_ns'],r['ended_ns']))
++ intervals.sort();need(all(a[1]<=b[0]for a,b in zip(intervals,intervals[1:])),'codec lifetimes overlapped')
++ need(not list(root.glob('work/*/*.raw')),'orphan raw scratch prevents automatic release')
+  need(not list(root.rglob('*failure*.json')),'failed attempt remains; no automatic release')
+  return dict(complete=True,ordinal=i,selection=row['selection'],staged_sha256=pin(root/'staged.json')['sha256'],verified_path=str(root/'verification-first/result.json'),verified_sha256=pin(root/'verification-first/result.json')['sha256'],toolchain_sha256=verified['toolchain_sha256'],targets=len(s['pairs']),checked_resident_objects=len(mm),successful_codec_lifetimes=len(child_paths),scope='Independent exact metadata/payload digest and existing verifier proof readback; full decoded WAL and old encoded proof comes from the pinned independent verifier, not another codec pass.')
+ 
+@@ -148,8 +184,11 @@
+  for m in s['members']:
+   if m['id']in targets:need(absent(Path(m['path'])),'claimed COLD object still resident/restored')
+   else:need(identity(m['path'])==m['identity'],'preserved object identity differs')
++ need(restore['all_children_reaped']and len(restore['children'])==3*s['target_count']and len(reader['decoder_receipts'])==s['original_object_count'],'complete restore/readback child count')
+  for d in reader['decoder_receipts']:need(d['complete']and d['exit_code']==0 and d['absent'],'readback codec incomplete');gone(d)
+- for f in root.rglob('*.child.json'):outcome(js(f))
++ children=[c for r in stage['rows']for c in r['children']]+verified['children']+restore['children'];need(len(children)==9*s['target_count'],'complete migration child count')
++ sidecar_closure(children,root.rglob('*.child.json'),root.rglob('*.child-intent.json'),root.rglob('*.child-start.json'))
++ for r in children:need(js(Path(r['output']+'.child.json'))==r,'completed sidecar/embedded receipt differs');outcome(r)
+  return dict(ordinal=i,selection_sha256=sp,verified_sha256=verification_sha,restore_sha256=rsha,readback_sha256=pin(root/'readback-1/result.json')['sha256'],cold_sha256=pin(root/'retire-2/result.json')['sha256'],state='COLD',complete=True)
+ 
+ def zero_gate(group,terminal,terminal_sha,child,child_sha):
+@@ -184,6 +223,11 @@
+   need((d/'complete.json').is_file(),'incomplete/unknown ordinal: preserve and reconcile manually; no automatic retry')
+   r=js(d/'complete.json');need(r['complete']and r['ordinal']==i,'completed ordinal binding');done.append(r)
+  return done,96
++
++def global_prefix(group,completed_count):
++ expected=set(range(completed_count+1));transactions={r['ordinal']for r in group['rows']if not absent(Path(r['root']))}
++ handles={int(p.name)for p in EXEC.iterdir()if re.fullmatch(r'[0-9]{3}',p.name)}
++ need(transactions==handles==expected,'unexpected/missing transaction or dispatcher handle outside contiguous completed prefix')
+ 
+ def pdeath(parent):
+  libc=ctypes.CDLL(None,use_errno=True);need(libc.prctl(1,signal.SIGKILL,0,0,0)==0,'parent-death guard unavailable')
+@@ -248,7 +292,10 @@
+   done,next_i=resume_prefix(OUT)
+   for r in done:need(completed(group,r['ordinal'],r['verified_sha256'])==r['acceptance'],'completed prefix changed/restored');check(OUT/f"{r['ordinal']:03d}"/'release.json',r['release_pin'])
+   for i in range(next_i,96):
+-   resource_guard(started,CAMPAIGN_SECONDS);status=accounting(original,group);need(not status['incomplete_or_restored_cohorts'],'unknown incomplete/restored group state')
++   resource_guard(started,CAMPAIGN_SECONDS)
++   with dispatcher_read_lock():
++    global_prefix(group,len(done));status=accounting(original,group)
++   need(not status['incomplete_or_restored_cohorts'],'unknown incomplete/restored group state')
+    if stop_reason(status['actual_available_bytes'],i)=='actual_available_target':
+     event(dict(state='COMPLETE',reason='actual_available_target',next_ordinal=i,completed_ordinals=len(done),target_reached=True,available_bytes=status['actual_available_bytes']));save(OUT/('result-'+str(time.time_ns())+'.json'),dict(complete=True,reason='actual_available_target',completed_ordinals=len(done),target_reached=True,accounting=status));return 0
+    row,s=selected(group,i);need(absent(Path(s['root']))and absent(EXEC/f'{i:03d}'),'next ordinal has existing transaction/handle; refuse automatic adoption')
+@@ -259,7 +306,7 @@
+    event(dict(state='RUNNING',ordinal=i,phase='finish',verified_sha256=release['verified_sha256'],available_bytes=available()));invoke(i,'finish',release['verified_sha256'])
+    acceptance=completed(group,i,release['verified_sha256']);status=accounting(original,group);r=dict(complete=True,ordinal=i,verified_sha256=release['verified_sha256'],acceptance=acceptance,release_pin=release_pin,accounting=status)
+    save(folder/'complete.json',r);done.append(r);event(dict(state='COHORT_COMPLETE',ordinal=i,completed_ordinals=len(done),available_bytes=status['actual_available_bytes']))
+-  status=accounting(original,group);doc=dict(complete=True,reason='finite_exhaustion',completed_ordinals=len(done),target_reached=status['actual_available_bytes']>=STOP,accounting=status);save(OUT/('result-'+str(time.time_ns())+'.json'),doc);event(dict(state='COMPLETE',reason='finite_exhaustion',completed_ordinals=len(done),target_reached=doc['target_reached'],available_bytes=status['actual_available_bytes']));return 0
++  global_prefix(group,len(done));status=accounting(original,group);doc=dict(complete=True,reason='finite_exhaustion',completed_ordinals=len(done),target_reached=status['actual_available_bytes']>=STOP,accounting=status);save(OUT/('result-'+str(time.time_ns())+'.json'),doc);event(dict(state='COMPLETE',reason='finite_exhaustion',completed_ordinals=len(done),target_reached=doc['target_reached'],available_bytes=status['actual_available_bytes']));return 0
+  except BaseException as exc:
+   doc=dict(complete=False,error=repr(exc),scope='No automatic rerun of failed/partial/unknown ordinal; all originals, patches, archives, invocations and first failures retained.');save(OUT/('failure-'+str(time.time_ns())+'.json'),doc)
+   try:event(dict(state='FAILED',error=repr(exc),available_bytes=available()))

@@ -1,0 +1,13 @@
+{
+  "allegation": {
+    "bytes": 863,
+    "path": "/tmp/kv9-cross-voter-multicohort-campaign-review-20260915-first/completion-regression-first.json",
+    "sha256": "a06471b301fba260d4a166e3b191ba2a8915b1f73eb8ad4501307c73e659e70c"
+  },
+  "complete": true,
+  "evidence_receipt": "785a58/0",
+  "reason": "The reviewer inferred an undefined-local regression from a diff while overlooking an unchanged assignment in the full function. The same captured and frozen source SHA already assigns stage and verified before use.",
+  "scope": "Reviewer correction only; no owner source change, test, or runtime prompted.",
+  "source_sha256": "4d162d0a6ca48027b6de98fd174ba611f9cc72625e47d7787afc061895d94c97",
+  "withdrawn": "R3"
+}

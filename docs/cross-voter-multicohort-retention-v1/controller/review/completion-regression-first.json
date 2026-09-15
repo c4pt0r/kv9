@@ -1,0 +1,21 @@
+{
+  "complete": false,
+  "finding": {
+    "function": "completed",
+    "id": "R3",
+    "issue": "New final completion child closure references undefined stage and verified locals; bootstrap would raise NameError.",
+    "required": "Bind original stage/verify phase results inside completed and add a direct completed-chain control.",
+    "source_sha256": "4d162d0a6ca48027b6de98fd174ba611f9cc72625e47d7787afc061895d94c97",
+    "state": "open"
+  },
+  "prior_findings": {
+    "R1": "corrected",
+    "R2": "corrected"
+  },
+  "scope": "Source review correction before any campaign execution by this reviewer.",
+  "source_read_receipt": "44376f/0",
+  "supersedes_review": {
+    "path": "/tmp/kv9-cross-voter-multicohort-campaign-review-20260915-first/source-review-complete.json",
+    "sha256": "1d8fe6915eada3e804f545a3c5ba7144e6fd62aa5fdb8bbab7814bd503cb295a"
+  }
+}

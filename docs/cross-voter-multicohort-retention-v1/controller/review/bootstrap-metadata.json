@@ -1,0 +1,64 @@
+{
+  "accepted": {
+    "all_original_metadata_unchanged": true,
+    "codec_lifetimes": 2403,
+    "complete": true,
+    "logical_bytes": 11249173926,
+    "objects": 369,
+    "ordinal": 0,
+    "preserved_objects": 143,
+    "same_lifetimes_present": 0,
+    "state": "COLD",
+    "targets": 226
+  },
+  "audit_tool": {
+    "exit_code": 0,
+    "final_chunk": "109415",
+    "initial_chunk": "aaed9b",
+    "result_path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-accepted-summary.json",
+    "result_sha256": "2d818655ec96af2db4d613d9b28fdde54a327cdcc21661cc053b3b3b6112539a",
+    "session_id": 88896
+  },
+  "complete": true,
+  "finish_child_fields": [
+    "argv",
+    "complete",
+    "ended_ns",
+    "exit_code",
+    "pid",
+    "result_path",
+    "result_sha256",
+    "started_ns"
+  ],
+  "finish_tool": {
+    "exit_code": 0,
+    "final_chunk": "ba03d0",
+    "initial_chunk": "aa2cc1",
+    "result_path": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first/retire-2/result.json",
+    "result_sha256": "52363b045612b30d7477d2d6b56694e06259986930a17ee5af112c052923b4f4",
+    "session_id": 56949
+  },
+  "inputs": [
+    {
+      "bytes": 284,
+      "path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-tool-terminal.json",
+      "sha256": "1234e8dba38b60262e8ec024218b44608f04aba51b5b341ba07d005455c184f2"
+    },
+    {
+      "bytes": 839,
+      "path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-child-terminal.json",
+      "sha256": "62bca83a0e9c7937ba2844c3a1a9e6bbec5be1bd849aba1621b55ca4b3a7502c"
+    },
+    {
+      "bytes": 407580,
+      "path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-accepted-summary.json",
+      "sha256": "2d818655ec96af2db4d613d9b28fdde54a327cdcc21661cc053b3b3b6112539a"
+    },
+    {
+      "bytes": 291,
+      "path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-audit-tool-terminal.json",
+      "sha256": "8e873e64194c76a62919954027dd47cd78c73046b131611e84e4920f1c8dcf71"
+    }
+  ],
+  "scope": "Read-only actual bootstrap metadata check; no codecs, current object checks, or payload hashing."
+}

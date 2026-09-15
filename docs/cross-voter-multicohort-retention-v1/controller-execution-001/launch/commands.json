@@ -1,0 +1,29 @@
+{
+  "campaign": {
+    "argv": [
+      "sudo",
+      "-n",
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTHONOPTIMIZE=0",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "python3",
+      "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/campaign.py",
+      "--mode",
+      "run",
+      "--inventory-sha256",
+      "a8b83212496c6ece97376cb14b04c17a3ea899d3c8d7ae3717cd290add1c5c40",
+      "--cohort-zero-terminal",
+      "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-tool-terminal.json",
+      "--cohort-zero-terminal-sha256",
+      "1234e8dba38b60262e8ec024218b44608f04aba51b5b341ba07d005455c184f2",
+      "--cohort-zero-child-terminal",
+      "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-child-terminal.json",
+      "--cohort-zero-child-terminal-sha256",
+      "62bca83a0e9c7937ba2844c3a1a9e6bbec5be1bd849aba1621b55ca4b3a7502c"
+    ],
+    "result": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/status.json"
+  }
+}

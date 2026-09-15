@@ -1,0 +1,8 @@
+{
+  "session_id": 79586,
+  "initial_chunk": "9539d5",
+  "terminal_observed": false,
+  "observed_ns": 1789447947127345437,
+  "command_manifest_sha256": "1bea03de434f02a0b244b8c87754e2cbcc3c428e15414af5c43ed4ded054709b",
+  "instruction": "Poll this same tool session; an observation timeout is not terminal and must not trigger a restart."
+}

@@ -1,0 +1,15 @@
+{
+  "complete": true,
+  "observed_ns": 1789447923684108369,
+  "preparation_inventory_sha256": "a8b83212496c6ece97376cb14b04c17a3ea899d3c8d7ae3717cd290add1c5c40",
+  "review_sha256": "7d6a591b4f20d008c9f4ed76f826b878354caf94f41322d2d6673b24cb8cb39c",
+  "source_files_checked": 7,
+  "root_controls": {
+    "tool_terminal": "143615/0",
+    "controls": 15,
+    "source_unchanged": true
+  },
+  "command_manifest_sha256": "1bea03de434f02a0b244b8c87754e2cbcc3c428e15414af5c43ed4ded054709b",
+  "available_bytes": 27695042560,
+  "scope": "Root authorizes the finite remaining-cohort run with the frozen deterministic per-cohort release and stop conditions. No benchmark launch is authorized by capacity alone."
+}

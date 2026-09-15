@@ -1,0 +1,101 @@
+{
+  "complete": true,
+  "controls_executed_by_reviewer": 0,
+  "controls_prepared": 15,
+  "findings": [
+    {
+      "evidence": "codec_roles, codec_receipt and sidecar_closure bind exact six-role selected recipes, outputs and sizes; embedded receipts exactly equal sidecars; orphan intent/start/final sets refuse; retained source/destination and zstd pins checked; unique non-overlapping successful child lifetimes required.",
+      "id": "R1",
+      "state": "corrected"
+    },
+    {
+      "evidence": "global_prefix checks all selected transaction roots and EXEC ordinal handles against bootstrap zero plus contiguous completed campaign prefix before new work, actual-space stop, or finite exhaustion.",
+      "id": "R2",
+      "state": "corrected"
+    }
+  ],
+  "limits": {
+    "actual_available_stop_bytes": 100000000000,
+    "campaign_seconds": 172800,
+    "controller_output_cap_bytes": 268435456,
+    "event_cap_bytes": 67108864,
+    "finish_seconds": 9000,
+    "free_floor_bytes": 8589934592,
+    "independent_release_seconds": 1200,
+    "stage_verify_seconds": 4500
+  },
+  "qualifications": [
+    "Full raw and exact old encoded identities derive from existing pinned successful independent verifier, plus actual recorded complete codec outcomes; no new decoder is run by this controller review.",
+    "Preparation source review is not a substitute for root executing controls or actual campaign receipts.",
+    "Current data residency is checked by the root controller at execution; this reviewer did not access current payloads."
+  ],
+  "remaining_blockers": [],
+  "retained_invariants": [
+    "frozen original code/group/command pins",
+    "actual cohort000 finish and independent audit pins",
+    "serial campaign ownership and original dispatcher locks",
+    "actual verification hash passed to conditional finish",
+    "exact restore/readback/second-COLD chain",
+    "no automatic retry/adoption of incomplete ordinal",
+    "all failed and partial records preserved",
+    "actual available-space stop versus finite exhaustion reported separately",
+    "benchmark_runtime_ready remains false"
+  ],
+  "review_scope": "Source and small bootstrap metadata only; no controller/control/codec execution, payload access, mutation or campaign acceptance.",
+  "reviewed_inputs": [
+    {
+      "bytes": 29439,
+      "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/campaign.py",
+      "sha256": "4d162d0a6ca48027b6de98fd174ba611f9cc72625e47d7787afc061895d94c97"
+    },
+    {
+      "bytes": 10678,
+      "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/test_campaign.py",
+      "sha256": "96a906d05ffab8d384eee1fed5f0a9cb3166eccd9e1147bf042935788a7388fd"
+    },
+    {
+      "bytes": 1002,
+      "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/cohort-zero-binding.json",
+      "sha256": "6e62d455f4deca310d9f66534a5b8c1f0403ed5ea702be73814a37c1efa533b0"
+    }
+  ],
+  "source_line_references": {
+    "absent": 24,
+    "accounting": 274,
+    "allocated": 52,
+    "available": 236,
+    "canonical": 20,
+    "check": 35,
+    "codec_receipt": 100,
+    "codec_roles": 86,
+    "completed": 174,
+    "dispatcher_read_lock": 125,
+    "event": 243,
+    "exact_rows": 70,
+    "global_prefix": 227,
+    "gone": 66,
+    "identity": 25,
+    "invoke": 251,
+    "js": 37,
+    "lifetime": 60,
+    "main": 279,
+    "mkdir": 47,
+    "need": 18,
+    "original_modules": 118,
+    "outcome": 68,
+    "pair_proofs": 73,
+    "pdeath": 232,
+    "phase_receipt": 134,
+    "pin": 28,
+    "resource_guard": 239,
+    "resume_prefix": 216,
+    "save": 48,
+    "selected": 131,
+    "sidecar_closure": 96,
+    "stop_reason": 81,
+    "syncdir": 43,
+    "verify_release": 141,
+    "zero_audit_binding": 202,
+    "zero_gate": 194
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "files": 28,
+  "bytes": 938563,
+  "rows": [
+    {
+      "path": "controller/complete.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/complete.json",
+      "bytes": 2109,
+      "sha256": "c26d3d62835c2884b842bbe8d43f17954bacb6c3bd51278f767bc8b75b58a3be"
+    },
+    {
+      "path": "controller/finish/child.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/finish/child.json",
+      "bytes": 428,
+      "sha256": "ed5a8112b0bf5d74457ba3d67437c0a62aecd48b0f5a10218954fe35b49476b8"
+    },
+    {
+      "path": "controller/finish/invocation.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/finish/invocation.json",
+      "bytes": 429,
+      "sha256": "b8941b5352c440b246286708129e3db0b33b86571a2eb6c9f2930f9ff050e719"
+    },
+    {
+      "path": "controller/finish/result.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/finish/result.json",
+      "bytes": 1214,
+      "sha256": "ec843bb2c045f554aae991fdd4c6bcd93407e5d62e769ea602c1494b5952fdb8"
+    },
+    {
+      "path": "controller/finish/stderr",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/finish/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller/finish/stdout",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/finish/stdout",
+      "bytes": 1214,
+      "sha256": "4e3231f9bfe880712cdc5226d20608fc4c0c1b6c52984c15b636a21440b6e8cf"
+    },
+    {
+      "path": "controller/finish/terminal.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/finish/terminal.json",
+      "bytes": 724,
+      "sha256": "59f3dc4425f927a4e0d7b107ce6f65782e52a3d8dc7fb15f4d3e01609d1c165e"
+    },
+    {
+      "path": "controller/release.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/release.json",
+      "bytes": 988,
+      "sha256": "0c47a236007557297ea0a808109ce89827f6e1c4a87ba9382f6e5ed0f0d8355c"
+    },
+    {
+      "path": "controller/stage-verify/child.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/stage-verify/child.json",
+      "bytes": 337,
+      "sha256": "dd9ef7090019ad6c7ccbd4fdc54491fa0ca2f90722f1f62ad8481d7115b5a951"
+    },
+    {
+      "path": "controller/stage-verify/invocation.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/stage-verify/invocation.json",
+      "bytes": 344,
+      "sha256": "b06b3b1c237668424765f42b432ec86b97dab233c5167cba6f3316d893aef842"
+    },
+    {
+      "path": "controller/stage-verify/result.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/stage-verify/result.json",
+      "bytes": 319,
+      "sha256": "d0c5fd59ed3dc3cce9cdd671c38a3665b6fd4f7302131c2fe36ee89b0c47ad01"
+    },
+    {
+      "path": "controller/stage-verify/stderr",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/stage-verify/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controller/stage-verify/stdout",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/stage-verify/stdout",
+      "bytes": 319,
+      "sha256": "365586d08823110fcbd4b7578a70c958e0c49c4fbd29658fd037d42e3b8ed4dc"
+    },
+    {
+      "path": "controller/stage-verify/terminal.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/001/stage-verify/terminal.json",
+      "bytes": 632,
+      "sha256": "3dca12019abc21b4554055b51b031c6af413e39839d0ffa20d9261fafbceaa90"
+    },
+    {
+      "path": "dispatcher/readback-1-complete.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-execution-20260915-first/001/readback-1-complete.json",
+      "bytes": 1077,
+      "sha256": "e6a6d37ca97ad932d9a74216bad0f81769ee32fc1543bcd22147bb47e4c86f94"
+    },
+    {
+      "path": "dispatcher/restore-1-complete.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-execution-20260915-first/001/restore-1-complete.json",
+      "bytes": 1327,
+      "sha256": "e90963ed137a616b8120e5ebf26fabe2ab651cb0da788cb19ce606ac5349a343"
+    },
+    {
+      "path": "dispatcher/retire-1-complete.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-execution-20260915-first/001/retire-1-complete.json",
+      "bytes": 1324,
+      "sha256": "42131c0353916dfd9a25bb7c4b46825ee93dacccf0cede8597cba25895ee95e2"
+    },
+    {
+      "path": "dispatcher/retire-2-complete.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-execution-20260915-first/001/retire-2-complete.json",
+      "bytes": 1531,
+      "sha256": "e5c89c5a68053849c9f7e022840b7b1eaa3774204310b5e78ea16752b1112d11"
+    },
+    {
+      "path": "dispatcher/stage-complete.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-execution-20260915-first/001/stage-complete.json",
+      "bytes": 931,
+      "sha256": "206df671bfb9d019ca046f4bee3655a415ccae5d4453663c2f40a58ae7c13e1c"
+    },
+    {
+      "path": "dispatcher/verify-complete.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-execution-20260915-first/001/verify-complete.json",
+      "bytes": 1259,
+      "sha256": "528dd765afd90635b33799eb51a198f1168bb12c3ce56080db49ba475e2e8f38"
+    },
+    {
+      "path": "transaction/readback-1/result.json",
+      "source_path": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/readback-1/result.json",
+      "bytes": 801725,
+      "sha256": "848080b806b2520641ed8ffbb87f72aa283b554c23836ca31926ea31232c3f32"
+    },
+    {
+      "path": "transaction/retire-2/result.json",
+      "source_path": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/retire-2/result.json",
+      "bytes": 112415,
+      "sha256": "71d41a2f8d26f68e8d9b345b71ebf66223a8f9295edee0f28cc6eff601265683"
+    },
+    {
+      "path": "launch/root-release.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/launch-first/root-release.json",
+      "bytes": 703,
+      "sha256": "54e90a728421e13e951166c864a3277ee59525c9b8b646e5a09ba22bd2aac3e0"
+    },
+    {
+      "path": "launch/commands.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/launch-first/commands.json",
+      "bytes": 1020,
+      "sha256": "1bea03de434f02a0b244b8c87754e2cbcc3c428e15414af5c43ed4ded054709b"
+    },
+    {
+      "path": "launch/tool-session.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/launch-first/tool-session.json",
+      "bytes": 340,
+      "sha256": "694943cd6f3efec5c26e71b0f39b8b33f94996aa7e11f795ded77641a260f1c5"
+    },
+    {
+      "path": "launch/campaign-invocation.json",
+      "source_path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/launch-first/campaign-invocation.json",
+      "bytes": 1010,
+      "sha256": "2000ec06edb0f9c2070f4780a89258b2d6a375d52b6e12348c3cee2152ec1c35"
+    },
+    {
+      "path": "checkpoint.json",
+      "source_path": null,
+      "bytes": 3012,
+      "sha256": "178cfeeee9d247ac22ea11f1e066cf6093e857e3cace18e906cb623640a9516d"
+    },
+    {
+      "path": "README.md",
+      "source_path": null,
+      "bytes": 1832,
+      "sha256": "c61ae82a8d8bb20f1c0434d93c99888b2d13eb3e642db5f6216dec882ce3877f"
+    }
+  ]
+}

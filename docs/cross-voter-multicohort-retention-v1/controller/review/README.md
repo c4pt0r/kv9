@@ -1,0 +1,5 @@
+The bounded controller review is complete with no remaining blockers. R1 and R2 were corrected: exact six-role codec receipts and all sidecars now bind the selected originals and retained tools, and existing transaction/dispatcher state must match bootstrap 000 plus the contiguous completed campaign prefix. The controller retains the original transaction functions, conditional verification-SHA release, restoration/readback/second-COLD chain, serial ownership and finite failure stops.
+
+Root reports 15 pure controls passed (143615/0); the small result file is hash-bound in result-final.json. This reviewer ran no controls, codec or campaign and read no payload. Actual campaign acceptance remains dependent on the future original phase receipts.
+
+The brief R3 undefined-local report was a reviewer mistake: the unchanged assignment was present in both the captured and final source. reviewer-correction.json withdraws it explicitly, preserving the initial allegation and source snapshots. No source change or additional test was required. Earlier source/metadata reviews in other directories remain untouched.

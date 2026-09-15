@@ -1,0 +1,50 @@
+{
+  "scope": "Root-preauthorized deterministic campaign for frozen ordinals1..95 only",
+  "first": 1,
+  "last": 95,
+  "cohort_zero_actual_acceptance_required": true,
+  "actual_available_target_bytes": 100000000000,
+  "target_is_benchmark_guard": false,
+  "continuous_available_floor_bytes": 8589934592,
+  "controller_metadata_output_cap_bytes": 268435456,
+  "event_bytes": 67108864,
+  "per_stream_bytes": 1048576,
+  "sample_seconds": 5,
+  "stage_verify_outer_seconds": 4500,
+  "finish_outer_seconds": 9000,
+  "controller_seconds": 172800,
+  "unchanged_original_caps": true,
+  "partial_or_unknown_auto_resume": false,
+  "original_source_pins": [
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/run.py",
+      "bytes": 11642,
+      "sha256": "3d2508a003135b38641169b9dcef163157e75c1af9ff7a6e567ef9fd48d23d2a"
+    },
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/code-pins.json",
+      "bytes": 2067,
+      "sha256": "66ac9d2f4e5fa8fc59f4fe77ca158ebba8fa40d183ed71b5ff1a6deab1920d7e"
+    },
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/group-plan.json",
+      "bytes": 86817,
+      "sha256": "e0e9956c1334149ded0f23f2989f90e2ef54d3510a25293d30f1d5b7d66a86de"
+    },
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/ROOT-COMMANDS.json",
+      "bytes": 1018982,
+      "sha256": "35db1b51a0ae37a7ba7c9958763ca6a90068a3724c568f725ac0c0b1ebdc554b"
+    },
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/inventory.json",
+      "bytes": 21861,
+      "sha256": "eb7c6b05231a62edb82b222f1f87a6bcab00346ef9094f3ef7bb29e88d79c92f"
+    }
+  ],
+  "bootstrap": {
+    "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/cohort-zero-binding.json",
+    "bytes": 1002,
+    "sha256": "6e62d455f4deca310d9f66534a5b8c1f0403ed5ea702be73814a37c1efa533b0"
+  }
+}

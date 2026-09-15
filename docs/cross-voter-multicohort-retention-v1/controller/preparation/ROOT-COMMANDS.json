@@ -1,0 +1,69 @@
+{
+  "scope": "Root executes after reviewing the frozen source and controller controls; fill only the independently reviewed final inventory hash.",
+  "controls": [
+    "sudo",
+    "-n",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/test_campaign.py"
+  ],
+  "run": [
+    "sudo",
+    "-n",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/campaign.py",
+    "--mode",
+    "run",
+    "--inventory-sha256",
+    "REQUIRED_FROZEN_INVENTORY_SHA256",
+    "--cohort-zero-terminal",
+    "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-tool-terminal.json",
+    "--cohort-zero-terminal-sha256",
+    "1234e8dba38b60262e8ec024218b44608f04aba51b5b341ba07d005455c184f2",
+    "--cohort-zero-child-terminal",
+    "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-child-terminal.json",
+    "--cohort-zero-child-terminal-sha256",
+    "62bca83a0e9c7937ba2844c3a1a9e6bbec5be1bd849aba1621b55ca4b3a7502c"
+  ],
+  "status": [
+    "sudo",
+    "-n",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/campaign.py",
+    "--mode",
+    "status"
+  ],
+  "status_file": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first/status.json",
+  "retained_restore_commands": {
+    "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/ROOT-COMMANDS.json",
+    "bytes": 1018982,
+    "sha256": "35db1b51a0ae37a7ba7c9958763ca6a90068a3724c568f725ac0c0b1ebdc554b"
+  },
+  "campaign_source": {
+    "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/campaign.py",
+    "bytes": 29439,
+    "sha256": "4d162d0a6ca48027b6de98fd174ba611f9cc72625e47d7787afc061895d94c97"
+  },
+  "control_source": {
+    "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/test_campaign.py",
+    "bytes": 10678,
+    "sha256": "96a906d05ffab8d384eee1fed5f0a9cb3166eccd9e1147bf042935788a7388fd"
+  }
+}

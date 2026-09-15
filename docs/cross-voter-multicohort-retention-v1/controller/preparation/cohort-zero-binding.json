@@ -1,0 +1,22 @@
+{
+  "group-000-finish-tool-terminal.json": {
+    "path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-tool-terminal.json",
+    "bytes": 284,
+    "sha256": "1234e8dba38b60262e8ec024218b44608f04aba51b5b341ba07d005455c184f2"
+  },
+  "group-000-finish-child-terminal.json": {
+    "path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-child-terminal.json",
+    "bytes": 839,
+    "sha256": "62bca83a0e9c7937ba2844c3a1a9e6bbec5be1bd849aba1621b55ca4b3a7502c"
+  },
+  "group-000-accepted-summary.json": {
+    "path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-accepted-summary.json",
+    "bytes": 407580,
+    "sha256": "2d818655ec96af2db4d613d9b28fdde54a327cdcc21661cc053b3b3b6112539a"
+  },
+  "group-000-audit-tool-terminal.json": {
+    "path": "/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-audit-tool-terminal.json",
+    "bytes": 291,
+    "sha256": "8e873e64194c76a62919954027dd47cd78c73046b131611e84e4920f1c8dcf71"
+  }
+}

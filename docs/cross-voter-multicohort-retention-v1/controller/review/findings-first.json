@@ -1,0 +1,42 @@
+{
+  "complete": false,
+  "findings": [
+    {
+      "function": "verify_release",
+      "id": "R1",
+      "issue": "Receipt count and self-consistency do not independently bind exact codec role/input/output to selected original and retained-codec identities; orphan intents/starts can be ignored.",
+      "required": "Bind exact six codec roles per selected pair, embedded receipts and complete sidecar sets. Refuse altered argv/output/count and orphan intent/start.",
+      "state": "open"
+    },
+    {
+      "function": "resume_prefix/main",
+      "id": "R2",
+      "issue": "Completed prefix does not account for existing transaction/EXEC roots outside campaign ledger; later known-COLD state may be credited or bypassed.",
+      "required": "Require all existing selected transaction/EXEC ordinal state to equal bootstrap 000 plus contiguous completed campaign prefix before new work or stop.",
+      "state": "open"
+    }
+  ],
+  "scope": "Read-only bounded controller source review; no execution, payload access, or changes to owner inputs.",
+  "source_inputs": [
+    {
+      "bytes": 24220,
+      "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/campaign.py",
+      "sha256": "bb5b6c4445c04bc59ee7938bb64bf684800dd922056881372d2bf87c00910b07"
+    },
+    {
+      "bytes": 6170,
+      "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/test_campaign.py",
+      "sha256": "0ec6bef20d215e4467cf7c96b2ad9d9fd0f15152e7f7f6464b7194d72bf5b1cd"
+    },
+    {
+      "bytes": 1002,
+      "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first/cohort-zero-binding.json",
+      "sha256": "6e62d455f4deca310d9f66534a5b8c1f0403ed5ea702be73814a37c1efa533b0"
+    }
+  ],
+  "source_read_receipts": [
+    "6b98aa/0",
+    "89c5b9/0",
+    "5bfa56/0"
+  ]
+}

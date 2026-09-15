@@ -1,0 +1,1 @@
+{"argv": ["/usr/bin/python3", "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/run.py", "--code-pins-sha256", "66ac9d2f4e5fa8fc59f4fe77ca158ebba8fa40d183ed71b5ff1a6deab1920d7e", "--mode", "stage-verify", "--ordinal", "1"], "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e", "pid": 763922, "start_ticks": 173664398}

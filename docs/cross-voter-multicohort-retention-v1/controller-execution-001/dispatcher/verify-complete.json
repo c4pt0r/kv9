@@ -1,0 +1,28 @@
+{
+  "complete": true,
+  "exit_code": 0,
+  "result_path": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/verification-first/result.json",
+  "result_sha256": "a4f4fccbc80458e0c39e8c75fa741c2a8abbf980af9729bf8ed5c2838cd53245",
+  "invocation": "/tmp/kv9-cross-voter-multicohort-execution-20260915-first/001/verify-attempt-0/invocation.json",
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/verify.py",
+    "--selection",
+    "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/001.json",
+    "--selection-sha256",
+    "865a5369c19791afe26226d9cefba091312976f4656ce06f646924124fcde972",
+    "--code-pins-sha256",
+    "66ac9d2f4e5fa8fc59f4fe77ca158ebba8fa40d183ed71b5ff1a6deab1920d7e",
+    "--staged-sha256",
+    "f95a076f9bfaae246cd6051c31d3378a08d5fcec2a957694366889819c25e79b",
+    "--retained-toolchain-sha256",
+    "ad6eefb90978882e6221874edee9a26428276576cee47f873a1088f3f9cb441a",
+    "--output",
+    "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first/verification-first"
+  ],
+  "pid": 772883,
+  "start_ticks": 173673914,
+  "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+  "ended_ns": 1789448141765108663,
+  "child_reaped": true
+}

@@ -139,8 +139,8 @@ establishes performance gains.
 The [receipt matched-screen preparation](receipt-tail-performance-preparation-v1/README.md)
 also passes its 16 focused controls and actual three-role source/binary/Cargo
 binding. Its complete eight-smoke/sixteen-timed workload and storage-v3 policy
-are unchanged. About 25 GB is available, versus an estimated 80–100 GB launch
-budget for a complete new campaign. Qualify additional capacity before running
+are unchanged. About 25 GB was available at preparation, versus an estimated
+80–100 GB launch budget for a complete new campaign. Qualify additional capacity before running
 the frozen commands; preparation does not count as new performance evidence.
 The [bounded WAL patch pilot](cross-voter-retention-pilot-v1/README.md) passes
 six full original-byte reconstructions and eight refusal controls. It supports
@@ -159,9 +159,21 @@ The [bounded expansion](cross-voter-multicohort-retention-v1/README.md) now pass
 readback of all 369 objects, with 2,403 codec lifetimes exited. Net recovery adds
 2,360,422,400 bytes after transaction/shared preparation/dispatcher allocation;
 available space is about 27.71 GB before publication overhead. Only one of the
-fixed 96 cohorts has run. Continue the remaining serialized migrations with
+fixed 96 cohorts had run at that stage. Continue the remaining serialized migrations with
 actual result validation and capacity accounting, then run the prepared receipt
 screen unchanged. No additional QPS or general candidate promotion is established.
+
+The [continuous controller](cross-voter-multicohort-retention-v1/controller/README.md)
+now passes 15 controls and independent review, and its first actual iteration
+completes exact restoration and full readback of 355 frame-buffer objects. At
+that [completed boundary](cross-voter-multicohort-retention-v1/controller-execution-001/README.md),
+two of the 96 planned cohorts are COLD, conservative net recovery is 4.692 GB
+including controller allocation, and actual available space is 30.024 GB.
+Ordinal 002 is running. After the migration exits and fresh capacity qualifies,
+the existing receipt commands run all eight smokes, complete smoke readback,
+all sixteen timed cohorts and independent final acceptance. The completed
+16 focused controls and role binder need no repeat. Keep timing exclusive of
+migration/codec activity and preserve the original workload and limits.
 
 ## Comparison contract
 
