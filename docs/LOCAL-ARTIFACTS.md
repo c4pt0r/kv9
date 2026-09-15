@@ -37,6 +37,14 @@ reusable development compiler cache can still grow on the root filesystem.
 Continue checking both devices. Do not change a running process's open output
 files or silently relocate a benchmark's WAL to a different storage class.
 
+The first [loaded write-stage capture](WRITE-STAGE-CAPTURE.md) also follows this
+placement: matching release artifacts, preparation, runtime logs, 4,234,585,489
+bytes of retained database payload, independent audit and correction-validation
+logs all use `/mnt/data/kv9-work`. Its capture entry point requires an output
+path under that directory. The active continuation record carries this policy
+forward to new attempts; historical scripts remain records of their original
+paths. The failed capture is terminal, with all owned workload processes exited.
+
 The subsequent write-stage development runs follow this split: all three sets
 of test logs, five proof compositions, reader controls and publication assembly
 use fresh directories below `/mnt/data/kv9-work`. They reuse the existing

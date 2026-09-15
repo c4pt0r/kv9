@@ -59,6 +59,16 @@ cannot be interpreted as an empty successful capture. Serialization and vector
 allocation happen after copying the fixed arrays and releasing the observer
 lock. Maximum-width serialization is tested against 384 KiB.
 
+The first actual capture exposed five lost recording calls on its instrumented
+leader. It was correctly refused. Status export now first tries the driver's
+existing pump gate: all production group/inspection recording paths already
+hold that gate. A busy gate returns an unavailable snapshot; an idle snapshot
+holds the gate only while copying fixed arrays, then releases both locks before
+allocating vectors or serializing. An exporter therefore cannot own the trace
+lock while a driver recording call needs it. Snapshot refusal does not discard
+a recording or permit quality-based resampling. See the
+[original failure and correction](WRITE-STAGE-CAPTURE.md).
+
 Snapshot begin/end timestamps bracket the fixed-array copy. The row set is
 coherent, while the loss/invalid indicators are independent atomic observations.
 Bind all records to the node, process incarnation, nonzero `trace_instance` and
@@ -104,8 +114,11 @@ instrumented state `(S, O)` to `S`.
    watermark publication and request completion/deadline precedence are retained.
    Erasing the observer calls therefore gives the original ordered transitions.
 3. A recording attempt takes no additional blocking lock, acquires no database
-   lock and performs no I/O. Snapshot allocation/serialization is outside the
-   observer lock. There is no new lock-order cycle through the collector.
+   lock and performs no I/O. An exporter tries the existing pump gate before
+   the observer lock; writers already take that order. There is no reverse edge
+   from either lock to an exporter lock. Snapshot allocation/serialization is
+   outside both locks. A successful fixed-array copy can delay the next pump;
+   nonblocking acquisition does not establish negligible scheduling overhead.
 4. Each ring advances only through checked addition. Before overflow, record
    `n` occupies `(n-1) mod 512`; exactly the last `min(n,512)` records remain.
    The overwritten count is `n-min(n,512)`. Overflow is explicit invalidity and
@@ -128,8 +141,8 @@ gapped/mixed-term sample identities, both ring overwrites, lock contention,
 poisoning, integer/time overflow and the worst-case JSON bound. This is not an
 executed performance capture or an observer-overhead result.
 
-The default workspace has 731 passing library tests; the final build with both
-`write-stage-tracing` and `write-path-diagnostics` has 744. Each leaves four
+The initial `8c00085` qualification has 731 passing default workspace library
+tests and 744 with both `write-stage-tracing` and `write-path-diagnostics`. Each leaves four
 existing fixture tests ignored. Both configurations pass all-target,
 warnings-denied Clippy, and formatting passes. An initial Clippy rejection of
 an unused unit binding is preserved with its subsequent correction.
@@ -161,7 +174,8 @@ arithmetic and preserves the original outcome, including `fence_rejected`;
 it never certifies client success. Missing/ambiguous/time-incompatible matches
 have no interval arithmetic. Every result states that it is not a complete
 history or a causal proof. Synthetic qualification has not yet accepted a live
-trace capture.
+trace capture. The later actual attempt and exporter-contention fix are tracked
+in [the capture report](WRITE-STAGE-CAPTURE.md), including its more recent tests.
 
 Next qualify matching default/tracing releases from the same source and compiler,
 then capture the loaded BatchPut(64) interval with separate outcome/lifetime,
