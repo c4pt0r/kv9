@@ -81,6 +81,17 @@ class Cell:
             require(failure["complete"] is False and failure["phase"] == "provision" and failure["fault_uid"] is None, "only a failed pre-workload provision may supply images/baseline")
             require(not (self.prior / "failed-history.json").exists(), "prior workload must not have started")
             self.baseline = failure["baseline_available_bytes"]
+        self.image_failure = None
+        if args.image_preparation_failure:
+            require(args.retained_ca_base and not args.prior_preparation, "failed image preparation requires the new-binary CA route")
+            self.image_failure = args.image_preparation_failure.resolve()
+            failure = json.loads((self.image_failure/"failure.json").read_text())
+            require(failure["complete"] is False and failure["phase"] == "image-load" and failure["namespace_uid"] is None and failure["fault_uid"] is None, "only a pre-fixture image failure may preserve its budget")
+            require(not (self.image_failure/"failed-history.json").exists() and not (self.image_failure/"namespace.json").exists(), "prior workload/fault forbidden")
+            binding = json.loads((self.image_failure/"source-binding.json").read_text())
+            require(binding["binary"] == pin(args.binary) and binding["binary"]["sha256"] == args.binary_sha256 and binding["inputs"] == pin(args.inputs), "failed image's exact new binary and input authority")
+            require(pin(self.image_failure/"image-context/kv9")["sha256"] == args.binary_sha256, "preserved executable context identity")
+            self.baseline = failure["baseline_available_bytes"]
         self.minimum = min(self.baseline, self.available())
         self.count = 0
         self.ns_uid = None
@@ -290,7 +301,11 @@ class Cell:
         inputs = json.loads(self.args.inputs.read_text())
         require(inputs["binary_sha256"] == binary["sha256"], "runtime input binding")
         repo = Path(__file__).resolve().parent.parent
-        for name, expected in inputs["sources"].items():
+        source_keys = [key for key in ("sources", "source_pins") if key in inputs]
+        require(len(source_keys) == 1 and isinstance(inputs[source_keys[0]], dict) and inputs[source_keys[0]], "one exact nonempty source pin map")
+        if "binary_bytes" in inputs:
+            require(inputs["binary_bytes"] == binary["bytes"], "runtime binary size binding")
+        for name, expected in inputs[source_keys[0]].items():
             require(pin(repo/name)["sha256"] == expected, "tested source binding changed: "+name)
         self.save("source-binding.json", {"binary": binary, "inputs": pin(self.args.inputs), "helper": pin(__file__),
                                          "wal_layout": pin(Path(__file__).with_name("wal_layout.py")), "scope": "one remote-checkpoint PodChaos cell"})
@@ -305,7 +320,30 @@ class Cell:
         for image in (BASE, MINIO):
             require(self.command(["docker", "image", "inspect", image, "--format", "{{.Id}}"])[0].decode().strip() == image, "retained image absent")
         self.phase = "image-load"
-        if self.prior:
+        if self.args.retained_ca_base:
+            require(self.prior is None, "new binary image route cannot reuse failed-attempt binary authority")
+            inherited = Path("/tmp/kv9-c04-checkpoint-publication-chaos-20260915-fourth")
+            prior_image = json.loads((inherited/"images.json").read_text())
+            lineage = json.loads((inherited/"runtime-ca-lineage.json").read_text())
+            parent_image = "sha256:4c4a246d9fd6d00eafa71382158e4395cd7186c420ce37960c17b85abdbec975"
+            require(prior_image["kv9_id"] == lineage["image_id"] == parent_image, "retained CA-bearing image lineage")
+            require(self.command(["docker","image","inspect",parent_image,"--format","{{.Id}}"])[0].decode().strip() == parent_image, "retained CA image missing")
+            context = self.out/"image-context";context.mkdir()
+            if self.image_failure:
+                os.link(self.image_failure/"image-context/kv9",context/"kv9")
+                self.save("prior-image-preparation.json",{"failure":pin(self.image_failure/"failure.json"),"tool_terminal":pin(self.image_failure/"tool-terminal.json"),"source_binding":pin(self.image_failure/"source-binding.json"),"actual_source":pin(self.image_failure/"sources/checkpoint-publication-chaos.py"),"original_baseline_available_bytes":self.baseline,"context_reused_by_hardlink":True,"no_workload_replayed":True})
+            else:
+                shutil.copyfile(self.args.binary,context/"kv9")
+                (context/"kv9").chmod(0o755)
+            require(pin(context/"kv9")["sha256"] == binary["sha256"], "new image executable copy")
+            parent_tag = prior_image["kv9_tag"]
+            require(self.command(["docker","image","inspect",parent_tag,"--format","{{.Id}}"])[0].decode().strip() == parent_image, "retained CA image tag changed")
+            (context/"Dockerfile").write_text('FROM '+parent_tag+'\nCOPY kv9 /usr/local/bin/kv9\n')
+            self.command(["docker","build","--pull=false","--network=none","-t",self.image,str(context)],seconds=180)
+            image_id = self.command(["docker","image","inspect",self.image,"--format","{{.Id}}"])[0].decode().strip()
+            self.command([KIND,"load","docker-image","--name",CLUSTER,self.image],seconds=180)
+            self.save("runtime-ca-lineage.json",{"parent_id":parent_image,"retained_image_authority":pin(inherited/"images.json"),"retained_ca_authority":pin(inherited/"runtime-ca-lineage.json"),"image":self.image,"image_id":image_id,"new_binary":binary,"ca_input":lineage["ca_input"],"new_image_contains_new_binary_only_over_retained_ca_base":True,"ca_bytes_excluded_from_public_evidence":True})
+        elif self.prior:
             prior = json.loads((self.prior/"images.json").read_text())
             cleanup = json.loads((self.prior/"failure-post-first/result.json").read_text())
             require(cleanup["complete"] and cleanup["namespace_absent"] and cleanup["no_kv_deployment_or_fault_executed"], "prior preparation scoped cleanup must be complete")
@@ -325,19 +363,20 @@ class Cell:
             image_id = self.command(["docker", "image", "inspect", self.image, "--format", "{{.Id}}"])[0].decode().strip()
             require(self.command(["docker", "image", "inspect", MINIO_TAG, "--format", "{{.Id}}"])[0].decode().strip() == MINIO, "retained MinIO tag differs")
             self.command([KIND, "load", "docker-image", "--name", CLUSTER, self.image, MINIO_TAG], seconds=180)
-        # reqwest constructs its native certificate verifier even for this HTTP endpoint.
-        # Keep the exact tested executable layer and add only the retained public CA input.
-        ca = pin(self.args.ca_bundle)
-        require(0 < ca["bytes"] <= MIB, "bounded retained certificate bundle")
-        context = self.out/"runtime-image-context";context.mkdir()
-        shutil.copyfile(self.args.ca_bundle,context/"ca-certificates.crt")
-        parent_image, parent_id = self.image,image_id
-        self.image = "kv9-c04-checkpoint:"+self.namespace+"-ca"
-        (context/"Dockerfile").write_text('FROM '+parent_image+'\nCOPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt\n')
-        self.command(["docker","build","--pull=false","--network=none","-t",self.image,str(context)],seconds=90)
-        image_id = self.command(["docker","image","inspect",self.image,"--format","{{.Id}}"])[0].decode().strip()
-        self.command([KIND,"load","docker-image","--name",CLUSTER,self.image],seconds=180)
-        self.save("runtime-ca-lineage.json",{"parent_image":parent_image,"parent_id":parent_id,"image":self.image,"image_id":image_id,"ca_input":ca,"binary_unchanged":binary,"ca_bytes_excluded_from_public_evidence":True})
+        if not self.args.retained_ca_base:
+            # reqwest constructs its native certificate verifier even for this HTTP endpoint.
+            # Keep the exact tested executable layer and add only the retained public CA input.
+            ca = pin(self.args.ca_bundle)
+            require(0 < ca["bytes"] <= MIB, "bounded retained certificate bundle")
+            context = self.out/"runtime-image-context";context.mkdir()
+            shutil.copyfile(self.args.ca_bundle,context/"ca-certificates.crt")
+            parent_image, parent_id = self.image,image_id
+            self.image = "kv9-c04-checkpoint:"+self.namespace+"-ca"
+            (context/"Dockerfile").write_text('FROM '+parent_image+'\nCOPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt\n')
+            self.command(["docker","build","--pull=false","--network=none","-t",self.image,str(context)],seconds=90)
+            image_id = self.command(["docker","image","inspect",self.image,"--format","{{.Id}}"])[0].decode().strip()
+            self.command([KIND,"load","docker-image","--name",CLUSTER,self.image],seconds=180)
+            self.save("runtime-ca-lineage.json",{"parent_image":parent_image,"parent_id":parent_id,"image":self.image,"image_id":image_id,"ca_input":ca,"binary_unchanged":binary,"ca_bytes_excluded_from_public_evidence":True})
         self.save("images.json", {"kv9_tag": self.image, "kv9_id": image_id, "minio_tag": MINIO_TAG, "minio_id": MINIO, "base_id": BASE})
         self.phase = "provision"
         self.apply({"apiVersion": "v1", "kind": "Namespace", "metadata": {"name": self.namespace, "labels": {"kv9-owner": "c04-checkpoint-publication"}, "annotations": {"chaos-mesh.org/inject": "enabled"}}})
@@ -517,6 +556,8 @@ def main():
     parser.add_argument("--binary-sha256",required=True)
     parser.add_argument("--inputs",type=Path,required=True)
     parser.add_argument("--output",type=Path,required=True)
+    parser.add_argument("--image-preparation-failure",type=Path,help="Exact failed pre-fixture image attempt whose original budget and binary context remain authoritative")
+    parser.add_argument("--retained-ca-base",action="store_true",help="Layer a newly pinned executable onto the exact retained CA-bearing image; no historical binary acceptance reuse")
     parser.add_argument("--ca-bundle",type=Path,default=Path("/etc/ssl/certs/ca-certificates.crt"))
     parser.add_argument("--prior-preparation",type=Path,help="Completed scoped cleanup of a failed pre-workload provision; reuse images and original space baseline")
     args=parser.parse_args();cell=Cell(args)

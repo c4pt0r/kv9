@@ -37,10 +37,10 @@
     "CheckpointPublicationProof"
   ],
   "source_pins": {
-    "crates/engine/src/persist.rs": "eddad2cfc8eb6b9e9188b88170fc90a5cbaec0b98850f22c40b2f93b91f768d1",
+    "crates/engine/src/persist.rs": "56e9505eefad563d2db1549d434e56355b41ceaf18d008433f8aed0a45924593",
     "crates/raft/src/state_machine.rs": "ac6b9048056aeb869dcceaf0013292a4530338bb37715f290b054fc8651e9a86",
-    "crates/raft/src/state_machine/checkpoint_recovery.rs": "9d9deec49ae4e16e15ccae0b2da8f816ff5579012343ec3ba8e44a444b33dda1",
+    "crates/raft/src/state_machine/checkpoint_recovery.rs": "0751743f973bdf6caf270a75687388e65bd2d84b0d60d46fbb7965837a6bba0b",
     "crates/raft/src/storage/configuration.rs": "bdf0f0b441d97405ca8d41710248ec7ee6b9c6420539f46e2b6f955f1066db5a",
-    "crates/server/src/runtime.rs": "108dd35bf67eb62cb9ca41fe97c697c437f6ddf4860fedfd6046a7e6787a670c"
+    "crates/server/src/runtime.rs": "397e3fa427310a5b561dd8433434df36465c54dcb0b1efa4c930535afc4a7f74"
   }
 }

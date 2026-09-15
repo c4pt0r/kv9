@@ -13,6 +13,11 @@ This is local recovery validation. Complete portable anchors, root/range and
 destination binding, the replicated retention ledger, snapshot installation and
 dynamic multi-Raft remain unfinished. C04 stays open.
 
+The subsequent [historical base identity increment](CHECKPOINT-BASE-IDENTITY.md)
+adds a runtime callback between verified SST restore and tail replay, and makes
+upload scope come from the same frozen image. The publication protocol below
+is unchanged; its source pins are revalidated for that composition.
+
 ## Implementation
 
 `open_checkpoint_engine` owns the validator and the engine open. Callers cannot

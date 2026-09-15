@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "tlapm_version": "4600b24",
+  "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "modules": {
+    "CheckpointBaseProof": {
+      "theorems": [
+        "CBDescriptorUsesFrozenImage",
+        "CBFrozenImageSurvivesLaterWrites",
+        "CBInvariantAlways",
+        "CBInvariantInit",
+        "CBInvariantStep",
+        "CBServingRequiresCompletedPublication",
+        "CBTailCannotAuthorizeWrongBase"
+      ],
+      "obligations": 27
+    }
+  },
+  "standard_modules": {
+    "Naturals": "73f2a68412039aa86f37ad08f0d0fef50fa8327d0ad8806f515548c75e9d9d84",
+    "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
+  },
+  "models": {
+    "CheckpointBase": {
+      "source": "proofs/tla/checkpoint_base/CheckpointBase.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "84787b3984e3e6a535f7c5bd2a66de4bdc8c822d2e7bd3741a52a77da6c1251c"
+        }
+      ]
+    }
+  },
+  "roots": [
+    "CheckpointBaseProof"
+  ],
+  "source_pins": {
+    "crates/engine/src/persist.rs": "56e9505eefad563d2db1549d434e56355b41ceaf18d008433f8aed0a45924593",
+    "crates/meta/src/checkpoint.rs": "79697c1e933f83cc417fd30c12861fdffad9c16ee30fcae75668c652c473d4c4",
+    "crates/server/src/remote_storage.rs": "2f433c7ed8b421d2e5d18c2d1d7dcafb8a74e480e83fb80e6c0f0d4e848a2f4c",
+    "crates/server/src/runtime.rs": "397e3fa427310a5b561dd8433434df36465c54dcb0b1efa4c930535afc4a7f74",
+    "crates/raft/src/state_machine/checkpoint_recovery.rs": "0751743f973bdf6caf270a75687388e65bd2d84b0d60d46fbb7965837a6bba0b"
+  }
+}

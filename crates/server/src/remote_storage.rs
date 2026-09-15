@@ -4,11 +4,9 @@ use std::path::Path;
 use std::sync::{mpsc, Arc};
 use std::time::Duration;
 
-use kv9_common::{Error, Result, META_REGION_0};
-use kv9_engine::checkpoint::{CheckpointManifest, FlushJournal, FlushScope, RemoteUploader};
+use kv9_common::{Error, Result, RootDescriptor, META_REGION_0};
+use kv9_engine::checkpoint::{CheckpointManifest, FlushJournal, RemoteUploader};
 use kv9_engine::{MinioConfig, MinioObjectStore, WalEngine};
-use kv9_meta::codec::{memcmp_uint, ColumnValue};
-use kv9_meta::schema::{ColumnId, REGIONS_DESC};
 use kv9_raft::driver::NodeDriver;
 use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::Role;
@@ -21,15 +19,17 @@ pub(crate) struct PreparedRemote {
     journal: FlushJournal,
     interval: Duration,
     cluster: String,
+    root: RootDescriptor,
 }
 
 /// Validate configuration and pending recovery authority before starting driver
 /// or listener threads. An invalid journal never becomes an empty fresh slot.
 pub(crate) fn prepare_remote(
     dir: &Path,
-    cluster: String,
+    root: &RootDescriptor,
     storage: &DiskRaftStorage,
 ) -> Result<Option<PreparedRemote>> {
+    let cluster = root.cluster_id.to_string();
     let journal = FlushJournal::new(dir.join("catalog.pending"));
     let pending = journal.load()?;
     let uploader = match std::env::var("KV9_STORAGE") {
@@ -75,6 +75,7 @@ pub(crate) fn prepare_remote(
         journal,
         interval: Duration::from_millis(interval),
         cluster,
+        root: root.clone(),
     }))
 }
 
@@ -143,21 +144,12 @@ impl CheckpointWorker {
         if revision == self.last_revision {
             return Ok(());
         }
-        let txn = self.node.meta_raft.store.begin()?;
-        let Some(region) = txn.get(&REGIONS_DESC, &[memcmp_uint(META_REGION_0.0)])? else {
-            return Ok(());
-        };
-        let uint = |id| match region.value.get(ColumnId(id)) {
-            Some(ColumnValue::Uint(n)) => Ok(*n),
-            _ => Err(Error::Engine("metadata region epoch is invalid".into())),
-        };
-        let frozen = engine.freeze(FlushScope {
-            cluster: self.remote.cluster.clone(),
-            region: META_REGION_0.0,
-            conf_ver: uint(5)?,
-            version: uint(6)?,
+        let frozen = engine.freeze_with_scope(|view| {
+            Ok(
+                kv9_meta::checkpoint::inspect_initial_checkpoint_base(view, &self.remote.root)?
+                    .flush_scope(),
+            )
         })?;
-        drop(txn);
         let prepared = self.remote.uploader.upload(frozen)?;
         self.remote.journal.stage(&prepared, pair.generation)?;
         self.pause_for_test("prepared", stopped)?;

@@ -25,11 +25,31 @@ pub fn open_checkpoint_engine(
     kv9_engine::EngineReplay,
     Option<RecoveredCheckpointPublication>,
 )> {
+    open_checkpoint_engine_with_base(storage, path, uploader, cluster, region, |_, _| Ok(()))
+}
+
+/// Compose local publication checks with an enclosing layer's inspection of
+/// the verified base image. It runs before tail replay; any error refuses the
+/// whole open. The callback cannot supply or replace the image being inspected.
+/// Callback side effects remain provisional until this function returns.
+pub fn open_checkpoint_engine_with_base(
+    storage: &mut DiskRaftStorage,
+    path: impl AsRef<std::path::Path>,
+    uploader: Option<&kv9_engine::checkpoint::RemoteUploader>,
+    cluster: String,
+    region: u64,
+    base_observer: impl FnMut(&CheckpointManifest, &dyn kv9_engine::ReadView) -> Result<()>,
+) -> Result<(
+    WalEngine,
+    kv9_engine::EngineReplay,
+    Option<RecoveredCheckpointPublication>,
+)> {
     let recovery = std::cell::RefCell::new(CheckpointRecovery::new(storage, cluster, region));
-    let (engine, report) = WalEngine::open_with_replay_observer(
+    let (engine, report) = WalEngine::open_with_base_observer(
         path,
         uploader,
         |base| recovery.borrow_mut().checkpoint(base),
+        base_observer,
         |batch, at| recovery.borrow_mut().batch(batch, at),
     )?;
     let publication = recovery.into_inner().finish(&engine)?;
