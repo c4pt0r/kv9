@@ -159,3 +159,12 @@ selection, exact image/term binding, completion before granting authority and
 finite scan progress. Existing ordered apply, committed Raft history and intact
 atomic WAL batches are explicit premises. Complete portable anchor, owner-ledger
 and installation composition remains unfinished.
+
+## Historical checkpoint base identity
+
+`checkpoint_base/CheckpointBaseProof.tla` adds seven statements / 27 strict
+obligations for immutable scope derivation and base-before-tail recovery. Run
+`scripts/check-checkpoint-base.py` with the pinned TLAPS/TLA tools. Three TLC
+instances, five unsafe model controls and three proof rejections accompany the
+proof. [Scope and source correspondence](../../docs/CHECKPOINT-BASE-IDENTITY.md)
+state its lower-layer premises and unfinished portable-anchor work.

@@ -22,6 +22,13 @@ the historical configuration-at-cut provider without adding work to online
 apply or changing the selected write candidate. Complete portable anchors and
 the replicated retention ledger remain the next storage prerequisites.
 
+The subsequent [historical base identity increment](CHECKPOINT-BASE-IDENTITY.md)
+derives upload scope from the exact frozen image and checks its certified root,
+schema and owner epoch before startup WAL replay. Valid newer tail epochs remain
+recoverable. The next anchor work composes this observation with the committed
+configuration and actual winning publication; destination admission and the
+replicated retention ledger remain separate requirements.
+
 ## Local storage checkpoint (2026-09-14 UTC)
 
 The [completed cache cleanup](write-storage-cache-cleanup-v1/result.json) increased

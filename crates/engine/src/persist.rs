@@ -119,7 +119,27 @@ impl WalEngine {
     pub fn open_with_replay_observer(
         path: impl AsRef<Path>,
         uploader: Option<&RemoteUploader>,
+        checkpoint_observer: impl FnMut(Option<&CheckpointManifest>) -> Result<()>,
+        batch_observer: impl FnMut(&WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    ) -> Result<(Self, EngineReplay)> {
+        Self::open_with_base_observer(
+            path,
+            uploader,
+            checkpoint_observer,
+            |_, _| Ok(()),
+            batch_observer,
+        )
+    }
+
+    /// Inspect the verified restored image before any uncovered WAL is replayed.
+    /// The borrowed immutable view belongs to that exact image. A later tail
+    /// cannot repair invalid base identity, and a callback result is provisional
+    /// until the complete engine open returns successfully.
+    pub fn open_with_base_observer(
+        path: impl AsRef<Path>,
+        uploader: Option<&RemoteUploader>,
         mut checkpoint_observer: impl FnMut(Option<&CheckpointManifest>) -> Result<()>,
+        mut base_observer: impl FnMut(&CheckpointManifest, &dyn crate::ReadView) -> Result<()>,
         mut batch_observer: impl FnMut(&WriteBatch, Option<AppliedPosition>) -> Result<()>,
     ) -> Result<(Self, EngineReplay)> {
         let path = path.as_ref();
@@ -158,7 +178,11 @@ impl WalEngine {
                                 "remote checkpoint requires MinIO configuration".into(),
                             )
                         })?;
-                        *index.borrow_mut() = uploader.restore(manifest)?;
+                        let restored = uploader.restore(manifest)?;
+                        let view = restored.snapshot()?;
+                        base_observer(manifest, view.as_ref())?;
+                        drop(view);
+                        *index.borrow_mut() = restored;
                     }
                     Ok(())
                 },
@@ -197,7 +221,11 @@ impl WalEngine {
                         "remote checkpoint requires MinIO configuration".into(),
                     )
                 })?;
-                (uploader.restore(&manifest)?, Some(manifest.position()))
+                let restored = uploader.restore(&manifest)?;
+                let view = restored.snapshot()?;
+                base_observer(&manifest, view.as_ref())?;
+                drop(view);
+                (restored, Some(manifest.position()))
             }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
                 checkpoint_observer(None)?;
@@ -243,11 +271,24 @@ impl WalEngine {
     /// Seal data and position under the same write lock. This is an O(1)
     /// persistent-map snapshot; serialization and all remote I/O happen later.
     pub fn freeze(&self, scope: FlushScope) -> Result<FrozenFlush> {
-        let wal = self.wal.lock().expect("wal lock poisoned");
-        wal.ensure_available()?;
-        let (view, position) = self.index.freeze_parts();
+        self.freeze_with_scope(|_| Ok(scope))
+    }
+
+    /// Derive descriptor scope from the exact frozen image, never an earlier
+    /// catalog snapshot. The callback runs after releasing the writer lock;
+    /// immutable map roots keep its view stable while later writes proceed.
+    pub fn freeze_with_scope(
+        &self,
+        scope_for_view: impl FnOnce(&dyn crate::ReadView) -> Result<FlushScope>,
+    ) -> Result<FrozenFlush> {
+        let (view, position) = {
+            let wal = self.wal.lock().expect("wal lock poisoned");
+            wal.ensure_available()?;
+            self.index.freeze_parts()
+        };
         let position = position
             .ok_or_else(|| kv9_common::Error::Engine("nothing applied to freeze".into()))?;
+        let scope = scope_for_view(&view)?;
         Ok(FrozenFlush {
             view,
             position,
@@ -675,6 +716,142 @@ mod tests {
         engine
             .write_applied(batch, AppliedPosition { term: 2, index })
             .unwrap();
+    }
+
+    #[test]
+    fn scope_uses_the_frozen_image_and_does_not_hold_the_writer_lock() {
+        let dir = tmpdir("frozen-scope-view");
+        let engine = std::sync::Arc::new(WalEngine::open(dir.join("catalog.wal")).unwrap().0);
+        let mut old = WriteBatch::new();
+        old.put(ColumnFamily::Default, b"epoch".to_vec(), vec![1]);
+        engine
+            .write_applied(old, AppliedPosition { term: 1, index: 1 })
+            .unwrap();
+        let frozen = engine
+            .freeze_with_scope(|view| {
+                let writer = engine.clone();
+                let (sent, received) = std::sync::mpsc::channel();
+                let thread = std::thread::spawn(move || {
+                    let mut next = WriteBatch::new();
+                    next.put(ColumnFamily::Default, b"epoch".to_vec(), vec![2]);
+                    writer
+                        .write_applied(next, AppliedPosition { term: 1, index: 2 })
+                        .unwrap();
+                    sent.send(()).unwrap();
+                });
+                received
+                    .recv_timeout(std::time::Duration::from_secs(2))
+                    .expect("scope callback retained writer lock");
+                thread.join().unwrap();
+                let epoch = view.get(ColumnFamily::Default, b"epoch")?.unwrap()[0];
+                assert_eq!(
+                    epoch, 1,
+                    "scope must use the frozen image, not the newer engine"
+                );
+                Ok(FlushScope {
+                    version: epoch.into(),
+                    ..scope()
+                })
+            })
+            .unwrap();
+        assert_eq!(frozen.position(), AppliedPosition { term: 1, index: 1 });
+        assert_eq!(frozen.scope.version, 1);
+        assert_eq!(
+            frozen.view.get(ColumnFamily::Default, b"epoch").unwrap(),
+            Some(vec![1])
+        );
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"epoch").unwrap(),
+            Some(vec![2])
+        );
+        drop(engine);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    #[ignore = "requires a real MinIO server"]
+    fn base_validation_precedes_tail_repair_in_both_wal_layouts() {
+        for segmented in [false, true] {
+            let dir = tmpdir(if segmented {
+                "base-before-tail-segmented"
+            } else {
+                "base-before-tail-legacy"
+            });
+            let path = dir.join("catalog.wal");
+            let engine = WalEngine::open(&path).unwrap().0;
+            if segmented {
+                engine.enable_segmentation().unwrap();
+            }
+            let uploader = RemoteUploader::new(std::sync::Arc::new(
+                crate::MinioObjectStore::connect(crate::MinioConfig::from_env().unwrap()).unwrap(),
+            ));
+            let mut batch = WriteBatch::new();
+            batch.put(ColumnFamily::Default, b"identity".to_vec(), b"old".to_vec());
+            engine
+                .write_applied(batch, AppliedPosition { term: 1, index: 1 })
+                .unwrap();
+            let manifest = uploader
+                .upload(engine.freeze(scope()).unwrap())
+                .unwrap()
+                .into_manifest();
+            let mut tail = WriteBatch::new();
+            tail.put(ColumnFamily::Default, b"identity".to_vec(), b"new".to_vec());
+            engine
+                .write_applied(tail, AppliedPosition { term: 1, index: 2 })
+                .unwrap();
+            assert!(engine.checkpoint_applied(&manifest).unwrap());
+            drop(engine);
+            let observed = std::cell::Cell::new(false);
+            let tail_calls = std::cell::Cell::new(0);
+            let error = WalEngine::open_with_base_observer(
+                &path,
+                Some(&uploader),
+                |_| Ok(()),
+                |base, view| {
+                    assert_eq!(base.position(), AppliedPosition { term: 1, index: 1 });
+                    assert_eq!(
+                        view.get(ColumnFamily::Default, b"identity")?,
+                        Some(b"old".to_vec())
+                    );
+                    observed.set(true);
+                    Err(kv9_common::Error::Engine(
+                        "refuse original image identity".into(),
+                    ))
+                },
+                |_, _| {
+                    tail_calls.set(tail_calls.get() + 1);
+                    Ok(())
+                },
+            )
+            .unwrap_err();
+            assert!(error.to_string().contains("refuse original image identity"));
+            assert!(observed.get());
+            assert_eq!(
+                tail_calls.get(),
+                0,
+                "a later repair cannot authorize the original image"
+            );
+            let (recovered, _) = WalEngine::open_with_base_observer(
+                &path,
+                Some(&uploader),
+                |_| Ok(()),
+                |_, view| {
+                    assert_eq!(
+                        view.get(ColumnFamily::Default, b"identity")?,
+                        Some(b"old".to_vec())
+                    );
+                    Ok(())
+                },
+                |_, _| Ok(()),
+            )
+            .unwrap();
+            assert_eq!(
+                recovered.get(ColumnFamily::Default, b"identity").unwrap(),
+                Some(b"new".to_vec())
+            );
+            drop(recovered);
+            std::fs::remove_dir_all(dir).unwrap();
+        }
     }
 
     #[test]

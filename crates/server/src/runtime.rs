@@ -3082,20 +3082,28 @@ impl NodeRuntime {
             DiskRaftStorage::open(&data_dir.join("raft"), &voter_ids)?.0
         };
         let raft_io_metrics = storage.io_metrics();
-        let remote = crate::remote_storage::prepare_remote(
-            &data_dir,
-            root.cluster_id.to_string(),
-            &storage,
-        )?;
+        let remote = crate::remote_storage::prepare_remote(&data_dir, &root, &storage)?;
         let catalog_path = data_dir.join("catalog.wal");
+        let mut recovered_base = None;
         let (engine, replay, recovered_checkpoint) =
-            kv9_raft::state_machine::checkpoint_recovery::open_checkpoint_engine(
+            kv9_raft::state_machine::checkpoint_recovery::open_checkpoint_engine_with_base(
                 &mut storage,
                 &catalog_path,
                 remote.as_ref().map(|config| config.uploader.as_ref()),
                 root.cluster_id.to_string(),
                 META_REGION_0.0,
+                |manifest, view| {
+                    let base = kv9_meta::checkpoint::inspect_initial_checkpoint_base(view, &root)?;
+                    base.check_manifest(manifest)?;
+                    recovered_base = Some(base);
+                    Ok(())
+                },
             )?;
+        if recovered_base.is_some() != recovered_checkpoint.is_some() {
+            return Err(Error::Engine(
+                "checkpoint recovery lacks matching base identity and publication".into(),
+            ));
+        }
         if let Some(checkpoint) = recovered_checkpoint {
             eprintln!(
                 "node {} recovered checkpoint generation={} cut={} publication={}",

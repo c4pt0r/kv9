@@ -17,6 +17,11 @@ now consumes that input during startup and matches an actual winning apply batch
 to its exact committed manifest command. Complete portable anchor identity,
 retention binding and bounded online snapshot capture remain open.
 
+The subsequent [base identity check](CHECKPOINT-BASE-IDENTITY.md) binds upload
+scope to the exact frozen image and inspects the restored historical root,
+schema and initial owner epoch before tail replay. It does not yet mint a
+portable anchor or destination install capability.
+
 ## Authority already implemented
 
 Recovery currently composes several records; there is no independently
