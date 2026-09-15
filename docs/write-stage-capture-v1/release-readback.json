@@ -1,0 +1,82 @@
+{
+  "actual_tool_terminal": {
+    "bytes": 145,
+    "path": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/tool-terminal.json",
+    "sha256": "aa46f4efa13e9f3a22419df5bfd038ba13e0e9733518f3bab5109e29fa423f38"
+  },
+  "build_result": {
+    "bytes": 1632,
+    "path": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/build-result.json",
+    "sha256": "ff375988c727ced05aeebaed9ee4fa06437e7a2f5772e64eb8c6a70de3063520"
+  },
+  "cache_safety": {
+    "bytes": 23355,
+    "path": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/cache-safety.json",
+    "sha256": "7399a378a1bbc5fae52e6548bfd65a34e2b254ad487e923b06e05a21977fc423"
+  },
+  "capacity_scope": "Preflight filesystem observation only; no continuous resource monitor was used for these local builds.",
+  "complete": true,
+  "ended_ns": 1789505962177620022,
+  "revision": "8c0008569d50e51a39eb04ff2ebb6cde1d00ba13",
+  "scope": "Independent original source/manifest/Cargo graph/codegen and retained binary readback; no server or workload execution.",
+  "source_files": 1385,
+  "source_tree_sha256": "9895bc88c3ab9c0224bdfcb9336cf6e7e8d1414e978a98e80a304b8038d4af48",
+  "started_ns": 1789505961990246572,
+  "variants": [
+    {
+      "binary": {
+        "bytes": 16535704,
+        "path": "/mnt/data/kv9-work/write-stage-release-default-20260915-first/kv9",
+        "sha256": "cb77ef363437aa9893d931aad059e91cf5a3124a7ff31adeb12d4db3a55d5ebf"
+      },
+      "build": {
+        "bytes": 182873,
+        "path": "/mnt/data/kv9-work/write-stage-release-default-20260915-first/build.json",
+        "sha256": "a4ca3cc72c0ab4b070fba46954cecc0dcd8986bbf8573c4a0ae277b0b9cedb40"
+      },
+      "cargo_jsonl": {
+        "bytes": 212739,
+        "path": "/mnt/data/kv9-work/write-stage-release-default-20260915-first/kv9-cargo.jsonl",
+        "sha256": "c637a799852b212ba963ba1bd329c7c6a2fb979d96400f82d1bd9c8e6fccf9ff"
+      },
+      "features": {
+        "kv9": [],
+        "kv9-raft": [],
+        "kv9-server": []
+      },
+      "variant": "default"
+    },
+    {
+      "binary": {
+        "bytes": 16573448,
+        "path": "/mnt/data/kv9-work/write-stage-release-instrumented-20260915-first/kv9",
+        "sha256": "e78217c464640076dce085737ab4668b1f83a09bf3ead728bc8900f722d24b23"
+      },
+      "build": {
+        "bytes": 183711,
+        "path": "/mnt/data/kv9-work/write-stage-release-instrumented-20260915-first/build.json",
+        "sha256": "b565af2bef1a8045d7fe88eb66d905b864d088a534ae5950c1dde647521ef254"
+      },
+      "cargo_jsonl": {
+        "bytes": 212967,
+        "path": "/mnt/data/kv9-work/write-stage-release-instrumented-20260915-first/kv9-cargo.jsonl",
+        "sha256": "a525ecdb31ef3db18909e3475b909cea8811aea1c3fef4d84ad19694d6197560"
+      },
+      "features": {
+        "kv9": [
+          "write-path-diagnostics",
+          "write-stage-tracing"
+        ],
+        "kv9-raft": [
+          "write-path-diagnostics",
+          "write-stage-tracing"
+        ],
+        "kv9-server": [
+          "write-path-diagnostics",
+          "write-stage-tracing"
+        ]
+      },
+      "variant": "instrumented"
+    }
+  ]
+}

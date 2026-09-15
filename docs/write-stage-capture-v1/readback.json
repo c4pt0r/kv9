@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "scope": "Full member decode/hash/original-byte check; release archive member hashes rechecked. Not another workload, database payload read or proof execution.",
+  "run_members": 249,
+  "run_logical_bytes": 14950829,
+  "run_archive_sha256": "34da13d9a6568698aa24bc91b2d840876cdb2cd99a36361f1bc6b92a08cd4b48",
+  "run_archive_bytes": 1981891,
+  "release_members": 29,
+  "excluded_payload_bytes": 4234585489
+}

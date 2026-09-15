@@ -231,27 +231,46 @@ impl WriteStageTrace {
         }
     }
 
-    pub(crate) fn snapshot(&self) -> TraceSnapshot {
+    /// The driver already serializes every recording call with this gate.
+    /// Take it only opportunistically, then release it before allocating the
+    /// exported vectors. A busy driver loses a snapshot, never a recording.
+    pub(crate) fn snapshot_between_pumps(&self, pump_gate: &Mutex<()>) -> TraceSnapshot {
+        let owner = pump_gate.try_lock().ok();
+        self.snapshot_when(owner.is_some(), || drop(owner))
+    }
+
+    #[cfg(test)]
+    fn snapshot(&self) -> TraceSnapshot {
+        self.snapshot_when(true, || {})
+    }
+
+    fn snapshot_when(&self, allowed: bool, release_owner: impl FnOnce()) -> TraceSnapshot {
         let capture_started_ns = self.now();
         // Copy only fixed arrays under the leaf lock; allocation/serialization
-        // happens after release. A busy snapshot supplies no partial row set.
-        let copied = match self.state.try_lock() {
-            Ok(s) => Some((
-                s.groups_seen,
-                s.group_commands_seen,
-                s.terminal_inspections_seen,
-                s.saturated,
-                s.groups.total,
-                s.groups.rows,
-                s.inspections.total,
-                s.inspections.rows,
-            )),
-            Err(TryLockError::WouldBlock) => None,
-            Err(TryLockError::Poisoned(_)) => {
-                self.invalid.store(true, Ordering::Relaxed);
-                None
+        // happens after BOTH locks are released. A busy snapshot supplies no
+        // partial row set and does not contend with a driver recording call.
+        let copied = if !allowed {
+            None
+        } else {
+            match self.state.try_lock() {
+                Ok(s) => Some((
+                    s.groups_seen,
+                    s.group_commands_seen,
+                    s.terminal_inspections_seen,
+                    s.saturated,
+                    s.groups.total,
+                    s.groups.rows,
+                    s.inspections.total,
+                    s.inspections.rows,
+                )),
+                Err(TryLockError::WouldBlock) => None,
+                Err(TryLockError::Poisoned(_)) => {
+                    self.invalid.store(true, Ordering::Relaxed);
+                    None
+                }
             }
         };
+        release_owner();
         let capture_finished_ns = self.now();
         let rows_available = copied.is_some();
         let (
@@ -339,6 +358,44 @@ pub struct TraceSnapshot {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn busy_pump_snapshots_cannot_contend_with_recording() {
+        let trace = WriteStageTrace::default();
+        let pump_gate = Mutex::new(());
+        let owner = pump_gate.lock().unwrap();
+        std::thread::scope(|scope| {
+            let observer = scope.spawn(|| {
+                for _ in 0..64 {
+                    let snapshot = trace.snapshot_between_pumps(&pump_gate);
+                    assert!(!snapshot.rows_available && !snapshot.valid);
+                    assert!(snapshot.groups.rows.is_empty());
+                }
+            });
+            for n in 1..=64 {
+                trace.record_group(
+                    GroupTiming {
+                        commands: 1,
+                        encoded_bytes: 128,
+                        ..Default::default()
+                    },
+                    std::iter::once(AppliedPosition {
+                        term: 1,
+                        index: n * SAMPLE_STRIDE,
+                    }),
+                );
+            }
+            observer.join().unwrap();
+        });
+        drop(owner);
+        let snapshot = trace.snapshot_between_pumps(&pump_gate);
+        assert!(snapshot.valid && snapshot.rows_available);
+        assert_eq!(snapshot.groups_seen, 64);
+        assert_eq!(snapshot.groups.total_recorded, 64);
+        assert_eq!(snapshot.dropped_recording_calls, 0);
+        assert!(pump_gate.try_lock().is_ok());
+        assert!(trace.state.try_lock().is_ok());
+    }
 
     #[test]
     fn driver_recreation_has_a_distinct_trace_origin_and_exhaustion_never_wraps() {

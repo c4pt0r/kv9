@@ -1,0 +1,2452 @@
+{
+  "archive": {
+    "file": "runs.tar.gz",
+    "bytes": 1981891,
+    "sha256": "34da13d9a6568698aa24bc91b2d840876cdb2cd99a36361f1bc6b92a08cd4b48"
+  },
+  "members": [
+    {
+      "member": "correction-source/crates/raft/src/driver.rs",
+      "source": "/home/dongxu/kv9/crates/raft/src/driver.rs",
+      "bytes": 165964,
+      "sha256": "3b88370ed73887fdf2c0d7d8b91519c3cdf430b456d82e0766f627d5c967318e"
+    },
+    {
+      "member": "correction-source/crates/raft/src/write_stage_trace.rs",
+      "source": "/home/dongxu/kv9/crates/raft/src/write_stage_trace.rs",
+      "bytes": 17255,
+      "sha256": "f198c6fa73fac08a53d06a3d287689bde4dffff8cb80dc5cee5d9ca5fcbb10f4"
+    },
+    {
+      "member": "correction-source/scripts/capture-write-stage-trace.py",
+      "source": "/home/dongxu/kv9/scripts/capture-write-stage-trace.py",
+      "bytes": 15178,
+      "sha256": "5ed0d4e590f481056a9e6311cda22d635cfd3813ee2dc8329523a451a695c4e9"
+    },
+    {
+      "member": "correction-source/scripts/check-write-stage-capture-controls.py",
+      "source": "/home/dongxu/kv9/scripts/check-write-stage-capture-controls.py",
+      "bytes": 9802,
+      "sha256": "3019272f52ae051d860e0f701682a3185f7fd8c5ec96002c4b16643fc6d7acbb"
+    },
+    {
+      "member": "correction-source/scripts/write_stage_capture.py",
+      "source": "/home/dongxu/kv9/scripts/write_stage_capture.py",
+      "bytes": 10878,
+      "sha256": "4e880f867eebb4817744558871ae4f72a882784a14427307c1e4526be11f19f6"
+    },
+    {
+      "member": "correction/clippy-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/clippy-invocation.json",
+      "bytes": 390,
+      "sha256": "9e0b212cf7b7ecbcdd6ce0692f6eae591c15e45c5ab423d51172ea6c6cb43037"
+    },
+    {
+      "member": "correction/clippy-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/clippy-terminal.json",
+      "bytes": 448,
+      "sha256": "02236956c6030166d50f1b413e6b226a0c7771d4d5b3b0cd3ffac556faa7449e"
+    },
+    {
+      "member": "correction/clippy.log",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/clippy.log",
+      "bytes": 421,
+      "sha256": "9a74b33c3af229a25f7a4b9f02303ca5d0d621633d70e2b645968ded54df7d29"
+    },
+    {
+      "member": "correction/proof-pins-unchanged.json",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/proof-pins-unchanged.json",
+      "bytes": 5452,
+      "sha256": "1ff1a6f97c6bb83cc629220aac76922e1005af4898f61d24a2720ad89e308561"
+    },
+    {
+      "member": "correction/raft-tests-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/raft-tests-invocation.json",
+      "bytes": 351,
+      "sha256": "c266b092f702abca79508ebb12fd4e94b6c09e0a3214db07648f6c92e8ed6ebd"
+    },
+    {
+      "member": "correction/raft-tests-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/raft-tests-terminal.json",
+      "bytes": 409,
+      "sha256": "30dc68a8b56bfe6f40f756ae55799bc2738b8800996770e0db86aff680f53b52"
+    },
+    {
+      "member": "correction/raft-tests.log",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/raft-tests.log",
+      "bytes": 25851,
+      "sha256": "b5a3b819cf55cf6a94b124365345c5e374923a14b5eef00512cb6d485dc37096"
+    },
+    {
+      "member": "correction/source-pins.json",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/source-pins.json",
+      "bytes": 212,
+      "sha256": "24a2bd6af15c3295ac34160416fbf3e386bf370eebb314eb6802a5d14bee126c"
+    },
+    {
+      "member": "correction/tool-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-export-contention-development-20260915-first/tool-terminal.json",
+      "bytes": 281,
+      "sha256": "e65e9e71900210fa6e582101d263de39f6be9a24808407237c7fd88047f855c4"
+    },
+    {
+      "member": "execution/capture.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-execution-20260915-first/capture.log",
+      "bytes": 1112,
+      "sha256": "d5ee8ea8f05b95753fa2e6b51528e41228fc8ec7d8975f565ac21a16e5e39391"
+    },
+    {
+      "member": "execution/invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-execution-20260915-first/invocation.json",
+      "bytes": 1258,
+      "sha256": "0d1f152e9d2090e59e23adff37fa615296f7b00b4be4e18feb6158269d4e5f7f"
+    },
+    {
+      "member": "execution/terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-execution-20260915-first/terminal.json",
+      "bytes": 1316,
+      "sha256": "d21d41ed3112d9cf36738b8552b7685a4b989d7ce42e12d5ad36c7954f32a295"
+    },
+    {
+      "member": "independent/README.md",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/README.md",
+      "bytes": 2689,
+      "sha256": "92824f2dc5c1f40b831454a57ba60506b212b7838c068cf57b80a69de68923ed"
+    },
+    {
+      "member": "independent/audit.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/audit.py",
+      "bytes": 23017,
+      "sha256": "31ccc46dc062fe283e68097fb1e32de2f59df46a3238b1adaad4ca4d55d6f3dd"
+    },
+    {
+      "member": "independent/failure-first-tool-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/failure-first-tool-terminal.json",
+      "bytes": 356,
+      "sha256": "e55ae747606c362e000187d7f0a3a6e453c6fb7fbed8132bc4f101c8995989a1"
+    },
+    {
+      "member": "independent/failure-first/input-hashes.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/failure-first/input-hashes.json",
+      "bytes": 27690,
+      "sha256": "91843f3b120ae4019075d37695165a57cd34e2ef8d89056cd6d9ba3189d4a013"
+    },
+    {
+      "member": "independent/failure-first/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/failure-first/result.json",
+      "bytes": 760,
+      "sha256": "cd85e7a60ca8855bad68b692412f5fddc45c14dd7cf89534bf5a120051042ace"
+    },
+    {
+      "member": "independent/failure-privileged-second-tool-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/failure-privileged-second-tool-terminal.json",
+      "bytes": 369,
+      "sha256": "8d8d9e388f36698f4a3955ceecb0b27d3e441f52b80608397f8f445bb31bbde8"
+    },
+    {
+      "member": "independent/failure-privileged-second/input-hashes.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/failure-privileged-second/input-hashes.json",
+      "bytes": 35699,
+      "sha256": "c5707af778e442ea9b15c019fe8fb582d0c6f315e311832dc0a38f7146aaf8ad"
+    },
+    {
+      "member": "independent/failure-privileged-second/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/failure-privileged-second/result.json",
+      "bytes": 8765,
+      "sha256": "536da78e35ce1b3a8edd1568a4f66d3b8ebbddaa9324b6f3162a98da0af9d035"
+    },
+    {
+      "member": "independent/failure_audit.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/failure_audit.py",
+      "bytes": 12571,
+      "sha256": "ff6152c4901ae3527d5d65b7e67bac92759be0703e559270450cf89a34de62ec"
+    },
+    {
+      "member": "independent/handoff.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/handoff.json",
+      "bytes": 893,
+      "sha256": "a65eb3613af51afd56774e483da65192a863a027b77d7bac8753a2826ff8c3bf"
+    },
+    {
+      "member": "independent/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/inventory.json",
+      "bytes": 3424,
+      "sha256": "21ad9a947a55b77c358613fcd0914bb8e19120a9ec59e5331d0b001d39c32e73"
+    },
+    {
+      "member": "independent/snapshot-gate-review.diff",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/snapshot-gate-review.diff",
+      "bytes": 5876,
+      "sha256": "cad7aeb204efcc4e50a52de3053f78ea10ea5e73f1561d12a827d2b8f5556e5e"
+    },
+    {
+      "member": "independent/snapshot-gate-review.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-independent-20260915-first/snapshot-gate-review.json",
+      "bytes": 2530,
+      "sha256": "5cf29fc799f9763153790dd58464ef602c27e1014be4ac2cc54f27a317cf718c"
+    },
+    {
+      "member": "preparation/README.md",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/README.md",
+      "bytes": 5787,
+      "sha256": "23d20006e46d5392c000b217fb4df6e5e0440027f0bc85b9f13fb632d7deb1b7"
+    },
+    {
+      "member": "preparation/ROOT-COMMANDS.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/ROOT-COMMANDS.json",
+      "bytes": 2057,
+      "sha256": "9fed24121586bce019fbfcf9d4a312449d2eb4a64109341abf3fd36cb8a34a65"
+    },
+    {
+      "member": "preparation/arguments.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/arguments.json",
+      "bytes": 791,
+      "sha256": "f4802f8d8a737152abe75a34ea901b5bf0d5c3e7b85144206a1e60018169afa3"
+    },
+    {
+      "member": "preparation/capacity.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/capacity.json",
+      "bytes": 2585,
+      "sha256": "853524778f26643a759a04e14b66e6c1eabe2c3c026059a77e132ff57d261a15"
+    },
+    {
+      "member": "preparation/capture.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/capture.py",
+      "bytes": 15178,
+      "sha256": "5ed0d4e590f481056a9e6311cda22d635cfd3813ee2dc8329523a451a695c4e9"
+    },
+    {
+      "member": "preparation/check-write-stage-capture-controls.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/check-write-stage-capture-controls.py",
+      "bytes": 9802,
+      "sha256": "3019272f52ae051d860e0f701682a3185f7fd8c5ec96002c4b16643fc6d7acbb"
+    },
+    {
+      "member": "preparation/check-write-stage-trace.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/check-write-stage-trace.py",
+      "bytes": 15870,
+      "sha256": "4bfe18d3b749204337a0d6d6b5366c51a4c5bc813303a8c551279a47c7876ca8"
+    },
+    {
+      "member": "preparation/controls-first/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/result.json",
+      "bytes": 1220,
+      "sha256": "ded1cfde83bf3cfdcc92bb2c8a5c498c8c57cbee323614a64557eaefb667ce2f"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/before/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/before/capture.json",
+      "bytes": 953,
+      "sha256": "947d0a65d1de615e42e0d125de312c27a04cfc0d2ab9adc70149963454868d87"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/before/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/before/node-1.status",
+      "bytes": 937,
+      "sha256": "d49b10616efc89dfd5c6fe3a78118ce0bda1760e0442ec5a9712e0e6017f2a53"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/before/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/before/node-2.status",
+      "bytes": 937,
+      "sha256": "58366b701d544fada3255bedace86b573dada066cce9adfb735ad9d210590ea7"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/before/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/before/node-3.status",
+      "bytes": 937,
+      "sha256": "9a8dd7651abd80c14756c2944a4735d564869e42e5d8fcb7daa49564bdf3e9e7"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/comparison.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/comparison.json",
+      "bytes": 13561,
+      "sha256": "62f8061ec5a67631dd717c4e263db0488e133729b03676904324cd93513d2456"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-1-before-to-post-client.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-1-before-to-post-client.json",
+      "bytes": 3538,
+      "sha256": "69efb1d78864846fd2e3e36c3b7eaeaadd2d350e8625ea96f155b285a1b36ddd"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-1-post-client-to-post-drain.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-1-post-client-to-post-drain.json",
+      "bytes": 4590,
+      "sha256": "bb68f1b891c198ba87f6697c0ee5dd977b3ceb172aa07c6029489fc90b6a5733"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-1-post-drain-to-post-readback.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-1-post-drain-to-post-readback.json",
+      "bytes": 5640,
+      "sha256": "ae682bdb754519411b86fe37344287e61ced18c1b2f4fa44f4b34c3bb68252d8"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-2-before-to-post-client.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-2-before-to-post-client.json",
+      "bytes": 3538,
+      "sha256": "e615583a95f0d000f833eac0be1d0912ef64137e8eeb3a60117a3c35a54ca018"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-2-post-client-to-post-drain.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-2-post-client-to-post-drain.json",
+      "bytes": 4590,
+      "sha256": "3593439498561ca347ce167c3622847edf753ed2197df669ca509b2f38afaab4"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-2-post-drain-to-post-readback.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-2-post-drain-to-post-readback.json",
+      "bytes": 5640,
+      "sha256": "0755e32e4b5b843b10fd7799f399b9af8db614a23a31553c681ce5c2f9f6394e"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-3-before-to-post-client.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-3-before-to-post-client.json",
+      "bytes": 3538,
+      "sha256": "295f2755dd03c384d2a9f08db85c976c534ea5384d66bdcfd9f40bf272c2e7ce"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-3-post-client-to-post-drain.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-3-post-client-to-post-drain.json",
+      "bytes": 4590,
+      "sha256": "8e7bd8e8b566ec85caa0bd8c42fd02fb359866f617aa26460ca3f628486a1624"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-3-post-drain-to-post-readback.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/node-3-post-drain-to-post-readback.json",
+      "bytes": 5640,
+      "sha256": "e9dd5f3f40b4e3306f22a3b0d84c30c221cdbe82e537765a29dafc8de2e13f67"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-client/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-client/capture.json",
+      "bytes": 971,
+      "sha256": "a62018a6e5485ce63ab497fd5ce35223091cbdd7cf415f84dd0dc4e57a8f264e"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-client/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-client/node-1.status",
+      "bytes": 1269,
+      "sha256": "e3db9133ee9d301cde6cad82c3dc72367fc3c53abc96bc0115c9af85d2bf1b0c"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-client/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-client/node-2.status",
+      "bytes": 1269,
+      "sha256": "0accd54d0a7fd104854ba846e74ec35e13d0fa421be351b57b85e705a4963adc"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-client/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-client/node-3.status",
+      "bytes": 1269,
+      "sha256": "1cf63a95d3c1c225af9fe74b20b48e4c5f514a0628bafa9c294c03004d942e84"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-drain/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-drain/capture.json",
+      "bytes": 968,
+      "sha256": "362259b812c538f5566f3affc5cb73748cfc74467334100cd4a260436d934899"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-drain/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-drain/node-1.status",
+      "bytes": 1601,
+      "sha256": "8ebb38f7f13a88e16682b90a1cd35dd810908fedcf05a20a0b001c66bf5b127e"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-drain/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-drain/node-2.status",
+      "bytes": 1601,
+      "sha256": "7b1754a45a171c325690413a6dfa63b850d18a87539e8fbc40054b17f8a72ed6"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-drain/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-drain/node-3.status",
+      "bytes": 1601,
+      "sha256": "d3f22b1a3ab875b39c384894c811a554e0df532d4da3706cc57ed934ff52c594"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-readback/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-readback/capture.json",
+      "bytes": 977,
+      "sha256": "28de283745a939df3c3cb3b75618c91b7619a22a6efd8c40a57be5e84bb1db6b"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-readback/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-readback/node-1.status",
+      "bytes": 1933,
+      "sha256": "637f784be1df93673f992eaa5facf8d1e7d301ca8e0e30b25dc460c323889d58"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-readback/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-readback/node-2.status",
+      "bytes": 1933,
+      "sha256": "5f7686683a35b05d9267b5ab5be0e8466d62affab50e51df432ed2a44d8b5eb6"
+    },
+    {
+      "member": "preparation/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-readback/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_changed_post_drain_tail_reported_and_not_erased/raw-status/post-readback/node-3.status",
+      "bytes": 1933,
+      "sha256": "bec758f0f99f6129426cf5dc7462f9711fe5d949f6477b101ea2cc9b14238cc9"
+    },
+    {
+      "member": "preparation/controls-first/test_first_fresh_invalid_rows_retained_without_quality_retry/raw-status/before/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_first_fresh_invalid_rows_retained_without_quality_retry/raw-status/before/capture.json",
+      "bytes": 1604,
+      "sha256": "900841c8ff8d2696eb9db09228dd4daa38bb8763d5e5dd2c4db7585c3b4f749d"
+    },
+    {
+      "member": "preparation/controls-first/test_first_fresh_invalid_rows_retained_without_quality_retry/raw-status/before/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_first_fresh_invalid_rows_retained_without_quality_retry/raw-status/before/node-1.status",
+      "bytes": 937,
+      "sha256": "9c3882d2c0d3e46144fb479e7459ca93c5b1dc6f9f54afee77f732e90eb01389"
+    },
+    {
+      "member": "preparation/controls-first/test_first_fresh_invalid_rows_retained_without_quality_retry/raw-status/before/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_first_fresh_invalid_rows_retained_without_quality_retry/raw-status/before/node-2.status",
+      "bytes": 937,
+      "sha256": "04814dbddaad08b6192c76000f1994574c40d0216b0d751e162462bc5cd9af6a"
+    },
+    {
+      "member": "preparation/controls-first/test_first_fresh_invalid_rows_retained_without_quality_retry/raw-status/before/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_first_fresh_invalid_rows_retained_without_quality_retry/raw-status/before/node-3.status",
+      "bytes": 937,
+      "sha256": "f70d2a02e2f43838da6d5b9ea56e03b60ea88fd01a10cdaeb6f0c7bba3906154"
+    },
+    {
+      "member": "preparation/controls-first/test_owned_lifetime_mismatch_is_preserved_refusal/raw-status/before/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/test_owned_lifetime_mismatch_is_preserved_refusal/raw-status/before/capture.json",
+      "bytes": 288,
+      "sha256": "151d9dcf4394069ff0bc179dfaf0de0c0b1ccc7b59343f34fa73e276007ad8e3"
+    },
+    {
+      "member": "preparation/controls-first/tool-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/controls-first/tool-terminal.json",
+      "bytes": 456,
+      "sha256": "9cbb3a5db416554a726a8c3c55f8e99318f91d4ab4bafbfdf810939beeb7b875"
+    },
+    {
+      "member": "preparation/diffs/capture.diff",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/diffs/capture.diff",
+      "bytes": 11450,
+      "sha256": "99980d054aebfe02aa9761f071db61bca03248b76bdd62cfda616ce6d8972169"
+    },
+    {
+      "member": "preparation/health.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/health.py",
+      "bytes": 3829,
+      "sha256": "cb6f0c2cb05797cab1758e1bee863c1fd966f8292ce01544e22f8180279e7925"
+    },
+    {
+      "member": "preparation/inherited-driver.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/inherited-driver.py",
+      "bytes": 53868,
+      "sha256": "d494ae312ae4bf0a476bd4d6c58137cf66ba1ebf042880b4d11670d32f058a3e"
+    },
+    {
+      "member": "preparation/inherited-inputs.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/inherited-inputs.json",
+      "bytes": 795,
+      "sha256": "cc5ddcc306321908e7f6f1bd3ccb7c88c5a98c00cfa8cc3312319e24f40cf145"
+    },
+    {
+      "member": "preparation/input-hashes.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/input-hashes.json",
+      "bytes": 5512,
+      "sha256": "b3b91398c7ef29f12606592b7cb14dd174beb62c212513084bd3d0ffcfc52fcc"
+    },
+    {
+      "member": "preparation/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/inventory.json",
+      "bytes": 11434,
+      "sha256": "539e6134f04344985e4dfe1b9d35f4657b4881101dea815618be93a38c37ff2c"
+    },
+    {
+      "member": "preparation/isolate-and-run.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/isolate-and-run.py",
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    {
+      "member": "preparation/origin/README.md",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/origin/README.md",
+      "bytes": 5510,
+      "sha256": "936ec53b60328241fa7cbcf12b8b9a5df00a2b5994cfe34fdfdea27ab3d98a15"
+    },
+    {
+      "member": "preparation/origin/ROOT-COMMANDS.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/origin/ROOT-COMMANDS.json",
+      "bytes": 2920,
+      "sha256": "2391cb2533270e666568c768b04f7162c14126f648c31ffb0584ccd0d8c530bc"
+    },
+    {
+      "member": "preparation/origin/capture.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/origin/capture.py",
+      "bytes": 13040,
+      "sha256": "4484b16f7e89aff5bcb69eb0c65471be7e4bd2ffcf832f5fd5d0538f0a8017c8"
+    },
+    {
+      "member": "preparation/origin/health.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/origin/health.py",
+      "bytes": 3829,
+      "sha256": "cb6f0c2cb05797cab1758e1bee863c1fd966f8292ce01544e22f8180279e7925"
+    },
+    {
+      "member": "preparation/origin/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/origin/inventory.json",
+      "bytes": 15090,
+      "sha256": "a6887008cf0a69bcb2fc21ea38756e9663207f8f71989f92a7b61f6f37f56298"
+    },
+    {
+      "member": "preparation/origin/isolate-and-run.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/origin/isolate-and-run.py",
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    {
+      "member": "preparation/origin/protocol.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/origin/protocol.json",
+      "bytes": 2835,
+      "sha256": "718344324805617002c78a23fac481d0faaa6d23e591fd7ca6a834d269c6ec23"
+    },
+    {
+      "member": "preparation/release-pins.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/release-pins.json",
+      "bytes": 894,
+      "sha256": "aa50821456a9bfa528f10187ecf66577e43a2f9fba1e5c41aca78bda89da9180"
+    },
+    {
+      "member": "preparation/source-delta.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/source-delta.json",
+      "bytes": 2499,
+      "sha256": "a2437329ba357a8cbff4babc4e8e4a655b3405f16de7a23fa7c0b940983775d3"
+    },
+    {
+      "member": "preparation/write_stage_capture.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-preparation-20260915-first/write_stage_capture.py",
+      "bytes": 10878,
+      "sha256": "4e880f867eebb4817744558871ae4f72a882784a14427307c1e4526be11f19f6"
+    },
+    {
+      "member": "publication/assemble.py",
+      "source": "/mnt/data/kv9-work/write-stage-capture-publication-20260915-first/assemble.py",
+      "bytes": 3788,
+      "sha256": "303715bfa02405045cd1e11e88de0d7cefe0a8be380f5799c479eb0d67c9bd2e"
+    },
+    {
+      "member": "runtime/after.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/after.json",
+      "bytes": 41734,
+      "sha256": "42f9da80875ed3a91f58bf9287fce8db4ae97e945664260dd3236b567a7b8312"
+    },
+    {
+      "member": "runtime/before.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/before.json",
+      "bytes": 41613,
+      "sha256": "4e790e73d52e6ffdcd377fddf9440e01bc88667b958fbb4b629547574122d203"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/after-metrics.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/after-metrics.json",
+      "bytes": 931603,
+      "sha256": "7c1ca387b8f56f582a004eeb2df8da3cff567c0a18d282e96ccd150ffbe83135"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/after-resources.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/after-resources.json",
+      "bytes": 1774,
+      "sha256": "94cc1bdd1fe508ba3639164bbb791ff7431309a3c7690069a19c995a78808c28"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/after-status.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/after-status.json",
+      "bytes": 12822,
+      "sha256": "46cc5df2bcc2e8ccee96cf0b0004bad90ffd0c55463408fdda72b9284240644d"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/background-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/background-before.json",
+      "bytes": 27819,
+      "sha256": "a353c18c6d7936d02f65c050d03d5458ee47d78d2faf9fc2514e10403a792ed5"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/before-allocator-provenance.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/before-allocator-provenance.json",
+      "bytes": 4172,
+      "sha256": "ba02817173be29e41a9c6a791f48e91b81f5fa0d833c09097ed613b28591ee45"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/before-fresh-drain.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/before-fresh-drain.json",
+      "bytes": 40567,
+      "sha256": "022f48be9804781cc9abdd5348981cb83d3f7b2085a1f8cca901baae6981f9e1"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/before-metrics.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/before-metrics.json",
+      "bytes": 928615,
+      "sha256": "615f2bf29cbab8cf4d98c7b62a5a781a7eb58764a7e5947dc945b78d60bf16c7"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/before-resources.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/before-resources.json",
+      "bytes": 1742,
+      "sha256": "3be6f7afecfa867a0e1188a3746b45b9060a9bead6acb7a016774a493419d1aa"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/before-status.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/before-status.json",
+      "bytes": 12752,
+      "sha256": "3d762086070337f94cf0feb9ce5c664bb4e4df363ab04505ab8fa7db93d3acee"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/cleanup.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/cleanup.json",
+      "bytes": 5871,
+      "sha256": "c35b303bb7c0149ac337e6c133860ee752c0e11ca206381e5f6526558819e515"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/client-exit.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "1ecacd39cb8300ecf940b2424001a8ff826f55f816111d33f0703fdd1f1aea91"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/client-identity.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/client-identity.json",
+      "bytes": 913,
+      "sha256": "b60cb0a8e01652f8c9146fdcada6094cbbb133c8e886867f3e1a7db81c68d3a6"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/client.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/client.log",
+      "bytes": 82,
+      "sha256": "af04e933130389f0a726ee1d7fd3b483b5dacd899914e77b15e5716c7456edf1"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-000.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-000.json",
+      "bytes": 405,
+      "sha256": "d5801d253b8f83cc4c3cdf27247400d641be8ec9730500114a04946b93d67c96"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-001.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-001.json",
+      "bytes": 405,
+      "sha256": "4242409a9a575ec579f1e130fe4e6b3013d8db277f5d2a956a331330ac568ca0"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-002.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-002.json",
+      "bytes": 405,
+      "sha256": "546a2e89ef99706eb3518dbac2fbb39e7a60ece002f1653c68ef396dec551f84"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-003.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-003.json",
+      "bytes": 1062,
+      "sha256": "ae7176dac695daf590051679e7964ae59a5241ebb0edeed181fec339b165d476"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-004.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-004.json",
+      "bytes": 773,
+      "sha256": "39776ba84df74027028181d83cb19f13a0e92a222fec52e8cf5cbde05a99ac38"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-005.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-005.json",
+      "bytes": 773,
+      "sha256": "03dcf37467da2c6a26ac5d0a3fedfc2587342f6e151263f203c67dc5e478ce0b"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-006.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-006.json",
+      "bytes": 773,
+      "sha256": "f42721ba52950f987d5fad652481b0475df5f50bb607e7acc763c6a0753a5beb"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-007.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-007.json",
+      "bytes": 328,
+      "sha256": "b75b2e8cb24cb28c7dc4a97ce775dbd516e39cd986b249bc416a51a39c3bdc78"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-008.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-008.json",
+      "bytes": 83046,
+      "sha256": "af26f915512946268c49a24430137421ef5c5cdcaf90027ad2df89910692b339"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-009.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-009.json",
+      "bytes": 83080,
+      "sha256": "7f986d4c257b69fb771fb412a30afc946dbec5de6547e8114594ddd2a9b5f9b7"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-010.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-010.json",
+      "bytes": 83080,
+      "sha256": "dce9989633b8a7aa54ae9dbdc93e0fe312bb274db425dbac58617eebad0efaed"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-011.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-011.json",
+      "bytes": 83080,
+      "sha256": "cdb61668ee9aef0ca4eb75f14ef57fef802dcd6f5a5d7fbe484dc714b8dc768c"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-012.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-012.json",
+      "bytes": 83080,
+      "sha256": "09f931bbf2fb3ce0abdb739a7d3e7b9d0e4b82b6c35c49c2c7f0d39fe1f85860"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-013.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-013.json",
+      "bytes": 83080,
+      "sha256": "ae4efe128302ee5c943c0e333f591f25585c54d7512ad744e5194a394aa44fa0"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-014.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-014.json",
+      "bytes": 83080,
+      "sha256": "77c3c2ca30177292ab467a306f8ef000a5aeb5624640c24dc552042d88633fe2"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-015.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-015.json",
+      "bytes": 83080,
+      "sha256": "877b9ec817bf551e3087770ba16acc13d9269182b91d7669108221cf95b0456d"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-016.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-016.json",
+      "bytes": 83080,
+      "sha256": "f693bca6540c089e178f3bd9c4b15f9ef8ba0bc8d0d9e1016574c87f0bc3e99b"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-017.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-017.json",
+      "bytes": 83080,
+      "sha256": "f26b9633a26e33e7d82e9a28e1b90a160a17ccecc6c6b91cb1954229f264725d"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-018.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-018.json",
+      "bytes": 83080,
+      "sha256": "606aea59ae4685968ea44846edf6f767b48f378494756596070ae08f901d3f29"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-019.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-019.json",
+      "bytes": 83080,
+      "sha256": "e1b789e012d0491f85f95710d029260047f7ddb1654a2389133c5be5519e86ae"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-020.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-020.json",
+      "bytes": 83080,
+      "sha256": "008e84f91ae6035242ec61d31d358fd43c135519e1ec47484a1930440b72d96e"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-021.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-021.json",
+      "bytes": 83080,
+      "sha256": "979bca775211f7de62b1d44d3ad42b71919cc2df6ac93a9e926a6df23616bbdc"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-022.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-022.json",
+      "bytes": 83080,
+      "sha256": "d215a35a668ad4035a4057b444a1972cf74d99f5857ef72c895e3c98838fc7eb"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-023.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-023.json",
+      "bytes": 83080,
+      "sha256": "787413be78223b68ecca1b7eb33a8215baacfceb598e7157c5f7df688dc4ffba"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/command-024.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/command-024.json",
+      "bytes": 713,
+      "sha256": "337dd26f85e8c7cb3aff4d9afa3bc88a079dcff0c70d829c5b016ddef6e30e9d"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/diagnostic-retention-budget.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 457,
+      "sha256": "fbc76456d8c9d7b089cc01f5e313745886f3f030494cf6c472c8ccace7846c10"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/fixture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/fixture.json",
+      "bytes": 4686,
+      "sha256": "3a157316df95e2ec7eb0ebe12e1267c7c4bdf1e30b4a056e5eb0cc0577fab951"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/n1.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/n1.log",
+      "bytes": 158,
+      "sha256": "dece507d11990e3b9b2dddfaab9446979f3a8d059b485a1344b78d276e8aa298"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/n2.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/n2.log",
+      "bytes": 158,
+      "sha256": "812324fdc7d9775aff096dd5726120849c2737000966984e34d606813272de67"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/n3.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/n3.log",
+      "bytes": 158,
+      "sha256": "fcf327e9988b94f7ed88d58502becbff771e1a32e9e2022be3b2dd315d5f167a"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/root.bin",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/root.bin",
+      "bytes": 179,
+      "sha256": "51b8597980790991cc79451984666ab3fb6398899ed79338ff71a2336c9c901e"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/tmpfs-created.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/tmpfs-created.json",
+      "bytes": 258,
+      "sha256": "25d854a1960bd06c74663cbc03290c3344ad8fd9ea0d0567dcc2d4039c507160"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/tmpfs-retention.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 17883,
+      "sha256": "91bf4aa91f51e1733b8bcf92662d105dda124e5b075275152f34b26b5c631989"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/fixture/tmpfs-voters.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/tmpfs-voters.json",
+      "bytes": 39750,
+      "sha256": "664c875060a5487bb422ade05bbbefb701f20bf7ebb9355303e81aee415b198f"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/host-after.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/host-after.json",
+      "bytes": 11089,
+      "sha256": "eb7c49f5fc10cef01129c7bf207dc339931674b3b58d8b44c616412162f449c8"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/host-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/host-before.json",
+      "bytes": 11089,
+      "sha256": "39727a9f55f299957e6c1637e2c56b20d5d70d8d0dd48665d4c746a5c8a03729"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/host-resource-samples.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/host-resource-samples.json",
+      "bytes": 468344,
+      "sha256": "e86f609ab0824a5cb31c9b366395834a366aa02ece9fab076f22f461e524ba76"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/listener-after.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/listener-after.json",
+      "bytes": 939,
+      "sha256": "6552dcf5b212b2a8fb823d0dcca41b18722d5a10f1c82eed7f349672902e51bb"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/listener-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/listener-before.json",
+      "bytes": 939,
+      "sha256": "5acd0338d5f3805b8362cc05c6d5590366c6a95ba34db92bed9d444cf5e1c7a5"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/post-client-allocator-provenance.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/post-client-allocator-provenance.json",
+      "bytes": 4223,
+      "sha256": "1c47a1869148741785b205b041501829788d7709c08d3ecf9b0bb3ebe060b3c8"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/post-client-fresh-drain.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/post-client-fresh-drain.json",
+      "bytes": 40784,
+      "sha256": "c317e83c6e79fd7ae519b34414b2948e4710e94e9559041a95d9ca6123476274"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/post-readback-fresh-drain.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/post-readback-fresh-drain.json",
+      "bytes": 40784,
+      "sha256": "2f40d09488349bc8c7b75ed42642433c6b8607a007e2c81587ee0028389ffa4c"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/pre-cleanup.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/pre-cleanup.json",
+      "bytes": 21605,
+      "sha256": "8fe66d7c35c06b60f59b09523c7272f8e86102e707606c7fccdfe74dc5bf475c"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/before/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/before/capture.json",
+      "bytes": 1391,
+      "sha256": "385a24ae4383ae5eef70f7d4f58e47f51a815b9283a85e52b21fdb4c59596fbf"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/before/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/before/node-1.status",
+      "bytes": 3429,
+      "sha256": "7e1bfb889858ad14a678e64baa1a1288d681d5d4b152be32029ed4df361e2e61"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/before/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/before/node-2.status",
+      "bytes": 3436,
+      "sha256": "a2d860ae9d8b3b44f57ae349c81766f7ce68d06f476eb2b84a25d2b7b9eb0c35"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/before/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/before/node-3.status",
+      "bytes": 3445,
+      "sha256": "f1f2d268bbf6c86b9e1f0863157713adc0f7d96aa9fd69f049a2fb8858d11faa"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/comparison.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/comparison.json",
+      "bytes": 308,
+      "sha256": "a9a80735d6223110da200f0827a676f49253716eba1c4721be8b94d677ad4021"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-client/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-client/capture.json",
+      "bytes": 1414,
+      "sha256": "0cb9e444a1b558642319b168270239dce6618b49729fd14c14c25acdd80b7a21"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-client/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-client/node-1.status",
+      "bytes": 3445,
+      "sha256": "46be13030149bb7c1f5daecda171fad9f9dfb625c0be0c9b4ae4c27fd2e98af7"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-client/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-client/node-2.status",
+      "bytes": 3477,
+      "sha256": "2b08bb7cb5573d31d7af9b47ff9c554a647098020073c1d5a1326eec5a30c91e"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-client/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-client/node-3.status",
+      "bytes": 3458,
+      "sha256": "7f9739857a408d29cc8fc2888a3a3ece038a3352f4fbb026f606737d8491272e"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-drain/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-drain/capture.json",
+      "bytes": 1413,
+      "sha256": "2d6b7d6c5a2a1a780377e6330dfe86cb2b6022dacf042eb8b2dc2b7050a88efa"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-drain/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-drain/node-1.status",
+      "bytes": 3445,
+      "sha256": "db750177bdee72a1e95fadc16e6f88aa32869e5dd568e319c706952c3c1837e3"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-drain/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-drain/node-2.status",
+      "bytes": 3477,
+      "sha256": "037988ffa24934a9cc2eb3062eed84b0645676ce1d82d91f1dbadc172b4474e2"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-drain/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-drain/node-3.status",
+      "bytes": 3458,
+      "sha256": "68c5c93a76f9381ccee608fda299eb0ad2ac93d6b80c0b32f8cd225c03493adc"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-readback/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-readback/capture.json",
+      "bytes": 1425,
+      "sha256": "4994f56ccc2d8693babec57715359c5f030872f65524fd1cfec0d55881d01924"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-readback/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-readback/node-1.status",
+      "bytes": 3445,
+      "sha256": "2e0a4efe13eb204d5a314d1a065b492605d8000af34dec08c20bf4c904993d37"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-readback/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-readback/node-2.status",
+      "bytes": 3477,
+      "sha256": "abd24e8a14d564af4d13711294b5eae7eef459a6336b2e770a5b4b675faf7d69"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/raw-status/post-readback/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/raw-status/post-readback/node-3.status",
+      "bytes": 3458,
+      "sha256": "07388ffa81b8cf6e21d4787c79e267a5a26dc4e35b970ce840bd1bfed6bbe335"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-00.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-00.txt",
+      "bytes": 82442,
+      "sha256": "a3c7bb22db4c9e6327f919a19d8ecb1b67d308fe798e30a7d12609938a3e18c3"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-01.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-01.txt",
+      "bytes": 82442,
+      "sha256": "c92022af5822755131973c11ab6e2e62140687f2765041b5efd08e89993415d1"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-02.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-02.txt",
+      "bytes": 82442,
+      "sha256": "d2e9f29a987087093a5e57a35e9d9cd8ac9dcf7aa8702f2078d3f05117b74ca3"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-03.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-03.txt",
+      "bytes": 82442,
+      "sha256": "20cdc9360d414ee50bb06e117804ab3de5307cfcddf3704269e6da7dd92554a9"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-04.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-04.txt",
+      "bytes": 82442,
+      "sha256": "24d93c2184fee0a9e82bf55f08d1caf82c0c04c7ab6b008af52bbf611b5fb1e7"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-05.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-05.txt",
+      "bytes": 82442,
+      "sha256": "fc0bf8b19607b2b67cce484c1f103387d0d1a541ed04197e895af21c2b0bfcf8"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-06.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-06.txt",
+      "bytes": 82442,
+      "sha256": "97050384a2083f0c701c68b977a42e5d0a124998de7f017a0d9acd64c19a09f7"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-07.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-07.txt",
+      "bytes": 82442,
+      "sha256": "33e4199fe1d1bf0c986d3f573dfb7620123556ac6c63cd1948f31901bad4895d"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-08.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-08.txt",
+      "bytes": 82442,
+      "sha256": "4893a9beb6c78d9826edf9f4ba01b860715ae901d471b70d4d494d796c1073f4"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-09.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-09.txt",
+      "bytes": 82442,
+      "sha256": "39d0a197de42386a09d0218e9c01571879f306b3b35e9feb60d25efb68d313bd"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-10.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-10.txt",
+      "bytes": 82442,
+      "sha256": "a2d774cf7a374a9deaf882b73fff47cae2f1026363dec88499d370c801749334"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-11.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-11.txt",
+      "bytes": 82442,
+      "sha256": "ec9a821b40ad067596caa2ee447b4eb90817fb3f38700a33d96acefbe3d7fe5e"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-12.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-12.txt",
+      "bytes": 82442,
+      "sha256": "7b196c6035125c4d75e5cbfbca86d32cad78f3a275e9442a8da650fb6c5ef5b4"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-13.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-13.txt",
+      "bytes": 82442,
+      "sha256": "7447efa259659e7763834bc76c9d322c969a794c78a7a610fa6a729871eaef8e"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-14.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-14.txt",
+      "bytes": 82442,
+      "sha256": "b5df056ab0b8000ff7f5cb4fd650025415cbfebb65e09facd87b39e353c01cb7"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-15.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-15.txt",
+      "bytes": 82442,
+      "sha256": "1c6f1ed96bb9da7f62f29e2141836c55fdbd6013c52bbac563ea327d93c6274c"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/readback-16.txt",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/readback-16.txt",
+      "bytes": 330,
+      "sha256": "41e551842fbbf751692f8c069835e7b0130fe02fa84de9cbc8d846fbd6370bda"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/requested-config.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/requested-config.json",
+      "bytes": 812,
+      "sha256": "22a87f4d18568344915bd8ad7237fe049accb8afbace5aa8b4d0907d0115373b"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/resource-coverage.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/resource-coverage.json",
+      "bytes": 3769,
+      "sha256": "eadf24aef71f0013c00df89d496c602f2010c86f1027e40fe1e5cd2cee24c306"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/resource-samples.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/resource-samples.json",
+      "bytes": 755657,
+      "sha256": "ab0afa82fbf738beffc90326142961842e5cdb6efaf166f52b01ea5cc405f4bf"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/result.json",
+      "bytes": 21632,
+      "sha256": "4d2103f41ef1161d3606d22e784b3b0367e2631a9fed18a0f1eea869e088a1b9"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/run/build.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/run/build.json",
+      "bytes": 487,
+      "sha256": "eaef25789234170e999fab3746f6d29db403d6df556a82a7c373f572daf04e16"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/run/config.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/run/config.json",
+      "bytes": 812,
+      "sha256": "22a87f4d18568344915bd8ad7237fe049accb8afbace5aa8b4d0907d0115373b"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/run/ready.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/run/ready.json",
+      "bytes": 79,
+      "sha256": "6ffc9793f0446720d3d4f0e5105ff5edfe1131947d01a58b84758ff94c69f716"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/run/report.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/run/report.json",
+      "bytes": 1443380,
+      "sha256": "c4e252cfbd0c17ba25dfb3d9c609b064cf564743de22735060097f080109b272"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/sample-calls.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/sample-calls.json",
+      "bytes": 605337,
+      "sha256": "1d705f80184e53136e32888f70283b129654bdd33b0982b19fbff3ef1d437067"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/storage-mounts.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/storage-mounts.json",
+      "bytes": 828,
+      "sha256": "d077e77f1a61911d216a3601f0716affdfc995b1326cf9574c1b4c735fd15ca8"
+    },
+    {
+      "member": "runtime/cohorts/00-default-batch64-r000-c64/storage-resource-samples.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/storage-resource-samples.json",
+      "bytes": 38283,
+      "sha256": "e2613f689858189b2d8f342d242df93bc2667f92bdaa782fe773f7a5407244d3"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/background-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/background-before.json",
+      "bytes": 27819,
+      "sha256": "e365faf1009896dabcdd29c982c4ac07e2173a040554d7900198705482031e8e"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/before-allocator-provenance.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/before-allocator-provenance.json",
+      "bytes": 4182,
+      "sha256": "84ef9e249f7bc398ec3c8ec28558cb17455d68e744050290aa36e06bef44b0a9"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/before-fresh-drain.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/before-fresh-drain.json",
+      "bytes": 101183,
+      "sha256": "330e4ad951c8bde7e6e0e9a9405c105eb6488006c553fc52a61f58501a4ba75d"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/before-metrics.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/before-metrics.json",
+      "bytes": 928590,
+      "sha256": "958fb8e584a1951363d8a08d878873e8eec444825483b36e1d53978b091e4f00"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/before-resources.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/before-resources.json",
+      "bytes": 1745,
+      "sha256": "b9c875f87bea00aa5f5a9bacc54077f8a3bc0c51f9813045a3f92e19dd40a3f1"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/before-status.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/before-status.json",
+      "bytes": 32980,
+      "sha256": "658e076379452634b5ad0988b8be26428056a8d5e99934aad1f2421f8580b516"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/cleanup.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/cleanup.json",
+      "bytes": 6195,
+      "sha256": "bc72fb4cadd248a2e9bc447447a47f9fef066ce78580ede7497f4951cdbc5506"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/client-exit.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/client-exit.json",
+      "bytes": 64,
+      "sha256": "e4951bacf857dd63c637256744fe9556657499b43d45351bdb66dc71e71f3acf"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/client-identity.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/client-identity.json",
+      "bytes": 913,
+      "sha256": "b8895e2b3177aaa292126a20dda835d8188ff9760758224c1476299eca356b0f"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/client.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/client.log",
+      "bytes": 82,
+      "sha256": "af04e933130389f0a726ee1d7fd3b483b5dacd899914e77b15e5716c7456edf1"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/command-000.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/command-000.json",
+      "bytes": 415,
+      "sha256": "e71155f500e2ac79248a1a447cb56dc257d17e4f9aeb633e1d36bf755fb43159"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/command-001.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/command-001.json",
+      "bytes": 415,
+      "sha256": "e43eb3e01a4f385cbaf44e017ec1ceee70ec32cddc39d545d01ea11e7e1d4ae4"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/command-002.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/command-002.json",
+      "bytes": 415,
+      "sha256": "9ecdbfa506f35cca50af16939a3d954799268a4b1f9829294ca2e223f214ef9b"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/command-003.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/command-003.json",
+      "bytes": 1077,
+      "sha256": "ac14b192530feec3f6bdd993c3bcfce8e349bc62542eb2a1c8391a10d2d00923"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/command-004.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/command-004.json",
+      "bytes": 793,
+      "sha256": "c1b0e40adc35a56f1fa47b4cf62faca2a3fe37ca1dfc07cd45b8fbdfb52c995f"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/command-005.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/command-005.json",
+      "bytes": 793,
+      "sha256": "05916ba05a629084e48fad6ee78685753845b10dfec8d5d80c9c3055f38e3213"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/command-006.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/command-006.json",
+      "bytes": 793,
+      "sha256": "3b894a03c5cce243b04fd0c00e742c146d044831b5de64d52796baf34ffc7d5e"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/command-007.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/command-007.json",
+      "bytes": 333,
+      "sha256": "ae8c27a504a1d4ae9ffa442978d9929d8cd89329d3bf64d16ab3a182fe77c518"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/diagnostic-retention-budget.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/diagnostic-retention-budget.json",
+      "bytes": 457,
+      "sha256": "b44d2f59e3b1940f90264526a68b56d193bc943710c52e3f031a6f0c55684915"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/fixture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/fixture.json",
+      "bytes": 4975,
+      "sha256": "041eed4d9f5bc259ed505bc34ba176dbb2642780ddf141710b565993bdc688fc"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/n1.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/n1.log",
+      "bytes": 163,
+      "sha256": "535ef0124e0e2d52f0f550b170e5d3155fc313fd979f44c1dd3fa4e613381fcb"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/n2.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/n2.log",
+      "bytes": 163,
+      "sha256": "740151e330b494539c0282a6bd70aeead987016708c38a889f8bf79cce47fc7b"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/n3.log",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/n3.log",
+      "bytes": 163,
+      "sha256": "6016e29520933e8a9b1e13b02672a9bfe1874167e23aa0b729def49c7cede6cb"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/root.bin",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/root.bin",
+      "bytes": 179,
+      "sha256": "dc9467a1dc5c5c7f1bdfcbf9281249be823ba8061414611a40b6fea02b09b653"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/tmpfs-created.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/tmpfs-created.json",
+      "bytes": 263,
+      "sha256": "8968cf5982de4b7521131ab841ed10cb1a2c9e4fe9b2e5f8b91ac12310a2d7e6"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/tmpfs-retention.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/tmpfs-retention.json",
+      "bytes": 17291,
+      "sha256": "c9eef1ff7763837e0d90cc1a83999d868f8515a9ded751b3fbafc83573a9d9dc"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/fixture/tmpfs-voters.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/tmpfs-voters.json",
+      "bytes": 39795,
+      "sha256": "2e751cbf6c5b2c36b373dd586bc8f9a89dfb8310d76345b18b4e37f02985e049"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/host-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/host-before.json",
+      "bytes": 11089,
+      "sha256": "11e83011049103388243b498a54e50dd747311cd70856c2039c2820d0cc48911"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/host-resource-samples.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/host-resource-samples.json",
+      "bytes": 468346,
+      "sha256": "30f82e7c0f876b0fce7da365efa65f0ef307423e0a7e1275c6255b5dd1e061db"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/listener-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/listener-before.json",
+      "bytes": 939,
+      "sha256": "edf2e816718af26b9a124614c83d099ed6c358ac53636a90328dc3f54163ed72"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/pre-cleanup.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/pre-cleanup.json",
+      "bytes": 369,
+      "sha256": "0319ac7379b0cfbdbe0a9afe1f66ca5829a1eb6b9426a338dabf2f7868c0d523"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/raw-status/before/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/raw-status/before/capture.json",
+      "bytes": 2771,
+      "sha256": "e70dfd9f8cb314c10a378af0c448d215d4bfa3c9eae6344d33eec822af8e7b3b"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/raw-status/before/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/raw-status/before/node-1.status",
+      "bytes": 9705,
+      "sha256": "e9b1305fa15957d52db74d049e7b88f15aafb4807aee55a6f45377f38c870837"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/raw-status/before/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/raw-status/before/node-2.status",
+      "bytes": 9702,
+      "sha256": "71d9701ab019486f153787df2438b77bd572e8545f81532ec250e636bf1810b3"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/raw-status/before/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/raw-status/before/node-3.status",
+      "bytes": 9721,
+      "sha256": "46b04e4d22a07ab3c7663c2e4a07e656fe8423c9ca7278cb5c5928c86c1c898a"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/raw-status/post-client/capture.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/raw-status/post-client/capture.json",
+      "bytes": 2412,
+      "sha256": "775e983e32e6568635b92b4dbdd42421f48bdd19c73bcd0a100f6758a5f271b6"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/raw-status/post-client/node-1.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/raw-status/post-client/node-1.status",
+      "bytes": 141909,
+      "sha256": "9f4ca081d5e233fc48d05769ab4001566d97c62d95c38999a76d71708ee33e17"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/raw-status/post-client/node-2.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/raw-status/post-client/node-2.status",
+      "bytes": 222082,
+      "sha256": "96711d0c3b6f50344f9aeedc37770e747509ad9f4ed34abffcba1e1d3e2d084e"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/raw-status/post-client/node-3.status",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/raw-status/post-client/node-3.status",
+      "bytes": 141924,
+      "sha256": "ff0b539f27b3258d43baf47fe60005b09db12748c0e5b5d63813eaceb096a56d"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/requested-config.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/requested-config.json",
+      "bytes": 812,
+      "sha256": "90edf9e77f0d2516690213ccbcb60028672f79a987ed7f66c57cfc274a050075"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/resource-coverage.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/resource-coverage.json",
+      "bytes": 3083,
+      "sha256": "e182eb66173f53725e80d5b1673c7ae9bb51b3afcf423544e2bc0dcb981dd012"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/resource-samples.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/resource-samples.json",
+      "bytes": 762498,
+      "sha256": "be33513fef83dad52e608078232c7849680dd63992bc1394b9458896fb918cfc"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/result.json",
+      "bytes": 397,
+      "sha256": "d47fd87e56c415d74104bfbd7717aa47fbf3006068e48d3834a97518c2916a3b"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/run/build.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/run/build.json",
+      "bytes": 487,
+      "sha256": "eaef25789234170e999fab3746f6d29db403d6df556a82a7c373f572daf04e16"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/run/config.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/run/config.json",
+      "bytes": 812,
+      "sha256": "90edf9e77f0d2516690213ccbcb60028672f79a987ed7f66c57cfc274a050075"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/run/ready.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/run/ready.json",
+      "bytes": 79,
+      "sha256": "b3d7df05fd8159b44b253eaaef3a85a78bc3934e35a26663bf9d4ad55e141346"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/run/report.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/run/report.json",
+      "bytes": 1443419,
+      "sha256": "3c26595934ad5672963fd7e6d3e5196afbec8bd44ab936fbc47090561218436e"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/sample-calls.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/sample-calls.json",
+      "bytes": 610818,
+      "sha256": "ee559b220fc81049d2beba6e5d7493d47df28a23916d46c535361cd03df60f9d"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/storage-mounts.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/storage-mounts.json",
+      "bytes": 828,
+      "sha256": "1b9c529c2cd303b35cb18ac7d322dbce9a65c73ec973322821f93afd445319c5"
+    },
+    {
+      "member": "runtime/cohorts/01-instrumented-batch64-r000-c64/storage-resource-samples.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/storage-resource-samples.json",
+      "bytes": 38483,
+      "sha256": "f3671103e61fbeeec28e9376ee2cb0a33508ace3fe7e74d4b58d641b75c3ffe4"
+    },
+    {
+      "member": "runtime/cohorts/matrix.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/matrix.json",
+      "bytes": 464749,
+      "sha256": "1d78cee0d7a0ff9e27f752f808e7e522364e0d761e2f252d6faef75718ff88f7"
+    },
+    {
+      "member": "runtime/cohorts/plan.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/plan.json",
+      "bytes": 436803,
+      "sha256": "678a1fec4c1c45cd86d2f0e13e3fc5aae5a732a488db519f0f60ffc8655a4ef5"
+    },
+    {
+      "member": "runtime/invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/invocation.json",
+      "bytes": 1325,
+      "sha256": "8efe905bc184d0626cc642837fc9fe9bf2f636848219cb973adf493fcdacba3d"
+    },
+    {
+      "member": "runtime/isolation.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/isolation.json",
+      "bytes": 2118,
+      "sha256": "0649b2cb88e5d80d7417733fe2a4d77623e417e08f2d31589c223e6318b7f66d"
+    },
+    {
+      "member": "runtime/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "bytes": 845,
+      "sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2"
+    },
+    {
+      "member": "runtime/kv9-chaos-control-plane-isolated.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/kv9-chaos-control-plane-isolated.json",
+      "bytes": 829,
+      "sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893"
+    },
+    {
+      "member": "runtime/kv9-minio-dev-isolated.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/kv9-minio-dev-isolated.json",
+      "bytes": 11065,
+      "sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa"
+    },
+    {
+      "member": "runtime/summary.json",
+      "source": "/mnt/data/kv9-work/write-stage-capture-20260915-first/summary.json",
+      "bytes": 249,
+      "sha256": "b872c62ec857859ecfbda0fa2e1a7f32005465d85950fa444288d283ca58287e"
+    }
+  ],
+  "excluded_payloads": [
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000001.wal",
+      "bytes": 16771924,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000002.wal",
+      "bytes": 16508540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000003.wal",
+      "bytes": 16730540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000004.wal",
+      "bytes": 16667580,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000005.wal",
+      "bytes": 16698700,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000006.wal",
+      "bytes": 16572260,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000007.wal",
+      "bytes": 16519140,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000008.wal",
+      "bytes": 16508180,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000009.wal",
+      "bytes": 16666460,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000010.wal",
+      "bytes": 16572300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000011.wal",
+      "bytes": 16666780,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000012.wal",
+      "bytes": 16677300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000013.wal",
+      "bytes": 16107020,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000014.wal",
+      "bytes": 16149300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000015.wal",
+      "bytes": 16719940,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000016.wal",
+      "bytes": 16740780,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000017.wal",
+      "bytes": 16677500,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000018.wal",
+      "bytes": 16730260,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000019.wal",
+      "bytes": 16392340,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000020.wal",
+      "bytes": 16624820,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000021.wal",
+      "bytes": 16603540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.segments/190515deca4ef011d1232e3539ccb8af/00000000000000000022.wal",
+      "bytes": 9770220,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/catalog.wal",
+      "bytes": 2448,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/kv9-initialized",
+      "bytes": 12,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/kv9-root-descriptor",
+      "bytes": 179,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/kv9-serving-endpoint",
+      "bytes": 235,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/kv9-store-identity",
+      "bytes": 80,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/kv9-store-lifecycle",
+      "bytes": 97,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/kv9-store-lock",
+      "bytes": 0,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/metrics.json",
+      "bytes": 62075,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/raft/raft.log",
+      "bytes": 359673402,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n1/status",
+      "bytes": 3445,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000001.wal",
+      "bytes": 16772284,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000002.wal",
+      "bytes": 16551540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000003.wal",
+      "bytes": 16688740,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000004.wal",
+      "bytes": 16667820,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000005.wal",
+      "bytes": 16699340,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000006.wal",
+      "bytes": 16572980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000007.wal",
+      "bytes": 16667900,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000008.wal",
+      "bytes": 16752260,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000009.wal",
+      "bytes": 16656980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000010.wal",
+      "bytes": 16762900,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000011.wal",
+      "bytes": 16773460,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000012.wal",
+      "bytes": 16645740,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000013.wal",
+      "bytes": 16625180,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000014.wal",
+      "bytes": 16435340,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000015.wal",
+      "bytes": 16477580,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000016.wal",
+      "bytes": 16466860,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000017.wal",
+      "bytes": 16667500,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000018.wal",
+      "bytes": 16646420,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000019.wal",
+      "bytes": 16730940,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000020.wal",
+      "bytes": 16709540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000021.wal",
+      "bytes": 16519620,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/b275b64cbc2eaeb5dc3e322d84cea610/00000000000000000022.wal",
+      "bytes": 8598100,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.wal",
+      "bytes": 2448,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/kv9-initialized",
+      "bytes": 12,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/kv9-root-descriptor",
+      "bytes": 179,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/kv9-serving-endpoint",
+      "bytes": 235,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/kv9-store-identity",
+      "bytes": 80,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/kv9-store-lifecycle",
+      "bytes": 97,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/kv9-store-lock",
+      "bytes": 0,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/metrics.json",
+      "bytes": 63041,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/raft/raft.log",
+      "bytes": 359679005,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/status",
+      "bytes": 3477,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000001.wal",
+      "bytes": 16771844,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000002.wal",
+      "bytes": 16508700,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000003.wal",
+      "bytes": 16730420,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000004.wal",
+      "bytes": 16666860,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000005.wal",
+      "bytes": 16698500,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000006.wal",
+      "bytes": 16572340,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000007.wal",
+      "bytes": 16667020,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000008.wal",
+      "bytes": 16751340,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000009.wal",
+      "bytes": 16656300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000010.wal",
+      "bytes": 16445260,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000011.wal",
+      "bytes": 16159980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000012.wal",
+      "bytes": 16687460,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000013.wal",
+      "bytes": 16466260,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000014.wal",
+      "bytes": 16709100,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000015.wal",
+      "bytes": 16582540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000016.wal",
+      "bytes": 16487380,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000017.wal",
+      "bytes": 16635300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000018.wal",
+      "bytes": 16487060,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000019.wal",
+      "bytes": 16392180,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000020.wal",
+      "bytes": 16592820,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000021.wal",
+      "bytes": 16635020,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.segments/10d514482f7eeda9e5960ad4b3328b25/00000000000000000022.wal",
+      "bytes": 9770340,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/catalog.wal",
+      "bytes": 2448,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/kv9-initialized",
+      "bytes": 12,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/kv9-root-descriptor",
+      "bytes": 179,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/kv9-serving-endpoint",
+      "bytes": 235,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/kv9-store-identity",
+      "bytes": 80,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/kv9-store-lifecycle",
+      "bytes": 97,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/kv9-store-lock",
+      "bytes": 0,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/metrics.json",
+      "bytes": 61833,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/raft/raft.log",
+      "bytes": 359672807,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n3/status",
+      "bytes": 3458,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000001.wal",
+      "bytes": 16613524,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000002.wal",
+      "bytes": 16772420,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000003.wal",
+      "bytes": 16730300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000004.wal",
+      "bytes": 16677620,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000005.wal",
+      "bytes": 16497900,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000006.wal",
+      "bytes": 16434300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000007.wal",
+      "bytes": 16571420,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000008.wal",
+      "bytes": 16698740,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000009.wal",
+      "bytes": 16751500,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000010.wal",
+      "bytes": 16667180,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000011.wal",
+      "bytes": 16561420,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000012.wal",
+      "bytes": 16582820,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000013.wal",
+      "bytes": 16434660,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000014.wal",
+      "bytes": 16772420,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000015.wal",
+      "bytes": 16656740,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000016.wal",
+      "bytes": 16772500,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000017.wal",
+      "bytes": 16741460,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000018.wal",
+      "bytes": 16740660,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000019.wal",
+      "bytes": 16593060,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000020.wal",
+      "bytes": 16328820,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.segments/d2187ea7a3b7c0269a663d5111c7f53f/00000000000000000021.wal",
+      "bytes": 13361140,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/catalog.wal",
+      "bytes": 2337,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/kv9-initialized",
+      "bytes": 12,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/kv9-root-descriptor",
+      "bytes": 179,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/kv9-serving-endpoint",
+      "bytes": 235,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/kv9-store-identity",
+      "bytes": 80,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/kv9-store-lifecycle",
+      "bytes": 97,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/kv9-store-lock",
+      "bytes": 0,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/metrics.json",
+      "bytes": 62072,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/raft/raft.log",
+      "bytes": 347503877,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n1/status",
+      "bytes": 141909,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000001.wal",
+      "bytes": 16740884,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000002.wal",
+      "bytes": 16646220,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000003.wal",
+      "bytes": 16730980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000004.wal",
+      "bytes": 16699340,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000005.wal",
+      "bytes": 16751980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000006.wal",
+      "bytes": 16551020,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000007.wal",
+      "bytes": 16699340,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000008.wal",
+      "bytes": 16709980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000009.wal",
+      "bytes": 16741820,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000010.wal",
+      "bytes": 16340380,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000011.wal",
+      "bytes": 16625220,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000012.wal",
+      "bytes": 16625380,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000013.wal",
+      "bytes": 16709980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000014.wal",
+      "bytes": 16730900,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000015.wal",
+      "bytes": 16742060,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000016.wal",
+      "bytes": 16593660,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000017.wal",
+      "bytes": 16773580,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000018.wal",
+      "bytes": 16762380,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000019.wal",
+      "bytes": 16773300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000020.wal",
+      "bytes": 16625260,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.segments/2c451c28c22ac27538a154ceb1f07f41/00000000000000000021.wal",
+      "bytes": 12400260,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/catalog.wal",
+      "bytes": 2337,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/kv9-initialized",
+      "bytes": 12,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/kv9-root-descriptor",
+      "bytes": 179,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/kv9-serving-endpoint",
+      "bytes": 235,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/kv9-store-identity",
+      "bytes": 80,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/kv9-store-lifecycle",
+      "bytes": 97,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/kv9-store-lock",
+      "bytes": 0,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/metrics.json",
+      "bytes": 63021,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/raft/raft.log",
+      "bytes": 347509365,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n2/status",
+      "bytes": 222082,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000001.wal",
+      "bytes": 16613364,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000002.wal",
+      "bytes": 16772100,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000003.wal",
+      "bytes": 16730540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000004.wal",
+      "bytes": 16678060,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000005.wal",
+      "bytes": 16772540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000006.wal",
+      "bytes": 16550540,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000007.wal",
+      "bytes": 16677380,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000008.wal",
+      "bytes": 16730460,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000009.wal",
+      "bytes": 16741460,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000010.wal",
+      "bytes": 16339900,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000011.wal",
+      "bytes": 16624780,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000012.wal",
+      "bytes": 16624980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000013.wal",
+      "bytes": 16708940,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000014.wal",
+      "bytes": 16730300,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000015.wal",
+      "bytes": 16741380,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000016.wal",
+      "bytes": 16593180,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000017.wal",
+      "bytes": 16772460,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000018.wal",
+      "bytes": 16761980,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000019.wal",
+      "bytes": 16772660,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000020.wal",
+      "bytes": 16624940,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.segments/f93c191d15a91ab4c2e745d89eba2f2d/00000000000000000021.wal",
+      "bytes": 12399700,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/catalog.wal",
+      "bytes": 2337,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/kv9-initialized",
+      "bytes": 12,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/kv9-root-descriptor",
+      "bytes": 179,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/kv9-serving-endpoint",
+      "bytes": 235,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/kv9-store-identity",
+      "bytes": 80,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/kv9-store-lifecycle",
+      "bytes": 97,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/kv9-store-lock",
+      "bytes": 0,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/metrics.json",
+      "bytes": 61788,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/raft/raft.log",
+      "bytes": 347504291,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    },
+    {
+      "path": "/mnt/data/kv9-work/write-stage-capture-20260915-first/cohorts/01-instrumented-batch64-r000-c64/fixture/data/n3/status",
+      "bytes": 141924,
+      "reason": "Retained database payload; original copy/readback receipts remain included."
+    }
+  ],
+  "logical_bytes": 14950829,
+  "excluded_payload_bytes": 4234585489
+}

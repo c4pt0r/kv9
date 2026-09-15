@@ -25,8 +25,15 @@ and runs below remain separately scoped.
 The [completed retained batch review](write-batch-tail-review-v1/README.md)
 identifies missing group preparation/lock and receipt-to-inspection intervals.
 [Default-off bounded tracing](WRITE-STAGE-TRACE.md) now records those boundaries
-with exact sampled term/index identities. Actual capture, coverage and overhead
+with exact sampled term/index identities. Accepted capture, coverage and overhead
 qualification remain pending; this adds no performance result.
+
+The [first current-source release/capture attempt](WRITE-STAGE-CAPTURE.md)
+completed its default row, then refused five lost leader trace recordings in
+the instrumented row; the reverse order did not run. The tested exporter fix
+uses the existing pump gate for the fixed-array copy and allocates afterward.
+Corrected matching releases and a fresh four-row capture remain next. The
+failed attempt supplies no accepted overhead comparison or new baseline.
 
 The earlier [complete directory-candidate screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
 records CRC main at **139,457.016 point Put/s** and **1,056,344.501 batch items/s**

@@ -1,0 +1,181 @@
+{
+  "scope": "Release build and independent readback metadata, not runtime acceptance. Binaries remain separate.",
+  "archive_sha256": "fb952fed2b89ae66e16fb6dd50b58d8b2ac2b021364c81776cba17926168f9ca",
+  "archive_bytes": 389180,
+  "members": [
+    {
+      "name": "default/build.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-default-20260915-first/build.json",
+      "bytes": 182873,
+      "sha256": "a4ca3cc72c0ab4b070fba46954cecc0dcd8986bbf8573c4a0ae277b0b9cedb40"
+    },
+    {
+      "name": "default/build.log",
+      "source": "/mnt/data/kv9-work/write-stage-release-default-20260915-first/build.log",
+      "bytes": 19949,
+      "sha256": "c240a527a27ac5ce956b878db2a84e69d695677cd04a820e66480581ccf3270c"
+    },
+    {
+      "name": "default/invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-default-20260915-first/invocation.json",
+      "bytes": 336,
+      "sha256": "1244ebd6a7eefc7f8384aa42df969afbbb799f31e26fd2445e3ba3be0cad1bd5"
+    },
+    {
+      "name": "default/kv9-cargo.jsonl",
+      "source": "/mnt/data/kv9-work/write-stage-release-default-20260915-first/kv9-cargo.jsonl",
+      "bytes": 212739,
+      "sha256": "c637a799852b212ba963ba1bd329c7c6a2fb979d96400f82d1bd9c8e6fccf9ff"
+    },
+    {
+      "name": "default/source-after.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-default-20260915-first/source-after.json",
+      "bytes": 166375,
+      "sha256": "0035fe1f11b32bc1925e88737e2600bcd4adb804a906433f5a74b836b938ad7d"
+    },
+    {
+      "name": "instrumented/build.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-instrumented-20260915-first/build.json",
+      "bytes": 183711,
+      "sha256": "b565af2bef1a8045d7fe88eb66d905b864d088a534ae5950c1dde647521ef254"
+    },
+    {
+      "name": "instrumented/build.log",
+      "source": "/mnt/data/kv9-work/write-stage-release-instrumented-20260915-first/build.log",
+      "bytes": 18101,
+      "sha256": "3c5903c424a4da68c466b9647007c662e6b2a95a437253b5c19d1aade44ec3dc"
+    },
+    {
+      "name": "instrumented/invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-instrumented-20260915-first/invocation.json",
+      "bytes": 414,
+      "sha256": "adc723d600f7ba492473b747d2df99d7bc79f3e0cfe2059d090c0825d4ecf290"
+    },
+    {
+      "name": "instrumented/kv9-cargo.jsonl",
+      "source": "/mnt/data/kv9-work/write-stage-release-instrumented-20260915-first/kv9-cargo.jsonl",
+      "bytes": 212967,
+      "sha256": "a525ecdb31ef3db18909e3475b909cea8811aea1c3fef4d84ad19694d6197560"
+    },
+    {
+      "name": "instrumented/source-after.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-instrumented-20260915-first/source-after.json",
+      "bytes": 166375,
+      "sha256": "0035fe1f11b32bc1925e88737e2600bcd4adb804a906433f5a74b836b938ad7d"
+    },
+    {
+      "name": "root/build-pair-original.py",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/build-pair-original.py",
+      "bytes": 6058,
+      "sha256": "193876dce9bf70118e04215b081443229a88285f4d4458d533cd6226df3132db"
+    },
+    {
+      "name": "root/build-pair.diff",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/build-pair.diff",
+      "bytes": 3586,
+      "sha256": "0267ee5fb993a211bd98a1749a8f2ce1e8ea7dab6df679b02e2cf26b2b840021"
+    },
+    {
+      "name": "root/build-pair.py",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/build-pair.py",
+      "bytes": 6148,
+      "sha256": "60f77eb021347b2d3765ef0db7406e39ba21c412242053de9fa82539b8df87fa"
+    },
+    {
+      "name": "root/build-result.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/build-result.json",
+      "bytes": 1632,
+      "sha256": "ff375988c727ced05aeebaed9ee4fa06437e7a2f5772e64eb8c6a70de3063520"
+    },
+    {
+      "name": "root/cache-clean.stderr",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/cache-clean.stderr",
+      "bytes": 3450,
+      "sha256": "8369024e7fc6c65d6b9373b9a8ec409cfcc4a9e1e46ecae566f0bfa311522520"
+    },
+    {
+      "name": "root/cache-clean.stdout",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "root/cache-metadata.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/cache-metadata.json",
+      "bytes": 30478,
+      "sha256": "5f33e27b148f92ef5c8dfa958a9435030357a5cd1976a16a42af0dfffce670d9"
+    },
+    {
+      "name": "root/cache-metadata.log",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "root/cache-safety.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/cache-safety.json",
+      "bytes": 23355,
+      "sha256": "7399a378a1bbc5fae52e6548bfd65a34e2b254ad487e923b06e05a21977fc423"
+    },
+    {
+      "name": "root/client-readback.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/client-readback.json",
+      "bytes": 298,
+      "sha256": "0833f77e1a7d8ef00c9e5ce8811009ae4a6a4008be74d4d377a804c53b4f7a81"
+    },
+    {
+      "name": "root/independent-readback.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/independent-readback.json",
+      "bytes": 3116,
+      "sha256": "d900806a65f2a78a9345b90ea7b6949b046b5f5797b7e9de19e242af7aea5a4e"
+    },
+    {
+      "name": "root/preflight.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/preflight.json",
+      "bytes": 658,
+      "sha256": "d4b1fdb248b9d0317e63764507adf01c21e64da78fa796c1be6eeda1124c0a80"
+    },
+    {
+      "name": "root/readback-original.py",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/readback-original.py",
+      "bytes": 5116,
+      "sha256": "b9063878239d47353b17263f53b620291c3e504ba13b70126e3a8701328ca0ab"
+    },
+    {
+      "name": "root/readback.diff",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/readback.diff",
+      "bytes": 5316,
+      "sha256": "9c8517603e29e9016150e22ad88f7e54070541541e6d23e7e826b34b5fb7b219"
+    },
+    {
+      "name": "root/readback.py",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/readback.py",
+      "bytes": 4759,
+      "sha256": "1295f7d10f27ca770da4fa899176480d8d04781fb040442feba9b5d4190a54af"
+    },
+    {
+      "name": "root/source-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/source-before.json",
+      "bytes": 166375,
+      "sha256": "0035fe1f11b32bc1925e88737e2600bcd4adb804a906433f5a74b836b938ad7d"
+    },
+    {
+      "name": "root/tool-live.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/tool-live.json",
+      "bytes": 163,
+      "sha256": "288e6b032897595d4b9d4eae629701f7b7445eb7aa0008f73ae2bd504a3821d0"
+    },
+    {
+      "name": "root/tool-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/tool-terminal.json",
+      "bytes": 145,
+      "sha256": "aa46f4efa13e9f3a22419df5bfd038ba13e0e9733518f3bab5109e29fa423f38"
+    },
+    {
+      "name": "root/toolchain.json",
+      "source": "/mnt/data/kv9-work/write-stage-release-root-20260915-first/toolchain.json",
+      "bytes": 1003,
+      "sha256": "fd599b7a61bf323937ccbd35f3580b84d62275bd17165149559b7c3003b81b1e"
+    }
+  ]
+}

@@ -38,7 +38,10 @@
 > narrows the missing observation to group preparation/apply/receipt insertion
 > and terminal inspection. [Default-off bounded timestamps](WRITE-STAGE-TRACE.md)
 > implement those exact-position joins; no live trace performance result exists.
-> Next: qualify matching default/tracing releases and capture the loaded batch
+> The first [matching release pair and actual capture](WRITE-STAGE-CAPTURE.md)
+> exposed exporter/recording contention: five lost calls correctly refused the
+> instrumented row. A tested correction snapshots between existing Raft pumps.
+> Next: qualify corrected matching releases and capture the loaded batch
 > interval, finish the pending pre-upload crash cut, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton

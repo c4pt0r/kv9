@@ -1260,7 +1260,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 
     #[cfg(feature = "write-stage-tracing")]
     pub fn write_stage_trace(&self) -> crate::write_stage_trace::TraceSnapshot {
-        self.write_stage_trace.snapshot()
+        self.write_stage_trace
+            .snapshot_between_pumps(&self.pump_gate)
     }
 
     #[cfg(feature = "write-path-diagnostics")]
@@ -2190,6 +2191,20 @@ mod tests {
                 crate::write_stage_trace::InspectionOutcome::Applied
             );
         }
+    }
+
+    #[cfg(feature = "write-stage-tracing")]
+    #[test]
+    fn write_stage_snapshot_yields_to_the_actual_driver_owner() {
+        let driver = single_node_driver();
+        let owner = driver.pump_gate.lock().unwrap();
+        let busy = driver.write_stage_trace();
+        assert!(!busy.rows_available && !busy.valid);
+        drop(owner);
+        let quiet = driver.write_stage_trace();
+        assert!(quiet.rows_available && quiet.valid);
+        assert_eq!(quiet.dropped_recording_calls, 0);
+        assert!(driver.pump_gate.try_lock().is_ok());
     }
 
     #[tokio::test]

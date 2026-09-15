@@ -30,6 +30,13 @@ inspection. Next qualify matching releases and actual capture/coverage/overhead
 before selecting another writer or scheduling change. This is instrumentation,
 not a new QPS result or promotion of the held candidate.
 
+The first current-source release pair now exists, but its
+[actual capture stopped on five lost trace recordings](WRITE-STAGE-CAPTURE.md).
+The default row completed; the instrumented row remains failed and the reverse
+order never ran. Export now tries the existing pump gate and releases both
+guards before allocation. The tested correction needs a new matching release
+pair and complete capture; no observer-overhead comparison has been accepted.
+
 During the earlier full-screen capacity constraint, the C04
 [checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local
 restart authority: an actual atomic winning manifest apply must match the exact
