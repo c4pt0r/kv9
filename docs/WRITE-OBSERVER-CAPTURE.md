@@ -129,8 +129,13 @@ are required for future work; these observations reserve no capacity.
 
 The data supports investigating redundant pending inspections and the cost of
 misses, alongside the held candidate's actual checked-hint and fallback paths.
-First bind those path counts to a separate candidate observer; tail distance in
-this baseline cannot be relabeled as a measured candidate hint hit.
+Bind those path counts to a separate candidate observer; tail distance in this
+baseline cannot be relabeled as a measured candidate hint hit. Separately, the
+[conservative upper-bound experiment](WRITE-RECEIPT-UPPER-BOUND.md) now passes
+source-bound refinement and local development checks. It rejects impossible
+future-index lookups without caching pending outcomes. Its retained release,
+ordinary recovery, actual Chaos and complete matched performance gates remain
+open; actual upper-bound skip counts are not yet measured.
 
 For a subsequent pending-inspection optimization, establish an explicit proof
 of when a previous pending result remains valid. Any skipped lookup must account

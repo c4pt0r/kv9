@@ -1,31 +1,32 @@
 # kv9 development roadmap
 
 > Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
-> Keep selected ThinLTO and Safe ReadIndex. The version-4 Redis reference client
-> now supports same-connection WAIT 1/2 with bounded deadlines and unknown-write
-> accounting. The [matched write baseline](WRITE-REDIS3-BASELINE.md) now passes
-> 12 smoke/24 timed cohorts and independent audit: all 18,993,624 measured calls
-> succeed once. At c64, Redis is about 1.7× faster for point writes and 4.5×
-> for batches; KV9 loaded batch p99 remains 9.437–9.568 ms. The isolated CRC
-> reapplication now passes source/proof/release/ordinary recovery and its
-> [actual 21-window Chaos campaign](WRITE-CRC-CHAOS.md): 9,833 complete operations,
-> including 600 unknowns and 28 refusals, with independent audit and cleanup.
-> Qualify capacity, then run candidate A/B throughput/latency; 28 environment
-> controls pass, but no candidate timing or speedup is established.
-> A separate [single-buffer Raft WAL experiment](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
-> now passes source-bound layout proofs, 710 local tests/doctests and lint checks.
-> Release, recovery, actual Chaos and performance gates remain open for it.
-> Read optimization and lease qualification are held at the user's request.
-> Proof, actual Chaos Mesh and no-service-critical-singleton gates still apply.
-
-Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
+> Keep selected ThinLTO and Safe ReadIndex; read and lease optimization remain held.
+> CRC remains the selected write runtime. The latest [matched screen](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
+> measures the CRC reference at c64 / 128-byte values at **138,099 Put calls/s**
+> and **1,050,120 BatchPut(64) items/s**, with p99 **0.745–0.754 ms** and
+> **7.864–7.930 ms** respectively. The receipt-tail candidate improves point
+> writes but has batch/order tradeoffs; promotion remains held.
+> The [completed observer capture](WRITE-OBSERVER-CAPTURE.md) identifies repeated
+> receipt misses. The independent [upper-bound candidate](WRITE-RECEIPT-UPPER-BOUND.md)
+> now passes 14 source-bound theorem statements / 82 obligations and local
+> development checks. Its exact release, recovery, actual Chaos and full matched
+> performance gates remain open; no new speedup is claimed.
+> Next: complete that candidate's acceptance, then continue industrial storage,
+> resource-bounded multi-Raft, ownership changes and automatic splits with the
+> original dependencies. Proof, actual Chaos Mesh and no critical singleton
+> requirements remain mandatory. CI stays local.
+Updated: 2026-09-15. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
 
 The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 25 work packages,
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records accepted ThinLTO full72
+The qualification history below retains its original revisions and decisions;
+the latest selected write runtime and next action are stated above.
+
+The [earlier checkpoint](CURRENT-STATUS.md) records accepted ThinLTO full72
 performance and the exact-build Chaos matrix, including 9,923 complete history
 operations. The 36 smoke / 72 timed point/batch cohorts and independent audit
 now pass. Main now selects the exact qualified source after fresh local release,
