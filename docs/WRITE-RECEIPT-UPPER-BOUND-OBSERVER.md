@@ -7,8 +7,10 @@ branch. At c64 Put, **87.973–88.013% of lookups skip the scan**, and actual li
 comparisons average **121.234–121.650 per lookup**. The filter is exercised by
 the real workload; these counts do not measure CPU savings or predict speedup.
 
-**CRC remains selected. The original 8-smoke/16-ten-second matched comparison
-has not run for this candidate and remains a prerequisite for promotion.**
+**CRC remains selected. The subsequent [8-smoke/16-ten-second matched comparison](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
+has completed with a separately requalified client. It holds promotion because
+of the loaded-batch tradeoff.** The observer figures below retain their original
+client, scope and capture duration.
 The [previous schema-1 observer](WRITE-OBSERVER-CAPTURE.md) and
 [accepted ten-second performance baseline](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
 retain their separate source, workload and interpretation.
@@ -118,10 +120,12 @@ The [portable metadata and original records](receipt-upper-bound-observer-v1/REA
 retain complete per-node snapshots, native reports, source/feature bindings,
 actual terminals and the independent analyses. Database payloads remain local.
 
-Obtain capacity for the unchanged full matched comparison against CRC before
-deciding promotion; the approximately 74 GiB initial scenario remains unfunded.
-The successful observer capture closes the missing actual skip-count evidence,
-not the ten-second acceptance gate. Preserve the held tail-hint experiment and
+The later full matched comparison passed its original capacity and acceptance
+gates with output on the data volume. The [retained batch review](write-batch-tail-review-v1/README.md)
+now motivates [bounded group/inspection timestamps](WRITE-STAGE-TRACE.md);
+their actual capture and observer-overhead qualification remain next. The
+successful observer capture itself establishes actual skip counts, not the
+ten-second performance-selection decision. Preserve the held tail-hint experiment and
 its unresolved batch tradeoffs. Continue the original storage, bounded
 multi-Raft and split dependencies in issue #9. No original industrial roadmap
 item closes from this diagnostic result, and no hosted CI was dispatched.

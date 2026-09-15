@@ -281,6 +281,8 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     metrics: Arc<DriverMetrics>,
     #[cfg(feature = "write-path-diagnostics")]
     write_diagnostics: crate::write_diagnostics::WriteDiagnostics,
+    #[cfg(feature = "write-stage-tracing")]
+    write_stage_trace: crate::write_stage_trace::WriteStageTrace,
     #[cfg(any(test, feature = "experimental-leader-lease"))]
     lease_read_hits: std::sync::atomic::AtomicU64,
 }
@@ -342,6 +344,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             metrics,
             #[cfg(feature = "write-path-diagnostics")]
             write_diagnostics: Default::default(),
+            #[cfg(feature = "write-stage-tracing")]
+            write_stage_trace: Default::default(),
             #[cfg(any(test, feature = "experimental-leader-lease"))]
             lease_read_hits: std::sync::atomic::AtomicU64::new(0),
         }))
@@ -431,13 +435,39 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             Ok(())
         });
         if result.is_ok() {
+            let inspect = |at: ProposedAt, waited| {
+                #[cfg(feature = "write-stage-tracing")]
+                let started = self.write_stage_trace.now();
+                let result = self.inspect_applied(at, waited);
+                #[cfg(feature = "write-stage-tracing")]
+                if let Some(ref terminal) = result {
+                    use crate::write_stage_trace::InspectionOutcome as O;
+                    let finished = self.write_stage_trace.now();
+                    let outcome = match terminal {
+                        Ok(ApplyWaitOutcome::Applied(_)) => O::Applied,
+                        Ok(ApplyWaitOutcome::Manifest { .. }) => O::Manifest,
+                        Ok(ApplyWaitOutcome::FenceRejected { .. }) => O::FenceRejected,
+                        Ok(ApplyWaitOutcome::Replaced) => O::Replaced,
+                        Err(ApplyWaitError::Failed(_)) => O::Failed,
+                        Err(ApplyWaitError::Unconfirmed { .. }) => O::Unconfirmed,
+                    };
+                    self.write_stage_trace.record_inspection(
+                        kv9_common::AppliedPosition {
+                            term: at.term,
+                            index: at.index.0,
+                        },
+                        started,
+                        finished,
+                        waited,
+                        outcome,
+                    );
+                }
+                result
+            };
             #[cfg(feature = "write-path-diagnostics")]
-            let _service = self
-                .async_applies
-                .service(|at, waited| self.inspect_applied(at, waited));
+            let _service = self.async_applies.service(inspect);
             #[cfg(not(feature = "write-path-diagnostics"))]
-            self.async_applies
-                .service(|at, waited| self.inspect_applied(at, waited));
+            self.async_applies.service(inspect);
             #[cfg(feature = "write-path-diagnostics")]
             self.write_diagnostics
                 .record_pump(&observation, Some(&_service));
@@ -532,6 +562,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 // current-term barrier's liveness anchor).
                 EntryKind::Noop => {}
                 EntryKind::Command => {
+                    #[cfg(feature = "write-stage-tracing")]
+                    let prepare_started_ns = self.write_stage_trace.now();
                     let cmd = match Command::decode(&entry.data) {
                         Ok(c) => c,
                         Err(e) => return Err(self.poison(entry.term, entry.index.0, &e)),
@@ -550,6 +582,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     }
                     let mut applied = self.applied.lock().expect("applied poisoned");
                     let mut sm = self.sm.lock().expect("sm poisoned");
+                    #[cfg(feature = "write-stage-tracing")]
+                    let locks_acquired_ns = self.write_stage_trace.now();
                     let mut bytes = entry.data.len();
                     let mut commands = vec![(
                         kv9_common::AppliedPosition {
@@ -602,10 +636,22 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                         .iter()
                         .map(|_| self.metrics.command_apply.start())
                         .collect();
+                    #[cfg(feature = "write-stage-tracing")]
+                    let apply_started_ns = self.write_stage_trace.now();
                     let outcome = if commands.len() == 1 {
                         sm.apply_at(commands[0].0, &commands[0].1).map(|r| vec![r])
                     } else {
                         sm.apply_raw_group(&commands)
+                    };
+                    #[cfg(feature = "write-stage-tracing")]
+                    let mut timing = crate::write_stage_trace::GroupTiming {
+                        commands: commands.len() as u64,
+                        encoded_bytes: bytes as u64,
+                        prepare_started_ns,
+                        locks_acquired_ns,
+                        apply_started_ns,
+                        apply_finished_ns: self.write_stage_trace.now(),
+                        receipts_inserted_ns: None,
                     };
                     let results = match outcome {
                         Ok(r) => {
@@ -615,6 +661,9 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                             r
                         }
                         Err(e) => {
+                            #[cfg(feature = "write-stage-tracing")]
+                            self.write_stage_trace
+                                .record_group(timing, commands.iter().map(|(at, _)| *at));
                             for timer in apply_timers {
                                 timer.finish(Outcome::Error);
                             }
@@ -631,6 +680,12 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     }
                     for ((at, _), result) in commands.iter().zip(results) {
                         push_ring(&mut applied, at.index, at.term, result.outcome);
+                    }
+                    #[cfg(feature = "write-stage-tracing")]
+                    {
+                        timing.receipts_inserted_ns = Some(self.write_stage_trace.now());
+                        self.write_stage_trace
+                            .record_group(timing, commands.iter().map(|(at, _)| *at));
                     }
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
@@ -1201,6 +1256,11 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 
     pub fn metrics(&self) -> &DriverMetrics {
         &self.metrics
+    }
+
+    #[cfg(feature = "write-stage-tracing")]
+    pub fn write_stage_trace(&self) -> crate::write_stage_trace::TraceSnapshot {
+        self.write_stage_trace.snapshot()
     }
 
     #[cfg(feature = "write-path-diagnostics")]
@@ -2045,6 +2105,89 @@ mod tests {
             assert_eq!(
                 value("async_requests_inspected_per_service"),
                 observation.driver.lookup_hits + observation.driver.lookup_misses
+            );
+        }
+    }
+
+    #[cfg(feature = "write-stage-tracing")]
+    #[tokio::test]
+    async fn write_stage_trace_joins_actual_groups_to_terminal_receipt_inspections() {
+        let driver = single_node_driver();
+        driver.pause_apply(true);
+        let mut requests = Vec::new();
+        for n in 0..64u8 {
+            requests.push(
+                driver
+                    .propose_with_async_wait(
+                        &Command::Put {
+                            cf: 0,
+                            key: vec![n],
+                            value: vec![n + 1],
+                        },
+                        Instant::now() + Duration::from_secs(5),
+                    )
+                    .unwrap(),
+            );
+        }
+        driver.step().unwrap();
+        assert!(driver.status().raft_committed >= requests.last().unwrap().0.index.0);
+        let before = driver.write_stage_trace();
+        assert_eq!(before.groups.total_recorded, 0);
+        assert_eq!(
+            before.inspections.total_recorded, 0,
+            "commit without application produced a terminal trace"
+        );
+        driver.pause_apply(false);
+        driver.step().unwrap();
+        let expected: Vec<_> = requests
+            .iter()
+            .filter(|(at, _)| at.index.0.is_multiple_of(16))
+            .map(|(at, _)| (at.term, at.index.0))
+            .collect();
+        for (at, wait) in requests {
+            assert_eq!(
+                wait.wait().await.unwrap(),
+                ApplyWaitOutcome::Applied(kv9_common::AppliedPosition {
+                    term: at.term,
+                    index: at.index.0
+                })
+            );
+        }
+        let trace = driver.write_stage_trace();
+        assert!(trace.valid && trace.rows_available);
+        assert_eq!(trace.dropped_recording_calls, 0);
+        assert_eq!(trace.group_commands_seen, 64);
+        assert_eq!(trace.terminal_inspections_seen, 64);
+        assert_eq!(
+            trace
+                .groups
+                .rows
+                .iter()
+                .map(|r| (r.term, r.index))
+                .collect::<Vec<_>>(),
+            expected
+        );
+        assert_eq!(
+            trace
+                .inspections
+                .rows
+                .iter()
+                .map(|r| (r.term, r.index))
+                .collect::<Vec<_>>(),
+            expected
+        );
+        for (g, i) in trace.groups.rows.iter().zip(&trace.inspections.rows) {
+            assert!(g.prepare_started_ns <= g.locks_acquired_ns);
+            assert!(g.locks_acquired_ns <= g.apply_started_ns);
+            assert!(g.apply_started_ns <= g.apply_finished_ns);
+            assert!(g.apply_finished_ns <= g.receipts_inserted_ns.unwrap());
+            assert!(g.receipts_inserted_ns.unwrap() <= i.inspect_started_ns);
+            assert!(i.inspect_started_ns <= i.inspect_finished_ns);
+            assert!(i.inspect_finished_ns <= trace.capture_finished_ns);
+            assert!(trace.capture_started_ns <= trace.capture_finished_ns);
+            assert_eq!(
+                i.outcome,
+                crate::write_stage_trace::InspectionOutcome::Applied
             );
         }
     }

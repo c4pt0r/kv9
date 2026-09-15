@@ -535,6 +535,30 @@ mod tests {
         assert_eq!(machine(&store).applied_index(), b.index);
     }
 
+    #[cfg(feature = "write-stage-tracing")]
+    #[test]
+    fn failed_group_trace_cannot_claim_receipt_publication() {
+        let store = Arc::new(ProbeStore::default());
+        let d = driver(&store);
+        let before = d.driver_applied();
+        let proposals: Vec<_> = (0..32).map(|_| d.propose(&put(b"fail")).unwrap()).collect();
+        store.failure.store(2, Ordering::SeqCst);
+        assert!(d.step().is_err());
+        assert_eq!(d.driver_applied(), before);
+        let trace = d.write_stage_trace();
+        assert!(trace.valid);
+        assert_eq!(trace.group_commands_seen, 32);
+        assert!(!trace.groups.rows.is_empty());
+        assert!(trace
+            .groups
+            .rows
+            .iter()
+            .all(|r| r.receipts_inserted_ns.is_none()));
+        for proposal in proposals {
+            assert!(d.wait_applied(proposal, Duration::ZERO).is_err());
+        }
+    }
+
     #[test]
     fn real_legacy_and_segmented_wals_sync_once_and_recover_the_composed_group() {
         use kv9_common::metrics::Outcome;

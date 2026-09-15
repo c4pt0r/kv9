@@ -41,6 +41,7 @@ checkpoint-testing = []
 # Isolated transport comparison. Never enabled in the default runtime.
 rpc-experiment = ["dep:tarpc"]
 write-path-diagnostics = ["kv9-raft/write-path-diagnostics"]
+write-stage-tracing = ["kv9-raft/write-stage-tracing"]
 # Programmatic experimental installation requires an explicitly supplied clock.
 # No default clock or CLI enablement is selected by this feature.
 experimental-leader-lease = ["kv9-raft/experimental-leader-lease"]

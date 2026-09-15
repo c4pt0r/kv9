@@ -134,6 +134,8 @@ partition-testing = ["kv9-raft/testing"]
 checkpoint-testing = ["kv9-server/checkpoint-testing"]
 rpc-experiment = ["kv9-server/rpc-experiment"]
 write-path-diagnostics = ["kv9-server/write-path-diagnostics"]
+# Bounded sampled timestamps for write-stage diagnosis; absent by default.
+write-stage-tracing = ["kv9-server/write-stage-tracing"]
 
 [dependencies]
 kv9-common.workspace = true

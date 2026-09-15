@@ -60,6 +60,17 @@ there is no certified final abort release and these pins can accumulate.
 Unknown outcomes retain the journal. Absence of an object, an RPC error or
 suspected process death cannot release ownership.
 
+The next abort/history integration needs the complete canonical descriptor and
+expected generation durably discoverable from the Pending owner, before local
+journal clearing. The current owner records bind only the operation and subject
+digests; they cannot reconstruct that descriptor after its local slot is gone.
+Retain the exact winner at the attempt's `expected_generation + 1` window before
+using a non-matching winner to prove the attempt can never apply. A later current
+generation, absent history or a stale retry receipt supplies no such proof.
+An earlier successful application instead needs the positive Version transfer.
+Even a certified losing attempt cannot release independent reader/version pins
+or supply complete legacy coverage or physical deletion authority.
+
 ## Durable journal compatibility
 
 `KV9PENDING\x01` remains the descriptor of a remotely verified prepared flush.

@@ -37,6 +37,18 @@ reusable development compiler cache can still grow on the root filesystem.
 Continue checking both devices. Do not change a running process's open output
 files or silently relocate a benchmark's WAL to a different storage class.
 
+The subsequent write-stage development runs follow this split: all three sets
+of test logs, five proof compositions, reader controls and publication assembly
+use fresh directories below `/mnt/data/kv9-work`. They reuse the existing
+`/tmp/kv9-c04-configuration-development-20260915-first/target` instead of making
+a new compiler cache per run. At the later capacity check, root had
+868,678,049,792 bytes available (about 809 GiB), and data had
+9,638,567,776,256 bytes (about 8.77 TiB). The reusable development directory
+occupied 10,496,512,000 allocated bytes. The wider `/tmp/kv9*` size survey hit
+permission-denied directories, so its partial sum is not a complete inventory
+or an amount safe to delete. These observations are retained in the
+[write-stage validation packet](write-stage-trace-v1/README.md).
+
 At the current campaign launch check, available space was 877,222,043,648 bytes
 on root, 9,689,422,909,440 bytes on the data volume, and 66,274,971,648 bytes on
 tmpfs. The full campaign's 79,455,850,496-byte output requirement passed. These
