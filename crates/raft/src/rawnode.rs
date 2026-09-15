@@ -194,6 +194,8 @@ struct PeerInner<S: PersistentRaftStorage> {
     /// invisible. Observability only; never fatal — a stale message from a
     /// removed peer must not be able to kill a healthy node.
     step_errors: u64,
+    #[cfg(feature = "write-path-diagnostics")]
+    write_diagnostics: crate::write_diagnostics::ReadyDiagnostics,
     /// Persistence failure is terminal for this incarnation. Never resume a
     /// RawNode whose Ready may have been only partly written or advanced.
     fatal: Option<String>,
@@ -365,6 +367,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 applied_reported: 0,
                 conf_applied,
                 step_errors: 0,
+                #[cfg(feature = "write-path-diagnostics")]
+                write_diagnostics: Default::default(),
                 fatal: None,
             }),
         })
@@ -543,6 +547,14 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         self.lock().step_errors
     }
 
+    #[cfg(feature = "write-path-diagnostics")]
+    pub(crate) fn write_ready_diagnostics(
+        &self,
+    ) -> Vec<crate::write_diagnostics::DistributionSnapshot> {
+        let observation = self.lock().write_diagnostics.clone();
+        observation.snapshots()
+    }
+
     /// Persist `Ready` and any commit advance from `LightReady` before publishing
     /// messages, committed entries or read states. Application is reported later.
     #[cfg(any(test, feature = "testing"))]
@@ -557,6 +569,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             return Ok(());
         }
         let mut ready = g.raw.ready();
+        #[cfg(feature = "write-path-diagnostics")]
+        let ready_entry_count = ready.entries().len();
         // Quorum-confirmed read states (task #28): drained HERE because this
         // is the single Ready consumer — a second consumer would steal them
         // exactly like it would steal committed entries.
@@ -581,6 +595,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         for e in ready.take_committed_entries() {
             committed.push(classify_entry(e));
         }
+        #[cfg(feature = "write-path-diagnostics")]
+        let ready_committed_count = committed.len();
         // `advance_append`, NOT `advance`: `advance()` internally marks apply
         // progress as caught up, but our apply happens later, when the driver
         // drains `take_ready`. raft-rs gates one-at-a-time conf-change safety
@@ -601,6 +617,16 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         msgs.extend(light.take_messages());
         for e in light.take_committed_entries() {
             committed.push(classify_entry(e));
+        }
+        #[cfg(feature = "write-path-diagnostics")]
+        {
+            g.write_diagnostics.entries.record(ready_entry_count as u64);
+            g.write_diagnostics
+                .committed
+                .record(ready_committed_count as u64);
+            g.write_diagnostics
+                .light_committed
+                .record((committed.len() - ready_committed_count) as u64);
         }
         g.ready.extend(committed);
         g.outbox.extend(msgs);

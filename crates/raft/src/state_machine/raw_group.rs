@@ -487,6 +487,28 @@ mod tests {
                 d.driver_applied().unwrap().index,
                 commands.last().unwrap().index.0
             );
+            #[cfg(feature = "write-path-diagnostics")]
+            {
+                let snapshot = d.write_diagnostics();
+                let groups = snapshot
+                    .driver
+                    .distributions
+                    .iter()
+                    .find(|m| m.name == "successful_apply_group_commands")
+                    .unwrap();
+                assert_eq!(groups.count, writes.len() as u64);
+                assert_eq!(groups.sum, count as u64);
+                assert_eq!(groups.max, lengths.iter().max().map(|&n| n as u64));
+                assert_eq!(groups.buckets.iter().sum::<u64>(), groups.count);
+                let ready_sum: u64 = snapshot
+                    .ready
+                    .iter()
+                    .filter(|m| m.name != "ready_entries_to_persist")
+                    .map(|m| m.sum)
+                    .sum();
+                // Includes the elected leader's no-op, which is never a command group.
+                assert_eq!(ready_sum, count as u64 + 1);
+            }
         }
     }
 

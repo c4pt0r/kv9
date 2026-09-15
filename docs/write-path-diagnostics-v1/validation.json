@@ -1,0 +1,105 @@
+{
+  "artifact": {
+    "bytes": 65200,
+    "full_readback": true,
+    "members": [
+      {
+        "bytes": 3823,
+        "name": "initial/result.json",
+        "sha256": "59061f02e208ccb6d8f79f654ee7b2bc0c3ace5273225a66a79794de5a54f535"
+      },
+      {
+        "bytes": 17124,
+        "name": "initial/source-before.json",
+        "sha256": "e72e6abf49d395b1ff3cf2ea49e11e9bc21a31fd539abf4f58e4d086ffebf29a"
+      },
+      {
+        "bytes": 23241,
+        "name": "initial/source.patch",
+        "sha256": "f98cf22d9a099a85c2ceb9190a149cce0fd6ec8b026e208bd020ffc0a6dc46bf"
+      },
+      {
+        "bytes": 48789,
+        "name": "initial/tests.log",
+        "sha256": "d9985844c4ffa9daff9464fef5ecb26808d2968fc303389125017c9b9613c50f"
+      },
+      {
+        "bytes": 5523,
+        "name": "checks/check-0.log",
+        "sha256": "3613a5554ca73255b869cc2de2f0e1662474f0b749c5fdfedc57a3cd721bb4cb"
+      },
+      {
+        "bytes": 37692,
+        "name": "checks/check-1.log",
+        "sha256": "15030560e72ea752056b244aa7f782bd8d9a59f1f116fb605fb135d5536938dc"
+      },
+      {
+        "bytes": 1285,
+        "name": "checks/check-2.log",
+        "sha256": "802b438ec2733254719440e2ea94e0ec103b5d32dbd58b50dd4f32daafce50c0"
+      },
+      {
+        "bytes": 78838,
+        "name": "checks/check-3.log",
+        "sha256": "cd8b241af013e0d8c273f9d9b4dfcfcda07e3271eb1af8925ce9de1357a5ea49"
+      },
+      {
+        "bytes": 7178,
+        "name": "checks/result.json",
+        "sha256": "b75e9f1571ededa8389476b02294d45972017436e49cb80d408381bdeefa29a5"
+      },
+      {
+        "bytes": 17124,
+        "name": "checks/source-before.json",
+        "sha256": "ec837a96a4f462cf2c0579cb8a25724e3f5937a24d541717daea2abb990bc6a5"
+      },
+      {
+        "bytes": 25312,
+        "name": "checks/source.patch",
+        "sha256": "2fb7bf45d8bddb5b84e19f48106f79a31e98c7aa1fe4605c7872b512d84d7c82"
+      },
+      {
+        "bytes": 549,
+        "name": "root/check-0.log",
+        "sha256": "42fb259e5543c021eec374be95e5270f3ba5cd31becd1d0c4c27e4e94295cf20"
+      },
+      {
+        "bytes": 0,
+        "name": "root/check-1.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 851,
+        "name": "root/result.json",
+        "sha256": "34f0b398a9789ea380a584a9be6c38f2666ac47e864934081a3c98773ad263a2"
+      }
+    ],
+    "path": "test-evidence.tar.gz",
+    "sha256": "73f831e97f4742e38722fa22578f54760fc38daf2d441458d00342ef7d03b41d"
+  },
+  "checks_terminal": "98704/77e66f/0",
+  "clippy": {
+    "default_workspace_all_targets": true,
+    "diagnostic_raft_server_lib_tests": true,
+    "warnings_denied": true
+  },
+  "final_default_library_tests": {
+    "raft_passed": 250,
+    "server_ignored_existing": 1,
+    "server_passed": 207
+  },
+  "final_diagnostic_tests": {
+    "note": "After the empty-histogram merge shortcut and maximum-width JSON test",
+    "raft_passed": 4,
+    "server_passed": 1
+  },
+  "initial_instrumented_library_tests": {
+    "raft_passed": 255,
+    "server_ignored_existing": 1,
+    "server_passed": 207,
+    "terminal": "51971/4e96fb/0"
+  },
+  "root_feature_check_and_format_terminal": "30894/2e5eea/0",
+  "scope": "Local development checks only; no new runtime performance, release, recovery or Chaos result",
+  "source_unchanged_during_each_run": true
+}

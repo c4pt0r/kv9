@@ -367,6 +367,46 @@ mod tests {
         )
     }
 
+    #[cfg(feature = "write-path-diagnostics")]
+    #[test]
+    fn write_diagnostic_snapshot_has_fixed_inventory_and_bounded_json() {
+        let (_, driver) = fixture();
+        let mut snapshot = driver.write_diagnostics();
+        assert_eq!(snapshot.schema_version, 1);
+        assert_eq!(snapshot.driver.distributions.len(), 17);
+        assert_eq!(snapshot.ready.len(), 3);
+        let mut names = std::collections::BTreeSet::new();
+        for metric in snapshot
+            .driver
+            .distributions
+            .iter_mut()
+            .chain(&mut snapshot.ready)
+        {
+            assert!(names.insert(metric.name));
+            assert_eq!(metric.buckets.len(), 65);
+            metric.buckets.fill(u64::MAX);
+            metric.count = u64::MAX;
+            metric.sum = u64::MAX;
+            metric.max = Some(u64::MAX);
+            // False is one byte longer than true in the JSON encoding.
+            metric.saturated = false;
+        }
+        snapshot.driver.successful_pumps = u64::MAX;
+        snapshot.driver.failed_pumps = u64::MAX;
+        snapshot.driver.lookup_hits = u64::MAX;
+        snapshot.driver.lookup_misses = u64::MAX;
+        snapshot.driver.valid = false;
+        snapshot.driver.applied_vs_resolved = [[u64::MAX; 9]; 9];
+        let bytes = serde_json::to_vec(&snapshot).unwrap();
+        assert!(bytes.len() < 40 * 1024);
+        let value: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(
+            value["driver"]["lookup_algorithm"],
+            "first_match_linear_scan"
+        );
+        assert_eq!(value["driver"]["lookup_hits"].as_u64(), Some(u64::MAX));
+    }
+
     #[test]
     fn export_inventory_is_fixed_and_worst_case_document_fits_the_cap() {
         let (admission, driver) = fixture();

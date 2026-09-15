@@ -1076,6 +1076,7 @@ dependencies = [
  "prost",
  "protobuf",
  "raft",
+ "serde",
  "slog",
  "tokio",
  "tokio-stream",
