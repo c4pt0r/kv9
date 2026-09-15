@@ -1,0 +1,1004 @@
+[
+  {
+    "name": "first-preparation/README.md",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/README.md",
+    "bytes": 6976,
+    "sha256": "45cbc80b3efd654c312335b7112c1f0d4d65e7d22d3b013f02fd93d298cb5abc"
+  },
+  {
+    "name": "first-preparation/code-pins.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/code-pins.json",
+    "bytes": 368,
+    "sha256": "b36e190e2b414b7a2a7efe0c4927fcf3e988dabf0bf19e950a415f238975fe6f"
+  },
+  {
+    "name": "first-preparation/commands.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/commands.json",
+    "bytes": 1400,
+    "sha256": "71636bdf1a1a37cc44bf477b474884ff1c7e63e29cef9b4e5f39d450457481ed"
+  },
+  {
+    "name": "first-preparation/common.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/common.py",
+    "bytes": 6737,
+    "sha256": "83dc44c951a6bbdaa06a301bcdca925c21d5a700f8ad8097fad89d8375e71ae1"
+  },
+  {
+    "name": "first-preparation/pilot.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/pilot.py",
+    "bytes": 3516,
+    "sha256": "246cb22e78fda86d1855e24b8f71509967c77954595bcc4f2d26958ad65e9bc8"
+  },
+  {
+    "name": "first-preparation/preparation-result.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/preparation-result.json",
+    "bytes": 596,
+    "sha256": "cdaf314426c46e129d92ad208e43497108628203013f76263a6578386a682ff4"
+  },
+  {
+    "name": "first-preparation/prepare-selection.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/prepare-selection.py",
+    "bytes": 6194,
+    "sha256": "1d4e5ba8df2303072e58631a4b119e08191f64d7450e3e26a9dd08d48ad8bcd4"
+  },
+  {
+    "name": "first-preparation/selection.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/selection.json",
+    "bytes": 26904,
+    "sha256": "2a39aa86025e0813ce4a06f95b91d273de0cd3607d0b72fe6e6cf0b46c372483"
+  },
+  {
+    "name": "first-preparation/verify.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/verify.py",
+    "bytes": 7388,
+    "sha256": "96d9c3a8a4c91729ebe8c2ef242eea0b0c37d70d22689a97ded6953fb8fa6545"
+  },
+  {
+    "name": "first-preparation/zstd-help.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/zstd-help.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "first-preparation/zstd-help.stdout",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/zstd-help.stdout",
+    "bytes": 6576,
+    "sha256": "dc8478781f8d5435d5ef8a71b8943508af1ae8da9b0f102cca8bfc74bfd80370"
+  },
+  {
+    "name": "first-preparation/inventory.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/inventory.json",
+    "bytes": 1833,
+    "sha256": "007c1246a2cd3e8f6c1fe49c7034c9137d81e5243fa073a19f93f40b0224b9c6"
+  },
+  {
+    "name": "corrected-preparation/README.md",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/README.md",
+    "bytes": 8573,
+    "sha256": "738a7d0d7fc817550811dd4b17570f0139d079fe23bfce9d42dceee289568339"
+  },
+  {
+    "name": "corrected-preparation/code-pins.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/code-pins.json",
+    "bytes": 368,
+    "sha256": "2f5ef4c2ae55e0fa3214292ecd9e95071641b352164dbfbfe7544474fabfd028"
+  },
+  {
+    "name": "corrected-preparation/commands.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/commands.json",
+    "bytes": 1424,
+    "sha256": "0880d7fb7a172a2d35645c45b03105ae498d4588ed5ad0bf94d3eafef39f522b"
+  },
+  {
+    "name": "corrected-preparation/common.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/common.py",
+    "bytes": 6737,
+    "sha256": "83dc44c951a6bbdaa06a301bcdca925c21d5a700f8ad8097fad89d8375e71ae1"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/bare512.raw",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/bare512.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/bare512.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/bare512.raw.child.json",
+    "bytes": 1241,
+    "sha256": "c06f566d74a74ae0474e06805340c30dda23a6ebc2d45a430693db5a93f25cbf"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/bare512.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/bare512.raw.stderr",
+    "bytes": 44,
+    "sha256": "8875b210ebcb50a757e2be3d5c657449cd0492b1064e1da4bb5433c8ed6e6bea"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/base.raw",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/base.raw",
+    "bytes": 16384,
+    "sha256": "a1f259d4365ed4320c377ce26f5c8c56dcdc9a89e7b641bfd8eabfbbeac86654"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/diagnose.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/diagnose.py",
+    "bytes": 2688,
+    "sha256": "265e9dd2a1586275ba1cebc6d5807a610c3b16054ee925b299b7e795d98d39d4"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit512KiB.raw",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit512KiB.raw",
+    "bytes": 16384,
+    "sha256": "7f415297ecb3cdea83dc5b20d1b23393106b54ae56a67ca7950d30f02c0d25b9"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit512KiB.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit512KiB.raw.child.json",
+    "bytes": 1268,
+    "sha256": "85c3de9a2b097447a2606a34323b9194f2735a3141b0862fe77a2cd8fa8cd039"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit512KiB.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit512KiB.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit512MiB.raw",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit512MiB.raw",
+    "bytes": 16384,
+    "sha256": "7f415297ecb3cdea83dc5b20d1b23393106b54ae56a67ca7950d30f02c0d25b9"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit512MiB.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit512MiB.raw.child.json",
+    "bytes": 1276,
+    "sha256": "57aa15e4123d50bab9876240089f779b9030eb7a40bc3c37d2f054913d018d09"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit512MiB.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit512MiB.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit536870912.raw",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit536870912.raw",
+    "bytes": 16384,
+    "sha256": "7f415297ecb3cdea83dc5b20d1b23393106b54ae56a67ca7950d30f02c0d25b9"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit536870912.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit536870912.raw.child.json",
+    "bytes": 1288,
+    "sha256": "907687bde49c444e5fd05c95401b8a7edf84954784e41cb9308e9a1fc61bef2e"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/explicit536870912.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/explicit536870912.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/ordinary.zst",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/ordinary.zst",
+    "bytes": 288,
+    "sha256": "bc4791c23c72a9fe71d342c75c36bed246c4b4a9867675e98d0dc1be093d0a3a"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/ordinary.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/ordinary.zst.child.json",
+    "bytes": 1294,
+    "sha256": "d8d18f6383e3d42184e479a1660ae8d9ecb2b01f4f177feefaa51b6010af8813"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/ordinary.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/ordinary.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/patch-decoded.raw",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/patch-decoded.raw",
+    "bytes": 16384,
+    "sha256": "7f415297ecb3cdea83dc5b20d1b23393106b54ae56a67ca7950d30f02c0d25b9"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/patch-decoded.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/patch-decoded.raw.child.json",
+    "bytes": 1394,
+    "sha256": "c43b224740f487a0e1df10d6cc0d1774be86417b645d0d4092234457624c881d"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/patch-decoded.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/patch-decoded.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/patch.zst",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/patch.zst",
+    "bytes": 30,
+    "sha256": "5c9cf904fa4f044d4f7b91bd542996d452e70c3d51065b46465b8ff24a67025f"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/patch.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/patch.zst.child.json",
+    "bytes": 1395,
+    "sha256": "9cc0a35d5ed4ad4cef3417e9b6610a0936443f76e4d099d5c0ebabd5174a3388"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/patch.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/patch.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/result.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/result.json",
+    "bytes": 12257,
+    "sha256": "4c39a8592119ce38c6f1e0680a6560df59b84af5cac09904047c116835ccf3b7"
+  },
+  {
+    "name": "corrected-preparation/diagnostics-first/target.raw",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/diagnostics-first/target.raw",
+    "bytes": 16384,
+    "sha256": "7f415297ecb3cdea83dc5b20d1b23393106b54ae56a67ca7950d30f02c0d25b9"
+  },
+  {
+    "name": "corrected-preparation/first-failure/point-n1.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/first-failure/point-n1.raw.child.json",
+    "bytes": 1292,
+    "sha256": "e8fe15a87d7ff8766520c298bacf05c45e0df7392cf025ec3868201e479dec32"
+  },
+  {
+    "name": "corrected-preparation/first-failure/point-n1.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/first-failure/point-n1.raw.stderr",
+    "bytes": 44,
+    "sha256": "8875b210ebcb50a757e2be3d5c657449cd0492b1064e1da4bb5433c8ed6e6bea"
+  },
+  {
+    "name": "corrected-preparation/first-failure/producer-result.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/first-failure/producer-result.json",
+    "bytes": 1917,
+    "sha256": "bc0cbb6b3ef6ca2310f862dc5d12a98df077383ea7f3a83e027cef448500d9bc"
+  },
+  {
+    "name": "corrected-preparation/local-manual-memory.txt",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/local-manual-memory.txt",
+    "bytes": 2202,
+    "sha256": "00178b126240af6e8c79c6c4b605542a023cc4fd296270b64d7787e1049c29a5"
+  },
+  {
+    "name": "corrected-preparation/origin/README.md",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/README.md",
+    "bytes": 6976,
+    "sha256": "45cbc80b3efd654c312335b7112c1f0d4d65e7d22d3b013f02fd93d298cb5abc"
+  },
+  {
+    "name": "corrected-preparation/origin/code-pins.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/code-pins.json",
+    "bytes": 368,
+    "sha256": "b36e190e2b414b7a2a7efe0c4927fcf3e988dabf0bf19e950a415f238975fe6f"
+  },
+  {
+    "name": "corrected-preparation/origin/commands.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/commands.json",
+    "bytes": 1400,
+    "sha256": "71636bdf1a1a37cc44bf477b474884ff1c7e63e29cef9b4e5f39d450457481ed"
+  },
+  {
+    "name": "corrected-preparation/origin/common.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/common.py",
+    "bytes": 6737,
+    "sha256": "83dc44c951a6bbdaa06a301bcdca925c21d5a700f8ad8097fad89d8375e71ae1"
+  },
+  {
+    "name": "corrected-preparation/origin/inventory.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/inventory.json",
+    "bytes": 1833,
+    "sha256": "007c1246a2cd3e8f6c1fe49c7034c9137d81e5243fa073a19f93f40b0224b9c6"
+  },
+  {
+    "name": "corrected-preparation/origin/pilot.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/pilot.py",
+    "bytes": 3516,
+    "sha256": "246cb22e78fda86d1855e24b8f71509967c77954595bcc4f2d26958ad65e9bc8"
+  },
+  {
+    "name": "corrected-preparation/origin/preparation-result.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/preparation-result.json",
+    "bytes": 596,
+    "sha256": "cdaf314426c46e129d92ad208e43497108628203013f76263a6578386a682ff4"
+  },
+  {
+    "name": "corrected-preparation/origin/prepare-selection.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/prepare-selection.py",
+    "bytes": 6194,
+    "sha256": "1d4e5ba8df2303072e58631a4b119e08191f64d7450e3e26a9dd08d48ad8bcd4"
+  },
+  {
+    "name": "corrected-preparation/origin/selection.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/selection.json",
+    "bytes": 26904,
+    "sha256": "2a39aa86025e0813ce4a06f95b91d273de0cd3607d0b72fe6e6cf0b46c372483"
+  },
+  {
+    "name": "corrected-preparation/origin/verify.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/verify.py",
+    "bytes": 7388,
+    "sha256": "96d9c3a8a4c91729ebe8c2ef242eea0b0c37d70d22689a97ded6953fb8fa6545"
+  },
+  {
+    "name": "corrected-preparation/origin/zstd-help.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/zstd-help.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/origin/zstd-help.stdout",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/origin/zstd-help.stdout",
+    "bytes": 6576,
+    "sha256": "dc8478781f8d5435d5ef8a71b8943508af1ae8da9b0f102cca8bfc74bfd80370"
+  },
+  {
+    "name": "corrected-preparation/pilot.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot.py",
+    "bytes": 3526,
+    "sha256": "b5e78c9bd34948cf1d7b4a2466e0f201eace891bd12541121dfb380a6c43f6a4"
+  },
+  {
+    "name": "corrected-preparation/preparation-result.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/preparation-result.json",
+    "bytes": 329,
+    "sha256": "8b9de98b1a3e41f466963b693ceb769d59d74c1f95986ce18752f9c825ec9b68"
+  },
+  {
+    "name": "corrected-preparation/prepare-selection.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/prepare-selection.py",
+    "bytes": 6204,
+    "sha256": "279ba69c1aef89599a032a6b6af55dc681e9c677b8d5eadbc7789ead206a9ca6"
+  },
+  {
+    "name": "corrected-preparation/repair.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/repair.json",
+    "bytes": 1175,
+    "sha256": "17fc70cb05fd25b75405b8defbc17930e3bbbbc2a48bf65ef4b1ccadac888864"
+  },
+  {
+    "name": "corrected-preparation/selection.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/selection.json",
+    "bytes": 26915,
+    "sha256": "a1071e78c46105e50417108b14b6f1b73d70aac0325f2719ecc017c4e9d24cc0"
+  },
+  {
+    "name": "corrected-preparation/source-delta.diff",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/source-delta.diff",
+    "bytes": 4620,
+    "sha256": "64eca39db1020c546f46197e15af3559df5dfc502ac6ef877267ae886395c5a3"
+  },
+  {
+    "name": "corrected-preparation/verify.py",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/verify.py",
+    "bytes": 7418,
+    "sha256": "59087d8002767c15fbc9a489dd46a6ddca8dba3a302d7e94a3c8d3877b6d660b"
+  },
+  {
+    "name": "corrected-preparation/zstd-help.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/zstd-help.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-preparation/zstd-help.stdout",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/zstd-help.stdout",
+    "bytes": 6576,
+    "sha256": "dc8478781f8d5435d5ef8a71b8943508af1ae8da9b0f102cca8bfc74bfd80370"
+  },
+  {
+    "name": "corrected-preparation/inventory.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/inventory.json",
+    "bytes": 8994,
+    "sha256": "0dab1d4838bbe9abeb65b5319798da8bd7c37efc991d96f50bf1d97fd1c5b1a0"
+  },
+  {
+    "name": "three-screen-eligibility/README.md",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/README.md",
+    "bytes": 2669,
+    "sha256": "ab179b5f32e4913075e1fd3176138eb193ed848acb47c78f0714a42086404779"
+  },
+  {
+    "name": "three-screen-eligibility/by-voter.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/by-voter.json",
+    "bytes": 1519,
+    "sha256": "b048c448201e0cbdb15a6cb4488185d7ac2769f42895b558bd39a8885aee6061"
+  },
+  {
+    "name": "three-screen-eligibility/cohorts.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/cohorts.json",
+    "bytes": 62472,
+    "sha256": "c349b454c85efbff77c005b928660cc34c85cb7cb553ca55dae0b5dbc8c24047"
+  },
+  {
+    "name": "three-screen-eligibility/first-failure.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/first-failure.json",
+    "bytes": 369,
+    "sha256": "bb8a460cb3820854e9f90e2f894d062a449d1fe52b3c8b36c9d4d6e6511f6653"
+  },
+  {
+    "name": "three-screen-eligibility/members.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/members.json",
+    "bytes": 10456870,
+    "sha256": "61f7d5226dfb6f693ef5a4e040d744868c1c9c29bd042a0b74469b62ae6c7305"
+  },
+  {
+    "name": "three-screen-eligibility/metadata-pins.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/metadata-pins.json",
+    "bytes": 23425,
+    "sha256": "e40bd9e2e816b50f0d3050a48ea9aec35c8c8e6e4fc9585ed47ec982844c0077"
+  },
+  {
+    "name": "three-screen-eligibility/observe-first-syntax-failure.py",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/observe-first-syntax-failure.py",
+    "bytes": 11334,
+    "sha256": "6710edf3ce16c4b8cdd380edbeb46bd3a527b60821ec68f8e7871ac6b6104ce8"
+  },
+  {
+    "name": "three-screen-eligibility/observe.py",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/observe.py",
+    "bytes": 11336,
+    "sha256": "697971846fe2a891db9ae75f8e5b204a759711bc3987e92bfc159ce90b0b210a"
+  },
+  {
+    "name": "three-screen-eligibility/published-directory-authority-closure.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/published-directory-authority-closure.json",
+    "bytes": 1309,
+    "sha256": "7e8ddfa399373a8fae4e48cb7364cf0916d8362afbd07cd188c7c6c8ec2a42e4"
+  },
+  {
+    "name": "three-screen-eligibility/summary.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/summary.json",
+    "bytes": 4084,
+    "sha256": "ee821673b45562dc6c3e4813d8f5bb3f1a6f010a78139578809e4779fa217204"
+  },
+  {
+    "name": "three-screen-eligibility/terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/terminal.json",
+    "bytes": 451,
+    "sha256": "d3302829c99b63f353d211698965b092f98ab293cea65e9f427532ef8866f313"
+  },
+  {
+    "name": "three-screen-eligibility/inventory.json",
+    "original_path": "/tmp/kv9-cross-voter-retention-eligibility-20260915-first/inventory.json",
+    "bytes": 1879,
+    "sha256": "e855f15273d4ee915bc98d30a0e6b8073bf2fc20e7e3fe9f591cf4c975c4ada3"
+  },
+  {
+    "name": "first-pilot/baseline.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/pilot-first/baseline.json",
+    "bytes": 103,
+    "sha256": "ea26e898586134b8463d880cd47874a458a4d65e8a0a2144b081a87d9fcfc15c"
+  },
+  {
+    "name": "first-pilot/point-n1.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/pilot-first/point-n1.raw.child.json",
+    "bytes": 1292,
+    "sha256": "e8fe15a87d7ff8766520c298bacf05c45e0df7392cf025ec3868201e479dec32"
+  },
+  {
+    "name": "first-pilot/point-n1.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/pilot-first/point-n1.raw.stderr",
+    "bytes": 44,
+    "sha256": "8875b210ebcb50a757e2be3d5c657449cd0492b1064e1da4bb5433c8ed6e6bea"
+  },
+  {
+    "name": "first-pilot/producer-result.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-first/pilot-first/producer-result.json",
+    "bytes": 1917,
+    "sha256": "bc0cbb6b3ef6ca2310f862dc5d12a98df077383ea7f3a83e027cef448500d9bc"
+  },
+  {
+    "name": "corrected-pilot/baseline.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/baseline.json",
+    "bytes": 103,
+    "sha256": "e6b3830aa9d35b8f597aa02e65c97f3c3fa7d10b9c19ee5c0201672db934a28d"
+  },
+  {
+    "name": "corrected-pilot/batch-n1.ordinary.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n1.ordinary.zst.child.json",
+    "bytes": 1317,
+    "sha256": "06f0839cc344d71b1f55582b16cf35ef398be5b51f5f86399fe372d3f627985b"
+  },
+  {
+    "name": "corrected-pilot/batch-n1.ordinary.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n1.ordinary.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/batch-n1.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n1.raw.child.json",
+    "bytes": 1321,
+    "sha256": "40c265cf67ed98f39bcb8771e5c0bd0332dd92e3d61a89ef8e988cbb03a9b5ed"
+  },
+  {
+    "name": "corrected-pilot/batch-n1.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n1.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/batch-n2.ordinary.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n2.ordinary.zst.child.json",
+    "bytes": 1317,
+    "sha256": "46af2a3d0663ef094305c802d2fbc7fe032b9061c6c9d6481d4635a268a23a86"
+  },
+  {
+    "name": "corrected-pilot/batch-n2.ordinary.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n2.ordinary.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/batch-n2.patch.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n2.patch.zst.child.json",
+    "bytes": 1411,
+    "sha256": "adb7d415e455c275de64d4dcd1b2ef446d822338c4ef6d52de0b660855b214ce"
+  },
+  {
+    "name": "corrected-pilot/batch-n2.patch.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n2.patch.zst.stderr",
+    "bytes": 34,
+    "sha256": "2b0b295e15e3d0bbc3cc78675b0bbaf76b0718dc6968f67bd5e0e961bfd8d0e1"
+  },
+  {
+    "name": "corrected-pilot/batch-n2.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n2.raw.child.json",
+    "bytes": 1323,
+    "sha256": "616083585fbc93c47e55d442a5c8cd92562f274754f7b4e1aa8fc4c1c773b373"
+  },
+  {
+    "name": "corrected-pilot/batch-n2.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n2.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/batch-n3.ordinary.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n3.ordinary.zst.child.json",
+    "bytes": 1317,
+    "sha256": "6a39d399368a9d54cc7792aabfc6ce4d3778c080d2fc175cbc5c2542683ebc67"
+  },
+  {
+    "name": "corrected-pilot/batch-n3.ordinary.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n3.ordinary.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/batch-n3.patch.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n3.patch.zst.child.json",
+    "bytes": 1411,
+    "sha256": "c806fea620e1d18a857d8d49a704c78d9a50d92f7079b400b836e5ad9db8de99"
+  },
+  {
+    "name": "corrected-pilot/batch-n3.patch.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n3.patch.zst.stderr",
+    "bytes": 34,
+    "sha256": "2b0b295e15e3d0bbc3cc78675b0bbaf76b0718dc6968f67bd5e0e961bfd8d0e1"
+  },
+  {
+    "name": "corrected-pilot/batch-n3.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n3.raw.child.json",
+    "bytes": 1323,
+    "sha256": "bb3213b455b4e1660f5740517eb00ee26dc94ac3376b9db0a9af8397e405e625"
+  },
+  {
+    "name": "corrected-pilot/batch-n3.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/batch-n3.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/point-n1.ordinary.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n1.ordinary.zst.child.json",
+    "bytes": 1314,
+    "sha256": "55ed2d040002331495556e909ef658eded0f112c36dffff549c781b45a18675d"
+  },
+  {
+    "name": "corrected-pilot/point-n1.ordinary.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n1.ordinary.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/point-n1.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n1.raw.child.json",
+    "bytes": 1310,
+    "sha256": "1b5e91fb48d698aea16bc3c13a1d7cba040435fd3ed598e3a29e9c2dbffdf8a9"
+  },
+  {
+    "name": "corrected-pilot/point-n1.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n1.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/point-n2.ordinary.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n2.ordinary.zst.child.json",
+    "bytes": 1315,
+    "sha256": "55d34f197cfc5482b5f10d4c8855de66e83784448238077d9d84daf6facea7a9"
+  },
+  {
+    "name": "corrected-pilot/point-n2.ordinary.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n2.ordinary.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/point-n2.patch.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n2.patch.zst.child.json",
+    "bytes": 1410,
+    "sha256": "1cae3958fe6c8d7353c53f29bc111f9da47f9ef1fc52b87e9465aedcfe511f02"
+  },
+  {
+    "name": "corrected-pilot/point-n2.patch.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n2.patch.zst.stderr",
+    "bytes": 34,
+    "sha256": "2b0b295e15e3d0bbc3cc78675b0bbaf76b0718dc6968f67bd5e0e961bfd8d0e1"
+  },
+  {
+    "name": "corrected-pilot/point-n2.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n2.raw.child.json",
+    "bytes": 1318,
+    "sha256": "36bbb4c30f00ad09aeb5fd2ee0ba9a239dce0b8607520608c583391116270597"
+  },
+  {
+    "name": "corrected-pilot/point-n2.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n2.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/point-n3.ordinary.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n3.ordinary.zst.child.json",
+    "bytes": 1315,
+    "sha256": "8e85cf894c32b923a2a9a4ee0736018a077fc5725e9d11babe824c70d0d8301f"
+  },
+  {
+    "name": "corrected-pilot/point-n3.ordinary.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n3.ordinary.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/point-n3.patch.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n3.patch.zst.child.json",
+    "bytes": 1410,
+    "sha256": "dfd5eba8c634762fd0fec4fa200e642e50c1fd5dbbe3da59acb1efde0f2c0655"
+  },
+  {
+    "name": "corrected-pilot/point-n3.patch.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n3.patch.zst.stderr",
+    "bytes": 34,
+    "sha256": "2b0b295e15e3d0bbc3cc78675b0bbaf76b0718dc6968f67bd5e0e961bfd8d0e1"
+  },
+  {
+    "name": "corrected-pilot/point-n3.raw.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n3.raw.child.json",
+    "bytes": 1319,
+    "sha256": "2ed7688e9a57aace9faf7a0b09119eccecee5005448af07d857a5524f2803f95"
+  },
+  {
+    "name": "corrected-pilot/point-n3.raw.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/point-n3.raw.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/producer-result.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/producer-result.json",
+    "bytes": 29841,
+    "sha256": "3427f877943fbf835729f7299a108345e04c89318f3c79b8f4f6eca40fb4e7bf"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n1.ordinary.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n1.ordinary.decoded.child.json",
+    "bytes": 1348,
+    "sha256": "754effd300dbbce1a60565c6b88c23bef7c8cf6751efbbd720f8d2fca7ac9d1c"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n1.ordinary.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n1.ordinary.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n2.corrupt.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n2.corrupt.decoded.child.json",
+    "bytes": 1469,
+    "sha256": "e0d72e9654ddefa6ea8696c90c3c4a8debd95e09fd2fe90b9a15216de5c8618e"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n2.corrupt.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n2.corrupt.decoded.stderr",
+    "bytes": 83,
+    "sha256": "82d23998375a2378325b0c9b256aaaf55306c7a3493186eed24e8accc83f8a6a"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n2.ordinary.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n2.ordinary.decoded.child.json",
+    "bytes": 1348,
+    "sha256": "7324350747742c96bc1eb3856be4283040d941ec2c99214839d47fdc59badc93"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n2.ordinary.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n2.ordinary.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n2.patch.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n2.patch.decoded.child.json",
+    "bytes": 1442,
+    "sha256": "55d82a05b4826904df4139bdaef435b64edc0fdb86836710b5fc0ecabd826a4e"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n2.patch.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n2.patch.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n3.corrupt.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n3.corrupt.decoded.child.json",
+    "bytes": 1469,
+    "sha256": "86818e89007172e5a070ddea8f98157a40e610ef71b6776ec4d0861ba242fc14"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n3.corrupt.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n3.corrupt.decoded.stderr",
+    "bytes": 83,
+    "sha256": "bde665af776a9e307d41cb02abdbcc4d0fc1d011b979f38dc042912e9a65735a"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n3.ordinary.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n3.ordinary.decoded.child.json",
+    "bytes": 1348,
+    "sha256": "e77d25a3264d9a8b6737573c4efb7da87fb0824e9de4bc3db031d6c1f9422452"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n3.ordinary.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n3.ordinary.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n3.patch.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n3.patch.decoded.child.json",
+    "bytes": 1442,
+    "sha256": "c79f140da76e33fb1fd2d5e2df529f8920848b91a99c457bdee3b1c2b08c5665"
+  },
+  {
+    "name": "corrected-pilot/verification-first/batch-n3.patch.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/batch-n3.patch.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n1.ordinary.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n1.ordinary.decoded.child.json",
+    "bytes": 1347,
+    "sha256": "3fd747101d3089d7ee0e2042674c6c9cd7eb055975f28f89365cfa1a4d4b5b65"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n1.ordinary.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n1.ordinary.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n2.corrupt.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n2.corrupt.decoded.child.json",
+    "bytes": 1469,
+    "sha256": "dedf4cfa300c2e37418f6c1cb306016cd8209a041b81f1b2c7e23eb38d6ffbbe"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n2.corrupt.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n2.corrupt.decoded.stderr",
+    "bytes": 83,
+    "sha256": "82d23998375a2378325b0c9b256aaaf55306c7a3493186eed24e8accc83f8a6a"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n2.ordinary.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n2.ordinary.decoded.child.json",
+    "bytes": 1347,
+    "sha256": "f073c4dc322db0e61885a43ec1854ea305e4b5f8c2e309153143fd5a232afc8e"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n2.ordinary.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n2.ordinary.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n2.patch.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n2.patch.decoded.child.json",
+    "bytes": 1441,
+    "sha256": "f4389c925182892ffcd61a82e5a6b8f21ae43bc78d8b5549c609e5e23ec49fbb"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n2.patch.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n2.patch.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n3.corrupt.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n3.corrupt.decoded.child.json",
+    "bytes": 1469,
+    "sha256": "21c8cfc2ed9c752fb621e6b5c364864f93c36d568355eb3a3eedae0ff6d2d0ea"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n3.corrupt.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n3.corrupt.decoded.stderr",
+    "bytes": 83,
+    "sha256": "bde665af776a9e307d41cb02abdbcc4d0fc1d011b979f38dc042912e9a65735a"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n3.ordinary.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n3.ordinary.decoded.child.json",
+    "bytes": 1348,
+    "sha256": "ed4b6cf256bd1ad725420ee0287735eb0d8674a6da06c40bb800caffb0124c95"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n3.ordinary.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n3.ordinary.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n3.patch.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n3.patch.decoded.child.json",
+    "bytes": 1442,
+    "sha256": "34626579fb6851191750fc5a01635b75d74c39a312907ca5e301343d181bc4a4"
+  },
+  {
+    "name": "corrected-pilot/verification-first/point-n3.patch.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/point-n3.patch.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-pilot/verification-first/result.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-preparation-20260915-second/pilot-first/verification-first/result.json",
+    "bytes": 35392,
+    "sha256": "4e76a405790230161b2691cf85049dc7d3a6b78a39777df01bac3111472960e2"
+  },
+  {
+    "name": "first-root/commands.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-first/commands.json",
+    "bytes": 1431,
+    "sha256": "9e31dac12617d0494b81e62371468b9574137ad43070d53ff64deff33a96755c"
+  },
+  {
+    "name": "first-root/preflight.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-first/preflight.json",
+    "bytes": 285,
+    "sha256": "d010f0dcfe1acf1edad5abd4c3e3e289a05a725875cf27b494c4f52fd5ab9fb6"
+  },
+  {
+    "name": "first-root/producer-invocation.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-first/producer-invocation.json",
+    "bytes": 703,
+    "sha256": "c374c9fa2bee765929bf0aec405215669e13165320d18918ffd8121740ac0058"
+  },
+  {
+    "name": "first-root/producer.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-first/producer.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "first-root/producer.stdout",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-first/producer.stdout",
+    "bytes": 240,
+    "sha256": "1666f8aab93573d745fcfbe1ba8ba0b6c00f93b07ce4cf79e37a88895993026b"
+  },
+  {
+    "name": "first-root/tool-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-first/tool-terminal.json",
+    "bytes": 357,
+    "sha256": "6dced68bbb591297ee95d32b702b1448fe7ef41145dae812f935679cd884afc9"
+  },
+  {
+    "name": "corrected-root/accepted-summary.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/accepted-summary.json",
+    "bytes": 4258,
+    "sha256": "980e7352d6e684f90b9b426ab11714215a6b435930f62a0b3b55d039bb405be2"
+  },
+  {
+    "name": "corrected-root/commands.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/commands.json",
+    "bytes": 1443,
+    "sha256": "4d2ddb1c80a5d7ebf2756b13ce3f8794ad9eeac05d932aa92a5701921eb8597b"
+  },
+  {
+    "name": "corrected-root/preflight.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/preflight.json",
+    "bytes": 361,
+    "sha256": "60bfc9cf2968023c7d98cbad4694cce583670e8901a0ea8e2d6658107e2fae75"
+  },
+  {
+    "name": "corrected-root/producer-child-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/producer-child-terminal.json",
+    "bytes": 884,
+    "sha256": "2720416547db411201625da03e14cfddc78b9ffce83a484e8e160095dc739f4d"
+  },
+  {
+    "name": "corrected-root/producer-invocation.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/producer-invocation.json",
+    "bytes": 705,
+    "sha256": "d11184aaf77f4bf20fd945e6a078665880885c3fc924d94d3d0ac3c0a26e05dd"
+  },
+  {
+    "name": "corrected-root/producer-tool-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/producer-tool-terminal.json",
+    "bytes": 88,
+    "sha256": "8e7268f52fb70b57d3965746cac86d3265920bbe449eaf427af1a7aa9a95300a"
+  },
+  {
+    "name": "corrected-root/producer.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/producer.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-root/producer.stdout",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/producer.stdout",
+    "bytes": 240,
+    "sha256": "006b7f3ba84a4bd7e466a5de54e8c7715e61103847497c06edee63eee427ac2f"
+  },
+  {
+    "name": "corrected-root/verify-child-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/verify-child-terminal.json",
+    "bytes": 903,
+    "sha256": "c46e0156901409661ba843223b5c2996ee855ddeeae853c5cc0275db223213a8"
+  },
+  {
+    "name": "corrected-root/verify-invocation-refusal.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/verify-invocation-refusal.json",
+    "bytes": 315,
+    "sha256": "7f443209d95cb6c65ad5d48825c75b3051f2bd8d460f1c384b969bf8f5d46778"
+  },
+  {
+    "name": "corrected-root/verify-invocation.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/verify-invocation.json",
+    "bytes": 714,
+    "sha256": "189bbce47da5110087e24f7e8378a02ed06de8369929ad585880ea8c8cb9ba53"
+  },
+  {
+    "name": "corrected-root/verify-tool-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/verify-tool-terminal.json",
+    "bytes": 88,
+    "sha256": "789156d49ccbf3a41954d5ba97def62980d4482630ba8f66afa536cdf10e315a"
+  },
+  {
+    "name": "corrected-root/verify.stderr",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/verify.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "corrected-root/verify.stdout",
+    "original_path": "/tmp/kv9-cross-voter-patch-pilot-root-20260915-second/verify.stdout",
+    "bytes": 221,
+    "sha256": "13076ee53f2a9654cc1362dcf77904f327ed459e2ba65efc781fb78f82e8cf38"
+  },
+  {
+    "name": "root-manifest-phase.py",
+    "original_path": "/tmp/kv9-root-manifest-phase-20260915.py",
+    "bytes": 1971,
+    "sha256": "8f7bad2408df38215a6d53af6d78a4e7a3ddeb487df3cd5c93e5a5f6a2663e80"
+  }
+]

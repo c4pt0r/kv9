@@ -1,0 +1,11 @@
+{
+  "complete": true,
+  "scope": "Frozen matched write screen preparation, original role bindings and 16 focused controls; no smoke or timed workload executed.",
+  "members": 98,
+  "decoded_bytes": 1174930,
+  "archive_bytes": 344800,
+  "archive_sha256": "582af35a32429add728f835ce4bb02abcff697dc6be3da9a2f1461f6bf043d14",
+  "inventory_sha256": "fd0210ebe0cac851961ece5112657759eeac34e40057784a8e8c5623f7acec82",
+  "actual_check_terminal": "b4e952/0",
+  "runtime_released": false
+}

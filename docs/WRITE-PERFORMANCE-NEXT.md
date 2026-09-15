@@ -136,6 +136,18 @@ pending. It is not combined with FNV or selected on main. This advances the
 secondary receipt target without claiming that proof or a CPU percentage
 establishes performance gains.
 
+The [receipt matched-screen preparation](receipt-tail-performance-preparation-v1/README.md)
+also passes its 16 focused controls and actual three-role source/binary/Cargo
+binding. Its complete eight-smoke/sixteen-timed workload and storage-v3 policy
+are unchanged. About 25 GB is available, versus an estimated 80–100 GB launch
+budget for a complete new campaign. Qualify additional capacity before running
+the frozen commands; preparation does not count as new performance evidence.
+The [bounded WAL patch pilot](cross-voter-retention-pilot-v1/README.md) passes
+six full original-byte reconstructions and eight refusal controls. It supports
+testing a lossless retention migration, but has reclaimed no bytes. Verify
+exact old compressed-object reconstruction and safe restore before retiring
+any object; retain the full workload and consistency requirements.
+
 ## Comparison contract
 
 | Panel | Successful call requires | Interpretation |

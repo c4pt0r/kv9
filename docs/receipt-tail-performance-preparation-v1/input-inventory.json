@@ -1,0 +1,590 @@
+[
+  {
+    "name": "preparation/README.md",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/README.md",
+    "bytes": 2227,
+    "sha256": "5ca51e4723e7e142423313d86ddacd340e7622599b5e1b371c7ccffa445c51b2"
+  },
+  {
+    "name": "preparation/audit.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/audit.py",
+    "bytes": 57910,
+    "sha256": "14922d90896f656c1d71fc0b4c747f1eb617b032606c771302ad6e3670f3c955"
+  },
+  {
+    "name": "preparation/commands.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/commands.json",
+    "bytes": 9079,
+    "sha256": "2a9f907ff98ddcdf74e52d6205d6c506452822564fcb483a377a486456dc62c3"
+  },
+  {
+    "name": "preparation/compressed_retention.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/compressed_retention.py",
+    "bytes": 25690,
+    "sha256": "855f8d39428d48d12324ca0954d62b23ec7b4b5180ac7589dcccd7b0a2cf1ef4"
+  },
+  {
+    "name": "preparation/derive-receipt.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/derive-receipt.py",
+    "bytes": 8184,
+    "sha256": "dcd1acbfc32615b8cc70a041876ac8939abbf261c302c3365f59f611f74eace8"
+  },
+  {
+    "name": "preparation/diffs/audit.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/audit.py.diff",
+    "bytes": 6527,
+    "sha256": "a294e919f613c716cae22aba13853ac529f6dc6589427210926361cd652a8ec3"
+  },
+  {
+    "name": "preparation/diffs/commands.json.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/commands.json.diff",
+    "bytes": 12683,
+    "sha256": "8419acbf863b7436b9186bbfd4c49500d9e0dd157bb29dd3df14e62d64eb9371"
+  },
+  {
+    "name": "preparation/diffs/compressed_retention.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/compressed_retention.py.diff",
+    "bytes": 930,
+    "sha256": "aee6673977fac7599a2c322c28a216d78a1623d67599c29ef3cb3a051b1688b7"
+  },
+  {
+    "name": "preparation/diffs/driver-arguments.json.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/driver-arguments.json.diff",
+    "bytes": 602,
+    "sha256": "720d61c1f262cd11b1a4a2ad19baa80fa2b84edceae2e22cff09762f914334ea"
+  },
+  {
+    "name": "preparation/diffs/isolate-and-run.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/isolate-and-run.py.diff",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "preparation/diffs/matched-driver.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/matched-driver.py.diff",
+    "bytes": 3618,
+    "sha256": "93aae50279981334e869b8b0ade339df47f3bdeb54daad4ccbffea4cf109dca9"
+  },
+  {
+    "name": "preparation/diffs/protocol.json.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/protocol.json.diff",
+    "bytes": 4958,
+    "sha256": "93b643badb522b81a412960ef4afdaab2e7d2a0060d4bec9231161ac90413042"
+  },
+  {
+    "name": "preparation/diffs/retention_audit.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/retention_audit.py.diff",
+    "bytes": 982,
+    "sha256": "1242672f275801037ecbab616904e3796dca6761bf29a74f54763cebba92694e"
+  },
+  {
+    "name": "preparation/diffs/storage-policy.json.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/storage-policy.json.diff",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "preparation/diffs/test_audit_contract.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/test_audit_contract.py.diff",
+    "bytes": 2317,
+    "sha256": "439ec9ad1ee831e5f4df5217bd6a3b5d12bd6b96f2e23c5c058c015c245118aa"
+  },
+  {
+    "name": "preparation/diffs/test_cleanup_metadata.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/test_cleanup_metadata.py.diff",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "preparation/diffs/test_compressed_retention.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/test_compressed_retention.py.diff",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "preparation/diffs/test_driver.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/test_driver.py.diff",
+    "bytes": 1780,
+    "sha256": "83c36f2c331409d6e46feb6be72b29b514fe20681f976dac64de4fe3cca083d0"
+  },
+  {
+    "name": "preparation/diffs/test_smoke_schema.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/test_smoke_schema.py.diff",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "preparation/diffs/test_storage_policy.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/diffs/test_storage_policy.py.diff",
+    "bytes": 902,
+    "sha256": "6e92da08144b04815a4963f935e5836db20ea9018d07f302273fb4d06c8cf920"
+  },
+  {
+    "name": "preparation/driver-arguments.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/driver-arguments.json",
+    "bytes": 554,
+    "sha256": "e86c5ab9be121ddbf62c728ea66ee7a4cfac091bf9232b04f64fff93a6aea946"
+  },
+  {
+    "name": "preparation/isolate-and-run.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/isolate-and-run.py",
+    "bytes": 12873,
+    "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+  },
+  {
+    "name": "preparation/matched-driver.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/matched-driver.py",
+    "bytes": 53430,
+    "sha256": "632e536c045c892e532c2346548c128c7b44eab329dcbf677f34b66943de44a7"
+  },
+  {
+    "name": "preparation/origins/isolate-and-run.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/origins/isolate-and-run.py",
+    "bytes": 12873,
+    "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+  },
+  {
+    "name": "preparation/origins/matched-driver.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/origins/matched-driver.py",
+    "bytes": 51906,
+    "sha256": "4dbde74a51cb87174e859e00c1f2bda8fe4c3c4285d1bfd9a124c6e529b0d6fc"
+  },
+  {
+    "name": "preparation/origins/repaired-redis3-audit.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/origins/repaired-redis3-audit.py",
+    "bytes": 56523,
+    "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+  },
+  {
+    "name": "preparation/predecessor/accepted-controls.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/accepted-controls.json",
+    "bytes": 1808,
+    "sha256": "a7eb6ec8ba36bc8d39748181ac293f162eb31077f8e5bdeb41572afd0f53f478"
+  },
+  {
+    "name": "preparation/predecessor/audit.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/audit.py",
+    "bytes": 57959,
+    "sha256": "a78b64b21972c2881e068b10b9278abf173832028fcaceca603e317d4af13ae1"
+  },
+  {
+    "name": "preparation/predecessor/commands.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/commands.json",
+    "bytes": 5209,
+    "sha256": "35e924f0214ed4e6816658de98cc32d248dc7078fe8aa9646d796a892ed9515e"
+  },
+  {
+    "name": "preparation/predecessor/compressed_retention.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/compressed_retention.py",
+    "bytes": 25704,
+    "sha256": "1f87075106081831d689ddcb5d21ad744f2a1ea3c8554e1d048045ff74fdec6a"
+  },
+  {
+    "name": "preparation/predecessor/driver-arguments.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/driver-arguments.json",
+    "bytes": 568,
+    "sha256": "c69813371ecdb8787bc990e8e16214c1848e3e3cf4e1f02f2ff88d1227c398d1"
+  },
+  {
+    "name": "preparation/predecessor/first-derivation-failure.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/first-derivation-failure.json",
+    "bytes": 207,
+    "sha256": "b09d6b3f4a8564a1ad61ebdd3c79b70ccdd4f67f5cc522aaf38138c1cbffcaf5"
+  },
+  {
+    "name": "preparation/predecessor/isolate-and-run.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/isolate-and-run.py",
+    "bytes": 12873,
+    "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+  },
+  {
+    "name": "preparation/predecessor/matched-driver.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/matched-driver.py",
+    "bytes": 53451,
+    "sha256": "fe3e693fe38791c5fc23bb66831f409ae480131c0effb9c3d606edfe95bfe61f"
+  },
+  {
+    "name": "preparation/predecessor/protocol.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/protocol.json",
+    "bytes": 21467,
+    "sha256": "0359e79a807fa6e013311e1e7d2666aa6d33ad747c6beddd01ed13e2887c5fb5"
+  },
+  {
+    "name": "preparation/predecessor/retention_audit.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/retention_audit.py",
+    "bytes": 17317,
+    "sha256": "88fe5866978679ffdb4a41cc571e0ca808d2ab8d187662b2f51669f4ca495148"
+  },
+  {
+    "name": "preparation/predecessor/second-derivation-failure.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/second-derivation-failure.json",
+    "bytes": 197,
+    "sha256": "e71ea3e6f1bdf9d0caecf9dacc1331f1a454e3353eee56d0c5e5cbf4aed02c23"
+  },
+  {
+    "name": "preparation/predecessor/storage-policy.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/storage-policy.json",
+    "bytes": 449,
+    "sha256": "cebdc41bbed8fd7000ef11fc5de29aa10722fc1112008366ef24e2e7d8924ba1"
+  },
+  {
+    "name": "preparation/predecessor/test_audit_contract.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/test_audit_contract.py",
+    "bytes": 18293,
+    "sha256": "e49ca9bc9cfa3b97d300213aec5592d291ffb82b1e2a5215b294dc6e9681667e"
+  },
+  {
+    "name": "preparation/predecessor/test_cleanup_metadata.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/test_cleanup_metadata.py",
+    "bytes": 2805,
+    "sha256": "9c5d16eb59698c8d350681559fdc373452421293fdddc20b6b90aad2823c1bd3"
+  },
+  {
+    "name": "preparation/predecessor/test_compressed_retention.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/test_compressed_retention.py",
+    "bytes": 17508,
+    "sha256": "277b0d0a752b56c5033f34c15daff522e26dd9375ab3f3a933abc7063f691041"
+  },
+  {
+    "name": "preparation/predecessor/test_driver.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/test_driver.py",
+    "bytes": 10675,
+    "sha256": "a5ddd8d4335ccb75a91a991e6e8200ff7f712d2d709f21e5813b03733eae14ab"
+  },
+  {
+    "name": "preparation/predecessor/test_smoke_schema.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/test_smoke_schema.py",
+    "bytes": 4614,
+    "sha256": "4e70513a4110f90abaeeb85a2e530b90339750f680d1c72744b02f6383e12807"
+  },
+  {
+    "name": "preparation/predecessor/test_storage_policy.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/test_storage_policy.py",
+    "bytes": 8648,
+    "sha256": "538eced59d38cb5b2f8848f8d9b6b2c6587a25772a7d0628c675f90e6c38c6a2"
+  },
+  {
+    "name": "preparation/predecessor/third-derivation-failure.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/predecessor/third-derivation-failure.json",
+    "bytes": 227,
+    "sha256": "9ae0898b9ff9e5607bd3fc193e9bdcbe46589c554019d123fb5ff35f925f5d18"
+  },
+  {
+    "name": "preparation/protocol.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/protocol.json",
+    "bytes": 21499,
+    "sha256": "554ad00afa43025f06c3d88ebae0fac46f4295f9fcd7e94d24dc91f4f50905a0"
+  },
+  {
+    "name": "preparation/retention_audit.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/retention_audit.py",
+    "bytes": 17303,
+    "sha256": "f411651d9be90956e6b346f66f392b755156069d78afed4a7bc6985f052e0e66"
+  },
+  {
+    "name": "preparation/source-delta.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/source-delta.json",
+    "bytes": 9237,
+    "sha256": "e218698d7c50cc9de85ffc5957fbf59f15a031a51d5f4f1d08f423e3896c257e"
+  },
+  {
+    "name": "preparation/static-review.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/static-review.json",
+    "bytes": 1423,
+    "sha256": "a20aae5d33dab2ff07f7451322bc174523fbd2b74fb8e20283eed4569546c59b"
+  },
+  {
+    "name": "preparation/storage-policy.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/storage-policy.json",
+    "bytes": 449,
+    "sha256": "cebdc41bbed8fd7000ef11fc5de29aa10722fc1112008366ef24e2e7d8924ba1"
+  },
+  {
+    "name": "preparation/substitutions.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/substitutions.json",
+    "bytes": 1266,
+    "sha256": "748d1dc23ab9a71981f5adf8d59b90e06c1419960982c68ee267724509e2e7af"
+  },
+  {
+    "name": "preparation/test_audit_contract.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/test_audit_contract.py",
+    "bytes": 18286,
+    "sha256": "9f63ba4f8986ee6490512dc22515ce63ae977b1031f6f8fe9454f1d3c9090bf4"
+  },
+  {
+    "name": "preparation/test_cleanup_metadata.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/test_cleanup_metadata.py",
+    "bytes": 2805,
+    "sha256": "9c5d16eb59698c8d350681559fdc373452421293fdddc20b6b90aad2823c1bd3"
+  },
+  {
+    "name": "preparation/test_compressed_retention.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/test_compressed_retention.py",
+    "bytes": 17508,
+    "sha256": "277b0d0a752b56c5033f34c15daff522e26dd9375ab3f3a933abc7063f691041"
+  },
+  {
+    "name": "preparation/test_driver.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/test_driver.py",
+    "bytes": 10654,
+    "sha256": "ea18d986fc6747bdefb1cd3b0caa54008478547a7361de5a0dd203c2130999cc"
+  },
+  {
+    "name": "preparation/test_smoke_schema.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/test_smoke_schema.py",
+    "bytes": 4614,
+    "sha256": "4e70513a4110f90abaeeb85a2e530b90339750f680d1c72744b02f6383e12807"
+  },
+  {
+    "name": "preparation/test_storage_policy.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/test_storage_policy.py",
+    "bytes": 8641,
+    "sha256": "9dc5c8d66d07c7deea61529162f77aaf08e7fab76717f6b3b2a900d11b347a86"
+  },
+  {
+    "name": "preparation/v1-original/compressed_retention.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/v1-original/compressed_retention.py",
+    "bytes": 24620,
+    "sha256": "5ffff9476f3efa4f096d836ee93d9c54b1692efac38ede97d48d3c8a0e395227"
+  },
+  {
+    "name": "preparation/v1-original/matched-driver.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/v1-original/matched-driver.py",
+    "bytes": 51920,
+    "sha256": "83c123b93edf48c14c5b86ca5db19b468d93020059e0612ec61a974d8037f7dc"
+  },
+  {
+    "name": "preparation/v1-original/retention_audit.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/v1-original/retention_audit.py",
+    "bytes": 16410,
+    "sha256": "ada7cb3d5d4da8cc05e5519d6c6a86b4d432523c82c69ee396d91a52598c1f83"
+  },
+  {
+    "name": "preparation/inventory.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-preparation-20260915-first/inventory.json",
+    "bytes": 10077,
+    "sha256": "2406a1582300d6357429e10c53f471440c5a078e170fa7492249caaa19f22552"
+  },
+  {
+    "name": "readiness/README.md",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/README.md",
+    "bytes": 2342,
+    "sha256": "8552941aefc3fd42618a6994d3b3a0355924df97ecf84dae1f199984b7aad732"
+  },
+  {
+    "name": "readiness/ROOT-COMMANDS.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/ROOT-COMMANDS.json",
+    "bytes": 8819,
+    "sha256": "f023be5f2fb4d562a277b77ca9ba5f24c28fc5c12ca7258648a9c88ca292766a"
+  },
+  {
+    "name": "readiness/bind-roles.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/bind-roles.py",
+    "bytes": 2064,
+    "sha256": "c7f90475d7ede689e830d97fd05c67e5c72cae5818f8f8997cb46ef82805b1a8"
+  },
+  {
+    "name": "readiness/capacity-observation.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/capacity-observation.json",
+    "bytes": 780,
+    "sha256": "3f984b05d7aae857ce8ad5faf5a73fa9a119e1c278ca922c04c78c148c13a928"
+  },
+  {
+    "name": "readiness/check-smoke-v3.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/check-smoke-v3.py",
+    "bytes": 5643,
+    "sha256": "80f900eeb69821d4aa4b1816350976df72598abbf598f3e534fa1bd88725368b"
+  },
+  {
+    "name": "readiness/completed-prerequisites.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/completed-prerequisites.json",
+    "bytes": 3047,
+    "sha256": "af39740bb677053721d8b0e429ed9fbc0d556f4b51b835ac513bd7dca7d00db7"
+  },
+  {
+    "name": "readiness/diffs/check-smoke-v3.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/diffs/check-smoke-v3.py.diff",
+    "bytes": 2756,
+    "sha256": "ab3a08b723d90627201ca8cc3c46faa4e855f2cacb60234109f00b1182fe5512"
+  },
+  {
+    "name": "readiness/diffs/test_smoke_v3_bindings.py.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/diffs/test_smoke_v3_bindings.py.diff",
+    "bytes": 1089,
+    "sha256": "35aa240eaaab1152a7c01eaffa030d6446fdaaa81b3844c9fbb2e5cf6268002b"
+  },
+  {
+    "name": "readiness/predecessor/check-smoke-v3.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/predecessor/check-smoke-v3.py",
+    "bytes": 5664,
+    "sha256": "ef39fb6e9c169de59c84ade07b7facbe54dbb66dbceec991f38f2fa9a81a41b0"
+  },
+  {
+    "name": "readiness/predecessor/original-check-smoke-corrected.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/predecessor/original-check-smoke-corrected.py",
+    "bytes": 5665,
+    "sha256": "d59669f8330d55681a990a90194311207577871c1fa0d5ff8a7f476754228e63"
+  },
+  {
+    "name": "readiness/predecessor/smoke-reader.diff",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/predecessor/smoke-reader.diff",
+    "bytes": 1777,
+    "sha256": "e8dac7b07f765ae9879417f9b185cba40617e810e2f0b6a9ae046edc2eb0ba7b"
+  },
+  {
+    "name": "readiness/predecessor/test_smoke_v3_bindings.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/predecessor/test_smoke_v3_bindings.py",
+    "bytes": 4418,
+    "sha256": "e59d8bb983b7145e8630f8571120a335736ac928b4716f312483d2f4915a299d"
+  },
+  {
+    "name": "readiness/predecessor-lineage.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/predecessor-lineage.json",
+    "bytes": 3675,
+    "sha256": "c793bda04e289e6dac653b64f5d5b2ece55079f7f6e031dc420151a66ace84f3"
+  },
+  {
+    "name": "readiness/preparation-binding.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/preparation-binding.json",
+    "bytes": 432,
+    "sha256": "daa5568aa863bde62133b0e7f4a82b6bb719c8b69e2473e8a6a7d229d1f434e5"
+  },
+  {
+    "name": "readiness/role-inputs.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/role-inputs.json",
+    "bytes": 3862,
+    "sha256": "720c791dc11fc4337c75be8e1d3488d925157995c31b1ba36081ba5930d2a622"
+  },
+  {
+    "name": "readiness/runtime-commands.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/runtime-commands.json",
+    "bytes": 4639,
+    "sha256": "eb060d8907e51a685f02fefa7088ea9f30be41794e56c04ca3b00bbd43c2a8e4"
+  },
+  {
+    "name": "readiness/test_smoke_v3_bindings.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/test_smoke_v3_bindings.py",
+    "bytes": 4397,
+    "sha256": "f18313224df54a28001510fa277ccf22ff2ac6c9b39040d39070ddd00541191d"
+  },
+  {
+    "name": "readiness/test_source_bindings.py",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/test_source_bindings.py",
+    "bytes": 6674,
+    "sha256": "c846e04c54fe435f47f0b34fbb8c0190953e801344797fa82553739f036f4f5e"
+  },
+  {
+    "name": "readiness/inventory.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/inventory.json",
+    "bytes": 3263,
+    "sha256": "45c266f8821a466a219ee3ccdbc17992e5c50908da7bed4a6c5e5c562a9e81ca"
+  },
+  {
+    "name": "readiness/role-bindings-first.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-v3-readiness-preparation-20260915-first/role-bindings-first.json",
+    "bytes": 285618,
+    "sha256": "0f0633da81a049a1fb6bc36800b72609242d26b9fd55b7306496f7c0e93b4f9b"
+  },
+  {
+    "name": "root/bind_current_source_and_retained_roles-child-terminal.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/bind_current_source_and_retained_roles-child-terminal.json",
+    "bytes": 1196,
+    "sha256": "39085ad5165b9eab68767fa611171066697c270bf564f9ebb916134e8f53d14b"
+  },
+  {
+    "name": "root/bind_current_source_and_retained_roles-invocation.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/bind_current_source_and_retained_roles-invocation.json",
+    "bytes": 1012,
+    "sha256": "d861d91ddbd09e10b27e9602e8cc8361433d948f22d70a8bab103acfd5168441"
+  },
+  {
+    "name": "root/bind_current_source_and_retained_roles.stderr",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/bind_current_source_and_retained_roles.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "root/bind_current_source_and_retained_roles.stdout",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/bind_current_source_and_retained_roles.stdout",
+    "bytes": 655,
+    "sha256": "55b04eec4d2a3bc459c43bd4d252b7a87c07699d3bdec7b3139e4ce46749ce86"
+  },
+  {
+    "name": "root/commands.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/commands.json",
+    "bytes": 2532,
+    "sha256": "ad84205c0bdd1807b55f7e1c26d8647a1948594d73f7da24b15d76c9311db164"
+  },
+  {
+    "name": "root/focused_smoke_reader_controls-child-terminal.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/focused_smoke_reader_controls-child-terminal.json",
+    "bytes": 776,
+    "sha256": "26a7ef561812ca90036e97b2db574834ae435961cbe0df7d43b262a75a3d11a2"
+  },
+  {
+    "name": "root/focused_smoke_reader_controls-invocation.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/focused_smoke_reader_controls-invocation.json",
+    "bytes": 798,
+    "sha256": "b4bcf9971205464f07246cefec2f6a03cc3a3a48328fe847ad9d0c4363379844"
+  },
+  {
+    "name": "root/focused_smoke_reader_controls.stderr",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/focused_smoke_reader_controls.stderr",
+    "bytes": 878,
+    "sha256": "5603add8b766f4e98f90b385012aa22f09a6c8d4ac86cf0a3abd42a31f228c9a"
+  },
+  {
+    "name": "root/focused_smoke_reader_controls.stdout",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/focused_smoke_reader_controls.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "root/preflight.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/preflight.json",
+    "bytes": 783,
+    "sha256": "89eea7f0fed51d9434999615cbd93cc5b4792c0f22c7401ab858a35d59092d5b"
+  },
+  {
+    "name": "root/result.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/result.json",
+    "bytes": 1535,
+    "sha256": "5e6ca6e4067d7bcc72079f2b4679da9a9be86630dec8f668bcf9688689c2079f"
+  },
+  {
+    "name": "root/targeted_changed_source_controls-child-terminal.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/targeted_changed_source_controls-child-terminal.json",
+    "bytes": 774,
+    "sha256": "739bc0ff79d93a95b131cb61540fc060cc5bcbb18f85b674dcf60fe26b0dfeb6"
+  },
+  {
+    "name": "root/targeted_changed_source_controls-invocation.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/targeted_changed_source_controls-invocation.json",
+    "bytes": 796,
+    "sha256": "ed1dd11f69c1d273a9f98bd4cd71fb31a945dafd7ba07821bfebfef5d35d4dac"
+  },
+  {
+    "name": "root/targeted_changed_source_controls.stderr",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/targeted_changed_source_controls.stderr",
+    "bytes": 1190,
+    "sha256": "99eb3b2d544a79f94b9276b78027f12ad1ebaa7d126ad69ea03b0a7c2568757a"
+  },
+  {
+    "name": "root/targeted_changed_source_controls.stdout",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/targeted_changed_source_controls.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "root/tool-terminal.json",
+    "original_path": "/tmp/kv9-receipt-tail-performance-prerequisites-20260915-first/tool-terminal.json",
+    "bytes": 171,
+    "sha256": "02f751f65d6e7de26cc4fbe08674c0125e20b1384457b778289bbea6a13dc707"
+  },
+  {
+    "name": "root/root-manifest-phase.py",
+    "original_path": "/tmp/kv9-root-manifest-phase-20260915.py",
+    "bytes": 1971,
+    "sha256": "8f7bad2408df38215a6d53af6d78a4e7a3ddeb487df3cd5c93e5a5f6a2663e80"
+  }
+]

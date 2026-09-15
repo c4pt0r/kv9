@@ -1,0 +1,33 @@
+{
+  "complete": true,
+  "scope": "Original reporting publication only; no new benchmark or reclaimed capacity.",
+  "packages": [
+    {
+      "path": "docs/receipt-tail-performance-preparation-v1",
+      "archive_sha256": "582af35a32429add728f835ce4bb02abcff697dc6be3da9a2f1461f6bf043d14",
+      "package_tool": {
+        "chunk_id": "efa8f1",
+        "exit_code": 0
+      },
+      "readback_tool": {
+        "chunk_id": "1097f4",
+        "exit_code": 0
+      },
+      "verifier_sha256": "7f84e7a916dae7342eac455377f572723eaaf3f84b9ccea378e354d45fd2e59c"
+    },
+    {
+      "path": "docs/cross-voter-retention-pilot-v1",
+      "archive_sha256": "4da2528d42ea0c33214f2e5b523e04791f16abe38d3894c620ee7ee7199c8967",
+      "package_tool": {
+        "chunk_id": "aec68c",
+        "exit_code": 0
+      },
+      "readback_tool": {
+        "chunk_id": "bc637f",
+        "exit_code": 0
+      },
+      "verifier_sha256": "30632d3f626acb2086515640bc4353ff706af152f57fda6c906a6858ab58ce6f"
+    }
+  ],
+  "hosted_ci_dispatched": false
+}

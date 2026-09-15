@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "members": 167,
+  "decoded_bytes": 11051321,
+  "archive_bytes": 1002370,
+  "archive_sha256": "4da2528d42ea0c33214f2e5b523e04791f16abe38d3894c620ee7ee7199c8967",
+  "inventory_sha256": "50ca7844480d49e1f70634c43c61f095c1a55712f22568c3e3df0e4b5eaf46a4",
+  "scope": "Original pilot preparation, failures, codec/readback reports and three-screen metadata assessment. Full WAL/object and decoded verification payloads remain local; no deletion or capacity release."
+}
