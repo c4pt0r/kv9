@@ -97,8 +97,10 @@ original result is preserved separately. Both runs proved the same 24 obligation
 
 The [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.md)
 now pass on exact runtime `483b8c3`: 364 complete operations, 333 OK and 31 unknown,
-with six fresh drains. Actual Chaos Mesh and a matched throughput/latency
-comparison remain required runtime gates. Keep CRC main selected.
+with six fresh drains. The [actual 21-window Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md)
+also passes, with 9,372 complete operations, four fresh drains and all 33
+observed server lifetimes exited. Positive segment-rotation/crash coverage and
+a matched throughput/latency comparison remain required. Keep CRC main selected.
 The latest accepted performance figures remain unchanged; no hosted CI ran.
 
 [Portable original source, proof and syscall evidence](https://github.com/c4pt0r/kv9/blob/483b8c3629b033734f5d7a2b8653a1352304a4b5/docs/published-directory-source-v1/README.md) contains 175 members / 8,553,269 decoded bytes in a 646,232-byte archive. Independent member verification passes. The [retained FNV tail analysis](WRITE-FNV-TAIL-ANALYSIS.md) explains the investigation context without attributing causality.

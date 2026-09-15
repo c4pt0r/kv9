@@ -3,7 +3,9 @@
 Measured and checked locally on 2026-09-14 UTC. Experimental runtime
 `483b8c3629b033734f5d7a2b8653a1352304a4b5` now passes a clean default release,
 independent binary/source verification and three-voter process recovery.
-CRC main remains selected. No new QPS or actual Chaos Mesh result is claimed.
+CRC main remains selected. This release/recovery report contains no QPS result;
+the subsequent [actual Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md) is
+qualified separately.
 
 All 871 source files are bound to the clean release worktree; every non-document
 source file matches the completed source gate. The runtime files also match the
@@ -52,7 +54,8 @@ and after. Dependency/release caches, source and original test payloads remain.
 
 [Portable original build, histories, WAL bytes, policy derivation and audit](https://github.com/c4pt0r/kv9/blob/4e8cd198587b556abe6534260c09bf921615f077/docs/published-directory-runtime-v1/README.md)
 contains 138 files / 4,365,387 decoded bytes in 416,043 compressed bytes. All
-archive members pass independent hash verification. The next gate is actual
-21-window Chaos Mesh, followed by matched write throughput and latency.
+archive members pass independent hash verification. The subsequent actual
+21-window Chaos baseline passes. Positive segment-rotation/crash coverage and
+matched write throughput and latency remain pending.
 All work ran locally; no hosted CI was dispatched and no original industrial
 roadmap checkbox closes.
