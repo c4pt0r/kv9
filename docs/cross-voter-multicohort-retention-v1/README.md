@@ -129,6 +129,15 @@ records 001 through 012 and includes the separately qualified bootstrap cohort
 capacity or reexecute payload verification. The overall campaign and the receipt
 performance screen remain incomplete.
 
+That controller subsequently exited with failure during ordinal 013: its full
+reader confused a reused historical PID with a live producer. The separate
+[PID identity repair and actual reconciliation](../retention-pid-identity-v1/README.md)
+preserve that failure, pass a fresh complete 344-object readback and final COLD,
+and extend the completed prefix to 14 cohorts. Available space immediately after
+the new command is 57.387 GB. The old controller remains FAILED; a separately
+qualified continuation is required before ordinal 014. The original snapshot
+above remains historical evidence.
+
 ## Actual coverage of all four reader families
 
 The first completed cohort from each reader family now passes exact restoration,

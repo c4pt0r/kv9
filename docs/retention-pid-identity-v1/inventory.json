@@ -1,0 +1,955 @@
+{
+  "schema": 1,
+  "scope": "Exact qualified source, control results, actual failure and corrected runtime reporting evidence; retained payloads remain local.",
+  "archive": {
+    "path": "original-evidence.tar.gz",
+    "bytes": 432305,
+    "sha256": "bbf6d8f6e41d0692a6aa15b62f3bb7834fbe65dd9e71c13b4cb55872f0ac71b4"
+  },
+  "files": 157,
+  "bytes": 5489181,
+  "rows": [
+    {
+      "archive_path": "original-failure/originals-inventory.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals-inventory.json",
+      "bytes": 3930,
+      "sha256": "8393d09683f66aa7c99870de6e0ed758f3bfb7aaa0eb18169df2b7837de057b8"
+    },
+    {
+      "archive_path": "original-failure/originals/013__finish__child.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/013__finish__child.json",
+      "bytes": 430,
+      "sha256": "4807b795d738e1fb41ba2b65b243e7359668a47d5fe65452f1a09be906296917"
+    },
+    {
+      "archive_path": "original-failure/originals/013__finish__failure.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/013__finish__failure.json",
+      "bytes": 288,
+      "sha256": "2298baf966a1b85247d87aed08db0cb98497e07a53d2e99f890b018288e51270"
+    },
+    {
+      "archive_path": "original-failure/originals/013__finish__invocation.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/013__finish__invocation.json",
+      "bytes": 431,
+      "sha256": "6dfa3462aa0727790762dbdd42f28c660c6e9e051b7070c684ceb3e8a17003e8"
+    },
+    {
+      "archive_path": "original-failure/originals/013__finish__stderr",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/013__finish__stderr",
+      "bytes": 1095,
+      "sha256": "4e0faabe3819185d8ffe1ce74ff9ce0da5aa76e22f317a30df873e7940510c1a"
+    },
+    {
+      "archive_path": "original-failure/originals/013__finish__stdout",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/013__finish__stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "original-failure/originals/013__finish__terminal.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/013__finish__terminal.json",
+      "bytes": 727,
+      "sha256": "ce86732dfb0e5410d1b57eef5cb4c8d076cf56282f5ca76c031d215385188df9"
+    },
+    {
+      "archive_path": "original-failure/originals/013__release.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/013__release.json",
+      "bytes": 983,
+      "sha256": "f13d205c57e5e2ebe58f061ca694c62a6856341b709dd1bb7f7c10d6d15d3432"
+    },
+    {
+      "archive_path": "original-failure/originals/launch-first__campaign-child-terminal.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/launch-first__campaign-child-terminal.json",
+      "bytes": 1170,
+      "sha256": "8d7acda302f874c356b374a0c989598488e47b9ee37073aa863d324c452f277b"
+    },
+    {
+      "archive_path": "original-failure/originals/launch-first__campaign-invocation.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/launch-first__campaign-invocation.json",
+      "bytes": 1010,
+      "sha256": "2000ec06edb0f9c2070f4780a89258b2d6a375d52b6e12348c3cee2152ec1c35"
+    },
+    {
+      "archive_path": "original-failure/originals/launch-first__commands.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/launch-first__commands.json",
+      "bytes": 1020,
+      "sha256": "1bea03de434f02a0b244b8c87754e2cbcc3c428e15414af5c43ed4ded054709b"
+    },
+    {
+      "archive_path": "original-failure/originals/readback-1-attempt-0__child.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/readback-1-attempt-0__child.json",
+      "bytes": 670,
+      "sha256": "380e9298172a032f6bcab390ccee7d17ee8883d7c3abd663496c282c185e8f78"
+    },
+    {
+      "archive_path": "original-failure/originals/readback-1-attempt-0__failure.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/readback-1-attempt-0__failure.json",
+      "bytes": 207,
+      "sha256": "252be0cd7dec87ab0f7a5a6c75e291c9584e4afa559779f6463305b55e9b8dc1"
+    },
+    {
+      "archive_path": "original-failure/originals/readback-1-attempt-0__invocation.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/readback-1-attempt-0__invocation.json",
+      "bytes": 1479,
+      "sha256": "c41cb0e60944464e2483f509f4727e55a2f9e54190c84af3512904f8fc67651f"
+    },
+    {
+      "archive_path": "original-failure/originals/readback-1-attempt-0__stderr",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/readback-1-attempt-0__stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "original-failure/originals/readback-1-attempt-0__stdout",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/readback-1-attempt-0__stdout",
+      "bytes": 198,
+      "sha256": "76df3c5a7882018b13522b9c40bf442ed87cd8d2c56708ed7415bac715e253a7"
+    },
+    {
+      "archive_path": "original-failure/originals/readback-1-result.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/readback-1-result.json",
+      "bytes": 399879,
+      "sha256": "a9fedebaf08dbeb02e1733d90c9602401027be7e543525e82f350c771b77970d"
+    },
+    {
+      "archive_path": "original-failure/originals/status.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/originals/status.json",
+      "bytes": 140,
+      "sha256": "9cfbb49c832d555029907c168e1aaa9143a1e0b46d5a507ecdd0594b17643715"
+    },
+    {
+      "archive_path": "original-failure/readback-failure-inventory.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/readback-failure-inventory.json",
+      "bytes": 1807,
+      "sha256": "ab263b4eb06a72c1f78cf5a212ddf21bd1644eca71c5d6e9fc21c9195afc9792"
+    },
+    {
+      "archive_path": "original-failure/tool-terminal.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first/tool-terminal.json",
+      "bytes": 1277,
+      "sha256": "c7844650ae795fae4c720d3bf565e74fd94b61eda551ee83dd92385167bd9b33"
+    },
+    {
+      "archive_path": "reader-repair/README.md",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/README.md",
+      "bytes": 2974,
+      "sha256": "3081ed65b9779a22326b410db72d8c7d7a9fbfb8b85a7961348c46216973ebeb"
+    },
+    {
+      "archive_path": "reader-repair/ROOT-COMMANDS.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/ROOT-COMMANDS.json",
+      "bytes": 852,
+      "sha256": "e7d45bc0e0aa929d5ae699e12ad3f13d89d278c6642961ff07c3ba25e5c6e106"
+    },
+    {
+      "archive_path": "reader-repair/collision.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/collision.json",
+      "bytes": 3226,
+      "sha256": "7f54a706ffcadd9b757c059a5f1fa60a1ec5c764e8b314131dae167889cec3fc"
+    },
+    {
+      "archive_path": "reader-repair/controls-first/result.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/controls-first/result.json",
+      "bytes": 3849,
+      "sha256": "b353879905cb71a6e38cd1ceecfa438c65f2a1aae4b0544c62fe287301db5727"
+    },
+    {
+      "archive_path": "reader-repair/controls-first/stderr.txt",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/controls-first/stderr.txt",
+      "bytes": 1162,
+      "sha256": "846c41c8e43b0040d7946b0e0d789fbaa333eafa5d31f4c86d35f21b1ea052a2"
+    },
+    {
+      "archive_path": "reader-repair/controls-tool-terminal.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/controls-tool-terminal.json",
+      "bytes": 1989,
+      "sha256": "7712b4a74f2ada984b04c5751715c956dff55a87f0de9bfe25a54c7a8370942a"
+    },
+    {
+      "archive_path": "reader-repair/diffs/crc-full-regression.diff",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/diffs/crc-full-regression.diff",
+      "bytes": 3231,
+      "sha256": "6e593bdc9aa65f3c0668684a85007d6b69751f35d361f2957b2a60c2bf729526"
+    },
+    {
+      "archive_path": "reader-repair/diffs/fnv-writer.diff",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/diffs/fnv-writer.diff",
+      "bytes": 3213,
+      "sha256": "d77c898b1386eaa42a3f2a07b76e020ed308e3733fffba43675a3908b50f2795"
+    },
+    {
+      "archive_path": "reader-repair/diffs/frame-buffer-crc.diff",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/diffs/frame-buffer-crc.diff",
+      "bytes": 3225,
+      "sha256": "a45f6cd570d642f4ad929a03e62caded7c215d164d40eb517d92468725bf3b44"
+    },
+    {
+      "archive_path": "reader-repair/diffs/published-directory.diff",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/diffs/published-directory.diff",
+      "bytes": 3220,
+      "sha256": "ed09e4584b12de0c80bc6eaedfbe405c7410c25732b2472db37c6ef635c0a007"
+    },
+    {
+      "archive_path": "reader-repair/evidence/failed-readback-decode-reservation.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/evidence/failed-readback-decode-reservation.json",
+      "bytes": 306,
+      "sha256": "b8b0a6f1afce8b33a99f1e5087a73ce64a67de049f708657724fb94681e5ad8b"
+    },
+    {
+      "archive_path": "reader-repair/evidence/failed-readback-result.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/evidence/failed-readback-result.json",
+      "bytes": 399879,
+      "sha256": "a9fedebaf08dbeb02e1733d90c9602401027be7e543525e82f350c771b77970d"
+    },
+    {
+      "archive_path": "reader-repair/evidence/reader-child.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/evidence/reader-child.json",
+      "bytes": 670,
+      "sha256": "380e9298172a032f6bcab390ccee7d17ee8883d7c3abd663496c282c185e8f78"
+    },
+    {
+      "archive_path": "reader-repair/identity-helper.txt",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/identity-helper.txt",
+      "bytes": 1753,
+      "sha256": "c61da512c47674ebd37608dbb558df281c1dee18fc5f734baba03e2f708589c1"
+    },
+    {
+      "archive_path": "reader-repair/inventory.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/inventory.json",
+      "bytes": 4214,
+      "sha256": "838b5476beb1f0322564174198bdec2c5bb615a7ed622d126692e5c5575b7045"
+    },
+    {
+      "archive_path": "reader-repair/originals/crc-full-regression.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/originals/crc-full-regression.py",
+      "bytes": 16562,
+      "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+    },
+    {
+      "archive_path": "reader-repair/originals/fnv-writer.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/originals/fnv-writer.py",
+      "bytes": 17461,
+      "sha256": "2e2839721fce661cd3a8e93453f620f1360bf3911e5f8c4f364342c6ce6cb47b"
+    },
+    {
+      "archive_path": "reader-repair/originals/frame-buffer-crc.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/originals/frame-buffer-crc.py",
+      "bytes": 16554,
+      "sha256": "56ab02e54e0aff6cf4801acaa9a6b240079f624790b51312d69361c213e2d90e"
+    },
+    {
+      "archive_path": "reader-repair/originals/published-directory.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/originals/published-directory.py",
+      "bytes": 17317,
+      "sha256": "88fe5866978679ffdb4a41cc571e0ca808d2ab8d187662b2f51669f4ca495148"
+    },
+    {
+      "archive_path": "reader-repair/prepare.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/prepare.py",
+      "bytes": 3291,
+      "sha256": "19b9f3b9eaa80e920c251d40059757f88562c81e4e684065eb637653d1849f64"
+    },
+    {
+      "archive_path": "reader-repair/qualification.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/qualification.json",
+      "bytes": 1076,
+      "sha256": "272e1c218350d0a35ab801e3479ce109dc446d790581bf7caf9f5fc1e1aec972"
+    },
+    {
+      "archive_path": "reader-repair/reader-bindings.json",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+      "bytes": 6170,
+      "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+    },
+    {
+      "archive_path": "reader-repair/readers/crc-full-regression.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/crc-full-regression.py",
+      "bytes": 18305,
+      "sha256": "8ccef04d24c794ee8f0c2eda6c900bfe52478cda2c08ca9b7983384197e788ea"
+    },
+    {
+      "archive_path": "reader-repair/readers/fnv-writer.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/fnv-writer.py",
+      "bytes": 19204,
+      "sha256": "5cdbea84ed22148c75a9bd3118a7c300b5cedf4f36af8f27e392782d4a1cca6b"
+    },
+    {
+      "archive_path": "reader-repair/readers/frame-buffer-crc.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/frame-buffer-crc.py",
+      "bytes": 18297,
+      "sha256": "e24f468640b3c37873be78e9e8c13dc645f285aa03ddd4cc63f46265fb3daaba"
+    },
+    {
+      "archive_path": "reader-repair/readers/published-directory.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/published-directory.py",
+      "bytes": 19060,
+      "sha256": "e3b1d33fbc21675f586d57b8decc4b25d9fc5aa441000f0f14b7fabc7b2b8775"
+    },
+    {
+      "archive_path": "reader-repair/test_identity.py",
+      "original_path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/test_identity.py",
+      "bytes": 8712,
+      "sha256": "2846d5503163811f96e480ddf214f117ba9b812518a93893d1f3d149cb01d8a0"
+    },
+    {
+      "archive_path": "reconciliation/README.md",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/README.md",
+      "bytes": 4777,
+      "sha256": "98e9a97334779e0887b80558bc91e7c0becd92501807fff4c99e23b3151f54ea"
+    },
+    {
+      "archive_path": "reconciliation/ROOT-COMMANDS.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/ROOT-COMMANDS.json",
+      "bytes": 4024,
+      "sha256": "80846319b6da781545d54d4b3311c6f0a4609898c3173a8970e6b3d2066462e6"
+    },
+    {
+      "archive_path": "reconciliation/authority.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/authority.py",
+      "bytes": 9297,
+      "sha256": "66b527b1ae83e676a109820ebf3a7c0cec9321884bbcb79a72a3059b5e87ac19"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/README.md",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/README.md",
+      "bytes": 3901,
+      "sha256": "abbdc13334dfdad9e721cbde6f47ac396912a17641d55429a752692988901250"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/ROOT-COMMANDS.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/ROOT-COMMANDS.json",
+      "bytes": 1818,
+      "sha256": "9c2663976ce77392f841cf250c0963693fbbbc5278b45d483c4e5cf9302329d3"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/authority.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/authority.py",
+      "bytes": 9098,
+      "sha256": "12108396ec272fc78c2153e506b347c6c1529e454357a6a46d3fb55be80885ee"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/readback-1-repaired-first/decode-reservation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/readback-1-repaired-first/decode-reservation.json",
+      "bytes": 29,
+      "sha256": "bd5161ba204ecfcfd1695e72081d8cdf50261943c2d3e1eca0afd782ed37e0ec"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/readback-1/decode-reservation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/readback-1/decode-reservation.json",
+      "bytes": 29,
+      "sha256": "bd5161ba204ecfcfd1695e72081d8cdf50261943c2d3e1eca0afd782ed37e0ec"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/work/member/a.child-intent.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/work/member/a.child-intent.json",
+      "bytes": 46,
+      "sha256": "36dc16e5992a4f834c7406bf66d6a0989002a85244e151ffd803e3ecc530143d"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/new-result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/new-result.json",
+      "bytes": 42,
+      "sha256": "4705d785d35eddf3b401a1cffd5b7a37a5f1cd39295eaf44126ad0572b9fe5c7"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/child.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/child.json",
+      "bytes": 140,
+      "sha256": "19cc0e5c9567ad5bd9c0fca448756f74bb496bba4c3576c6f454db552b3aaa50"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/failure.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/failure.json",
+      "bytes": 207,
+      "sha256": "0131e8708b2dc90d704f78bf855f3b5d05abf26a727408e6fbda06ae46a454af"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/invocation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/invocation.json",
+      "bytes": 318,
+      "sha256": "2c8e234ec8dc4b3fbac531edf69ddc55ef3fdd612fadf7b00397049d3a49a442"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/stderr",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/stdout",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/child.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/child.json",
+      "bytes": 140,
+      "sha256": "19cc0e5c9567ad5bd9c0fca448756f74bb496bba4c3576c6f454db552b3aaa50"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/invocation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/invocation.json",
+      "bytes": 318,
+      "sha256": "1c124c83eb638a5c97cb8a39ed7e91814b9b731daae494196c793e343a063087"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/result.json",
+      "bytes": 734,
+      "sha256": "21612b2141309647b547889e99045c11d4dddfe28117d1e0ee6873d1b38ea113"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/stderr",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/stdout",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-complete.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-complete.json",
+      "bytes": 734,
+      "sha256": "21612b2141309647b547889e99045c11d4dddfe28117d1e0ee6873d1b38ea113"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/readback-1-repaired-first/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/readback-1-repaired-first/result.json",
+      "bytes": 2257,
+      "sha256": "65878545fb5c38a363d239c79a3d8260929d9a15a1731020304d6dd3a4a95fcc"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/readback-1/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/readback-1/result.json",
+      "bytes": 48,
+      "sha256": "2fcadfe7b47a2ea99dbd2d348eb61cce383b2098a8547234919de712d1378b52"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/restore-1/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/restore-1/result.json",
+      "bytes": 191,
+      "sha256": "c5cc8751da6bff6ca6f250a2b433a3c55ccea9ea1c49adf02b075abe10eba6f1"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-first/invocation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-first/invocation.json",
+      "bytes": 1433,
+      "sha256": "77b35d627f2503102ce976283df2de924ac386fc7d43c1ba6846ecc8f2d16e68"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-first/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-first/result.json",
+      "bytes": 628,
+      "sha256": "d608af367cc3e6f2375e64c763e794d87df547364b3e63067a681fe9e23e90cb"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-first/stderr",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-first/stderr",
+      "bytes": 1788,
+      "sha256": "4fb896edf6a6437a00d37664cd2f86d6e1a2f29aef3035409104884ed9082ba4"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-first/stdout",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-first/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/controls-terminal.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/controls-terminal.json",
+      "bytes": 433,
+      "sha256": "bf9a863bf5e8dd59e6ec9b4e849dd35caa0909745480b458ef0de33484860d51"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/diffs/readback_repaired.py.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/diffs/readback_repaired.py.diff",
+      "bytes": 4776,
+      "sha256": "c2abd60ebc10a0d268399518d884639e83199b47818fa9e64f30effff6f6e8cc"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/diffs/transition_repaired.py.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/diffs/transition_repaired.py.diff",
+      "bytes": 3777,
+      "sha256": "98dc78ecce9e3602a9cc4f1de801be6369a0af30d6a068886f0ddcdcb77ef7b9"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/inventory-lineage.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/inventory-lineage.json",
+      "bytes": 431,
+      "sha256": "c32de9d289009aef9f5cea8c5ba2fea0cf2920487701116bcf3832d67976ed65"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/inventory.initial-readable-only.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/inventory.initial-readable-only.json",
+      "bytes": 3240,
+      "sha256": "3d210006699615c8a879de4d9cdbe65903065bfad7a888a919e1e27cc4ed5016"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/inventory.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/inventory.json",
+      "bytes": 8200,
+      "sha256": "aa048d28b236a9ed6564449ce2b4c6e6fa43d0757006de2346c2a1d81f7a3e1e"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/originals/common.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/originals/common.py",
+      "bytes": 8624,
+      "sha256": "c711a554ee34d314851ff11b2f6f8bc820a0970c8c9ff0b0ba377c423401aa53"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/originals/readback.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/originals/readback.py",
+      "bytes": 3501,
+      "sha256": "0303bd502616a9a4b8848f158f4d65d470738ffd1ade59d7cf0838f22b7a2064"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/originals/run.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/originals/run.py",
+      "bytes": 11642,
+      "sha256": "3d2508a003135b38641169b9dcef163157e75c1af9ff7a6e567ef9fd48d23d2a"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/originals/support.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/originals/support.py",
+      "bytes": 16973,
+      "sha256": "b1728a82b5c593c4cf6f552da8c4e03314bf7ec8da3c4324e481ebe59119faea"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/originals/transition.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/originals/transition.py",
+      "bytes": 7667,
+      "sha256": "2c48dbd204c981b667a5e99928f2a6fcb21d331fb3b7f42f1efd5ab4130f8395"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/provenance.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/provenance.json",
+      "bytes": 3939,
+      "sha256": "77528464803e5c7b09667b225af9646049487ba55145f5f65d8265b06d5c5838"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/readback_repaired.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/readback_repaired.py",
+      "bytes": 3657,
+      "sha256": "cc0f6a2698701ef5510808264c7aa86656716af184561c66531a990ca985ef28"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/reconcile.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/reconcile.py",
+      "bytes": 5432,
+      "sha256": "f9deb5e4d5a41677baca373f5dfffa1b57143db462e3193ed8db2d2cd743c77a"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/test_reconciliation.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/test_reconciliation.py",
+      "bytes": 11934,
+      "sha256": "0de4fac64cc4217b33eb63b5be910ff652a7aa385bb45097454ab6970e596243"
+    },
+    {
+      "archive_path": "reconciliation/before-restoration-correction/transition_repaired.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/before-restoration-correction/transition_repaired.py",
+      "bytes": 7597,
+      "sha256": "a6187c6292d9e7cf8e9d454fb9f6b29ecaada15432a624f281d149e6c09c8e3a"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/readback-1-repaired-first/decode-reservation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/readback-1-repaired-first/decode-reservation.json",
+      "bytes": 29,
+      "sha256": "bd5161ba204ecfcfd1695e72081d8cdf50261943c2d3e1eca0afd782ed37e0ec"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/readback-1/decode-reservation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/readback-1/decode-reservation.json",
+      "bytes": 29,
+      "sha256": "bd5161ba204ecfcfd1695e72081d8cdf50261943c2d3e1eca0afd782ed37e0ec"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/work/member/a.child-intent.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_both_failed_and_repaired_reservations_are_charged-5oqsazev/work/member/a.child-intent.json",
+      "bytes": 46,
+      "sha256": "36dc16e5992a4f834c7406bf66d6a0989002a85244e151ffd803e3ecc530143d"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_dispatcher_exposes_real_corrected_restore_and_readback_routes-jmvs_cef/exec/serial.lock",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_dispatcher_exposes_real_corrected_restore_and_readback_routes-jmvs_cef/exec/serial.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/new-result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/new-result.json",
+      "bytes": 42,
+      "sha256": "4705d785d35eddf3b401a1cffd5b7a37a5f1cd39295eaf44126ad0572b9fe5c7"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/child.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/child.json",
+      "bytes": 140,
+      "sha256": "19cc0e5c9567ad5bd9c0fca448756f74bb496bba4c3576c6f454db552b3aaa50"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/failure.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/failure.json",
+      "bytes": 207,
+      "sha256": "0131e8708b2dc90d704f78bf855f3b5d05abf26a727408e6fbda06ae46a454af"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/invocation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/invocation.json",
+      "bytes": 318,
+      "sha256": "2c8e234ec8dc4b3fbac531edf69ddc55ef3fdd612fadf7b00397049d3a49a442"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/stderr",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/stdout",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-0/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/child.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/child.json",
+      "bytes": 140,
+      "sha256": "19cc0e5c9567ad5bd9c0fca448756f74bb496bba4c3576c6f454db552b3aaa50"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/invocation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/invocation.json",
+      "bytes": 318,
+      "sha256": "1c124c83eb638a5c97cb8a39ed7e91814b9b731daae494196c793e343a063087"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/result.json",
+      "bytes": 734,
+      "sha256": "21612b2141309647b547889e99045c11d4dddfe28117d1e0ee6873d1b38ea113"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/stderr",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/stdout",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-attempt-1/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-complete.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_original_step_retains_failed_child_then_records_actual_success-knnw2fx7/wrapper/repaired-complete.json",
+      "bytes": 734,
+      "sha256": "21612b2141309647b547889e99045c11d4dddfe28117d1e0ee6873d1b38ea113"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/readback-1-repaired-first/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/readback-1-repaired-first/result.json",
+      "bytes": 2257,
+      "sha256": "65878545fb5c38a363d239c79a3d8260929d9a15a1731020304d6dd3a4a95fcc"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/readback-1/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/readback-1/result.json",
+      "bytes": 48,
+      "sha256": "2fcadfe7b47a2ea99dbd2d348eb61cce383b2098a8547234919de712d1378b52"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/restore-1/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-7d88ye1w/restore-1/result.json",
+      "bytes": 191,
+      "sha256": "c5cc8751da6bff6ca6f250a2b433a3c55ccea9ea1c49adf02b075abe10eba6f1"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-mvvk2p8i/readback-1-repaired-first/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-mvvk2p8i/readback-1-repaired-first/result.json",
+      "bytes": 2257,
+      "sha256": "c11193fa9898635cdaa8f4f19e06b6a055f95b61f8d2a4a6807230ee00d2d935"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-mvvk2p8i/readback-1/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-mvvk2p8i/readback-1/result.json",
+      "bytes": 48,
+      "sha256": "2fcadfe7b47a2ea99dbd2d348eb61cce383b2098a8547234919de712d1378b52"
+    },
+    {
+      "archive_path": "reconciliation/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-mvvk2p8i/restore-1/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-data/test_real_second_cycle_gate_uses_new_file_and_keeps_old_failure-mvvk2p8i/restore-1/result.json",
+      "bytes": 191,
+      "sha256": "c5cc8751da6bff6ca6f250a2b433a3c55ccea9ea1c49adf02b075abe10eba6f1"
+    },
+    {
+      "archive_path": "reconciliation/controls-first/invocation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-first/invocation.json",
+      "bytes": 1433,
+      "sha256": "77b35d627f2503102ce976283df2de924ac386fc7d43c1ba6846ecc8f2d16e68"
+    },
+    {
+      "archive_path": "reconciliation/controls-first/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-first/result.json",
+      "bytes": 628,
+      "sha256": "d608af367cc3e6f2375e64c763e794d87df547364b3e63067a681fe9e23e90cb"
+    },
+    {
+      "archive_path": "reconciliation/controls-first/stderr",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-first/stderr",
+      "bytes": 1788,
+      "sha256": "4fb896edf6a6437a00d37664cd2f86d6e1a2f29aef3035409104884ed9082ba4"
+    },
+    {
+      "archive_path": "reconciliation/controls-first/stdout",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-first/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/controls-restoration-first/invocation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-restoration-first/invocation.json",
+      "bytes": 1865,
+      "sha256": "bca4f78ef30e12ec5120f0a69dcc94e28272cf4bb3585d2c291c7be8f858bbba"
+    },
+    {
+      "archive_path": "reconciliation/controls-restoration-first/result.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-restoration-first/result.json",
+      "bytes": 665,
+      "sha256": "9df2b5147eacecc03d6c9e6cd99c86b96ca3ab122dd3c6d9b24b805f68c05b3b"
+    },
+    {
+      "archive_path": "reconciliation/controls-restoration-first/stderr",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-restoration-first/stderr",
+      "bytes": 891,
+      "sha256": "3d5cf494ed8085582f7b36e3ab311cffba0b8afbcd10751b4c914c70e1999f5a"
+    },
+    {
+      "archive_path": "reconciliation/controls-restoration-first/stdout",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-restoration-first/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "reconciliation/controls-restoration-terminal.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-restoration-terminal.json",
+      "bytes": 452,
+      "sha256": "bb0286ecd5dab39488775e1740a2727f681c37ef9c7852c9c272d2235113ecb3"
+    },
+    {
+      "archive_path": "reconciliation/controls-terminal.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/controls-terminal.json",
+      "bytes": 433,
+      "sha256": "bf9a863bf5e8dd59e6ec9b4e849dd35caa0909745480b458ef0de33484860d51"
+    },
+    {
+      "archive_path": "reconciliation/diffs/authority.py.restoration.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/diffs/authority.py.restoration.diff",
+      "bytes": 1052,
+      "sha256": "421234b625c998a074d48a4ee5b1a13bfa5a0b0f2fb4130b86f053a00dadb107"
+    },
+    {
+      "archive_path": "reconciliation/diffs/readback_repaired.py.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/diffs/readback_repaired.py.diff",
+      "bytes": 4750,
+      "sha256": "03322f03af67edf79ccb051f01b655ca84c90016d65d3aa02dd07285d8203c3b"
+    },
+    {
+      "archive_path": "reconciliation/diffs/readback_repaired.py.restoration.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/diffs/readback_repaired.py.restoration.diff",
+      "bytes": 2358,
+      "sha256": "c8d9a1fd38b874c339015b46ceb2c3ac93abd46ebdd0643eef22cb5709b017e9"
+    },
+    {
+      "archive_path": "reconciliation/diffs/reconcile.py.restoration.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/diffs/reconcile.py.restoration.diff",
+      "bytes": 4039,
+      "sha256": "6b2cf11d24dd0b835527d136eee437563f8c17f6922e53c1099c94183aa75bf2"
+    },
+    {
+      "archive_path": "reconciliation/diffs/test_reconciliation.py.restoration.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/diffs/test_reconciliation.py.restoration.diff",
+      "bytes": 5049,
+      "sha256": "21d9fd7e5e1632f7dbdb8098799584af073e77993f7e88f6f8f018d18258789c"
+    },
+    {
+      "archive_path": "reconciliation/diffs/transition_repaired.py.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/diffs/transition_repaired.py.diff",
+      "bytes": 3774,
+      "sha256": "518c0465eb35c4d4490669c81fe06af346b5b5c9974373fab2fa4cb437b3aa85"
+    },
+    {
+      "archive_path": "reconciliation/diffs/transition_repaired.py.restoration.diff",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/diffs/transition_repaired.py.restoration.diff",
+      "bytes": 1254,
+      "sha256": "6f0cf2983193d5280cea0249125e1d5c81750974f03e63471811def1c0dedb35"
+    },
+    {
+      "archive_path": "reconciliation/inventory-lineage.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/inventory-lineage.json",
+      "bytes": 431,
+      "sha256": "c32de9d289009aef9f5cea8c5ba2fea0cf2920487701116bcf3832d67976ed65"
+    },
+    {
+      "archive_path": "reconciliation/inventory.initial-readable-only.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/inventory.initial-readable-only.json",
+      "bytes": 3240,
+      "sha256": "3d210006699615c8a879de4d9cdbe65903065bfad7a888a919e1e27cc4ed5016"
+    },
+    {
+      "archive_path": "reconciliation/inventory.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/inventory.json",
+      "bytes": 20340,
+      "sha256": "289615ee63d27604b6265aa332d094cf2e96aac4b2c084e855ecb8da0df02e04"
+    },
+    {
+      "archive_path": "reconciliation/originals/common.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/originals/common.py",
+      "bytes": 8624,
+      "sha256": "c711a554ee34d314851ff11b2f6f8bc820a0970c8c9ff0b0ba377c423401aa53"
+    },
+    {
+      "archive_path": "reconciliation/originals/readback.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/originals/readback.py",
+      "bytes": 3501,
+      "sha256": "0303bd502616a9a4b8848f158f4d65d470738ffd1ade59d7cf0838f22b7a2064"
+    },
+    {
+      "archive_path": "reconciliation/originals/run.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/originals/run.py",
+      "bytes": 11642,
+      "sha256": "3d2508a003135b38641169b9dcef163157e75c1af9ff7a6e567ef9fd48d23d2a"
+    },
+    {
+      "archive_path": "reconciliation/originals/support.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/originals/support.py",
+      "bytes": 16973,
+      "sha256": "b1728a82b5c593c4cf6f552da8c4e03314bf7ec8da3c4324e481ebe59119faea"
+    },
+    {
+      "archive_path": "reconciliation/originals/transition.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/originals/transition.py",
+      "bytes": 7667,
+      "sha256": "2c48dbd204c981b667a5e99928f2a6fcb21d331fb3b7f42f1efd5ab4130f8395"
+    },
+    {
+      "archive_path": "reconciliation/provenance.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/provenance.json",
+      "bytes": 4889,
+      "sha256": "fb9abbb0b3f8035e5931f66c48c7f90766c79f1f7e16787d7f59770450e89185"
+    },
+    {
+      "archive_path": "reconciliation/readback_repaired.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/readback_repaired.py",
+      "bytes": 3631,
+      "sha256": "7aefb7f651aea921903ae82eef84a57865613051ced11a478bdd7b5618233708"
+    },
+    {
+      "archive_path": "reconciliation/reconcile.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/reconcile.py",
+      "bytes": 8190,
+      "sha256": "875428eed3bbc94c2d3888c23128e0805127ffd1ca33f5dac6de118d6d52828d"
+    },
+    {
+      "archive_path": "reconciliation/test_reconciliation.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/test_reconciliation.py",
+      "bytes": 16432,
+      "sha256": "f167e6613dbd1a6d537b81fbd13b71eaedfc2a46407c01682875200e45538b0d"
+    },
+    {
+      "archive_path": "reconciliation/transition_repaired.py",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first/transition_repaired.py",
+      "bytes": 7594,
+      "sha256": "0a606c88bf1cf827c587cdda3245ef3e4414abe3c9eea0334d15890dadbeb104"
+    },
+    {
+      "archive_path": "runtime/commands.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first/commands.json",
+      "bytes": 3126,
+      "sha256": "a635011e7c299bbd44f9fc0e7d52ea2e8662b7d6194ef37c95de425bc75e83ad"
+    },
+    {
+      "archive_path": "runtime/independent-review.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first/independent-review.json",
+      "bytes": 709,
+      "sha256": "5865b8a74814d60ce6ace8b5257047aa62f83742d7986393d46b868643970797"
+    },
+    {
+      "archive_path": "runtime/launch-first/ordinal013_finish-child-terminal.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first/launch-first/ordinal013_finish-child-terminal.json",
+      "bytes": 1163,
+      "sha256": "b1231a26ef06a8d1949a7ec1f02d731f6c1ac9ac40b1ef18b6d5ce7f9eca2337"
+    },
+    {
+      "archive_path": "runtime/launch-first/ordinal013_finish-invocation.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first/launch-first/ordinal013_finish-invocation.json",
+      "bytes": 999,
+      "sha256": "11415779669f3576deddfac4f9a715ebc73a3970e9fe0913d10b204bb57e5247"
+    },
+    {
+      "archive_path": "runtime/launch-first/ordinal013_finish.stderr",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first/launch-first/ordinal013_finish.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive_path": "runtime/launch-first/ordinal013_finish.stdout",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first/launch-first/ordinal013_finish.stdout",
+      "bytes": 6367,
+      "sha256": "aa62d1044665902fac4253dc60dd8e3847e8f6321893b54ca3f083b52a81ea36"
+    },
+    {
+      "archive_path": "runtime/tool-terminal.json",
+      "original_path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first/tool-terminal.json",
+      "bytes": 1464,
+      "sha256": "378a6b917cafad8da64ca7c1c47b891ccd3312e70464ebb164628718c6941ce0"
+    },
+    {
+      "archive_path": "transaction/readback-1-repaired-first/decode-reservation.json",
+      "original_path": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first/readback-1-repaired-first/decode-reservation.json",
+      "bytes": 306,
+      "sha256": "f15754af1ec787880ef682670d1e51063aeb4daf1d4b1e8d0b3368ff90be85bd"
+    },
+    {
+      "archive_path": "transaction/readback-1-repaired-first/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first/readback-1-repaired-first/result.json",
+      "bytes": 797153,
+      "sha256": "69845f4e24f6df43efc5932f802a23a770e0485c25f5f42c05033db64e8ec7ad"
+    },
+    {
+      "archive_path": "transaction/readback-1/decode-reservation.json",
+      "original_path": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first/readback-1/decode-reservation.json",
+      "bytes": 306,
+      "sha256": "b8b0a6f1afce8b33a99f1e5087a73ce64a67de049f708657724fb94681e5ad8b"
+    },
+    {
+      "archive_path": "transaction/readback-1/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first/readback-1/result.json",
+      "bytes": 399879,
+      "sha256": "a9fedebaf08dbeb02e1733d90c9602401027be7e543525e82f350c771b77970d"
+    },
+    {
+      "archive_path": "transaction/restore-1/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first/restore-1/result.json",
+      "bytes": 1401161,
+      "sha256": "6b15909ae5c84acd148535aa9ca3de9139f679969de1b26d05fc0cdbccf9a5ce"
+    },
+    {
+      "archive_path": "transaction/retire-2/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first/retire-2/result.json",
+      "bytes": 111966,
+      "sha256": "1214b0c5d70b79ae0edfb59b3c0341f958c63b48c95fffe3f2617ed1885d52ab"
+    },
+    {
+      "archive_path": "transaction/verification-first/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first/verification-first/result.json",
+      "bytes": 1456935,
+      "sha256": "6b17d3766c740a223627b69d2161d86cc7edb7672864370a2a32616d1d686099"
+    }
+  ]
+}

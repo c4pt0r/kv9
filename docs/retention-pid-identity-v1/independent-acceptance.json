@@ -1,0 +1,53 @@
+{
+  "actual_fresh_codec_lifetimes": 2569,
+  "all_original_metadata_unchanged": true,
+  "charged_decoded_bytes": 41558085954,
+  "complete": true,
+  "conservative_group_net_after_all_metadata_bytes": 32065552384,
+  "decoded_cap_bytes": 69793218560,
+  "encoded_bytes": 7362155494,
+  "historical_producer_lifetimes": 688,
+  "logical_bytes": 10402566933,
+  "no_payload_decode_or_workload": true,
+  "objects": 344,
+  "observed_ns": 1789456374599898163,
+  "ordinal": 13,
+  "original_failed_readback_preserved": true,
+  "own_audit_allocation_reservation_bytes": 4194304,
+  "patch_bytes": 210588064,
+  "scope": "Independent receipt/lifetime/identity/full preserved-object hash acceptance for actual013. Historical failed result remains failed. Old controller, failure evidence, repaired execution and all new metadata are charged in addition to original group accounting.",
+  "selection_sha256": "66bf03896100ca431aff0ae802708b422224267e585245ccbbbcd58658fb0ff4",
+  "state": "COLD",
+  "targets": 209,
+  "actual_available_bytes": 57384558592,
+  "preserved_object_count": 135,
+  "phase_hashes": {
+    "readback-1-repaired-first/result.json": "69845f4e24f6df43efc5932f802a23a770e0485c25f5f42c05033db64e8ec7ad",
+    "readback-1/result.json": "a9fedebaf08dbeb02e1733d90c9602401027be7e543525e82f350c771b77970d",
+    "restore-1/result.json": "6b15909ae5c84acd148535aa9ca3de9139f679969de1b26d05fc0cdbccf9a5ce",
+    "retire-1/result.json": "7df21ddf54bd6d3c0de232aa661d9f1f88dfaacd5483a65b1ca317415a25d8db",
+    "retire-2/result.json": "1214b0c5d70b79ae0edfb59b3c0341f958c63b48c95fffe3f2617ed1885d52ab",
+    "staged.json": "2e4cb12d72e4ef4ea0a3e8dbfc7f7fdc07c521b749f07ec067b63e05d8837b7b",
+    "verification-first/result.json": "6b17d3766c740a223627b69d2161d86cc7edb7672864370a2a32616d1d686099"
+  },
+  "actual_runtime_tool": {
+    "bytes": 1464,
+    "sha256": "378a6b917cafad8da64ca7c1c47b891ccd3312e70464ebb164628718c6941ce0"
+  },
+  "actual_runtime_child": {
+    "bytes": 1163,
+    "sha256": "b1231a26ef06a8d1949a7ec1f02d731f6c1ac9ac40b1ef18b6d5ce7f9eca2337"
+  },
+  "summary_sha256": "4b957a568e9fb516cdc10312dee27abe5bd31efef22bfe6dc38579dd7fb7afd7",
+  "summary_bytes": 987659,
+  "audit_terminal_sha256": "270215a722703daf0f793d1d3e7bd27be29e482689ce331ea5f9ecb4f330c5f0",
+  "audit_actual_terminal": "39909/f0df7e/0",
+  "archive": {
+    "path": "independent-acceptance.tar.gz",
+    "bytes": 74992,
+    "sha256": "b13585f141af697d288a7838d76b65bc42b26796cf679aa2f49339a783085ad5",
+    "files": 5,
+    "original_file_bytes": 1008625
+  },
+  "archive_readback_complete": true
+}
