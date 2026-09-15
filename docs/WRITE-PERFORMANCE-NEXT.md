@@ -26,16 +26,27 @@ apply timers omit group decoding/lock acquisition and overlap within groups;
 endpoint aggregates cannot locate one slow request. The new
 [default-off write-stage trace](WRITE-STAGE-TRACE.md) records bounded exact
 term/index joins across preparation, locks, apply, receipt insertion and terminal
-inspection. Next qualify matching releases and actual capture/coverage/overhead
-before selecting another writer or scheduling change. This is instrumentation,
-not a new QPS result or promotion of the held candidate.
+inspection. The corrected-source capture below now qualifies retained coverage
+and observer overhead. Use that evidence before selecting another writer or
+scheduling change; it does not promote the held candidate.
 
 The first current-source release pair now exists, but its
 [actual capture stopped on five lost trace recordings](WRITE-STAGE-CAPTURE.md).
 The default row completed; the instrumented row remains failed and the reverse
 order never ran. Export now tries the existing pump gate and releases both
-guards before allocation. The tested correction needs a new matching release
-pair and complete capture; no observer-overhead comparison has been accepted.
+guards before allocation. That failed attempt supplies no observer-overhead
+comparison; the corrected-source qualification is separate below.
+
+That subsequent [corrected-source comparison now passes](WRITE-STAGE-CAPTURE-RESULTS.md):
+all four rows, 131,737 calls and 8,431,168 items, with zero trace loss and exact
+cleanup/restoration. Combined diagnostics cost 3.666% / 1.852% throughput in the
+two short orders (2.770% pooled). The two leader tails locate a larger cost
+inside state-machine apply: deduplicated group means 549.018 / 546.521 us,
+against about 47–49 us before apply and 4 us to publish receipts. Next attribute
+Raw batch lowering, WAL encoding/checksum and persistent-map publication before
+choosing a change. Existing metrics do not show direct tmpfs sync as the dominant
+cost. Preserve rejected owned-buffer and scheduling experiments; these internal
+tails are not complete client histories or a new performance-selection result.
 
 During the earlier full-screen capacity constraint, the C04
 [checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local

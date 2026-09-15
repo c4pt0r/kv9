@@ -25,15 +25,23 @@ and runs below remain separately scoped.
 The [completed retained batch review](write-batch-tail-review-v1/README.md)
 identifies missing group preparation/lock and receipt-to-inspection intervals.
 [Default-off bounded tracing](WRITE-STAGE-TRACE.md) now records those boundaries
-with exact sampled term/index identities. Accepted capture, coverage and overhead
-qualification remain pending; this adds no performance result.
+with exact sampled term/index identities. The failed first attempt and accepted
+corrected capture below retain separate coverage and overhead qualifications.
 
 The [first current-source release/capture attempt](WRITE-STAGE-CAPTURE.md)
 completed its default row, then refused five lost leader trace recordings in
 the instrumented row; the reverse order did not run. The tested exporter fix
 uses the existing pump gate for the fixed-array copy and allocates afterward.
-Corrected matching releases and a fresh four-row capture remain next. The
-failed attempt supplies no accepted overhead comparison or new baseline.
+The failed attempt supplies no accepted overhead comparison or new baseline.
+
+The separate [corrected four-row capture](WRITE-STAGE-CAPTURE-RESULTS.md) now
+passes all 131,737 calls / 8,431,168 items, independent dataset/drain/lifetime
+checks and zero recording loss. Its combined diagnostic overhead is -3.666% /
+-1.852% throughput by order, -2.770% pooled. Deduplicated leader group apply
+means are 549.018 / 546.521 us, substantially above the retained lock and receipt
+stages. Next attribute the work within apply; do not repeat earlier clone-removal
+or scheduler candidates without a different observed cause. No new selected
+runtime, full performance baseline or Redis comparison follows from this capture.
 
 The earlier [complete directory-candidate screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
 records CRC main at **139,457.016 point Put/s** and **1,056,344.501 batch items/s**
