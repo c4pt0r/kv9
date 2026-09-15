@@ -165,15 +165,21 @@ screen unchanged. No additional QPS or general candidate promotion is establishe
 
 The [continuous controller](cross-voter-multicohort-retention-v1/controller/README.md)
 now passes 15 controls and independent review, and its first actual iteration
-completes exact restoration and full readback of 355 frame-buffer objects. At
-that [completed boundary](cross-voter-multicohort-retention-v1/controller-execution-001/README.md),
-two of the 96 planned cohorts are COLD, conservative net recovery is 4.692 GB
-including controller allocation, and actual available space is 30.024 GB.
-Ordinal 002 is running. After the migration exits and fresh capacity qualifies,
+completes exact restoration and full readback of 355 frame-buffer objects. The
+[latest progress snapshot](cross-voter-multicohort-retention-v1/campaign-progress-20260915.json)
+records four of the 96 planned cohorts COLD, conservative net recovery of
+8.996 GB including controller allocation, and 34.325 GB actual available space
+at the completed boundary. Ordinal 004 is running. After the migration exits and fresh capacity qualifies,
 the existing receipt commands run all eight smokes, complete smoke readback,
 all sixteen timed cohorts and independent final acceptance. The completed
 16 focused controls and role binder need no repeat. Keep timing exclusive of
 migration/codec activity and preserve the original workload and limits.
+
+An [offline analysis of retained counters](write-amortization-v1/README.md)
+separately quantifies existing write amortization. It preserves the distinction
+between command events, WAL metric events, syscall counts and overlapping
+per-command timers. It provides no new QPS, group distribution or justification
+to repeat rejected owned-buffer/worker changes.
 
 ## Comparison contract
 
