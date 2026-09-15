@@ -154,6 +154,15 @@ lifetimes exited. Extend this qualified migration in bounded groups until actual
 capacity covers the receipt screen; preserve original historical checks while
 separately reviewing live readback-floor changes for older readers.
 
+The [bounded expansion](cross-voter-multicohort-retention-v1/README.md) now passes
+12 focused controls and its first larger cohort: 226 exact restores and complete
+readback of all 369 objects, with 2,403 codec lifetimes exited. Net recovery adds
+2,360,422,400 bytes after transaction/shared preparation/dispatcher allocation;
+available space is about 27.71 GB before publication overhead. Only one of the
+fixed 96 cohorts has run. Continue the remaining serialized migrations with
+actual result validation and capacity accounting, then run the prepared receipt
+screen unchanged. No additional QPS or general candidate promotion is established.
+
 ## Comparison contract
 
 | Panel | Successful call requires | Interpretation |

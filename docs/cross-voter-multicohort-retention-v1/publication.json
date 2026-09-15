@@ -1,0 +1,16 @@
+{
+  "complete": true,
+  "package_tool": {
+    "session_id": 82963,
+    "initial_chunk": "268e6a",
+    "final_chunk": "645c85",
+    "exit_code": 0
+  },
+  "readback_tool": {
+    "chunk_id": "932fd3",
+    "exit_code": 0
+  },
+  "archive_sha256": "e10fc538ef408894f1c5f0abc35b717fb7aa79aa9a43b4e50be15308114f312f",
+  "verifier_sha256": "a79fb4c16803dca89055ecf05a5e8a95b95992911259fa46af2de5fe91db6030",
+  "scope": "Source and original reporting for finite96 preparation and only completed cohort000; remaining95 and receipt performance pending."
+}

@@ -70,3 +70,15 @@ fresh codec lifetimes have exited. Available space at its final audit was
 complete receipt-screen estimate. Extend migration in bounded groups using
 actual capacity, with separately reviewed live readback-floor adaptations for
 older campaign readers and all historical validation preserved.
+
+The [first larger cohort](cross-voter-multicohort-retention-v1/README.md) now also
+passes: 226 exact target restores, complete readback of 369 objects / 11.249 GB
+logical bytes, all 143 preserved object hashes unchanged, and all 2,403 codec
+lifetimes exited. It adds **2,360,422,400 bytes** of net recovery after transaction,
+shared preparation and dispatcher allocation; publication has separate overhead.
+Its final audit observes 27,713,499,136 bytes available. Twelve focused controls
+and independent review qualify the finite 96-cohort extension. Older reader
+copies change only the current decode floor to 8 GiB; their original historical
+checks remain intact. Only cohort 000 has run; the remaining 95 and receipt
+performance are pending. The 100 GB stop target is a planning margin and does
+not replace the unchanged benchmark guards.
