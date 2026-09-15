@@ -6,6 +6,14 @@ the selected ThinLTO/Safe ReadIndex baseline. The experimental lease work and
 its remaining clock/Chaos gates are retained; read parity is not claimed and is
 no longer a prerequisite for this write phase.
 
+The latest [complete write-observer capture](WRITE-OBSERVER-CAPTURE.md) measures
+queue/group distributions and diagnostic overhead across all 16 planned cells.
+Loaded Put repeatedly inspects pending receipts: 86.00–86.11% of lookups miss,
+averaging about 1,022 logical comparisons. Next bind the held candidate's actual
+lookup paths and prove whether unchanged pending results can avoid repeated
+inspection. The [complete ten-second baseline](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
+remains selected; the two-second observer sweep does not replace that gate.
+
 ## Local storage checkpoint (2026-09-14 UTC)
 
 The [completed cache cleanup](write-storage-cache-cleanup-v1/result.json) increased
@@ -440,9 +448,15 @@ original failed audit and schema repair remain retained without workload reruns.
    default release, recovery, actual full21 Chaos and complete matched screen
    now pass. Loaded Put gains 2.971% with better p99 in both orders; c1 batch
    regresses 0.698%, and the loaded batch result is order-sensitive. Hold its
-   promotion and keep CRC selected. Next measure actual receipt queue lengths,
-   ages, lookup-path use and apply/Ready group sizes, including diagnostic
-   overhead, before choosing another lookup change or combination experiment.
+   promotion and keep CRC selected. The [complete observer sweep](WRITE-OBSERVER-CAPTURE.md)
+   now records actual queue, age, linear lookup and apply/Ready populations with
+   matched diagnostic overhead. Loaded Put has 86.00–86.11% lookup misses and
+   about 1,022 comparisons per inspection, despite mean nonempty service queues
+   of 27 requests. Next bind actual candidate hint/fallback counts and prove
+   whether redundant pending inspections can be skipped until relevant apply
+   state changes. Preserve deadlines, eviction, replacement and fatal-state
+   handling, followed by ordinary recovery, actual Chaos and the original full
+   throughput/latency screen. The observer does not establish candidate speedup.
    Persistent-map work remains secondary;
    do not repeat rejected owned-buffer or worker/transport sweeps without new
    causal evidence.

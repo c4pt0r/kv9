@@ -121,13 +121,17 @@ test targets. Root binary feature wiring and formatting checks pass.
 are retained. These are development checks, not a retained release, Chaos run
 or matched performance result.
 
-Next, qualify an instrumented release and collect bounded point/batch samples
-at c1 and c64. Compare a diagnostic build with its matching default build to
-measure throughput and latency overhead separately. Add actual checked-hint,
+The [matched release and complete bounded capture](WRITE-OBSERVER-CAPTURE.md)
+now pass for point/batch traffic at c1 and c64. Put throughput decreases about
+1% with diagnostics; batch throughput is order-sensitive and p99 worsens in
+both orders. The report preserves all three-node observations and independent
+conservation checks. Add actual checked-hint,
 ordered-fallback and first-match-fallback observations to a separately bound
 receipt-candidate build before comparing lookup paths. This baseline schema
 does not contain those candidate counts and must not be presented as if it did.
 Preserve the original complete eight-smoke/sixteen-timed performance screen
 for a subsequent candidate decision. Select a causal change only after these
-observations support it. CRC remains selected; no new QPS or batch-regression
-explanation is established by this instrumentation increment.
+observations support it. Repeated pending inspections are now a measured
+follow-up target; their safe elimination requires an explicit state-change
+argument. CRC remains selected, and the held candidate's batch-regression
+cause remains unproven.
