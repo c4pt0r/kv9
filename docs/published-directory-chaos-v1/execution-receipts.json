@@ -1,0 +1,21 @@
+{
+  "package-terminal.json": {
+    "complete": true,
+    "session_id": 63977,
+    "exit_code": 0,
+    "terminal_receipt": "2b5843",
+    "observed_ns": 1789431058687690097,
+    "result_path": "/tmp/kv9-published-directory-chaos-publication-20260915-first/result.json",
+    "result_sha256": "657b70a81ee64fe18ccc1ebcd5a55bd8f393657a7d385058241b5c7795944dbc"
+  },
+  "verify-terminal.json": {
+    "complete": true,
+    "session_id": null,
+    "exit_code": 0,
+    "terminal_receipt": "6fe983",
+    "observed_ns": 1789431058687787970,
+    "execution_kind": "direct_tool_terminal",
+    "verified_directory": "/tmp/kv9-published-directory-chaos-publication-20260915-first/package-first",
+    "inventory_sha256": "93051753f347792ec4bd8bad4ec51d5cbb3b1e3aa32a2baa8415b7454791c4cb"
+  }
+}

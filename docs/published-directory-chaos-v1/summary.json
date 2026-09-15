@@ -1,0 +1,89 @@
+{
+  "archive_verified": true,
+  "audit_precedes_cleanup": true,
+  "complete": true,
+  "containers": 25,
+  "fresh_drains": 4,
+  "full_archive": {
+    "all_inputs_rehashed": true,
+    "all_members_read_back": true,
+    "archive": "/tmp/kv9-published-directory-chaos-preparation-20260914-first/archive-first/evidence.tar.gz",
+    "bytes": 90568968,
+    "cleanup_in_separate_supplement": true,
+    "complete": true,
+    "ended_unix_ns": 1789430827428063298,
+    "file_bytes": 900304014,
+    "files": 4279,
+    "independent_retained_evidence_accepted": true,
+    "inventory": "/tmp/kv9-published-directory-chaos-preparation-20260914-first/archive-first/inventory.json",
+    "inventory_sha256": "10eeeebc81479a516d25388faa91dd49c994fb20a6e8c94192ccfce26491a741",
+    "members": 4594,
+    "original_fixture_exit_code": 0,
+    "roots": [
+      "/tmp/kv9-chaos-e2e.msVU9C",
+      "/tmp/kv9-published-directory-chaos-preparation-20260914-first",
+      "/tmp/kv9-published-directory-release-20260914-first",
+      "/tmp/kv9-published-directory-chaos-preparation-20260914-first/persistent-build",
+      "/tmp/kv9-published-directory-chaos-preparation-20260914-first/pressure-build-first",
+      "/tmp/kv9-published-directory-chaos-preparation-20260914-first/image-context-first",
+      "/tmp/kv9-thin-lto-delay-selection-repair-first"
+    ],
+    "scope": "Freeze, archive and independently read back current native Chaos evidence before cleanup.",
+    "sha256": "06375fdb07f690c41f58b585b6f6ca670c182b4b390988c379a26766621ef49b",
+    "started_unix_ns": 1789430823424955911
+  },
+  "historical_namespaces_preserved": 8,
+  "histories": {
+    "cli": {
+      "bytes": 3039098,
+      "invokes": 5368,
+      "outcomes": {
+        "ok": 4889,
+        "refused": 8,
+        "unknown": 471
+      },
+      "returns": 5368,
+      "sha256": "37e5eb789dfc9da53e770e1c3e25b73a3517e9551567b3d7c1639bba14e063ff"
+    },
+    "native": {
+      "bytes": 6481290,
+      "invokes": 2560,
+      "outcomes": {
+        "ok": 2531,
+        "refused": 10,
+        "unknown": 19
+      },
+      "returns": 2560,
+      "sha256": "d418f65710181f30cf8ae3a2853ef279aca4f9092236ef06c8779c523b96d9eb"
+    },
+    "persistent": {
+      "bytes": 1066724,
+      "invokes": 1444,
+      "outcomes": {
+        "ok": 1424,
+        "refused": 5,
+        "unknown": 15
+      },
+      "returns": 1444,
+      "sha256": "8817736057396f1005c9af7e036834f80740a3b49ad7e1cbb0a93692fa371c7d"
+    }
+  },
+  "image_id": "sha256:48f3c8f8e2a39d10cca1d7a68de2a4a4d59f1c98724f25c2dab1ec1ce35de1c6",
+  "namespace_removed": true,
+  "native_sha256": "205bcf4451d8f1d59023bcd4893d3388ed73846cf0980cbc9efa6cb5df578a2e",
+  "operations": 9372,
+  "original_audit_scope": "Exact clean bd42e60 default-feature release server, ordinary-port tonic_stream point and native atomic batch clients, plus original CLI/catalog histories. Original 21 actual voter/storage/endpoint Chaos windows and effects; independent complete histories, source/executable/process identity and fresh final drains. Dedicated client-link/quorum acceptance, performance, cross-host, power-loss and whole-Rust proof are separate.",
+  "outcomes": {
+    "ok": 8844,
+    "refused": 23,
+    "unknown": 505
+  },
+  "point_sha256": "30b884af7a354f6813d92e98e0fed1f1d66cd4d982bf774696f354ca5ec74c1b",
+  "revision": "483b8c3629b033734f5d7a2b8653a1352304a4b5",
+  "scope": "Exact published-directory default-feature 21-window Chaos acceptance; no positive rotation coverage, performance or promotion claim.",
+  "server_lifetimes": 33,
+  "server_sha256": "43d8bcb2d852d6fcbebb7f528808e53b3eb93588e2637195e9053cd91e8d5450",
+  "source_files": 871,
+  "source_tree_sha256": "24a48e21191a6d23f0eac2615a5d5f53e875f677e3a1f9cd39a7b091b650e3f6",
+  "windows": 21
+}
