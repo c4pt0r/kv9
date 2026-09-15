@@ -1116,6 +1116,62 @@ where
 }
 
 impl AdminApi for RuntimeBackend {
+    fn apply_retention(
+        &self,
+        _caller: &str,
+        request: Vec<u8>,
+    ) -> Result<crate::api::RetentionUpdateResult> {
+        use kv9_meta::retention::{decode_request, plan_retention, MAX_LEDGER_REQUEST_BYTES};
+        if request.len() > MAX_LEDGER_REQUEST_BYTES {
+            return Err(Error::Config("retention request exceeds byte bound".into()));
+        }
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        // Drain prior ambiguous proposals before taking the one planning view.
+        // The term fence prevents a plan from surviving a leadership change.
+        let term = self.prepare_catalog()?;
+        let txn = self.node.meta_raft.store.begin()?;
+        let root = kv9_meta::root::certified_root(&txn)?
+            .ok_or_else(|| Error::MetaNotReady("retention requires a certified root".into()))?;
+        let request =
+            decode_request(&request, root.digest()).map_err(|e| Error::Config(e.to_string()))?;
+        let view = txn.into_view();
+        let plan = plan_retention(view.as_ref(), &root, &request)?;
+        let revision = plan.revision();
+        let changed = plan.changed();
+        let command = if changed {
+            kv9_raft::Command::from_batch(&plan.into_batch())
+        } else {
+            kv9_raft::Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::RetentionUpdateResult {
+            revision,
+            changed,
+            applied,
+        })
+    }
+
+    fn get_retention_owner(
+        &self,
+        _caller: &str,
+        expected_root: kv9_common::RootDigest,
+        owner: kv9_common::retention::OwnerId,
+    ) -> Result<Option<Vec<u8>>> {
+        self.ensure_serving()?;
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let txn = self.node.meta_raft.store.begin()?;
+        let root = kv9_meta::root::certified_root(&txn)?
+            .ok_or_else(|| Error::MetaNotReady("retention requires a certified root".into()))?;
+        if root.digest() != expected_root {
+            return Err(Error::Config("retention read root differs".into()));
+        }
+        kv9_meta::retention::retention_owner(txn.into_view().as_ref(), &root, owner)?
+            .as_ref()
+            .map(kv9_meta::retention::encode_owner_observation)
+            .transpose()
+    }
+
     fn get_node_endpoint(
         &self,
         _caller: &str,
@@ -4433,6 +4489,7 @@ fn prepare_test_store(directory: &Path, id: NodeId) -> StoreIncarnation {
 mod tests {
     mod async_batch_read_tests;
     mod lease_read_tests;
+    mod retention_tests;
 
     #[tokio::test]
     async fn accepted_grpc_sockets_disable_nagle_without_rebinding() {

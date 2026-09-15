@@ -274,8 +274,32 @@ pub enum EndpointUpdateResult {
     Refused(EndpointRefusal),
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RetentionUpdateResult {
+    pub revision: u64,
+    /// False denotes a fresh confirmation of existing state, never recovery
+    /// of a previous invocation's mutation receipt.
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
 pub trait AdminApi {
+    fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::apply_retention",
+        ))
+    }
+    fn get_retention_owner(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _owner: kv9_common::retention::OwnerId,
+    ) -> Result<Option<Vec<u8>>> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::get_retention_owner",
+        ))
+    }
     fn create_keyspace(
         &self,
         caller: &str,

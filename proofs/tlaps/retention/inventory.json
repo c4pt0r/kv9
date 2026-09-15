@@ -20,6 +20,6 @@
   },
   "roots": ["PinRetentionProof"],
   "source_pins": {
-    "crates/common/src/retention.rs": "603609b895dcff3dec5b3c907ecf9b8b5968abb45d30f03df3421259212acd91"
+    "crates/common/src/retention.rs": "7260025252aae933c9c21f1109122300d3ba6179ad849c5efd4bec1999a108fa"
   }
 }

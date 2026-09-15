@@ -15,6 +15,10 @@ the change. Use an explicitly selected, isolated local Kubernetes cluster for
 Chaos injection. Local single-host acceptance does not prove host-loss tolerance.
 Record accepted evidence and remaining gaps in roadmap issue #9.
 
+New bulk artifacts go under `/mnt/data/kv9-work`; latency-sensitive fixture data
+keeps its explicitly selected filesystem. See [local output placement](LOCAL-ARTIFACTS.md)
+for the observed failure, separate filesystem guards and preservation rules.
+
 ## Origin
 
 Every rule here exists because it failed on this project. Rules 1-13 come from 2026-08-28,

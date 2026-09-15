@@ -25,6 +25,7 @@ use kv9_server::{
 };
 
 mod endpoint_cli;
+mod retention_cli;
 
 // Confined to the Linux kv9 binary: library users and benchmark clients retain
 // their own allocator. No Raft, storage, admission or scheduling policy changes.
@@ -57,6 +58,8 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client get-node-endpoint --addr <leader-ip:port> --node-id <id>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client retention-apply --addr <leader-ip:port> --root-digest <hex> --request-file <path>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client retention-owner --addr <leader-ip:port> --root-digest <hex> --owner-id <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client change-node-endpoint --addr <leader-ip:port> --cluster-id <hex> --node-id <id> --store-incarnation <hex> --expected-address <ip:port> --expected-generation <n> --new-address <ip:port>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client raw-put --addr <leader-ip:port> --keyspace <id> --key-hex <hex> --value-hex <hex>\n\\
            KV9_CLIENT_TOKEN=<token> kv9 client raw-get --addr <leader-ip:port> --keyspace <id> --key-hex <hex>\n\\
@@ -788,6 +791,8 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         "admit-node" => run_admit_node(args),
         "promote-node" => run_promote_node(args),
         "get-node-endpoint" => endpoint_cli::run(args, false),
+        "retention-apply" => retention_cli::run(args, true),
+        "retention-owner" => retention_cli::run(args, false),
         "change-node-endpoint" => endpoint_cli::run(args, true),
         _ => {
             eprintln!(

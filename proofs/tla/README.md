@@ -63,3 +63,12 @@ under its stated fairness assumptions.
 See [METADATA-PLANNING.md](../../docs/METADATA-PLANNING.md) for the proof argument,
 source mapping, counterexamples and open refinement obligations. This increment
 does not close roadmap issues #9, #11 or #14.
+
+## Retention ledger
+
+`retention_ledger/RetentionLedger.tla` models registered immutable owner closures,
+per-resource generation/phase crosslinks and successor-backed release. The strict
+runner is `scripts/check-retention-ledger.py`; its three finite instances and six
+counterexamples accompany the parameterized TLAPS proof. See the
+[ledger source mapping and scope](../../docs/RETENTION-LEDGER.md) for explicit
+composition premises and the unimplemented complete-reference/GC obligations.

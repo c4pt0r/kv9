@@ -178,3 +178,15 @@ public decoding without authority, and a bounded envelope. Run
 seven unsafe model counterexamples and four proof rejections accompany it.
 [The source mapping and premises](../../docs/RECOVERY-ANCHOR-ENVELOPE.md) distinguish
 the local observation from plain data and future install/retention authority.
+
+## Replicated retention ledger
+
+`retention_ledger/RetentionLedgerProof.tla` adds seven statements / 55 strict
+obligations for whole-closure owner/resource crosslinks, successor coverage,
+generation fencing and source preservation. `scripts/check-retention-ledger.py`
+checks three finite TLC instances, six actual unsafe model counterexamples and
+three proof rejections. Four independently compiled metadata source controls
+also fail at their exact guarding assertions. [Source mapping and trust premises](../../docs/RETENTION-LEDGER.md)
+separate ordered committed ledger transitions from automatic reference discovery,
+reader drainage and deletion authority. Existing Raft/atomic persistence and
+metadata planner freshness are composition premises, not new refinement results.

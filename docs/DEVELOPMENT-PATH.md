@@ -56,24 +56,33 @@ C00 integrates the baseline; C01/C02/C03/C04 can start independently afterward. 
 
 The [C04 contract](RECOVERY-RETENTION-CONTRACT.md) and [log ownership ADR](ADR-DUAL-WAL.md)
 now specify the anchor/retention interfaces, crash rules and downstream work.
-Common validation capabilities, the durable owner ledger, checked composition
-proofs and new fault acceptance remain open; this design increment changes no
-checkbox or dependency below.
+The component implementations and accepted gates below refine this contract;
+complete retention coverage and installation authority remain open. The original
+checkboxes and dependencies below are unchanged.
 
 The [first pin-record component](RETENTION-RECORD.md) implements bounded
-per-resource transitions and a checked component proof. Complete recovery
-anchors, durable ledger integration and its actual fault acceptance remain open.
+per-resource transitions and a checked component proof. The enclosing ledger and
+local recovery binding are implemented in the subsequent increments below.
 
 The [configuration-at-cut component](CONFIGURATION-AT-CUT.md) implements checked
-historical membership for a retained committed cut. Complete anchor identity and
-publication binding, bounded online capture and the outer ledger remain open.
+historical membership for a retained committed cut. Local recovery now consumes
+it through the envelope below; bounded online capture remains open.
 
 The subsequent [initial recovery envelope](RECOVERY-ANCHOR-ENVELOPE.md) now binds
 historical root/owner scope, the exact image, configuration and winning
 publication from one complete local open. Its strict proof and new actual
 three-voter/Chaos Mesh recovery pass. Transferable history/ownership authority,
-the replicated retention ledger and destination installation remain open;
+complete retention coverage and destination installation remain open;
 the original stage checkboxes and dependencies below are unchanged.
+
+The [tracking-only replicated ledger](RETENTION-LEDGER.md) now implements bounded
+registration, whole-closure ownership transfer, exact generations and fresh
+Raft confirmation receipts through authenticated administration. Its committed
+state proof and actual leader-kill recovery pass. Next integrate checkpoint and
+pending-attempt owners, prevent bookkeeping from continuously triggering new
+checkpoints, and backfill/fence existing references. Reader draining, transferable
+history authority, destination admission and atomic installation remain open.
+The ledger alone cannot authorize object deletion or close C04/S07.
 
 - [x] [#10](https://github.com/c4pt0r/kv9/issues/10) **C00** - Integrate the takeover fixes and establish a reproducible acceptance baseline
 - [ ] [#11](https://github.com/c4pt0r/kv9/issues/11) **C01** - Build deterministic fault injection and a persistence recovery matrix
