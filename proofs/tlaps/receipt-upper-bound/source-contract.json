@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "parent": "7f458bfba79a1ab654127bf1f63e76d2750abe79",
+  "changed_runtime_files": [
+    "crates/raft/src/driver.rs",
+    "crates/raft/src/driver/applied_receipts.rs",
+    "crates/raft/src/write_diagnostics.rs",
+    "crates/server/src/observability.rs"
+  ],
+  "files": {
+    "crates/raft/src/driver.rs": "59fcf22c87f98dc888d9fbe5a07d9042eedcd31eb962aaa65dd7c1524271666f",
+    "crates/raft/src/driver/applied_receipts.rs": "2f1eba99776731da76422d2213ebe739fe64c0c8fef4e9a7c48267bba8e16154",
+    "crates/raft/src/write_diagnostics.rs": "d52abc37f684690ff49b13246b4f4e0dcdc52a6ea170dd413bab7282a8ab9e9b",
+    "crates/server/src/observability.rs": "80f16cc3cc7e07637a3a5a7a7be265f3481e6a1ae2542b83ec770916c35b03db",
+    "proofs/tlaps/receipt-upper-bound/README.md": "4f18bd2ab0971b7a3d086aecb74413367b7cc889bdcdc0ad42c4f349b72cef84",
+    "proofs/tlaps/receipt-upper-bound/ReceiptUpperBound.cfg": "2bf5c6c64b3d35274aab4439b7195a7faf5b6b65e03ab26d8fcec528eb8f97b5",
+    "proofs/tlaps/receipt-upper-bound/ReceiptUpperBound.tla": "3a677cc2a1438757bfe71be62433b9b576af338370bbb1d6bf1a6ed47c82dd79",
+    "proofs/tlaps/receipt-upper-bound/ReceiptUpperBoundProof.tla": "b8e732673855454966c430a593ad8f7af1ad3a41ab66168e9ca13814bcb1056b",
+    "proofs/tlaps/receipt-upper-bound/inventory.json": "22e253bff644522968090ebadcddd290d373cd3d0a153ca738c570604acc717d",
+    "scripts/ProofAudit.java": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a",
+    "scripts/check-receipt-upper-bound-proof.py": "35bed36d4fa990bd6e3d3b1a69ded48b33a663ce60bb2be6cc70cea7656d7406",
+    "scripts/check-tla.py": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70",
+    "scripts/check-tlaps.py": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+  },
+  "reverse_driver_edits": [
+    [
+      "/// How many recently applied `(index, term)` pairs are retained for proposal\n/// verification (correlation is by term+index, never position alone).\nconst APPLIED_RING: usize = 1024;\n\nmod applied_receipts;\nuse applied_receipts::AppliedReceipts;\n\n/// How many conf-change receipts are retained (membership changes are rare;\n/// a waiter that lags 64 changes behind has bigger problems).\n",
+      "/// How many recently applied `(index, term)` pairs are retained for proposal\n/// verification (correlation is by term+index, never position alone).\nconst APPLIED_RING: usize = 1024;\n\n/// How many conf-change receipts are retained (membership changes are rare;\n/// a waiter that lags 64 changes behind has bigger problems).\n"
+    ],
+    [
+      "    /// advanced, nothing written) and enters WITH its rejection verdict, so\n    /// the receipt reaches the proposer instead of dying at this boundary\n    /// (the silent-lost-write blocker Ren's layer-3 test caught).\n    applied: Mutex<AppliedReceipts>,\n    /// Conf-change receipts by exact (index, term) \u2014 the correlation store for\n    /// [`Self::wait_conf_applied`]. Conf entries NEVER enter the command ring:\n    /// `applied_index`/`applied_term` must remain a same-entry pair.\n",
+      "    /// advanced, nothing written) and enters WITH its rejection verdict, so\n    /// the receipt reaches the proposer instead of dying at this boundary\n    /// (the silent-lost-write blocker Ren's layer-3 test caught).\n    applied: Mutex<Vec<RingEntry>>,\n    /// Conf-change receipts by exact (index, term) \u2014 the correlation store for\n    /// [`Self::wait_conf_applied`]. Conf entries NEVER enter the command ring:\n    /// `applied_index`/`applied_term` must remain a same-entry pair.\n"
+    ],
+    [
+      "            drain,\n            transport,\n            sm: Mutex::new(sm),\n            applied: Mutex::new(AppliedReceipts::default()),\n            conf_receipts: Mutex::new(Vec::new()),\n            read_receipts: Mutex::new(Vec::new()),\n            read_incarnation: {\n",
+      "            drain,\n            transport,\n            sm: Mutex::new(sm),\n            applied: Mutex::new(Vec::new()),\n            conf_receipts: Mutex::new(Vec::new()),\n            read_receipts: Mutex::new(Vec::new()),\n            read_incarnation: {\n"
+    ],
+    [
+      "            .is_some_and(|wm| wm.index >= at.index.0);\n        {\n            let applied = self.applied.lock().expect(\"applied poisoned\");\n            let entry = applied.find_index(\n                at.index.0,\n                #[cfg(feature = \"write-path-diagnostics\")]\n                &self.write_diagnostics,\n            );\n            if let Some(entry) = entry {\n                return Some(if entry.term == at.term {\n                    // The receipt is the RING's recorded values \u2014 position\n",
+      "            .is_some_and(|wm| wm.index >= at.index.0);\n        {\n            let applied = self.applied.lock().expect(\"applied poisoned\");\n            #[cfg(not(feature = \"write-path-diagnostics\"))]\n            let entry = applied.iter().find(|e| e.index == at.index.0);\n            #[cfg(feature = \"write-path-diagnostics\")]\n            let entry = {\n                let slot = applied.iter().position(|e| e.index == at.index.0);\n                self.write_diagnostics.record_linear_lookup(\n                    applied.len(),\n                    slot,\n                    applied.last().map(|entry| entry.index),\n                    at.index.0,\n                );\n                slot.map(|slot| &applied[slot])\n            };\n            if let Some(entry) = entry {\n                return Some(if entry.term == at.term {\n                    // The receipt is the RING's recorded values \u2014 position\n"
+    ],
+    [
+      "    #[cfg(feature = \"write-path-diagnostics\")]\n    pub fn write_diagnostics(&self) -> crate::write_diagnostics::WriteDiagnosticsSnapshot {\n        crate::write_diagnostics::WriteDiagnosticsSnapshot {\n            schema_version: 2,\n            snapshot_consistency: \"coherent_per_component_independent_between_components\",\n            bucket_rule: \"0=[0,0]; i>0=[2^(i-1),2^i-1]\",\n            joint_bucket_rule: \"0=[0,0]; 1..7=[2^(i-1),2^i-1]; 8=[128,infinity)\",\n",
+      "    #[cfg(feature = \"write-path-diagnostics\")]\n    pub fn write_diagnostics(&self) -> crate::write_diagnostics::WriteDiagnosticsSnapshot {\n        crate::write_diagnostics::WriteDiagnosticsSnapshot {\n            schema_version: 1,\n            snapshot_consistency: \"coherent_per_component_independent_between_components\",\n            bucket_rule: \"0=[0,0]; i>0=[2^(i-1),2^i-1]\",\n            joint_bucket_rule: \"0=[0,0]; 1..7=[2^(i-1),2^i-1]; 8=[128,infinity)\",\n"
+    ],
+    [
+      "    pub learners: Vec<u64>,\n}\n\nfn push_ring(applied: &mut AppliedReceipts, index: u64, term: u64, outcome: crate::ApplyOutcome) {\n    applied.push(RingEntry {\n        index,\n        term,\n        outcome,\n    });\n}\n\nfn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {\n",
+      "    pub learners: Vec<u64>,\n}\n\nfn push_ring(applied: &mut Vec<RingEntry>, index: u64, term: u64, outcome: crate::ApplyOutcome) {\n    applied.push(RingEntry {\n        index,\n        term,\n        outcome,\n    });\n    let len = applied.len();\n    if len > APPLIED_RING {\n        applied.drain(..len - APPLIED_RING);\n    }\n}\n\nfn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {\n"
+    ]
+  ],
+  "review_scope": "Keep original first-match full receipt and vector append/eviction order. Only a conservative impossible-index rejection precedes lookup; all surrounding driver decisions must reconstruct the exact parent."
+}

@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "tlapm_version": "4600b24",
+  "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "roots": [
+    "ReceiptUpperBoundProof"
+  ],
+  "modules": {
+    "ReceiptUpperBoundProof": {
+      "theorems": [
+        "UBSequenceType",
+        "UBMaximumMonotonic",
+        "UBTailBound",
+        "UBAppendBound",
+        "UBPushBound",
+        "UBImpossibleMatch",
+        "UBLookupSame",
+        "UBContextRefinement",
+        "UBInvariantInit",
+        "UBInvariantPush",
+        "UBInvariantStep",
+        "UBInvariantAlways",
+        "UBLookupObservation",
+        "UBLookupAlways"
+      ],
+      "obligations": 82
+    }
+  },
+  "models": {
+    "ReceiptUpperBound": {
+      "source": "ReceiptUpperBound.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "c446cab63c72d7b551c2427fabdc6c0056ca8cc11d4be88141bb36713d961273"
+        }
+      ]
+    }
+  },
+  "standard_modules": {
+    "Integers": "071da69e5eea383d361ef308ba12ecc931bf968fcea98175c3bca419bbd8cbf2",
+    "Naturals": "73f2a68412039aa86f37ad08f0d0fef50fa8327d0ad8806f515548c75e9d9d84",
+    "Sequences": "f613cffe14133769f0972b6f6e0139aaf0773004a51bac88ada382426e3eb7f4",
+    "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
+  },
+  "status": "Parameterized upper-bound and complete first-match refinement; no receipt ordering assumption."
+}
