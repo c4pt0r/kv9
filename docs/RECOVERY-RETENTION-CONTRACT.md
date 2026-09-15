@@ -4,24 +4,25 @@ Status: C04 design increment, 2026-09-15. Tracks [#14](https://github.com/c4pt0r
 under [#9](https://github.com/c4pt0r/kv9/issues/9). Source audit: `d4a7ab782e5a057b40c6ea1099ee93059bdfc77e`.
 This defines the implementation contract for the remaining storage work. The
 initial common anchor codec and local recovery binding are now implemented;
-the replicated retention ledger, transferable authority and installation
-composition remain unfinished. C04 remains open.
+the tracking-only replicated ledger is implemented below. Complete reference
+coverage, transferable authority and installation composition remain unfinished.
+C04 remains open.
 
 The [per-resource record increment](RETENTION-RECORD.md) now implements bounded
 pin transitions and their recovery codec, with a checked parameterized component
-proof. It does not yet implement the enclosing durable ledger or complete anchor.
+proof. Its enclosing ledger and local recovery binding are described below.
 
 The [configuration-at-cut component](CONFIGURATION-AT-CUT.md) now supplies the
 actual full membership at an exact retained committed cut, with refusal for
 missing or ambiguous authority. The [local checkpoint publication validator](CHECKPOINT-PUBLICATION.md)
 now consumes that input during startup and matches an actual winning apply batch
-to its exact committed manifest command. Complete portable anchor identity,
-retention binding and bounded online snapshot capture remain open.
+to its exact committed manifest command. Transferable anchor authority,
+complete retention binding and bounded online snapshot capture remain open.
 
 The subsequent [base identity check](CHECKPOINT-BASE-IDENTITY.md) binds upload
 scope to the exact frozen image and inspects the restored historical root,
-schema and initial owner epoch before tail replay. It does not yet mint a
-portable anchor or destination install capability.
+schema and initial owner epoch before tail replay. It contributes to the local
+anchor below; destination installation remains a separate capability.
 
 The [initial anchor envelope](RECOVERY-ANCHOR-ENVELOPE.md) now combines those
 observations from one complete local open. Its bounded canonical descriptor
@@ -29,6 +30,14 @@ binds root, historical owner epoch, distinct image/configuration/publication
 positions, full joint configuration and manifest. Public decoding cannot mint
 the private local observation. Retention remains explicitly unbound and retained
 protocol history remains required; destination installation is still separate.
+
+The [tracking-only ledger](RETENTION-LEDGER.md) now commits bounded resource
+registrations and whole-closure owner transitions in the existing metadata Raft
+group. Exact duplicate calls receive a new confirmation receipt; ambiguous
+outcomes remain ambiguous. The proof and new actual leader-failure recovery
+cover registered state, not complete reference discovery or physical deletion.
+Checkpoint writers, pending attempts and readers still need automatic owner
+integration and backfill before these records can supply retention authority.
 
 ## Authority already implemented
 

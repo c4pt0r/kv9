@@ -1,0 +1,26 @@
+{
+  "archive": {
+    "bytes": 1580549,
+    "path": "/mnt/data/kv9-work/ledger-agent-packet-20260915-first/evidence.tar.gz",
+    "sha256": "cc10ce2d639f977c34ec2bc3ddbedbba5e7c0b858b1d417c3844a859d2c01a62"
+  },
+  "complete": true,
+  "elapsed_seconds": 0.7035851201508194,
+  "gzip_member_count": 1,
+  "originals_retained": true,
+  "parts": [
+    {
+      "bytes": 1580549,
+      "path": "/mnt/data/kv9-work/ledger-agent-packet-20260915-first/evidence.tar.gz.part-000",
+      "sha256": "cc10ce2d639f977c34ec2bc3ddbedbba5e7c0b858b1d417c3844a859d2c01a62"
+    }
+  ],
+  "scope": "Reporting compression only; no database/codec acceptance replay.",
+  "selected_original_bytes": 129368514,
+  "selection": {
+    "bytes": 761259,
+    "path": "/mnt/data/kv9-work/ledger-agent-packet-20260915-first/selection.json",
+    "sha256": "910c656be79b7596987bf83aceba8493506b3a34d478d33ca92d4b076fe01766"
+  },
+  "tar_file_members": 2902
+}

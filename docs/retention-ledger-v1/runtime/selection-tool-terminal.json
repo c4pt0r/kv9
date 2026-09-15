@@ -1,0 +1,13 @@
+{
+  "actual_terminal_receipt": "b55acf",
+  "complete": true,
+  "cpu_affinity": "6-15,22-31",
+  "execution_kind": "direct_tool_terminal",
+  "exit_code": 0,
+  "original_workloads_replayed": false,
+  "result": {
+    "bytes": 761259,
+    "path": "/mnt/data/kv9-work/ledger-agent-packet-20260915-first/selection.json",
+    "sha256": "910c656be79b7596987bf83aceba8493506b3a34d478d33ca92d4b076fe01766"
+  }
+}

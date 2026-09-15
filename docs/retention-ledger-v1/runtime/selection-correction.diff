@@ -1,0 +1,33 @@
+--- prepare-first-failed.py
++++ prepare.py
+@@ -11,9 +11,10 @@
+  return {'path':str(p),'bytes':s.st_size,'sha256':h}
+ def save(name,x):
+  with (OUT/name).open('x') as f:json.dump(x,f,indent=2,sort_keys=True);f.write('\n')
+-(OUT/'receipts').mkdir()
++(OUT/'receipts').mkdir(exist_ok=True)
+ for name,receipt in [('raw','268089'),('ledger','6d7cff')]:
+- save('receipts/'+name+'-audit-tool-terminal.json',{'complete':True,'execution_kind':'direct_tool_terminal','actual_terminal_receipt':receipt,'exit_code':0,'result':pin(AUDIT/(name+'-result.json')),'source':pin(AUDIT/('audit-'+name+'.py')),'recording_note':'Recorded after observed original tool completion; no audit was replayed to produce this receipt.'})
++ receipt_value = {'complete':True,'execution_kind':'direct_tool_terminal','actual_terminal_receipt':receipt,'exit_code':0,'result':pin(AUDIT/(name+'-result.json')),'source':pin(AUDIT/('audit-'+name+'.py')),'recording_note':'Recorded after observed original tool completion; no audit was replayed to produce this receipt.'}
++ assert json.loads((OUT/('receipts/'+name+'-audit-tool-terminal.json')).read_text())==receipt_value
+ rows={};excluded=[]
+ def add(p,name,expected=None):
+  p=Path(p);r=pin(p);assert r['bytes']<=128*1024**2
+@@ -42,7 +43,7 @@
+ for path,r in json.loads((D/'original-failure-input-pins.json').read_text()).items():
+  p=Path(path);rel=p.relative_to('/mnt/data/kv9-work/ledger-development-acceptance-20260915-first/tmp')
+  assert p.name in ('status','metrics.json');add(p,'discriminator/original-fixtures/'+str(rel),r)
+-for name in ('restoration.json','download.log','export.stderr','nodes.json','nodes.stderr'):
++for name in ('restoration.json','download.log','kubeconfig-export.stderr','nodes.json','nodes.stderr'):
+  add(Path('/mnt/data/kv9-work/chaos-tools-20260915-first')/name,'tools/'+name)
+ public=json.loads((CHAOS/'public-evidence-manifest.json').read_text());assert public['complete']
+ for r in public['files']:add(r['path'],'chaos/'+r['relative_path'],r)
+@@ -67,7 +68,7 @@
+  {'path':'Original large unit-fixture WAL/data files','reason':'Not selected; exact failing status/metrics and original logs retained. Only current Chaos stopped-node payloads included.'},
+  {'path':'Prior ledger registered SST object aeb165c2ba15f38013c6563b58c4dd7170c2280c135a6435f4bd0222e5c4a909','reason':'Descriptor retained, but body was not separately captured before owned MinIO cleanup. Captured recovery SST is different; no body-preservation claim.'}
+ ])
+-for name in ('prepare.py','pack.py','verify.py','README.md'):
++for name in ('prepare.py','prepare-first-failed.py','selection-first-failure.json','selection-correction.diff','pack.py','verify.py','README.md'):
+  add(OUT/name,'reporting/'+name)
+ assert len(rows)<=4096 and sum(r['bytes']for r in rows.values())<=512*1024**2
+ save('selection.json',{'schema_version':1,'complete':True,'files':[rows[n]for n in sorted(rows)],'member_count':len(rows),'original_bytes':sum(r['bytes']for r in rows.values()),'limits':{'members':4096,'member_bytes':128*1024**2,'aggregate_original_bytes':512*1024**2,'part_bytes':2*1024**2},'exclusions':excluded,'scope':'Completed environment, guard, failed-library discriminator, actual ledger Chaos histories and complete retained stopped-node archives; no workload replay.'})

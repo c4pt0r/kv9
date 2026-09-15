@@ -27,9 +27,9 @@ MIB = 1024**2
 MINIO = "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9"
 MINIO_TAG = "quay.io/minio/minio:latest"
 BASE = "sha256:b2b7ea366714195a1e1c5b2b578ece85c0b3920381a8654d038d9684f009613c"
-KIND = "/tmp/kv9-p0-tools/kind-linux-amd64"
+KIND = os.environ.get("KV9_KIND", "/tmp/kv9-p0-tools/kind-linux-amd64")
 CLUSTER = "kv9-chaos-ci-p0-20260908"
-KUBECONFIG = "/tmp/kv9-p0-ci-chaos.kubeconfig"
+KUBECONFIG = os.environ.get("KV9_CHAOS_KUBECONFIG", "/tmp/kv9-p0-ci-chaos.kubeconfig")
 PROTECTED = {
     "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
     "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
@@ -61,6 +61,84 @@ def parent_death(parent):
         os.kill(os.getpid(), signal.SIGKILL)
 
 
+class FilesystemBudget:
+    """Charge each distinct host/output filesystem's retained high-water decrease."""
+
+    def __init__(self, output, *, stat_fn=None, statvfs_fn=None):
+        self.stat = stat_fn or os.stat
+        self.statvfs = statvfs_fn or os.statvfs
+        self.paths = {"host": Path("/"), "output": Path(output)}
+        self.devices = {role: self.stat(path).st_dev for role, path in self.paths.items()}
+        self.filesystems = {}
+        for role, device in self.devices.items():
+            if device not in self.filesystems:
+                v = self.statvfs(self.paths[role])
+                free = v.f_bavail * v.f_frsize
+                self.filesystems[device] = {"device": device, "roles": [], "paths": [],
+                    "baseline_available_bytes": free, "current_available_bytes": free,
+                    "minimum_available_bytes": free, "maximum_observed_decrease_bytes": 0}
+            self.filesystems[device]["roles"].append(role)
+            self.filesystems[device]["paths"].append(str(self.paths[role]))
+
+    @property
+    def host(self):
+        return self.filesystems[self.devices["host"]]
+
+    def sample(self):
+        for role, path in self.paths.items():
+            require(self.stat(path).st_dev == self.devices[role], "filesystem device changed: " + role)
+        for row in self.filesystems.values():
+            v = self.statvfs(row["paths"][0])
+            free = v.f_bavail * v.f_frsize
+            row["current_available_bytes"] = free
+            row["minimum_available_bytes"] = min(row["minimum_available_bytes"], free)
+            row["maximum_observed_decrease_bytes"] = max(0, row["baseline_available_bytes"] - row["minimum_available_bytes"])
+        return self.snapshot()
+
+    def snapshot(self):
+        return {"schema_version": 1, "host_device": self.devices["host"],
+                "output_device": self.devices["output"],
+                "filesystems": [dict(row, roles=list(row["roles"]), paths=list(row["paths"]))
+                                for row in self.filesystems.values()],
+                "maximum_observed_total_decrease_bytes": sum(
+                    row["maximum_observed_decrease_bytes"] for row in self.filesystems.values())}
+
+    def check(self, *, launch=False):
+        for row in self.filesystems.values():
+            roles = "/".join(row["roles"])
+            if launch:
+                require(row["baseline_available_bytes"] >= 9*GIB + 8*MIB,
+                        "9 GiB plus 8 MiB launch headroom: " + roles)
+            require(row["current_available_bytes"] >= 8*GIB, "8 GiB available floor: " + roles)
+        require(self.snapshot()["maximum_observed_total_decrease_bytes"] <= GIB,
+                "1 GiB total conservative filesystem decrease")
+
+    def inherit(self, failure, prior):
+        """Retain failed-attempt charges; refuse a filesystem switch during reuse."""
+        require(self.stat(prior).st_dev == self.devices["output"], "prior output filesystem changed")
+        old = failure.get("filesystem_budget")
+        if old is None:
+            require(len(self.filesystems) == 1, "legacy failure needs the same host/output filesystem")
+            prior_rows = [dict(device=self.devices["host"], roles=["host", "output"],
+                              baseline_available_bytes=failure["baseline_available_bytes"],
+                              minimum_available_bytes=failure["minimum_available_bytes"])]
+        else:
+            require(old["schema_version"] == 1 and old["host_device"] == self.devices["host"]
+                    and old["output_device"] == self.devices["output"], "prior filesystem budget binding")
+            prior_rows = old["filesystems"]
+        require(len(prior_rows) == len(self.filesystems)
+                and {row["device"] for row in prior_rows} == set(self.filesystems), "prior filesystem set")
+        for prior_row in prior_rows:
+            row = self.filesystems[prior_row["device"]]
+            require(prior_row["roles"] == row["roles"], "prior filesystem roles")
+            baseline, minimum = prior_row["baseline_available_bytes"], prior_row["minimum_available_bytes"]
+            require(type(baseline) is int and type(minimum) is int and 0 <= minimum <= baseline,
+                    "prior filesystem counters")
+            row["baseline_available_bytes"] = baseline
+            row["minimum_available_bytes"] = min(minimum, row["current_available_bytes"])
+        self.sample()
+
+
 class Cell:
     def __init__(self, args):
         self.args = args
@@ -73,14 +151,14 @@ class Cell:
         self.values = {k: secrets.token_hex(24) for k in ("bootstrap", "cluster", "client", "access", "secret")}
         self.env = {**os.environ, "KUBECONFIG": KUBECONFIG, "KV9_BOOTSTRAP_TOKEN": self.values["bootstrap"]}
         self.started = time.monotonic()
-        self.baseline = self.available()
+        self.storage = FilesystemBudget(self.out)
         self.prior = None
         if args.prior_preparation:
             self.prior = args.prior_preparation.resolve()
             failure = json.loads((self.prior / "failure.json").read_text())
             require(failure["complete"] is False and failure["phase"] == "provision" and failure["fault_uid"] is None, "only a failed pre-workload provision may supply images/baseline")
             require(not (self.prior / "failed-history.json").exists(), "prior workload must not have started")
-            self.baseline = failure["baseline_available_bytes"]
+            self.storage.inherit(failure, self.prior)
         self.image_failure = None
         if args.image_preparation_failure:
             require(args.retained_ca_base and not args.prior_preparation, "failed image preparation requires the new-binary CA route")
@@ -91,8 +169,9 @@ class Cell:
             binding = json.loads((self.image_failure/"source-binding.json").read_text())
             require(binding["binary"] == pin(args.binary) and binding["binary"]["sha256"] == args.binary_sha256 and binding["inputs"] == pin(args.inputs), "failed image's exact new binary and input authority")
             require(pin(self.image_failure/"image-context/kv9")["sha256"] == args.binary_sha256, "preserved executable context identity")
-            self.baseline = failure["baseline_available_bytes"]
-        self.minimum = min(self.baseline, self.available())
+            self.storage.inherit(failure, self.image_failure)
+        self.baseline = self.storage.host["baseline_available_bytes"]
+        self.minimum = self.storage.host["minimum_available_bytes"]
         self.count = 0
         self.ns_uid = None
         self.fault_uid = None
@@ -115,18 +194,20 @@ class Cell:
             os.fsync(f.fileno())
 
     def available(self):
-        v = os.statvfs(self.out)
+        # Legacy scalar fields describe the Docker/Kind host filesystem.
+        v = os.statvfs("/")
         return v.f_bavail * v.f_frsize
 
     def guard(self):
-        free = self.available()
-        self.minimum = min(self.minimum, free)
-        require(free >= 8 * GIB, "8 GiB host available floor")
-        require(self.baseline - free <= GIB, "1 GiB measured added host footprint")
+        storage = self.storage.sample()
+        free = self.storage.host["current_available_bytes"]
+        self.minimum = self.storage.host["minimum_available_bytes"]
+        self.storage.check()
         require(time.monotonic() - self.started < 1200, "1200-second outer deadline")
         with (self.out / "resources.jsonl").open("a") as f:
             f.write(json.dumps({"observed_ns": time.time_ns(), "phase": self.phase, "available_bytes": free,
-                                "decrease_from_original_baseline": self.baseline - free}) + "\n")
+                                "decrease_from_original_baseline": max(0, self.baseline - free),
+                                "filesystem_budget": storage}) + "\n")
 
     def redact(self, value):
         for secret in self.values.values():
@@ -293,9 +374,19 @@ class Cell:
         self.save("public-evidence-manifest.json", {"complete": True, "files": rows, "excluded": omitted,
                     "scope": "Nonsecret exact metadata/source/command evidence only; credentials never hashed or archived."})
 
+    def before_fault(self):
+        """Extension point after reclamation and before selecting the crash cut."""
+
+    def choose_victim(self):
+        return 3 if self.leader_id != 3 else 2
+
+    def after_recovery(self):
+        """Extension point after fresh all-voter progress, before scoped cleanup."""
+
     def run(self):
         require(os.geteuid() == 0, "root needed for isolated Kind/Docker fixture")
-        require(self.baseline >= 9*GIB + 8*MIB, "floor plus complete1GiB footprint and metadata launch reservation")
+        self.guard()
+        self.storage.check(launch=True)
         binary = pin(self.args.binary)
         require(binary["sha256"] == self.args.binary_sha256, "tested binary changed")
         inputs = json.loads(self.args.inputs.read_text())
@@ -470,7 +561,9 @@ printf 'physical_files_checked=%s\\n' "${#files[@]}"
         self.save("reclamation.json",{"complete":True,"target_paths":target_paths,"filler_writes":count,"filler_bytes_each":60*1024,"through":through,"physical_absence_observed":True})
         self.check(b"keep",b"remote-value");self.check(b"deleted",None);self.check(b"overwrite",b"new-value");self.check(b"wal-rotation-filler",None)
         self.wait("stable leader before fault",self.agreement)
-        victim = 3 if self.leader_id!=3 else 2
+        self.before_fault()
+        self.wait("stable leader after pre-fault extension",self.agreement)
+        victim = self.choose_victim()
         before=self.pod(victim);old=before["status"]["containerStatuses"][0]
         lifecycle=self.exec(self.pods[victim],"cat","/data/kv9-store-lifecycle")[0]
         selected=self.layout(victim,"before-fault").checkpoint
@@ -515,6 +608,7 @@ printf 'physical_files_checked=%s\\n' "${#files[@]}"
             rows=self.statuses()
             return rows and set(rows)=={1,2,3} and all(int(r.get("driver_applied_index","0"))>=int(receipt["applied_index"])for r in rows.values()) and self.agreement(rows)
         self.wait("fresh acknowledged write caught up everywhere",caught_up)
+        self.after_recovery()
         self.save("recovered-status.json",self.statuses())
         self.save("history.json",self.history)
         self.save("cell-acceptance.json",{"complete":True,"victim":victim,"namespace":self.namespace,"namespace_uid":self.ns_uid,"fault_uid":self.fault_uid,"selected_checkpoint":selected,"recovery_log_matches":[[int(y)for y in x]for x in matches],"old_container_id":old["containerID"],"new_container_id":new["containerID"],"old_exit_code":137,"same_pod_pvc_store":True,"fresh_write_receipt":receipt,"reclamation":pin(self.out/"reclamation.json"),"image_id":image_id,"tested_binary":binary})
@@ -544,7 +638,7 @@ printf 'physical_files_checked=%s\\n' "${#files[@]}"
         before_protection=json.loads((self.out/"protected-before.json").read_text());after_protection=json.loads((self.out/"protected-after.json").read_text())
         require(before_protection["namespaces"]==after_protection["namespaces"] and before_protection["fault"]["spec"]==after_protection["fault"]["spec"],"historical protections unchanged")
         self.guard()
-        result={"complete":True,"namespace":self.namespace,"namespace_uid":self.ns_uid,"owned_namespace_removed":True,"fault_uid":self.fault_uid,"actual_fault":"PodChaos/container-kill","acceptance":pin(self.out/"cell-acceptance.json"),"baseline_available_bytes":self.baseline,"minimum_available_bytes":self.minimum,"final_available_bytes":self.available(),"maximum_observed_decrease_bytes":self.baseline-self.minimum,"maximum_added_budget_bytes":GIB,"floor_bytes":8*GIB,"protected_namespaces_unchanged":True,"old_fault_unchanged":True,"credentials_excluded":"credentials.json and Secret stdin omitted from portable evidence","scope":"One actual container death and remote-checkpoint restart on single-host Kind; no object-store power-loss durability, full21 or performance acceptance."}
+        result={"complete":True,"namespace":self.namespace,"namespace_uid":self.ns_uid,"owned_namespace_removed":True,"fault_uid":self.fault_uid,"actual_fault":"PodChaos/container-kill","acceptance":pin(self.out/"cell-acceptance.json"),"baseline_available_bytes":self.baseline,"minimum_available_bytes":self.minimum,"final_available_bytes":self.available(),"maximum_observed_decrease_bytes":self.storage.snapshot()["maximum_observed_total_decrease_bytes"],"maximum_added_budget_bytes":GIB,"floor_bytes":8*GIB,"filesystem_budget":self.storage.snapshot(),"protected_namespaces_unchanged":True,"old_fault_unchanged":True,"credentials_excluded":"credentials.json and Secret stdin omitted from portable evidence","scope":"One actual container death and remote-checkpoint restart on single-host Kind; no object-store power-loss durability, full21 or performance acceptance."}
         self.save("result.json",result)
         self.public_manifest()
         print(json.dumps(result,sort_keys=True),flush=True)
@@ -565,7 +659,7 @@ def main():
     signal.signal(signal.SIGTERM,stop);signal.signal(signal.SIGINT,stop)
     try:cell.run()
     except BaseException as error:
-        cell.save("failure.json",{"complete":False,"phase":cell.phase,"error":str(error),"namespace":cell.namespace,"namespace_uid":cell.ns_uid,"fault_uid":cell.fault_uid,"available_bytes":cell.available(),"baseline_available_bytes":cell.baseline,"minimum_available_bytes":cell.minimum,"owned_namespace_preserved_for_inspection":cell.ns_uid is not None,"historical_evidence_unchanged":True})
+        cell.save("failure.json",{"complete":False,"phase":cell.phase,"error":str(error),"namespace":cell.namespace,"namespace_uid":cell.ns_uid,"fault_uid":cell.fault_uid,"available_bytes":cell.available(),"baseline_available_bytes":cell.baseline,"minimum_available_bytes":cell.minimum,"filesystem_budget":cell.storage.snapshot(),"owned_namespace_preserved_for_inspection":cell.ns_uid is not None,"historical_evidence_unchanged":True})
         if cell.history:cell.save("failed-history.json",cell.history)
         cell.public_manifest()
         raise

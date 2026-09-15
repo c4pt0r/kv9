@@ -37,9 +37,33 @@ service Kv9 {
   rpc PromoteNode(PromoteNodeRequest) returns (MembershipChangeResponse);
   rpc GetNodeEndpoint(GetNodeEndpointRequest) returns (GetNodeEndpointResponse);
   rpc ChangeNodeEndpoint(ChangeNodeEndpointRequest) returns (ChangeNodeEndpointResponse);
+  // Tracking-only retention administration. No object deletion or installation.
+  rpc ApplyRetention(ApplyRetentionRequest) returns (ApplyRetentionResponse);
+  rpc GetRetentionOwner(GetRetentionOwnerRequest) returns (GetRetentionOwnerResponse);
 }
 
 message Empty {}
+
+message ApplyRetentionRequest {
+  // Canonical KV9RTX01 frame, including exact root; at most 16 KiB.
+  bytes command = 1;
+}
+message ApplyRetentionResponse {
+  uint64 revision = 1;
+  // If false, the position is a NEW confirmation, not an original receipt.
+  bool changed = 2;
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
+}
+message GetRetentionOwnerRequest {
+  bytes root_digest = 1;
+  bytes owner_id = 2;
+}
+message GetRetentionOwnerResponse {
+  bool found = 1;
+  // Canonical KV9OWN01 observation, not a usable retention capability.
+  bytes owner = 2;
+}
 
 message NodeEndpoint {
   uint64 node_id = 1;

@@ -69,6 +69,18 @@ pub struct ResourceIdentity {
     content: [u8; 32],
 }
 impl ResourceIdentity {
+    pub fn root(&self) -> RootDigest {
+        self.root
+    }
+    pub fn kind(&self) -> ResourceKind {
+        self.kind
+    }
+    pub fn instance(&self) -> &[u8; 16] {
+        &self.instance
+    }
+    pub fn content(&self) -> &[u8; 32] {
+        &self.content
+    }
     pub fn new(
         root: RootDigest,
         kind: ResourceKind,
@@ -92,6 +104,9 @@ impl ResourceIdentity {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct OwnerId([u8; 16]);
 impl OwnerId {
+    pub fn as_bytes(&self) -> &[u8; 16] {
+        &self.0
+    }
     pub fn new(bytes: [u8; 16]) -> Result<Self, PinError> {
         if bytes == [0; 16] {
             return Err(PinError::InvalidIdentity);

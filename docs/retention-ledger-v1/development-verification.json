@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "archive_sha256": "0d369ff3ce97abec1e14f8154fcfdf2ddcb15559e52c2f9faf24747e8cc029ac",
+  "archive_bytes": 1431448,
+  "members": 1101,
+  "decoded_bytes": 7568174,
+  "inventory_sha256": "8001bb4c3f54870513e8826b7d1250d85b705a04f3185c7fb6d60a2e28848b40",
+  "all_members_equal_original": true,
+  "frozen_source_pins_checked": 165,
+  "executable_bytes_excluded": true
+}

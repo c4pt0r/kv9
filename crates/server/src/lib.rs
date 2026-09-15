@@ -15,6 +15,7 @@ mod point_stream;
 #[cfg(test)]
 mod point_test_support;
 mod point_wire;
+pub mod retention;
 pub mod routing;
 #[cfg(feature = "rpc-experiment")]
 pub mod rpc_experiment;

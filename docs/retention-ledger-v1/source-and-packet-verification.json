@@ -1,0 +1,50 @@
+{
+  "source_pins_match": 165,
+  "python_parse": 5,
+  "format_and_diff_terminal": "a6a0f3/0",
+  "no_source_changes_after_frozen_build": true,
+  "observed_unix": 1789496059.9022055,
+  "source_verification_terminal": "a7e6cd/0",
+  "all_five_current_proof_source_inventories_verified": "78bf62/0",
+  "packet_readback_terminal": "75e68a/0",
+  "packet_readback": {
+    "status": "PASS",
+    "packets": [
+      {
+        "archive": "docs/retention-ledger-v1/development.tar.gz",
+        "sha256": "0d369ff3ce97abec1e14f8154fcfdf2ddcb15559e52c2f9faf24747e8cc029ac",
+        "members": 1101,
+        "original_files_checked": 1101,
+        "all_original_bytes_equal": true
+      },
+      {
+        "archive": "docs/retention-ledger-v1/runtime/evidence.tar.gz",
+        "sha256": "cc10ce2d639f977c34ec2bc3ddbedbba5e7c0b858b1d417c3844a859d2c01a62",
+        "members": 2902,
+        "original_files_checked": 2901,
+        "all_original_bytes_equal": true
+      }
+    ],
+    "runtime_companion_files_match": true,
+    "protocol_logs": [
+      {
+        "outer": "chaos/n1-stopped-data.tar",
+        "member": "./raft/raft.log",
+        "bytes": 17398231,
+        "sha256": "db4b2a8145206297a2e032704d375c52438322d2be1a8404149e8041a512b93a"
+      },
+      {
+        "outer": "chaos/n2-stopped-data.tar",
+        "member": "./raft/raft.log",
+        "bytes": 17398216,
+        "sha256": "ed34ccc02e528198da4efb2ba5aa3d70564c3b664715ced3cb41f47d8e89b271"
+      },
+      {
+        "outer": "chaos/n3-stopped-data.tar",
+        "member": "./raft/raft.log",
+        "bytes": 17398199,
+        "sha256": "353f898c6734123e8fcc734ffabcaecfc513328c85353c2e649f34e38100bb93"
+      }
+    ]
+  }
+}

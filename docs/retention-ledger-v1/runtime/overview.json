@@ -1,0 +1,89 @@
+{
+  "archive": {
+    "bytes": 1580549,
+    "path": "/mnt/data/kv9-work/ledger-agent-packet-20260915-first/evidence.tar.gz",
+    "sha256": "cc10ce2d639f977c34ec2bc3ddbedbba5e7c0b858b1d417c3844a859d2c01a62"
+  },
+  "audit_tool_terminals": [
+    "268089/0",
+    "6d7cff/0"
+  ],
+  "complete": true,
+  "fresh_absent_command_lifetimes": 526,
+  "independent_original_byte_readback_terminal": "9e0278/0",
+  "known_secret_matches": 0,
+  "known_secret_scan_terminal": "5e7f5d/0",
+  "later_selected_recovery_sst_body_retained": true,
+  "ledger_calls": 16,
+  "ledger_changed_transactions": 8,
+  "ledger_duplicate_confirmations": 2,
+  "manifest_bytes": 761259,
+  "missing_fixed_performance_client_preservation": "UNVERIFIED",
+  "no_new_workload_or_acceptance_replay": true,
+  "package_tool_terminal": "4fd8bc/0",
+  "raft_logs": [
+    {
+      "original_archive_readback_complete": true,
+      "raft_log": {
+        "bytes": 17398231,
+        "name": "./raft/raft.log",
+        "sha256": "db4b2a8145206297a2e032704d375c52438322d2be1a8404149e8041a512b93a"
+      },
+      "retained_archive": {
+        "bytes": 18114560,
+        "path": "/mnt/data/kv9-work/ledger-chaos-20260915-first/n1-stopped-data.tar",
+        "sha256": "994d7e693386ebe37fbc98e565e860e718fe8ce328d3a6b90db535516970ac79"
+      },
+      "voter": 1
+    },
+    {
+      "original_archive_readback_complete": true,
+      "raft_log": {
+        "bytes": 17398216,
+        "name": "./raft/raft.log",
+        "sha256": "ed34ccc02e528198da4efb2ba5aa3d70564c3b664715ced3cb41f47d8e89b271"
+      },
+      "retained_archive": {
+        "bytes": 18114560,
+        "path": "/mnt/data/kv9-work/ledger-chaos-20260915-first/n2-stopped-data.tar",
+        "sha256": "0fb2dce8fd48d92c86671410d3cd5d898a615056cfc2e7122d0e3ee11ac6258c"
+      },
+      "voter": 2
+    },
+    {
+      "original_archive_readback_complete": true,
+      "raft_log": {
+        "bytes": 17398199,
+        "name": "./raft/raft.log",
+        "sha256": "353f898c6734123e8fcc734ffabcaecfc513328c85353c2e649f34e38100bb93"
+      },
+      "retained_archive": {
+        "bytes": 18114560,
+        "path": "/mnt/data/kv9-work/ledger-chaos-20260915-first/n3-stopped-data.tar",
+        "sha256": "a2c9316a23d424d44ca2e5ad398b55cdbce2dacf87903ce8f5a9e6f38e9156ca"
+      },
+      "voter": 3
+    }
+  ],
+  "raw_operations": 296,
+  "registered_earlier_sst_body_retained": false,
+  "reporting_allocation_is_separate_from_runtime": true,
+  "reporting_only_failures": [
+    {
+      "phase": "selection",
+      "receipt": "6a54de/1",
+      "record": "selection-first-failure.json"
+    },
+    {
+      "phase": "known-secret scan input interpretation",
+      "receipt": "4dd914/1",
+      "record": "known-secret-scan-first-failure.json"
+    }
+  ],
+  "reporting_root_allocation_at_observation_bytes": 4018176,
+  "runtime_conservative_peak_decrease_bytes": 587988992,
+  "runtime_tool_terminal": "96465/d5c80a/0",
+  "selected_original_bytes": 129368514,
+  "tar_members": 2902,
+  "total_regular_member_bytes": 130129773
+}

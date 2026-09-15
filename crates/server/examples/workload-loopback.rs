@@ -130,6 +130,8 @@ service! {
     promote_node: PromoteNodeRequest => MembershipChangeResponse,
     get_node_endpoint: GetNodeEndpointRequest => GetNodeEndpointResponse,
     change_node_endpoint: ChangeNodeEndpointRequest => ChangeNodeEndpointResponse,
+    apply_retention: ApplyRetentionRequest => ApplyRetentionResponse,
+    get_retention_owner: GetRetentionOwnerRequest => GetRetentionOwnerResponse,
 }
 
 fn publish(path: &Path, value: serde_json::Value) -> std::io::Result<()> {

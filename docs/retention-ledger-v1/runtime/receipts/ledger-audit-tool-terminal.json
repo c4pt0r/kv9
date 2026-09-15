@@ -1,0 +1,17 @@
+{
+  "actual_terminal_receipt": "6d7cff",
+  "complete": true,
+  "execution_kind": "direct_tool_terminal",
+  "exit_code": 0,
+  "recording_note": "Recorded after observed original tool completion; no audit was replayed to produce this receipt.",
+  "result": {
+    "bytes": 1648,
+    "path": "/mnt/data/kv9-work/ledger-chaos-audit-20260915-first/ledger-result.json",
+    "sha256": "86dc97c9c221ba5597323f971a0439510d5a05866973804712acba34c998c5c7"
+  },
+  "source": {
+    "bytes": 9971,
+    "path": "/mnt/data/kv9-work/ledger-chaos-audit-20260915-first/audit-ledger.py",
+    "sha256": "45e60511ad59667ea054418520a23e47b3aa295d93f1434f838fbed446266acd"
+  }
+}

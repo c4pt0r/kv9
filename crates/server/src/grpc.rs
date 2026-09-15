@@ -1629,6 +1629,73 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn apply_retention(
+        &self,
+        request: Request<proto::ApplyRetentionRequest>,
+    ) -> Result<Response<proto::ApplyRetentionResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let caller = auth.principal.to_string();
+        let command = request.into_inner().command;
+        if command.len() > kv9_meta::retention::MAX_LEDGER_REQUEST_BYTES {
+            return Err(Status::invalid_argument(
+                "retention request exceeds byte bound",
+            ));
+        }
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.apply_retention(&caller, command)
+            })
+            .await?;
+        Ok(Response::new(proto::ApplyRetentionResponse {
+            revision: result.revision,
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+        }))
+    }
+
+    async fn get_retention_owner(
+        &self,
+        request: Request<proto::GetRetentionOwnerRequest>,
+    ) -> Result<Response<proto::GetRetentionOwnerResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let caller = auth.principal.to_string();
+        let request = request.into_inner();
+        let root: [u8; 32] = request
+            .root_digest
+            .as_slice()
+            .try_into()
+            .map_err(|_| Status::invalid_argument("retention root must be 32 bytes"))?;
+        if root == [0; 32] {
+            return Err(Status::invalid_argument("retention root must be nonzero"));
+        }
+        let owner = kv9_common::retention::OwnerId::new(
+            request
+                .owner_id
+                .as_slice()
+                .try_into()
+                .map_err(|_| Status::invalid_argument("retention owner must be 16 bytes"))?,
+        )
+        .map_err(|e| Status::invalid_argument(e.to_string()))?;
+        let owner = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.get_retention_owner(
+                    &caller,
+                    kv9_common::RootDigest::from_bytes(root),
+                    owner,
+                )
+            })
+            .await?;
+        Ok(Response::new(proto::GetRetentionOwnerResponse {
+            found: owner.is_some(),
+            owner: owner.unwrap_or_default(),
+        }))
+    }
+
     async fn get_node_endpoint(
         &self,
         request: Request<proto::GetNodeEndpointRequest>,

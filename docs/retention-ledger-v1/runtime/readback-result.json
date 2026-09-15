@@ -1,0 +1,15 @@
+{
+  "all_members_sha256_match": true,
+  "all_original_bytes_compared": true,
+  "all_parts_exact_reconstruct_archive": true,
+  "archive_sha256": "cc10ce2d639f977c34ec2bc3ddbedbba5e7c0b858b1d417c3844a859d2c01a62",
+  "complete": true,
+  "elapsed_seconds": 0.298384573077783,
+  "gzip_full_eof": true,
+  "manifest_exact_bytes": true,
+  "member_paths_unique": true,
+  "scope": "One independent archive decode/readback; original workload and acceptance controls were not replayed.",
+  "selected_members": 2901,
+  "selected_original_bytes": 129368514,
+  "tar_members": 2902
+}

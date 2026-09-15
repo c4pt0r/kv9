@@ -1,0 +1,102 @@
+{
+  "complete": true,
+  "files": {
+    "README.md": {
+      "bytes": 5115,
+      "sha256": "e264c327f80b9069dd9661c91008538fcca69e49837b01e204a5a9aea8a974ec"
+    },
+    "evidence.tar.gz": {
+      "bytes": 1580549,
+      "sha256": "cc10ce2d639f977c34ec2bc3ddbedbba5e7c0b858b1d417c3844a859d2c01a62"
+    },
+    "evidence.tar.gz.part-000": {
+      "bytes": 1580549,
+      "sha256": "cc10ce2d639f977c34ec2bc3ddbedbba5e7c0b858b1d417c3844a859d2c01a62"
+    },
+    "known-secret-scan-correction.diff": {
+      "bytes": 459,
+      "sha256": "83c9740c23fa6fd411051eb6a71c1d64ce0ed06d080d115eae2934219b97ab66"
+    },
+    "known-secret-scan-first-failure.json": {
+      "bytes": 353,
+      "sha256": "19cda92a25583799e32d0c63bb96d9f38ba33eb1433990f9af02e802837a609d"
+    },
+    "known-secret-scan-result.json": {
+      "bytes": 973,
+      "sha256": "7203e41e346b1c72144254f3f338662ae27fe33b8db5756e4802dd1f8be56534"
+    },
+    "known-secret-scan-tool-terminal.json": {
+      "bytes": 413,
+      "sha256": "58adbd92550172bcbf8f8496004125f5b93cdc8eb0b3bcf104ad1c62eb51a3f9"
+    },
+    "overview.json": {
+      "bytes": 3000,
+      "sha256": "304c259a0aef947330a43723ad0f5e80d652e59e61ff3569bb00499dfbda2c57"
+    },
+    "pack.py": {
+      "bytes": 2533,
+      "sha256": "366a67c1c84cc42a6da841947bf8af4370fa9d5a4e524d0b3a451c938df162df"
+    },
+    "package-result.json": {
+      "bytes": 916,
+      "sha256": "5a2e8ab0c6bef76fbaf2e402e0121175941190d0fdfea34f74b9d3b679b8ab33"
+    },
+    "package-tool-terminal.json": {
+      "bytes": 403,
+      "sha256": "49acf7de7c209356f3b57e691f490382a6ac10cef732cde228fb6430edef9767"
+    },
+    "prepare-first-failed.py": {
+      "bytes": 5957,
+      "sha256": "1910251657c1ce6cc5447f47644496d93ce473122259f9d2913b9b0bf406345e"
+    },
+    "prepare.py": {
+      "bytes": 6131,
+      "sha256": "ed03351c7c937687b6a40baa46b9ed787c6587e8de13be23196ab812b7b2f36d"
+    },
+    "readback-result.json": {
+      "bytes": 568,
+      "sha256": "3bc0716b119e46c82688f20835fa7fd9bdd94c390efd392facb12dbc2bc2fa8f"
+    },
+    "readback-tool-terminal.json": {
+      "bytes": 404,
+      "sha256": "ab5c65f717e7ab62d1858648140e19462ff059fedae8905594461d9f18b2abed"
+    },
+    "receipts/ledger-audit-tool-terminal.json": {
+      "bytes": 653,
+      "sha256": "e7bc78d6d671d28c1d5feb94411bd2659349c12b9b2b15d2bbac6e56be903028"
+    },
+    "receipts/raw-audit-tool-terminal.json": {
+      "bytes": 646,
+      "sha256": "bd060a8113c13fb566b2769240047382813f97b8a1d65cf61438315e94fcb2be"
+    },
+    "scan-known-secrets-first-failed.py": {
+      "bytes": 2540,
+      "sha256": "6137c44775cc72e33fa970edd7b9d5ecb26c14bd2732fc8328c19b77fe56955c"
+    },
+    "scan-known-secrets.py": {
+      "bytes": 2610,
+      "sha256": "9a03cd85f5b2ea6b99e0bf78d3b502f76e6eae66a08522ca8bfb8635fe19fb86"
+    },
+    "selection-correction.diff": {
+      "bytes": 3283,
+      "sha256": "5a33e4afe63798297e5f16f7446131507a9686745bf6f5af80a73788cbdf91f5"
+    },
+    "selection-first-failure.json": {
+      "bytes": 364,
+      "sha256": "22411d0362411d385dd64391c578e69d46185d8ce8b7469b5cf938610ed06985"
+    },
+    "selection-tool-terminal.json": {
+      "bytes": 401,
+      "sha256": "b6f340143e3bfa1b4b5a9127a3fc716e4fa36977d483e3643e44c08a6647333e"
+    },
+    "selection.json": {
+      "bytes": 761259,
+      "sha256": "910c656be79b7596987bf83aceba8493506b3a34d478d33ca92d4b076fe01766"
+    },
+    "verify.py": {
+      "bytes": 3068,
+      "sha256": "7abcf916e1b5b944ce8b86e647e74ba9cba7b22c79506ff4f52bb59a89e8a035"
+    }
+  },
+  "scope": "Finite environment/runtime evidence packet and exact subsequent packaging/secret-scan receipts; no credentials or executable/image inputs."
+}

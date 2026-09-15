@@ -14,6 +14,68 @@ fn bounded(count: usize, bytes: usize) -> Kv9Grpc {
     .unwrap()
 }
 
+#[tokio::test(flavor = "current_thread")]
+async fn retention_requests_enforce_auth_identity_byte_bounds_and_admission() {
+    let service = bounded(1, 64 * 1024);
+    let oversized = proto::ApplyRetentionRequest {
+        command: vec![0; kv9_meta::retention::MAX_LEDGER_REQUEST_BYTES + 1],
+    };
+    assert_eq!(
+        service
+            .apply_retention(Request::new(oversized.clone()))
+            .await
+            .unwrap_err()
+            .code(),
+        Code::Unauthenticated
+    );
+    assert_eq!(
+        service
+            .apply_retention(authenticated(oversized))
+            .await
+            .unwrap_err()
+            .code(),
+        Code::InvalidArgument
+    );
+    for (root, owner) in [
+        (vec![1; 31], vec![1; 16]),
+        (vec![0; 32], vec![1; 16]),
+        (vec![1; 32], vec![1; 15]),
+        (vec![1; 32], vec![0; 16]),
+    ] {
+        assert_eq!(
+            service
+                .get_retention_owner(authenticated(proto::GetRetentionOwnerRequest {
+                    root_digest: root,
+                    owner_id: owner,
+                }))
+                .await
+                .unwrap_err()
+                .code(),
+            Code::InvalidArgument
+        );
+        let state = service.admission().snapshot();
+        assert_eq!(
+            (state.in_flight, state.running, state.encoded_bytes),
+            (0, 0, 0)
+        );
+    }
+    let held = service
+        .admission()
+        .reserve(WorkClass::MetadataWrite, 1)
+        .unwrap();
+    let refused = service
+        .get_retention_owner(authenticated(proto::GetRetentionOwnerRequest {
+            root_digest: vec![1; 32],
+            owner_id: vec![1; 16],
+        }))
+        .await
+        .unwrap_err();
+    assert_eq!(refused.code(), Code::ResourceExhausted);
+    assert!(admission_refusal(&refused).is_some());
+    drop(held);
+    assert_eq!(service.admission().snapshot().in_flight, 0);
+}
+
 #[test]
 fn cancelled_prepared_write_keeps_capacity_across_queue_and_async_wait() {
     let runtime = tokio::runtime::Builder::new_current_thread()

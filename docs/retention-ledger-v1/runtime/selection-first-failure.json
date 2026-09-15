@@ -1,0 +1,10 @@
+{
+  "complete": false,
+  "actual_terminal_receipt": "6a54de",
+  "exit_code": 1,
+  "error": "FileNotFoundError: expected export.stderr, actual kubeconfig-export.stderr",
+  "phase": "metadata selection",
+  "archive_started": false,
+  "runtime_acceptance_unchanged": true,
+  "first_source_sha256": "1910251657c1ce6cc5447f47644496d93ce473122259f9d2913b9b0bf406345e"
+}

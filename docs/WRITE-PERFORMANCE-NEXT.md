@@ -14,13 +14,13 @@ lookup paths and prove whether unchanged pending results can avoid repeated
 inspection. The [complete ten-second baseline](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
 remains selected; the two-second observer sweep does not replace that gate.
 
-While full-screen capacity is unavailable, the C04
+During the earlier full-screen capacity constraint, the C04
 [checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local
 restart authority: an actual atomic winning manifest apply must match the exact
 committed command; a committed CAS loser cannot certify recovery. This consumes
 the historical configuration-at-cut provider without adding work to online
-apply or changing the selected write candidate. Complete portable anchors and
-the replicated retention ledger remain the next storage prerequisites.
+apply or changing the selected write candidate. Complete portable authority and
+retention integration remain storage prerequisites.
 
 The subsequent [historical base identity increment](CHECKPOINT-BASE-IDENTITY.md)
 derives upload scope from the exact frozen image and checks its certified root,
@@ -29,9 +29,18 @@ recoverable. The [initial anchor envelope](RECOVERY-ANCHOR-ENVELOPE.md) now
 composes this observation with the committed configuration and actual winning
 publication. Its bounded description and private local recovery observation pass
 684 library tests, strict binding proofs and new actual three-voter/Chaos Mesh
-recovery. Next implement the replicated outer retention ledger and ownership
-transition evidence, then destination admission and atomic installation.
-This storage work adds no online write-path operation or new performance claim.
+recovery. The [tracking-only replicated ledger](RETENTION-LEDGER.md) now adds
+whole-closure ownership transitions, strict committed-state proofs and actual
+Chaos Mesh leader-failure acceptance. Next connect checkpoint/pending owners,
+backfill existing references and bind transition evidence, then implement
+destination admission and atomic installation.
+This storage work adds no operation to ordinary Raw writes and no new performance claim.
+
+New bulk output and proof tools now use `/mnt/data/kv9-work`; latency-sensitive
+test data keeps its original NVMe location. [Fresh capacity and input checks](LOCAL-ARTIFACTS.md)
+show enough space for the unchanged 79,455,850,496-byte full screen. The old fixed
+v3 benchmark client is missing after an external cleanup, so exact causal input
+restoration remains required. No new matched performance result is claimed.
 
 ## Local storage checkpoint (2026-09-14 UTC)
 

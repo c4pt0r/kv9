@@ -33,6 +33,7 @@ pub mod leader;
 pub mod membership;
 pub mod placement;
 pub mod recovery;
+pub mod retention;
 pub mod root;
 pub mod routing;
 pub mod tso;
