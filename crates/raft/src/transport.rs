@@ -789,18 +789,14 @@ mod tests {
     fn three_nodes_over_real_tcp_elect_replicate_and_discover() {
         let region = RegionId(1);
         let ids = [NodeId(1), NodeId(2), NodeId(3)];
-        let addrs: Vec<SocketAddr> = ids.iter().map(|_| free_addr()).collect();
-        let peers_map = |_me: u64| -> HashMap<u64, SocketAddr> {
-            ids.iter().zip(&addrs).map(|(n, a)| (n.0, *a)).collect()
-        };
 
         let mut drivers = Vec::new();
         let mut transports = Vec::new();
-        for (i, &id) in ids.iter().enumerate() {
+        for &id in &ids {
             let transport = TcpTransport::bind(
                 id,
-                addrs[i],
-                peers_map(id.0),
+                "127.0.0.1:0".parse().unwrap(),
+                HashMap::new(),
                 Arc::new(StaticDiscovery(id, false, 42)),
             )
             .unwrap();
@@ -813,6 +809,14 @@ mod tests {
             .expect("drain token minted once per peer");
             transports.push(transport);
             drivers.push(driver);
+        }
+        // Keep every listener bound while publishing its actual address;
+        // releasing temporary listeners would race other ephemeral-port users.
+        let addrs: Vec<SocketAddr> = transports.iter().map(|t| t.local_addr()).collect();
+        for transport in &transports {
+            for (&id, &addr) in ids.iter().zip(&addrs) {
+                transport.register_peer(id, addr);
+            }
         }
 
         // Discovery over the wire: each seed answers positively; an unbound

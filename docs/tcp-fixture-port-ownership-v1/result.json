@@ -1,0 +1,70 @@
+{
+  "complete": true,
+  "source": "/home/dongxu/kv9",
+  "scope": "Fixed Cargo/crates/src/proto inputs, local development checks only.",
+  "available_before": 25897947136,
+  "host_floor_bytes": 8589934592,
+  "max_decrease_bytes": 17179869184,
+  "commands": [
+    {
+      "ordinal": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "4",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--features",
+        "write-path-diagnostics",
+        "transport::tests::three_nodes_over_real_tcp_elect_replicate_and_discover",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "started_unix_ns": 1789474327733142379,
+      "samples": [
+        {
+          "unix_ns": 1789474327733475292,
+          "available": 25897947136
+        },
+        {
+          "unix_ns": 1789474332733606000,
+          "available": 25638563840
+        }
+      ],
+      "pid": 3630590,
+      "exit_code": 0,
+      "ended_unix_ns": 1789474333499032143,
+      "runtime_inputs_unchanged": true
+    },
+    {
+      "ordinal": 2,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "started_unix_ns": 1789474333509122254,
+      "samples": [
+        {
+          "unix_ns": 1789474333509498196,
+          "available": 25430867968
+        }
+      ],
+      "pid": 3631868,
+      "exit_code": 0,
+      "ended_unix_ns": 1789474333923220436,
+      "runtime_inputs_unchanged": true
+    }
+  ],
+  "lock_identity": {
+    "device": 66306,
+    "inode": 108829546
+  },
+  "available_after": 25431830528
+}

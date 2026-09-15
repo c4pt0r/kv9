@@ -1,0 +1,40 @@
+{
+  "complete": true,
+  "files": {
+    "check-1.log": {
+      "path": "/tmp/kv9-tcp-fixture-bound-port-check-20260915-first/check-1.log",
+      "bytes": 540,
+      "sha256": "112042be2489262ed29cb2b0365ecfda6b88e06b73e4a3858e1acb0cb4a9da95"
+    },
+    "check-2.log": {
+      "path": "/tmp/kv9-tcp-fixture-bound-port-check-20260915-first/check-2.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation.json": {
+      "path": "/tmp/kv9-tcp-fixture-bound-port-check-20260915-first/preparation.json",
+      "bytes": 514,
+      "sha256": "bcf8198d4f5aa750131fc776b651f5d40a676056d29ddee11c9265e3a8b3bd7f"
+    },
+    "result.json": {
+      "path": "/tmp/kv9-tcp-fixture-bound-port-check-20260915-first/result.json",
+      "bytes": 1591,
+      "sha256": "e238f747a6bfce2b9dbfbe7aae4470ac9ba6fb568524d7ffff8d21990bfaf04b"
+    },
+    "run.py": {
+      "path": "/tmp/kv9-tcp-fixture-bound-port-check-20260915-first/run.py",
+      "bytes": 4125,
+      "sha256": "ff76089cb350b246b9263b67bfca48ed8d4e44b64d9267f6e3cb8068e5fa4f8a"
+    },
+    "runtime-inputs.json": {
+      "path": "/tmp/kv9-tcp-fixture-bound-port-check-20260915-first/runtime-inputs.json",
+      "bytes": 17124,
+      "sha256": "ffd92dda604f03fe77600c06a8e07c466eb1997dfbe998be64acce559f19c6ac"
+    },
+    "terminal.json": {
+      "path": "/tmp/kv9-tcp-fixture-bound-port-check-20260915-first/terminal.json",
+      "bytes": 336,
+      "sha256": "17830595060465f1a68dcae034dcab80249e25b30947597475c9e376973a00e7"
+    }
+  }
+}

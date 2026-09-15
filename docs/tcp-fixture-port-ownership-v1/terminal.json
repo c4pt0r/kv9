@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "session_id": 50533,
+  "launch_receipt": "ff1473",
+  "terminal_receipt": "1e1e84",
+  "exit_code": 0,
+  "result_path": "/tmp/kv9-tcp-fixture-bound-port-check-20260915-first/result.json",
+  "result_sha256": "e238f747a6bfce2b9dbfbe7aae4470ac9ba6fb568524d7ffff8d21990bfaf04b",
+  "recorded_ns": 1789474491838572716
+}

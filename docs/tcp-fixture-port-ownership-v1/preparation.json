@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "preparation_only": true,
+  "origin_path": "/tmp/kv9-upper-bound-development-20260915-third/run.py",
+  "origin_sha256": "05a9bca251aa97f90976d84a6f50d2579c4159673393283e17b60f501a245826",
+  "new_sha256": "ff76089cb350b246b9263b67bfca48ed8d4e44b64d9267f6e3cb8068e5fa4f8a",
+  "test_source_sha256": "790c2d1918f513a8d6258df0a51b7209595ed236cab82289d8a079d99cec8fe6",
+  "pending": "Run only after live candidate Chaos and all post phases are terminal; no Cargo launched by this preparation."
+}
