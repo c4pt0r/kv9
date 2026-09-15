@@ -10,6 +10,11 @@ The [per-resource record increment](RETENTION-RECORD.md) now implements bounded
 pin transitions and their recovery codec, with a checked parameterized component
 proof. It does not yet implement the enclosing durable ledger or complete anchor.
 
+The [configuration-at-cut component](CONFIGURATION-AT-CUT.md) now supplies the
+actual full membership at an exact retained committed cut, with refusal for
+missing or ambiguous authority. It is a recovery-only input; complete anchor
+identity/publication binding and bounded online snapshot capture remain open.
+
 ## Authority already implemented
 
 Recovery currently composes several records; there is no independently

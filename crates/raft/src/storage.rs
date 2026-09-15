@@ -45,6 +45,10 @@ use kv9_common::{Error, Result};
 use crate::lease_policy::{LeaseEpoch, LeasePolicy};
 use crate::rawnode::PersistentRaftStorage;
 
+mod configuration;
+use configuration::ConfigurationHistory;
+pub use configuration::{CommittedConfiguration, ConfigurationLookup, ConfigurationUnavailable};
+
 const REC_CONF_STATE: u8 = 1;
 const REC_HARD_STATE: u8 = 2;
 const REC_ENTRY: u8 = 3;
@@ -81,6 +85,9 @@ pub struct DiskRaftStorage<F: FileSystem = OsFileSystem> {
     /// Highest conf-change index recorded via `REC_CONF_STATE_AT` (0 = only
     /// the initial configuration exists). The replay guard boundary.
     conf_index: Mutex<u64>,
+    /// Recovery metadata only. Indexed full configurations remain retained with
+    /// the protocol log; they do not change Ready or ordinary write admission.
+    conf_history: Mutex<ConfigurationHistory>,
     lease_epoch: Mutex<Option<LeaseEpoch>>,
     io_metrics: Arc<WalIoMetrics>,
 }
@@ -133,6 +140,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         let mut valid_len: u64 = 0;
         let mut saw_any = false;
         let mut conf_idx: u64 = 0;
+        let mut conf_history = ConfigurationHistory::default();
         let mut lease_epoch: Option<LeaseEpoch> = None;
         let mut cursor: usize = 0;
         // The loop ends where records stop parsing — a torn tail
@@ -155,6 +163,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                     let cs = ConfState::parse_from_bytes(payload).map_err(|e| {
                         Error::Raft(format!("checksum-valid ConfState undecodable: {e}"))
                     })?;
+                    conf_history.initial(&cs);
                     mem.wl().set_conf_state(cs);
                 }
                 REC_CONF_STATE_AT => {
@@ -167,6 +176,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                     let cs = ConfState::parse_from_bytes(&payload[8..]).map_err(|e| {
                         Error::Raft(format!("checksum-valid ConfStateAt undecodable: {e}"))
                     })?;
+                    conf_history.applied(idx, &cs);
                     mem.wl().set_conf_state(cs);
                     conf_idx = idx; // last write wins, in file order
                 }
@@ -220,6 +230,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             file: Mutex::new(Some(file)),
             path,
             conf_index: Mutex::new(conf_idx),
+            conf_history: Mutex::new(conf_history),
             lease_epoch: Mutex::new(lease_epoch),
             io_metrics,
         };
@@ -234,6 +245,11 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                     &cs.write_to_bytes()
                         .map_err(|e| Error::Raft(format!("confstate encode: {e}")))?,
                 )?;
+                storage
+                    .conf_history
+                    .lock()
+                    .expect("conf history poisoned")
+                    .initial(&cs);
                 storage.mem.wl().set_conf_state(cs);
                 Ok(())
             })?;
@@ -533,6 +549,10 @@ impl<F: FileSystem> PersistentRaftStorage for DiskRaftStorage<F> {
             Self::write_record(&self.io_metrics, file, REC_CONF_STATE_AT, &bytes)?;
             self.mem.wl().set_conf_state(cs.clone());
             *self.conf_index.lock().expect("conf index poisoned") = at_index;
+            self.conf_history
+                .lock()
+                .expect("conf history poisoned")
+                .applied(at_index, cs);
             Ok(())
         })
     }

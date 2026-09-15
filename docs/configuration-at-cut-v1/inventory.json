@@ -1,0 +1,2908 @@
+{
+  "version": 1,
+  "archive_sha256": "9ee357bb002cf707cbc18c09b57ea620b385ab9e930ed13962122f526a3d86c4",
+  "archive_bytes": 1489801,
+  "members": 483,
+  "decoded_file_bytes": 7001209,
+  "independent_readback": "Every member compared byte-for-byte with its retained original after archive close. No build targets, binaries, proof caches or TLC state directories included.",
+  "files": [
+    {
+      "path": "publication/development-failures.json",
+      "original": "/tmp/kv9-c04-configuration-publication-20260915-first/development-failures.json",
+      "bytes": 1099,
+      "sha256": "2ec5164aad38218b37b1b29c25c362c6e5e69edf3f1b0ba3ff9e919961c9a4f8"
+    },
+    {
+      "path": "publication/issue-14-before.json",
+      "original": "/tmp/kv9-c04-configuration-publication-20260915-first/issue-14-before.json",
+      "bytes": 6482,
+      "sha256": "45ece92fe3f5a0015193839dac6ed69be6fe9285ea8911cbb2605724f4ddfc53"
+    },
+    {
+      "path": "publication/issue-9-before.json",
+      "original": "/tmp/kv9-c04-configuration-publication-20260915-first/issue-9-before.json",
+      "bytes": 52049,
+      "sha256": "f07c6b7459105c007cf0c229d878bcadd0d97e36c9b63ab348e17bc6af2ddc36"
+    },
+    {
+      "path": "publication/trace-controls.json",
+      "original": "/tmp/kv9-c04-configuration-publication-20260915-first/trace-controls.json",
+      "bytes": 423,
+      "sha256": "8cf974fbf3c493001709b488817ddc9c4406772a218246a1596a09d991b925aa"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-control-build-20260915-first/cargo.jsonl",
+      "original": "/tmp/kv9-c04-configuration-control-build-20260915-first/cargo.jsonl",
+      "bytes": 213923,
+      "sha256": "8029998222a5b2535db97094ec8b344094239b4ac6412482189ea95b65e26f23"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-control-build-20260915-first/cargo.log",
+      "original": "/tmp/kv9-c04-configuration-control-build-20260915-first/cargo.log",
+      "bytes": 120,
+      "sha256": "0413494c245cb0c6857381814801981a94787f4f47d19a3fd4b90ae4b619d76e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-control-build-20260915-first/result.json",
+      "original": "/tmp/kv9-c04-configuration-control-build-20260915-first/result.json",
+      "bytes": 217,
+      "sha256": "2728e4e3179aef1ba4e6d4fda780dd4cfddf71ea07df8e2f497ac73fc79b4470"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-first/command.json",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-first/command.json",
+      "bytes": 267,
+      "sha256": "c463d3be29f42e01b67b026ef612fdb49068f9dc391b656c9679c41ea0fac2b8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-first/result.json",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-first/result.json",
+      "bytes": 56,
+      "sha256": "9e33d53196fed8c190608d5d14b41d53ce6cd6b4b7fc58751402709516205f49"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-first/test.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-first/test.log",
+      "bytes": 7368,
+      "sha256": "41a57d41a649aa71a0d375051896675cf915a0601f6c2fa21f775a32cec65463"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-fourth/clippy.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-fourth/clippy.log",
+      "bytes": 120,
+      "sha256": "f46fda1795f06e5e8afcd969da2e8844ede750ab9895698d8df9ea9c5ecdc2e8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-fourth/fmt.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-fourth/fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-fourth/lib.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-fourth/lib.log",
+      "bytes": 248,
+      "sha256": "bde2dfbf19726538eeaa77ceb865fcd8dbf76525077770b68573c5c8653a333e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-fourth/result.json",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-fourth/result.json",
+      "bytes": 751,
+      "sha256": "c913f185624ff959ca66dfd261e190739298db287a6540eb6131f2c538faf96b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-fourth/tests.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-fourth/tests.log",
+      "bytes": 23222,
+      "sha256": "0706eeb1b453602beaf9ad55982c010b032dd52d9227b3cc76c131fc26ff3b96"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-second/command.json",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-second/command.json",
+      "bytes": 216,
+      "sha256": "a6869f17b24947d2958636e5f28f69d687c715f91fdec46cad27e75357dbba25"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-second/result.json",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-second/result.json",
+      "bytes": 53,
+      "sha256": "b4e8a923975f174dab7e21292f6e7938b23e7144f44be83a8459e7690a621d71"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-second/test.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-second/test.log",
+      "bytes": 918,
+      "sha256": "550f95b192e2fedcc182457cd3765159f629723ab1f14bacf6e4b9d622d26a86"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-third/0.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-third/0.log",
+      "bytes": 23123,
+      "sha256": "49dcba7c4c302b6824ec587c883cd65c720e44927703fef27fd8b77449ade15e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-third/1.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-third/1.log",
+      "bytes": 4703,
+      "sha256": "abd9f080aab997cabab1e3fd668054de476f0677f2aa046b8e02b6aa2635738c"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-third/2.log",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-third/2.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-third/commands.json",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-third/commands.json",
+      "bytes": 445,
+      "sha256": "38e614ff01ecdb866c96660a03576000d4ffec4caf5ad3000445651746fb415e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-development-20260915-third/result.json",
+      "original": "/tmp/kv9-c04-configuration-development-20260915-third/result.json",
+      "bytes": 570,
+      "sha256": "2230119608a49fd577725398c1f6d20862c525a15ebdeb0236c5c9cac2a6f99b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-eighth/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-eighth/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-eighth/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-eighth/ConfigurationCutProof.tla",
+      "bytes": 4438,
+      "sha256": "35a3fdd52625ae0c5bd3f1d969bffdac0b0b4f5078b54e0f3ef31f302ef82c32"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-eighth/command.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-eighth/command.json",
+      "bytes": 290,
+      "sha256": "068e9d0b373770590f1bea54aedd77c6c6d3b4fc7c75c3d1143abc22438f8ad8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-eighth/proof.log",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-eighth/proof.log",
+      "bytes": 814,
+      "sha256": "b92498ea4046e13ba76088e1371c4230318c5f88047e9d3fa49073e406cc1c91"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-eighth/result.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-eighth/result.json",
+      "bytes": 53,
+      "sha256": "f6be24f5cf4386e75db701abd1bf3cbd481a9b0f50da967de101b6c2f0970df9"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fifth/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fifth/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fifth/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fifth/ConfigurationCutProof.tla",
+      "bytes": 3951,
+      "sha256": "6a35ab3fa8b2705748904a4ea15351ea193846f98df3e9a44cfdc6aead0eb969"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fifth/command.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fifth/command.json",
+      "bytes": 288,
+      "sha256": "e30ca614dd7df55c8bb4d5c226181c661bb4144241fa5e1607d5217eb2ed583d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fifth/proof.log",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fifth/proof.log",
+      "bytes": 4744,
+      "sha256": "f04ed0331eaa708c8e6752aea29d1569e98e878cb76215f057b3abc88f4ea57a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fifth/result.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fifth/result.json",
+      "bytes": 55,
+      "sha256": "823adc1878ed23901c59095ae8bc13522621fde4f6207e4aeb6827e73a84fc4e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-first/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-first/ConfigurationCut.tla",
+      "bytes": 4329,
+      "sha256": "92b2a5c4663b6938102af03dc7aa964c236086e60ed096988b1a8031e148f9e9"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-first/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-first/ConfigurationCutProof.tla",
+      "bytes": 3261,
+      "sha256": "815295d4038ba8f6f61e3e39bf4b6e3b7e53c268a01d67bea3693e67dffabdc6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-first/command.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-first/command.json",
+      "bytes": 288,
+      "sha256": "684a4bc248d668f36dc06e85c7ed62623d035f04931b4ff0f4ad91dc38bc9368"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-first/proof.log",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-first/proof.log",
+      "bytes": 2448,
+      "sha256": "ea66103a93bc36b98c31e3257b22fe0ab572fec44dbe107c0802b0395f63cb7f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-first/result.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-first/result.json",
+      "bytes": 55,
+      "sha256": "bc123090316bd20daa42e5b300743ea87c441e44dd627e570891d221fd3c89a5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fourth/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fourth/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fourth/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fourth/ConfigurationCutProof.tla",
+      "bytes": 3370,
+      "sha256": "e5ef8385946219e100c1f0e48e19b39b1f6f603833dcb6938245d7fe6d686948"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fourth/command.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fourth/command.json",
+      "bytes": 290,
+      "sha256": "ba448e8cd13184b610f9854af132fd5b924f3f760b92e58bf618615ac272bfd9"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fourth/proof.log",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fourth/proof.log",
+      "bytes": 5450,
+      "sha256": "6eefb5e29a289a4cca219f55f5c4b09b66f50e7ae3d30b73ab27e192e85e5a5a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-fourth/result.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-fourth/result.json",
+      "bytes": 54,
+      "sha256": "1d1c75475d52f0281ce5c9aaa07896c2d970fe46fc440ff2485630be0c954d1f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-second/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-second/ConfigurationCut.tla",
+      "bytes": 4333,
+      "sha256": "96ed3f6c2c98d4471a643846542cb6302641f7350125fb6337ff543fcf1699d5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-second/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-second/ConfigurationCutProof.tla",
+      "bytes": 3261,
+      "sha256": "815295d4038ba8f6f61e3e39bf4b6e3b7e53c268a01d67bea3693e67dffabdc6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-second/command.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-second/command.json",
+      "bytes": 290,
+      "sha256": "e64fec1a7f036f47aeaf8af12042e405c62086f3513261ecee5c2e620f734724"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-second/proof.log",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-second/proof.log",
+      "bytes": 8530,
+      "sha256": "a108bb27f0cde21b53769782ae3576495c59dac9aa18674d35289e10c769429a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-second/result.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-second/result.json",
+      "bytes": 54,
+      "sha256": "08316c67f294396873faca9705d4efb5ddcc8b963d0190e445688eab9745d3ee"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-seventh/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-seventh/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-seventh/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-seventh/ConfigurationCutProof.tla",
+      "bytes": 4055,
+      "sha256": "19cee99bdffa07ed919948665fadc5aec7b0a496b0a158de86eaa8ff6e19be18"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-seventh/command.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-seventh/command.json",
+      "bytes": 292,
+      "sha256": "5e1c1087adb08fccc7b18217c1f3c9d0014f52126f8d0e098aa6073f98cc6904"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-seventh/proof.log",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-seventh/proof.log",
+      "bytes": 3558,
+      "sha256": "9933e61413a3624a1a76a0f0c86027b8d03830f955b6408f24ccda5c882a03c6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-seventh/result.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-seventh/result.json",
+      "bytes": 54,
+      "sha256": "8fe9668c9b17bae6e778ce1668fb70db58f32ebdd38122e9acf4c6c5aa4e711e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-sixth/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-sixth/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-sixth/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-sixth/ConfigurationCutProof.tla",
+      "bytes": 4009,
+      "sha256": "9fcf222a5dd6f908670439637c1d090caeec4b251852fe7e58053c5c5be65283"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-sixth/command.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-sixth/command.json",
+      "bytes": 288,
+      "sha256": "68c8f94f4948800d7714889e7246aa91303b6f4b4a12a7b360d86885e0ce0160"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-sixth/proof.log",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-sixth/proof.log",
+      "bytes": 1872,
+      "sha256": "5a1b931694b3031172815e42ea4a48086f5365b06311bb86731141f05bf18470"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-sixth/result.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-sixth/result.json",
+      "bytes": 55,
+      "sha256": "cc1ac428e9a599cbd08d6a5284325ce4df6d0b6e517ef5e8758ab5ef4a84f661"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-third/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-third/ConfigurationCut.tla",
+      "bytes": 4333,
+      "sha256": "96ed3f6c2c98d4471a643846542cb6302641f7350125fb6337ff543fcf1699d5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-third/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-third/ConfigurationCutProof.tla",
+      "bytes": 3549,
+      "sha256": "102071db385e5fa8498fd441e08d40bd02e4f574937be01cc3561dab7b910f4e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-third/command.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-third/command.json",
+      "bytes": 288,
+      "sha256": "94a6006045629ef3fc7324cd3db00ba919086b6d54f23f4ddfcd83d89a10963f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-third/proof.log",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-third/proof.log",
+      "bytes": 9313,
+      "sha256": "3b0c0168edf32082225bcb3a189fd0affde594a7f95bed742072f7b44164c5c9"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-proof-development-20260915-third/result.json",
+      "original": "/tmp/kv9-c04-configuration-proof-development-20260915-third/result.json",
+      "bytes": 54,
+      "sha256": "c9cef52b1cc2857dff99fb20924d0c71186a341fad209f60fcb68f6547befbdb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut2/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut2/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut2/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut2/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut2/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut2/Run.cfg",
+      "bytes": 130,
+      "sha256": "c3a2814f679094b0ea9e5d7fbbb6e321e5a34a5962dbb065f4365360daaf1464"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut2/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut2/result.json",
+      "bytes": 880,
+      "sha256": "a8912ffc37463ff7c0656f4aee118f553c18eb86237a5c3b418c657642287e07"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut2/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut2/tlc.log",
+      "bytes": 2367,
+      "sha256": "c60b8305285622c79154b3f1a323cd488b2d345968ab357c8b7ff68660de98e5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut3/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut3/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut3/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut3/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut3/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut3/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut3/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut3/result.json",
+      "bytes": 882,
+      "sha256": "98d76ce7b6ad1e3c3be66cab85dca5cc1cfb345093ce76ffcf8de4115d42af7f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Cut3/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Cut3/tlc.log",
+      "bytes": 2374,
+      "sha256": "9acb5694f34525c19fcb16491862a4d308db3bcd57f7d8dec0d9b12b82c23011"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Inspect3/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Inspect3/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Inspect3/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Inspect3/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Inspect3/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Inspect3/Run.cfg",
+      "bytes": 170,
+      "sha256": "36f61a7e9b148e513bc2cd55be8af340fed27829ca62313972db6fd4996f8568"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Inspect3/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Inspect3/result.json",
+      "bytes": 888,
+      "sha256": "3cdbdb820e28364272543dbec7846d9ea6bd25804a5dd2eeaf3101762344bd71"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/Inspect3/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/Inspect3/tlc.log",
+      "bytes": 3174,
+      "sha256": "17ed80d8b3e6fc7ed8be1205f78f57f5742b2cd03954e3c571cf1df4d1e1b0b2"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/failed-writer/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/failed-writer/ConfigurationCut.tla",
+      "bytes": 4398,
+      "sha256": "df7eda4f78905f4ce1822177933f785d07e18b8940998b37578f451bbccbc54a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/failed-writer/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/failed-writer/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/failed-writer/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/failed-writer/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/failed-writer/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/failed-writer/result.json",
+      "bytes": 910,
+      "sha256": "2bff05554890f981c6074ff07adf7ceedf34cab6c917c5ffcb0a05e18342872c"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/failed-writer/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/failed-writer/tlc.log",
+      "bytes": 4224,
+      "sha256": "48e29845ce91ad2a1f9d75ee366032ba9db463126cd77d05f491acaf323b5c77"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/future-configuration/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/future-configuration/ConfigurationCut.tla",
+      "bytes": 4392,
+      "sha256": "c1cf81f3cbb68754bc2fa8b9357aea4e74d6f3911b5840a606000ed2615bfab3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/future-configuration/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/future-configuration/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/future-configuration/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/future-configuration/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/future-configuration/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/future-configuration/result.json",
+      "bytes": 923,
+      "sha256": "69bbf4e621aaf20c708a2a75cdcd2ee8763f15c1466b2395089bb588baecb290"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/future-configuration/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/future-configuration/tlc.log",
+      "bytes": 3910,
+      "sha256": "9d29100fe6b1b313db69f75706ff360311528721091f9972f997a3f7e3fd0548"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/inputs.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/inputs.json",
+      "bytes": 1551,
+      "sha256": "1f8947fd35f53dbdb12c20764083e45d077baa0fc34ab9126c4f9f7bae3818bb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/proof/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/proof/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/proof/ConfigurationCutProof.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/proof/ConfigurationCutProof.log",
+      "bytes": 838,
+      "sha256": "ca35522d1ca896dc9b6aa7179832b8f6327625f2c372fc43def2b4f8fbb165d7"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/proof/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/proof/ConfigurationCutProof.tla",
+      "bytes": 4438,
+      "sha256": "35a3fdd52625ae0c5bd3f1d969bffdac0b0b4f5078b54e0f3ef31f302ef82c32"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/proof/inventory.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/proof/inventory.json",
+      "bytes": 1440,
+      "sha256": "9f7a669a6e90e425d8da1718a66dfa343ed151e7c568d7b6c418ed9d9b695b5d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/proof/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/proof/result.json",
+      "bytes": 919,
+      "sha256": "e5a583b9be7c997a7e72133edb27b739540895bbb6466932033a1a711253ab5d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/proof/sany.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/proof/sany.log",
+      "bytes": 2084,
+      "sha256": "2da222e4b74d828b8ff1a70c548bfdafc6afa20600187b1218bfd0389a4cdd36"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/proof/semantic-audit.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/proof/semantic-audit.json",
+      "bytes": 2282,
+      "sha256": "a04eb37495403af883b0c2d75ebdcfa599c875633b698deb89204f4df910aca5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/ConfigurationCut.tla",
+      "bytes": 4371,
+      "sha256": "b243b70267b72e7db847889a741581d46104110d20dce0a62e9db63c6f6529d6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/result.json",
+      "bytes": 923,
+      "sha256": "ca3397777e8a8d7b18b74d24f47c9421ca2a25383f2cf0224c8c0ba1600bf971"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unapplied-configuration/tlc.log",
+      "bytes": 2741,
+      "sha256": "4ae19b7408ca97714acbda94a434160b0d84fead46c2e6b571d6b3f858683ad4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unknown-history/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unknown-history/ConfigurationCut.tla",
+      "bytes": 4399,
+      "sha256": "b9e8810708aaab95d96847d0c6a05264992b59049a6945a5a838427bf19c214f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unknown-history/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unknown-history/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unknown-history/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unknown-history/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unknown-history/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unknown-history/result.json",
+      "bytes": 914,
+      "sha256": "cd1013778839e45ea444a61ea980b0999cd6bdb5428f3646a71f31af72617b96"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/unknown-history/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/unknown-history/tlc.log",
+      "bytes": 4237,
+      "sha256": "f39955248b2c5e24031223fef7cf195450e50a8f588c33efc15223a870dfce8d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/ConfigurationCut.tla",
+      "bytes": 4389,
+      "sha256": "59c76d756d632931873d581a00b211d0a06f139e4cdf65dcfc78105219c44107"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/result.json",
+      "bytes": 911,
+      "sha256": "6cfc316ac50adba2d2e0ac8c95e2ea5264b2502191f5a63569413edcf71e10b7"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-first/wrong-cut-term/tlc.log",
+      "bytes": 3891,
+      "sha256": "b7abe5ede8652e09595b679fdf34fa55c6a9410ea0e30231916a95d3abb2a8e7"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut2/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut2/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut2/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut2/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut2/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut2/Run.cfg",
+      "bytes": 130,
+      "sha256": "c3a2814f679094b0ea9e5d7fbbb6e321e5a34a5962dbb065f4365360daaf1464"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut2/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut2/result.json",
+      "bytes": 882,
+      "sha256": "dde9a917415e336b622a00c8b7a6a3d3848862b9697bdd43dfcb93b53069f17e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut2/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut2/tlc.log",
+      "bytes": 2372,
+      "sha256": "b22f3269a6e69df4ee97d9f19c5ab0f352464102d170f0b30364ff917f73479f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut3/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut3/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut3/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut3/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut3/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut3/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut3/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut3/result.json",
+      "bytes": 884,
+      "sha256": "f50d335267e59e67185463578cb23783402c764b648a87df231e50babce7f5bb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Cut3/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Cut3/tlc.log",
+      "bytes": 2377,
+      "sha256": "6919d02f20162765f3eba3fc002a179f35d1e2ee6484792e390ec9a4eac15e71"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Inspect3/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Inspect3/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Inspect3/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Inspect3/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Inspect3/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Inspect3/Run.cfg",
+      "bytes": 170,
+      "sha256": "36f61a7e9b148e513bc2cd55be8af340fed27829ca62313972db6fd4996f8568"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Inspect3/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Inspect3/result.json",
+      "bytes": 890,
+      "sha256": "f234e148dbbf1d9205dc229471d8e014d008d4c9af7739d947faa26fbc9123b2"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/Inspect3/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/Inspect3/tlc.log",
+      "bytes": 3177,
+      "sha256": "cf921b007e2ddcf8028f1d22d5425aec1fc51898ce1d86e44a6f0a49a243da09"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/failed-writer/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/failed-writer/ConfigurationCut.tla",
+      "bytes": 4398,
+      "sha256": "df7eda4f78905f4ce1822177933f785d07e18b8940998b37578f451bbccbc54a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/failed-writer/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/failed-writer/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/failed-writer/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/failed-writer/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/failed-writer/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/failed-writer/result.json",
+      "bytes": 912,
+      "sha256": "ad045795012f07fc4ce505d42ace82e5011eb6501ba61864f0b98ef1be500b31"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/failed-writer/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/failed-writer/tlc.log",
+      "bytes": 4229,
+      "sha256": "84c89e8ae10fc68a45552d84208c3a0f9dd566cd4fa83dc81c2bbd1d77422d22"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/future-configuration/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/future-configuration/ConfigurationCut.tla",
+      "bytes": 4392,
+      "sha256": "c1cf81f3cbb68754bc2fa8b9357aea4e74d6f3911b5840a606000ed2615bfab3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/future-configuration/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/future-configuration/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/future-configuration/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/future-configuration/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/future-configuration/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/future-configuration/result.json",
+      "bytes": 925,
+      "sha256": "65bd90e247fc1289c9df4a0f7ce4082742d93c45fa12b8f19db63b09f10648d9"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/future-configuration/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/future-configuration/tlc.log",
+      "bytes": 3913,
+      "sha256": "ab27c41898cc112379ab63ef3b95e16f9d21812e0a07d449ea0725d0ac5a2fc9"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/inputs.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/inputs.json",
+      "bytes": 1551,
+      "sha256": "e63bf064ef44d33b2e2584dc293a90e00da135e65a79d6bdca806b2de8fec85e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/proof/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/proof/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/proof/ConfigurationCutProof.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/proof/ConfigurationCutProof.log",
+      "bytes": 843,
+      "sha256": "a13a4382ec476d8457e3bc37fa6ed4cf60a3d192d9a7f513c68fea3126fddcd8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/proof/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/proof/ConfigurationCutProof.tla",
+      "bytes": 4438,
+      "sha256": "35a3fdd52625ae0c5bd3f1d969bffdac0b0b4f5078b54e0f3ef31f302ef82c32"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/proof/inventory.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/proof/inventory.json",
+      "bytes": 1440,
+      "sha256": "9f7a669a6e90e425d8da1718a66dfa343ed151e7c568d7b6c418ed9d9b695b5d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/proof/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/proof/result.json",
+      "bytes": 920,
+      "sha256": "2cbce970a0bdd540530f28c3b87c639f6bd33ccc88e23e899bcbb8f9f8d10898"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/proof/sany.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/proof/sany.log",
+      "bytes": 2088,
+      "sha256": "e9b3bf8a733327f151c3a3828ae02fdcce52b293e4f809c9ab82fb788eb0e7ae"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/proof/semantic-audit.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/proof/semantic-audit.json",
+      "bytes": 2284,
+      "sha256": "580343464b1b7d8fc07a27052c9ddd1d679ec9d4f4512704cfddcad7b4b0fc7a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/ConfigurationCut.tla",
+      "bytes": 4375,
+      "sha256": "f4c3b2a35c128bf243af4ffc973aeceed6fc3555f9dc8b65dd10de9fb8a49619"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/result.json",
+      "bytes": 926,
+      "sha256": "c510a26cde307b9418b051833c7b003711eaa38fe8d49f64e1f247a57614fb0b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/publish-before-durable/tlc.log",
+      "bytes": 3251,
+      "sha256": "53500c7c06f799800726b2d0fc801f9d13644a261ee4700ad1ff5dc2d220f729"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/ConfigurationCut.tla",
+      "bytes": 4371,
+      "sha256": "b243b70267b72e7db847889a741581d46104110d20dce0a62e9db63c6f6529d6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/result.json",
+      "bytes": 925,
+      "sha256": "40eba3e8f18276b8d1d448b02a3b627fbf871c9cd33e277007155eb5e0dc329d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unapplied-configuration/tlc.log",
+      "bytes": 2744,
+      "sha256": "6f0a2b54c39266243a28429c23ea88cfcec3651fcc064d5094b96d65c1f4c658"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/ConfigurationCutMC.tla",
+      "bytes": 701,
+      "sha256": "d65f010608e842d9a6d9b9e3680fb8cd586348eb9a2c92be90bc5ddc03851f69"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/Run.cfg",
+      "bytes": 170,
+      "sha256": "36f61a7e9b148e513bc2cd55be8af340fed27829ca62313972db6fd4996f8568"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/result.json",
+      "bytes": 886,
+      "sha256": "768ce949d2aef64f2627b88ed4aa2d63a1953c05ae399f7c695bd12c45909696"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unfair-inspection/tlc.log",
+      "bytes": 3197,
+      "sha256": "695410a374c7e239ace94d446d865bf20b08ec100f55a6de81c40ecde7e29903"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unknown-history/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unknown-history/ConfigurationCut.tla",
+      "bytes": 4399,
+      "sha256": "b9e8810708aaab95d96847d0c6a05264992b59049a6945a5a838427bf19c214f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unknown-history/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unknown-history/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unknown-history/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unknown-history/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unknown-history/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unknown-history/result.json",
+      "bytes": 916,
+      "sha256": "ccc31fbedfacc2ace3159f2c5077be275544330b01129b60305cd5d49f75c2a4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/unknown-history/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/unknown-history/tlc.log",
+      "bytes": 4241,
+      "sha256": "e5e4107aa4683a9597123a1879b4a99af53ecaa1b18d766023992c8ea3ce2d3b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/ConfigurationCut.tla",
+      "bytes": 4389,
+      "sha256": "59c76d756d632931873d581a00b211d0a06f139e4cdf65dcfc78105219c44107"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/result.json",
+      "bytes": 913,
+      "sha256": "aeee1c4e2481a664463bbb7743a765a2a49f022bef1cc8bc79b93bc31d455821"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-cut-term/tlc.log",
+      "bytes": 3895,
+      "sha256": "2c944df0ade287d0e9219f5986680224f2573d13bce127454629274bbe2aefd4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/ConfigurationCut.tla",
+      "bytes": 4380,
+      "sha256": "4f40815a8089ca5ac3b8ad1ce09374ccfcfa0dba8f26b136bb2da3231eaff5a1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/result.json",
+      "bytes": 917,
+      "sha256": "b780f9ffc690b541cc9c8b59a0e103a07258c684949b7b1c0d7fa1dbbd7c9282"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-second/wrong-entry-kind/tlc.log",
+      "bytes": 3901,
+      "sha256": "0ac8ebed50e3d2a8001f744a508cab9b0561a7ecad7c324499db35ca62f499aa"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut2/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut2/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut2/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut2/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut2/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut2/Run.cfg",
+      "bytes": 130,
+      "sha256": "c3a2814f679094b0ea9e5d7fbbb6e321e5a34a5962dbb065f4365360daaf1464"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut2/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut2/result.json",
+      "bytes": 880,
+      "sha256": "1e66dd98daa96d6bc07042950ff716aef9da9aff4101ca29538d4d489ec481b4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut2/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut2/tlc.log",
+      "bytes": 2368,
+      "sha256": "51ecdcd5c7be2565b0e9383e627189778e1f3ffec4228c75bdac0a5dc7b8b6ee"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut3/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut3/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut3/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut3/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut3/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut3/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut3/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut3/result.json",
+      "bytes": 882,
+      "sha256": "1db7808b4da498d7da179c5fde187badab991c45ddc1da9828f5ae8f082f08fd"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Cut3/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Cut3/tlc.log",
+      "bytes": 2374,
+      "sha256": "ff24462afc5e5d13de7eb88b01d7b433abb35c838d6a8c7c4c7abf43e867ddd1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Inspect3/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Inspect3/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Inspect3/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Inspect3/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Inspect3/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Inspect3/Run.cfg",
+      "bytes": 170,
+      "sha256": "36f61a7e9b148e513bc2cd55be8af340fed27829ca62313972db6fd4996f8568"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Inspect3/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Inspect3/result.json",
+      "bytes": 888,
+      "sha256": "bca54def637c4cb2e01a97af33ebd23ef0e110230b9bcc88b111b6f23e26206d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/Inspect3/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/Inspect3/tlc.log",
+      "bytes": 3174,
+      "sha256": "98721bf5abff1f2502d453e83c796ce724de06c88b6b60465102d84d8bc5ba9f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/custom-axiom/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/custom-axiom/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/custom-axiom/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/custom-axiom/ConfigurationCutProof.tla",
+      "bytes": 4468,
+      "sha256": "f9dedf183c9e9814d9e25f7b02370c68f638e7af8b9dfdfbeb64af9205798ba9"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/custom-axiom/inventory.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/custom-axiom/inventory.json",
+      "bytes": 1440,
+      "sha256": "9f7a669a6e90e425d8da1718a66dfa343ed151e7c568d7b6c418ed9d9b695b5d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/custom-axiom/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/custom-axiom/result.json",
+      "bytes": 466,
+      "sha256": "1e11a919ba6062244acf51acc55bfb0dfbbc519033cbda8a1e8ca97d3ebae3a9"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/custom-axiom/sany.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/custom-axiom/sany.log",
+      "bytes": 2202,
+      "sha256": "c8c06b0b8ce19d29455ac18183a8d8e349621f4e0dfb87dcf0fde53fa697e415"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/failed-writer/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/failed-writer/ConfigurationCut.tla",
+      "bytes": 4398,
+      "sha256": "df7eda4f78905f4ce1822177933f785d07e18b8940998b37578f451bbccbc54a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/failed-writer/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/failed-writer/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/failed-writer/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/failed-writer/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/failed-writer/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/failed-writer/result.json",
+      "bytes": 910,
+      "sha256": "fc106b40c5a529acf8e6417f7b0883e25025b09c40674c344bd037df45aba3da"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/failed-writer/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/failed-writer/tlc.log",
+      "bytes": 4227,
+      "sha256": "3eca5ff5baf9c1cd90773cc70cf04c443fc66270b7c753c881aaff78c7b76274"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/future-configuration/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/future-configuration/ConfigurationCut.tla",
+      "bytes": 4392,
+      "sha256": "c1cf81f3cbb68754bc2fa8b9357aea4e74d6f3911b5840a606000ed2615bfab3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/future-configuration/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/future-configuration/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/future-configuration/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/future-configuration/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/future-configuration/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/future-configuration/result.json",
+      "bytes": 923,
+      "sha256": "f36b3ddc3204e280cf644780bc8a87adfa6027bae7fc9b167eab84f278ca437a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/future-configuration/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/future-configuration/tlc.log",
+      "bytes": 3910,
+      "sha256": "dc1027aced8feeb0b024d70782c9434389fcc16c2010edc43d74892f1c3ebcf1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/inputs.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/inputs.json",
+      "bytes": 1551,
+      "sha256": "98a009da67af9dbf4fad025c00da6e830381cb3b4d6f0a7c70f14813cd168cdb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof-hole/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof-hole/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof-hole/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof-hole/ConfigurationCutProof.tla",
+      "bytes": 4394,
+      "sha256": "568783ace33849be826166e91f2e876d13d52653a2823583004777df01848c26"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof-hole/inventory.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof-hole/inventory.json",
+      "bytes": 1440,
+      "sha256": "9f7a669a6e90e425d8da1718a66dfa343ed151e7c568d7b6c418ed9d9b695b5d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof-hole/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof-hole/result.json",
+      "bytes": 446,
+      "sha256": "a2bd9080583513e87c56a4045039892b430c8cceb8aaf45f6c32c27625c79e47"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof-hole/sany.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof-hole/sany.log",
+      "bytes": 2103,
+      "sha256": "b2a803f4bc13abb138f65883c08011595897d9c38cb3b8afde753e576d3a7194"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof/ConfigurationCutProof.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof/ConfigurationCutProof.log",
+      "bytes": 838,
+      "sha256": "6983036f2dedb6754c48892785c32101f27647744e72d93eb888e3063fcaea8f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof/ConfigurationCutProof.tla",
+      "bytes": 4438,
+      "sha256": "35a3fdd52625ae0c5bd3f1d969bffdac0b0b4f5078b54e0f3ef31f302ef82c32"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof/inventory.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof/inventory.json",
+      "bytes": 1440,
+      "sha256": "9f7a669a6e90e425d8da1718a66dfa343ed151e7c568d7b6c418ed9d9b695b5d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof/result.json",
+      "bytes": 918,
+      "sha256": "7416d9eae2cfb59ef5e0a4f8b43cf0103ae76019510ebefd316b3e7fc04b2263"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof/sany.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof/sany.log",
+      "bytes": 2084,
+      "sha256": "47636ffdd54367a3c6e2ab1c39d06e9876b97aa0b8819dba872eb7cc5d399a8c"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/proof/semantic-audit.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/proof/semantic-audit.json",
+      "bytes": 2282,
+      "sha256": "3c3b3d42fe2f1ac256e4a624f7938059fb51f8dabb67a1928e7397dca39130ab"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/ConfigurationCut.tla",
+      "bytes": 4375,
+      "sha256": "f4c3b2a35c128bf243af4ffc973aeceed6fc3555f9dc8b65dd10de9fb8a49619"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/result.json",
+      "bytes": 924,
+      "sha256": "41ac0c17b83e93c764178b5b46b448fd1578e4ebfaef549778a866428d3717ef"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/publish-before-durable/tlc.log",
+      "bytes": 3249,
+      "sha256": "38740ca710127477c668044d2ed017b6b28bae18e62d4852291e9438e22dd04f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/summary.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/summary.json",
+      "bytes": 15775,
+      "sha256": "65062de67895c5ea9ecd985327fa00961a7f2cec2b6843ef46f33dc4c5114588"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/ConfigurationCut.tla",
+      "bytes": 4371,
+      "sha256": "b243b70267b72e7db847889a741581d46104110d20dce0a62e9db63c6f6529d6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/result.json",
+      "bytes": 923,
+      "sha256": "1bad4b8d91aeedc947633c723d1d990b3b0d747f6fca11a2d009292ff42f7b88"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unapplied-configuration/tlc.log",
+      "bytes": 2741,
+      "sha256": "5737121f5fa4a21e7428b75e36863c7aa4f14f87d2c08c6b3b6f7744f73e95e4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/ConfigurationCutMC.tla",
+      "bytes": 701,
+      "sha256": "d65f010608e842d9a6d9b9e3680fb8cd586348eb9a2c92be90bc5ddc03851f69"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/Run.cfg",
+      "bytes": 170,
+      "sha256": "36f61a7e9b148e513bc2cd55be8af340fed27829ca62313972db6fd4996f8568"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/result.json",
+      "bytes": 922,
+      "sha256": "a29dfb0a70a8a390abbc6dc029db939dcae716ca358cefece316ba8248fcc72c"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unfair-inspection/tlc.log",
+      "bytes": 3194,
+      "sha256": "6083f4ea7d14e21029aef0e417fc7262ca3aa85e13da1655b5ed9d62004380d8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unknown-history/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unknown-history/ConfigurationCut.tla",
+      "bytes": 4399,
+      "sha256": "b9e8810708aaab95d96847d0c6a05264992b59049a6945a5a838427bf19c214f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unknown-history/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unknown-history/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unknown-history/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unknown-history/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unknown-history/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unknown-history/result.json",
+      "bytes": 914,
+      "sha256": "288246847ad51034722020c052b553063db5324e44fa52cb9cd591012626ea06"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unknown-history/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unknown-history/tlc.log",
+      "bytes": 4238,
+      "sha256": "12123cca5999953f8c9af3d83789756618ccccbd529fd8329771c7db2a6db864"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/ConfigurationCut.tla",
+      "bytes": 4371,
+      "sha256": "b243b70267b72e7db847889a741581d46104110d20dce0a62e9db63c6f6529d6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/ConfigurationCutProof.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/ConfigurationCutProof.log",
+      "bytes": 7257,
+      "sha256": "acc5b78bdbe9e4c8ef5467ab1a6f1c28ebfb377f7c68b73c9d82ea23154717aa"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/ConfigurationCutProof.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/ConfigurationCutProof.tla",
+      "bytes": 4438,
+      "sha256": "35a3fdd52625ae0c5bd3f1d969bffdac0b0b4f5078b54e0f3ef31f302ef82c32"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/inventory.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/inventory.json",
+      "bytes": 1440,
+      "sha256": "9f7a669a6e90e425d8da1718a66dfa343ed151e7c568d7b6c418ed9d9b695b5d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/result.json",
+      "bytes": 1000,
+      "sha256": "d4408dbf140906cf31fc367a54ee8d634b453be25d131a4655af2de245db1682"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/sany.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/sany.log",
+      "bytes": 2152,
+      "sha256": "7921cd1956bf232fcb83aeed9e3f60659c520af4767d033a727ba42acf3e5f26"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/semantic-audit.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/unsafe-selection-proof/semantic-audit.json",
+      "bytes": 2316,
+      "sha256": "118720e9b6ee47387dc714c1e29d4669f867eb2cd72a82669983cbcb8c7fff7d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/ConfigurationCut.tla",
+      "bytes": 4389,
+      "sha256": "59c76d756d632931873d581a00b211d0a06f139e4cdf65dcfc78105219c44107"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/result.json",
+      "bytes": 911,
+      "sha256": "5950bae539b007eb46fe6f6ac7113e42f4036e0101ddf8de69d3ff431e76a94b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-cut-term/tlc.log",
+      "bytes": 3891,
+      "sha256": "7875119bdfd36194bf5b34e47dc6d34cb419528a0c2ebb19ca7a8c0a8952fb23"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/ConfigurationCut.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/ConfigurationCut.tla",
+      "bytes": 4380,
+      "sha256": "4f40815a8089ca5ac3b8ad1ce09374ccfcfa0dba8f26b136bb2da3231eaff5a1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/ConfigurationCutMC.tla",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/Run.cfg",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/Run.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/result.json",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/result.json",
+      "bytes": 915,
+      "sha256": "e4fd2f688277edca98202e36fd91323439f0a31f9d557eb48cc2aeb3fc9c9a87"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/tlc.log",
+      "original": "/tmp/kv9-c04-configuration-protocol-20260915-third/wrong-entry-kind/tlc.log",
+      "bytes": 3897,
+      "sha256": "57fe0c65cb0c9ea971e7bbc844b317641c1ecfe23b9e8d3521852979e0270706"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-semantic-development-20260915-first/audit.json",
+      "original": "/tmp/kv9-c04-configuration-semantic-development-20260915-first/audit.json",
+      "bytes": 2262,
+      "sha256": "ede347c2b85f45acb79091dcaa5944f099aa05d174866756b7aa7eb54fb20215"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-semantic-development-20260915-first/sany.log",
+      "original": "/tmp/kv9-c04-configuration-semantic-development-20260915-first/sany.log",
+      "bytes": 2044,
+      "sha256": "e0af6c06677838fbcf4a0800dd9e7756dd862d45b26e265fcb87305a14efab08"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-first/baseline/compile.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-first/baseline/compile.log",
+      "bytes": 8378,
+      "sha256": "7bb9a062f8d89e2f7b0c4e48d5c45bb4fff8e25e0392af4f8620b66bd2b349ec"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-first/baseline/result.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-first/baseline/result.json",
+      "bytes": 25515,
+      "sha256": "dcf206975faf2cecf652698bdd4cdfe9a3d4d71bff88a6d162e6533d9552dc47"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-first/baseline/storage.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-first/baseline/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-first/baseline/storage/configuration.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-first/baseline/storage/configuration.rs",
+      "bytes": 17267,
+      "sha256": "bdf0f0b441d97405ca8d41710248ec7ee6b9c6420539f46e2b6f955f1066db5a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-first/baseline/storage/persistence_model.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-first/baseline/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-first/baseline/wrapper.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-first/baseline/wrapper.rs",
+      "bytes": 34,
+      "sha256": "759dfc26cdffec37fa97a96af839aa62cfad60cca8d766e0e4b4f3c9b9649f36"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-second/baseline/compile.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-second/baseline/compile.log",
+      "bytes": 3392,
+      "sha256": "382c9c41fd6cadc3791ef6ec853614a1ba4e471c415413099cd1be19fe88d5ca"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-second/baseline/result.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-second/baseline/result.json",
+      "bytes": 25521,
+      "sha256": "44ef6e336f19d91812e081b25288c1533417e8ade8a37f4706a8f3018bb2009a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-second/baseline/storage.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-second/baseline/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-second/baseline/storage/configuration.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-second/baseline/storage/configuration.rs",
+      "bytes": 17267,
+      "sha256": "bdf0f0b441d97405ca8d41710248ec7ee6b9c6420539f46e2b6f955f1066db5a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-second/baseline/storage/persistence_model.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-second/baseline/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-second/baseline/wrapper.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-second/baseline/wrapper.rs",
+      "bytes": 34,
+      "sha256": "759dfc26cdffec37fa97a96af839aa62cfad60cca8d766e0e4b4f3c9b9649f36"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/compile.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/result.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/result.json",
+      "bytes": 28895,
+      "sha256": "6ea51cdcd9fcac8c8f0a439c5d9f265602e41d78908553c3500570c02eacd521"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/async_apply.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/async_apply.rs",
+      "bytes": 14968,
+      "sha256": "0216a122246f511b093f84590ba72bd9baab67e14ce10de43446eda8dbfd2220"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/async_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/async_read.rs",
+      "bytes": 40284,
+      "sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/command.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/command.rs",
+      "bytes": 34898,
+      "sha256": "093647b01c0b4d214ca97f193a7b0ad8afdc7193b6c999ad60759511558aa47b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/driver.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/driver.rs",
+      "bytes": 159023,
+      "sha256": "67a32ef08ac1cc1e3f7c94d3e62830b38af917b6b03dbfa38d6c82807bdb3357"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/driver/lease_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/driver/lease_read.rs",
+      "bytes": 6922,
+      "sha256": "12d4cbc7532bca6728d0d8e2c499595449bc5529f22aff9a7542e817ee6ab947"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/driver/lease_read/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/driver/lease_read/tests.rs",
+      "bytes": 12402,
+      "sha256": "91e4528b794a9ec320ea760773800c36dabb516ef21874ea1f6df05f7b30a9c8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/grpc.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/grpc.rs",
+      "bytes": 141405,
+      "sha256": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/grpc/endpoint.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/grpc/endpoint.rs",
+      "bytes": 15872,
+      "sha256": "ca0944b0cfca6372baee560ab75668f7c0549cc1e8e2a174426764cb321bead5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease.rs",
+      "bytes": 21058,
+      "sha256": "6ee20392b4a7b3e1b3e5a46ca2c5d6e4d9345f07934aeebc49c8524440b3269e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease/tests.rs",
+      "bytes": 20416,
+      "sha256": "0cf1891f210843f690953bbf944b1a6dca5cfa67b30804c529a8d60f172c9da3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_clock.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_clock.rs",
+      "bytes": 1962,
+      "sha256": "1b768868f65f3914e9a3e37a17d76eb2ca7038900258acdbccfe29c186ed1e50"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_clock/linux.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_clock/linux.rs",
+      "bytes": 5493,
+      "sha256": "7f596e5a9915e86967b54d5cb1f3911e5f9a04c0705827d3b998504f04ca82bc"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_clock/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_clock/tests.rs",
+      "bytes": 4061,
+      "sha256": "48faacd70746511d40a3d7309eaa9a0993e24ff9cfed6511454a2fbd1b27e522"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_policy.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_policy.rs",
+      "bytes": 4328,
+      "sha256": "82fbc3180e76f7e2da4573285b2f676f6cc2a10abad174757741d16b0c26d560"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_policy/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lease_policy/tests.rs",
+      "bytes": 1816,
+      "sha256": "ba33b7b84876863392f8f8e43264332cb8f7e77d4aec0ca961cbb9cd50f66fcb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lib.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/lib.rs",
+      "bytes": 12200,
+      "sha256": "4f232b6626c0136301b9f403635825b1cd90f5e4686ec2f27d401b434e92cb39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/rawnode.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/rawnode/lease_gate.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/rawnode/lease_gate.rs",
+      "bytes": 15733,
+      "sha256": "7bb59ba7cda0bf485f4418b2170822c844ab196fe6739d2cf6ecfb3d34a7ea23"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/rawnode/lease_gate/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/rawnode/lease_gate/tests.rs",
+      "bytes": 27761,
+      "sha256": "364f0e36dd804e9bb5037981acd6a22a863ad2c3cc13942a539b3cf01abd9546"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/rawnode/lease_wire.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/rawnode/lease_wire.rs",
+      "bytes": 8436,
+      "sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/read_stage_timing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/read_stage_timing.rs",
+      "bytes": 4441,
+      "sha256": "b69de8475c251cd55a1297ad593e6e6e170eff4b57057dc52b0b594f996af797"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/state_machine.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/state_machine.rs",
+      "bytes": 74877,
+      "sha256": "1b40923564c1304f370f05261bda704b498c001b0ef327e6f4aba653fcb247bd"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/state_machine/raw_group.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/state_machine/raw_group.rs",
+      "bytes": 21704,
+      "sha256": "27e435ca278c87cda40ddbd064d5cda0728c7e9953fc6853d0b3a2f01f91693f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/storage.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/storage/configuration.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/storage/configuration.rs",
+      "bytes": 17255,
+      "sha256": "ebcaac0281e89e9e586f84a8b0215d6c87d03f1e02bfb2849d6a65ba3cdbe817"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/storage/persistence_model.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/testing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/testing.rs",
+      "bytes": 19033,
+      "sha256": "552a9b0d34f910ccbb96fbe4c13898c00e489fdcfb877e4ed4f47abd0c1ec967"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/transport.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/transport.rs",
+      "bytes": 33189,
+      "sha256": "790c2d1918f513a8d6258df0a51b7209595ed236cab82289d8a079d99cec8fe6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/work.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/work.rs",
+      "bytes": 13285,
+      "sha256": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/write_diagnostics.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/src/write_diagnostics.rs",
+      "bytes": 14002,
+      "sha256": "f00217c94a94438e5b2577a6f6a81ead6c2fb66647214c41be512a8810dae3af"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/test.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/ambiguous-history/test.log",
+      "bytes": 956,
+      "sha256": "406d107899072afac2e04c642c759f1620e048de4e3c5833fd719c6924e0f0d1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/compile.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/result.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/result.json",
+      "bytes": 28778,
+      "sha256": "5184a2283820e3f614783afda026540326b7af2e09fbee6b95db22c3caeac374"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/async_apply.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/async_apply.rs",
+      "bytes": 14968,
+      "sha256": "0216a122246f511b093f84590ba72bd9baab67e14ce10de43446eda8dbfd2220"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/async_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/async_read.rs",
+      "bytes": 40284,
+      "sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/command.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/command.rs",
+      "bytes": 34898,
+      "sha256": "093647b01c0b4d214ca97f193a7b0ad8afdc7193b6c999ad60759511558aa47b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/driver.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/driver.rs",
+      "bytes": 159023,
+      "sha256": "67a32ef08ac1cc1e3f7c94d3e62830b38af917b6b03dbfa38d6c82807bdb3357"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/driver/lease_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/driver/lease_read.rs",
+      "bytes": 6922,
+      "sha256": "12d4cbc7532bca6728d0d8e2c499595449bc5529f22aff9a7542e817ee6ab947"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/driver/lease_read/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/driver/lease_read/tests.rs",
+      "bytes": 12402,
+      "sha256": "91e4528b794a9ec320ea760773800c36dabb516ef21874ea1f6df05f7b30a9c8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/grpc.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/grpc.rs",
+      "bytes": 141405,
+      "sha256": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/grpc/endpoint.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/grpc/endpoint.rs",
+      "bytes": 15872,
+      "sha256": "ca0944b0cfca6372baee560ab75668f7c0549cc1e8e2a174426764cb321bead5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease.rs",
+      "bytes": 21058,
+      "sha256": "6ee20392b4a7b3e1b3e5a46ca2c5d6e4d9345f07934aeebc49c8524440b3269e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease/tests.rs",
+      "bytes": 20416,
+      "sha256": "0cf1891f210843f690953bbf944b1a6dca5cfa67b30804c529a8d60f172c9da3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_clock.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_clock.rs",
+      "bytes": 1962,
+      "sha256": "1b768868f65f3914e9a3e37a17d76eb2ca7038900258acdbccfe29c186ed1e50"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_clock/linux.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_clock/linux.rs",
+      "bytes": 5493,
+      "sha256": "7f596e5a9915e86967b54d5cb1f3911e5f9a04c0705827d3b998504f04ca82bc"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_clock/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_clock/tests.rs",
+      "bytes": 4061,
+      "sha256": "48faacd70746511d40a3d7309eaa9a0993e24ff9cfed6511454a2fbd1b27e522"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_policy.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_policy.rs",
+      "bytes": 4328,
+      "sha256": "82fbc3180e76f7e2da4573285b2f676f6cc2a10abad174757741d16b0c26d560"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_policy/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lease_policy/tests.rs",
+      "bytes": 1816,
+      "sha256": "ba33b7b84876863392f8f8e43264332cb8f7e77d4aec0ca961cbb9cd50f66fcb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lib.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/lib.rs",
+      "bytes": 12200,
+      "sha256": "4f232b6626c0136301b9f403635825b1cd90f5e4686ec2f27d401b434e92cb39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/rawnode.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/rawnode/lease_gate.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/rawnode/lease_gate.rs",
+      "bytes": 15733,
+      "sha256": "7bb59ba7cda0bf485f4418b2170822c844ab196fe6739d2cf6ecfb3d34a7ea23"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/rawnode/lease_gate/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/rawnode/lease_gate/tests.rs",
+      "bytes": 27761,
+      "sha256": "364f0e36dd804e9bb5037981acd6a22a863ad2c3cc13942a539b3cf01abd9546"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/rawnode/lease_wire.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/rawnode/lease_wire.rs",
+      "bytes": 8436,
+      "sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/read_stage_timing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/read_stage_timing.rs",
+      "bytes": 4441,
+      "sha256": "b69de8475c251cd55a1297ad593e6e6e170eff4b57057dc52b0b594f996af797"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/state_machine.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/state_machine.rs",
+      "bytes": 74877,
+      "sha256": "1b40923564c1304f370f05261bda704b498c001b0ef327e6f4aba653fcb247bd"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/state_machine/raw_group.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/state_machine/raw_group.rs",
+      "bytes": 21704,
+      "sha256": "27e435ca278c87cda40ddbd064d5cda0728c7e9953fc6853d0b3a2f01f91693f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/storage.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/storage/configuration.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/storage/configuration.rs",
+      "bytes": 17267,
+      "sha256": "bdf0f0b441d97405ca8d41710248ec7ee6b9c6420539f46e2b6f955f1066db5a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/storage/persistence_model.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/testing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/testing.rs",
+      "bytes": 19033,
+      "sha256": "552a9b0d34f910ccbb96fbe4c13898c00e489fdcfb877e4ed4f47abd0c1ec967"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/transport.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/transport.rs",
+      "bytes": 33189,
+      "sha256": "790c2d1918f513a8d6258df0a51b7209595ed236cab82289d8a079d99cec8fe6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/work.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/work.rs",
+      "bytes": 13285,
+      "sha256": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/src/write_diagnostics.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/src/write_diagnostics.rs",
+      "bytes": 14002,
+      "sha256": "f00217c94a94438e5b2577a6f6a81ead6c2fb66647214c41be512a8810dae3af"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/baseline/test.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/baseline/test.log",
+      "bytes": 882,
+      "sha256": "da7d6d0883e7d2ca37ba9191666ce6c358b5b32f63247b57d445ad0a9acb4f3e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/compile.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/compile.log",
+      "bytes": 367,
+      "sha256": "7608f158e1230a43be72502ef5d3512ce7d9d5933f20ce74ae000b2dc5b2d0d4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/result.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/result.json",
+      "bytes": 28891,
+      "sha256": "064ca4c6fbde54686a0ae715c3fba4d7702fc81de2637b13513f946bb655c1bf"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/async_apply.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/async_apply.rs",
+      "bytes": 14968,
+      "sha256": "0216a122246f511b093f84590ba72bd9baab67e14ce10de43446eda8dbfd2220"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/async_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/async_read.rs",
+      "bytes": 40284,
+      "sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/command.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/command.rs",
+      "bytes": 34898,
+      "sha256": "093647b01c0b4d214ca97f193a7b0ad8afdc7193b6c999ad60759511558aa47b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/driver.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/driver.rs",
+      "bytes": 159023,
+      "sha256": "67a32ef08ac1cc1e3f7c94d3e62830b38af917b6b03dbfa38d6c82807bdb3357"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/driver/lease_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/driver/lease_read.rs",
+      "bytes": 6922,
+      "sha256": "12d4cbc7532bca6728d0d8e2c499595449bc5529f22aff9a7542e817ee6ab947"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/driver/lease_read/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/driver/lease_read/tests.rs",
+      "bytes": 12402,
+      "sha256": "91e4528b794a9ec320ea760773800c36dabb516ef21874ea1f6df05f7b30a9c8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/grpc.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/grpc.rs",
+      "bytes": 141405,
+      "sha256": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/grpc/endpoint.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/grpc/endpoint.rs",
+      "bytes": 15872,
+      "sha256": "ca0944b0cfca6372baee560ab75668f7c0549cc1e8e2a174426764cb321bead5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease.rs",
+      "bytes": 21058,
+      "sha256": "6ee20392b4a7b3e1b3e5a46ca2c5d6e4d9345f07934aeebc49c8524440b3269e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease/tests.rs",
+      "bytes": 20416,
+      "sha256": "0cf1891f210843f690953bbf944b1a6dca5cfa67b30804c529a8d60f172c9da3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_clock.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_clock.rs",
+      "bytes": 1962,
+      "sha256": "1b768868f65f3914e9a3e37a17d76eb2ca7038900258acdbccfe29c186ed1e50"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_clock/linux.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_clock/linux.rs",
+      "bytes": 5493,
+      "sha256": "7f596e5a9915e86967b54d5cb1f3911e5f9a04c0705827d3b998504f04ca82bc"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_clock/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_clock/tests.rs",
+      "bytes": 4061,
+      "sha256": "48faacd70746511d40a3d7309eaa9a0993e24ff9cfed6511454a2fbd1b27e522"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_policy.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_policy.rs",
+      "bytes": 4328,
+      "sha256": "82fbc3180e76f7e2da4573285b2f676f6cc2a10abad174757741d16b0c26d560"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_policy/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lease_policy/tests.rs",
+      "bytes": 1816,
+      "sha256": "ba33b7b84876863392f8f8e43264332cb8f7e77d4aec0ca961cbb9cd50f66fcb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lib.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/lib.rs",
+      "bytes": 12200,
+      "sha256": "4f232b6626c0136301b9f403635825b1cd90f5e4686ec2f27d401b434e92cb39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/rawnode.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/rawnode/lease_gate.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/rawnode/lease_gate.rs",
+      "bytes": 15733,
+      "sha256": "7bb59ba7cda0bf485f4418b2170822c844ab196fe6739d2cf6ecfb3d34a7ea23"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/rawnode/lease_gate/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/rawnode/lease_gate/tests.rs",
+      "bytes": 27761,
+      "sha256": "364f0e36dd804e9bb5037981acd6a22a863ad2c3cc13942a539b3cf01abd9546"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/rawnode/lease_wire.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/rawnode/lease_wire.rs",
+      "bytes": 8436,
+      "sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/read_stage_timing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/read_stage_timing.rs",
+      "bytes": 4441,
+      "sha256": "b69de8475c251cd55a1297ad593e6e6e170eff4b57057dc52b0b594f996af797"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/state_machine.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/state_machine.rs",
+      "bytes": 74877,
+      "sha256": "1b40923564c1304f370f05261bda704b498c001b0ef327e6f4aba653fcb247bd"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/state_machine/raw_group.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/state_machine/raw_group.rs",
+      "bytes": 21704,
+      "sha256": "27e435ca278c87cda40ddbd064d5cda0728c7e9953fc6853d0b3a2f01f91693f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/storage.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/storage/configuration.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/storage/configuration.rs",
+      "bytes": 17256,
+      "sha256": "776873bc073ced5988a30459f7a2e00ac15115eef7460a85ca339efbd1c6c037"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/storage/persistence_model.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/testing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/testing.rs",
+      "bytes": 19033,
+      "sha256": "552a9b0d34f910ccbb96fbe4c13898c00e489fdcfb877e4ed4f47abd0c1ec967"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/transport.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/transport.rs",
+      "bytes": 33189,
+      "sha256": "790c2d1918f513a8d6258df0a51b7209595ed236cab82289d8a079d99cec8fe6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/work.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/work.rs",
+      "bytes": 13285,
+      "sha256": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/write_diagnostics.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/src/write_diagnostics.rs",
+      "bytes": 14002,
+      "sha256": "f00217c94a94438e5b2577a6f6a81ead6c2fb66647214c41be512a8810dae3af"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/failed-writer/test.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/failed-writer/test.log",
+      "bytes": 631,
+      "sha256": "777cd4668818c95c878d1c2265cd31d9157baea8fc70f114399e3ad0e990ef29"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/compile.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/result.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/result.json",
+      "bytes": 28893,
+      "sha256": "4af821fa33ce3f8391fb5fce78c1ff1ab06748425c01f127081467fa26061ee6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/async_apply.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/async_apply.rs",
+      "bytes": 14968,
+      "sha256": "0216a122246f511b093f84590ba72bd9baab67e14ce10de43446eda8dbfd2220"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/async_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/async_read.rs",
+      "bytes": 40284,
+      "sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/command.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/command.rs",
+      "bytes": 34898,
+      "sha256": "093647b01c0b4d214ca97f193a7b0ad8afdc7193b6c999ad60759511558aa47b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/driver.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/driver.rs",
+      "bytes": 159023,
+      "sha256": "67a32ef08ac1cc1e3f7c94d3e62830b38af917b6b03dbfa38d6c82807bdb3357"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/driver/lease_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/driver/lease_read.rs",
+      "bytes": 6922,
+      "sha256": "12d4cbc7532bca6728d0d8e2c499595449bc5529f22aff9a7542e817ee6ab947"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/driver/lease_read/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/driver/lease_read/tests.rs",
+      "bytes": 12402,
+      "sha256": "91e4528b794a9ec320ea760773800c36dabb516ef21874ea1f6df05f7b30a9c8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/grpc.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/grpc.rs",
+      "bytes": 141405,
+      "sha256": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/grpc/endpoint.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/grpc/endpoint.rs",
+      "bytes": 15872,
+      "sha256": "ca0944b0cfca6372baee560ab75668f7c0549cc1e8e2a174426764cb321bead5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease.rs",
+      "bytes": 21058,
+      "sha256": "6ee20392b4a7b3e1b3e5a46ca2c5d6e4d9345f07934aeebc49c8524440b3269e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease/tests.rs",
+      "bytes": 20416,
+      "sha256": "0cf1891f210843f690953bbf944b1a6dca5cfa67b30804c529a8d60f172c9da3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_clock.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_clock.rs",
+      "bytes": 1962,
+      "sha256": "1b768868f65f3914e9a3e37a17d76eb2ca7038900258acdbccfe29c186ed1e50"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_clock/linux.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_clock/linux.rs",
+      "bytes": 5493,
+      "sha256": "7f596e5a9915e86967b54d5cb1f3911e5f9a04c0705827d3b998504f04ca82bc"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_clock/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_clock/tests.rs",
+      "bytes": 4061,
+      "sha256": "48faacd70746511d40a3d7309eaa9a0993e24ff9cfed6511454a2fbd1b27e522"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_policy.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_policy.rs",
+      "bytes": 4328,
+      "sha256": "82fbc3180e76f7e2da4573285b2f676f6cc2a10abad174757741d16b0c26d560"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_policy/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lease_policy/tests.rs",
+      "bytes": 1816,
+      "sha256": "ba33b7b84876863392f8f8e43264332cb8f7e77d4aec0ca961cbb9cd50f66fcb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lib.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/lib.rs",
+      "bytes": 12200,
+      "sha256": "4f232b6626c0136301b9f403635825b1cd90f5e4686ec2f27d401b434e92cb39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/rawnode.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/rawnode/lease_gate.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/rawnode/lease_gate.rs",
+      "bytes": 15733,
+      "sha256": "7bb59ba7cda0bf485f4418b2170822c844ab196fe6739d2cf6ecfb3d34a7ea23"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/rawnode/lease_gate/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/rawnode/lease_gate/tests.rs",
+      "bytes": 27761,
+      "sha256": "364f0e36dd804e9bb5037981acd6a22a863ad2c3cc13942a539b3cf01abd9546"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/rawnode/lease_wire.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/rawnode/lease_wire.rs",
+      "bytes": 8436,
+      "sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/read_stage_timing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/read_stage_timing.rs",
+      "bytes": 4441,
+      "sha256": "b69de8475c251cd55a1297ad593e6e6e170eff4b57057dc52b0b594f996af797"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/state_machine.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/state_machine.rs",
+      "bytes": 74877,
+      "sha256": "1b40923564c1304f370f05261bda704b498c001b0ef327e6f4aba653fcb247bd"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/state_machine/raw_group.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/state_machine/raw_group.rs",
+      "bytes": 21704,
+      "sha256": "27e435ca278c87cda40ddbd064d5cda0728c7e9953fc6853d0b3a2f01f91693f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/storage.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/storage/configuration.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/storage/configuration.rs",
+      "bytes": 17254,
+      "sha256": "cd6c343c3ad992cbd424f1c4c4ef53ce28b503d2f1fc5961018e72c6ac042d92"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/storage/persistence_model.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/testing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/testing.rs",
+      "bytes": 19033,
+      "sha256": "552a9b0d34f910ccbb96fbe4c13898c00e489fdcfb877e4ed4f47abd0c1ec967"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/transport.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/transport.rs",
+      "bytes": 33189,
+      "sha256": "790c2d1918f513a8d6258df0a51b7209595ed236cab82289d8a079d99cec8fe6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/work.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/work.rs",
+      "bytes": 13285,
+      "sha256": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/write_diagnostics.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/src/write_diagnostics.rs",
+      "bytes": 14002,
+      "sha256": "f00217c94a94438e5b2577a6f6a81ead6c2fb66647214c41be512a8810dae3af"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/future-configuration/test.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/future-configuration/test.log",
+      "bytes": 702,
+      "sha256": "75642c223320db46747a66eb4bcd9d9114f29ba271358d1d83ae5b97ee8e3d01"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/summary.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/summary.json",
+      "bytes": 226019,
+      "sha256": "7393bf87bbf7377e225838b640d194e6ad8bb583487d1298580a9a31d9ad616e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/compile.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/result.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/result.json",
+      "bytes": 28913,
+      "sha256": "8fdeefc0f7ec75590f09d3eae19d997c8ff957a17184bb99c4cb3e7532d3ed51"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/async_apply.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/async_apply.rs",
+      "bytes": 14968,
+      "sha256": "0216a122246f511b093f84590ba72bd9baab67e14ce10de43446eda8dbfd2220"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/async_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/async_read.rs",
+      "bytes": 40284,
+      "sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/command.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/command.rs",
+      "bytes": 34898,
+      "sha256": "093647b01c0b4d214ca97f193a7b0ad8afdc7193b6c999ad60759511558aa47b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/driver.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/driver.rs",
+      "bytes": 159023,
+      "sha256": "67a32ef08ac1cc1e3f7c94d3e62830b38af917b6b03dbfa38d6c82807bdb3357"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/driver/lease_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/driver/lease_read.rs",
+      "bytes": 6922,
+      "sha256": "12d4cbc7532bca6728d0d8e2c499595449bc5529f22aff9a7542e817ee6ab947"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/driver/lease_read/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/driver/lease_read/tests.rs",
+      "bytes": 12402,
+      "sha256": "91e4528b794a9ec320ea760773800c36dabb516ef21874ea1f6df05f7b30a9c8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/grpc.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/grpc.rs",
+      "bytes": 141405,
+      "sha256": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/grpc/endpoint.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/grpc/endpoint.rs",
+      "bytes": 15872,
+      "sha256": "ca0944b0cfca6372baee560ab75668f7c0549cc1e8e2a174426764cb321bead5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease.rs",
+      "bytes": 21058,
+      "sha256": "6ee20392b4a7b3e1b3e5a46ca2c5d6e4d9345f07934aeebc49c8524440b3269e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease/tests.rs",
+      "bytes": 20416,
+      "sha256": "0cf1891f210843f690953bbf944b1a6dca5cfa67b30804c529a8d60f172c9da3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_clock.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_clock.rs",
+      "bytes": 1962,
+      "sha256": "1b768868f65f3914e9a3e37a17d76eb2ca7038900258acdbccfe29c186ed1e50"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_clock/linux.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_clock/linux.rs",
+      "bytes": 5493,
+      "sha256": "7f596e5a9915e86967b54d5cb1f3911e5f9a04c0705827d3b998504f04ca82bc"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_clock/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_clock/tests.rs",
+      "bytes": 4061,
+      "sha256": "48faacd70746511d40a3d7309eaa9a0993e24ff9cfed6511454a2fbd1b27e522"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_policy.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_policy.rs",
+      "bytes": 4328,
+      "sha256": "82fbc3180e76f7e2da4573285b2f676f6cc2a10abad174757741d16b0c26d560"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_policy/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lease_policy/tests.rs",
+      "bytes": 1816,
+      "sha256": "ba33b7b84876863392f8f8e43264332cb8f7e77d4aec0ca961cbb9cd50f66fcb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lib.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/lib.rs",
+      "bytes": 12200,
+      "sha256": "4f232b6626c0136301b9f403635825b1cd90f5e4686ec2f27d401b434e92cb39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/rawnode.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/rawnode/lease_gate.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/rawnode/lease_gate.rs",
+      "bytes": 15733,
+      "sha256": "7bb59ba7cda0bf485f4418b2170822c844ab196fe6739d2cf6ecfb3d34a7ea23"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/rawnode/lease_gate/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/rawnode/lease_gate/tests.rs",
+      "bytes": 27761,
+      "sha256": "364f0e36dd804e9bb5037981acd6a22a863ad2c3cc13942a539b3cf01abd9546"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/rawnode/lease_wire.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/rawnode/lease_wire.rs",
+      "bytes": 8436,
+      "sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/read_stage_timing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/read_stage_timing.rs",
+      "bytes": 4441,
+      "sha256": "b69de8475c251cd55a1297ad593e6e6e170eff4b57057dc52b0b594f996af797"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/state_machine.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/state_machine.rs",
+      "bytes": 74877,
+      "sha256": "1b40923564c1304f370f05261bda704b498c001b0ef327e6f4aba653fcb247bd"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/state_machine/raw_group.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/state_machine/raw_group.rs",
+      "bytes": 21704,
+      "sha256": "27e435ca278c87cda40ddbd064d5cda0728c7e9953fc6853d0b3a2f01f91693f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/storage.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/storage/configuration.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/storage/configuration.rs",
+      "bytes": 17271,
+      "sha256": "d0ba51ea6ba32829c6502af3cf8842c4982ef48b1cdeffd0b877fb370a10921b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/storage/persistence_model.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/testing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/testing.rs",
+      "bytes": 19033,
+      "sha256": "552a9b0d34f910ccbb96fbe4c13898c00e489fdcfb877e4ed4f47abd0c1ec967"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/transport.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/transport.rs",
+      "bytes": 33189,
+      "sha256": "790c2d1918f513a8d6258df0a51b7209595ed236cab82289d8a079d99cec8fe6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/work.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/work.rs",
+      "bytes": 13285,
+      "sha256": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/write_diagnostics.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/src/write_diagnostics.rs",
+      "bytes": 14002,
+      "sha256": "f00217c94a94438e5b2577a6f6a81ead6c2fb66647214c41be512a8810dae3af"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/test.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/unapplied-configuration/test.log",
+      "bytes": 839,
+      "sha256": "4b224e5a9ec05c1bd11ad82ddcb6b3e1550ed00ca61f7f2100e30e750f195dde"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/compile.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/result.json",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/result.json",
+      "bytes": 28881,
+      "sha256": "99e5501a372333accdfd155d2ad6ce5cb4fcc69ee56adca0db9bb6fa7c049b1e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/async_apply.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/async_apply.rs",
+      "bytes": 14968,
+      "sha256": "0216a122246f511b093f84590ba72bd9baab67e14ce10de43446eda8dbfd2220"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/async_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/async_read.rs",
+      "bytes": 40284,
+      "sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/command.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/command.rs",
+      "bytes": 34898,
+      "sha256": "093647b01c0b4d214ca97f193a7b0ad8afdc7193b6c999ad60759511558aa47b"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/driver.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/driver.rs",
+      "bytes": 159023,
+      "sha256": "67a32ef08ac1cc1e3f7c94d3e62830b38af917b6b03dbfa38d6c82807bdb3357"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/driver/lease_read.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/driver/lease_read.rs",
+      "bytes": 6922,
+      "sha256": "12d4cbc7532bca6728d0d8e2c499595449bc5529f22aff9a7542e817ee6ab947"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/driver/lease_read/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/driver/lease_read/tests.rs",
+      "bytes": 12402,
+      "sha256": "91e4528b794a9ec320ea760773800c36dabb516ef21874ea1f6df05f7b30a9c8"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/grpc.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/grpc.rs",
+      "bytes": 141405,
+      "sha256": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/grpc/endpoint.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/grpc/endpoint.rs",
+      "bytes": 15872,
+      "sha256": "ca0944b0cfca6372baee560ab75668f7c0549cc1e8e2a174426764cb321bead5"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease.rs",
+      "bytes": 21058,
+      "sha256": "6ee20392b4a7b3e1b3e5a46ca2c5d6e4d9345f07934aeebc49c8524440b3269e"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease/tests.rs",
+      "bytes": 20416,
+      "sha256": "0cf1891f210843f690953bbf944b1a6dca5cfa67b30804c529a8d60f172c9da3"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_clock.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_clock.rs",
+      "bytes": 1962,
+      "sha256": "1b768868f65f3914e9a3e37a17d76eb2ca7038900258acdbccfe29c186ed1e50"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_clock/linux.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_clock/linux.rs",
+      "bytes": 5493,
+      "sha256": "7f596e5a9915e86967b54d5cb1f3911e5f9a04c0705827d3b998504f04ca82bc"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_clock/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_clock/tests.rs",
+      "bytes": 4061,
+      "sha256": "48faacd70746511d40a3d7309eaa9a0993e24ff9cfed6511454a2fbd1b27e522"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_policy.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_policy.rs",
+      "bytes": 4328,
+      "sha256": "82fbc3180e76f7e2da4573285b2f676f6cc2a10abad174757741d16b0c26d560"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_policy/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lease_policy/tests.rs",
+      "bytes": 1816,
+      "sha256": "ba33b7b84876863392f8f8e43264332cb8f7e77d4aec0ca961cbb9cd50f66fcb"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lib.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/lib.rs",
+      "bytes": 12200,
+      "sha256": "4f232b6626c0136301b9f403635825b1cd90f5e4686ec2f27d401b434e92cb39"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/rawnode.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/rawnode/lease_gate.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/rawnode/lease_gate.rs",
+      "bytes": 15733,
+      "sha256": "7bb59ba7cda0bf485f4418b2170822c844ab196fe6739d2cf6ecfb3d34a7ea23"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/rawnode/lease_gate/tests.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/rawnode/lease_gate/tests.rs",
+      "bytes": 27761,
+      "sha256": "364f0e36dd804e9bb5037981acd6a22a863ad2c3cc13942a539b3cf01abd9546"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/rawnode/lease_wire.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/rawnode/lease_wire.rs",
+      "bytes": 8436,
+      "sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/read_stage_timing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/read_stage_timing.rs",
+      "bytes": 4441,
+      "sha256": "b69de8475c251cd55a1297ad593e6e6e170eff4b57057dc52b0b594f996af797"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/state_machine.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/state_machine.rs",
+      "bytes": 74877,
+      "sha256": "1b40923564c1304f370f05261bda704b498c001b0ef327e6f4aba653fcb247bd"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/state_machine/raw_group.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/state_machine/raw_group.rs",
+      "bytes": 21704,
+      "sha256": "27e435ca278c87cda40ddbd064d5cda0728c7e9953fc6853d0b3a2f01f91693f"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/storage.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/storage/configuration.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/storage/configuration.rs",
+      "bytes": 17260,
+      "sha256": "01a3d8adf6a05cf50d935b99a375097361860067b4c359792eb2bb956e622848"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/storage/persistence_model.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/testing.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/testing.rs",
+      "bytes": 19033,
+      "sha256": "552a9b0d34f910ccbb96fbe4c13898c00e489fdcfb877e4ed4f47abd0c1ec967"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/transport.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/transport.rs",
+      "bytes": 33189,
+      "sha256": "790c2d1918f513a8d6258df0a51b7209595ed236cab82289d8a079d99cec8fe6"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/work.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/work.rs",
+      "bytes": 13285,
+      "sha256": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/write_diagnostics.rs",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/src/write_diagnostics.rs",
+      "bytes": 14002,
+      "sha256": "f00217c94a94438e5b2577a6f6a81ead6c2fb66647214c41be512a8810dae3af"
+    },
+    {
+      "path": "runs/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/test.log",
+      "original": "/tmp/kv9-c04-configuration-source-controls-20260915-third/wrong-cut-term/test.log",
+      "bytes": 630,
+      "sha256": "e375958ae515e317d977793672b89c085e0ef622d712ddc4d2e5c6294931f2f2"
+    },
+    {
+      "path": "source/crates/raft/src/rawnode.rs",
+      "original": "/home/dongxu/kv9/crates/raft/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "path": "source/crates/raft/src/storage.rs",
+      "original": "/home/dongxu/kv9/crates/raft/src/storage.rs",
+      "bytes": 32534,
+      "sha256": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1"
+    },
+    {
+      "path": "source/crates/raft/src/storage/configuration.rs",
+      "original": "/home/dongxu/kv9/crates/raft/src/storage/configuration.rs",
+      "bytes": 17267,
+      "sha256": "bdf0f0b441d97405ca8d41710248ec7ee6b9c6420539f46e2b6f955f1066db5a"
+    },
+    {
+      "path": "source/proofs/tla/configuration_cut/ConfigurationCut.tla",
+      "original": "/home/dongxu/kv9/proofs/tla/configuration_cut/ConfigurationCut.tla",
+      "bytes": 4402,
+      "sha256": "b650dccd6cef89c2430d89af685ffb613d0a99a2505a836734de087513bebac0"
+    },
+    {
+      "path": "source/proofs/tla/configuration_cut/ConfigurationCutMC.tla",
+      "original": "/home/dongxu/kv9/proofs/tla/configuration_cut/ConfigurationCutMC.tla",
+      "bytes": 724,
+      "sha256": "e01bc27a6db6ccd037cc58552d81ed58b3b704ddc0cf84e85eb9464cfb007957"
+    },
+    {
+      "path": "source/proofs/tla/configuration_cut/Cut2.cfg",
+      "original": "/home/dongxu/kv9/proofs/tla/configuration_cut/Cut2.cfg",
+      "bytes": 130,
+      "sha256": "c3a2814f679094b0ea9e5d7fbbb6e321e5a34a5962dbb065f4365360daaf1464"
+    },
+    {
+      "path": "source/proofs/tla/configuration_cut/Cut3.cfg",
+      "original": "/home/dongxu/kv9/proofs/tla/configuration_cut/Cut3.cfg",
+      "bytes": 133,
+      "sha256": "330033c29c78e023f490cf9e96db2f49328fa4c23d02a764b5bfbf536e7f8bf8"
+    },
+    {
+      "path": "source/proofs/tla/configuration_cut/Inspect3.cfg",
+      "original": "/home/dongxu/kv9/proofs/tla/configuration_cut/Inspect3.cfg",
+      "bytes": 170,
+      "sha256": "36f61a7e9b148e513bc2cd55be8af340fed27829ca62313972db6fd4996f8568"
+    },
+    {
+      "path": "source/proofs/tlaps/configuration_cut/ConfigurationCutProof.tla",
+      "original": "/home/dongxu/kv9/proofs/tlaps/configuration_cut/ConfigurationCutProof.tla",
+      "bytes": 4438,
+      "sha256": "35a3fdd52625ae0c5bd3f1d969bffdac0b0b4f5078b54e0f3ef31f302ef82c32"
+    },
+    {
+      "path": "source/proofs/tlaps/configuration_cut/inventory.json",
+      "original": "/home/dongxu/kv9/proofs/tlaps/configuration_cut/inventory.json",
+      "bytes": 1440,
+      "sha256": "9f7a669a6e90e425d8da1718a66dfa343ed151e7c568d7b6c418ed9d9b695b5d"
+    },
+    {
+      "path": "source/scripts/ProofAudit.java",
+      "original": "/home/dongxu/kv9/scripts/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "path": "source/scripts/check-configuration-protocol.py",
+      "original": "/home/dongxu/kv9/scripts/check-configuration-protocol.py",
+      "bytes": 9294,
+      "sha256": "8d1621978320f5265ff3f9613ca2ad6d930cc67713d19ff1ce4d67df8c2750d6"
+    },
+    {
+      "path": "source/scripts/check-configuration-source-controls.py",
+      "original": "/home/dongxu/kv9/scripts/check-configuration-source-controls.py",
+      "bytes": 6630,
+      "sha256": "4351c3e0090980f855639d14b85287f72d5b4425b2953c8bd2012a5373108cf7"
+    },
+    {
+      "path": "source/scripts/check-tla.py",
+      "original": "/home/dongxu/kv9/scripts/check-tla.py",
+      "bytes": 13312,
+      "sha256": "f8f14b6237871b4d251bc67ef1dbd8c293ce7be0d2b5875ce74215e6e4479fa0"
+    },
+    {
+      "path": "source/scripts/check-tlaps.py",
+      "original": "/home/dongxu/kv9/scripts/check-tlaps.py",
+      "bytes": 16239,
+      "sha256": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+    }
+  ]
+}
