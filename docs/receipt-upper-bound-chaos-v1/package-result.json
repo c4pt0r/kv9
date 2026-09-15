@@ -1,0 +1,24 @@
+{
+  "complete": true,
+  "started_ns": 1789474999317017021,
+  "initial_available_bytes": 25428705280,
+  "limits": {
+    "member_bytes": 16777216,
+    "decoded_bytes": 67108864,
+    "compressed_bytes": 33554432,
+    "root_allocated_bytes": 67108864,
+    "part_bytes": 2097152,
+    "seconds": 1200,
+    "host_floor_bytes": 8589934592
+  },
+  "source_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+  "members": 2164,
+  "decoded_bytes": 46114449,
+  "compressed_bytes": 4297012,
+  "compressed_sha256": "ff13cf57afdb56373a60e73f05023d509907f45a95edcb0ff3d33c10c5982ef5",
+  "parts": 3,
+  "inventory_sha256": "6e325d7b2d1292739482cfc7e7f98846f430d2eaa1569c3502dd9229ddea9bf2",
+  "ended_ns": 1789474999793887406,
+  "final_available_bytes": 25423695872,
+  "root_allocated_bytes": 8048640
+}

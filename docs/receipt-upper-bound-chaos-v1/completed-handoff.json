@@ -1,0 +1,88 @@
+{
+  "actual_terminals": [
+    {
+      "bytes": 678,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-terminal.json",
+      "sha256": "cbc0d08f87f133698a2f6fe09ffd11f8001f43128dfa5212701f66cb2ae15fe1"
+    },
+    {
+      "bytes": 782,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/verify-terminal.json",
+      "sha256": "d27ccaf75f810ca9082ed2bfc317c0de3503efff8bfc59e85eb1ef793b1c4b85"
+    }
+  ],
+  "complete": true,
+  "compressed_bytes": 4297012,
+  "compressed_sha256": "ff13cf57afdb56373a60e73f05023d509907f45a95edcb0ff3d33c10c5982ef5",
+  "copy_scope": "Copy package-first plus the separately listed actual terminal/result/handoff records. No additional payload expansion needed.",
+  "decoded_bytes": 46114449,
+  "inventory_sha256": "6e325d7b2d1292739482cfc7e7f98846f430d2eaa1569c3502dd9229ddea9bf2",
+  "members": 2164,
+  "originals_unchanged": true,
+  "package_files": [
+    {
+      "bytes": 4812,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/README.md",
+      "sha256": "401071a399f70d993e144212114845e0f6f24c8c01b5519d13f9591737af31e1"
+    },
+    {
+      "bytes": 2097152,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/evidence.tar.gz.001",
+      "sha256": "8f15f23d24ae33095d94329ba371e12a854a60f2ddeb4a7e3d5d6d1cc7dbe621"
+    },
+    {
+      "bytes": 2097152,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/evidence.tar.gz.002",
+      "sha256": "57b267d881695bb88c4f15ff711c8b382cb0f7c9b85e7cd8474da616645ecc86"
+    },
+    {
+      "bytes": 102708,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/evidence.tar.gz.003",
+      "sha256": "93eb43ddcfa1d9a922887ad1129d995b71c0635cd3f95e2a860e6ea3d401ad17"
+    },
+    {
+      "bytes": 668519,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/inventory.json",
+      "sha256": "6e325d7b2d1292739482cfc7e7f98846f430d2eaa1569c3502dd9229ddea9bf2"
+    },
+    {
+      "bytes": 6356,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/package.py",
+      "sha256": "e87a467d3a90b42da446e5acba534afab4083f8c2086a6ea20633e4468295b0c"
+    },
+    {
+      "bytes": 6970,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/summary.json",
+      "sha256": "4a4ba69f3ead410d2d1d394c676cd49ec050967522e58e62551f37df2812d0de"
+    },
+    {
+      "bytes": 4345,
+      "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/verify.py",
+      "sha256": "fa61702b8d064fb6f42760263c1ce30b7c7062310d575271c7a30b82f870d1d7"
+    }
+  ],
+  "package_first_immutable": true,
+  "package_result": {
+    "bytes": 786,
+    "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-result.json",
+    "sha256": "7dd6fd85bf2d8fdd196f8890ac3b24fa778ae5dd718ad83e712d0f7d6af625d1"
+  },
+  "package_root": "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first",
+  "performance_wording_correction": {
+    "bytes": 1269,
+    "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/performance-snapshot-correction.json",
+    "sha256": "acaa46f02cb1245ab806df87df628592de62df3baff3a10de970df0266e74b75"
+  },
+  "root_allocated_bytes_before_handoff": 8085504,
+  "source_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+  "summary": {
+    "bytes": 6970,
+    "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/summary.json",
+    "sha256": "4a4ba69f3ead410d2d1d394c676cd49ec050967522e58e62551f37df2812d0de"
+  },
+  "verify_result": {
+    "bytes": 1367,
+    "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/verify-result.json",
+    "sha256": "af82c05e4ad3844acd4bfde46a3e9597731fc95596aeba74636767f9555f7153"
+  }
+}

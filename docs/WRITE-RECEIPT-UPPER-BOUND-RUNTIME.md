@@ -3,8 +3,9 @@
 The exact experimental candidate
 [`e2e23cc`](https://github.com/c4pt0r/kv9/commit/e2e23cca5e70a9ea0cc241877b3b35b5b6433d27)
 now has accepted default/native and diagnostic releases plus ordinary
-three-voter recovery. **CRC remains selected. Actual Chaos Mesh, the complete
-matched performance screen and a live schema-2 observer capture remain pending.**
+three-voter recovery. The subsequent [actual full21 Chaos Mesh gate](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md)
+also passes. **CRC remains selected. The complete matched performance screen
+and a live schema-2 observer capture remain pending.**
 These results do not establish a throughput improvement.
 
 ## Retained release identity
@@ -70,14 +71,12 @@ repair or relabel that failed test run.
 
 ## Remaining acceptance
 
-1. Run the complete actual 21-window Chaos Mesh matrix with positive fault
-   effects, independent histories and exact cleanup on this default binary.
-2. Run the original 8 smokes and 16 ten-second matched performance cohorts
+1. Qualify fresh capacity and run the original 8 smokes and 16 ten-second matched performance cohorts
    against selected CRC, with the fixed native v3 measurement client. Compare
    throughput and latency in both opposite orders.
-3. Run the separate schema-2 observer capture to measure actual skipped scans.
+2. Run the separate schema-2 observer capture to measure actual skipped scans.
    Keep the held receipt-tail hint/fallback comparison separate.
-4. Decide promotion from complete evidence, then continue the industrial
+3. Decide promotion from complete evidence, then continue the industrial
    storage and dynamic multi-Raft/split dependencies in issue #9.
 
 [Original release logs, manifests, complete histories, runtime records and audit](receipt-upper-bound-runtime-v1/README.md)

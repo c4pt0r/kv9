@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "-B",
+    "/tmp/kv9-upper-bound-chaos-report-20260915-first/package-first/verify.py",
+    "--output",
+    "/tmp/kv9-upper-bound-chaos-report-20260915-first/verify-result.json"
+  ],
+  "complete": true,
+  "execution_kind": "direct_tool_terminal",
+  "exit_code": 0,
+  "result": {
+    "bytes": 1367,
+    "path": "/tmp/kv9-upper-bound-chaos-report-20260915-first/verify-result.json",
+    "sha256": "af82c05e4ad3844acd4bfde46a3e9597731fc95596aeba74636767f9555f7153"
+  },
+  "scope": "Actual tool completion from the original one-shot command. No repeated workload or correctness control.",
+  "session_id": null,
+  "terminal_receipt": "478889"
+}

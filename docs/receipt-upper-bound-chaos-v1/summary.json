@@ -1,0 +1,169 @@
+{
+  "audit_scope_correction": "Inherited audit.scope prose names a6ac335. Machine revision/runtime_revision, image/source/binary/client bindings identify exact e2e23cca; original scope bytes are preserved without acceptance mutation.",
+  "audit_scope_original": "Exact clean a6ac335 default-feature release server, ordinary-port tonic_stream point and native atomic batch clients, plus original CLI/catalog histories. Original 21 actual voter/storage/endpoint Chaos windows and effects; independent complete histories, source/executable/process identity and fresh final drains. Dedicated client-link/quorum acceptance, performance, cross-host, power-loss and whole-Rust proof are separate.",
+  "authority": {
+    "audit": {
+      "bytes": 457078,
+      "path": "/tmp/kv9-upper-bound-chaos-preparation-20260915-first/independent/audit.json",
+      "sha256": "8e99787bd37a13d9ce2051efe48a64e7fbf85b66285ba2944c58164de33239ac"
+    },
+    "full_archive_inventory": {
+      "bytes": 1067874,
+      "path": "/tmp/kv9-upper-bound-chaos-preparation-20260915-first/archive-first/inventory.json",
+      "sha256": "18bb883a0b77c4f80823820fcbc9599ac3b2d7e52ad1a6f1b9ee8aee62e171c7"
+    },
+    "full_archive_result": {
+      "bytes": 1312,
+      "path": "/tmp/kv9-upper-bound-chaos-preparation-20260915-first/archive-first/result.json",
+      "sha256": "bb54d0d70faab65e5ba50f1c04c2aab63229800c74b64f8ed504873eb5f7f555"
+    },
+    "post_terminal": {
+      "bytes": 335,
+      "path": "/tmp/kv9-upper-bound-chaos-root-20260915-first/post-terminal.json",
+      "sha256": "18a97406f97477b6b563eaecbcbcc1eccb5a34c2588c0fa7e23c995633704cff"
+    },
+    "runtime_terminal": {
+      "bytes": 330,
+      "path": "/tmp/kv9-upper-bound-chaos-root-20260915-first/terminal.json",
+      "sha256": "0186a10c688d95f50160806a80be1f517f04b82e9bceb57a72ae8252e1ce9951"
+    }
+  },
+  "complete": true,
+  "container_states_exited": 25,
+  "fresh_final_drained_replicas": 4,
+  "full_archive": {
+    "all_inputs_rehashed": true,
+    "all_members_read_back": true,
+    "archive": "/tmp/kv9-upper-bound-chaos-preparation-20260915-first/archive-first/evidence.tar.gz",
+    "bytes": 92332752,
+    "cleanup_in_separate_supplement": true,
+    "complete": true,
+    "ended_unix_ns": 1789474243276395984,
+    "file_bytes": 923659003,
+    "files": 4250,
+    "independent_retained_evidence_accepted": true,
+    "inventory": "/tmp/kv9-upper-bound-chaos-preparation-20260915-first/archive-first/inventory.json",
+    "inventory_sha256": "18bb883a0b77c4f80823820fcbc9599ac3b2d7e52ad1a6f1b9ee8aee62e171c7",
+    "members": 4552,
+    "original_fixture_exit_code": 0,
+    "roots": [
+      "/tmp/kv9-chaos-e2e.Q7qvIj",
+      "/tmp/kv9-upper-bound-chaos-preparation-20260915-first",
+      "/tmp/kv9-upper-bound-release-20260915-first",
+      "/tmp/kv9-upper-bound-chaos-preparation-20260915-first/persistent-build",
+      "/tmp/kv9-upper-bound-chaos-preparation-20260915-first/pressure-build-first",
+      "/tmp/kv9-upper-bound-chaos-preparation-20260915-first/image-context-first",
+      "/tmp/kv9-thin-lto-delay-selection-repair-first"
+    ],
+    "scope": "Freeze, archive and independently read back current native Chaos evidence before cleanup.",
+    "sha256": "9c069050bbaf3e88f8859151dac1ba5f88fc618cdaea49aa1a73ac21dc9d5ab1",
+    "started_unix_ns": 1789474239210366747
+  },
+  "historical_namespace_uids_preserved": 8,
+  "histories": {
+    "cli": {
+      "archive_name": "original/tmp/kv9-chaos-e2e.Q7qvIj/history.jsonl",
+      "bytes": 3149216,
+      "contiguous_event_sequence": true,
+      "header_count": 1,
+      "invokes": 5550,
+      "operations": {
+        "create_keyspace": 267,
+        "delete": 1055,
+        "delete_range": 1055,
+        "get": 1059,
+        "put": 1058,
+        "scan": 1056
+      },
+      "outcomes": {
+        "ok": 4964,
+        "refused": 21,
+        "unknown": 565
+      },
+      "path": "/tmp/kv9-chaos-e2e.Q7qvIj/history.jsonl",
+      "returns": 5550,
+      "sha256": "e2ce93487a51dc6ea86d437057e4e25003cbf04e4c4ed51697042b663c130429"
+    },
+    "native": {
+      "archive_name": "original/tmp/kv9-chaos-e2e.Q7qvIj/native-run/history.jsonl",
+      "bytes": 6609933,
+      "contiguous_event_sequence": true,
+      "header_count": 1,
+      "invokes": 2614,
+      "operations": {
+        "batch_get": 916,
+        "batch_put": 915,
+        "delete": 261,
+        "get": 261,
+        "put": 261
+      },
+      "outcomes": {
+        "ok": 2570,
+        "refused": 13,
+        "unknown": 31
+      },
+      "path": "/tmp/kv9-chaos-e2e.Q7qvIj/native-run/history.jsonl",
+      "returns": 2614,
+      "sha256": "11802119f441b653777525e208aecc2d9beb5472ac0023db020027383fb055ce"
+    },
+    "persistent": {
+      "archive_name": "original/tmp/kv9-chaos-e2e.Q7qvIj/persistent-run/history.jsonl",
+      "bytes": 1087165,
+      "contiguous_event_sequence": true,
+      "header_count": 1,
+      "invokes": 1475,
+      "operations": {
+        "delete": 150,
+        "get": 748,
+        "put": 577
+      },
+      "outcomes": {
+        "ok": 1448,
+        "refused": 9,
+        "unknown": 18
+      },
+      "path": "/tmp/kv9-chaos-e2e.Q7qvIj/persistent-run/history.jsonl",
+      "returns": 1475,
+      "sha256": "a2f1db349d61106fddc822e36923ea68a713ef36099188c6c8fbe595b5da9bed"
+    }
+  },
+  "image_id": "sha256:451b98047cc2628fc062af6091bed425e372b04f01d094c0ece2ddf125b0807c",
+  "limitations": "Portable packet does not contain ELFs/WALs, the large observer stream, history-prefix capture bodies or the independent duplicate tree. Those exact originals remain bound to the previously fully verified local archive. Counters do not repeat linearizability, cluster, source, binary or lifecycle tests.",
+  "namespace": "kv9-chaos-upper-bound-e2e23cca-1789473682-2890439",
+  "namespace_absent": true,
+  "native_client_sha256": "44d0f6429fd549fc7d0fac6e71ba67b413a2a8aca0e3e3f0386a64058ac06769",
+  "operations": 9639,
+  "outcomes": {
+    "ok": 8982,
+    "refused": 43,
+    "unknown": 614
+  },
+  "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+  "scope": "Original accepted full21 correctness evidence plus independent complete-history counts; no new runtime, semantic checker replay or performance claim.",
+  "server_lifetimes_exited": 36,
+  "server_sha256": "6f074e867eae45274c17b54aa763888e92db2c45d5757974fa52ee0f15936d49",
+  "window_names": [
+    "registration-seed-blackhole",
+    "pod-failure-1",
+    "pod-failure-2",
+    "pod-failure-3",
+    "partition",
+    "public-admission-overload",
+    "delay",
+    "io-voter-1-errno-5",
+    "io-voter-1-errno-28",
+    "io-voter-2-errno-5",
+    "io-voter-2-errno-28",
+    "io-voter-3-errno-5",
+    "io-voter-3-errno-28",
+    "store-loss-voter-1-log-missing",
+    "store-loss-voter-2-log-missing",
+    "store-loss-voter-3-log-missing",
+    "store-loss-voter-1-pvc-replacement",
+    "store-loss-voter-2-pvc-replacement",
+    "store-loss-voter-3-pvc-replacement",
+    "endpoint-migration-pending",
+    "endpoint-migration-recovered"
+  ],
+  "windows": 21
+}

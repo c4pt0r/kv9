@@ -3,9 +3,9 @@
 Candidate [`e2e23cc`](https://github.com/c4pt0r/kv9/commit/e2e23cca5e70a9ea0cc241877b3b35b5b6433d27)
 adds a conservative negative-lookup filter to the applied-receipt vector.
 Its source-bound proof, local development checks, retained default/diagnostic
-releases and ordinary three-voter recovery pass. **It is experimental: actual
-Chaos Mesh and the full matched performance screen remain open. CRC remains
-selected.**
+releases, ordinary three-voter recovery and [actual full21 Chaos Mesh](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md)
+pass. **It is experimental: the full matched performance screen and live
+schema-2 observer capture remain open. CRC remains selected.**
 
 ## Why this candidate
 
@@ -68,7 +68,8 @@ pass. Both earlier failed proof drafts remain preserved.
 Default workspace checks pass **792 tests/doctests, with 23 ignored**. The
 initial diagnostic Raft run has 258 passed and one TCP fixture bind failure;
 the exact isolated failed test then passes with unchanged source. The original
-run remains failed, and the fixture's released-port race is not yet repaired.
+run remains failed. The later [test-only port ownership repair](tcp-fixture-port-ownership-v1/README.md)
+fixes listener allocation on main; the frozen candidate source remains unchanged.
 The server's scoped diagnostic schema/JSON-size check, default and diagnostic
 warnings-denied Clippy, formatting and explicit production experimental-lease
 compilation pass. The successful Raft tests were not replayed after only the
@@ -107,12 +108,16 @@ operations, 330 successes and 30 explicit unknowns. Six fresh drains and all
 seven owned client/voter lifetimes are checked. This is ordinary process
 recovery on one host, not actual Chaos Mesh or physical power-loss evidence.
 
-1. Complete actual full21 Chaos Mesh against the retained default candidate.
-   Preserve unknown outcomes and all original failures.
-2. Run the original eight-smoke/sixteen-ten-second point/batch matched screen
+The subsequent actual Chaos gate also passes: 9,639 complete operations,
+including 614 unknowns and 43 refusals, four fresh final drains, 36 exited
+server lifetimes and 25 exited containers. All six independent/archive/cleanup
+post phases complete. The original failures remain preserved.
+
+1. Qualify fresh full-campaign capacity and run the original
+   eight-smoke/sixteen-ten-second point/batch matched screen
    with the fixed native v3 client and selected CRC reference. Judge throughput
    and latency by both opposite orders; no diagnostic sweep replaces this gate.
-3. Capture actual upper-bound skip/fallback populations separately and keep
+2. Capture actual upper-bound skip/fallback populations separately and keep
    the held tail-hint comparison distinct. Promote only after the complete
    correctness/performance decision, then continue the industrial storage and
    dynamic multi-Raft/split route recorded in issue #9.

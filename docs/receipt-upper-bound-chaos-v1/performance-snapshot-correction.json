@@ -1,0 +1,29 @@
+{
+  "complete": true,
+  "correct_wording": "during the actual Chaos runtime",
+  "kind": "Provenance prose correction only",
+  "original_capacity": {
+    "bytes": 3771,
+    "path": "/tmp/kv9-upper-bound-performance-preparation-20260915-first/capacity.json",
+    "sha256": "7c7b5ecc2a647ba31f1afc9af29674a3e8463b335087831fd7f01c128f455439"
+  },
+  "original_files_unchanged": true,
+  "original_readme": {
+    "bytes": 5686,
+    "path": "/tmp/kv9-upper-bound-performance-preparation-20260915-first/README.md",
+    "sha256": "75c0202b702676310fe515eae79bfe1fe316ba56c2b1348f23ed49cde0183a3b"
+  },
+  "original_wording": "while root auxiliary work was active",
+  "reason": "The original README retained assignment-time wording. The recorded snapshot timestamp is inside actual full21 runtime after auxiliary completion.",
+  "runtime_authority": {
+    "bytes": 1703,
+    "path": "/tmp/kv9-upper-bound-chaos-root-20260915-first/result.json",
+    "sha256": "c46cf9e9fec196575af386396cc2e9b2d5d7d397f3c87c4c0dca8c04c0c9eef4"
+  },
+  "runtime_ended_ns": 1789474192075655673,
+  "runtime_started_ns": 1789473682063037227,
+  "selection_or_control_replay": false,
+  "snapshot_observed_ns": 1789473791980634966,
+  "space_arithmetic_unchanged": true,
+  "storage_guards_unchanged": true
+}

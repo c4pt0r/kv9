@@ -1,0 +1,46 @@
+{
+  "complete": true,
+  "compressed_bytes": 4297012,
+  "compressed_sha256": "ff13cf57afdb56373a60e73f05023d509907f45a95edcb0ff3d33c10c5982ef5",
+  "decoded_bytes": 46114449,
+  "ended_ns": 1789475005679382337,
+  "histories": {
+    "cli": {
+      "bytes": 3149216,
+      "invokes": 5550,
+      "outcomes": {
+        "ok": 4964,
+        "refused": 21,
+        "unknown": 565
+      },
+      "returns": 5550,
+      "sha256": "e2ce93487a51dc6ea86d437057e4e25003cbf04e4c4ed51697042b663c130429"
+    },
+    "native": {
+      "bytes": 6609933,
+      "invokes": 2614,
+      "outcomes": {
+        "ok": 2570,
+        "refused": 13,
+        "unknown": 31
+      },
+      "returns": 2614,
+      "sha256": "11802119f441b653777525e208aecc2d9beb5472ac0023db020027383fb055ce"
+    },
+    "persistent": {
+      "bytes": 1087165,
+      "invokes": 1475,
+      "outcomes": {
+        "ok": 1448,
+        "refused": 9,
+        "unknown": 18
+      },
+      "returns": 1475,
+      "sha256": "a2f1db349d61106fddc822e36923ea68a713ef36099188c6c8fbe595b5da9bed"
+    }
+  },
+  "inventory_sha256": "6e325d7b2d1292739482cfc7e7f98846f430d2eaa1569c3502dd9229ddea9bf2",
+  "members": 2164,
+  "scope": "Exact included bytes, three complete-history counts and bounded archive readback. No semantic/lifecycle/workload replay; omissions remain original-archive authority.",
+  "started_ns": 1789475005504137544
+}

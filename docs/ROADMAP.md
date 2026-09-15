@@ -12,8 +12,10 @@
 > now passes 14 source-bound theorem statements / 82 obligations, local
 > development checks and [retained releases/ordinary recovery](WRITE-RECEIPT-UPPER-BOUND-RUNTIME.md).
 > Both complete recovery histories pass: 360 operations, including 30 explicit
-> unknowns, six fresh drains and seven exited lifetimes. Actual Chaos and the full
-> matched performance gates remain open; no new speedup is claimed.
+> unknowns, six fresh drains and seven exited lifetimes. [Actual full21 Chaos](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md)
+> also passes: 9,639 complete operations, four fresh final drains, 36 exited server
+> lifetimes and 25 exited containers. Fresh performance capacity and the full
+> matched screen remain open; no new speedup is claimed.
 > Next: complete that candidate's acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
