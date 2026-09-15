@@ -7,10 +7,31 @@ records an actual live poll; the [runtime bindings](runtime-bindings.json)
 record ordinal **014** executing its verified finish phase. No new completed cohort or
 overall terminal success is claimed at that snapshot.
 
-The [PID reuse repair](../../retention-pid-identity-v1/README.md) remains the
-latest completed capacity phase: 14 original plan cohorts and 32.066 GB
-conservative net recovery before later publication/continuation overhead.
-The old controller and its failed reader result remain FAILED and unchanged.
+The preceding [PID reuse repair](../../retention-pid-identity-v1/README.md)
+completed 14 original plan cohorts. The old controller and its failed reader
+result remain FAILED and unchanged.
+
+## First actual continuation cohort completed
+
+Ordinal014 subsequently passes original staging, independent verification,
+exact restoration, complete corrected full-CRC readback and final COLD.
+Both actual dispatcher children exit zero and are reaped. The
+[actual completed record](first-completed-cohort.json) extends the prefix to
+**15 plan cohorts**, with **34,086,608,896 bytes** conservative net recovery
+after current transaction/shared/old/new metadata allocation. Available space
+at that boundary is **59,401,035,776 bytes**, before later publication overhead.
+
+All **303 original objects / 9,026,238,780 logical bytes / 6,387,947,218 compressed
+bytes** pass readback, with 303 fresh decoder receipts. The reader's inherited
+`observed.codec_lifetimes=606` and timestamps describe the historical producer,
+not this readback. This adds actual corrected full-CRC execution to corrected
+FNV ordinal013. Corrected frame/directory runtime coverage remains pending.
+
+The [reporting extraction](first-cohort-014.json) binds and archives the actual
+verification, restoration, readback, COLD, release and child terminals. Full
+archive readback passes (`e70e15/0`); no payload workload is replayed. The same
+live campaign has advanced to ordinal015. Overall migration and receipt
+performance acceptance remain incomplete.
 
 ## Execution and qualification
 

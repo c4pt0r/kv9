@@ -176,8 +176,11 @@ preserve that failure and complete a new 344-object readback and final COLD,
 extending the prefix to 14 cohorts and observing 57.387 GB available. The
 [qualified continuation](cross-voter-multicohort-retention-v1/continuation/README.md)
 now executes from ordinal014 with a prospective 85 GB capacity stop; its 11
-distinct focused controls and independent source review pass. The original plan
-and benchmark guards stay intact.
+distinct focused controls and independent source review pass. Its first actual
+cohort completes corrected full-CRC readback of 303 objects and final COLD,
+extending the accepted prefix to 15 cohorts: 34.087 GB conservative net recovery
+and 59.401 GB available at that boundary. The original plan and benchmark
+guards stay intact.
 Actual restoration/readback
 now covers a [first cohort from all four reader families](cross-voter-multicohort-retention-v1/README.md#actual-coverage-of-all-four-reader-families),
 including independent full-CRC metadata review. After the migration exits and fresh capacity qualifies,

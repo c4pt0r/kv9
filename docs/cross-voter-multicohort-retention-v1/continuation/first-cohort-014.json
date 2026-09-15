@@ -1,0 +1,70 @@
+{
+  "complete": true,
+  "scope": "Reporting extraction of actual first continuation cohort; controller independent verification and complete corrected readback succeeded. Not another payload replay or overall campaign acceptance.",
+  "ordinal": 14,
+  "completed_plan_cohorts": 15,
+  "conservative_net_recovered_bytes": 34086608896,
+  "available_at_boundary_bytes": 59401035776,
+  "reader_family": "crc-full-regression",
+  "actual_readback_decoder_receipts": 303,
+  "whole_original_objects": 303,
+  "logical_bytes": 9026238780,
+  "compressed_bytes": 6387947218,
+  "historical_observed_codec_count_is_not_current": true,
+  "archive": {
+    "path": "first-cohort-014.tar.gz",
+    "bytes": 219079,
+    "sha256": "2ee938ad0942e3ea115bc51660d33e7dff44d3c97d1dfb25853d315973ea48ac"
+  },
+  "files": [
+    {
+      "path": "complete.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/complete.json",
+      "bytes": 7659,
+      "sha256": "8ff96ad6b439101d1238217935753346d3ede0345d808613e59cc345465d8ce3"
+    },
+    {
+      "path": "controller/finish/terminal.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/finish/terminal.json",
+      "bytes": 1024,
+      "sha256": "4261937686ced44552b43fd472ff47e6b449e579205b51a85932d8275c0fcc65"
+    },
+    {
+      "path": "controller/release.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/release.json",
+      "bytes": 992,
+      "sha256": "4d0640447f27c4a19e676307005170259358e88748d5a7cb4e4405a70827eb44"
+    },
+    {
+      "path": "controller/stage-verify/terminal.json",
+      "original_path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/stage-verify/terminal.json",
+      "bytes": 634,
+      "sha256": "c0bb0c5a1cf52cffd00eb96cebc08a49c3c54980003441684fc79af5beda43e7"
+    },
+    {
+      "path": "transaction/readback-1-repaired-first/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+      "bytes": 691316,
+      "sha256": "928971ffa6d6f38811cb0396c8822814e779d63fa29109defd2f3a75b1191ea2"
+    },
+    {
+      "path": "transaction/restore-1/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first/restore-1/result.json",
+      "bytes": 1248001,
+      "sha256": "5f6cba892b1daaf9eec9bc59a804140197528c7ad350c0d72bf40ff03eaf3286"
+    },
+    {
+      "path": "transaction/retire-2/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first/retire-2/result.json",
+      "bytes": 98135,
+      "sha256": "da2df7f768f95457ccdbd6080062013d3a8dc75faeae4ee38eac7d6c33e0e1af"
+    },
+    {
+      "path": "transaction/verification-first/result.json",
+      "original_path": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first/verification-first/result.json",
+      "bytes": 1297511,
+      "sha256": "34721978dbf643261b447b7ab170f4a800798cde740fd4d5a61ee208d5e17070"
+    }
+  ],
+  "archive_readback_complete": true
+}

@@ -135,10 +135,13 @@ reader confused a reused historical PID with a live producer. The separate
 preserve that failure, pass a fresh complete 344-object readback and final COLD,
 and extend the completed prefix to 14 cohorts. Available space immediately after
 the new command is 57.387 GB. The old controller remains FAILED. The separately
-[qualified continuation](continuation/README.md) now runs ordinal 014 under
-actual session 85630 after validating the completed prefix. It uses the repaired
-reader authority and a prospective 85 GB capacity stop, preserving the original
-plan and benchmark guards. The original snapshot above remains historical evidence.
+[qualified continuation](continuation/README.md) starts at ordinal 014 under
+actual session 85630 after validating the completed prefix. Its first actual
+cohort now passes complete corrected full-CRC readback and final COLD, extending
+the prefix to 15 cohorts with 34.087 GB conservative net recovery and 59.401 GB
+available at that boundary. It uses the repaired reader authority and a
+prospective 85 GB capacity stop, preserving the original plan and benchmark
+guards. The original snapshot above remains historical evidence.
 
 ## Actual coverage of all four reader families
 
