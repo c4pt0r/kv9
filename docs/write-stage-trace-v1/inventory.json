@@ -1,0 +1,3035 @@
+{
+  "archive": {
+    "file": "runs.tar.gz",
+    "bytes": 417628,
+    "sha256": "2bc921154ca1a57a72add41076a05a8c9311b6c8b87b7967cb06de0e4d41dddf"
+  },
+  "member_count": 504,
+  "logical_bytes": 2218828,
+  "members": [
+    {
+      "member": "development/first/clippy-default-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/clippy-default-invocation.json",
+      "bytes": 326,
+      "sha256": "837b54ed9ca52eadcb545b8d75a53011a5772cbd21eda3fbc94dd5cd47b0b43c"
+    },
+    {
+      "member": "development/first/clippy-default-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/clippy-default-terminal.json",
+      "bytes": 381,
+      "sha256": "a3858c9f82b3ff97bfbf15cb7a1e8ce10c87f250eaa1245dc1ff6db4d2d7c991"
+    },
+    {
+      "member": "development/first/clippy-default.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/clippy-default.log",
+      "bytes": 6449,
+      "sha256": "3894efc4527045d92ac8c4e0f2411f105c92ba27ca6b4f02b82ef9573b0e2adc"
+    },
+    {
+      "member": "development/first/default-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/default-invocation.json",
+      "bytes": 280,
+      "sha256": "e3df97209763d8f64fde97cbaa9d9a8ebe02a02020da094aaff570519d5c0c73"
+    },
+    {
+      "member": "development/first/default-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/default-terminal.json",
+      "bytes": 333,
+      "sha256": "fc82dc77ba8775668151a714e6c877c00c52a0621dd433acf059800711bc8794"
+    },
+    {
+      "member": "development/first/default.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/default.log",
+      "bytes": 66018,
+      "sha256": "ef47b050308c7aa7dfc48eff9d8b3d0aa0dcdc814b88e7589ceef2af3910db24"
+    },
+    {
+      "member": "development/first/diagnostic-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/diagnostic-invocation.json",
+      "bytes": 460,
+      "sha256": "eaa053bfcabb2fb53f174bb6d61e037909d847400fbbe100235dbb99c2bb1f22"
+    },
+    {
+      "member": "development/first/diagnostic-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/diagnostic-terminal.json",
+      "bytes": 513,
+      "sha256": "d0296dc71475ad9c5e0de87e3e960d168624e39849ee0266c5416466b37ab2ad"
+    },
+    {
+      "member": "development/first/diagnostic.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/diagnostic.log",
+      "bytes": 51382,
+      "sha256": "5243411c9b2faad2283877377fd83cd166186b3bbf83af00004e890571553622"
+    },
+    {
+      "member": "development/first/source-pins-before-tests.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-first/source-pins-before-tests.json",
+      "bytes": 1025,
+      "sha256": "a5d19add53d0f0d595c17e6ad5e78184ba43f31c0649059d60cf8471725c6013"
+    },
+    {
+      "member": "development/second/clippy-default-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/clippy-default-invocation.json",
+      "bytes": 326,
+      "sha256": "a019b44c28a8f98789ed00bac92ac0418f5fc7e6eea8c8f92594fbfaf937724b"
+    },
+    {
+      "member": "development/second/clippy-default-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/clippy-default-terminal.json",
+      "bytes": 379,
+      "sha256": "fb153add7923cec37eef33fac75937461f2dc97a47e40af20fe35c1c0a96b3c8"
+    },
+    {
+      "member": "development/second/clippy-default.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/clippy-default.log",
+      "bytes": 547,
+      "sha256": "e7f651c27c842676f8453602a0eac607152f3e9a70572ea8f5f0f57d91297a76"
+    },
+    {
+      "member": "development/second/clippy-trace-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/clippy-trace-invocation.json",
+      "bytes": 394,
+      "sha256": "3a26845724927a139228c0207ff3fd8a7c0877bb8a17d18a2824faab734369e4"
+    },
+    {
+      "member": "development/second/clippy-trace-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/clippy-trace-terminal.json",
+      "bytes": 447,
+      "sha256": "26787743593dc0a01ff2e23ebac980c422db3b08006ebfe16b904daee36b2984"
+    },
+    {
+      "member": "development/second/clippy-trace.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/clippy-trace.log",
+      "bytes": 421,
+      "sha256": "edd36de1d64b1d6e3a944c8f505cf466214fe17339bb39f75e91aa9d678e07a9"
+    },
+    {
+      "member": "development/second/default-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/default-invocation.json",
+      "bytes": 280,
+      "sha256": "f0ae93c5322d7673d42705b732f3e1ce78134bdf92c416a3c010e35186d9bb8e"
+    },
+    {
+      "member": "development/second/default-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/default-terminal.json",
+      "bytes": 333,
+      "sha256": "adaf4503250f10e321d68f758cb13a81cf687ce81520cef99147b55ac8674195"
+    },
+    {
+      "member": "development/second/default.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/default.log",
+      "bytes": 65889,
+      "sha256": "680a850e08291fd5cdd647d8780f96481550bf23d1173061f38e6f95cc8a2d71"
+    },
+    {
+      "member": "development/second/source-pins.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/source-pins.json",
+      "bytes": 1025,
+      "sha256": "05bbcdc00c2f6ce07782b33b74b126021d6eb7985832ea5d157309839e7a5d93"
+    },
+    {
+      "member": "development/second/trace-and-diagnostics-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/trace-and-diagnostics-invocation.json",
+      "bytes": 383,
+      "sha256": "614ab6eaebf296e8282f90f44b8a67036b54be7f2541682c5fc469dea1a3fda3"
+    },
+    {
+      "member": "development/second/trace-and-diagnostics-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/trace-and-diagnostics-terminal.json",
+      "bytes": 436,
+      "sha256": "f9e94373217fc0ed2a7973604e84f6c6fd6bf6a24235371f0314439c2e87729e"
+    },
+    {
+      "member": "development/second/trace-and-diagnostics.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-second/trace-and-diagnostics.log",
+      "bytes": 45554,
+      "sha256": "d44d178aeb84dd8882cdda0334ea0f726378d87719f3979d5f0b1800e6526b69"
+    },
+    {
+      "member": "development/third/anchor-binding-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/anchor-binding-invocation.json",
+      "bytes": 543,
+      "sha256": "e087c15a104a31e9ceecee422253f9d412833a85a71b31fd77d4d0bca528f355"
+    },
+    {
+      "member": "development/third/anchor-binding-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/anchor-binding-terminal.json",
+      "bytes": 596,
+      "sha256": "c5206f6a41d462e56ea561fa6c87c1631066ac7fdf961aa9227b70c8cefb4b2b"
+    },
+    {
+      "member": "development/third/anchor-binding.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/anchor-binding.log",
+      "bytes": 799,
+      "sha256": "307e25c54f6a14da3fb9eba7c6976e0932014450db3814263933b1121fb9cf23"
+    },
+    {
+      "member": "development/third/checkpoint-base-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-base-invocation.json",
+      "bytes": 545,
+      "sha256": "069047d28113578e84e6f9f1545ba4e6302d3a14095cc7b60c0d4343ed1349c5"
+    },
+    {
+      "member": "development/third/checkpoint-base-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-base-terminal.json",
+      "bytes": 598,
+      "sha256": "61e79d75bfb2164f4996de896852c7eafcce53a4f5797c70482dfb4633b0433a"
+    },
+    {
+      "member": "development/third/checkpoint-base.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-base.log",
+      "bytes": 581,
+      "sha256": "d3a919310e20d71b3756e21fab5cd7ef74c380d856903657061e3e88ec1cda42"
+    },
+    {
+      "member": "development/third/checkpoint-owner-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-owner-invocation.json",
+      "bytes": 547,
+      "sha256": "90c179bb7b6f25387d154974d66042cdca4024bf1f00b8babf6c1146c5877481"
+    },
+    {
+      "member": "development/third/checkpoint-owner-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-owner-terminal.json",
+      "bytes": 600,
+      "sha256": "6cdf2416183d388c92b4aba402ee6c09e69dbbf1f1b644d3aebc6ee0115fc50e"
+    },
+    {
+      "member": "development/third/checkpoint-owner.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-owner.log",
+      "bytes": 703,
+      "sha256": "9db4d9f9fa2d319d3e4b0061d57980376baeb185c7674ed8238de01b839b9c37"
+    },
+    {
+      "member": "development/third/checkpoint-publication-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-publication-invocation.json",
+      "bytes": 559,
+      "sha256": "e0e99314dae22cf4d24221dc5a221df25d12aa5a1eae634efd3d2e2347448e9e"
+    },
+    {
+      "member": "development/third/checkpoint-publication-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-publication-terminal.json",
+      "bytes": 612,
+      "sha256": "04c899bd982bc93c0a20970c4acde53e40bf06c376b26f16d764bf49582c4063"
+    },
+    {
+      "member": "development/third/checkpoint-publication.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/checkpoint-publication.log",
+      "bytes": 556,
+      "sha256": "0fffb6867fe175503854e34d5c893bd1505f421ab8db3b8e350df8f26df41a85"
+    },
+    {
+      "member": "development/third/clippy-trace-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/clippy-trace-invocation.json",
+      "bytes": 394,
+      "sha256": "d6cd9c8631df69cc1f7d6589331dcd1727f59c59ad56da39b206c7c5fd9bda97"
+    },
+    {
+      "member": "development/third/clippy-trace-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/clippy-trace-terminal.json",
+      "bytes": 447,
+      "sha256": "c78bca9b979f91df552afb0d4ea0fefda6a3f040057a07472234c79eb92d45ad"
+    },
+    {
+      "member": "development/third/clippy-trace.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/clippy-trace.log",
+      "bytes": 421,
+      "sha256": "ee10cd23aef238ee2568e3444231b67fc5f28e3eed22954c4593ec6b32f3e037"
+    },
+    {
+      "member": "development/third/retention-ledger-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/retention-ledger-invocation.json",
+      "bytes": 547,
+      "sha256": "deae53c2531df91e91131147c336cc03bb0d5a6184f5ebddca7a860590463994"
+    },
+    {
+      "member": "development/third/retention-ledger-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/retention-ledger-terminal.json",
+      "bytes": 600,
+      "sha256": "805307d30ed5a9f12f4bfaddfd233021fab8acd0838085572955582bee9088b3"
+    },
+    {
+      "member": "development/third/retention-ledger.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/retention-ledger.log",
+      "bytes": 677,
+      "sha256": "89a9f3848f370417b0c15651ffbe8d2bed725534ba76219e218f36ea006a5e5e"
+    },
+    {
+      "member": "development/third/source-pins.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/source-pins.json",
+      "bytes": 1618,
+      "sha256": "b7b6da557e8d0f6995a4de91408fed43e6f091404bce8c7d1b5b2c7c691dd0aa"
+    },
+    {
+      "member": "development/third/storage-observation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/storage-observation.json",
+      "bytes": 2592,
+      "sha256": "8c8cab14476351ec8df7a3e7b7707686a05ed276992e4f9c8ba54a94b05f2be2"
+    },
+    {
+      "member": "development/third/tmp-du-followup.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/tmp-du-followup.json",
+      "bytes": 35943,
+      "sha256": "ba4f67211c265e55e473274abfcc3d40927b8edfecde34f0c7a3f3c618101929"
+    },
+    {
+      "member": "development/third/tmp-du-followup.txt",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/tmp-du-followup.txt",
+      "bytes": 35621,
+      "sha256": "3c346b09bcb8de412d51e476f9f1faa89234ed4e958fcba395c0d303ca4ec786"
+    },
+    {
+      "member": "development/third/traced-workspace-invocation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/traced-workspace-invocation.json",
+      "bytes": 348,
+      "sha256": "4229be62b40a1b8d551d5f9603663c940b0b454bc5a8cc5807351c0f9764ba49"
+    },
+    {
+      "member": "development/third/traced-workspace-terminal.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/traced-workspace-terminal.json",
+      "bytes": 401,
+      "sha256": "4d557de7bc00b4abdd86c88c34cb14d587ba7a3579ffce07c52b7e3ec8d0c6d5"
+    },
+    {
+      "member": "development/third/traced-workspace.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-development-20260915-third/traced-workspace.log",
+      "bytes": 67207,
+      "sha256": "2da964bf448eb2a87a67736637f505c4e1661b7c45b0afdf7ca47e01e3393a50"
+    },
+    {
+      "member": "proofs/anchor-binding/InvalidFrame/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/InvalidFrame/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/InvalidFrame/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/InvalidFrame/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/InvalidFrame/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/InvalidFrame/Run.cfg",
+      "bytes": 174,
+      "sha256": "7e0fae53b7354ef013f2973e1b86760e81fd59cf2912928d28f58f3d38495693"
+    },
+    {
+      "member": "proofs/anchor-binding/InvalidFrame/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/InvalidFrame/result.json",
+      "bytes": 975,
+      "sha256": "daa90b7e655a5101048da19a3b429a3cc12e3c87f36ac39f67dc2680bedae4a8"
+    },
+    {
+      "member": "proofs/anchor-binding/InvalidFrame/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/InvalidFrame/tlc.log",
+      "bytes": 2472,
+      "sha256": "deaaca24ca1167ba8e5d6dd333dd9b89717d8f46895df44681d95a190d4dde2e"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingConfiguration/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingConfiguration/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingConfiguration/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingConfiguration/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingConfiguration/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingConfiguration/Run.cfg",
+      "bytes": 174,
+      "sha256": "88bb8138c7402f95557804081a7e33409d8dfa1f35afca1323943ce7598322d6"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingConfiguration/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingConfiguration/result.json",
+      "bytes": 992,
+      "sha256": "755a30d1c517aad851ba7fdab12b3a225459de44fe5617fa5b4f11db2996c169"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingConfiguration/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingConfiguration/tlc.log",
+      "bytes": 2499,
+      "sha256": "ceac6396e1571dd36503f444907d04a7c6b2cadfb3e2d0b92ee81341d348eb32"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingPublication/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingPublication/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingPublication/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingPublication/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingPublication/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingPublication/Run.cfg",
+      "bytes": 174,
+      "sha256": "b6ee5b22984ce0061a1f113546052b7af0d336d879679fc7764386373cda6ed2"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingPublication/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingPublication/result.json",
+      "bytes": 988,
+      "sha256": "15351624e8d6dc9226e665e4fb4a7a82edda394cddef70731fb7291b49360efc"
+    },
+    {
+      "member": "proofs/anchor-binding/MissingPublication/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/MissingPublication/tlc.log",
+      "bytes": 2493,
+      "sha256": "7c2fe9438f05bf167224b4a8e3726fd4b08f6f418f76fe935582078d79ae7399"
+    },
+    {
+      "member": "proofs/anchor-binding/Valid/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/Valid/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/Valid/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/Valid/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/Valid/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/Valid/Run.cfg",
+      "bytes": 171,
+      "sha256": "99c00aa54127f0cd93b570a05fb88c705b3466fbcdc7d0e81a8e6a2663e4d53e"
+    },
+    {
+      "member": "proofs/anchor-binding/Valid/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/Valid/result.json",
+      "bytes": 961,
+      "sha256": "783bd8aa8e1547e663deb3506be19efb5a9e4a4201c6e861d528f1fdf90f9871"
+    },
+    {
+      "member": "proofs/anchor-binding/Valid/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/Valid/tlc.log",
+      "bytes": 2454,
+      "sha256": "680308dd5e9f3959b6a9bbfc306c6591df41683e6224002b9fc9af9177abe52a"
+    },
+    {
+      "member": "proofs/anchor-binding/WrongRoot/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/WrongRoot/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/WrongRoot/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/WrongRoot/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/WrongRoot/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/WrongRoot/Run.cfg",
+      "bytes": 174,
+      "sha256": "bcbdd5e13e5fa69a406f024b06ae8500f649d97cf6cff30a138aa4d8988ecf9c"
+    },
+    {
+      "member": "proofs/anchor-binding/WrongRoot/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/WrongRoot/result.json",
+      "bytes": 969,
+      "sha256": "e95a83aedf7c3608d3031824bba355f27ee1b006c71e922750cbb8edfeceee49"
+    },
+    {
+      "member": "proofs/anchor-binding/WrongRoot/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/WrongRoot/tlc.log",
+      "bytes": 2462,
+      "sha256": "dad98121c0365eec8a25aee117e9180f28ed41cc88a27c982a93af2a217a877f"
+    },
+    {
+      "member": "proofs/anchor-binding/auditor/ProofAudit.class",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "member": "proofs/anchor-binding/auditor/ProofAudit.java",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/auditor/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-before-completion/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-before-completion/AnchorBinding.tla",
+      "bytes": 4054,
+      "sha256": "4abdf2196aa93a5f65e3d27a80bcfeaef06b19b8c4de66f4e3bffaa05e054269"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-before-completion/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-before-completion/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-before-completion/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-before-completion/Run.cfg",
+      "bytes": 171,
+      "sha256": "99c00aa54127f0cd93b570a05fb88c705b3466fbcdc7d0e81a8e6a2663e4d53e"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-before-completion/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-before-completion/result.json",
+      "bytes": 1004,
+      "sha256": "1c281389e282a57da77eca9412ef3fc1a0cabdcf54ba0be812c6d26d38a523e9"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-before-completion/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-before-completion/tlc.log",
+      "bytes": 3306,
+      "sha256": "e28af2aedd145e86939e746611fc9a719706ba28d0a5d6574fdc5d44ad2db6a7"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-decoded-image/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-decoded-image/AnchorBinding.tla",
+      "bytes": 4057,
+      "sha256": "dc0730f9f45fcea3284856538fbbfc167196f02cb03f60451dad8b96aff6b7a7"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-decoded-image/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-decoded-image/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-decoded-image/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-decoded-image/Run.cfg",
+      "bytes": 171,
+      "sha256": "99c00aa54127f0cd93b570a05fb88c705b3466fbcdc7d0e81a8e6a2663e4d53e"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-decoded-image/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-decoded-image/result.json",
+      "bytes": 997,
+      "sha256": "74399b8f0ca92744e396ac2c14f6a28204e8f109373625e192a271f9bf4c6d93"
+    },
+    {
+      "member": "proofs/anchor-binding/bind-decoded-image/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/bind-decoded-image/tlc.log",
+      "bytes": 3789,
+      "sha256": "f9ade07fe91a74adf9094d6ef42abcae30ae1418fca8996e202637e76d5dedf6"
+    },
+    {
+      "member": "proofs/anchor-binding/custom-axiom/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/custom-axiom/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/custom-axiom/AnchorBindingProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/custom-axiom/AnchorBindingProof.tla",
+      "bytes": 1751,
+      "sha256": "58232c0b177b355aed751528cfbeb8debb02c1f2b0a2fbb58849038ba9228aaf"
+    },
+    {
+      "member": "proofs/anchor-binding/custom-axiom/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/custom-axiom/inventory.json",
+      "bytes": 2094,
+      "sha256": "c9730820ca7d592ebb1fae3fc3ab455858c58b98e879ab1a353bfe2445e42ecd"
+    },
+    {
+      "member": "proofs/anchor-binding/custom-axiom/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/custom-axiom/result.json",
+      "bytes": 457,
+      "sha256": "4ccc365b3b96ee64db6cb5a1a1720891b8b4748d74062a99171ae8ef77427b9e"
+    },
+    {
+      "member": "proofs/anchor-binding/custom-axiom/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/custom-axiom/sany.log",
+      "bytes": 2201,
+      "sha256": "929cebcde8b0f4208deb1fe589a74a7c46946e55ea8549dcfc5551bdfeaadb50"
+    },
+    {
+      "member": "proofs/anchor-binding/decode-mints-observation/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/decode-mints-observation/AnchorBinding.tla",
+      "bytes": 4057,
+      "sha256": "3ef9be00c111f52c87472904a379ccff7d7c5a5759092cfeb3afd8c260c2bbcf"
+    },
+    {
+      "member": "proofs/anchor-binding/decode-mints-observation/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/decode-mints-observation/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/decode-mints-observation/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/decode-mints-observation/Run.cfg",
+      "bytes": 171,
+      "sha256": "99c00aa54127f0cd93b570a05fb88c705b3466fbcdc7d0e81a8e6a2663e4d53e"
+    },
+    {
+      "member": "proofs/anchor-binding/decode-mints-observation/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/decode-mints-observation/result.json",
+      "bytes": 1006,
+      "sha256": "b41ebce37edbead9118ec05328f79283a57897303db69f38a658229d94e9a5dc"
+    },
+    {
+      "member": "proofs/anchor-binding/decode-mints-observation/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/decode-mints-observation/tlc.log",
+      "bytes": 2665,
+      "sha256": "af3b1da233b50253e83db98278ffa51cbffcf7356e2f06727c252327b5132b7b"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/AnchorBindingProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/AnchorBindingProof.log",
+      "bytes": 2405,
+      "sha256": "2f12e023de4936f3b273e327d38b626430ec443efe59b317248b4313624f0dec"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/AnchorBindingProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/AnchorBindingProof.tla",
+      "bytes": 1721,
+      "sha256": "4c2e77cd6c542f6e488bd7a39ba3c314e0763606adec27408e02004503584edc"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/cache/AnchorBindingProof/AnchorBindingProof.tlaps/AnchorBindingProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/cache/AnchorBindingProof/AnchorBindingProof.tlaps/AnchorBindingProof.thy",
+      "bytes": 417,
+      "sha256": "951f6913eeb83c99045faa995aabce747ad4bb10dbdef8ead23ed38b87ba5308"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints",
+      "bytes": 2236,
+      "sha256": "744988a4a526d1dfcab6c68bdfc127621581509546b70bfa0bef9120a77428e6"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_43_08/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_43_08/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_43_08/AnchorBindingProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_43_08/AnchorBindingProof.tla",
+      "bytes": 1721,
+      "sha256": "4c2e77cd6c542f6e488bd7a39ba3c314e0763606adec27408e02004503584edc"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/inventory.json",
+      "bytes": 2094,
+      "sha256": "c9730820ca7d592ebb1fae3fc3ab455858c58b98e879ab1a353bfe2445e42ecd"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/result.json",
+      "bytes": 1045,
+      "sha256": "ddc10a9075f9c89990b1413515e1e5247a1a72b2897c4c4174b7728a56c2c529"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/sany.log",
+      "bytes": 2127,
+      "sha256": "5a875f5608c66bc830b48eff06c26a3ce8ef639c2aa77baa7b2e116b16b2a65e"
+    },
+    {
+      "member": "proofs/anchor-binding/false-size-bound/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/false-size-bound/semantic-audit.json",
+      "bytes": 2100,
+      "sha256": "4ea60202f0736960362a138e744465d97e27baf1ced031b148a3b9298a5d9e88"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-configuration/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-configuration/AnchorBinding.tla",
+      "bytes": 4019,
+      "sha256": "7d56b33fe912d9618e94265242205678183cd20b7a6b70c0fcb3b0562c751c9c"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-configuration/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-configuration/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-configuration/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-configuration/Run.cfg",
+      "bytes": 174,
+      "sha256": "88bb8138c7402f95557804081a7e33409d8dfa1f35afca1323943ce7598322d6"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-configuration/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-configuration/result.json",
+      "bytes": 1000,
+      "sha256": "4194ea0dd58cefab1dd5b5b09a140715c3cc39d9890c54da7075392b4c1c2e80"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-configuration/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-configuration/tlc.log",
+      "bytes": 3307,
+      "sha256": "b238431a6bcb314f1d1a3ff89f0752d8cd91810bc5ae80eb15de4dbae7002e4c"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-frame/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-frame/AnchorBinding.tla",
+      "bytes": 4012,
+      "sha256": "b20d671d9dd78dc79c0875944cd66ffe7a2b5702d2c21e1ba83d1253e635eddc"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-frame/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-frame/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-frame/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-frame/Run.cfg",
+      "bytes": 174,
+      "sha256": "7e0fae53b7354ef013f2973e1b86760e81fd59cf2912928d28f58f3d38495693"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-frame/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-frame/result.json",
+      "bytes": 984,
+      "sha256": "043fa4283e6de24c4e5570d45bf4909ef9749314d59f5e625ec6a4d0d9d7b6e2"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-frame/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-frame/tlc.log",
+      "bytes": 3522,
+      "sha256": "fc49441523851f663ae4a4efcf5714ae59ab10bbc01d826fe5574d97d3a4b903"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-publication/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-publication/AnchorBinding.tla",
+      "bytes": 4021,
+      "sha256": "f7c943fa29ada324a6f049ca9ace9889c1af43c8b89571db33f2b65c875dbc2c"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-publication/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-publication/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-publication/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-publication/Run.cfg",
+      "bytes": 174,
+      "sha256": "b6ee5b22984ce0061a1f113546052b7af0d336d879679fc7764386373cda6ed2"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-publication/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-publication/result.json",
+      "bytes": 996,
+      "sha256": "1fce7802ab98005fc1d0dd1047eca8a2223e81e2daba41bcec465c0aadce44e5"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-publication/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-publication/tlc.log",
+      "bytes": 3302,
+      "sha256": "64dd4517fc24ffb3f1f56115267014b6003adb5a01b5a33c9e1189db10a28a06"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-root/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-root/AnchorBinding.tla",
+      "bytes": 4014,
+      "sha256": "af1e35cce85e2f02382f4383bc8935c4623f3a72c49e55a6ea548402c9be01d5"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-root/AnchorBindingMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-root/AnchorBindingMC.tla",
+      "bytes": 247,
+      "sha256": "7c4ccc1b8736ec39492cc63265a4b8e91c3a4c2d1ea72b5cb1bd8a15c5c8fe9f"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-root/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-root/Run.cfg",
+      "bytes": 174,
+      "sha256": "bcbdd5e13e5fa69a406f024b06ae8500f649d97cf6cff30a138aa4d8988ecf9c"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-root/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-root/result.json",
+      "bytes": 980,
+      "sha256": "547d085606c606f58953c8f68a0e7560fd2abe215fbfcb9d45000b18b0a929d9"
+    },
+    {
+      "member": "proofs/anchor-binding/ignore-root/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/ignore-root/tlc.log",
+      "bytes": 3029,
+      "sha256": "70b93a0cf136bcbea732ee2c705eb9c885bfa939125dfb54a6912c107add766f"
+    },
+    {
+      "member": "proofs/anchor-binding/inputs.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/inputs.json",
+      "bytes": 2507,
+      "sha256": "bf4010deaeea0fb6806ec3f9a6f88809e538376bf07309a8bd98225cf252b1d7"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/AnchorBinding.tla",
+      "bytes": 4054,
+      "sha256": "4abdf2196aa93a5f65e3d27a80bcfeaef06b19b8c4de66f4e3bffaa05e054269"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/AnchorBindingProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/AnchorBindingProof.log",
+      "bytes": 4671,
+      "sha256": "9560f9db1746d9dadbc17354448ca48669e898a98b1d9ee8e86bf6b68d591497"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/AnchorBindingProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/AnchorBindingProof.tla",
+      "bytes": 1721,
+      "sha256": "2ae00ebb727b661c1f41ea21ab92971cae2ffce985ee872fadb75280841c0648"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/AnchorBindingProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/AnchorBindingProof.thy",
+      "bytes": 417,
+      "sha256": "951f6913eeb83c99045faa995aabce747ad4bb10dbdef8ead23ed38b87ba5308"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints",
+      "bytes": 2236,
+      "sha256": "a2e075d0e1da51466e51711a378b09694cbf956f4eb54ec131fb68aa308572af"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_43_02/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_43_02/AnchorBinding.tla",
+      "bytes": 4054,
+      "sha256": "4abdf2196aa93a5f65e3d27a80bcfeaef06b19b8c4de66f4e3bffaa05e054269"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_43_02/AnchorBindingProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_43_02/AnchorBindingProof.tla",
+      "bytes": 1721,
+      "sha256": "2ae00ebb727b661c1f41ea21ab92971cae2ffce985ee872fadb75280841c0648"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/inventory.json",
+      "bytes": 2094,
+      "sha256": "c9730820ca7d592ebb1fae3fc3ab455858c58b98e879ab1a353bfe2445e42ecd"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/result.json",
+      "bytes": 1059,
+      "sha256": "aea8a0df41ed82b7a9afada75122960da7bf2534fb8d3309cada91fa02145c33"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/sany.log",
+      "bytes": 2155,
+      "sha256": "998e567e3471029c90022d3749e8bf5bab2040ea6cb9deb381772a1d4a38dcf2"
+    },
+    {
+      "member": "proofs/anchor-binding/premature-binding-proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/premature-binding-proof/semantic-audit.json",
+      "bytes": 2114,
+      "sha256": "9e0a0b8a48ffce02c55b25c3c5b2a2c32fc3aad0314874b387dd65cdf8675eaa"
+    },
+    {
+      "member": "proofs/anchor-binding/proof-hole/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof-hole/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/proof-hole/AnchorBindingProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof-hole/AnchorBindingProof.tla",
+      "bytes": 1658,
+      "sha256": "a1a26c1ea2858bb886a63ddc49fb10d28213425b49b25a6cda1213bb654b7b91"
+    },
+    {
+      "member": "proofs/anchor-binding/proof-hole/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof-hole/inventory.json",
+      "bytes": 2094,
+      "sha256": "c9730820ca7d592ebb1fae3fc3ab455858c58b98e879ab1a353bfe2445e42ecd"
+    },
+    {
+      "member": "proofs/anchor-binding/proof-hole/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof-hole/result.json",
+      "bytes": 436,
+      "sha256": "dc8ebb557879e187b8d2ea30286f893e3542c3b2d3ff72518d4c3c8e86665fde"
+    },
+    {
+      "member": "proofs/anchor-binding/proof-hole/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof-hole/sany.log",
+      "bytes": 2102,
+      "sha256": "817e1cb586a7d447ea9992af4532f4816a068a4aaf649c5fee2619ef2c6431e2"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/AnchorBindingProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/AnchorBindingProof.log",
+      "bytes": 576,
+      "sha256": "e6aca00f7ddb6a894e3f36515475581711ebcb0dae091298b18bf59a8297d3f6"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/AnchorBindingProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/AnchorBindingProof.tla",
+      "bytes": 1721,
+      "sha256": "2ae00ebb727b661c1f41ea21ab92971cae2ffce985ee872fadb75280841c0648"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/AnchorBindingProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/AnchorBindingProof.thy",
+      "bytes": 417,
+      "sha256": "951f6913eeb83c99045faa995aabce747ad4bb10dbdef8ead23ed38b87ba5308"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints",
+      "bytes": 2234,
+      "sha256": "bdb200ff377ac475e00b9534526690f580c847172abd49e0385cbd79c7b132cd"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_42_55/AnchorBinding.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_42_55/AnchorBinding.tla",
+      "bytes": 4042,
+      "sha256": "afceb00491b8997d2baf3dce2be800e22d5be22ed60cf81324544d30f023d658"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_42_55/AnchorBindingProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/cache/AnchorBindingProof/AnchorBindingProof.tlaps/fingerprints.history/2026-09-15_13_42_55/AnchorBindingProof.tla",
+      "bytes": 1721,
+      "sha256": "2ae00ebb727b661c1f41ea21ab92971cae2ffce985ee872fadb75280841c0648"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/inventory.json",
+      "bytes": 2094,
+      "sha256": "c9730820ca7d592ebb1fae3fc3ab455858c58b98e879ab1a353bfe2445e42ecd"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/result.json",
+      "bytes": 983,
+      "sha256": "6ad102a9313fd22d5e800e9a510539cb31af3283e5fadf4e627cf19c667a5413"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/sany.log",
+      "bytes": 2083,
+      "sha256": "3da92fa1a2ada977c09b12ff6356d914f2399e041d7c4a18157354020b595033"
+    },
+    {
+      "member": "proofs/anchor-binding/proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/proof/semantic-audit.json",
+      "bytes": 2078,
+      "sha256": "c554c57f1154b6d0c3453e2b51b114705298cec2cd19200b8421c676a52f8bcb"
+    },
+    {
+      "member": "proofs/anchor-binding/summary.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor-binding/summary.json",
+      "bytes": 19797,
+      "sha256": "e7ff76d6c77148b257bae67336adf8300e2b99c2ba1594c3509b9c9914b1042e"
+    },
+    {
+      "member": "proofs/anchor_binding-inventory-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/anchor_binding-inventory-before.json",
+      "bytes": 2094,
+      "sha256": "9346403b84ea56e4b88baf8ffbd3e4a22fe7f20920173c392daaa9b5ffb9f2c7"
+    },
+    {
+      "member": "proofs/checkpoint-base/Unpublished/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Unpublished/CheckpointBase.tla",
+      "bytes": 4150,
+      "sha256": "5418b05e349e17a399772dc2d6195de6de760ebfe0c2ac04fb6ab97f33096c7c"
+    },
+    {
+      "member": "proofs/checkpoint-base/Unpublished/CheckpointBaseMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Unpublished/CheckpointBaseMC.tla",
+      "bytes": 430,
+      "sha256": "200bface693c36369acf6ff95666f04f7f1fd290e61f73b5ebe8b499a262106b"
+    },
+    {
+      "member": "proofs/checkpoint-base/Unpublished/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Unpublished/Run.cfg",
+      "bytes": 197,
+      "sha256": "84c1ab3f57b8306426fc9dc65908d7c7df025fe1befdbe609130ad6624af981e"
+    },
+    {
+      "member": "proofs/checkpoint-base/Unpublished/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Unpublished/result.json",
+      "bytes": 979,
+      "sha256": "30a6ecd20cb5817dc8e71f484a5a6b4b661fbd52b406578b5ec28f001c50410b"
+    },
+    {
+      "member": "proofs/checkpoint-base/Unpublished/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Unpublished/tlc.log",
+      "bytes": 2482,
+      "sha256": "c4969f6a014bf028cca2a4a070ff1bcb51f2f301ab37daf2a8916285ebce31b2"
+    },
+    {
+      "member": "proofs/checkpoint-base/Valid/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Valid/CheckpointBase.tla",
+      "bytes": 4150,
+      "sha256": "5418b05e349e17a399772dc2d6195de6de760ebfe0c2ac04fb6ab97f33096c7c"
+    },
+    {
+      "member": "proofs/checkpoint-base/Valid/CheckpointBaseMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Valid/CheckpointBaseMC.tla",
+      "bytes": 430,
+      "sha256": "200bface693c36369acf6ff95666f04f7f1fd290e61f73b5ebe8b499a262106b"
+    },
+    {
+      "member": "proofs/checkpoint-base/Valid/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Valid/Run.cfg",
+      "bytes": 196,
+      "sha256": "f0a61372fe653a26743e79a04ca1800c4695ba43a68372df924b4fcc8916c9d8"
+    },
+    {
+      "member": "proofs/checkpoint-base/Valid/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Valid/result.json",
+      "bytes": 967,
+      "sha256": "78c6de1bb4aae0526ee013ee7a3f5a481ab6b1968871bcad2ce9f684f677c088"
+    },
+    {
+      "member": "proofs/checkpoint-base/Valid/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/Valid/tlc.log",
+      "bytes": 2464,
+      "sha256": "42149465e110d0fc0266e1d499fa10211c4fc24832609f349b5e3c0f305c4a5a"
+    },
+    {
+      "member": "proofs/checkpoint-base/WrongRoot/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/WrongRoot/CheckpointBase.tla",
+      "bytes": 4150,
+      "sha256": "5418b05e349e17a399772dc2d6195de6de760ebfe0c2ac04fb6ab97f33096c7c"
+    },
+    {
+      "member": "proofs/checkpoint-base/WrongRoot/CheckpointBaseMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/WrongRoot/CheckpointBaseMC.tla",
+      "bytes": 430,
+      "sha256": "200bface693c36369acf6ff95666f04f7f1fd290e61f73b5ebe8b499a262106b"
+    },
+    {
+      "member": "proofs/checkpoint-base/WrongRoot/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/WrongRoot/Run.cfg",
+      "bytes": 204,
+      "sha256": "3ed0d27bf9d01ffce45bbebff95c023b81a0877f9055682bc317c27a6a2f7bc6"
+    },
+    {
+      "member": "proofs/checkpoint-base/WrongRoot/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/WrongRoot/result.json",
+      "bytes": 974,
+      "sha256": "5014f72893ab3b6d29869706eca81f31db74c30294ed12b5bd1bd8f6defd4044"
+    },
+    {
+      "member": "proofs/checkpoint-base/WrongRoot/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/WrongRoot/tlc.log",
+      "bytes": 2473,
+      "sha256": "15079b8e6f696dce4bddacd10ed1aaa4b57959e51a4ba50b4a75238aafb3c321"
+    },
+    {
+      "member": "proofs/checkpoint-base/auditor/ProofAudit.class",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "member": "proofs/checkpoint-base/auditor/ProofAudit.java",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/auditor/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "member": "proofs/checkpoint-base/custom-axiom/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/custom-axiom/CheckpointBase.tla",
+      "bytes": 4150,
+      "sha256": "5418b05e349e17a399772dc2d6195de6de760ebfe0c2ac04fb6ab97f33096c7c"
+    },
+    {
+      "member": "proofs/checkpoint-base/custom-axiom/CheckpointBaseProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/custom-axiom/CheckpointBaseProof.tla",
+      "bytes": 1877,
+      "sha256": "8783098c51a817b7181d0396297464f1d3590aca75c50669d69a20987f8ef911"
+    },
+    {
+      "member": "proofs/checkpoint-base/custom-axiom/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/custom-axiom/inventory.json",
+      "bytes": 1695,
+      "sha256": "7749232147f1ffc07125747fcb073a6f663d59954558cac41f749a5b6cfe19f9"
+    },
+    {
+      "member": "proofs/checkpoint-base/custom-axiom/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/custom-axiom/result.json",
+      "bytes": 460,
+      "sha256": "5d0c2e660c53ee1a46c45d2fc1e9651fc3e24457f2edf6f8e3ef94061b7a5122"
+    },
+    {
+      "member": "proofs/checkpoint-base/custom-axiom/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/custom-axiom/sany.log",
+      "bytes": 2226,
+      "sha256": "1362131fa06b3e389506a6f6c8b7ef571c7b7fe55fc19ac61243e5a69f68e535"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-before-completion/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-before-completion/CheckpointBase.tla",
+      "bytes": 4166,
+      "sha256": "c4b78b9838ac68cb69255b6aad9933b5b1a062be899133eecb6b77bc2fb4c51a"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-before-completion/CheckpointBaseMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-before-completion/CheckpointBaseMC.tla",
+      "bytes": 430,
+      "sha256": "200bface693c36369acf6ff95666f04f7f1fd290e61f73b5ebe8b499a262106b"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-before-completion/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-before-completion/Run.cfg",
+      "bytes": 196,
+      "sha256": "f0a61372fe653a26743e79a04ca1800c4695ba43a68372df924b4fcc8916c9d8"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-before-completion/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-before-completion/result.json",
+      "bytes": 1013,
+      "sha256": "4b59c760bb987d9d69ab001ebf7c8ed83a213da39fb5c931077018dd34d7b4ed"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-before-completion/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-before-completion/tlc.log",
+      "bytes": 4255,
+      "sha256": "dce2566b41468b3edc9ef1ed4daba16dcb58d153cbbb7fb8ef8d7cf3c87f6d4a"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-unpublished/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-unpublished/CheckpointBase.tla",
+      "bytes": 4141,
+      "sha256": "e4d1fdf2c15a3c15d1ea13a9f10d4987cbd48a37cb34c27967676dd86d683f45"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-unpublished/CheckpointBaseMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-unpublished/CheckpointBaseMC.tla",
+      "bytes": 430,
+      "sha256": "200bface693c36369acf6ff95666f04f7f1fd290e61f73b5ebe8b499a262106b"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-unpublished/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-unpublished/Run.cfg",
+      "bytes": 197,
+      "sha256": "84c1ab3f57b8306426fc9dc65908d7c7df025fe1befdbe609130ad6624af981e"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-unpublished/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-unpublished/result.json",
+      "bytes": 1001,
+      "sha256": "57ba619fc13d439ee08532a6e44e62784f6e3b11f911edaf7cec657d45bae481"
+    },
+    {
+      "member": "proofs/checkpoint-base/grant-unpublished/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/grant-unpublished/tlc.log",
+      "bytes": 4507,
+      "sha256": "b49d545cbda6d4810934387c55413d5e71442291949a6cffd665f452faaccd4c"
+    },
+    {
+      "member": "proofs/checkpoint-base/ignore-schema/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/ignore-schema/CheckpointBase.tla",
+      "bytes": 4150,
+      "sha256": "bb14d4466d2664584fa04f5900ab4e0b91dc1eb893c90a94585953562f186c87"
+    },
+    {
+      "member": "proofs/checkpoint-base/ignore-schema/CheckpointBaseMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/ignore-schema/CheckpointBaseMC.tla",
+      "bytes": 430,
+      "sha256": "200bface693c36369acf6ff95666f04f7f1fd290e61f73b5ebe8b499a262106b"
+    },
+    {
+      "member": "proofs/checkpoint-base/ignore-schema/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/ignore-schema/Run.cfg",
+      "bytes": 205,
+      "sha256": "c9e9862356bd2541e832aa1c1d43ef14ab614e549fd8289d46da5d0e045d2cfd"
+    },
+    {
+      "member": "proofs/checkpoint-base/ignore-schema/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/ignore-schema/result.json",
+      "bytes": 993,
+      "sha256": "4b9163d6ab8fb4b9137794c529c13d2e1c6bf28984d27ed32f9df5b3a4ab7983"
+    },
+    {
+      "member": "proofs/checkpoint-base/ignore-schema/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/ignore-schema/tlc.log",
+      "bytes": 3684,
+      "sha256": "d87ccde09d1df36e9770452891201adb04092bdca1003eeb9a863d55b8fd9793"
+    },
+    {
+      "member": "proofs/checkpoint-base/inputs.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/inputs.json",
+      "bytes": 1862,
+      "sha256": "957758d12ee52dfd01716f72f375ae8c48c67449404da992c081462838cdb6a2"
+    },
+    {
+      "member": "proofs/checkpoint-base/later-root-repairs-base/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/later-root-repairs-base/CheckpointBase.tla",
+      "bytes": 4212,
+      "sha256": "81f4f05b00ba5ca7152feb8ec2f06f77cf02be298ddf8d624e6e1401427b175c"
+    },
+    {
+      "member": "proofs/checkpoint-base/later-root-repairs-base/CheckpointBaseMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/later-root-repairs-base/CheckpointBaseMC.tla",
+      "bytes": 430,
+      "sha256": "200bface693c36369acf6ff95666f04f7f1fd290e61f73b5ebe8b499a262106b"
+    },
+    {
+      "member": "proofs/checkpoint-base/later-root-repairs-base/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/later-root-repairs-base/Run.cfg",
+      "bytes": 204,
+      "sha256": "3ed0d27bf9d01ffce45bbebff95c023b81a0877f9055682bc317c27a6a2f7bc6"
+    },
+    {
+      "member": "proofs/checkpoint-base/later-root-repairs-base/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/later-root-repairs-base/result.json",
+      "bytes": 1012,
+      "sha256": "896b319cfe6bfcfaf0b9e059b9a4666577d3db43544da355336607f30525e040"
+    },
+    {
+      "member": "proofs/checkpoint-base/later-root-repairs-base/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/later-root-repairs-base/tlc.log",
+      "bytes": 3985,
+      "sha256": "ff8c2efc08da9a76ac09c8eee2d67f498e397107d03a94faadc0d6352983cff3"
+    },
+    {
+      "member": "proofs/checkpoint-base/live-scope-after-freeze/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/live-scope-after-freeze/CheckpointBase.tla",
+      "bytes": 4148,
+      "sha256": "a9778c722a5b86cf4ac3dd174929c404807d32c10768d976445a1aafeb1fdebb"
+    },
+    {
+      "member": "proofs/checkpoint-base/live-scope-after-freeze/CheckpointBaseMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/live-scope-after-freeze/CheckpointBaseMC.tla",
+      "bytes": 430,
+      "sha256": "200bface693c36369acf6ff95666f04f7f1fd290e61f73b5ebe8b499a262106b"
+    },
+    {
+      "member": "proofs/checkpoint-base/live-scope-after-freeze/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/live-scope-after-freeze/Run.cfg",
+      "bytes": 196,
+      "sha256": "f0a61372fe653a26743e79a04ca1800c4695ba43a68372df924b4fcc8916c9d8"
+    },
+    {
+      "member": "proofs/checkpoint-base/live-scope-after-freeze/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/live-scope-after-freeze/result.json",
+      "bytes": 1012,
+      "sha256": "861a937cb3d4b345b6e32cdcf594c4f8e4c22702b32d620d6e67afba679ba5b9"
+    },
+    {
+      "member": "proofs/checkpoint-base/live-scope-after-freeze/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/live-scope-after-freeze/tlc.log",
+      "bytes": 3440,
+      "sha256": "50576294a2678ced2d0b82f3e06f4a7c3871906ded451124bedc387c51f9eb63"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof-hole/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof-hole/CheckpointBase.tla",
+      "bytes": 4150,
+      "sha256": "5418b05e349e17a399772dc2d6195de6de760ebfe0c2ac04fb6ab97f33096c7c"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof-hole/CheckpointBaseProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof-hole/CheckpointBaseProof.tla",
+      "bytes": 1766,
+      "sha256": "fe7b6816045d77e9b36ebab2582f7417d3c4809ea6f30bb0d946ad0e132e3e88"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof-hole/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof-hole/inventory.json",
+      "bytes": 1695,
+      "sha256": "7749232147f1ffc07125747fcb073a6f663d59954558cac41f749a5b6cfe19f9"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof-hole/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof-hole/result.json",
+      "bytes": 440,
+      "sha256": "11dbc321fe35b2c84f6ef47c3158863734ec613646c79d4029df502d758d388e"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof-hole/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof-hole/sany.log",
+      "bytes": 2127,
+      "sha256": "94c61c30e5a22192029317f223dbcdcad1e3ff9c7f94ec5c324f44ab9094a409"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/CheckpointBase.tla",
+      "bytes": 4150,
+      "sha256": "5418b05e349e17a399772dc2d6195de6de760ebfe0c2ac04fb6ab97f33096c7c"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/CheckpointBaseProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/CheckpointBaseProof.log",
+      "bytes": 585,
+      "sha256": "68ff872bde9b5d628b479a2e1a25f861eee49be7b71745090e936afb85fe5c17"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/CheckpointBaseProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/CheckpointBaseProof.tla",
+      "bytes": 1847,
+      "sha256": "ec070f37d6b9db25c0994eeeb4e59d50489d2e10c1fb2277e84a9b0b1a9f26aa"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/CheckpointBaseProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/CheckpointBaseProof.thy",
+      "bytes": 418,
+      "sha256": "69c5f09f5fa801933d6e23a5bf0554676fbff3de579c258092ec5ed9e08b384e"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints",
+      "bytes": 2271,
+      "sha256": "7e24d1f39bdce1085a4c81e5d31cba40cc377f46a067ac491012b7c139c824c0"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints.history/2026-09-15_13_43_14/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints.history/2026-09-15_13_43_14/CheckpointBase.tla",
+      "bytes": 4150,
+      "sha256": "5418b05e349e17a399772dc2d6195de6de760ebfe0c2ac04fb6ab97f33096c7c"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints.history/2026-09-15_13_43_14/CheckpointBaseProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints.history/2026-09-15_13_43_14/CheckpointBaseProof.tla",
+      "bytes": 1847,
+      "sha256": "ec070f37d6b9db25c0994eeeb4e59d50489d2e10c1fb2277e84a9b0b1a9f26aa"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/inventory.json",
+      "bytes": 1695,
+      "sha256": "7749232147f1ffc07125747fcb073a6f663d59954558cac41f749a5b6cfe19f9"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/result.json",
+      "bytes": 990,
+      "sha256": "5d5cfb4ca4b2de2054cc083682d2de07f943d57a69787d5573ad482ae0ffb02b"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/sany.log",
+      "bytes": 2108,
+      "sha256": "4a557ef9928bf1901fdc3601f8480bcbb3c46a1deddfc7e34daf92a54d7e88c5"
+    },
+    {
+      "member": "proofs/checkpoint-base/proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/proof/semantic-audit.json",
+      "bytes": 2097,
+      "sha256": "c2a2bd503b8d4a2d70d93dcb98ea2bb3abfcbe770422de28f90d4aea6fd348e9"
+    },
+    {
+      "member": "proofs/checkpoint-base/summary.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/summary.json",
+      "bytes": 13649,
+      "sha256": "7e44d7d46633ac98400ed2db300b8f16917c30e3c2cfe316793dc3b44bc5565e"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/CheckpointBase.tla",
+      "bytes": 4148,
+      "sha256": "a9778c722a5b86cf4ac3dd174929c404807d32c10768d976445a1aafeb1fdebb"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/CheckpointBaseProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/CheckpointBaseProof.log",
+      "bytes": 4722,
+      "sha256": "1d467995542df712ef6aa173d1cb83795d62714f7a7bb75147a3b798ea375d12"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/CheckpointBaseProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/CheckpointBaseProof.tla",
+      "bytes": 1847,
+      "sha256": "ec070f37d6b9db25c0994eeeb4e59d50489d2e10c1fb2277e84a9b0b1a9f26aa"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/CheckpointBaseProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/CheckpointBaseProof.thy",
+      "bytes": 418,
+      "sha256": "69c5f09f5fa801933d6e23a5bf0554676fbff3de579c258092ec5ed9e08b384e"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints",
+      "bytes": 2273,
+      "sha256": "68376a1527ed92a5b93bb28c0bc413944b833bcdd6ae094703b2a722f23bfc27"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints.history/2026-09-15_13_43_19/CheckpointBase.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints.history/2026-09-15_13_43_19/CheckpointBase.tla",
+      "bytes": 4148,
+      "sha256": "a9778c722a5b86cf4ac3dd174929c404807d32c10768d976445a1aafeb1fdebb"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints.history/2026-09-15_13_43_19/CheckpointBaseProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/cache/CheckpointBaseProof/CheckpointBaseProof.tlaps/fingerprints.history/2026-09-15_13_43_19/CheckpointBaseProof.tla",
+      "bytes": 1847,
+      "sha256": "ec070f37d6b9db25c0994eeeb4e59d50489d2e10c1fb2277e84a9b0b1a9f26aa"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/inventory.json",
+      "bytes": 1695,
+      "sha256": "7749232147f1ffc07125747fcb073a6f663d59954558cac41f749a5b6cfe19f9"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/result.json",
+      "bytes": 1058,
+      "sha256": "4e1c1b5654b95479fc8eb4bd6f81fcdd73c189bd9117aa4ad301341725fc2f9f"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/sany.log",
+      "bytes": 2160,
+      "sha256": "2bf40f0754b7e101708ebc53d4e6a4fa2fca9052ef8ce217b3ced57ada99c8bc"
+    },
+    {
+      "member": "proofs/checkpoint-base/unsafe-scope-proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-base/unsafe-scope-proof/semantic-audit.json",
+      "bytes": 2123,
+      "sha256": "24e7a527cfcb1ff2c214872a73109d553a44f237d294d99a668c04b0daa0020f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/apply-without-preparation/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/apply-without-preparation/CheckpointOwner.tla",
+      "bytes": 5118,
+      "sha256": "47d275d213b037d343f396aa8bad68533da016d7ccbce8c19e59466c689fe90f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/apply-without-preparation/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/apply-without-preparation/CheckpointOwnerMC.tla",
+      "bytes": 177,
+      "sha256": "9fc3eea97d13adda6f5ce1cc8ee8efdf17187c3961b7bc2e352dd4f0c5957437"
+    },
+    {
+      "member": "proofs/checkpoint-owner/apply-without-preparation/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/apply-without-preparation/Run.cfg",
+      "bytes": 174,
+      "sha256": "a66ac844d8b57565601ccdc1d97cbd0d3e76cff231c9b73e93663162f342496f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/apply-without-preparation/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/apply-without-preparation/result.json",
+      "bytes": 1013,
+      "sha256": "6813f14f699f72b3e408759bacd0f3e7869275f538e703162a4df73df53972c8"
+    },
+    {
+      "member": "proofs/checkpoint-owner/apply-without-preparation/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/apply-without-preparation/tlc.log",
+      "bytes": 3275,
+      "sha256": "738e4c0991e31c0f16cab0dd394d6bad431124af6745f267564f4862eacbdff9"
+    },
+    {
+      "member": "proofs/checkpoint-owner/auditor/ProofAudit.class",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "member": "proofs/checkpoint-owner/auditor/ProofAudit.java",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/auditor/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "member": "proofs/checkpoint-owner/clear-unknown-intent/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/clear-unknown-intent/CheckpointOwner.tla",
+      "bytes": 5057,
+      "sha256": "7cffba91ebbc87f4c0228586aad297bb60486a52bc8d01f0d4fdc5dd65705314"
+    },
+    {
+      "member": "proofs/checkpoint-owner/clear-unknown-intent/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/clear-unknown-intent/CheckpointOwnerMC.tla",
+      "bytes": 177,
+      "sha256": "9fc3eea97d13adda6f5ce1cc8ee8efdf17187c3961b7bc2e352dd4f0c5957437"
+    },
+    {
+      "member": "proofs/checkpoint-owner/clear-unknown-intent/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/clear-unknown-intent/Run.cfg",
+      "bytes": 174,
+      "sha256": "a66ac844d8b57565601ccdc1d97cbd0d3e76cff231c9b73e93663162f342496f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/clear-unknown-intent/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/clear-unknown-intent/result.json",
+      "bytes": 1006,
+      "sha256": "d6c1bd336363c1e598df1ce592636c8659eed947d16322e7a18406ce4d8383dd"
+    },
+    {
+      "member": "proofs/checkpoint-owner/clear-unknown-intent/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/clear-unknown-intent/tlc.log",
+      "bytes": 3263,
+      "sha256": "fb9de013968f1fea024aa9aaaed25a6e6362e300a6d6c7ae7c282cff55ff47d4"
+    },
+    {
+      "member": "proofs/checkpoint-owner/custom-axiom/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/custom-axiom/CheckpointOwner.tla",
+      "bytes": 5129,
+      "sha256": "a13220be0cb4ece15a6b34a93d30692a4af5cbb87162227aa8dbe10570345f6f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/custom-axiom/CheckpointOwnerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/custom-axiom/CheckpointOwnerProof.tla",
+      "bytes": 2342,
+      "sha256": "24e916a900267d240cf02eb3c205b990e1c0b70d815947a4327ee3179407986d"
+    },
+    {
+      "member": "proofs/checkpoint-owner/custom-axiom/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/custom-axiom/inventory.json",
+      "bytes": 2095,
+      "sha256": "f5081f62e6efd00d1c6b6de0eac223acc43f1622429f4aae1cd96577e462320f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/custom-axiom/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/custom-axiom/result.json",
+      "bytes": 463,
+      "sha256": "394d8d4be35cc8fa30e5e17bd66cfc799daf4fb6c015fc3942daf42798fc8f0b"
+    },
+    {
+      "member": "proofs/checkpoint-owner/custom-axiom/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/custom-axiom/sany.log",
+      "bytes": 2200,
+      "sha256": "3561f5c45c7f19b9dc2e0cadac8cc46f8a116b1b3c7f8706cd6976f7223dd5c3"
+    },
+    {
+      "member": "proofs/checkpoint-owner/inputs.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/inputs.json",
+      "bytes": 2066,
+      "sha256": "af7f139343c49be6b307c5b8fdfaf1a9f72221ab52a74a73eab49cdc38bdbbe1"
+    },
+    {
+      "member": "proofs/checkpoint-owner/io-without-owner/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/io-without-owner/CheckpointOwner.tla",
+      "bytes": 5120,
+      "sha256": "7147b6d09cb3e117086d833ddd6fa7748d31ea8162ec6241d24d4fbeaee0bd97"
+    },
+    {
+      "member": "proofs/checkpoint-owner/io-without-owner/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/io-without-owner/CheckpointOwnerMC.tla",
+      "bytes": 177,
+      "sha256": "9fc3eea97d13adda6f5ce1cc8ee8efdf17187c3961b7bc2e352dd4f0c5957437"
+    },
+    {
+      "member": "proofs/checkpoint-owner/io-without-owner/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/io-without-owner/Run.cfg",
+      "bytes": 174,
+      "sha256": "a66ac844d8b57565601ccdc1d97cbd0d3e76cff231c9b73e93663162f342496f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/io-without-owner/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/io-without-owner/result.json",
+      "bytes": 998,
+      "sha256": "3cf51156a15cc0d43d757e0253f716ec2e80687f0f1dc0aded433cad96549662"
+    },
+    {
+      "member": "proofs/checkpoint-owner/io-without-owner/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/io-without-owner/tlc.log",
+      "bytes": 3250,
+      "sha256": "31ec6ad9f6ca5bc74c752218a52ea72ec66a190bff791129e21d3a372c5337ff"
+    },
+    {
+      "member": "proofs/checkpoint-owner/late-negative-retains-owner/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/late-negative-retains-owner/CheckpointOwner.tla",
+      "bytes": 5147,
+      "sha256": "0e45700a95c8256c529e04dfc8ef1432f50bd0f8b9d78567bb4503734a8e9afd"
+    },
+    {
+      "member": "proofs/checkpoint-owner/late-negative-retains-owner/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/late-negative-retains-owner/CheckpointOwnerMC.tla",
+      "bytes": 267,
+      "sha256": "e3c0f969d48f4efa8015516c00dd9039ab387738c550ffac93dfad766478ad86"
+    },
+    {
+      "member": "proofs/checkpoint-owner/late-negative-retains-owner/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/late-negative-retains-owner/Run.cfg",
+      "bytes": 207,
+      "sha256": "488fd8973bf0a84c9f564db994e682fd664be9c15a8316556ca74e0d0ead9620"
+    },
+    {
+      "member": "proofs/checkpoint-owner/late-negative-retains-owner/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/late-negative-retains-owner/result.json",
+      "bytes": 1037,
+      "sha256": "f1a800b1424fed466175c80fdb668d2254f567cb608635e0eb4e8c3aa6af0375"
+    },
+    {
+      "member": "proofs/checkpoint-owner/late-negative-retains-owner/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/late-negative-retains-owner/tlc.log",
+      "bytes": 5110,
+      "sha256": "3df98db8127fefdda640c31aa25d04e2452a16bfa3d1beda91c2ea05d093ef78"
+    },
+    {
+      "member": "proofs/checkpoint-owner/one-operation/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/one-operation/CheckpointOwner.tla",
+      "bytes": 5129,
+      "sha256": "a13220be0cb4ece15a6b34a93d30692a4af5cbb87162227aa8dbe10570345f6f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/one-operation/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/one-operation/CheckpointOwnerMC.tla",
+      "bytes": 177,
+      "sha256": "9fc3eea97d13adda6f5ce1cc8ee8efdf17187c3961b7bc2e352dd4f0c5957437"
+    },
+    {
+      "member": "proofs/checkpoint-owner/one-operation/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/one-operation/Run.cfg",
+      "bytes": 172,
+      "sha256": "fe5b71de72cd99f74a111e5abaede17208d0d578bafeddad7412520a24995444"
+    },
+    {
+      "member": "proofs/checkpoint-owner/one-operation/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/one-operation/result.json",
+      "bytes": 988,
+      "sha256": "b577a886fb4a84e9628852ee5d856a607336bc7aa13e38de922cac3edf85353a"
+    },
+    {
+      "member": "proofs/checkpoint-owner/one-operation/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/one-operation/tlc.log",
+      "bytes": 2493,
+      "sha256": "f13ce3fd3736f15d47f87559ff988ec03d4000a4de576e4b9463e02463cb8861"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof-hole/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof-hole/CheckpointOwner.tla",
+      "bytes": 5129,
+      "sha256": "a13220be0cb4ece15a6b34a93d30692a4af5cbb87162227aa8dbe10570345f6f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof-hole/CheckpointOwnerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof-hole/CheckpointOwnerProof.tla",
+      "bytes": 2231,
+      "sha256": "dffaf496d3f7cd93b2e45620200f5814daa7a69bb14b6d4145778fcb531d815e"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof-hole/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof-hole/inventory.json",
+      "bytes": 2095,
+      "sha256": "f5081f62e6efd00d1c6b6de0eac223acc43f1622429f4aae1cd96577e462320f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof-hole/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof-hole/result.json",
+      "bytes": 442,
+      "sha256": "40c69b198a43021b769b30703720fcaec7fb58b80e2669a0c589245e15371dec"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof-hole/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof-hole/sany.log",
+      "bytes": 2101,
+      "sha256": "d9e691c5581dd565ffc8ae0d64f31ef14d390bf9487f9f51249e8092c8c2317d"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/CheckpointOwner.tla",
+      "bytes": 5129,
+      "sha256": "a13220be0cb4ece15a6b34a93d30692a4af5cbb87162227aa8dbe10570345f6f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/CheckpointOwnerProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/CheckpointOwnerProof.log",
+      "bytes": 594,
+      "sha256": "c2c81d6adb8ec979b00e7505d7b4f8522f17a01cdb7c0502b79c13e5deff1a2d"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/CheckpointOwnerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/CheckpointOwnerProof.tla",
+      "bytes": 2312,
+      "sha256": "98f6ba89c03342191c861649fe693eecf3051e0994098f4628c3c5f64c7503ba"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/CheckpointOwnerProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/CheckpointOwnerProof.thy",
+      "bytes": 419,
+      "sha256": "bd166dc53b1e0a15815a54c5eac002f857b4f8b5ed02bc7a51f2072ff98cd545"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints",
+      "bytes": 2858,
+      "sha256": "a5a6755ee0aac7ba3477a58980481c13f5c5c8ebc9f4057d03fd30b884d3add5"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints.history/2026-09-15_13_43_36/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints.history/2026-09-15_13_43_36/CheckpointOwner.tla",
+      "bytes": 5129,
+      "sha256": "a13220be0cb4ece15a6b34a93d30692a4af5cbb87162227aa8dbe10570345f6f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints.history/2026-09-15_13_43_36/CheckpointOwnerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints.history/2026-09-15_13_43_36/CheckpointOwnerProof.tla",
+      "bytes": 2312,
+      "sha256": "98f6ba89c03342191c861649fe693eecf3051e0994098f4628c3c5f64c7503ba"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/inventory.json",
+      "bytes": 2095,
+      "sha256": "f5081f62e6efd00d1c6b6de0eac223acc43f1622429f4aae1cd96577e462320f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/result.json",
+      "bytes": 998,
+      "sha256": "7420fadc854ca3735e69d849e4b55623307a4a03814a2ca6b1595789f58b8845"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/sany.log",
+      "bytes": 2082,
+      "sha256": "1c05523d13c61e7bdae5221d95d63222422fdda94bc97f3f922de03a59b45108"
+    },
+    {
+      "member": "proofs/checkpoint-owner/proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/proof/semantic-audit.json",
+      "bytes": 2065,
+      "sha256": "8c6ab672105bdb5ff3a21b9363b31d779d50a6c8b1b3188af214cc240fde2455"
+    },
+    {
+      "member": "proofs/checkpoint-owner/quiesce-before-published-successor/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/quiesce-before-published-successor/CheckpointOwner.tla",
+      "bytes": 5135,
+      "sha256": "69c4840e7bea62b923095e71b7d544fe522acac8213bfc96c854b0ebc27e60f6"
+    },
+    {
+      "member": "proofs/checkpoint-owner/quiesce-before-published-successor/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/quiesce-before-published-successor/CheckpointOwnerMC.tla",
+      "bytes": 177,
+      "sha256": "9fc3eea97d13adda6f5ce1cc8ee8efdf17187c3961b7bc2e352dd4f0c5957437"
+    },
+    {
+      "member": "proofs/checkpoint-owner/quiesce-before-published-successor/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/quiesce-before-published-successor/Run.cfg",
+      "bytes": 174,
+      "sha256": "a66ac844d8b57565601ccdc1d97cbd0d3e76cff231c9b73e93663162f342496f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/quiesce-before-published-successor/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/quiesce-before-published-successor/result.json",
+      "bytes": 1037,
+      "sha256": "8a2032f616e8d22c5338e02b75c8bdcff84d31da6542680f465166737532b0f9"
+    },
+    {
+      "member": "proofs/checkpoint-owner/quiesce-before-published-successor/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/quiesce-before-published-successor/tlc.log",
+      "bytes": 5485,
+      "sha256": "1435ab8ed0b84cfdd7ed36078a3fd9e3887decc91b2d8e08a91939e1a88b7382"
+    },
+    {
+      "member": "proofs/checkpoint-owner/replace-active-intent/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/replace-active-intent/CheckpointOwner.tla",
+      "bytes": 5117,
+      "sha256": "dd6ce8fb534bb224185a6ebb0e2606fa40e983fe0fb6fd970441f948bf27de60"
+    },
+    {
+      "member": "proofs/checkpoint-owner/replace-active-intent/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/replace-active-intent/CheckpointOwnerMC.tla",
+      "bytes": 177,
+      "sha256": "9fc3eea97d13adda6f5ce1cc8ee8efdf17187c3961b7bc2e352dd4f0c5957437"
+    },
+    {
+      "member": "proofs/checkpoint-owner/replace-active-intent/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/replace-active-intent/Run.cfg",
+      "bytes": 174,
+      "sha256": "a66ac844d8b57565601ccdc1d97cbd0d3e76cff231c9b73e93663162f342496f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/replace-active-intent/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/replace-active-intent/result.json",
+      "bytes": 1005,
+      "sha256": "e6b91b2a47eff31121e574310bff21c8d1e83391c52888e179a96d20dd1c0f64"
+    },
+    {
+      "member": "proofs/checkpoint-owner/replace-active-intent/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/replace-active-intent/tlc.log",
+      "bytes": 3263,
+      "sha256": "8b8f496fd5dc88e90acaf9952f5402dfef2dc2a3891805ef3a65dd64a362cdfe"
+    },
+    {
+      "member": "proofs/checkpoint-owner/summary.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/summary.json",
+      "bytes": 15516,
+      "sha256": "0715591dab26ebdb79582792147390e13479b9da9cf9b3ba47a77d6124e9832d"
+    },
+    {
+      "member": "proofs/checkpoint-owner/two-operations/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/two-operations/CheckpointOwner.tla",
+      "bytes": 5129,
+      "sha256": "a13220be0cb4ece15a6b34a93d30692a4af5cbb87162227aa8dbe10570345f6f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/two-operations/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/two-operations/CheckpointOwnerMC.tla",
+      "bytes": 177,
+      "sha256": "9fc3eea97d13adda6f5ce1cc8ee8efdf17187c3961b7bc2e352dd4f0c5957437"
+    },
+    {
+      "member": "proofs/checkpoint-owner/two-operations/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/two-operations/Run.cfg",
+      "bytes": 174,
+      "sha256": "a66ac844d8b57565601ccdc1d97cbd0d3e76cff231c9b73e93663162f342496f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/two-operations/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/two-operations/result.json",
+      "bytes": 990,
+      "sha256": "6cae6b775536934ea9ea7bdab06718c6c617eed11e6360d0217a7810dbb5c1f7"
+    },
+    {
+      "member": "proofs/checkpoint-owner/two-operations/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/two-operations/tlc.log",
+      "bytes": 2505,
+      "sha256": "98fd525a9f19fee59a71fa880bf4e8979040cffe7207aa8ce0760d7107c2e01f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/CheckpointOwner.tla",
+      "bytes": 5120,
+      "sha256": "7147b6d09cb3e117086d833ddd6fa7748d31ea8162ec6241d24d4fbeaee0bd97"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/CheckpointOwnerProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/CheckpointOwnerProof.log",
+      "bytes": 3858,
+      "sha256": "02a9075fa8c8f9ff691d932d56b84c30ed943a585d83a930a0e02df831b152e2"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/CheckpointOwnerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/CheckpointOwnerProof.tla",
+      "bytes": 2312,
+      "sha256": "98f6ba89c03342191c861649fe693eecf3051e0994098f4628c3c5f64c7503ba"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/CheckpointOwnerProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/CheckpointOwnerProof.thy",
+      "bytes": 419,
+      "sha256": "bd166dc53b1e0a15815a54c5eac002f857b4f8b5ed02bc7a51f2072ff98cd545"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints",
+      "bytes": 2860,
+      "sha256": "dd643740e3851861b93758b98641fb92e40672373c8e7e381dd1a7b14bf4cda9"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints.history/2026-09-15_13_43_42/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints.history/2026-09-15_13_43_42/CheckpointOwner.tla",
+      "bytes": 5120,
+      "sha256": "7147b6d09cb3e117086d833ddd6fa7748d31ea8162ec6241d24d4fbeaee0bd97"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints.history/2026-09-15_13_43_42/CheckpointOwnerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/cache/CheckpointOwnerProof/CheckpointOwnerProof.tlaps/fingerprints.history/2026-09-15_13_43_42/CheckpointOwnerProof.tla",
+      "bytes": 2312,
+      "sha256": "98f6ba89c03342191c861649fe693eecf3051e0994098f4628c3c5f64c7503ba"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/inventory.json",
+      "bytes": 2095,
+      "sha256": "f5081f62e6efd00d1c6b6de0eac223acc43f1622429f4aae1cd96577e462320f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/result.json",
+      "bytes": 1063,
+      "sha256": "6bc6b588985324e33b353e63053fbd9bdf79e8fb3490a1621850ec084830fb8e"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/sany.log",
+      "bytes": 2126,
+      "sha256": "cb7053d3e0f49a8e0b54b31ea58d22955cd61712a56d5261bcad342bdce2cc65"
+    },
+    {
+      "member": "proofs/checkpoint-owner/unowned-io-proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/unowned-io-proof/semantic-audit.json",
+      "bytes": 2087,
+      "sha256": "c444547975c53b3601d3f62223912ff8033a1378805129ab05fac579ff674826"
+    },
+    {
+      "member": "proofs/checkpoint-owner/verified-without-visible-bytes/CheckpointOwner.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/verified-without-visible-bytes/CheckpointOwner.tla",
+      "bytes": 5120,
+      "sha256": "9237f0652821ac976f4ecc9ca48ba685a81a8deba5795db1605902a54401c8d1"
+    },
+    {
+      "member": "proofs/checkpoint-owner/verified-without-visible-bytes/CheckpointOwnerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/verified-without-visible-bytes/CheckpointOwnerMC.tla",
+      "bytes": 177,
+      "sha256": "9fc3eea97d13adda6f5ce1cc8ee8efdf17187c3961b7bc2e352dd4f0c5957437"
+    },
+    {
+      "member": "proofs/checkpoint-owner/verified-without-visible-bytes/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/verified-without-visible-bytes/Run.cfg",
+      "bytes": 174,
+      "sha256": "a66ac844d8b57565601ccdc1d97cbd0d3e76cff231c9b73e93663162f342496f"
+    },
+    {
+      "member": "proofs/checkpoint-owner/verified-without-visible-bytes/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/verified-without-visible-bytes/result.json",
+      "bytes": 1023,
+      "sha256": "6abcdaae80322d16655dc80b2651fd37b396d528ce9647903933968e7f0c605d"
+    },
+    {
+      "member": "proofs/checkpoint-owner/verified-without-visible-bytes/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-owner/verified-without-visible-bytes/tlc.log",
+      "bytes": 3291,
+      "sha256": "bae1932152d07632aa8dbc8fb022b295effa9a0c221f6d302471a254a95f72bc"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Loser/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Loser/CheckpointPublication.tla",
+      "bytes": 5225,
+      "sha256": "392f685656f593789cd68695407df2eacd2d2d5dbde7edcbe9ce3ac4ac76c778"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Loser/CheckpointPublicationMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Loser/CheckpointPublicationMC.tla",
+      "bytes": 530,
+      "sha256": "62bcc4790c97fa834ea7224f7a4288ebb275e30828b5cf0bf1f94b6a901e2b93"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Loser/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Loser/Run.cfg",
+      "bytes": 290,
+      "sha256": "fdf2e767b5c98b412d4d2fa0fea185b5172004bb889836ec5530617573885f09"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Loser/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Loser/result.json",
+      "bytes": 1001,
+      "sha256": "fba9f4afed414b5ff8b26d22af4d530e312b5fbd6de1b9a68e51c372ccccd00a"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Loser/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Loser/tlc.log",
+      "bytes": 2507,
+      "sha256": "7c5fd89010c61e4f911c11beba93805bcfe7b243d3182f635f8e0d4d5168aadd"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Winner/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Winner/CheckpointPublication.tla",
+      "bytes": 5225,
+      "sha256": "392f685656f593789cd68695407df2eacd2d2d5dbde7edcbe9ce3ac4ac76c778"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Winner/CheckpointPublicationMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Winner/CheckpointPublicationMC.tla",
+      "bytes": 530,
+      "sha256": "62bcc4790c97fa834ea7224f7a4288ebb275e30828b5cf0bf1f94b6a901e2b93"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Winner/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Winner/Run.cfg",
+      "bytes": 290,
+      "sha256": "0b65c10ef54947bc13adea7db902c155e4696b16ac8c1a3ed9e2b4a614a96a4f"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Winner/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Winner/result.json",
+      "bytes": 1003,
+      "sha256": "f070476cdc2d6770cf4a513c92907f6e7321793a02f6bf80dd7e513d572ea0d6"
+    },
+    {
+      "member": "proofs/checkpoint-publication/Winner/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/Winner/tlc.log",
+      "bytes": 2513,
+      "sha256": "ac5378a853738642395787df9d634f1bb82bd214e9dab2f300b7e0cfc9a3f3fa"
+    },
+    {
+      "member": "proofs/checkpoint-publication/auditor/ProofAudit.class",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "member": "proofs/checkpoint-publication/auditor/ProofAudit.java",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/auditor/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "member": "proofs/checkpoint-publication/custom-axiom/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/custom-axiom/CheckpointPublication.tla",
+      "bytes": 5225,
+      "sha256": "392f685656f593789cd68695407df2eacd2d2d5dbde7edcbe9ce3ac4ac76c778"
+    },
+    {
+      "member": "proofs/checkpoint-publication/custom-axiom/CheckpointPublicationProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/custom-axiom/CheckpointPublicationProof.tla",
+      "bytes": 2495,
+      "sha256": "4cb95fec5b112653452638d7997e543dd7bb5d05818dd315cb89fd45f191d366"
+    },
+    {
+      "member": "proofs/checkpoint-publication/custom-axiom/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/custom-axiom/inventory.json",
+      "bytes": 1785,
+      "sha256": "c90411416d4cd4b3060b5dc2db1753203c055e5d507fccf04d3cc9303fcda3cd"
+    },
+    {
+      "member": "proofs/checkpoint-publication/custom-axiom/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/custom-axiom/result.json",
+      "bytes": 481,
+      "sha256": "f11b3726720199d4928a123a052b92fb8bcaa36905ea435b6dfd33a24fcf8c55"
+    },
+    {
+      "member": "proofs/checkpoint-publication/custom-axiom/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/custom-axiom/sany.log",
+      "bytes": 2383,
+      "sha256": "d84a58f598cd395019d7765c5d81ff9d71470e4674d7d7c067d8c731cdedc0d3"
+    },
+    {
+      "member": "proofs/checkpoint-publication/inputs.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/inputs.json",
+      "bytes": 1821,
+      "sha256": "068d76eae8022565afe269e689eb2342ddb339e8074b55d8fcb390ec7610fb87"
+    },
+    {
+      "member": "proofs/checkpoint-publication/missing-final-history/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/missing-final-history/CheckpointPublication.tla",
+      "bytes": 5200,
+      "sha256": "c6897f2b90a624f3c800141f2aa2ffb882b0791185df4e5d2c387a35bb3d02f2"
+    },
+    {
+      "member": "proofs/checkpoint-publication/missing-final-history/CheckpointPublicationMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/missing-final-history/CheckpointPublicationMC.tla",
+      "bytes": 530,
+      "sha256": "62bcc4790c97fa834ea7224f7a4288ebb275e30828b5cf0bf1f94b6a901e2b93"
+    },
+    {
+      "member": "proofs/checkpoint-publication/missing-final-history/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/missing-final-history/Run.cfg",
+      "bytes": 291,
+      "sha256": "0fa47d62e114dc4704fcc699a66e0f882b466c72d0a101261ab267821653767e"
+    },
+    {
+      "member": "proofs/checkpoint-publication/missing-final-history/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/missing-final-history/result.json",
+      "bytes": 1042,
+      "sha256": "8e9b98c1d8296b0dacc6a9c8e49c4d8e289ec43a76125406a6da06bad8d08d8c"
+    },
+    {
+      "member": "proofs/checkpoint-publication/missing-final-history/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/missing-final-history/tlc.log",
+      "bytes": 4572,
+      "sha256": "3488585562888a39cd7dd154ea9f66ba9ebc043a7769625371c2c5b9837c401e"
+    },
+    {
+      "member": "proofs/checkpoint-publication/partial-recovery/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/partial-recovery/CheckpointPublication.tla",
+      "bytes": 5237,
+      "sha256": "31e0f3c2460d115d020171416b457f51a0270ebccd03c2738f1ae74839279021"
+    },
+    {
+      "member": "proofs/checkpoint-publication/partial-recovery/CheckpointPublicationMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/partial-recovery/CheckpointPublicationMC.tla",
+      "bytes": 530,
+      "sha256": "62bcc4790c97fa834ea7224f7a4288ebb275e30828b5cf0bf1f94b6a901e2b93"
+    },
+    {
+      "member": "proofs/checkpoint-publication/partial-recovery/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/partial-recovery/Run.cfg",
+      "bytes": 290,
+      "sha256": "0b65c10ef54947bc13adea7db902c155e4696b16ac8c1a3ed9e2b4a614a96a4f"
+    },
+    {
+      "member": "proofs/checkpoint-publication/partial-recovery/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/partial-recovery/result.json",
+      "bytes": 1033,
+      "sha256": "6bf30a2b62ce6248fcb95aac52d5bdeba08280644a393db19c13884ab2ef1d21"
+    },
+    {
+      "member": "proofs/checkpoint-publication/partial-recovery/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/partial-recovery/tlc.log",
+      "bytes": 4241,
+      "sha256": "9e6d5d678465a2d0b6f8c054ccbb52cb0648d7027303335e6094c6d2679ba724"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof-hole/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof-hole/CheckpointPublication.tla",
+      "bytes": 5225,
+      "sha256": "392f685656f593789cd68695407df2eacd2d2d5dbde7edcbe9ce3ac4ac76c778"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof-hole/CheckpointPublicationProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof-hole/CheckpointPublicationProof.tla",
+      "bytes": 2375,
+      "sha256": "a1653aa31c16ba1db1a150dba805c3b0ded787754b333ee54b22081b617899fc"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof-hole/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof-hole/inventory.json",
+      "bytes": 1785,
+      "sha256": "c90411416d4cd4b3060b5dc2db1753203c055e5d507fccf04d3cc9303fcda3cd"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof-hole/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof-hole/result.json",
+      "bytes": 461,
+      "sha256": "c130e1129e9fe2cdd4612a1089b0edc6763d54247efd7bbe8d984c570e8b1cca"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof-hole/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof-hole/sany.log",
+      "bytes": 2284,
+      "sha256": "bb37b009774a9008f7b3e315d0a92e4d7275776fb2601ad921fa43650b95a4f3"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/CheckpointPublication.tla",
+      "bytes": 5225,
+      "sha256": "392f685656f593789cd68695407df2eacd2d2d5dbde7edcbe9ce3ac4ac76c778"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/CheckpointPublicationProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/CheckpointPublicationProof.log",
+      "bytes": 648,
+      "sha256": "5b85a757e5cd6bfbdade72d12f7228eebbbc921701d27139061578235e4a36d9"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/CheckpointPublicationProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/CheckpointPublicationProof.tla",
+      "bytes": 2465,
+      "sha256": "c6378bc1c74e35c9b750cfe35e71479712a9d25bf1c8588ac06f6b4747ea2ba1"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/CheckpointPublicationProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/CheckpointPublicationProof.thy",
+      "bytes": 425,
+      "sha256": "0661de859e484e202cd871f812e81a63701d1aedb1ce60afea12c49a1a1bf6f5"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints",
+      "bytes": 2712,
+      "sha256": "5de89c7f4ac8a6fe872b2418046c064647ddfa6c5062093f05443b6f4e6a5298"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints.history/2026-09-15_13_43_25/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints.history/2026-09-15_13_43_25/CheckpointPublication.tla",
+      "bytes": 5225,
+      "sha256": "392f685656f593789cd68695407df2eacd2d2d5dbde7edcbe9ce3ac4ac76c778"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints.history/2026-09-15_13_43_25/CheckpointPublicationProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints.history/2026-09-15_13_43_25/CheckpointPublicationProof.tla",
+      "bytes": 2465,
+      "sha256": "c6378bc1c74e35c9b750cfe35e71479712a9d25bf1c8588ac06f6b4747ea2ba1"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/inventory.json",
+      "bytes": 1785,
+      "sha256": "c90411416d4cd4b3060b5dc2db1753203c055e5d507fccf04d3cc9303fcda3cd"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/result.json",
+      "bytes": 1039,
+      "sha256": "089416b29019e9f791bd75431a830921b0dab64818f6dd9998d3d34f8716c619"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/sany.log",
+      "bytes": 2265,
+      "sha256": "eafd1f1a5c2d030532e569d5b68f8318fbbf1d44a3c2eea9fb30894e0673c23c"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proof/semantic-audit.json",
+      "bytes": 2280,
+      "sha256": "93ad1e0d04b4ce6457c038d54d1f34fb2adb3d49e2dc6db466a0d737c392c337"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proposal-presence/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proposal-presence/CheckpointPublication.tla",
+      "bytes": 5206,
+      "sha256": "15f0b8575cb8dbe9e2740f2549e65fe5dd6758179b982a497f6f54052b62d462"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proposal-presence/CheckpointPublicationMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proposal-presence/CheckpointPublicationMC.tla",
+      "bytes": 530,
+      "sha256": "62bcc4790c97fa834ea7224f7a4288ebb275e30828b5cf0bf1f94b6a901e2b93"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proposal-presence/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proposal-presence/Run.cfg",
+      "bytes": 290,
+      "sha256": "fdf2e767b5c98b412d4d2fa0fea185b5172004bb889836ec5530617573885f09"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proposal-presence/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proposal-presence/result.json",
+      "bytes": 1035,
+      "sha256": "6dfb8c8ed16f9252ec9ce6077b94e35135c6e9ccdb833e9f8e5f80d657924c29"
+    },
+    {
+      "member": "proofs/checkpoint-publication/proposal-presence/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/proposal-presence/tlc.log",
+      "bytes": 4529,
+      "sha256": "92abef3f614225d0bbfdec9c290997bc74bed9eef207f46c9e94f1a9cbaeb50c"
+    },
+    {
+      "member": "proofs/checkpoint-publication/summary.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/summary.json",
+      "bytes": 13043,
+      "sha256": "82eaec5d26b2cbc6b787b06df98fe657afc3c38cf11451718cd1aa3df4a90b6e"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/CheckpointPublication.tla",
+      "bytes": 5206,
+      "sha256": "15f0b8575cb8dbe9e2740f2549e65fe5dd6758179b982a497f6f54052b62d462"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/CheckpointPublicationProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/CheckpointPublicationProof.log",
+      "bytes": 5281,
+      "sha256": "9f1fa71fd62f6c51220b13c24bc61efe0720e7200cbd2a26e55acdf4e7b93603"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/CheckpointPublicationProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/CheckpointPublicationProof.tla",
+      "bytes": 2465,
+      "sha256": "c6378bc1c74e35c9b750cfe35e71479712a9d25bf1c8588ac06f6b4747ea2ba1"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/CheckpointPublicationProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/CheckpointPublicationProof.thy",
+      "bytes": 425,
+      "sha256": "0661de859e484e202cd871f812e81a63701d1aedb1ce60afea12c49a1a1bf6f5"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints",
+      "bytes": 2714,
+      "sha256": "d5540386d8059c3307ced85154d3ab35bbfd231b95597909089d81fa44f1dbfe"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints.history/2026-09-15_13_43_30/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints.history/2026-09-15_13_43_30/CheckpointPublication.tla",
+      "bytes": 5206,
+      "sha256": "15f0b8575cb8dbe9e2740f2549e65fe5dd6758179b982a497f6f54052b62d462"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints.history/2026-09-15_13_43_30/CheckpointPublicationProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/cache/CheckpointPublicationProof/CheckpointPublicationProof.tlaps/fingerprints.history/2026-09-15_13_43_30/CheckpointPublicationProof.tla",
+      "bytes": 2465,
+      "sha256": "c6378bc1c74e35c9b750cfe35e71479712a9d25bf1c8588ac06f6b4747ea2ba1"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/inventory.json",
+      "bytes": 1785,
+      "sha256": "c90411416d4cd4b3060b5dc2db1753203c055e5d507fccf04d3cc9303fcda3cd"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/result.json",
+      "bytes": 1129,
+      "sha256": "937ba7c4e086288c190534eac2e67764af2bd814df34253e7138ebb2d1e1f070"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/sany.log",
+      "bytes": 2333,
+      "sha256": "d207c47e6d4ca1e1ae7083949e2eed879feb835d21229a49d05fd262c8795188"
+    },
+    {
+      "member": "proofs/checkpoint-publication/unsafe-selection-proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/unsafe-selection-proof/semantic-audit.json",
+      "bytes": 2314,
+      "sha256": "b7616bd95c8574d656cc569bccf03dd85265c21c25d5a59bb9162fb600bf5442"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-command-image/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-command-image/CheckpointPublication.tla",
+      "bytes": 5190,
+      "sha256": "1e26aa995029cdf98b823f5d1f4818eba315ae44557ccad0e6714ffbd85193fb"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-command-image/CheckpointPublicationMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-command-image/CheckpointPublicationMC.tla",
+      "bytes": 530,
+      "sha256": "62bcc4790c97fa834ea7224f7a4288ebb275e30828b5cf0bf1f94b6a901e2b93"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-command-image/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-command-image/Run.cfg",
+      "bytes": 295,
+      "sha256": "49e734bc6fba3105d735e9f3ffb935402c6c2014a13b1915d25d0e7a8ada2553"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-command-image/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-command-image/result.json",
+      "bytes": 1039,
+      "sha256": "c75636a82ddf6b355f0aaeec1b2c867e038da0d73ccbe1243938c4674367ca3d"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-command-image/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-command-image/tlc.log",
+      "bytes": 3921,
+      "sha256": "0200270098b80f8fac384e860720c3db618d6888edafa023531ca4a716d4aef1"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-publication-term/CheckpointPublication.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-publication-term/CheckpointPublication.tla",
+      "bytes": 5193,
+      "sha256": "5afa3f34c422bd452172d7f598bce4604e3bc5f936a08d8aff5cc500be20a672"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-publication-term/CheckpointPublicationMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-publication-term/CheckpointPublicationMC.tla",
+      "bytes": 530,
+      "sha256": "62bcc4790c97fa834ea7224f7a4288ebb275e30828b5cf0bf1f94b6a901e2b93"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-publication-term/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-publication-term/Run.cfg",
+      "bytes": 296,
+      "sha256": "f9c669f17fa22861cd9f1ca4052ef487565563bd397c405087f0309c19dafaf3"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-publication-term/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-publication-term/result.json",
+      "bytes": 1045,
+      "sha256": "f5ed30d4b8d357ea45d5be74b0da2fa5907187eccc38480de1c1508dbf887f99"
+    },
+    {
+      "member": "proofs/checkpoint-publication/wrong-publication-term/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint-publication/wrong-publication-term/tlc.log",
+      "bytes": 3946,
+      "sha256": "0ca078596709ffe9f9f71c1afdce23f5ffc5427fa0ff96bbdb3051105d52c72d"
+    },
+    {
+      "member": "proofs/checkpoint_base-inventory-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint_base-inventory-before.json",
+      "bytes": 1695,
+      "sha256": "e11d9bf3d5364a747251f74fbf2c59cdaba1c1f41379995457a8129fc7d6fd67"
+    },
+    {
+      "member": "proofs/checkpoint_owner-inventory-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint_owner-inventory-before.json",
+      "bytes": 2095,
+      "sha256": "3382ef0ae47290544c326b8784dc670bfe3206b9ce635b3a7150d52e9b70ffd8"
+    },
+    {
+      "member": "proofs/checkpoint_publication-inventory-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/checkpoint_publication-inventory-before.json",
+      "bytes": 1785,
+      "sha256": "bdd962c956086dd16cf3a8ec051b4b44ff50896d0e00d00b6551d4c8a3418e62"
+    },
+    {
+      "member": "proofs/retention-ledger/auditor/ProofAudit.class",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "member": "proofs/retention-ledger/auditor/ProofAudit.java",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/auditor/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "member": "proofs/retention-ledger/custom-axiom/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/custom-axiom/RetentionLedger.tla",
+      "bytes": 3665,
+      "sha256": "a0fbbbdef65981c2775d6d45b5085e8cad0548a0a8d745c9a1abe6a015cdf30a"
+    },
+    {
+      "member": "proofs/retention-ledger/custom-axiom/RetentionLedgerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/custom-axiom/RetentionLedgerProof.tla",
+      "bytes": 2990,
+      "sha256": "eedab58038ee23e73c05cda30531a1e3f470475e68f93128cc86d8450fd9f7ca"
+    },
+    {
+      "member": "proofs/retention-ledger/custom-axiom/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/custom-axiom/inventory.json",
+      "bytes": 2144,
+      "sha256": "7313b237843d4ee1d71f375a4fc1b3fb5ed82de6a6e59bf4f02f0214389af506"
+    },
+    {
+      "member": "proofs/retention-ledger/custom-axiom/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/custom-axiom/result.json",
+      "bytes": 463,
+      "sha256": "fbe33f330e2079112732a0f903dbb736b40490dad6eeb01dff61b8dfc21cc41c"
+    },
+    {
+      "member": "proofs/retention-ledger/custom-axiom/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/custom-axiom/sany.log",
+      "bytes": 2181,
+      "sha256": "c9774af52995490402d891de09d0316c8f0227a870e8055dc0d68059634cbc5e"
+    },
+    {
+      "member": "proofs/retention-ledger/full-closure/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/full-closure/RetentionLedger.tla",
+      "bytes": 3665,
+      "sha256": "a0fbbbdef65981c2775d6d45b5085e8cad0548a0a8d745c9a1abe6a015cdf30a"
+    },
+    {
+      "member": "proofs/retention-ledger/full-closure/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/full-closure/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/full-closure/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/full-closure/Run.cfg",
+      "bytes": 264,
+      "sha256": "3d0374a37bfb8c20f4bfba6c38294aeee9fa84f11143abf543c35997d2e3877f"
+    },
+    {
+      "member": "proofs/retention-ledger/full-closure/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/full-closure/result.json",
+      "bytes": 987,
+      "sha256": "0d0b41897a0e05c43a0da8a59beba8ab23fb11ec3efe7ef32ab1e61e7a49a945"
+    },
+    {
+      "member": "proofs/retention-ledger/full-closure/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/full-closure/tlc.log",
+      "bytes": 2497,
+      "sha256": "bdd3d85845477aff5348bdcbda39b9fdbc4d884956f843e38d429dc1f46d24bb"
+    },
+    {
+      "member": "proofs/retention-ledger/inputs.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/inputs.json",
+      "bytes": 2133,
+      "sha256": "b710a423b0a7dcc5ad656cfeda119d2de4aae8ca6b862fce0e155218941fe326"
+    },
+    {
+      "member": "proofs/retention-ledger/missing-resource-atomicity/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/missing-resource-atomicity/RetentionLedger.tla",
+      "bytes": 3638,
+      "sha256": "3a330485af5f8b39664021162b51205632921f6b2a89dcbcb7390b6557df7126"
+    },
+    {
+      "member": "proofs/retention-ledger/missing-resource-atomicity/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/missing-resource-atomicity/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/missing-resource-atomicity/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/missing-resource-atomicity/Run.cfg",
+      "bytes": 265,
+      "sha256": "e549068127feaffaa32533266d3e19f266b3b78965d77467d8fe8f5dc80f5206"
+    },
+    {
+      "member": "proofs/retention-ledger/missing-resource-atomicity/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/missing-resource-atomicity/result.json",
+      "bytes": 1021,
+      "sha256": "d10ef776ffc3383fc5c86010d42b30bacec18df0719e3364356a590c497644f8"
+    },
+    {
+      "member": "proofs/retention-ledger/missing-resource-atomicity/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/missing-resource-atomicity/tlc.log",
+      "bytes": 3399,
+      "sha256": "1c9952527f9a15d53fccf2ee19ab9723b49d47c279edec02623792d421877afd"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-closure/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-closure/RetentionLedger.tla",
+      "bytes": 3665,
+      "sha256": "a0fbbbdef65981c2775d6d45b5085e8cad0548a0a8d745c9a1abe6a015cdf30a"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-closure/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-closure/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-closure/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-closure/Run.cfg",
+      "bytes": 265,
+      "sha256": "e549068127feaffaa32533266d3e19f266b3b78965d77467d8fe8f5dc80f5206"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-closure/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-closure/result.json",
+      "bytes": 992,
+      "sha256": "ca2b09e8a5a3c0f7c041b14a0e0e6cb9055fe930fd9576e7fc5fed86b1075e86"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-closure/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-closure/tlc.log",
+      "bytes": 2500,
+      "sha256": "743d2baf4537a8fdf19f36faa18a51a2aeeb5f85fcdcc1b24b14eb3aca93a777"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-successor-closure/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-successor-closure/RetentionLedger.tla",
+      "bytes": 3640,
+      "sha256": "59d3020983a62c2f6579390a57d98325229b28c6ff6c04d4bde2bf8b56200757"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-successor-closure/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-successor-closure/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-successor-closure/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-successor-closure/Run.cfg",
+      "bytes": 265,
+      "sha256": "e549068127feaffaa32533266d3e19f266b3b78965d77467d8fe8f5dc80f5206"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-successor-closure/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-successor-closure/result.json",
+      "bytes": 1030,
+      "sha256": "0d8f880347c1172059587c31d46961633c790857f29256955a9f03c7f187185f"
+    },
+    {
+      "member": "proofs/retention-ledger/partial-successor-closure/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/partial-successor-closure/tlc.log",
+      "bytes": 6093,
+      "sha256": "1891d2a3ce5f674d1597d3e932869d56e9104aadb83f22cc13866e71e181adc6"
+    },
+    {
+      "member": "proofs/retention-ledger/proof-hole/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof-hole/RetentionLedger.tla",
+      "bytes": 3665,
+      "sha256": "a0fbbbdef65981c2775d6d45b5085e8cad0548a0a8d745c9a1abe6a015cdf30a"
+    },
+    {
+      "member": "proofs/retention-ledger/proof-hole/RetentionLedgerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof-hole/RetentionLedgerProof.tla",
+      "bytes": 2848,
+      "sha256": "706d14786d455ea6b65a80585f33776b4af6099bafef9df15a218ecb1c77fc66"
+    },
+    {
+      "member": "proofs/retention-ledger/proof-hole/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof-hole/inventory.json",
+      "bytes": 2144,
+      "sha256": "7313b237843d4ee1d71f375a4fc1b3fb5ed82de6a6e59bf4f02f0214389af506"
+    },
+    {
+      "member": "proofs/retention-ledger/proof-hole/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof-hole/result.json",
+      "bytes": 442,
+      "sha256": "adc3eade9e7c45522c9f560bb58d14d498dbb69b1530805b745c5fe6c3876e81"
+    },
+    {
+      "member": "proofs/retention-ledger/proof-hole/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof-hole/sany.log",
+      "bytes": 2082,
+      "sha256": "237a998122157b9e3ca14e734057b5caf173d68c19eedcf0bfd7132be9b6d0c2"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/RetentionLedger.tla",
+      "bytes": 3665,
+      "sha256": "a0fbbbdef65981c2775d6d45b5085e8cad0548a0a8d745c9a1abe6a015cdf30a"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/RetentionLedgerProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/RetentionLedgerProof.log",
+      "bytes": 594,
+      "sha256": "3ed6ed92680664d1420cb28838ca7fe840f3f1f676ba2b2d8c650d5b46754f03"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/RetentionLedgerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/RetentionLedgerProof.tla",
+      "bytes": 2960,
+      "sha256": "5337b27900d0d88db42e8e7258550e3938f00bddcdd5a5ccb8a13e64bceff967"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/RetentionLedgerProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/RetentionLedgerProof.thy",
+      "bytes": 419,
+      "sha256": "110e7d40a70d77e4a01faa37331fdfd684c7ac9d3c8f48c85da41f858ff7e0a2"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints",
+      "bytes": 3818,
+      "sha256": "0b2c38b0dfbcecd2eede72d6705fd28837b6fc2a74a18209759e898e0e8fb948"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints.history/2026-09-15_13_43_49/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints.history/2026-09-15_13_43_49/RetentionLedger.tla",
+      "bytes": 3665,
+      "sha256": "a0fbbbdef65981c2775d6d45b5085e8cad0548a0a8d745c9a1abe6a015cdf30a"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints.history/2026-09-15_13_43_49/RetentionLedgerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints.history/2026-09-15_13_43_49/RetentionLedgerProof.tla",
+      "bytes": 2960,
+      "sha256": "5337b27900d0d88db42e8e7258550e3938f00bddcdd5a5ccb8a13e64bceff967"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/inventory.json",
+      "bytes": 2144,
+      "sha256": "7313b237843d4ee1d71f375a4fc1b3fb5ed82de6a6e59bf4f02f0214389af506"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/result.json",
+      "bytes": 997,
+      "sha256": "2deb24cdb54897efcda1bfd298c9ca0a41a4f9bc7ab6785ffc24eb7f0cefa825"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/sany.log",
+      "bytes": 2063,
+      "sha256": "8f0769814f4899d5c1ffcee101d1bb4874c441237da36da72ad51e014a21cb4c"
+    },
+    {
+      "member": "proofs/retention-ledger/proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/proof/semantic-audit.json",
+      "bytes": 2046,
+      "sha256": "c7d5cc8d0126aef69f4a8083767893ee7d4bf9d1bc1049f6ec27ba1960db6df6"
+    },
+    {
+      "member": "proofs/retention-ledger/release-published-source/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/release-published-source/RetentionLedger.tla",
+      "bytes": 3682,
+      "sha256": "e09c3b82b224df63287f49194b0c15903b71e8b1910e7e59af6c71e054a1f1c6"
+    },
+    {
+      "member": "proofs/retention-ledger/release-published-source/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/release-published-source/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/release-published-source/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/release-published-source/Run.cfg",
+      "bytes": 264,
+      "sha256": "3d0374a37bfb8c20f4bfba6c38294aeee9fa84f11143abf543c35997d2e3877f"
+    },
+    {
+      "member": "proofs/retention-ledger/release-published-source/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/release-published-source/result.json",
+      "bytes": 1027,
+      "sha256": "71d458af870d51fef666ef16a844f4a3b4a728ef6e45741e7a2935d9f1fbe670"
+    },
+    {
+      "member": "proofs/retention-ledger/release-published-source/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/release-published-source/tlc.log",
+      "bytes": 4822,
+      "sha256": "fafa4098bfa11b9ce1fa4a04c5cf5f8e6d276bd84efe5e940aecdce4475c01b0"
+    },
+    {
+      "member": "proofs/retention-ledger/separate-subjects/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/separate-subjects/RetentionLedger.tla",
+      "bytes": 3665,
+      "sha256": "a0fbbbdef65981c2775d6d45b5085e8cad0548a0a8d745c9a1abe6a015cdf30a"
+    },
+    {
+      "member": "proofs/retention-ledger/separate-subjects/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/separate-subjects/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/separate-subjects/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/separate-subjects/Run.cfg",
+      "bytes": 270,
+      "sha256": "fa22f4039c98f458582ac088a19bdd9c3c8408c8f7245b545d49ba5d8314615f"
+    },
+    {
+      "member": "proofs/retention-ledger/separate-subjects/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/separate-subjects/result.json",
+      "bytes": 996,
+      "sha256": "611f05f57ee1bf6e13b3553edf5d3275344ff38f811c2a563e19f0bf5768266d"
+    },
+    {
+      "member": "proofs/retention-ledger/separate-subjects/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/separate-subjects/tlc.log",
+      "bytes": 2507,
+      "sha256": "18bd1fa23d384d761177058f0e516ea2bf78e084e0a84bc43d0e80c5c93eed15"
+    },
+    {
+      "member": "proofs/retention-ledger/stale-publication-token/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/stale-publication-token/RetentionLedger.tla",
+      "bytes": 3644,
+      "sha256": "8e3d6d75aceba3573fecc2337e3b242d20fe4c8df4b00cc0762c575994f3617b"
+    },
+    {
+      "member": "proofs/retention-ledger/stale-publication-token/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/stale-publication-token/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/stale-publication-token/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/stale-publication-token/Run.cfg",
+      "bytes": 264,
+      "sha256": "3d0374a37bfb8c20f4bfba6c38294aeee9fa84f11143abf543c35997d2e3877f"
+    },
+    {
+      "member": "proofs/retention-ledger/stale-publication-token/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/stale-publication-token/result.json",
+      "bytes": 1014,
+      "sha256": "b4819d39c949889d19baf0e4867dc364ec8a9fb16d9876f5edb790ed715115ed"
+    },
+    {
+      "member": "proofs/retention-ledger/stale-publication-token/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/stale-publication-token/tlc.log",
+      "bytes": 4181,
+      "sha256": "d00439e6cb3f2f004edd9ba4a9869e91392c1a9a88fc085adbd8fb2e8f253602"
+    },
+    {
+      "member": "proofs/retention-ledger/summary.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/summary.json",
+      "bytes": 15619,
+      "sha256": "9b21392ca3463cd05cdb654ef29e4835cbc3ea917560a092b731fd400f4be1a8"
+    },
+    {
+      "member": "proofs/retention-ledger/unpublished-successor/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unpublished-successor/RetentionLedger.tla",
+      "bytes": 3677,
+      "sha256": "3f3cd01a3a20354e86dd42ab90b7d24611d27a8d258e57825c914420cebbe6d9"
+    },
+    {
+      "member": "proofs/retention-ledger/unpublished-successor/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unpublished-successor/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/unpublished-successor/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unpublished-successor/Run.cfg",
+      "bytes": 264,
+      "sha256": "3d0374a37bfb8c20f4bfba6c38294aeee9fa84f11143abf543c35997d2e3877f"
+    },
+    {
+      "member": "proofs/retention-ledger/unpublished-successor/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unpublished-successor/result.json",
+      "bytes": 1022,
+      "sha256": "6e411d60a24e1727f98910869d384ac9816c505c864e57afffe4bbceb10f6bc3"
+    },
+    {
+      "member": "proofs/retention-ledger/unpublished-successor/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unpublished-successor/tlc.log",
+      "bytes": 5433,
+      "sha256": "462e30c86a6da20ccd03c60d6eabb18219a38430b7d082bda0dbcd568accb6ad"
+    },
+    {
+      "member": "proofs/retention-ledger/unrelated-successor-subject/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unrelated-successor-subject/RetentionLedger.tla",
+      "bytes": 3640,
+      "sha256": "15c2d979d420a06881634941b6469594a34cd1622284fd9a0087cf0339bdfce3"
+    },
+    {
+      "member": "proofs/retention-ledger/unrelated-successor-subject/RetentionLedgerMC.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unrelated-successor-subject/RetentionLedgerMC.tla",
+      "bytes": 384,
+      "sha256": "6934b0fa691715dffa6bd8df2449ad8ae06d8ec8bdf543229616f38e4f43da8f"
+    },
+    {
+      "member": "proofs/retention-ledger/unrelated-successor-subject/Run.cfg",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unrelated-successor-subject/Run.cfg",
+      "bytes": 270,
+      "sha256": "fa22f4039c98f458582ac088a19bdd9c3c8408c8f7245b545d49ba5d8314615f"
+    },
+    {
+      "member": "proofs/retention-ledger/unrelated-successor-subject/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unrelated-successor-subject/result.json",
+      "bytes": 1034,
+      "sha256": "d6ec3b27483ec0dd9d6cfe82bca6000f0859e4d2d4fdc3accfedae2662feeb28"
+    },
+    {
+      "member": "proofs/retention-ledger/unrelated-successor-subject/tlc.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unrelated-successor-subject/tlc.log",
+      "bytes": 6143,
+      "sha256": "2775feafa3b53d406df019f796b563ff747b201be6e407969b1665aee59aeb68"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/RetentionLedger.tla",
+      "bytes": 3677,
+      "sha256": "3f3cd01a3a20354e86dd42ab90b7d24611d27a8d258e57825c914420cebbe6d9"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/RetentionLedgerProof.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/RetentionLedgerProof.log",
+      "bytes": 4391,
+      "sha256": "7cd9f637049c2e5f5378431a09e5ebacddb309563842e9445e218a4f08dece72"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/RetentionLedgerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/RetentionLedgerProof.tla",
+      "bytes": 2960,
+      "sha256": "5337b27900d0d88db42e8e7258550e3938f00bddcdd5a5ccb8a13e64bceff967"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/RetentionLedgerProof.thy",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/RetentionLedgerProof.thy",
+      "bytes": 419,
+      "sha256": "110e7d40a70d77e4a01faa37331fdfd684c7ac9d3c8f48c85da41f858ff7e0a2"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints",
+      "bytes": 3820,
+      "sha256": "d321b1d9e54ee9188756437c5ef0d3493acaa082b9660910722d5f364bf60e89"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints.history/2026-09-15_13_43_57/RetentionLedger.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints.history/2026-09-15_13_43_57/RetentionLedger.tla",
+      "bytes": 3677,
+      "sha256": "3f3cd01a3a20354e86dd42ab90b7d24611d27a8d258e57825c914420cebbe6d9"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints.history/2026-09-15_13_43_57/RetentionLedgerProof.tla",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/cache/RetentionLedgerProof/RetentionLedgerProof.tlaps/fingerprints.history/2026-09-15_13_43_57/RetentionLedgerProof.tla",
+      "bytes": 2960,
+      "sha256": "5337b27900d0d88db42e8e7258550e3938f00bddcdd5a5ccb8a13e64bceff967"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/inventory.json",
+      "bytes": 2144,
+      "sha256": "7313b237843d4ee1d71f375a4fc1b3fb5ed82de6a6e59bf4f02f0214389af506"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/result.json",
+      "bytes": 1073,
+      "sha256": "36e1c52f9fabb200161dc1432c83b8ea21ed1874f45ae198b304e1a00ed66ca0"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/sany.log",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/sany.log",
+      "bytes": 2127,
+      "sha256": "bd71b07010c09c261ab73fd4bc386947200da46af950f49aa95468f383e056f5"
+    },
+    {
+      "member": "proofs/retention-ledger/unsafe-transfer-proof/semantic-audit.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention-ledger/unsafe-transfer-proof/semantic-audit.json",
+      "bytes": 2078,
+      "sha256": "84d45a2324962ed07552d5ded585bb8108dbfd3e2de02c68a3db4398b0078380"
+    },
+    {
+      "member": "proofs/retention_ledger-inventory-before.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/retention_ledger-inventory-before.json",
+      "bytes": 2144,
+      "sha256": "ea49a3659ae40f8935a0e4d224dd6a55290681c5830a1758c25b7bb467bd29a3"
+    },
+    {
+      "member": "proofs/source-mapping-review.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-proof-compositions-20260915-first/source-mapping-review.json",
+      "bytes": 1778,
+      "sha256": "11c7a0e6e97e3f08b2ddd9ab1d226ff1352ce3c9a7c11a5572793154109fdccc"
+    },
+    {
+      "member": "publication/assemble.py",
+      "source": "/mnt/data/kv9-work/write-stage-trace-publication-20260915-first/assemble.py",
+      "bytes": 3383,
+      "sha256": "d74d087752444324a2dd3b5d0e80c990c8ec57a1c01591e54609717c06053bef"
+    },
+    {
+      "member": "publication/validation.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-publication-20260915-first/validation.json",
+      "bytes": 7891,
+      "sha256": "a7cc7a9cc4137ba3a813f3b27b3772a6dfc23455456910fe135553aee1f5621f"
+    },
+    {
+      "member": "reader-controls/README.md",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/README.md",
+      "bytes": 3113,
+      "sha256": "958ad5b87f6494996b435519c783e06daa27eeb1773ec099e1ade6d91a7b0e88"
+    },
+    {
+      "member": "reader-controls/check-write-stage-trace-controls.py.diff",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/check-write-stage-trace-controls.py.diff",
+      "bytes": 2682,
+      "sha256": "2a773952949670aa1ad55de0f15b32fd7fb8edd7afa89eaffa96974b203f361a"
+    },
+    {
+      "member": "reader-controls/check-write-stage-trace-controls.py.final",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/check-write-stage-trace-controls.py.final",
+      "bytes": 14885,
+      "sha256": "90bb1614d066f2f412d854501fd69cf179227ecac3bae4e3cbfcb2c0870bdad0"
+    },
+    {
+      "member": "reader-controls/check-write-stage-trace-controls.py.initial",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/check-write-stage-trace-controls.py.initial",
+      "bytes": 13546,
+      "sha256": "f606059c229f0892b5a5815863b70a5e926ca300d98191b3dd7a938d3251dc6f"
+    },
+    {
+      "member": "reader-controls/check-write-stage-trace.py.diff",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/check-write-stage-trace.py.diff",
+      "bytes": 676,
+      "sha256": "02762a205c360fbdb8b2a29293fb2593fe6b5d16f5ad651219dbf421bebfd5bf"
+    },
+    {
+      "member": "reader-controls/check-write-stage-trace.py.final",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/check-write-stage-trace.py.final",
+      "bytes": 15870,
+      "sha256": "4bfe18d3b749204337a0d6d6b5366c51a4c5bc813303a8c551279a47c7876ca8"
+    },
+    {
+      "member": "reader-controls/check-write-stage-trace.py.initial",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/check-write-stage-trace.py.initial",
+      "bytes": 15826,
+      "sha256": "cee7b59f5adb55cacd715c0c5beeb3f0b4d69382f90e04446deb6f51f45fc9e0"
+    },
+    {
+      "member": "reader-controls/huge-integer-result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/huge-integer-result.json",
+      "bytes": 1114,
+      "sha256": "1b345b087f6f6f0ec6cd92203e4d2f1e03a611b36db4eeb4d086a88b21a8c5b7"
+    },
+    {
+      "member": "reader-controls/inventory.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/inventory.json",
+      "bytes": 2374,
+      "sha256": "8b148ed7c7c8ac783301324bb6b400ab8e86293885aec6e76a8f61caccaecf91"
+    },
+    {
+      "member": "reader-controls/qualification.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/qualification.json",
+      "bytes": 3000,
+      "sha256": "f85bd1fa8a3da3ccf8b378b5078069a81d925804dd1c2d32cda0f7cfd936b46b"
+    },
+    {
+      "member": "reader-controls/result.json",
+      "source": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/result.json",
+      "bytes": 3107,
+      "sha256": "3b0f2178a0513c631e107456a6461124445e2be1b6f51f81ef90635862b98132"
+    },
+    {
+      "member": "source/Cargo.toml",
+      "source": "/home/dongxu/kv9/Cargo.toml",
+      "bytes": 7710,
+      "sha256": "e9f94317ea513b48176c19db21329b650132626f0b7d4e1c10ba49f68693e5fc"
+    },
+    {
+      "member": "source/crates/raft/Cargo.toml",
+      "source": "/home/dongxu/kv9/crates/raft/Cargo.toml",
+      "bytes": 1864,
+      "sha256": "e7685a6aca633e3d99032872ec887bb06f9f1504aed962682306703972c8bdda"
+    },
+    {
+      "member": "source/crates/raft/src/driver.rs",
+      "source": "/home/dongxu/kv9/crates/raft/src/driver.rs",
+      "bytes": 165364,
+      "sha256": "38504095171c4adbf68f11a40b6317a5245ca9fb789b2bcadba5192bd4d61f7d"
+    },
+    {
+      "member": "source/crates/raft/src/lib.rs",
+      "source": "/home/dongxu/kv9/crates/raft/src/lib.rs",
+      "bytes": 12267,
+      "sha256": "8f7c0e1e9fba460ff511338a6e70fd04b6e589b27054dccc45571ecaa72c0cbb"
+    },
+    {
+      "member": "source/crates/raft/src/state_machine/raw_group.rs",
+      "source": "/home/dongxu/kv9/crates/raft/src/state_machine/raw_group.rs",
+      "bytes": 22611,
+      "sha256": "63dba71402a09e1f12822024a184d5db9137ba6015c72e39bdc319513ab042cd"
+    },
+    {
+      "member": "source/crates/raft/src/write_stage_trace.rs",
+      "source": "/home/dongxu/kv9/crates/raft/src/write_stage_trace.rs",
+      "bytes": 14970,
+      "sha256": "6d37c5b2ade6bd8fa8771b4ce43841e5c97130d7f847581e6e60d34f35326f2a"
+    },
+    {
+      "member": "source/crates/server/Cargo.toml",
+      "source": "/home/dongxu/kv9/crates/server/Cargo.toml",
+      "bytes": 1769,
+      "sha256": "63f962128f1c9da3ccfb743c11905aab0c1bc524b01a39cfdb817abb041791f5"
+    },
+    {
+      "member": "source/crates/server/src/observability.rs",
+      "source": "/home/dongxu/kv9/crates/server/src/observability.rs",
+      "bytes": 20829,
+      "sha256": "6cfbd158f47db9d3d6bdc5d1d6498378b6a748354ccb2d10723fb8b9621a7f30"
+    },
+    {
+      "member": "source/crates/server/src/runtime.rs",
+      "source": "/home/dongxu/kv9/crates/server/src/runtime.rs",
+      "bytes": 417973,
+      "sha256": "85be248e02d83df4862bb2c0616d24740df04cc82d92b1b5941dca284c3dcbe5"
+    },
+    {
+      "member": "source/proofs/tlaps/anchor_binding/inventory.json",
+      "source": "/home/dongxu/kv9/proofs/tlaps/anchor_binding/inventory.json",
+      "bytes": 2094,
+      "sha256": "c9730820ca7d592ebb1fae3fc3ab455858c58b98e879ab1a353bfe2445e42ecd"
+    },
+    {
+      "member": "source/proofs/tlaps/checkpoint_base/inventory.json",
+      "source": "/home/dongxu/kv9/proofs/tlaps/checkpoint_base/inventory.json",
+      "bytes": 1695,
+      "sha256": "7749232147f1ffc07125747fcb073a6f663d59954558cac41f749a5b6cfe19f9"
+    },
+    {
+      "member": "source/proofs/tlaps/checkpoint_owner/inventory.json",
+      "source": "/home/dongxu/kv9/proofs/tlaps/checkpoint_owner/inventory.json",
+      "bytes": 2095,
+      "sha256": "f5081f62e6efd00d1c6b6de0eac223acc43f1622429f4aae1cd96577e462320f"
+    },
+    {
+      "member": "source/proofs/tlaps/checkpoint_publication/inventory.json",
+      "source": "/home/dongxu/kv9/proofs/tlaps/checkpoint_publication/inventory.json",
+      "bytes": 1785,
+      "sha256": "c90411416d4cd4b3060b5dc2db1753203c055e5d507fccf04d3cc9303fcda3cd"
+    },
+    {
+      "member": "source/proofs/tlaps/retention_ledger/inventory.json",
+      "source": "/home/dongxu/kv9/proofs/tlaps/retention_ledger/inventory.json",
+      "bytes": 2144,
+      "sha256": "7313b237843d4ee1d71f375a4fc1b3fb5ed82de6a6e59bf4f02f0214389af506"
+    },
+    {
+      "member": "source/scripts/check-anchor-binding.py",
+      "source": "/home/dongxu/kv9/scripts/check-anchor-binding.py",
+      "bytes": 9341,
+      "sha256": "66cdd73b34fddd7d0f90886c643c229a240111dc6690902d49046562532864b5"
+    },
+    {
+      "member": "source/scripts/check-checkpoint-base.py",
+      "source": "/home/dongxu/kv9/scripts/check-checkpoint-base.py",
+      "bytes": 8692,
+      "sha256": "f0c85e148bd1d786bb3975cad0866689c36ca8bd7fd3c117b82771007e4c3a2a"
+    },
+    {
+      "member": "source/scripts/check-checkpoint-owner.py",
+      "source": "/home/dongxu/kv9/scripts/check-checkpoint-owner.py",
+      "bytes": 9634,
+      "sha256": "91283e744e86c6f879894f8bdacca592e000312e65200568dd6e35dae2a74159"
+    },
+    {
+      "member": "source/scripts/check-checkpoint-publication.py",
+      "source": "/home/dongxu/kv9/scripts/check-checkpoint-publication.py",
+      "bytes": 9174,
+      "sha256": "24067859e050033e7363c5328279d23d3346af7f9acb76feb6e03f4690aecb85"
+    },
+    {
+      "member": "source/scripts/check-retention-ledger.py",
+      "source": "/home/dongxu/kv9/scripts/check-retention-ledger.py",
+      "bytes": 8950,
+      "sha256": "a9b34dd5c36c68bbc91a71ff04bdf7cf24a894042002ddf8e0ed43c112e3b664"
+    },
+    {
+      "member": "source/scripts/check-write-stage-trace-controls.py",
+      "source": "/home/dongxu/kv9/scripts/check-write-stage-trace-controls.py",
+      "bytes": 14885,
+      "sha256": "90bb1614d066f2f412d854501fd69cf179227ecac3bae4e3cbfcb2c0870bdad0"
+    },
+    {
+      "member": "source/scripts/check-write-stage-trace.py",
+      "source": "/home/dongxu/kv9/scripts/check-write-stage-trace.py",
+      "bytes": 15870,
+      "sha256": "4bfe18d3b749204337a0d6d6b5366c51a4c5bc813303a8c551279a47c7876ca8"
+    }
+  ]
+}

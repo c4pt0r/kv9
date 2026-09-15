@@ -19,6 +19,17 @@ batch-tail, group/writer and queue evidence before another rewrite; introduce
 bounded timestamped observation only for intervals the existing data cannot
 resolve. The two-second observer sweep is not a performance-selection gate.
 
+The [completed offline batch review](write-batch-tail-review-v1/README.md)
+confirms that observed apply-group maxima stay below the existing count/byte
+limits. Increasing those limits has no support in these captures. Per-command
+apply timers omit group decoding/lock acquisition and overlap within groups;
+endpoint aggregates cannot locate one slow request. The new
+[default-off write-stage trace](WRITE-STAGE-TRACE.md) records bounded exact
+term/index joins across preparation, locks, apply, receipt insertion and terminal
+inspection. Next qualify matching releases and actual capture/coverage/overhead
+before selecting another writer or scheduling change. This is instrumentation,
+not a new QPS result or promotion of the held candidate.
+
 During the earlier full-screen capacity constraint, the C04
 [checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local
 restart authority: an actual atomic winning manifest apply must match the exact

@@ -1,0 +1,11 @@
+--- extract-initial.py
++++ extract.py
+@@ -73,7 +73,7 @@
+         a,b = before[node], after[node]
+         for k in ('schema_version','process_id','node_id','exporter_created_unix_ns','bucket_count','bucket_rule','clock','duration_unit'):
+             assert a[k] == b[k], (node,k)
+-        assert a['bucket_count'] == 65 and a['reset'] is False and b['reset'] is False
++        assert a['bucket_count'] == 65 and a['reset'] == b['reset'] == 'node_component_construction'
+         assert a['export_failures_before_capture'] == b['export_failures_before_capture'] == 0
+         assert a['export_failures_saturated'] is False and b['export_failures_saturated'] is False
+         assert int(b['captured_unix_ns']) > int(a['captured_unix_ns'])

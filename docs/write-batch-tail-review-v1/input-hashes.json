@@ -1,0 +1,274 @@
+{
+  "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/results-first/summary.json": {
+    "bytes": 507162,
+    "sha256": "b345767bc8a710f4b6b2a925601fce2035ca69248ebba991d02745c7353cad14"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/input-inventory.json": {
+    "bytes": 914624,
+    "sha256": "7966dec3c4ac1f1f28a7797a4176bf92e95295014abb2d156eb55b4535929a2c"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-preparation-20260915-first/results-first/audit.json": {
+    "bytes": 455909,
+    "sha256": "7f60d63edbfaa3580160b3e80bf5ed97ba01aafe4faeb8e1342a6ba82daedb4f"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444083,
+    "sha256": "9db6bd0b56f472f96f203cbd5ffc18fbb705343caf2aecb021972358ae6ed61f"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/before-metrics.json": {
+    "bytes": 928605,
+    "sha256": "e00b65ece6de356d72e2e9e53d1ef1fd39343878c5b235c70f2d556925cd7be3"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/after-metrics.json": {
+    "bytes": 931823,
+    "sha256": "394446c0490078a9c7a823cef983cb1065f1e1dd105e009fef8fbd5f29db0b83"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/before-status.json": {
+    "bytes": 12752,
+    "sha256": "cb25ab1bb60520532b2f10fc39c29e33d95b36de7ae9ae29d744782bb6c37947"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/after-status.json": {
+    "bytes": 12833,
+    "sha256": "512ce69ef5f7814806e8390a24af69541d7039ad63890e59d3c6b204d89cb66b"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444167,
+    "sha256": "a50b275984928fe691cf10bfb1bc53ee601fab022b68cff70ab0da65c40e46c8"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/before-metrics.json": {
+    "bytes": 928656,
+    "sha256": "204e0d95d9066882242704289706dd6420a75ba7c571bf4c91aaf0589d4652b8"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/after-metrics.json": {
+    "bytes": 931834,
+    "sha256": "240b8b3e6686ae13034a1575b0fa62dbd8a3a783805d7ade956d91a591e4d4c1"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/before-status.json": {
+    "bytes": 12752,
+    "sha256": "9ee64231291658ef0077fab85aa137ee5f202ab9004305de8bdc49054d96b7e7"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/after-status.json": {
+    "bytes": 12833,
+    "sha256": "20b383354bf85d40c5774fa8b338cd7e53b78f3c0b426ac8b154ea7988a7d99f"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/run/report.json": {
+    "bytes": 1444150,
+    "sha256": "cc0bf6b8dc2ff96003994e7e921f148da5cc3e86431cd9c9740038d3320535eb"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/before-metrics.json": {
+    "bytes": 928595,
+    "sha256": "ab65fd4a4ac691298be572143710b9271dcbc1cf980f2b5f9c9f74d61cbb6583"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/after-metrics.json": {
+    "bytes": 931825,
+    "sha256": "7240ef5c015632953464f4260beeabb3bc7d5d0943d49974b242d6f1bcda0e0a"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/before-status.json": {
+    "bytes": 12752,
+    "sha256": "835e953b95ae4f3bba704bbe17ed740ef84772baae2d8d9ed44b66c210d56dc6"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/after-status.json": {
+    "bytes": 12833,
+    "sha256": "60b3b7f09412ea74280bcd661b1f5f469625a4bf29d587c6ae6ed1d1093f2541"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/run/report.json": {
+    "bytes": 1444120,
+    "sha256": "217ecf08a00713f4120a869d602c786965a776bf328140762e7566bfa651b3fa"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/before-metrics.json": {
+    "bytes": 928601,
+    "sha256": "0e1b5fd48c4476f7ff79e69f51dc4dc7ba3d41d189bda51f8e7ab03cd8208062"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/after-metrics.json": {
+    "bytes": 931830,
+    "sha256": "4d46d295f6d8e384b6fde94725b8f145ad4f52f695a0996a85924d5124fa05ed"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/before-status.json": {
+    "bytes": 12752,
+    "sha256": "1f2f5c360a9f6457e1c36c56cb3bd270f086e19d06781c565d7319ea0fc7c376"
+  },
+  "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/after-status.json": {
+    "bytes": 12833,
+    "sha256": "c92f7e8bb4c7ab9ba0330af4003ba0e1c11d249114ab20fe6f200ffa15827f00"
+  },
+  "/tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/result.json": {
+    "bytes": 1242493,
+    "sha256": "11311dee4d8a31ff20dbc18f5d52038296ae2a4677591f2a00d699af81e928de"
+  },
+  "/tmp/kv9-write-diagnostics-analysis-20260915-first/results-first/input-hashes.json": {
+    "bytes": 32389,
+    "sha256": "5cb742a875f87134ccc82f084c1a07c4204a0530441e929fc4c4638e1fb7d524"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/run/report.json": {
+    "bytes": 1443358,
+    "sha256": "22f2c61e130dcbc24cd67fda1bb29cd2cee8a1663cc7e1abcfb89d9342514461"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/before-metrics.json": {
+    "bytes": 928599,
+    "sha256": "39f2d56fcdba66235dc0ae8f7e64222d9b2312d3930424ea68dcef4d696e3328"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/after-metrics.json": {
+    "bytes": 931589,
+    "sha256": "b71825b8cf66b96f4068c5fd23d93471058917c38efc3941b47ddea2262859d7"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/before-status.json": {
+    "bytes": 12752,
+    "sha256": "ff1fcdcd4ae58c9aea3a1821cf3ad14222963f86b51309df157bbceb8eb9ac04"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/06-default-batch64-r000-c64/after-status.json": {
+    "bytes": 12822,
+    "sha256": "30c976e599b9250a3f2e0730541d390d9207be43a893c6169dd2e5b182533c15"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/run/report.json": {
+    "bytes": 1443397,
+    "sha256": "f1cce5f7e1fc92453ba7353b5303a203212ed499671cd993b7c4e57c7470343c"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/before-metrics.json": {
+    "bytes": 928638,
+    "sha256": "bfdf3611c2e239c8d54e0c553ea2a8a536345bc9b8098b30981deba644d6270d"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/after-metrics.json": {
+    "bytes": 931615,
+    "sha256": "7d50b6bea5c11011efc706ee11b854e69dff952d0a07dc22abea812c8293513d"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/before-status.json": {
+    "bytes": 30910,
+    "sha256": "1eb16288af63aaafd3f50a780a2533e221a72a6c1e3ca0a36a4af6c9c64f9c8a"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64/after-status.json": {
+    "bytes": 31773,
+    "sha256": "c5ff0403546a2a6e1a4d3e6f759893f2dce23e2cb1af0d7ae120b05a97b7c776"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/run/report.json": {
+    "bytes": 1443420,
+    "sha256": "bd17cec5fece198a28edfbb07a9bba71b067bbd3df3095286139d98ba9d9a5ae"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/before-metrics.json": {
+    "bytes": 928588,
+    "sha256": "276700664ba7a32044349f1f65f7804b721b9d41174abbbb4cd4eed31d60490f"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/after-metrics.json": {
+    "bytes": 931592,
+    "sha256": "3c6233d1780ce1d15ab5453505ab509c32815495531d5e038839d47cc41c9654"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/before-status.json": {
+    "bytes": 30910,
+    "sha256": "469d8c5b4b9be64899c9083e41ace9ac806e378649fabff34ebd9b096f684c87"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64/after-status.json": {
+    "bytes": 31768,
+    "sha256": "91b6dc3ec2a37d3588d8858a090ae94c789671c15621fd2e5652cdb341287328"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/run/report.json": {
+    "bytes": 1443398,
+    "sha256": "0350f89e8604e9aa7151778a7c2cd3d72d8d6e37d7faffc1b584d55f9a52b26e"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/before-metrics.json": {
+    "bytes": 928597,
+    "sha256": "851e33a257a0ef15d7b3051252253872914b730b498b932dc485d2ac28b25a4d"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/after-metrics.json": {
+    "bytes": 931592,
+    "sha256": "0627d070e0950cb251662ed76f8625fb2ee56ffa1707c0cb914f8a165f8e7657"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/before-status.json": {
+    "bytes": 12752,
+    "sha256": "68b0c4258ac8b47b338ac720195d916c449497ee4e90d4d2e8e2189cd697bc2e"
+  },
+  "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/09-default-batch64-r000-c64/after-status.json": {
+    "bytes": 12822,
+    "sha256": "8d15388ea3588df2563379a242198d670c12e70e7315f994ffe3770767429234"
+  },
+  "/tmp/kv9-upper-bound-observer-preparation-20260915-first/analysis-first/result.json": {
+    "bytes": 1297917,
+    "sha256": "3cc9e8f56593ca4f58eff29da7640b8b68dfca29b90169ecdb847a73f4a776a9"
+  },
+  "/tmp/kv9-upper-bound-observer-preparation-20260915-first/analysis-first/input-hashes.json": {
+    "bytes": 32682,
+    "sha256": "ab02eba2907faaa749cf80084b7b086efa1a573830a7e1ba54f4f13401bead90"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/06-default-batch64-r000-c64/run/report.json": {
+    "bytes": 1443391,
+    "sha256": "c70f0015b37e093ead61fcfb64bc07621082ff6fbdd920080722beb82ef32be3"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/06-default-batch64-r000-c64/before-metrics.json": {
+    "bytes": 928590,
+    "sha256": "b252b3ed47fbb0320dddf633bff2e73a7b372cc4a0575e628438d9f6c3d2f493"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/06-default-batch64-r000-c64/after-metrics.json": {
+    "bytes": 931559,
+    "sha256": "ece723d318a92c9d3acacad6c5506ad5a7d548bf8701fdfbd98940c5e8512ec2"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/06-default-batch64-r000-c64/before-status.json": {
+    "bytes": 12752,
+    "sha256": "92f007e10078d687cd540d4a97b9553ea9107a08148b429d2738d7860a6ea5a6"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/06-default-batch64-r000-c64/after-status.json": {
+    "bytes": 12822,
+    "sha256": "a3b84939d85ca2dc7ca416a58fb7e822c92a17987a851f451a796c2cd085ec11"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/07-diagnostic-batch64-r000-c64/run/report.json": {
+    "bytes": 1443343,
+    "sha256": "8a5427526a782e4a65c71dd19ea980ba07c14b732808358ec29c31387079a02a"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/07-diagnostic-batch64-r000-c64/before-metrics.json": {
+    "bytes": 928577,
+    "sha256": "7f0feead74458b83c9393e38cec17b1b5b35258a500e784c4b4ed61f0a54be9c"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/07-diagnostic-batch64-r000-c64/after-metrics.json": {
+    "bytes": 931567,
+    "sha256": "3bcfcd4dd02b7345a203a01449810afbb8e5027f2a626b61f8d67fec284646ec"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/07-diagnostic-batch64-r000-c64/before-status.json": {
+    "bytes": 31785,
+    "sha256": "af7f4181a078c6d64b6472d84c4ff92059dca3d00d900432360c2c78966a4f6e"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/07-diagnostic-batch64-r000-c64/after-status.json": {
+    "bytes": 32680,
+    "sha256": "0a3f8062416c90cfb0d1d7f2bbe3a7e0bbeda5fff934eb11dc3c8aa76bf5eddc"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/08-diagnostic-batch64-r000-c64/run/report.json": {
+    "bytes": 1443435,
+    "sha256": "42253574397fb6fd6e5c5626ba46460b6a658a20d86417db49a6a8ae2dfe073e"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/08-diagnostic-batch64-r000-c64/before-metrics.json": {
+    "bytes": 928601,
+    "sha256": "b88494bc485a41f01686bf9b494cd30bb5c769d851cccc065ab825b10cf41e4b"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/08-diagnostic-batch64-r000-c64/after-metrics.json": {
+    "bytes": 931582,
+    "sha256": "bcc9da9dbd7d752fca4567ba16b554f9f658fb7a53d5de681fb35cb6b8c9b7af"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/08-diagnostic-batch64-r000-c64/before-status.json": {
+    "bytes": 31785,
+    "sha256": "3250b40c220ec93a129cc2b331386861ec0a6c820fe17b21f9069b09c1f83b25"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/08-diagnostic-batch64-r000-c64/after-status.json": {
+    "bytes": 32687,
+    "sha256": "65dc168ce5ce083fa8d64be0dd0234e71a6c955fa555dc814a3b0d478ecb5410"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/09-default-batch64-r000-c64/run/report.json": {
+    "bytes": 1443397,
+    "sha256": "239246e0e120a5270505fcd31486e01f66d46770e575e3eeb78ec124617ec155"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/09-default-batch64-r000-c64/before-metrics.json": {
+    "bytes": 928611,
+    "sha256": "f291bea32af6a0a4678e2a21993d9e4ae271efdf6798b11b539255b38319bc08"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/09-default-batch64-r000-c64/after-metrics.json": {
+    "bytes": 931594,
+    "sha256": "d252dab6b573efcf6a4c021d33350f66026ab8ff5517d27f15da049f76bf0c90"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/09-default-batch64-r000-c64/before-status.json": {
+    "bytes": 12752,
+    "sha256": "5eac49fe361ed8dcdae6bb06b7646383cc2f99b07257d1771887d84305ce1fe5"
+  },
+  "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/09-default-batch64-r000-c64/after-status.json": {
+    "bytes": 12822,
+    "sha256": "2ffbb36e84722a62972420dc9fca0f5dec71094e409231f322cfbac87a312e77"
+  },
+  "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/extract.py": {
+    "bytes": 11584,
+    "sha256": "060f2b04860071d9141ca70e758678f384821efe1966b8114591c52c833e61f1"
+  }
+}

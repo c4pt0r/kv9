@@ -1,0 +1,46 @@
+{
+  "complete": true,
+  "files": [
+    {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/README.md",
+      "bytes": 12920,
+      "sha256": "aa94acd18fd5fcde9713d631db06cf1ea9d7d6aa0474f5c67f34adec2f9908fe"
+    },
+    {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/execution.json",
+      "bytes": 1536,
+      "sha256": "4e49e2e7344d2d00f15b2e14cc43cb5fee7bd80de72520473ca5e31cede5a991"
+    },
+    {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/extract-initial.py",
+      "bytes": 11570,
+      "sha256": "fb99d59f627122b5ddfc49bc42f92e27c2a3daa34f3abc993923e639e87c7b89"
+    },
+    {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/extract.diff",
+      "bytes": 739,
+      "sha256": "f04d52bc073b3f1116dc9170b21421e731b0090b94930f9bf80b703cf8e8adbe"
+    },
+    {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/extract.py",
+      "bytes": 11584,
+      "sha256": "060f2b04860071d9141ca70e758678f384821efe1966b8114591c52c833e61f1"
+    },
+    {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/findings.json",
+      "bytes": 80145,
+      "sha256": "82fd0c9edec8781583cbd0c1ffdf0495a3bd1320c58b8423b45fa466be469eb4"
+    },
+    {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/input-hashes.json",
+      "bytes": 15170,
+      "sha256": "c05aeb572cc6498d2c18045eb7587599dae9f6e3f74bddc025418e215b1fb7bd"
+    },
+    {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/summary.json",
+      "bytes": 992789,
+      "sha256": "b77304ccbbb67b3839000d3fd12fa4da10bc893e89247ca0c2d81afcb2196a48"
+    }
+  ],
+  "bytes": 1126453
+}

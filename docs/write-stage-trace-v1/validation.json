@@ -1,0 +1,198 @@
+{
+  "observed_unix_ns": 1789505337902290522,
+  "base_commit": "ca8d810d3f6db247735e6c5cb97de3eeffeb3ff1",
+  "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
+  "cargo": "cargo 1.94.0 (85eff7c80 2026-01-15)",
+  "final_traced_workspace": {
+    "passed": 744,
+    "ignored": 4,
+    "session": 55635,
+    "launch_chunk": "ff3bed",
+    "terminal_chunk": "e29785",
+    "exit_code": 0
+  },
+  "default_workspace": {
+    "passed": 731,
+    "ignored": 4,
+    "stage": "second/default"
+  },
+  "clippy_default": {
+    "stage": "second/clippy-default",
+    "exit_code": 0
+  },
+  "clippy_traced": {
+    "stage": "third/clippy-trace",
+    "exit_code": 0
+  },
+  "initial_clippy_failure": {
+    "stage": "first/clippy-default",
+    "exit_code": 101,
+    "reason": "clippy::let_unit_value; corrected cfg-specific service binding"
+  },
+  "proofs": {
+    "checkpoint-base": {
+      "theorems": 7,
+      "obligations": 27,
+      "positive_models": 3,
+      "model_counterexamples": 5,
+      "proof_rejections": 3,
+      "reachability_witnesses": 0
+    },
+    "checkpoint-publication": {
+      "theorems": 9,
+      "obligations": 36,
+      "positive_models": 2,
+      "model_counterexamples": 5,
+      "proof_rejections": 3,
+      "reachability_witnesses": 0
+    },
+    "retention-ledger": {
+      "theorems": 7,
+      "obligations": 55,
+      "positive_models": 3,
+      "model_counterexamples": 6,
+      "proof_rejections": 3,
+      "reachability_witnesses": 0
+    },
+    "anchor-binding": {
+      "theorems": 7,
+      "obligations": 26,
+      "positive_models": 5,
+      "model_counterexamples": 7,
+      "proof_rejections": 4,
+      "reachability_witnesses": 0
+    },
+    "checkpoint-owner": {
+      "theorems": 7,
+      "obligations": 43,
+      "positive_models": 2,
+      "model_counterexamples": 6,
+      "proof_rejections": 3,
+      "reachability_witnesses": 1
+    }
+  },
+  "checks": {
+    "cargo fmt --all -- --check": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "git diff --check": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "source_pins_verified": {
+    "Cargo.toml": "e9f94317ea513b48176c19db21329b650132626f0b7d4e1c10ba49f68693e5fc",
+    "crates/raft/Cargo.toml": "e7685a6aca633e3d99032872ec887bb06f9f1504aed962682306703972c8bdda",
+    "crates/raft/src/driver.rs": "38504095171c4adbf68f11a40b6317a5245ca9fb789b2bcadba5192bd4d61f7d",
+    "crates/raft/src/lib.rs": "8f7c0e1e9fba460ff511338a6e70fd04b6e589b27054dccc45571ecaa72c0cbb",
+    "crates/raft/src/state_machine/raw_group.rs": "63dba71402a09e1f12822024a184d5db9137ba6015c72e39bdc319513ab042cd",
+    "crates/raft/src/write_stage_trace.rs": "6d37c5b2ade6bd8fa8771b4ce43841e5c97130d7f847581e6e60d34f35326f2a",
+    "crates/server/Cargo.toml": "63f962128f1c9da3ccfb743c11905aab0c1bc524b01a39cfdb817abb041791f5",
+    "crates/server/src/observability.rs": "6cfbd158f47db9d3d6bdc5d1d6498378b6a748354ccb2d10723fb8b9621a7f30",
+    "crates/server/src/runtime.rs": "85be248e02d83df4862bb2c0616d24740df04cc82d92b1b5941dca284c3dcbe5",
+    "proofs/tlaps/anchor_binding/inventory.json": "c9730820ca7d592ebb1fae3fc3ab455858c58b98e879ab1a353bfe2445e42ecd",
+    "proofs/tlaps/checkpoint_base/inventory.json": "7749232147f1ffc07125747fcb073a6f663d59954558cac41f749a5b6cfe19f9",
+    "proofs/tlaps/checkpoint_owner/inventory.json": "f5081f62e6efd00d1c6b6de0eac223acc43f1622429f4aae1cd96577e462320f",
+    "proofs/tlaps/checkpoint_publication/inventory.json": "c90411416d4cd4b3060b5dc2db1753203c055e5d507fccf04d3cc9303fcda3cd",
+    "proofs/tlaps/retention_ledger/inventory.json": "7313b237843d4ee1d71f375a4fc1b3fb5ed82de6a6e59bf4f02f0214389af506",
+    "scripts/checkpoint-publication-chaos.py": "ebef796c6e19d4f3d391aa69b973e22df501f2e9af13f64dfcc7f34fd564d343"
+  },
+  "limitations": [
+    "No release build, live trace capture, overhead result, new QPS measurement or new Chaos Mesh run in this increment.",
+    "The existing C04 Chaos helper drafts are not part of this source publication.",
+    "The /tmp directory-size survey encountered permission-denied entries; its reported total is partial. Filesystem free-space observations are independent of that survey."
+  ],
+  "reader_qualification": {
+    "complete": true,
+    "scope": "Synthetic independent reader qualification and read-only final Rust/schema review; no live trace capture acceptance.",
+    "original_controls": {
+      "actual_tool_receipt": "3d4da4",
+      "exit_code": 0,
+      "tests": 16,
+      "result": {
+        "path": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/result.json",
+        "bytes": 3107,
+        "sha256": "3b0f2178a0513c631e107456a6461124445e2be1b6f51f81ef90635862b98132"
+      }
+    },
+    "huge_integer_followup": {
+      "actual_tool_receipt": "4f2ef8",
+      "exit_code": 0,
+      "tests": 1,
+      "result": {
+        "path": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first/huge-integer-result.json",
+        "bytes": 1114,
+        "sha256": "1b345b087f6f6f0ec6cd92203e4d2f1e03a611b36db4eeb4d086a88b21a8c5b7"
+      }
+    },
+    "unique_controls": 17,
+    "unchanged_controls_replayed": false,
+    "final_reader": {
+      "path": "/home/dongxu/kv9/scripts/check-write-stage-trace.py",
+      "bytes": 15870,
+      "sha256": "4bfe18d3b749204337a0d6d6b5366c51a4c5bc813303a8c551279a47c7876ca8"
+    },
+    "final_controls": {
+      "path": "/home/dongxu/kv9/scripts/check-write-stage-trace-controls.py",
+      "bytes": 14885,
+      "sha256": "90bb1614d066f2f412d854501fd69cf179227ecac3bae4e3cbfcb2c0870bdad0"
+    },
+    "final_schema_source_pins": [
+      {
+        "path": "/home/dongxu/kv9/crates/raft/src/write_stage_trace.rs",
+        "bytes": 14970,
+        "sha256": "6d37c5b2ade6bd8fa8771b4ce43841e5c97130d7f847581e6e60d34f35326f2a"
+      },
+      {
+        "path": "/home/dongxu/kv9/crates/raft/src/driver.rs",
+        "bytes": 165364,
+        "sha256": "38504095171c4adbf68f11a40b6317a5245ca9fb789b2bcadba5192bd4d61f7d"
+      },
+      {
+        "path": "/home/dongxu/kv9/crates/server/src/runtime.rs",
+        "bytes": 417973,
+        "sha256": "85be248e02d83df4862bb2c0616d24740df04cc82d92b1b5941dca284c3dcbe5"
+      },
+      {
+        "path": "/home/dongxu/kv9/crates/server/src/observability.rs",
+        "bytes": 20829,
+        "sha256": "6cfbd158f47db9d3d6bdc5d1d6498378b6a748354ccb2d10723fb8b9621a7f30"
+      },
+      {
+        "path": "/home/dongxu/kv9/crates/common/src/root.rs",
+        "bytes": 26229,
+        "sha256": "657fa19d65d4ddcd33511087d5fcb9e6af9e5810976e6e75711eb32dc4826385"
+      }
+    ],
+    "source_review_actual_tool_receipts": [
+      "c0566c",
+      "9f8cfa",
+      "6cd913"
+    ],
+    "runtime_identity_format_review": {
+      "pid_node_and_ticks": "Runtime decimal identities; unavailable/malformed identities refuse.",
+      "root_digest": "common/root.rs fixed_hex_id 32 bytes prints 64 lowercase hexadecimal characters.",
+      "store_incarnation": "common/root.rs fixed_hex_id 16 bytes prints 32 lowercase hexadecimal characters.",
+      "boot_id": "observability.rs normalizes validated 36-character UUID to lowercase.",
+      "trace_instance": "Process-local checked monotonic counter; zero and invalid flag on exhaustion are refused."
+    },
+    "no_runtime_or_cargo": true,
+    "outputs_root": "/mnt/data/kv9-work/write-stage-trace-reader-controls-20260915-first"
+  },
+  "parent_reader_review": {
+    "complete": true,
+    "scope": "Reviewed parser, identity bindings, bounded joins, control results and final source pins; no live capture.",
+    "review_chunks": [
+      "bd304c",
+      "300e9f",
+      "f70740"
+    ],
+    "notes": [
+      "Compatible inserted-receipt joins preserve fence_rejected outcomes; interval arithmetic does not establish client success.",
+      "Original 16 controls preceded only the JSON ValueError normalization; the added oversized-integer control checked both API and CLI refusal."
+    ]
+  }
+}

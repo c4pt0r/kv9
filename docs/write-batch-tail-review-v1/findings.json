@@ -1,0 +1,2633 @@
+{
+  "complete": true,
+  "scope": "Loaded BatchPut64 only; separate accepted populations; no new runtime or causality.",
+  "timing": {
+    "pooled": {
+      "old": {
+        "calls": 322197,
+        "items": 20620608,
+        "elapsed_ns": 20005845328,
+        "sum_ns": 1279977441955,
+        "calls_per_second": 16105.143007831615,
+        "items_per_second": 1030729.1525012234,
+        "mean_ns": 3972654.7483527157,
+        "p50": {
+          "lower_ns": 3768320,
+          "upper_ns": 3801087
+        },
+        "p95": {
+          "lower_ns": 5963776,
+          "upper_ns": 6029311
+        },
+        "p99": {
+          "lower_ns": 7798784,
+          "upper_ns": 7864319
+        }
+      },
+      "new": {
+        "calls": 317579,
+        "items": 20325056,
+        "elapsed_ns": 20002878144,
+        "sum_ns": 1279892090243,
+        "calls_per_second": 15876.665233560901,
+        "items_per_second": 1016106.5749478977,
+        "mean_ns": 4030153.4114125934,
+        "p50": {
+          "lower_ns": 3801088,
+          "upper_ns": 3833855
+        },
+        "p95": {
+          "lower_ns": 6160384,
+          "upper_ns": 6225919
+        },
+        "p99": {
+          "lower_ns": 8650752,
+          "upper_ns": 8781823
+        }
+      }
+    },
+    "comparisons": [
+      {
+        "repeat": 0,
+        "throughput_percent": -3.437387561336225,
+        "mean_percent": 3.5704052522819385,
+        "p99_change_percent_bounds": [
+          24.324341414764874,
+          27.272713401100845
+        ]
+      },
+      {
+        "repeat": 1,
+        "throughput_percent": 0.6560412126054516,
+        "mean_percent": -0.6457645824385128,
+        "p99_change_percent_bounds": [
+          -3.0769117005464697,
+          -0.7812619209289551
+        ]
+      }
+    ],
+    "pooled_change": {
+      "throughput_percent": -1.4186634304309442,
+      "mean_percent": 1.4473611904915584,
+      "p99_change_percent_bounds": [
+        10.000013987225076,
+        12.605029194294914
+      ]
+    },
+    "rows": [
+      {
+        "ordinal": 6,
+        "target": "old",
+        "repeat": 0,
+        "directory": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/006-old-batch64-r000-p00064",
+        "measurement": {
+          "calls": 163300,
+          "items": 10451200,
+          "elapsed_ns": 10003576795,
+          "sum_ns": 640003808856,
+          "calls_per_second": 16324.161182190435,
+          "items_per_second": 1044746.3156601879,
+          "mean_ns": 3919190.501261482,
+          "p50": {
+            "lower_ns": 3735552,
+            "upper_ns": 3768319
+          },
+          "p95": {
+            "lower_ns": 5832704,
+            "upper_ns": 5898239
+          },
+          "p99": {
+            "lower_ns": 7208960,
+            "upper_ns": 7274495
+          }
+        },
+        "server_cpu_cores": 3.2804400772284334,
+        "client_cpu_cores": 0.44729433660588397,
+        "leader_endpoint_metrics": {
+          "raft_application_wait": {
+            "success": {
+              "count": 163493,
+              "sum_ns": 465190784104,
+              "mean_ns": 2845325.3907139753,
+              "p50": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              },
+              "p95": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              },
+              "p99": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              }
+            }
+          },
+          "raft_command_apply": {
+            "success": {
+              "count": 163493,
+              "sum_ns": 99767595916,
+              "mean_ns": 610225.4892625372,
+              "p50": {
+                "lower_ns": 524288,
+                "upper_ns": 1048575
+              },
+              "p95": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              },
+              "p99": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              }
+            }
+          },
+          "raft_pump_service": {
+            "success": {
+              "count": 31811,
+              "sum_ns": 7453131377,
+              "mean_ns": 234294.15538650152,
+              "p50": {
+                "lower_ns": 32768,
+                "upper_ns": 65535
+              },
+              "p95": {
+                "lower_ns": 524288,
+                "upper_ns": 1048575
+              },
+              "p99": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              }
+            }
+          },
+          "raft_pump_iteration_spacing": {
+            "success": {
+              "count": 31811,
+              "sum_ns": 15120156824,
+              "mean_ns": 475312.21351104963,
+              "p50": {
+                "lower_ns": 131072,
+                "upper_ns": 262143
+              },
+              "p95": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              },
+              "p99": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              }
+            }
+          },
+          "engine_wal_record_write": {
+            "success": {
+              "count": 10384,
+              "sum_ns": 254315299,
+              "mean_ns": 24491.072708012325,
+              "p50": {
+                "lower_ns": 16384,
+                "upper_ns": 32767
+              },
+              "p95": {
+                "lower_ns": 32768,
+                "upper_ns": 65535
+              },
+              "p99": {
+                "lower_ns": 131072,
+                "upper_ns": 262143
+              }
+            }
+          },
+          "engine_wal_record_sync": {
+            "success": {
+              "count": 10487,
+              "sum_ns": 1731957,
+              "mean_ns": 165.1527605606942,
+              "p50": {
+                "lower_ns": 64,
+                "upper_ns": 127
+              },
+              "p95": {
+                "lower_ns": 128,
+                "upper_ns": 255
+              },
+              "p99": {
+                "lower_ns": 256,
+                "upper_ns": 511
+              }
+            }
+          },
+          "engine_wal_namespace_publish": {
+            "success": {
+              "count": 206,
+              "sum_ns": 68309177,
+              "mean_ns": 331597.9466019418,
+              "p50": {
+                "lower_ns": 2048,
+                "upper_ns": 4095
+              },
+              "p95": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              },
+              "p99": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "target": "new",
+        "repeat": 0,
+        "directory": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/007-new-batch64-r000-p00064",
+        "measurement": {
+          "calls": 157668,
+          "items": 10090752,
+          "elapsed_ns": 10002387550,
+          "sum_ns": 639993566260,
+          "calls_per_second": 15763.036496221344,
+          "items_per_second": 1008834.335758166,
+          "mean_ns": 4059121.4847654565,
+          "p50": {
+            "lower_ns": 3801088,
+            "upper_ns": 3833855
+          },
+          "p95": {
+            "lower_ns": 6225920,
+            "upper_ns": 6291455
+          },
+          "p99": {
+            "lower_ns": 9043968,
+            "upper_ns": 9175039
+          }
+        },
+        "server_cpu_cores": 3.1869494856907856,
+        "client_cpu_cores": 0.4744873465890734,
+        "leader_endpoint_metrics": {
+          "raft_application_wait": {
+            "success": {
+              "count": 157861,
+              "sum_ns": 468210232238,
+              "mean_ns": 2965965.1987381303,
+              "p50": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              },
+              "p95": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              },
+              "p99": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              }
+            }
+          },
+          "raft_command_apply": {
+            "success": {
+              "count": 157861,
+              "sum_ns": 101782009815,
+              "mean_ns": 644757.1586078892,
+              "p50": {
+                "lower_ns": 524288,
+                "upper_ns": 1048575
+              },
+              "p95": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              },
+              "p99": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              }
+            }
+          },
+          "raft_pump_service": {
+            "success": {
+              "count": 30760,
+              "sum_ns": 7342058310,
+              "mean_ns": 238688.50162548764,
+              "p50": {
+                "lower_ns": 32768,
+                "upper_ns": 65535
+              },
+              "p95": {
+                "lower_ns": 524288,
+                "upper_ns": 1048575
+              },
+              "p99": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              }
+            }
+          },
+          "raft_pump_iteration_spacing": {
+            "success": {
+              "count": 30760,
+              "sum_ns": 15137263767,
+              "mean_ns": 492108.7050390117,
+              "p50": {
+                "lower_ns": 131072,
+                "upper_ns": 262143
+              },
+              "p95": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              },
+              "p99": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              }
+            }
+          },
+          "engine_wal_record_write": {
+            "success": {
+              "count": 10205,
+              "sum_ns": 249193987,
+              "mean_ns": 24418.813032827045,
+              "p50": {
+                "lower_ns": 8192,
+                "upper_ns": 16383
+              },
+              "p95": {
+                "lower_ns": 32768,
+                "upper_ns": 65535
+              },
+              "p99": {
+                "lower_ns": 131072,
+                "upper_ns": 262143
+              }
+            }
+          },
+          "engine_wal_record_sync": {
+            "success": {
+              "count": 10305,
+              "sum_ns": 1159516,
+              "mean_ns": 112.51974769529355,
+              "p50": {
+                "lower_ns": 64,
+                "upper_ns": 127
+              },
+              "p95": {
+                "lower_ns": 128,
+                "upper_ns": 255
+              },
+              "p99": {
+                "lower_ns": 256,
+                "upper_ns": 511
+              }
+            }
+          },
+          "engine_wal_namespace_publish": {
+            "success": {
+              "count": 200,
+              "sum_ns": 189554704,
+              "mean_ns": 947773.52,
+              "p50": {
+                "lower_ns": 2048,
+                "upper_ns": 4095
+              },
+              "p95": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              },
+              "p99": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "target": "new",
+        "repeat": 1,
+        "directory": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/008-new-batch64-r000-p10064",
+        "measurement": {
+          "calls": 159911,
+          "items": 10234304,
+          "elapsed_ns": 10000490594,
+          "sum_ns": 639898523983,
+          "calls_per_second": 15990.315524714546,
+          "items_per_second": 1023380.193581731,
+          "mean_ns": 4001591.6602547667,
+          "p50": {
+            "lower_ns": 3768320,
+            "upper_ns": 3801087
+          },
+          "p95": {
+            "lower_ns": 6029312,
+            "upper_ns": 6094847
+          },
+          "p99": {
+            "lower_ns": 8257536,
+            "upper_ns": 8323071
+          }
+        },
+        "server_cpu_cores": 3.2277399955531623,
+        "client_cpu_cores": 0.44562165950844673,
+        "leader_endpoint_metrics": {
+          "raft_application_wait": {
+            "success": {
+              "count": 160104,
+              "sum_ns": 458161522101,
+              "mean_ns": 2861649.4409946036,
+              "p50": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              },
+              "p95": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              },
+              "p99": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              }
+            }
+          },
+          "raft_command_apply": {
+            "success": {
+              "count": 160104,
+              "sum_ns": 97858167989,
+              "mean_ns": 611216.2593626643,
+              "p50": {
+                "lower_ns": 524288,
+                "upper_ns": 1048575
+              },
+              "p95": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              },
+              "p99": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              }
+            }
+          },
+          "raft_pump_service": {
+            "success": {
+              "count": 32144,
+              "sum_ns": 7383299281,
+              "mean_ns": 229694.4773830264,
+              "p50": {
+                "lower_ns": 32768,
+                "upper_ns": 65535
+              },
+              "p95": {
+                "lower_ns": 524288,
+                "upper_ns": 1048575
+              },
+              "p99": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              }
+            }
+          },
+          "raft_pump_iteration_spacing": {
+            "success": {
+              "count": 32144,
+              "sum_ns": 15086570901,
+              "mean_ns": 469343.29582503735,
+              "p50": {
+                "lower_ns": 131072,
+                "upper_ns": 262143
+              },
+              "p95": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              },
+              "p99": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              }
+            }
+          },
+          "engine_wal_record_write": {
+            "success": {
+              "count": 10539,
+              "sum_ns": 279445472,
+              "mean_ns": 26515.368820571213,
+              "p50": {
+                "lower_ns": 16384,
+                "upper_ns": 32767
+              },
+              "p95": {
+                "lower_ns": 32768,
+                "upper_ns": 65535
+              },
+              "p99": {
+                "lower_ns": 131072,
+                "upper_ns": 262143
+              }
+            }
+          },
+          "engine_wal_record_sync": {
+            "success": {
+              "count": 10640,
+              "sum_ns": 1170609,
+              "mean_ns": 110.01964285714286,
+              "p50": {
+                "lower_ns": 64,
+                "upper_ns": 127
+              },
+              "p95": {
+                "lower_ns": 128,
+                "upper_ns": 255
+              },
+              "p99": {
+                "lower_ns": 128,
+                "upper_ns": 255
+              }
+            }
+          },
+          "engine_wal_namespace_publish": {
+            "success": {
+              "count": 202,
+              "sum_ns": 78964279,
+              "mean_ns": 390912.2722772277,
+              "p50": {
+                "lower_ns": 8192,
+                "upper_ns": 16383
+              },
+              "p95": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              },
+              "p99": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "target": "old",
+        "repeat": 1,
+        "directory": "/mnt/data/kv9-work/upper-bound-requalified-timing-20260915-first/cohorts/009-old-batch64-r000-p10064",
+        "measurement": {
+          "calls": 158897,
+          "items": 10169408,
+          "elapsed_ns": 10002268533,
+          "sum_ns": 639973633099,
+          "calls_per_second": 15886.09618665594,
+          "items_per_second": 1016710.1559459801,
+          "mean_ns": 4027600.4776616297,
+          "p50": {
+            "lower_ns": 3801088,
+            "upper_ns": 3833855
+          },
+          "p95": {
+            "lower_ns": 6094848,
+            "upper_ns": 6160383
+          },
+          "p99": {
+            "lower_ns": 8388608,
+            "upper_ns": 8519679
+          }
+        },
+        "server_cpu_cores": 3.2212904067413666,
+        "client_cpu_cores": 0.4484284473392766,
+        "leader_endpoint_metrics": {
+          "raft_application_wait": {
+            "success": {
+              "count": 159090,
+              "sum_ns": 457084229412,
+              "mean_ns": 2873117.2884027907,
+              "p50": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              },
+              "p95": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              },
+              "p99": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              }
+            }
+          },
+          "raft_command_apply": {
+            "success": {
+              "count": 159090,
+              "sum_ns": 97431365382,
+              "mean_ns": 612429.2248538563,
+              "p50": {
+                "lower_ns": 524288,
+                "upper_ns": 1048575
+              },
+              "p95": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              },
+              "p99": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              }
+            }
+          },
+          "raft_pump_service": {
+            "success": {
+              "count": 31140,
+              "sum_ns": 7308184332,
+              "mean_ns": 234688.00038535646,
+              "p50": {
+                "lower_ns": 32768,
+                "upper_ns": 65535
+              },
+              "p95": {
+                "lower_ns": 524288,
+                "upper_ns": 1048575
+              },
+              "p99": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              }
+            }
+          },
+          "raft_pump_iteration_spacing": {
+            "success": {
+              "count": 31140,
+              "sum_ns": 15104260701,
+              "mean_ns": 485043.69624277455,
+              "p50": {
+                "lower_ns": 131072,
+                "upper_ns": 262143
+              },
+              "p95": {
+                "lower_ns": 1048576,
+                "upper_ns": 2097151
+              },
+              "p99": {
+                "lower_ns": 2097152,
+                "upper_ns": 4194303
+              }
+            }
+          },
+          "engine_wal_record_write": {
+            "success": {
+              "count": 10359,
+              "sum_ns": 257429763,
+              "mean_ns": 24850.83145091225,
+              "p50": {
+                "lower_ns": 16384,
+                "upper_ns": 32767
+              },
+              "p95": {
+                "lower_ns": 32768,
+                "upper_ns": 65535
+              },
+              "p99": {
+                "lower_ns": 131072,
+                "upper_ns": 262143
+              }
+            }
+          },
+          "engine_wal_record_sync": {
+            "success": {
+              "count": 10460,
+              "sum_ns": 1552008,
+              "mean_ns": 148.37552581261951,
+              "p50": {
+                "lower_ns": 64,
+                "upper_ns": 127
+              },
+              "p95": {
+                "lower_ns": 128,
+                "upper_ns": 255
+              },
+              "p99": {
+                "lower_ns": 128,
+                "upper_ns": 255
+              }
+            }
+          },
+          "engine_wal_namespace_publish": {
+            "success": {
+              "count": 202,
+              "sum_ns": 128919119,
+              "mean_ns": 638213.4603960396,
+              "p50": {
+                "lower_ns": 2048,
+                "upper_ns": 4095
+              },
+              "p95": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              },
+              "p99": {
+                "lower_ns": 4194304,
+                "upper_ns": 8388607
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "observers": [
+    {
+      "schema": "schema1",
+      "source_revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "client_binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+      "pooled": {
+        "default": {
+          "calls": 65830,
+          "items": 4213120,
+          "elapsed_ns": 4004865222,
+          "sum_ns": 256088675722,
+          "calls_per_second": 16437.506969866263,
+          "items_per_second": 1052000.4460714408,
+          "mean_ns": 3890151.5376272216,
+          "p50": {
+            "lower_ns": 3670016,
+            "upper_ns": 3702783
+          },
+          "p95": {
+            "lower_ns": 5701632,
+            "upper_ns": 5767167
+          },
+          "p99": {
+            "lower_ns": 8192000,
+            "upper_ns": 8257535
+          }
+        },
+        "diagnostic": {
+          "calls": 65445,
+          "items": 4188480,
+          "elapsed_ns": 4006066795,
+          "sum_ns": 256156675905,
+          "calls_per_second": 16336.472492591078,
+          "items_per_second": 1045534.239525829,
+          "mean_ns": 3914075.573458629,
+          "p50": {
+            "lower_ns": 3702784,
+            "upper_ns": 3735551
+          },
+          "p95": {
+            "lower_ns": 5767168,
+            "upper_ns": 5832703
+          },
+          "p99": {
+            "lower_ns": 8519680,
+            "upper_ns": 8650751
+          }
+        }
+      },
+      "comparisons": [
+        {
+          "repeat": 0,
+          "throughput_percent": -1.670222309600644,
+          "mean_percent": 1.7103281736298603,
+          "p99_change_percent_bounds": [
+            3.4482894697899003,
+            5.217378035835596
+          ]
+        },
+        {
+          "repeat": 1,
+          "throughput_percent": 0.4680542565300705,
+          "mean_percent": -0.4841951289175861,
+          "p99_change_percent_bounds": [
+            7.692320332726155,
+            10.937488079071045
+          ]
+        }
+      ],
+      "pooled_change": {
+        "throughput_percent": -0.6146581562544995,
+        "mean_percent": 0.6149898172347346,
+        "p99_change_percent_bounds": [
+          3.1746156692039396,
+          5.5999877929687525
+        ]
+      },
+      "diagnostic_leader_whole_capture": [
+        {
+          "ordinal": 7,
+          "repeat": 0,
+          "directory": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/07-diagnostic-batch64-r000-c64",
+          "endpoint_leader": "2",
+          "continuous_leadership_proven": false,
+          "distributions": {
+            "successful_apply_group_commands": {
+              "name": "successful_apply_group_commands",
+              "unit": "commands",
+              "count": 2177,
+              "sum": 33008,
+              "mean": 15.16214974735875,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 8,
+                "upper": 15
+              },
+              "p95": {
+                "lower": 32,
+                "upper": 63
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 15.16214974735875,
+              "singleton_fraction": 0.14193844740468534
+            },
+            "successful_apply_group_encoded_bytes": {
+              "name": "successful_apply_group_encoded_bytes",
+              "unit": "bytes",
+              "count": 2177,
+              "sum": 349577333,
+              "mean": 160577.5530546624,
+              "before_cumulative_max": 1804,
+              "after_cumulative_max": 677824,
+              "maximum_bounds": {
+                "lower": 677824,
+                "upper": 677824
+              },
+              "p50": {
+                "lower": 131072,
+                "upper": 262143
+              },
+              "p95": {
+                "lower": 262144,
+                "upper": 524287
+              },
+              "p99": {
+                "lower": 524288,
+                "upper": 1048575
+              },
+              "nonempty_mean": 160577.5530546624,
+              "singleton_fraction": 0.0
+            },
+            "async_requests_extracted_per_service": {
+              "name": "async_requests_extracted_per_service",
+              "unit": "requests",
+              "count": 7634,
+              "sum": 226234,
+              "mean": 29.635053707099818,
+              "before_cumulative_max": 0,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p95": {
+                "lower": 64,
+                "upper": 127
+              },
+              "p99": {
+                "lower": 64,
+                "upper": 127
+              },
+              "nonempty_mean": 36.577849636216655,
+              "singleton_fraction": 0.05632695834424941
+            },
+            "async_request_inspection_age": {
+              "name": "async_request_inspection_age",
+              "unit": "nanoseconds",
+              "count": 226234,
+              "sum": 308013465977,
+              "mean": 1361481.7665647073,
+              "before_cumulative_max": null,
+              "after_cumulative_max": 9662746,
+              "maximum_bounds": {
+                "lower": 9662746,
+                "upper": 9662746
+              },
+              "p50": {
+                "lower": 1048576,
+                "upper": 2097151
+              },
+              "p95": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p99": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "nonempty_mean": 1361481.7665647073,
+              "singleton_fraction": 0.0
+            },
+            "async_request_resolved_age": {
+              "name": "async_request_resolved_age",
+              "unit": "nanoseconds",
+              "count": 33008,
+              "sum": 90028894368,
+              "mean": 2727487.105186621,
+              "before_cumulative_max": null,
+              "after_cumulative_max": 9662746,
+              "maximum_bounds": {
+                "lower": 9662746,
+                "upper": 9662746
+              },
+              "p50": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p95": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "p99": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "nonempty_mean": 2727487.105186621,
+              "singleton_fraction": 0.0
+            },
+            "receipt_linear_probes_per_lookup": {
+              "name": "receipt_linear_probes_per_lookup",
+              "unit": "receipts",
+              "count": 226234,
+              "sum": 228199714,
+              "mean": 1008.6888531343653,
+              "before_cumulative_max": 3,
+              "after_cumulative_max": 1024,
+              "maximum_bounds": {
+                "lower": 1024,
+                "upper": 1024
+              },
+              "p50": {
+                "lower": 1024,
+                "upper": 2047
+              },
+              "p95": {
+                "lower": 1024,
+                "upper": 2047
+              },
+              "p99": {
+                "lower": 1024,
+                "upper": 2047
+              },
+              "nonempty_mean": 1008.6888531343653,
+              "singleton_fraction": 0.0
+            }
+          },
+          "ready": [
+            {
+              "name": "ready_entries_to_persist",
+              "unit": "entries",
+              "count": 6104,
+              "sum": 33008,
+              "mean": 5.407601572739187,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 1,
+                "upper": 1
+              },
+              "p95": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 6.7130364043115724,
+              "singleton_fraction": 0.33420707732634336
+            },
+            {
+              "name": "ready_committed_entries",
+              "unit": "entries",
+              "count": 6104,
+              "sum": 33008,
+              "mean": 5.407601572739187,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 15.16214974735875,
+              "singleton_fraction": 0.05062254259501966
+            },
+            {
+              "name": "light_ready_committed_entries",
+              "unit": "entries",
+              "count": 6104,
+              "sum": 0,
+              "mean": 0.0,
+              "before_cumulative_max": 0,
+              "after_cumulative_max": 0,
+              "maximum_bounds": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p99": {
+                "lower": 0,
+                "upper": 0
+              },
+              "nonempty_mean": null,
+              "singleton_fraction": 0.0
+            }
+          ],
+          "turns_resolving_without_apply": 1,
+          "leader_endpoint_metrics": {
+            "raft_application_wait": {
+              "success": {
+                "count": 33008,
+                "sum_ns": 95012574128,
+                "mean_ns": 2878471.101793505,
+                "p50": {
+                  "lower_ns": 2097152,
+                  "upper_ns": 4194303
+                },
+                "p95": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                },
+                "p99": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                }
+              }
+            },
+            "raft_command_apply": {
+              "success": {
+                "count": 33008,
+                "sum_ns": 20132689213,
+                "mean_ns": 609933.6286051866,
+                "p50": {
+                  "lower_ns": 524288,
+                  "upper_ns": 1048575
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                }
+              }
+            },
+            "raft_pump_service": {
+              "success": {
+                "count": 7634,
+                "sum_ns": 1499126357,
+                "mean_ns": 196374.94851977992,
+                "p50": {
+                  "lower_ns": 16384,
+                  "upper_ns": 32767
+                },
+                "p95": {
+                  "lower_ns": 524288,
+                  "upper_ns": 1048575
+                },
+                "p99": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                }
+              }
+            },
+            "raft_pump_iteration_spacing": {
+              "success": {
+                "count": 7634,
+                "sum_ns": 7057203420,
+                "mean_ns": 924443.7280586849,
+                "p50": {
+                  "lower_ns": 65536,
+                  "upper_ns": 131071
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 16777216,
+                  "upper_ns": 33554431
+                }
+              }
+            },
+            "engine_wal_record_write": {
+              "success": {
+                "count": 2197,
+                "sum_ns": 62622743,
+                "mean_ns": 28503.751934456075,
+                "p50": {
+                  "lower_ns": 16384,
+                  "upper_ns": 32767
+                },
+                "p95": {
+                  "lower_ns": 65536,
+                  "upper_ns": 131071
+                },
+                "p99": {
+                  "lower_ns": 131072,
+                  "upper_ns": 262143
+                }
+              }
+            },
+            "engine_wal_record_sync": {
+              "success": {
+                "count": 2217,
+                "sum_ns": 240118,
+                "mean_ns": 108.30762291384754,
+                "p50": {
+                  "lower_ns": 64,
+                  "upper_ns": 127
+                },
+                "p95": {
+                  "lower_ns": 128,
+                  "upper_ns": 255
+                },
+                "p99": {
+                  "lower_ns": 128,
+                  "upper_ns": 255
+                }
+              }
+            },
+            "engine_wal_namespace_publish": {
+              "success": {
+                "count": 40,
+                "sum_ns": 28030333,
+                "mean_ns": 700758.325,
+                "p50": {
+                  "lower_ns": 4096,
+                  "upper_ns": 8191
+                },
+                "p95": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                },
+                "p99": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                }
+              }
+            }
+          }
+        },
+        {
+          "ordinal": 8,
+          "repeat": 1,
+          "directory": "/tmp/kv9-write-diagnostics-capture-20260915-second/cohorts/08-diagnostic-batch64-r000-c64",
+          "endpoint_leader": "2",
+          "continuous_leadership_proven": false,
+          "distributions": {
+            "successful_apply_group_commands": {
+              "name": "successful_apply_group_commands",
+              "unit": "commands",
+              "count": 2169,
+              "sum": 32823,
+              "mean": 15.132780082987551,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 8,
+                "upper": 15
+              },
+              "p95": {
+                "lower": 32,
+                "upper": 63
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 15.132780082987551,
+              "singleton_fraction": 0.13370216689718764
+            },
+            "successful_apply_group_encoded_bytes": {
+              "name": "successful_apply_group_encoded_bytes",
+              "unit": "bytes",
+              "count": 2169,
+              "sum": 347617998,
+              "mean": 160266.48132780084,
+              "before_cumulative_max": 1804,
+              "after_cumulative_max": 677824,
+              "maximum_bounds": {
+                "lower": 677824,
+                "upper": 677824
+              },
+              "p50": {
+                "lower": 131072,
+                "upper": 262143
+              },
+              "p95": {
+                "lower": 262144,
+                "upper": 524287
+              },
+              "p99": {
+                "lower": 262144,
+                "upper": 524287
+              },
+              "nonempty_mean": 160266.48132780084,
+              "singleton_fraction": 0.0
+            },
+            "async_requests_extracted_per_service": {
+              "name": "async_requests_extracted_per_service",
+              "unit": "requests",
+              "count": 7067,
+              "sum": 206192,
+              "mean": 29.176736946370454,
+              "before_cumulative_max": 0,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p95": {
+                "lower": 64,
+                "upper": 127
+              },
+              "p99": {
+                "lower": 64,
+                "upper": 127
+              },
+              "nonempty_mean": 36.82657617431684,
+              "singleton_fraction": 0.059431158907598695
+            },
+            "async_request_inspection_age": {
+              "name": "async_request_inspection_age",
+              "unit": "nanoseconds",
+              "count": 206192,
+              "sum": 286806797603,
+              "mean": 1390969.5701239621,
+              "before_cumulative_max": null,
+              "after_cumulative_max": 11378647,
+              "maximum_bounds": {
+                "lower": 11378647,
+                "upper": 11378647
+              },
+              "p50": {
+                "lower": 1048576,
+                "upper": 2097151
+              },
+              "p95": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p99": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "nonempty_mean": 1390969.5701239621,
+              "singleton_fraction": 0.0
+            },
+            "async_request_resolved_age": {
+              "name": "async_request_resolved_age",
+              "unit": "nanoseconds",
+              "count": 32823,
+              "sum": 91604235793,
+              "mean": 2790855.064832587,
+              "before_cumulative_max": null,
+              "after_cumulative_max": 11378647,
+              "maximum_bounds": {
+                "lower": 11378647,
+                "upper": 11378647
+              },
+              "p50": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p95": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "p99": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "nonempty_mean": 2790855.064832587,
+              "singleton_fraction": 0.0
+            },
+            "receipt_linear_probes_per_lookup": {
+              "name": "receipt_linear_probes_per_lookup",
+              "unit": "receipts",
+              "count": 206192,
+              "sum": 208271376,
+              "mean": 1010.0846589586405,
+              "before_cumulative_max": 3,
+              "after_cumulative_max": 1024,
+              "maximum_bounds": {
+                "lower": 1024,
+                "upper": 1024
+              },
+              "p50": {
+                "lower": 1024,
+                "upper": 2047
+              },
+              "p95": {
+                "lower": 1024,
+                "upper": 2047
+              },
+              "p99": {
+                "lower": 1024,
+                "upper": 2047
+              },
+              "nonempty_mean": 1010.0846589586405,
+              "singleton_fraction": 0.0
+            }
+          },
+          "ready": [
+            {
+              "name": "ready_entries_to_persist",
+              "unit": "entries",
+              "count": 5569,
+              "sum": 32823,
+              "mean": 5.893876818100198,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 1,
+                "upper": 1
+              },
+              "p95": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 7.362718707940781,
+              "singleton_fraction": 0.3216017238283354
+            },
+            {
+              "name": "ready_committed_entries",
+              "unit": "entries",
+              "count": 5569,
+              "sum": 32823,
+              "mean": 5.893876818100198,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 15.132780082987551,
+              "singleton_fraction": 0.05207398096606213
+            },
+            {
+              "name": "light_ready_committed_entries",
+              "unit": "entries",
+              "count": 5569,
+              "sum": 0,
+              "mean": 0.0,
+              "before_cumulative_max": 0,
+              "after_cumulative_max": 0,
+              "maximum_bounds": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p99": {
+                "lower": 0,
+                "upper": 0
+              },
+              "nonempty_mean": null,
+              "singleton_fraction": 0.0
+            }
+          ],
+          "turns_resolving_without_apply": 2,
+          "leader_endpoint_metrics": {
+            "raft_application_wait": {
+              "success": {
+                "count": 32823,
+                "sum_ns": 96449736065,
+                "mean_ns": 2938480.2140267496,
+                "p50": {
+                  "lower_ns": 2097152,
+                  "upper_ns": 4194303
+                },
+                "p95": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                },
+                "p99": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                }
+              }
+            },
+            "raft_command_apply": {
+              "success": {
+                "count": 32823,
+                "sum_ns": 21043559745,
+                "mean_ns": 641122.3759254181,
+                "p50": {
+                  "lower_ns": 524288,
+                  "upper_ns": 1048575
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 2097152,
+                  "upper_ns": 4194303
+                }
+              }
+            },
+            "raft_pump_service": {
+              "success": {
+                "count": 7066,
+                "sum_ns": 1572967122,
+                "mean_ns": 222610.68808378148,
+                "p50": {
+                  "lower_ns": 16384,
+                  "upper_ns": 32767
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                }
+              }
+            },
+            "raft_pump_iteration_spacing": {
+              "success": {
+                "count": 7066,
+                "sum_ns": 7060983630,
+                "mean_ns": 999290.0693461647,
+                "p50": {
+                  "lower_ns": 65536,
+                  "upper_ns": 131071
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 16777216,
+                  "upper_ns": 33554431
+                }
+              }
+            },
+            "engine_wal_record_write": {
+              "success": {
+                "count": 2189,
+                "sum_ns": 62732638,
+                "mean_ns": 28658.126084970307,
+                "p50": {
+                  "lower_ns": 16384,
+                  "upper_ns": 32767
+                },
+                "p95": {
+                  "lower_ns": 65536,
+                  "upper_ns": 131071
+                },
+                "p99": {
+                  "lower_ns": 131072,
+                  "upper_ns": 262143
+                }
+              }
+            },
+            "engine_wal_record_sync": {
+              "success": {
+                "count": 2209,
+                "sum_ns": 240240,
+                "mean_ns": 108.75509280217292,
+                "p50": {
+                  "lower_ns": 64,
+                  "upper_ns": 127
+                },
+                "p95": {
+                  "lower_ns": 128,
+                  "upper_ns": 255
+                },
+                "p99": {
+                  "lower_ns": 256,
+                  "upper_ns": 511
+                }
+              }
+            },
+            "engine_wal_namespace_publish": {
+              "success": {
+                "count": 40,
+                "sum_ns": 52432896,
+                "mean_ns": 1310822.4,
+                "p50": {
+                  "lower_ns": 1024,
+                  "upper_ns": 2047
+                },
+                "p95": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                },
+                "p99": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "schema": "schema2",
+      "source_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "client_binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+      "pooled": {
+        "default": {
+          "calls": 66407,
+          "items": 4250048,
+          "elapsed_ns": 4003151094,
+          "sum_ns": 255972673505,
+          "calls_per_second": 16588.68187601814,
+          "items_per_second": 1061675.640065161,
+          "mean_ns": 3854603.7843149067,
+          "p50": {
+            "lower_ns": 3637248,
+            "upper_ns": 3670015
+          },
+          "p95": {
+            "lower_ns": 5636096,
+            "upper_ns": 5701631
+          },
+          "p99": {
+            "lower_ns": 8650752,
+            "upper_ns": 8781823
+          }
+        },
+        "diagnostic": {
+          "calls": 66711,
+          "items": 4269504,
+          "elapsed_ns": 4003686825,
+          "sum_ns": 256052476316,
+          "calls_per_second": 16662.392168997885,
+          "items_per_second": 1066393.0988158647,
+          "mean_ns": 3838234.7186520966,
+          "p50": {
+            "lower_ns": 3637248,
+            "upper_ns": 3670015
+          },
+          "p95": {
+            "lower_ns": 5701632,
+            "upper_ns": 5767167
+          },
+          "p99": {
+            "lower_ns": 7405568,
+            "upper_ns": 7471103
+          }
+        }
+      },
+      "comparisons": [
+        {
+          "repeat": 0,
+          "throughput_percent": 0.12042202889419595,
+          "mean_percent": -0.09750270962091134,
+          "p99_change_percent_bounds": [
+            -23.134319605394005,
+            -21.212132771809898
+          ]
+        },
+        {
+          "repeat": 1,
+          "throughput_percent": 0.7719338476003479,
+          "mean_percent": -0.7533393957441126,
+          "p99_change_percent_bounds": [
+            -4.545443511204983,
+            -2.3077040452223585
+          ]
+        }
+      ],
+      "pooled_change": {
+        "throughput_percent": 0.4443408676508831,
+        "mean_percent": -0.4246627300429351,
+        "p99_change_percent_bounds": [
+          -15.671632188441965,
+          -13.63637519605232
+        ]
+      },
+      "diagnostic_leader_whole_capture": [
+        {
+          "ordinal": 7,
+          "repeat": 0,
+          "directory": "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/07-diagnostic-batch64-r000-c64",
+          "endpoint_leader": "2",
+          "continuous_leadership_proven": false,
+          "distributions": {
+            "successful_apply_group_commands": {
+              "name": "successful_apply_group_commands",
+              "unit": "commands",
+              "count": 2278,
+              "sum": 33604,
+              "mean": 14.75153643546971,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 63,
+              "maximum_bounds": {
+                "lower": 63,
+                "upper": 63
+              },
+              "p50": {
+                "lower": 8,
+                "upper": 15
+              },
+              "p95": {
+                "lower": 32,
+                "upper": 63
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 14.75153643546971,
+              "singleton_fraction": 0.1453028972783143
+            },
+            "successful_apply_group_encoded_bytes": {
+              "name": "successful_apply_group_encoded_bytes",
+              "unit": "bytes",
+              "count": 2278,
+              "sum": 355889569,
+              "mean": 156228.95917471466,
+              "before_cumulative_max": 1804,
+              "after_cumulative_max": 667233,
+              "maximum_bounds": {
+                "lower": 667233,
+                "upper": 667233
+              },
+              "p50": {
+                "lower": 65536,
+                "upper": 131071
+              },
+              "p95": {
+                "lower": 262144,
+                "upper": 524287
+              },
+              "p99": {
+                "lower": 262144,
+                "upper": 524287
+              },
+              "nonempty_mean": 156228.95917471466,
+              "singleton_fraction": 0.0
+            },
+            "async_requests_extracted_per_service": {
+              "name": "async_requests_extracted_per_service",
+              "unit": "requests",
+              "count": 8202,
+              "sum": 244609,
+              "mean": 29.823091928797854,
+              "before_cumulative_max": 0,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p95": {
+                "lower": 64,
+                "upper": 127
+              },
+              "p99": {
+                "lower": 64,
+                "upper": 127
+              },
+              "nonempty_mean": 36.31907943578322,
+              "singleton_fraction": 0.05206047305535235
+            },
+            "async_request_inspection_age": {
+              "name": "async_request_inspection_age",
+              "unit": "nanoseconds",
+              "count": 244609,
+              "sum": 319154203163,
+              "mean": 1304752.4954641897,
+              "before_cumulative_max": null,
+              "after_cumulative_max": 9137911,
+              "maximum_bounds": {
+                "lower": 9137911,
+                "upper": 9137911
+              },
+              "p50": {
+                "lower": 1048576,
+                "upper": 2097151
+              },
+              "p95": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p99": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "nonempty_mean": 1304752.4954641897,
+              "singleton_fraction": 0.0
+            },
+            "async_request_resolved_age": {
+              "name": "async_request_resolved_age",
+              "unit": "nanoseconds",
+              "count": 33604,
+              "sum": 88905779784,
+              "mean": 2645690.387572908,
+              "before_cumulative_max": null,
+              "after_cumulative_max": 9137911,
+              "maximum_bounds": {
+                "lower": 9137911,
+                "upper": 9137911
+              },
+              "p50": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p95": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p99": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "nonempty_mean": 2645690.387572908,
+              "singleton_fraction": 0.0
+            },
+            "receipt_linear_probes_per_lookup": {
+              "name": "receipt_linear_probes_per_lookup",
+              "unit": "receipts",
+              "count": 244609,
+              "sum": 33496551,
+              "mean": 136.9391600472591,
+              "before_cumulative_max": 3,
+              "after_cumulative_max": 1024,
+              "maximum_bounds": {
+                "lower": 1024,
+                "upper": 1024
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 512,
+                "upper": 1023
+              },
+              "p99": {
+                "lower": 512,
+                "upper": 1023
+              },
+              "nonempty_mean": 996.8024937507439,
+              "singleton_fraction": 0.0
+            }
+          },
+          "ready": [
+            {
+              "name": "ready_entries_to_persist",
+              "unit": "entries",
+              "count": 6428,
+              "sum": 33604,
+              "mean": 5.227753578095831,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 1,
+                "upper": 1
+              },
+              "p95": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 6.457340507302075,
+              "singleton_fraction": 0.35718730553827005
+            },
+            {
+              "name": "ready_committed_entries",
+              "unit": "entries",
+              "count": 6428,
+              "sum": 33604,
+              "mean": 5.227753578095831,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 63,
+              "maximum_bounds": {
+                "lower": 63,
+                "upper": 63
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 14.75153643546971,
+              "singleton_fraction": 0.0514934660858743
+            },
+            {
+              "name": "light_ready_committed_entries",
+              "unit": "entries",
+              "count": 6428,
+              "sum": 0,
+              "mean": 0.0,
+              "before_cumulative_max": 0,
+              "after_cumulative_max": 0,
+              "maximum_bounds": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p99": {
+                "lower": 0,
+                "upper": 0
+              },
+              "nonempty_mean": null,
+              "singleton_fraction": 0.0
+            }
+          ],
+          "turns_resolving_without_apply": 3,
+          "leader_endpoint_metrics": {
+            "raft_application_wait": {
+              "success": {
+                "count": 33604,
+                "sum_ns": 94068827250,
+                "mean_ns": 2799334.2236043327,
+                "p50": {
+                  "lower_ns": 2097152,
+                  "upper_ns": 4194303
+                },
+                "p95": {
+                  "lower_ns": 2097152,
+                  "upper_ns": 4194303
+                },
+                "p99": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                }
+              }
+            },
+            "raft_command_apply": {
+              "success": {
+                "count": 33604,
+                "sum_ns": 19799537041,
+                "mean_ns": 589201.7926734913,
+                "p50": {
+                  "lower_ns": 524288,
+                  "upper_ns": 1048575
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                }
+              }
+            },
+            "raft_pump_service": {
+              "success": {
+                "count": 8204,
+                "sum_ns": 1514972849,
+                "mean_ns": 184662.70709410045,
+                "p50": {
+                  "lower_ns": 16384,
+                  "upper_ns": 32767
+                },
+                "p95": {
+                  "lower_ns": 524288,
+                  "upper_ns": 1048575
+                },
+                "p99": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                }
+              }
+            },
+            "raft_pump_iteration_spacing": {
+              "success": {
+                "count": 8204,
+                "sum_ns": 7050836642,
+                "mean_ns": 859438.8885909313,
+                "p50": {
+                  "lower_ns": 65536,
+                  "upper_ns": 131071
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 16777216,
+                  "upper_ns": 33554431
+                }
+              }
+            },
+            "engine_wal_record_write": {
+              "success": {
+                "count": 2299,
+                "sum_ns": 49320551,
+                "mean_ns": 21453.045237059592,
+                "p50": {
+                  "lower_ns": 8192,
+                  "upper_ns": 16383
+                },
+                "p95": {
+                  "lower_ns": 32768,
+                  "upper_ns": 65535
+                },
+                "p99": {
+                  "lower_ns": 65536,
+                  "upper_ns": 131071
+                }
+              }
+            },
+            "engine_wal_record_sync": {
+              "success": {
+                "count": 2320,
+                "sum_ns": 507043,
+                "mean_ns": 218.5530172413793,
+                "p50": {
+                  "lower_ns": 64,
+                  "upper_ns": 127
+                },
+                "p95": {
+                  "lower_ns": 128,
+                  "upper_ns": 255
+                },
+                "p99": {
+                  "lower_ns": 256,
+                  "upper_ns": 511
+                }
+              }
+            },
+            "engine_wal_namespace_publish": {
+              "success": {
+                "count": 42,
+                "sum_ns": 23227113,
+                "mean_ns": 553026.5,
+                "p50": {
+                  "lower_ns": 2048,
+                  "upper_ns": 4095
+                },
+                "p95": {
+                  "lower_ns": 2097152,
+                  "upper_ns": 4194303
+                },
+                "p99": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                }
+              }
+            }
+          }
+        },
+        {
+          "ordinal": 8,
+          "repeat": 1,
+          "directory": "/tmp/kv9-upper-bound-observer-capture-20260915-first/cohorts/08-diagnostic-batch64-r000-c64",
+          "endpoint_leader": "2",
+          "continuous_leadership_proven": false,
+          "distributions": {
+            "successful_apply_group_commands": {
+              "name": "successful_apply_group_commands",
+              "unit": "commands",
+              "count": 2300,
+              "sum": 33493,
+              "mean": 14.562173913043479,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 8,
+                "upper": 15
+              },
+              "p95": {
+                "lower": 32,
+                "upper": 63
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 14.562173913043479,
+              "singleton_fraction": 0.1408695652173913
+            },
+            "successful_apply_group_encoded_bytes": {
+              "name": "successful_apply_group_encoded_bytes",
+              "unit": "bytes",
+              "count": 2300,
+              "sum": 354713968,
+              "mean": 154223.46434782608,
+              "before_cumulative_max": 1804,
+              "after_cumulative_max": 677824,
+              "maximum_bounds": {
+                "lower": 677824,
+                "upper": 677824
+              },
+              "p50": {
+                "lower": 65536,
+                "upper": 131071
+              },
+              "p95": {
+                "lower": 262144,
+                "upper": 524287
+              },
+              "p99": {
+                "lower": 524288,
+                "upper": 1048575
+              },
+              "nonempty_mean": 154223.46434782608,
+              "singleton_fraction": 0.0
+            },
+            "async_requests_extracted_per_service": {
+              "name": "async_requests_extracted_per_service",
+              "unit": "requests",
+              "count": 7974,
+              "sum": 239124,
+              "mean": 29.98796087283672,
+              "before_cumulative_max": 0,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p95": {
+                "lower": 64,
+                "upper": 127
+              },
+              "p99": {
+                "lower": 64,
+                "upper": 127
+              },
+              "nonempty_mean": 36.557712887937626,
+              "singleton_fraction": 0.052796588913970405
+            },
+            "async_request_inspection_age": {
+              "name": "async_request_inspection_age",
+              "unit": "nanoseconds",
+              "count": 239124,
+              "sum": 321268234434,
+              "mean": 1343521.4969388267,
+              "before_cumulative_max": null,
+              "after_cumulative_max": 10888617,
+              "maximum_bounds": {
+                "lower": 10888617,
+                "upper": 10888617
+              },
+              "p50": {
+                "lower": 1048576,
+                "upper": 2097151
+              },
+              "p95": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p99": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "nonempty_mean": 1343521.4969388267,
+              "singleton_fraction": 0.0
+            },
+            "async_request_resolved_age": {
+              "name": "async_request_resolved_age",
+              "unit": "nanoseconds",
+              "count": 33493,
+              "sum": 90232885649,
+              "mean": 2694081.9170871526,
+              "before_cumulative_max": null,
+              "after_cumulative_max": 10888617,
+              "maximum_bounds": {
+                "lower": 10888617,
+                "upper": 10888617
+              },
+              "p50": {
+                "lower": 2097152,
+                "upper": 4194303
+              },
+              "p95": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "p99": {
+                "lower": 4194304,
+                "upper": 8388607
+              },
+              "nonempty_mean": 2694081.9170871526,
+              "singleton_fraction": 0.0
+            },
+            "receipt_linear_probes_per_lookup": {
+              "name": "receipt_linear_probes_per_lookup",
+              "unit": "receipts",
+              "count": 239124,
+              "sum": 33387279,
+              "mean": 139.6232874993727,
+              "before_cumulative_max": 3,
+              "after_cumulative_max": 1024,
+              "maximum_bounds": {
+                "lower": 1024,
+                "upper": 1024
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 512,
+                "upper": 1023
+              },
+              "p99": {
+                "lower": 512,
+                "upper": 1023
+              },
+              "nonempty_mean": 996.8434896844117,
+              "singleton_fraction": 0.0
+            }
+          },
+          "ready": [
+            {
+              "name": "ready_entries_to_persist",
+              "unit": "entries",
+              "count": 6252,
+              "sum": 33493,
+              "mean": 5.357165706973769,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 62,
+              "maximum_bounds": {
+                "lower": 62,
+                "upper": 62
+              },
+              "p50": {
+                "lower": 1,
+                "upper": 1
+              },
+              "p95": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 6.661296738265712,
+              "singleton_fraction": 0.3365323096609085
+            },
+            {
+              "name": "ready_committed_entries",
+              "unit": "entries",
+              "count": 6252,
+              "sum": 33493,
+              "mean": 5.357165706973769,
+              "before_cumulative_max": 1,
+              "after_cumulative_max": 64,
+              "maximum_bounds": {
+                "lower": 64,
+                "upper": 64
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 16,
+                "upper": 31
+              },
+              "p99": {
+                "lower": 32,
+                "upper": 63
+              },
+              "nonempty_mean": 14.562173913043479,
+              "singleton_fraction": 0.05182341650671785
+            },
+            {
+              "name": "light_ready_committed_entries",
+              "unit": "entries",
+              "count": 6252,
+              "sum": 0,
+              "mean": 0.0,
+              "before_cumulative_max": 0,
+              "after_cumulative_max": 0,
+              "maximum_bounds": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p50": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p95": {
+                "lower": 0,
+                "upper": 0
+              },
+              "p99": {
+                "lower": 0,
+                "upper": 0
+              },
+              "nonempty_mean": null,
+              "singleton_fraction": 0.0
+            }
+          ],
+          "turns_resolving_without_apply": 3,
+          "leader_endpoint_metrics": {
+            "raft_application_wait": {
+              "success": {
+                "count": 33493,
+                "sum_ns": 95172566734,
+                "mean_ns": 2841565.9013525215,
+                "p50": {
+                  "lower_ns": 2097152,
+                  "upper_ns": 4194303
+                },
+                "p95": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                },
+                "p99": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                }
+              }
+            },
+            "raft_command_apply": {
+              "success": {
+                "count": 33493,
+                "sum_ns": 19522210497,
+                "mean_ns": 582874.3467888812,
+                "p50": {
+                  "lower_ns": 262144,
+                  "upper_ns": 524287
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                }
+              }
+            },
+            "raft_pump_service": {
+              "success": {
+                "count": 7972,
+                "sum_ns": 1514138064,
+                "mean_ns": 189932.02007024587,
+                "p50": {
+                  "lower_ns": 16384,
+                  "upper_ns": 32767
+                },
+                "p95": {
+                  "lower_ns": 524288,
+                  "upper_ns": 1048575
+                },
+                "p99": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                }
+              }
+            },
+            "raft_pump_iteration_spacing": {
+              "success": {
+                "count": 7972,
+                "sum_ns": 7054319905,
+                "mean_ns": 884887.0929503262,
+                "p50": {
+                  "lower_ns": 65536,
+                  "upper_ns": 131071
+                },
+                "p95": {
+                  "lower_ns": 1048576,
+                  "upper_ns": 2097151
+                },
+                "p99": {
+                  "lower_ns": 16777216,
+                  "upper_ns": 33554431
+                }
+              }
+            },
+            "engine_wal_record_write": {
+              "success": {
+                "count": 2321,
+                "sum_ns": 49894829,
+                "mean_ns": 21497.125807841447,
+                "p50": {
+                  "lower_ns": 8192,
+                  "upper_ns": 16383
+                },
+                "p95": {
+                  "lower_ns": 32768,
+                  "upper_ns": 65535
+                },
+                "p99": {
+                  "lower_ns": 65536,
+                  "upper_ns": 131071
+                }
+              }
+            },
+            "engine_wal_record_sync": {
+              "success": {
+                "count": 2342,
+                "sum_ns": 259363,
+                "mean_ns": 110.74423569598633,
+                "p50": {
+                  "lower_ns": 64,
+                  "upper_ns": 127
+                },
+                "p95": {
+                  "lower_ns": 128,
+                  "upper_ns": 255
+                },
+                "p99": {
+                  "lower_ns": 256,
+                  "upper_ns": 511
+                }
+              }
+            },
+            "engine_wal_namespace_publish": {
+              "success": {
+                "count": 42,
+                "sum_ns": 38544654,
+                "mean_ns": 917729.8571428572,
+                "p50": {
+                  "lower_ns": 2048,
+                  "upper_ns": 4095
+                },
+                "p95": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                },
+                "p99": {
+                  "lower_ns": 4194304,
+                  "upper_ns": 8388607
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "source_blobs": [
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "path": "crates/raft/src/driver.rs",
+      "bytes": 155107,
+      "sha256": "0fdc107979a175af9ef8522e3c30531d6236c0bab43f90a60ca2219f1d5bc88e"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "path": "crates/raft/src/async_apply.rs",
+      "bytes": 11119,
+      "sha256": "73a18d0e02fab720e7138a5b7ac15799742b1018b7226454f0e24b94a2ccc6f5"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "path": "crates/raft/src/rawnode.rs",
+      "bytes": 60323,
+      "sha256": "855095495b3789c18c551a6cd40f9f50f380dd0809b3b46fbbabb5683656e1b2"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "path": "crates/raft/src/state_machine/raw_group.rs",
+      "bytes": 20676,
+      "sha256": "a6340bbd8bba3471d455501f2081606064b3f3c4d1af58920eebc59b5d154ec4"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "path": "crates/engine/src/wal.rs",
+      "bytes": 36699,
+      "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "path": "crates/engine/src/wal_segment.rs",
+      "bytes": 31730,
+      "sha256": "8b4dcf628e065390a381cddd82bc9487a53713636f6d2974862e03d3147f1c6b"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "path": "crates/engine/src/persist.rs",
+      "bytes": 48094,
+      "sha256": "0a94ac54a3cf00ae5989e857f158d649c53fdd315b8ce250a44decf84074cd07"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "path": "crates/raft/src/driver.rs",
+      "bytes": 159023,
+      "sha256": "67a32ef08ac1cc1e3f7c94d3e62830b38af917b6b03dbfa38d6c82807bdb3357"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "path": "crates/raft/src/async_apply.rs",
+      "bytes": 14968,
+      "sha256": "0216a122246f511b093f84590ba72bd9baab67e14ce10de43446eda8dbfd2220"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "path": "crates/raft/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "path": "crates/raft/src/state_machine/raw_group.rs",
+      "bytes": 21704,
+      "sha256": "27e435ca278c87cda40ddbd064d5cda0728c7e9953fc6853d0b3a2f01f91693f"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "path": "crates/raft/src/write_diagnostics.rs",
+      "bytes": 14002,
+      "sha256": "f00217c94a94438e5b2577a6f6a81ead6c2fb66647214c41be512a8810dae3af"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "path": "crates/engine/src/wal.rs",
+      "bytes": 36699,
+      "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "path": "crates/engine/src/wal_segment.rs",
+      "bytes": 31730,
+      "sha256": "8b4dcf628e065390a381cddd82bc9487a53713636f6d2974862e03d3147f1c6b"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "9317e63a4b866aad4acf05d569f15e39ded58368",
+      "path": "crates/engine/src/persist.rs",
+      "bytes": 48094,
+      "sha256": "0a94ac54a3cf00ae5989e857f158d649c53fdd315b8ce250a44decf84074cd07"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "path": "crates/raft/src/driver.rs",
+      "bytes": 158593,
+      "sha256": "59fcf22c87f98dc888d9fbe5a07d9042eedcd31eb962aaa65dd7c1524271666f"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "path": "crates/raft/src/async_apply.rs",
+      "bytes": 14968,
+      "sha256": "0216a122246f511b093f84590ba72bd9baab67e14ce10de43446eda8dbfd2220"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "path": "crates/raft/src/rawnode.rs",
+      "bytes": 61432,
+      "sha256": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "path": "crates/raft/src/state_machine/raw_group.rs",
+      "bytes": 21704,
+      "sha256": "27e435ca278c87cda40ddbd064d5cda0728c7e9953fc6853d0b3a2f01f91693f"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "path": "crates/raft/src/write_diagnostics.rs",
+      "bytes": 14347,
+      "sha256": "d52abc37f684690ff49b13246b4f4e0dcdc52a6ea170dd413bab7282a8ab9e9b"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "path": "crates/engine/src/wal.rs",
+      "bytes": 36699,
+      "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "path": "crates/engine/src/wal_segment.rs",
+      "bytes": 31730,
+      "sha256": "8b4dcf628e065390a381cddd82bc9487a53713636f6d2974862e03d3147f1c6b"
+    },
+    {
+      "repository": "/home/dongxu/kv9",
+      "revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "path": "crates/engine/src/persist.rs",
+      "bytes": 48094,
+      "sha256": "0a94ac54a3cf00ae5989e857f158d649c53fdd315b8ce250a44decf84074cd07"
+    }
+  ],
+  "detailed_summary": {
+    "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/summary.json",
+    "bytes": 992789,
+    "sha256": "b77304ccbbb67b3839000d3fd12fa4da10bc893e89247ca0c2d81afcb2196a48"
+  },
+  "next_question": "For a terminally resolved loaded batch, is the long interval before its committed group starts apply, inside apply, or between apply completion/receipt publication and its exact terminal inspection?",
+  "limitations": [
+    "Whole-capture endpoint marginals have no per-call/group time join.",
+    "Command apply samples overlap within each group; sum is neither CPU nor exclusive elapsed time.",
+    "Native latency covers whole 64-item calls; quantiles are bucket bounds, not exact percentiles or confidence intervals.",
+    "Separate source/client/feature/duration captures are not pooled.",
+    "Tmpfs/shared-host data is not physical-storage performance.",
+    "A proposed group/terminal trace still needs proposal/Ready and response/client boundaries for full RPC decomposition."
+  ]
+}

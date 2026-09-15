@@ -31,6 +31,8 @@ pub mod transport;
 pub mod work;
 #[cfg(feature = "write-path-diagnostics")]
 pub mod write_diagnostics;
+#[cfg(feature = "write-stage-tracing")]
+pub mod write_stage_trace;
 pub use async_apply::AsyncApplySnapshot;
 pub use async_read::AsyncReadSnapshot;
 

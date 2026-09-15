@@ -22,6 +22,12 @@ pass. Keep CRC selected and hold promotion. Analyze retained batch-tail evidence
 before another rewrite; do not repeat the unchanged screen. Historical clients
 and runs below remain separately scoped.
 
+The [completed retained batch review](write-batch-tail-review-v1/README.md)
+identifies missing group preparation/lock and receipt-to-inspection intervals.
+[Default-off bounded tracing](WRITE-STAGE-TRACE.md) now records those boundaries
+with exact sampled term/index identities. Actual capture, coverage and overhead
+qualification remain pending; this adds no performance result.
+
 The earlier [complete directory-candidate screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
 records CRC main at **139,457.016 point Put/s** and **1,056,344.501 batch items/s**
 at c64. Candidate `483b8c3` reaches 138,734.094 / 1,076,849.048 respectively:

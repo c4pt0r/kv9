@@ -1,0 +1,51 @@
+{
+  "complete": true,
+  "scope": "Offline metadata extraction only",
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "-B",
+    "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/extract.py"
+  ],
+  "first_attempt": {
+    "actual_tool_receipt": "1a6d42",
+    "exit_code": 1,
+    "source": {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/extract-initial.py",
+      "bytes": 11570,
+      "sha256": "fb99d59f627122b5ddfc49bc42f92e27c2a3daa34f3abc993923e639e87c7b89"
+    },
+    "error": "AssertionError at metrics reset field: assumed bool False, actual documented 'node_component_construction' string",
+    "result_created": false
+  },
+  "successful_attempt": {
+    "actual_tool_receipt": "c704de",
+    "exit_code": 0,
+    "source": {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/extract.py",
+      "bytes": 11584,
+      "sha256": "060f2b04860071d9141ca70e758678f384821efe1966b8114591c52c833e61f1"
+    },
+    "result": {
+      "path": "/mnt/data/kv9-work/upper-bound-loaded-batch-evidence-review-20260915-first/summary.json",
+      "bytes": 992789,
+      "sha256": "b77304ccbbb67b3839000d3fd12fa4da10bc893e89247ca0c2d81afcb2196a48"
+    }
+  },
+  "retained_output_inspection": {
+    "actual_tool_receipts": [
+      "372091",
+      "3e8917"
+    ],
+    "exit_codes": [
+      0,
+      0
+    ]
+  },
+  "runtime_or_codecs_executed": false
+}

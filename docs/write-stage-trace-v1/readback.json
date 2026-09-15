@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "members": 504,
+  "logical_bytes": 2218828,
+  "archive_sha256": "2bc921154ca1a57a72add41076a05a8c9311b6c8b87b7967cb06de0e4d41dddf",
+  "scope": "Every regular archive member decoded, hashed and compared with its original input. No proof or workload rerun."
+}

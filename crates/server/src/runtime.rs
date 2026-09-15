@@ -4320,6 +4320,14 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        #[cfg(feature = "write-stage-tracing")]
+        {
+            if let Ok(trace) = serde_json::to_string(&self.driver.write_stage_trace()) {
+                body.push_str("write_stage_trace=");
+                body.push_str(&trace);
+                body.push('\n');
+            }
+        }
         #[cfg(feature = "write-path-diagnostics")]
         {
             // Diagnostic JSON has a fixed metric inventory and no request/key

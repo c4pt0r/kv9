@@ -34,8 +34,12 @@
 > Next run the separate pre-upload crash cut, then integrate typed negative
 > history and certified abort release, legacy coverage/fencing, reader drainage
 > and destination installation. C04 and physical object deletion remain open.
-> Next: analyze the retained batch-tail evidence before another performance
-> rewrite, finish the pending pre-upload crash cut, then continue industrial storage,
+> The [retained batch-tail analysis](write-batch-tail-review-v1/README.md) now
+> narrows the missing observation to group preparation/apply/receipt insertion
+> and terminal inspection. [Default-off bounded timestamps](WRITE-STAGE-TRACE.md)
+> implement those exact-position joins; no live trace performance result exists.
+> Next: qualify matching default/tracing releases and capture the loaded batch
+> interval, finish the pending pre-upload crash cut, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
 > requirements remain mandatory. CI stays local.

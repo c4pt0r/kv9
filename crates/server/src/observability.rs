@@ -407,6 +407,58 @@ mod tests {
         assert_eq!(value["driver"]["lookup_hits"].as_u64(), Some(u64::MAX));
     }
 
+    #[cfg(feature = "write-stage-tracing")]
+    #[test]
+    fn write_stage_trace_worst_case_json_is_bounded() {
+        use kv9_raft::write_stage_trace::{
+            GroupRecord, InspectionOutcome, InspectionRecord, CAPACITY,
+        };
+        let (_, driver) = fixture();
+        let mut trace = driver.write_stage_trace();
+        trace.trace_instance = u64::MAX;
+        trace.capture_started_ns = u64::MAX;
+        trace.capture_finished_ns = u64::MAX;
+        trace.valid = false;
+        trace.rows_available = false;
+        trace.dropped_recording_calls = u64::MAX;
+        trace.groups_seen = u64::MAX;
+        trace.group_commands_seen = u64::MAX;
+        trace.terminal_inspections_seen = u64::MAX;
+        trace.groups.total_recorded = u64::MAX;
+        trace.groups.overwritten = u64::MAX;
+        trace.groups.rows = vec![
+            GroupRecord {
+                sequence: u64::MAX,
+                group_sequence: u64::MAX,
+                term: u64::MAX,
+                index: u64::MAX,
+                commands: u64::MAX,
+                encoded_bytes: u64::MAX,
+                prepare_started_ns: u64::MAX,
+                locks_acquired_ns: u64::MAX,
+                apply_started_ns: u64::MAX,
+                apply_finished_ns: u64::MAX,
+                receipts_inserted_ns: Some(u64::MAX),
+            };
+            CAPACITY
+        ];
+        trace.inspections.total_recorded = u64::MAX;
+        trace.inspections.overwritten = u64::MAX;
+        trace.inspections.rows = vec![
+            InspectionRecord {
+                sequence: u64::MAX,
+                term: u64::MAX,
+                index: u64::MAX,
+                inspect_started_ns: u64::MAX,
+                inspect_finished_ns: u64::MAX,
+                registration_age_ns: u64::MAX,
+                outcome: InspectionOutcome::FenceRejected,
+            };
+            CAPACITY
+        ];
+        assert!(serde_json::to_vec(&trace).unwrap().len() < 384 * 1024);
+    }
+
     #[test]
     fn export_inventory_is_fixed_and_worst_case_document_fits_the_cap() {
         let (admission, driver) = fixture();
