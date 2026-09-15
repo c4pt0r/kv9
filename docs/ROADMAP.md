@@ -18,6 +18,9 @@
 > also passes all 16 short cohorts: at c64 Put, about 88% of lookups skip the scan.
 > Fresh performance capacity and the full matched screen remain open; no
 > candidate-versus-CRC speedup is claimed.
+> The parallel [C04 contract increment](RECOVERY-RETENTION-CONTRACT.md) now
+> specifies recovery anchors, shared pin ownership and delayed-delete fencing;
+> its implementation, composition proof and fault acceptance remain open.
 > Next: complete that candidate's acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
@@ -120,7 +123,8 @@ and the distinction between replica failure and host-failure isolation.
   transition is appended, preserving the ability to reopen large old stores.
 
 This is a basic implementation, not an industrial capacity or performance claim. The entire dataset remains in RAM,
-full checkpoints have a 48 MiB serialized ceiling, and catalog WAL reclamation copies the surviving tail before rename.
+and full checkpoints have a 48 MiB serialized ceiling. Normal catalog WAL reclamation now publishes a segmented
+topology and removes covered closed files; the legacy fallback still copies the surviving tail before rename.
 Raft logs, historical manifests and SSTs are retained. Incremental LSM, block cache, multiple running data groups,
 split/merge and usable transaction execution are still future work.
 
@@ -162,10 +166,11 @@ not benchmark acceptance; exact-revision evidence is tracked on the issues.
 
 1. Implement active/immutable memtables, incremental SSTs, stable versioned views, range tombstones, leveled
    compaction and a bounded block cache. Read remote SST blocks directly so memory no longer scales with live data.
-2. Replace O(tail) synchronous copying with segmented WAL and whole closed-segment reclamation.
+2. Complete qualification of the implemented segmented WAL and whole closed-segment reclamation.
    Add atomically installable Raft snapshots before protocol-log truncation.
-   Record the dual-WAL versus unified-log decision; any unification must preserve atomic data/position recovery.
-3. Batch proposals and persistence, add group commit, and bound upload concurrency and queues.
+   Follow the [dual-WAL decision](ADR-DUAL-WAL.md); any unification must preserve atomic data/position recovery
+   and the [shared recovery/retention contract](RECOVERY-RETENTION-CONTRACT.md).
+3. Qualify the implemented proposal batching and group commit, and bound upload concurrency and queues.
    Propagate admission/backpressure for slow disks, slow MinIO and compaction debt.
 4. Benchmark fixed CPU/RAM/disk/network/MinIO topologies, key/value sizes, distributions and concurrency.
    Report throughput, p50/p95/p99, error rates, fsync latency, apply lag, backlog, amplification, memory and recovery.
