@@ -1,0 +1,53 @@
+{
+  "audit_sha256": "9d87ba394620f4bdca9c8ce5a86efb7f0615b88bc3123ff5f5ffc1c3b59b7a36",
+  "audit_bytes": 454682,
+  "complete": true,
+  "calls": 7296894,
+  "input_items": 64701927,
+  "dropped_slots": 0,
+  "outcomes": {
+    "success": 7296894,
+    "refused": 0,
+    "unknown_write": 0,
+    "read_failure": 0,
+    "client_rejected": 0
+  },
+  "owned_lifetimes_exited": 64,
+  "qualifying_drains": 48,
+  "voter_writer_listener_bindings": 48,
+  "retention": {
+    "combined_independent_allocated_bytes": 52000653312,
+    "logical_original_files": 2441,
+    "logical_original_bytes": 65514412734,
+    "prior_smoke_logical_bytes": 8228918712,
+    "combined_smoke_timing_logical_bytes": 73743331446,
+    "compressed_bytes": 45902353995,
+    "resident_original_paths": false,
+    "independently_decoded_all_bytes": true,
+    "codec_lifetimes": 4882,
+    "timing_gap_scope": "Verified compression after writer reaping and before next cohort; no timed codec overlap"
+  },
+  "available_bytes": 33286901760,
+  "artifact_pins": {
+    "retention-decoder-receipts.json": {
+      "bytes": 3119664,
+      "sha256": "5e3785903c7003ae67f6efc6b354ddf453f5f3ad76573d4eadd981aa6e779424"
+    },
+    "audit.json": {
+      "bytes": 454682,
+      "sha256": "9d87ba394620f4bdca9c8ce5a86efb7f0615b88bc3123ff5f5ffc1c3b59b7a36"
+    },
+    "input-inventory.json": {
+      "bytes": 904101,
+      "sha256": "746706d7edfd0b8fb920b9b7f296766524ddb83492bd956b3a980b3f647bcfb3"
+    },
+    "logical-original-inventory.json": {
+      "bytes": 2405648,
+      "sha256": "149050daab05c9a1d96dc5fb81fb37ef6e78b7bf2c8fc979cc506a7d15fb9208"
+    },
+    "combined-physical-retention.json": {
+      "bytes": 1710286,
+      "sha256": "b4a7f36c4c4b82f49c1972b6af44d124989b9193c31ad82032cceaa608e772aa"
+    }
+  }
+}

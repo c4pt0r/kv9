@@ -1,0 +1,14 @@
+{
+  "archive": "analysis.tar.gz",
+  "archive_bytes": 22287,
+  "archive_sha256": "109f2905cc84e40dd5b26e34432e93f51bc3ee109d02bf913aeffe7e22943e74",
+  "complete": true,
+  "decoded_tar_bytes": 133120,
+  "files": 10,
+  "gzip_eof_verified": true,
+  "member_bytes_including_inventory": 117330,
+  "members_sha256": "9184097b51f3fa2e4d287adc6127d8f213d1159631612f8a5fe849a6d4c9dac0",
+  "original_bytes": 114931,
+  "original_files": 9,
+  "scope": "One full reporting-archive decode and exact member readback; no audit, tests or payload decoding."
+}

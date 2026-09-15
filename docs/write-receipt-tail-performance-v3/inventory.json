@@ -1,0 +1,100 @@
+{
+  "files": [
+    {
+      "bytes": 4402,
+      "path": "ANALYSIS.md",
+      "sha256": "2f28c9e6dfd49d319c35d060ea4e990fa78804a2ebe680f54671b3005d83c628"
+    },
+    {
+      "bytes": 5336,
+      "path": "README.md",
+      "sha256": "bf0d07574dc6926c4804da2459b52645241cf173dac51322ca6fdaf5c7bf22c4"
+    },
+    {
+      "bytes": 2399,
+      "path": "analysis-members.json",
+      "sha256": "9184097b51f3fa2e4d287adc6127d8f213d1159631612f8a5fe849a6d4c9dac0"
+    },
+    {
+      "bytes": 541,
+      "path": "analysis-verification.json",
+      "sha256": "d01ad01721ac9157e76bc54c7bea4726a27dd194f50d0a663529e59dee042530"
+    },
+    {
+      "bytes": 22287,
+      "path": "analysis.tar.gz",
+      "sha256": "109f2905cc84e40dd5b26e34432e93f51bc3ee109d02bf913aeffe7e22943e74"
+    },
+    {
+      "bytes": 1761,
+      "path": "audit-acceptance.json",
+      "sha256": "c82d06caba5a1f5e2176aa3960c7f82dc3e30a598bf2e982722086af20094f8a"
+    },
+    {
+      "bytes": 2069166,
+      "path": "evidence.tar.gz",
+      "sha256": "cf0f0eae5d3d9d89eb888487b58e4a01ab6ea6baadf557c36499482b034e8e32"
+    },
+    {
+      "bytes": 420,
+      "path": "initial-preflight-terminal.json",
+      "sha256": "af840b04cd6a9a0ea9978a1e31def8e7bb791a20a9def97f50f94d10e79a8fde"
+    },
+    {
+      "bytes": 13290,
+      "path": "input-hashes.json",
+      "sha256": "2e180a5b1870581107fe9ffa9b062ec03e0746adc5e5c483c72177e4606bde76"
+    },
+    {
+      "bytes": 59289,
+      "path": "members.json",
+      "sha256": "2b74d7d798ec5334af57dc9d404f4c171607346487a4ce7552e34cb55495fc3b"
+    },
+    {
+      "bytes": 2451,
+      "path": "package-analysis.py",
+      "sha256": "7b3a4f13fd6c7730ce53f5d48dab224e68c384bdc0e8359974882c138ffb2c0f"
+    },
+    {
+      "bytes": 137,
+      "path": "package-result.json",
+      "sha256": "9511f5cb25bf459c55d05b788f020ac9a3d1a40dcb3b375d7055877df99c9161"
+    },
+    {
+      "bytes": 6290,
+      "path": "package.py",
+      "sha256": "3c244f23b2599dfe4fee1cdd82411d93a1740b69fc9dd0ef4ebec5f98fb74c5b"
+    },
+    {
+      "bytes": 255,
+      "path": "reporting-allocation.json",
+      "sha256": "cd0e8748df4485530f699d93123d0d78d5635f2b7635930b1f4893e56aea4ac6"
+    },
+    {
+      "bytes": 2152,
+      "path": "reporting-terminals.json",
+      "sha256": "eab672166a0e0eb6aa12ee437afc566ed1ade1a428c320f3e781d90d37441dc4"
+    },
+    {
+      "bytes": 78364,
+      "path": "summary.json",
+      "sha256": "c71ad49a3f1c4ccca1153ba4bb2d858cc48d9d6788beefdbfe6f2585c7def773"
+    },
+    {
+      "bytes": 552,
+      "path": "verification.json",
+      "sha256": "5a93fdd1aa4a958ca5b7bc299f7da4eda4745b5384f557d3181e305683046c77"
+    },
+    {
+      "bytes": 2650,
+      "path": "verify-analysis.py",
+      "sha256": "0381328fe4c46a45dc80075d18b6f5c5b6699a7aee931307137bb5f9fd76bd9a"
+    },
+    {
+      "bytes": 2623,
+      "path": "verify.py",
+      "sha256": "6d5a2dd2a47c2e9f1476cbcb68c2ef617fb6339fcec0973b02cecafbb32e13ef"
+    }
+  ],
+  "scope": "Exact publication files; this inventory excludes itself. Original source paths/hashes remain in each archive member inventory."
+}

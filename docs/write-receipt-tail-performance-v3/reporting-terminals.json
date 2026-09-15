@@ -1,0 +1,32 @@
+{
+  "scope": "Actual finite metadata packaging and independent byte readback tool results; no workload, tests or payload decoding.",
+  "affinity": "6-15,22-31",
+  "runtime_package": {
+    "chunk_id": "13101d",
+    "wall_time_seconds": 0.11246521,
+    "exit_code": 0,
+    "original_token_count": 32,
+    "output": "{\"complete\": true, \"original_files\": 169, \"original_bytes\": 35047431, \"archive_members\": 170, \"summary_inputs_included\": 60}\n"
+  },
+  "runtime_readback": {
+    "chunk_id": "f8e95d",
+    "wall_time_seconds": 0.000003587,
+    "exit_code": 0,
+    "original_token_count": 132,
+    "output": "{\"archive\": \"evidence.tar.gz\", \"archive_bytes\": 2069166, \"archive_sha256\": \"cf0f0eae5d3d9d89eb888487b58e4a01ab6ea6baadf557c36499482b034e8e32\", \"complete\": true, \"decoded_tar_bytes\": 35246080, \"files\": 170, \"gzip_eof_verified\": true, \"member_bytes_including_inventory\": 35106720, \"members_sha256\": \"2b74d7d798ec5334af57dc9d404f4c171607346487a4ce7552e34cb55495fc3b\", \"original_bytes\": 35047431, \"original_files\": 169, \"scope\": \"One full reporting-archive decode and exact member readback; no audit, tests or payload decoding.\"}\n"
+  },
+  "analysis_package": {
+    "chunk_id": "771a0b",
+    "wall_time_seconds": 0.000003908,
+    "exit_code": 0,
+    "original_token_count": 23,
+    "output": "{\"complete\": true, \"original_files\": 9, \"original_bytes\": 114931, \"archive_members\": 10}\n"
+  },
+  "analysis_readback": {
+    "chunk_id": "d65608",
+    "wall_time_seconds": 0.000003276,
+    "exit_code": 0,
+    "original_token_count": 129,
+    "output": "{\"archive\": \"analysis.tar.gz\", \"archive_bytes\": 22287, \"archive_sha256\": \"109f2905cc84e40dd5b26e34432e93f51bc3ee109d02bf913aeffe7e22943e74\", \"complete\": true, \"decoded_tar_bytes\": 133120, \"files\": 10, \"gzip_eof_verified\": true, \"member_bytes_including_inventory\": 117330, \"members_sha256\": \"9184097b51f3fa2e4d287adc6127d8f213d1159631612f8a5fe849a6d4c9dac0\", \"original_bytes\": 114931, \"original_files\": 9, \"scope\": \"One full reporting-archive decode and exact member readback; no audit, tests or payload decoding.\"}\n"
+  }
+}

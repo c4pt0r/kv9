@@ -1,0 +1,2376 @@
+{
+  "complete": true,
+  "analysis_only": true,
+  "audit_accepted": true,
+  "actual_audit_receipt": "16800/8faaea/0",
+  "actual_timing_receipt": "84770/38c0ab/0",
+  "audit_pin": {
+    "bytes": 454682,
+    "sha256": "9d87ba394620f4bdca9c8ce5a86efb7f0615b88bc3123ff5f5ffc1c3b59b7a36"
+  },
+  "audit_inventory_pin": {
+    "bytes": 904101,
+    "sha256": "746706d7edfd0b8fb920b9b7f296766524ddb83492bd956b3a980b3f647bcfb3"
+  },
+  "protocol_id": "kv9-receipt-tail-write-ab-c1-c64-storage-v3",
+  "roles": {
+    "old": {
+      "source_path": "/tmp/kv9-crc-main-bd42-baseline-20260914-first",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "source_tree_sha256": "055196fb39a243b749ccb0f6597df791110d693d347c561ab2d536e3de9bf588",
+      "binary": "/tmp/kv9-crc-main-integration-release-20260914-first/kv9",
+      "binary_sha256": "106f517c84fabe790ea139f3c18661e14447abd9e257fdd6ba82bfabe6796eb9"
+    },
+    "new": {
+      "source_path": "/tmp/kv9-receipt-tail-release-source-20260915-first",
+      "revision": "a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9",
+      "source_tree_sha256": "29eeb78e11d6a6363226a3ebe92a5512a869d1cc26ed48344f3b70b4cdfc9abf",
+      "binary": "/tmp/kv9-receipt-tail-release-20260915-first/kv9",
+      "binary_sha256": "d83b4e2ede7bcd81e4a6c4adbc407d2fbd6790d9fcab5851314ed907a6fb0a8c"
+    },
+    "client": {
+      "source_path": "/tmp/kv9-point-write-measurement-v3",
+      "revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+      "source_tree_sha256": "878339ad2d1aa862b0b24faaae6c2b8c28d9db115a3eb4d473aef6205292b948",
+      "binary": "/tmp/kv9-point-write-v3-release-first/native/kv9-batch-benchmark",
+      "binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957"
+    }
+  },
+  "all_16_healthy": true,
+  "successful_calls": 7296894,
+  "successful_items": 64701927,
+  "comparisons": [
+    {
+      "api": "Put",
+      "concurrency": 1,
+      "repeat": 0,
+      "scope": "old-first",
+      "rate_unit": "calls/s",
+      "old": {
+        "ordinals": [
+          0
+        ],
+        "elapsed_ns": 10000034114,
+        "successful_calls": 193736,
+        "successful_items": 193736,
+        "successful_calls_per_second": 19373.53390912642,
+        "successful_items_per_second": 19373.53390912642,
+        "whole_call_latency": {
+          "count": 193736,
+          "sum_ns": 9979911261,
+          "mean_ns": 51512.94163707313,
+          "p50": {
+            "lower_ns": 50688,
+            "upper_ns": 51199
+          },
+          "p95": {
+            "lower_ns": 59392,
+            "upper_ns": 59903
+          },
+          "p99": {
+            "lower_ns": 66560,
+            "upper_ns": 67583
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 168150105.2717949,
+        "largest_run_sum_separate_voter_rss_max_bytes": 263999488
+      },
+      "new": {
+        "ordinals": [
+          1
+        ],
+        "elapsed_ns": 10000044230,
+        "successful_calls": 196279,
+        "successful_items": 196279,
+        "successful_calls_per_second": 19627.813186182277,
+        "successful_items_per_second": 19627.813186182277,
+        "whole_call_latency": {
+          "count": 196279,
+          "sum_ns": 9979644051,
+          "mean_ns": 50844.1761523138,
+          "p50": {
+            "lower_ns": 50176,
+            "upper_ns": 50687
+          },
+          "p95": {
+            "lower_ns": 57856,
+            "upper_ns": 58367
+          },
+          "p99": {
+            "lower_ns": 65024,
+            "upper_ns": 65535
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 169387769.43589744,
+        "largest_run_sum_separate_voter_rss_max_bytes": 266158080
+      },
+      "throughput_change_percent": 1.3125084883768734,
+      "mean_change_percent": -1.2982475151021577,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": 0.7360472133526308,
+      "max_voter_rss_sum_change_percent": 0.817650070594067
+    },
+    {
+      "api": "Put",
+      "concurrency": 1,
+      "repeat": 1,
+      "scope": "new-first",
+      "rate_unit": "calls/s",
+      "old": {
+        "ordinals": [
+          15
+        ],
+        "elapsed_ns": 10000036778,
+        "successful_calls": 194043,
+        "successful_items": 194043,
+        "successful_calls_per_second": 19404.228635127925,
+        "successful_items_per_second": 19404.228635127925,
+        "whole_call_latency": {
+          "count": 194043,
+          "sum_ns": 9980511540,
+          "mean_ns": 51434.53533495153,
+          "p50": {
+            "lower_ns": 50688,
+            "upper_ns": 51199
+          },
+          "p95": {
+            "lower_ns": 58880,
+            "upper_ns": 59391
+          },
+          "p99": {
+            "lower_ns": 65536,
+            "upper_ns": 66559
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 168076524.30769232,
+        "largest_run_sum_separate_voter_rss_max_bytes": 264036352
+      },
+      "new": {
+        "ordinals": [
+          14
+        ],
+        "elapsed_ns": 10000035563,
+        "successful_calls": 195422,
+        "successful_items": 195422,
+        "successful_calls_per_second": 19542.130502321295,
+        "successful_items_per_second": 19542.130502321295,
+        "whole_call_latency": {
+          "count": 195422,
+          "sum_ns": 9980012458,
+          "mean_ns": 51069.03244261137,
+          "p50": {
+            "lower_ns": 50176,
+            "upper_ns": 50687
+          },
+          "p95": {
+            "lower_ns": 58368,
+            "upper_ns": 58879
+          },
+          "p99": {
+            "lower_ns": 65024,
+            "upper_ns": 65535
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 167990865.3948718,
+        "largest_run_sum_separate_voter_rss_max_bytes": 265498624
+      },
+      "throughput_change_percent": 0.7106794595468813,
+      "mean_change_percent": -0.7106176617712845,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": -0.0509642338056171,
+      "max_voter_rss_sum_change_percent": 0.5538146504917574
+    },
+    {
+      "api": "Put",
+      "concurrency": 1,
+      "repeat": null,
+      "scope": "pooled",
+      "rate_unit": "calls/s",
+      "old": {
+        "ordinals": [
+          0,
+          15
+        ],
+        "elapsed_ns": 20000070892,
+        "successful_calls": 387779,
+        "successful_items": 387779,
+        "successful_calls_per_second": 19388.881274171436,
+        "successful_items_per_second": 19388.881274171436,
+        "whole_call_latency": {
+          "count": 387779,
+          "sum_ns": 19960422801,
+          "mean_ns": 51473.70744934615,
+          "p50": {
+            "lower_ns": 50688,
+            "upper_ns": 51199
+          },
+          "p95": {
+            "lower_ns": 58880,
+            "upper_ns": 59391
+          },
+          "p99": {
+            "lower_ns": 66560,
+            "upper_ns": 67583
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 168113314.78484312,
+        "largest_run_sum_separate_voter_rss_max_bytes": 264036352
+      },
+      "new": {
+        "ordinals": [
+          1,
+          14
+        ],
+        "elapsed_ns": 20000079793,
+        "successful_calls": 391701,
+        "successful_items": 391701,
+        "successful_calls_per_second": 19584.97186281701,
+        "successful_items_per_second": 19584.97186281701,
+        "whole_call_latency": {
+          "count": 391701,
+          "sum_ns": 19959656509,
+          "mean_ns": 50956.35831667522,
+          "p50": {
+            "lower_ns": 50176,
+            "upper_ns": 50687
+          },
+          "p95": {
+            "lower_ns": 58368,
+            "upper_ns": 58879
+          },
+          "p99": {
+            "lower_ns": 65024,
+            "upper_ns": 65535
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 168689317.7180576,
+        "largest_run_sum_separate_voter_rss_max_bytes": 266158080
+      },
+      "throughput_change_percent": 1.0113558687204538,
+      "mean_change_percent": -1.0050745483605072,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": 0.34262778885281175,
+      "max_voter_rss_sum_change_percent": 0.8035741987527434
+    },
+    {
+      "api": "Put",
+      "concurrency": 64,
+      "repeat": 0,
+      "scope": "old-first",
+      "rate_unit": "calls/s",
+      "old": {
+        "ordinals": [
+          4
+        ],
+        "elapsed_ns": 10000403869,
+        "successful_calls": 1385406,
+        "successful_items": 1385406,
+        "successful_calls_per_second": 138535.00500060653,
+        "successful_items_per_second": 138535.00500060653,
+        "whole_call_latency": {
+          "count": 1385406,
+          "sum_ns": 639850215532,
+          "mean_ns": 461850.3280135931,
+          "p50": {
+            "lower_ns": 438272,
+            "upper_ns": 442367
+          },
+          "p95": {
+            "lower_ns": 630784,
+            "upper_ns": 638975
+          },
+          "p99": {
+            "lower_ns": 745472,
+            "upper_ns": 753663
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 872603173.7263157,
+        "largest_run_sum_separate_voter_rss_max_bytes": 1645674496
+      },
+      "new": {
+        "ordinals": [
+          5
+        ],
+        "elapsed_ns": 10000451076,
+        "successful_calls": 1421588,
+        "successful_items": 1421588,
+        "successful_calls_per_second": 142152.38784694995,
+        "successful_items_per_second": 142152.38784694995,
+        "whole_call_latency": {
+          "count": 1421588,
+          "sum_ns": 639851687639,
+          "mean_ns": 450096.43274915096,
+          "p50": {
+            "lower_ns": 430080,
+            "upper_ns": 434175
+          },
+          "p95": {
+            "lower_ns": 606208,
+            "upper_ns": 614399
+          },
+          "p99": {
+            "lower_ns": 720896,
+            "upper_ns": 729087
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 901434503.4497354,
+        "largest_run_sum_separate_voter_rss_max_bytes": 1694720000
+      },
+      "throughput_change_percent": 2.6111688134905497,
+      "mean_change_percent": -2.5449576521890394,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": 3.3040596907641273,
+      "max_voter_rss_sum_change_percent": 2.9802676118035887
+    },
+    {
+      "api": "Put",
+      "concurrency": 64,
+      "repeat": 1,
+      "scope": "new-first",
+      "rate_unit": "calls/s",
+      "old": {
+        "ordinals": [
+          11
+        ],
+        "elapsed_ns": 10000091318,
+        "successful_calls": 1376643,
+        "successful_items": 1376643,
+        "successful_calls_per_second": 137663.04288862494,
+        "successful_items_per_second": 137663.04288862494,
+        "whole_call_latency": {
+          "count": 1376643,
+          "sum_ns": 639841489922,
+          "mean_ns": 464783.8909012721,
+          "p50": {
+            "lower_ns": 442368,
+            "upper_ns": 446463
+          },
+          "p95": {
+            "lower_ns": 638976,
+            "upper_ns": 647167
+          },
+          "p99": {
+            "lower_ns": 753664,
+            "upper_ns": 761855
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 877475602.8631579,
+        "largest_run_sum_separate_voter_rss_max_bytes": 1648857088
+      },
+      "new": {
+        "ordinals": [
+          10
+        ],
+        "elapsed_ns": 10000432864,
+        "successful_calls": 1422586,
+        "successful_items": 1422586,
+        "successful_calls_per_second": 142252.44240387712,
+        "successful_items_per_second": 142252.44240387712,
+        "whole_call_latency": {
+          "count": 1422586,
+          "sum_ns": 639848772519,
+          "mean_ns": 449778.62323894654,
+          "p50": {
+            "lower_ns": 430080,
+            "upper_ns": 434175
+          },
+          "p95": {
+            "lower_ns": 606208,
+            "upper_ns": 614399
+          },
+          "p99": {
+            "lower_ns": 720896,
+            "upper_ns": 729087
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 896621708.1263158,
+        "largest_run_sum_separate_voter_rss_max_bytes": 1684267008
+      },
+      "throughput_change_percent": 3.3337920032504353,
+      "mean_change_percent": -3.2284397019932354,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": 2.1819530025319445,
+      "max_voter_rss_sum_change_percent": 2.1475433048567583
+    },
+    {
+      "api": "Put",
+      "concurrency": 64,
+      "repeat": null,
+      "scope": "pooled",
+      "rate_unit": "calls/s",
+      "old": {
+        "ordinals": [
+          4,
+          11
+        ],
+        "elapsed_ns": 20000495187,
+        "successful_calls": 2762049,
+        "successful_items": 2762049,
+        "successful_calls_per_second": 138099.0307577628,
+        "successful_items_per_second": 138099.0307577628,
+        "whole_call_latency": {
+          "count": 2762049,
+          "sum_ns": 1279691705454,
+          "mean_ns": 463312.455881123,
+          "p50": {
+            "lower_ns": 442368,
+            "upper_ns": 446463
+          },
+          "p95": {
+            "lower_ns": 630784,
+            "upper_ns": 638975
+          },
+          "p99": {
+            "lower_ns": 745472,
+            "upper_ns": 753663
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 875039350.2236145,
+        "largest_run_sum_separate_voter_rss_max_bytes": 1648857088
+      },
+      "new": {
+        "ordinals": [
+          5,
+          10
+        ],
+        "elapsed_ns": 20000883940,
+        "successful_calls": 2844174,
+        "successful_items": 2844174,
+        "successful_calls_per_second": 142202.41507986072,
+        "successful_items_per_second": 142202.41507986072,
+        "whole_call_latency": {
+          "count": 2844174,
+          "sum_ns": 1279700460158,
+          "mean_ns": 449937.47223552427,
+          "p50": {
+            "lower_ns": 430080,
+            "upper_ns": 434175
+          },
+          "p95": {
+            "lower_ns": 606208,
+            "upper_ns": 614399
+          },
+          "p99": {
+            "lower_ns": 720896,
+            "upper_ns": 729087
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 899028107.9791945,
+        "largest_run_sum_separate_voter_rss_max_bytes": 1694720000
+      },
+      "throughput_change_percent": 2.9713346281883712,
+      "mean_change_percent": -2.8868171955710453,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": 2.741449027343723,
+      "max_voter_rss_sum_change_percent": 2.7814970947924955
+    },
+    {
+      "api": "BatchPut64",
+      "concurrency": 1,
+      "repeat": 0,
+      "scope": "old-first",
+      "rate_unit": "items/s",
+      "old": {
+        "ordinals": [
+          2
+        ],
+        "elapsed_ns": 10000064602,
+        "successful_calls": 62353,
+        "successful_items": 3990592,
+        "successful_calls_per_second": 6235.259718975163,
+        "successful_items_per_second": 399056.62201441044,
+        "whole_call_latency": {
+          "count": 62353,
+          "sum_ns": 9993793527,
+          "mean_ns": 160277.66951068913,
+          "p50": {
+            "lower_ns": 153600,
+            "upper_ns": 155647
+          },
+          "p95": {
+            "lower_ns": 176128,
+            "upper_ns": 178175
+          },
+          "p99": {
+            "lower_ns": 202752,
+            "upper_ns": 204799
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 1305606748.849741,
+        "largest_run_sum_separate_voter_rss_max_bytes": 2549014528
+      },
+      "new": {
+        "ordinals": [
+          3
+        ],
+        "elapsed_ns": 10000118964,
+        "successful_calls": 62098,
+        "successful_items": 3974272,
+        "successful_calls_per_second": 6209.726126614108,
+        "successful_items_per_second": 397422.4721033029,
+        "whole_call_latency": {
+          "count": 62098,
+          "sum_ns": 9993033219,
+          "mean_ns": 160923.59204805308,
+          "p50": {
+            "lower_ns": 155648,
+            "upper_ns": 157695
+          },
+          "p95": {
+            "lower_ns": 178176,
+            "upper_ns": 180223
+          },
+          "p99": {
+            "lower_ns": 202752,
+            "upper_ns": 204799
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 1296799839.5025907,
+        "largest_run_sum_separate_voter_rss_max_bytes": 2538389504
+      },
+      "throughput_change_percent": -0.4095032686986855,
+      "mean_change_percent": 0.40300220195108594,
+      "p99_direction": "same_bucket",
+      "sampled_rss_mean_change_percent": -0.6745453295878945,
+      "max_voter_rss_sum_change_percent": -0.4168286952972555
+    },
+    {
+      "api": "BatchPut64",
+      "concurrency": 1,
+      "repeat": 1,
+      "scope": "new-first",
+      "rate_unit": "items/s",
+      "old": {
+        "ordinals": [
+          13
+        ],
+        "elapsed_ns": 10000070857,
+        "successful_calls": 62643,
+        "successful_items": 4009152,
+        "successful_calls_per_second": 6264.255613364,
+        "successful_items_per_second": 400912.359255296,
+        "whole_call_latency": {
+          "count": 62643,
+          "sum_ns": 9992988301,
+          "mean_ns": 159522.82459333047,
+          "p50": {
+            "lower_ns": 153600,
+            "upper_ns": 155647
+          },
+          "p95": {
+            "lower_ns": 176128,
+            "upper_ns": 178175
+          },
+          "p99": {
+            "lower_ns": 208896,
+            "upper_ns": 210943
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 1309368045.525773,
+        "largest_run_sum_separate_voter_rss_max_bytes": 2570448896
+      },
+      "new": {
+        "ordinals": [
+          12
+        ],
+        "elapsed_ns": 10000151379,
+        "successful_calls": 62026,
+        "successful_items": 3969664,
+        "successful_calls_per_second": 6202.5061070828015,
+        "successful_items_per_second": 396960.3908532993,
+        "whole_call_latency": {
+          "count": 62026,
+          "sum_ns": 9993107442,
+          "mean_ns": 161111.58936574985,
+          "p50": {
+            "lower_ns": 155648,
+            "upper_ns": 157695
+          },
+          "p95": {
+            "lower_ns": 178176,
+            "upper_ns": 180223
+          },
+          "p99": {
+            "lower_ns": 204800,
+            "upper_ns": 206847
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 1292810675.0673575,
+        "largest_run_sum_separate_voter_rss_max_bytes": 2535202816
+      },
+      "throughput_change_percent": -0.9857437194846219,
+      "mean_change_percent": 0.9959482453182567,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": -1.2645314291114373,
+      "max_voter_rss_sum_change_percent": -1.3712032966245014
+    },
+    {
+      "api": "BatchPut64",
+      "concurrency": 1,
+      "repeat": null,
+      "scope": "pooled",
+      "rate_unit": "items/s",
+      "old": {
+        "ordinals": [
+          2,
+          13
+        ],
+        "elapsed_ns": 20000135459,
+        "successful_calls": 124996,
+        "successful_items": 7999744,
+        "successful_calls_per_second": 6249.757670703784,
+        "successful_items_per_second": 399984.4909250422,
+        "whole_call_latency": {
+          "count": 124996,
+          "sum_ns": 19986781828,
+          "mean_ns": 159899.37140388493,
+          "p50": {
+            "lower_ns": 153600,
+            "upper_ns": 155647
+          },
+          "p95": {
+            "lower_ns": 176128,
+            "upper_ns": 178175
+          },
+          "p99": {
+            "lower_ns": 206848,
+            "upper_ns": 208895
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 1307487397.7759256,
+        "largest_run_sum_separate_voter_rss_max_bytes": 2570448896
+      },
+      "new": {
+        "ordinals": [
+          3,
+          12
+        ],
+        "elapsed_ns": 20000270343,
+        "successful_calls": 124124,
+        "successful_items": 7943936,
+        "successful_calls_per_second": 6206.11611099761,
+        "successful_items_per_second": 397191.43110384705,
+        "whole_call_latency": {
+          "count": 124124,
+          "sum_ns": 19986140661,
+          "mean_ns": 161017.53618156037,
+          "p50": {
+            "lower_ns": 155648,
+            "upper_ns": 157695
+          },
+          "p95": {
+            "lower_ns": 178176,
+            "upper_ns": 180223
+          },
+          "p99": {
+            "lower_ns": 204800,
+            "upper_ns": 206847
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 1294805254.0522988,
+        "largest_run_sum_separate_voter_rss_max_bytes": 2538389504
+      },
+      "throughput_change_percent": -0.6982920299573703,
+      "mean_change_percent": 0.6992927913713309,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": -0.9699629797732312,
+      "max_voter_rss_sum_change_percent": -1.2472293088529818
+    },
+    {
+      "api": "BatchPut64",
+      "concurrency": 64,
+      "repeat": 0,
+      "scope": "old-first",
+      "rate_unit": "items/s",
+      "old": {
+        "ordinals": [
+          6
+        ],
+        "elapsed_ns": 10001251086,
+        "successful_calls": 161362,
+        "successful_items": 10327168,
+        "successful_calls_per_second": 16134.1814751435,
+        "successful_items_per_second": 1032587.614409184,
+        "whole_call_latency": {
+          "count": 161362,
+          "sum_ns": 639929661929,
+          "mean_ns": 3965801.5017724126,
+          "p50": {
+            "lower_ns": 3735552,
+            "upper_ns": 3768319
+          },
+          "p95": {
+            "lower_ns": 6029312,
+            "upper_ns": 6094847
+          },
+          "p99": {
+            "lower_ns": 8388608,
+            "upper_ns": 8519679
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 3560336136.0842104,
+        "largest_run_sum_separate_voter_rss_max_bytes": 6798798848
+      },
+      "new": {
+        "ordinals": [
+          7
+        ],
+        "elapsed_ns": 10001808491,
+        "successful_calls": 167135,
+        "successful_items": 10696640,
+        "successful_calls_per_second": 16710.477925106676,
+        "successful_items_per_second": 1069470.5872068272,
+        "whole_call_latency": {
+          "count": 167135,
+          "sum_ns": 639957728478,
+          "mean_ns": 3828986.9176294613,
+          "p50": {
+            "lower_ns": 3670016,
+            "upper_ns": 3702783
+          },
+          "p95": {
+            "lower_ns": 5570560,
+            "upper_ns": 5636095
+          },
+          "p99": {
+            "lower_ns": 6881280,
+            "upper_ns": 6946815
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 3605202879.326316,
+        "largest_run_sum_separate_voter_rss_max_bytes": 7045328896
+      },
+      "throughput_change_percent": 3.5718976562339133,
+      "mean_change_percent": -3.449859607996153,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": 1.260182789691644,
+      "max_voter_rss_sum_change_percent": 3.6260823935469366
+    },
+    {
+      "api": "BatchPut64",
+      "concurrency": 64,
+      "repeat": 1,
+      "scope": "new-first",
+      "rate_unit": "items/s",
+      "old": {
+        "ordinals": [
+          9
+        ],
+        "elapsed_ns": 10002867449,
+        "successful_calls": 166868,
+        "successful_items": 10679552,
+        "successful_calls_per_second": 16682.01651684208,
+        "successful_items_per_second": 1067649.057077893,
+        "whole_call_latency": {
+          "count": 166868,
+          "sum_ns": 639980365847,
+          "mean_ns": 3835249.21403145,
+          "p50": {
+            "lower_ns": 3670016,
+            "upper_ns": 3702783
+          },
+          "p95": {
+            "lower_ns": 5636096,
+            "upper_ns": 5701631
+          },
+          "p99": {
+            "lower_ns": 7077888,
+            "upper_ns": 7143423
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 3571749687.5343914,
+        "largest_run_sum_separate_voter_rss_max_bytes": 6999076864
+      },
+      "new": {
+        "ordinals": [
+          8
+        ],
+        "elapsed_ns": 10002102982,
+        "successful_calls": 166706,
+        "successful_items": 10669184,
+        "successful_calls_per_second": 16667.0949399349,
+        "successful_items_per_second": 1066694.0761558337,
+        "whole_call_latency": {
+          "count": 166706,
+          "sum_ns": 639949837181,
+          "mean_ns": 3838793.0679219705,
+          "p50": {
+            "lower_ns": 3670016,
+            "upper_ns": 3702783
+          },
+          "p95": {
+            "lower_ns": 5636096,
+            "upper_ns": 5701631
+          },
+          "p99": {
+            "lower_ns": 7208960,
+            "upper_ns": 7274495
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 3583501566.645503,
+        "largest_run_sum_separate_voter_rss_max_bytes": 6990409728
+      },
+      "throughput_change_percent": -0.0894470814851056,
+      "mean_change_percent": 0.09240218021699942,
+      "p99_direction": "new_higher_interval",
+      "sampled_rss_mean_change_percent": 0.3290230318246046,
+      "max_voter_rss_sum_change_percent": -0.12383255918476666
+    },
+    {
+      "api": "BatchPut64",
+      "concurrency": 64,
+      "repeat": null,
+      "scope": "pooled",
+      "rate_unit": "items/s",
+      "old": {
+        "ordinals": [
+          6,
+          9
+        ],
+        "elapsed_ns": 20004118535,
+        "successful_calls": 328230,
+        "successful_items": 21006720,
+        "successful_calls_per_second": 16408.12112894231,
+        "successful_items_per_second": 1050119.752252308,
+        "whole_call_latency": {
+          "count": 328230,
+          "sum_ns": 1279910027776,
+          "mean_ns": 3899430.3621728667,
+          "p50": {
+            "lower_ns": 3702784,
+            "upper_ns": 3735551
+          },
+          "p95": {
+            "lower_ns": 5832704,
+            "upper_ns": 5898239
+          },
+          "p99": {
+            "lower_ns": 7864320,
+            "upper_ns": 7929855
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 3566043372.925401,
+        "largest_run_sum_separate_voter_rss_max_bytes": 6999076864
+      },
+      "new": {
+        "ordinals": [
+          7,
+          8
+        ],
+        "elapsed_ns": 20003911473,
+        "successful_calls": 333841,
+        "successful_items": 21365824,
+        "successful_calls_per_second": 16688.786113185775,
+        "successful_items_per_second": 1068082.3112438896,
+        "whole_call_latency": {
+          "count": 333841,
+          "sum_ns": 1279907565659,
+          "mean_ns": 3833883.6921139103,
+          "p50": {
+            "lower_ns": 3670016,
+            "upper_ns": 3702783
+          },
+          "p95": {
+            "lower_ns": 5570560,
+            "upper_ns": 5636095
+          },
+          "p99": {
+            "lower_ns": 7012352,
+            "upper_ns": 7077887
+          }
+        },
+        "mean_run_voter_sampled_rss_bytes": 3594352063.2461185,
+        "largest_run_sum_separate_voter_rss_max_bytes": 7045328896
+      },
+      "throughput_change_percent": 1.7105248190080635,
+      "mean_change_percent": -1.6809293658582525,
+      "p99_direction": "new_lower_interval",
+      "sampled_rss_mean_change_percent": 0.793840325545303,
+      "max_voter_rss_sum_change_percent": 0.6608304623413774
+    }
+  ],
+  "cohorts": [
+    {
+      "ordinal": 0,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/000-old-point-r000-p00001",
+      "api": "Put",
+      "role": "old",
+      "concurrency": 1,
+      "repeat": 0,
+      "elapsed_ns": 10000034114,
+      "successful_calls": 193736,
+      "successful_items": 193736,
+      "completed_calls": 193736,
+      "issued": 193736,
+      "attempts": 193736,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 193736,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 193736,
+        "sum_ns": 9979911261,
+        "mean_ns": 51512.94163707313,
+        "p50": {
+          "lower_ns": 50688,
+          "upper_ns": 51199
+        },
+        "p95": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        },
+        "p99": {
+          "lower_ns": 66560,
+          "upper_ns": 67583
+        }
+      },
+      "successful_calls_per_second": 19373.53390912642,
+      "successful_items_per_second": 19373.53390912642,
+      "report_pin": {
+        "bytes": 1431977,
+        "sha256": "4df22fd926ba061d5f7a3583ac840dcd243ce67135038de8b9274b4adef88b1b"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 1986846,
+          "start_ticks": 175133664,
+          "samples": 195,
+          "rss_first_bytes": 15917056,
+          "rss_last_bytes": 85135360,
+          "rss_min_bytes": 15917056,
+          "rss_max_bytes": 85135360,
+          "rss_mean_bytes": 54814100.34871795,
+          "hwm_first_bytes": 15917056,
+          "hwm_last_bytes": 85135360,
+          "hwm_max_bytes": 85135360,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 1986851,
+          "start_ticks": 175133665,
+          "samples": 195,
+          "rss_first_bytes": 17174528,
+          "rss_last_bytes": 93761536,
+          "rss_min_bytes": 17174528,
+          "rss_max_bytes": 93761536,
+          "rss_mean_bytes": 58493820.71794872,
+          "hwm_first_bytes": 17174528,
+          "hwm_last_bytes": 93761536,
+          "hwm_max_bytes": 93761536,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 1986856,
+          "start_ticks": 175133666,
+          "samples": 195,
+          "rss_first_bytes": 16084992,
+          "rss_last_bytes": 85102592,
+          "rss_min_bytes": 16084992,
+          "rss_max_bytes": 85102592,
+          "rss_mean_bytes": 54842184.20512821,
+          "hwm_first_bytes": 16084992,
+          "hwm_last_bytes": 85102592,
+          "hwm_max_bytes": 85102592,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 168150105.2717949,
+      "sum_separate_voter_rss_max_bytes": 263999488,
+      "healthy": true
+    },
+    {
+      "ordinal": 1,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/001-new-point-r000-p00001",
+      "api": "Put",
+      "role": "new",
+      "concurrency": 1,
+      "repeat": 0,
+      "elapsed_ns": 10000044230,
+      "successful_calls": 196279,
+      "successful_items": 196279,
+      "completed_calls": 196279,
+      "issued": 196279,
+      "attempts": 196279,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 196279,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 196279,
+        "sum_ns": 9979644051,
+        "mean_ns": 50844.1761523138,
+        "p50": {
+          "lower_ns": 50176,
+          "upper_ns": 50687
+        },
+        "p95": {
+          "lower_ns": 57856,
+          "upper_ns": 58367
+        },
+        "p99": {
+          "lower_ns": 65024,
+          "upper_ns": 65535
+        }
+      },
+      "successful_calls_per_second": 19627.813186182277,
+      "successful_items_per_second": 19627.813186182277,
+      "report_pin": {
+        "bytes": 1431994,
+        "sha256": "71884ff918fc8db83054ab8c772d07bb2ca61bba3a1b60c664ebc3a3f53679ae"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 1988956,
+          "start_ticks": 175135698,
+          "samples": 195,
+          "rss_first_bytes": 15900672,
+          "rss_last_bytes": 85893120,
+          "rss_min_bytes": 15900672,
+          "rss_max_bytes": 85893120,
+          "rss_mean_bytes": 55187403.48717949,
+          "hwm_first_bytes": 15900672,
+          "hwm_last_bytes": 85893120,
+          "hwm_max_bytes": 85893120,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 1988961,
+          "start_ticks": 175135700,
+          "samples": 195,
+          "rss_first_bytes": 16912384,
+          "rss_last_bytes": 94482432,
+          "rss_min_bytes": 16912384,
+          "rss_max_bytes": 94482432,
+          "rss_mean_bytes": 58702779.733333334,
+          "hwm_first_bytes": 16912384,
+          "hwm_last_bytes": 94482432,
+          "hwm_max_bytes": 94482432,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 1988966,
+          "start_ticks": 175135701,
+          "samples": 195,
+          "rss_first_bytes": 15982592,
+          "rss_last_bytes": 85782528,
+          "rss_min_bytes": 15982592,
+          "rss_max_bytes": 85782528,
+          "rss_mean_bytes": 55497586.21538462,
+          "hwm_first_bytes": 15982592,
+          "hwm_last_bytes": 85782528,
+          "hwm_max_bytes": 85782528,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 169387769.43589744,
+      "sum_separate_voter_rss_max_bytes": 266158080,
+      "healthy": true
+    },
+    {
+      "ordinal": 2,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/002-old-batch64-r000-p00001",
+      "api": "BatchPut64",
+      "role": "old",
+      "concurrency": 1,
+      "repeat": 0,
+      "elapsed_ns": 10000064602,
+      "successful_calls": 62353,
+      "successful_items": 3990592,
+      "completed_calls": 62353,
+      "issued": 62353,
+      "attempts": 62353,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 62353,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 62353,
+        "sum_ns": 9993793527,
+        "mean_ns": 160277.66951068913,
+        "p50": {
+          "lower_ns": 153600,
+          "upper_ns": 155647
+        },
+        "p95": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p99": {
+          "lower_ns": 202752,
+          "upper_ns": 204799
+        }
+      },
+      "successful_calls_per_second": 6235.259718975163,
+      "successful_items_per_second": 399056.62201441044,
+      "report_pin": {
+        "bytes": 1431312,
+        "sha256": "99a958b07982d62e881c7f4654560823d283bc5a0391f6064c87d28614989a07"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 1991064,
+          "start_ticks": 175137739,
+          "samples": 193,
+          "rss_first_bytes": 19308544,
+          "rss_last_bytes": 797265920,
+          "rss_min_bytes": 19308544,
+          "rss_max_bytes": 797265920,
+          "rss_mean_bytes": 408419227.1917098,
+          "hwm_first_bytes": 19308544,
+          "hwm_last_bytes": 797265920,
+          "hwm_max_bytes": 797265920,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 1991069,
+          "start_ticks": 175137740,
+          "samples": 193,
+          "rss_first_bytes": 22204416,
+          "rss_last_bytes": 953761792,
+          "rss_min_bytes": 22204416,
+          "rss_max_bytes": 953761792,
+          "rss_mean_bytes": 488736757.38860106,
+          "hwm_first_bytes": 22204416,
+          "hwm_last_bytes": 953761792,
+          "hwm_max_bytes": 953761792,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 1991074,
+          "start_ticks": 175137741,
+          "samples": 193,
+          "rss_first_bytes": 19304448,
+          "rss_last_bytes": 797986816,
+          "rss_min_bytes": 19304448,
+          "rss_max_bytes": 797986816,
+          "rss_mean_bytes": 408450764.26943004,
+          "hwm_first_bytes": 19304448,
+          "hwm_last_bytes": 797986816,
+          "hwm_max_bytes": 797986816,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 1305606748.849741,
+      "sum_separate_voter_rss_max_bytes": 2549014528,
+      "healthy": true
+    },
+    {
+      "ordinal": 3,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/003-new-batch64-r000-p00001",
+      "api": "BatchPut64",
+      "role": "new",
+      "concurrency": 1,
+      "repeat": 0,
+      "elapsed_ns": 10000118964,
+      "successful_calls": 62098,
+      "successful_items": 3974272,
+      "completed_calls": 62098,
+      "issued": 62098,
+      "attempts": 62098,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 62098,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 62098,
+        "sum_ns": 9993033219,
+        "mean_ns": 160923.59204805308,
+        "p50": {
+          "lower_ns": 155648,
+          "upper_ns": 157695
+        },
+        "p95": {
+          "lower_ns": 178176,
+          "upper_ns": 180223
+        },
+        "p99": {
+          "lower_ns": 202752,
+          "upper_ns": 204799
+        }
+      },
+      "successful_calls_per_second": 6209.726126614108,
+      "successful_items_per_second": 397422.4721033029,
+      "report_pin": {
+        "bytes": 1431299,
+        "sha256": "9f58ef96cf42a4b2d053a62ac4dbf31e81ffca22bee809b9d9122c00169bcebb"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 1995483,
+          "start_ticks": 175141977,
+          "samples": 193,
+          "rss_first_bytes": 19263488,
+          "rss_last_bytes": 794243072,
+          "rss_min_bytes": 19263488,
+          "rss_max_bytes": 794243072,
+          "rss_mean_bytes": 405753304.2072539,
+          "hwm_first_bytes": 19263488,
+          "hwm_last_bytes": 794243072,
+          "hwm_max_bytes": 794243072,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 1995488,
+          "start_ticks": 175141979,
+          "samples": 193,
+          "rss_first_bytes": 22601728,
+          "rss_last_bytes": 950956032,
+          "rss_min_bytes": 22601728,
+          "rss_max_bytes": 950956032,
+          "rss_mean_bytes": 485935539.06735754,
+          "hwm_first_bytes": 22601728,
+          "hwm_last_bytes": 950956032,
+          "hwm_max_bytes": 950956032,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 1995493,
+          "start_ticks": 175141980,
+          "samples": 193,
+          "rss_first_bytes": 19120128,
+          "rss_last_bytes": 793190400,
+          "rss_min_bytes": 19120128,
+          "rss_max_bytes": 793190400,
+          "rss_mean_bytes": 405110996.2279793,
+          "hwm_first_bytes": 19120128,
+          "hwm_last_bytes": 793190400,
+          "hwm_max_bytes": 793190400,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 1296799839.5025907,
+      "sum_separate_voter_rss_max_bytes": 2538389504,
+      "healthy": true
+    },
+    {
+      "ordinal": 4,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/004-old-point-r000-p00064",
+      "api": "Put",
+      "role": "old",
+      "concurrency": 64,
+      "repeat": 0,
+      "elapsed_ns": 10000403869,
+      "successful_calls": 1385406,
+      "successful_items": 1385406,
+      "completed_calls": 1385406,
+      "issued": 1385406,
+      "attempts": 1385406,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1385406,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1385406,
+        "sum_ns": 639850215532,
+        "mean_ns": 461850.3280135931,
+        "p50": {
+          "lower_ns": 438272,
+          "upper_ns": 442367
+        },
+        "p95": {
+          "lower_ns": 630784,
+          "upper_ns": 638975
+        },
+        "p99": {
+          "lower_ns": 745472,
+          "upper_ns": 753663
+        }
+      },
+      "successful_calls_per_second": 138535.00500060653,
+      "successful_items_per_second": 138535.00500060653,
+      "report_pin": {
+        "bytes": 1445239,
+        "sha256": "a08c68d66159f394abb2f19b2ac6d1b7272f31198330643aba6142865ed44535"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 1999798,
+          "start_ticks": 175146244,
+          "samples": 190,
+          "rss_first_bytes": 16564224,
+          "rss_last_bytes": 518230016,
+          "rss_min_bytes": 16564224,
+          "rss_max_bytes": 518230016,
+          "rss_mean_bytes": 270843214.14736843,
+          "hwm_first_bytes": 16564224,
+          "hwm_last_bytes": 518230016,
+          "hwm_max_bytes": 518230016,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 1999803,
+          "start_ticks": 175146246,
+          "samples": 190,
+          "rss_first_bytes": 26206208,
+          "rss_last_bytes": 609345536,
+          "rss_min_bytes": 26206208,
+          "rss_max_bytes": 609345536,
+          "rss_mean_bytes": 331866758.7368421,
+          "hwm_first_bytes": 26206208,
+          "hwm_last_bytes": 609345536,
+          "hwm_max_bytes": 609345536,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 1999846,
+          "start_ticks": 175146247,
+          "samples": 190,
+          "rss_first_bytes": 16277504,
+          "rss_last_bytes": 518098944,
+          "rss_min_bytes": 16277504,
+          "rss_max_bytes": 518098944,
+          "rss_mean_bytes": 269893200.84210527,
+          "hwm_first_bytes": 16277504,
+          "hwm_last_bytes": 518098944,
+          "hwm_max_bytes": 518098944,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 872603173.7263157,
+      "sum_separate_voter_rss_max_bytes": 1645674496,
+      "healthy": true
+    },
+    {
+      "ordinal": 5,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/005-new-point-r000-p00064",
+      "api": "Put",
+      "role": "new",
+      "concurrency": 64,
+      "repeat": 0,
+      "elapsed_ns": 10000451076,
+      "successful_calls": 1421588,
+      "successful_items": 1421588,
+      "completed_calls": 1421588,
+      "issued": 1421588,
+      "attempts": 1421588,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1421588,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1421588,
+        "sum_ns": 639851687639,
+        "mean_ns": 450096.43274915096,
+        "p50": {
+          "lower_ns": 430080,
+          "upper_ns": 434175
+        },
+        "p95": {
+          "lower_ns": 606208,
+          "upper_ns": 614399
+        },
+        "p99": {
+          "lower_ns": 720896,
+          "upper_ns": 729087
+        }
+      },
+      "successful_calls_per_second": 142152.38784694995,
+      "successful_items_per_second": 142152.38784694995,
+      "report_pin": {
+        "bytes": 1445211,
+        "sha256": "c1043fd55c269a2816db8a1f1a62b7e5a6c2afedcbf0f817f743b90799835917"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2002841,
+          "start_ticks": 175149078,
+          "samples": 189,
+          "rss_first_bytes": 19374080,
+          "rss_last_bytes": 531693568,
+          "rss_min_bytes": 19374080,
+          "rss_max_bytes": 531693568,
+          "rss_mean_bytes": 277836772.9100529,
+          "hwm_first_bytes": 19374080,
+          "hwm_last_bytes": 531693568,
+          "hwm_max_bytes": 531693568,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2002846,
+          "start_ticks": 175149080,
+          "samples": 189,
+          "rss_first_bytes": 37875712,
+          "rss_last_bytes": 632098816,
+          "rss_min_bytes": 37875712,
+          "rss_max_bytes": 632098816,
+          "rss_mean_bytes": 345910125.71428573,
+          "hwm_first_bytes": 37875712,
+          "hwm_last_bytes": 632098816,
+          "hwm_max_bytes": 632098816,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2002851,
+          "start_ticks": 175149081,
+          "samples": 189,
+          "rss_first_bytes": 19369984,
+          "rss_last_bytes": 530927616,
+          "rss_min_bytes": 19369984,
+          "rss_max_bytes": 530927616,
+          "rss_mean_bytes": 277687604.82539684,
+          "hwm_first_bytes": 19369984,
+          "hwm_last_bytes": 530927616,
+          "hwm_max_bytes": 530927616,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 901434503.4497354,
+      "sum_separate_voter_rss_max_bytes": 1694720000,
+      "healthy": true
+    },
+    {
+      "ordinal": 6,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/006-old-batch64-r000-p00064",
+      "api": "BatchPut64",
+      "role": "old",
+      "concurrency": 64,
+      "repeat": 0,
+      "elapsed_ns": 10001251086,
+      "successful_calls": 161362,
+      "successful_items": 10327168,
+      "completed_calls": 161362,
+      "issued": 161362,
+      "attempts": 161362,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 161362,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 161362,
+        "sum_ns": 639929661929,
+        "mean_ns": 3965801.5017724126,
+        "p50": {
+          "lower_ns": 3735552,
+          "upper_ns": 3768319
+        },
+        "p95": {
+          "lower_ns": 6029312,
+          "upper_ns": 6094847
+        },
+        "p99": {
+          "lower_ns": 8388608,
+          "upper_ns": 8519679
+        }
+      },
+      "successful_calls_per_second": 16134.1814751435,
+      "successful_items_per_second": 1032587.614409184,
+      "report_pin": {
+        "bytes": 1444154,
+        "sha256": "f2ad182b236203ab594077ba05a8d2e3212defc6acea84e3fd5c1b50d22e904a"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2005880,
+          "start_ticks": 175151935,
+          "samples": 190,
+          "rss_first_bytes": 27488256,
+          "rss_last_bytes": 2056650752,
+          "rss_min_bytes": 27488256,
+          "rss_max_bytes": 2056650752,
+          "rss_mean_bytes": 1073893764.0421052,
+          "hwm_first_bytes": 27488256,
+          "hwm_last_bytes": 2056650752,
+          "hwm_max_bytes": 2056650752,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2005885,
+          "start_ticks": 175151937,
+          "samples": 190,
+          "rss_first_bytes": 49266688,
+          "rss_last_bytes": 2686242816,
+          "rss_min_bytes": 49266688,
+          "rss_max_bytes": 2686242816,
+          "rss_mean_bytes": 1412982309.7263157,
+          "hwm_first_bytes": 49266688,
+          "hwm_last_bytes": 2686242816,
+          "hwm_max_bytes": 2686242816,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2005890,
+          "start_ticks": 175151938,
+          "samples": 190,
+          "rss_first_bytes": 27992064,
+          "rss_last_bytes": 2055905280,
+          "rss_min_bytes": 27992064,
+          "rss_max_bytes": 2055905280,
+          "rss_mean_bytes": 1073460062.3157895,
+          "hwm_first_bytes": 27992064,
+          "hwm_last_bytes": 2055905280,
+          "hwm_max_bytes": 2055905280,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 3560336136.0842104,
+      "sum_separate_voter_rss_max_bytes": 6798798848,
+      "healthy": true
+    },
+    {
+      "ordinal": 7,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/007-new-batch64-r000-p00064",
+      "api": "BatchPut64",
+      "role": "new",
+      "concurrency": 64,
+      "repeat": 0,
+      "elapsed_ns": 10001808491,
+      "successful_calls": 167135,
+      "successful_items": 10696640,
+      "completed_calls": 167135,
+      "issued": 167135,
+      "attempts": 167135,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 167135,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 167135,
+        "sum_ns": 639957728478,
+        "mean_ns": 3828986.9176294613,
+        "p50": {
+          "lower_ns": 3670016,
+          "upper_ns": 3702783
+        },
+        "p95": {
+          "lower_ns": 5570560,
+          "upper_ns": 5636095
+        },
+        "p99": {
+          "lower_ns": 6881280,
+          "upper_ns": 6946815
+        }
+      },
+      "successful_calls_per_second": 16710.477925106676,
+      "successful_items_per_second": 1069470.5872068272,
+      "report_pin": {
+        "bytes": 1444069,
+        "sha256": "36355d0426e5a9618345988fb72df4082f6fb2cdf28e359ed8b003fdb482b8af"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2014494,
+          "start_ticks": 175160449,
+          "samples": 190,
+          "rss_first_bytes": 28385280,
+          "rss_last_bytes": 2130812928,
+          "rss_min_bytes": 28385280,
+          "rss_max_bytes": 2130812928,
+          "rss_mean_bytes": 1089478871.5789473,
+          "hwm_first_bytes": 28385280,
+          "hwm_last_bytes": 2130812928,
+          "hwm_max_bytes": 2130812928,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2014499,
+          "start_ticks": 175160450,
+          "samples": 190,
+          "rss_first_bytes": 48316416,
+          "rss_last_bytes": 2785755136,
+          "rss_min_bytes": 48316416,
+          "rss_max_bytes": 2785755136,
+          "rss_mean_bytes": 1428628857.2631578,
+          "hwm_first_bytes": 48316416,
+          "hwm_last_bytes": 2785755136,
+          "hwm_max_bytes": 2785755136,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2014504,
+          "start_ticks": 175160451,
+          "samples": 190,
+          "rss_first_bytes": 29765632,
+          "rss_last_bytes": 2128760832,
+          "rss_min_bytes": 29765632,
+          "rss_max_bytes": 2128760832,
+          "rss_mean_bytes": 1087095150.4842105,
+          "hwm_first_bytes": 29765632,
+          "hwm_last_bytes": 2128760832,
+          "hwm_max_bytes": 2128760832,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 3605202879.326316,
+      "sum_separate_voter_rss_max_bytes": 7045328896,
+      "healthy": true
+    },
+    {
+      "ordinal": 8,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/008-new-batch64-r000-p10064",
+      "api": "BatchPut64",
+      "role": "new",
+      "concurrency": 64,
+      "repeat": 1,
+      "elapsed_ns": 10002102982,
+      "successful_calls": 166706,
+      "successful_items": 10669184,
+      "completed_calls": 166706,
+      "issued": 166706,
+      "attempts": 166706,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 166706,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 166706,
+        "sum_ns": 639949837181,
+        "mean_ns": 3838793.0679219705,
+        "p50": {
+          "lower_ns": 3670016,
+          "upper_ns": 3702783
+        },
+        "p95": {
+          "lower_ns": 5636096,
+          "upper_ns": 5701631
+        },
+        "p99": {
+          "lower_ns": 7208960,
+          "upper_ns": 7274495
+        }
+      },
+      "successful_calls_per_second": 16667.0949399349,
+      "successful_items_per_second": 1066694.0761558337,
+      "report_pin": {
+        "bytes": 1444095,
+        "sha256": "20b80b05689903cba09c4819b86c56cffb15422c4011fdd7570b07fa40d8cb5c"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2023093,
+          "start_ticks": 175168875,
+          "samples": 189,
+          "rss_first_bytes": 28753920,
+          "rss_last_bytes": 2114191360,
+          "rss_min_bytes": 28753920,
+          "rss_max_bytes": 2114191360,
+          "rss_mean_bytes": 1079829390.2222223,
+          "hwm_first_bytes": 28753920,
+          "hwm_last_bytes": 2114191360,
+          "hwm_max_bytes": 2114191360,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2023107,
+          "start_ticks": 175168876,
+          "samples": 189,
+          "rss_first_bytes": 51277824,
+          "rss_last_bytes": 2760568832,
+          "rss_min_bytes": 51277824,
+          "rss_max_bytes": 2760568832,
+          "rss_mean_bytes": 1420621184.6772487,
+          "hwm_first_bytes": 51277824,
+          "hwm_last_bytes": 2760568832,
+          "hwm_max_bytes": 2760568832,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2023112,
+          "start_ticks": 175168878,
+          "samples": 189,
+          "rss_first_bytes": 28557312,
+          "rss_last_bytes": 2115649536,
+          "rss_min_bytes": 28557312,
+          "rss_max_bytes": 2115649536,
+          "rss_mean_bytes": 1083050991.7460318,
+          "hwm_first_bytes": 28557312,
+          "hwm_last_bytes": 2115649536,
+          "hwm_max_bytes": 2115649536,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 3583501566.645503,
+      "sum_separate_voter_rss_max_bytes": 6990409728,
+      "healthy": true
+    },
+    {
+      "ordinal": 9,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/009-old-batch64-r000-p10064",
+      "api": "BatchPut64",
+      "role": "old",
+      "concurrency": 64,
+      "repeat": 1,
+      "elapsed_ns": 10002867449,
+      "successful_calls": 166868,
+      "successful_items": 10679552,
+      "completed_calls": 166868,
+      "issued": 166868,
+      "attempts": 166868,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 166868,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 166868,
+        "sum_ns": 639980365847,
+        "mean_ns": 3835249.21403145,
+        "p50": {
+          "lower_ns": 3670016,
+          "upper_ns": 3702783
+        },
+        "p95": {
+          "lower_ns": 5636096,
+          "upper_ns": 5701631
+        },
+        "p99": {
+          "lower_ns": 7077888,
+          "upper_ns": 7143423
+        }
+      },
+      "successful_calls_per_second": 16682.01651684208,
+      "successful_items_per_second": 1067649.057077893,
+      "report_pin": {
+        "bytes": 1444054,
+        "sha256": "f39ce818c7e1389350814a49d3ac8347700b39efa24be03186d0d70896b9a528"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2031574,
+          "start_ticks": 175177371,
+          "samples": 189,
+          "rss_first_bytes": 28438528,
+          "rss_last_bytes": 2117615616,
+          "rss_min_bytes": 28438528,
+          "rss_max_bytes": 2117615616,
+          "rss_mean_bytes": 1077538447.5767195,
+          "hwm_first_bytes": 28438528,
+          "hwm_last_bytes": 2117615616,
+          "hwm_max_bytes": 2117615616,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2031579,
+          "start_ticks": 175177372,
+          "samples": 189,
+          "rss_first_bytes": 47755264,
+          "rss_last_bytes": 2759950336,
+          "rss_min_bytes": 47755264,
+          "rss_max_bytes": 2759950336,
+          "rss_mean_bytes": 1414703483.2592592,
+          "hwm_first_bytes": 47755264,
+          "hwm_last_bytes": 2759950336,
+          "hwm_max_bytes": 2759950336,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2031584,
+          "start_ticks": 175177374,
+          "samples": 189,
+          "rss_first_bytes": 28106752,
+          "rss_last_bytes": 2121510912,
+          "rss_min_bytes": 28106752,
+          "rss_max_bytes": 2121510912,
+          "rss_mean_bytes": 1079507756.6984127,
+          "hwm_first_bytes": 28106752,
+          "hwm_last_bytes": 2121510912,
+          "hwm_max_bytes": 2121510912,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 3571749687.5343914,
+      "sum_separate_voter_rss_max_bytes": 6999076864,
+      "healthy": true
+    },
+    {
+      "ordinal": 10,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/010-new-point-r000-p10064",
+      "api": "Put",
+      "role": "new",
+      "concurrency": 64,
+      "repeat": 1,
+      "elapsed_ns": 10000432864,
+      "successful_calls": 1422586,
+      "successful_items": 1422586,
+      "completed_calls": 1422586,
+      "issued": 1422586,
+      "attempts": 1422586,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1422586,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1422586,
+        "sum_ns": 639848772519,
+        "mean_ns": 449778.62323894654,
+        "p50": {
+          "lower_ns": 430080,
+          "upper_ns": 434175
+        },
+        "p95": {
+          "lower_ns": 606208,
+          "upper_ns": 614399
+        },
+        "p99": {
+          "lower_ns": 720896,
+          "upper_ns": 729087
+        }
+      },
+      "successful_calls_per_second": 142252.44240387712,
+      "successful_items_per_second": 142252.44240387712,
+      "report_pin": {
+        "bytes": 1445266,
+        "sha256": "5100e0326ce543e4f0c405e6180e2ef8fc89332c83cafb12476e9f51c53493bf"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2040478,
+          "start_ticks": 175185959,
+          "samples": 190,
+          "rss_first_bytes": 16400384,
+          "rss_last_bytes": 531361792,
+          "rss_min_bytes": 16400384,
+          "rss_max_bytes": 531361792,
+          "rss_mean_bytes": 277609051.6210526,
+          "hwm_first_bytes": 16400384,
+          "hwm_last_bytes": 531361792,
+          "hwm_max_bytes": 531361792,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2040483,
+          "start_ticks": 175185960,
+          "samples": 190,
+          "rss_first_bytes": 28557312,
+          "rss_last_bytes": 621158400,
+          "rss_min_bytes": 28557312,
+          "rss_max_bytes": 621158400,
+          "rss_mean_bytes": 340664772.7157895,
+          "hwm_first_bytes": 28557312,
+          "hwm_last_bytes": 621158400,
+          "hwm_max_bytes": 621158400,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2040488,
+          "start_ticks": 175185962,
+          "samples": 190,
+          "rss_first_bytes": 16646144,
+          "rss_last_bytes": 531746816,
+          "rss_min_bytes": 16646144,
+          "rss_max_bytes": 531746816,
+          "rss_mean_bytes": 278347883.7894737,
+          "hwm_first_bytes": 16646144,
+          "hwm_last_bytes": 531746816,
+          "hwm_max_bytes": 531746816,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 896621708.1263158,
+      "sum_separate_voter_rss_max_bytes": 1684267008,
+      "healthy": true
+    },
+    {
+      "ordinal": 11,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/011-old-point-r000-p10064",
+      "api": "Put",
+      "role": "old",
+      "concurrency": 64,
+      "repeat": 1,
+      "elapsed_ns": 10000091318,
+      "successful_calls": 1376643,
+      "successful_items": 1376643,
+      "completed_calls": 1376643,
+      "issued": 1376643,
+      "attempts": 1376643,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1376643,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1376643,
+        "sum_ns": 639841489922,
+        "mean_ns": 464783.8909012721,
+        "p50": {
+          "lower_ns": 442368,
+          "upper_ns": 446463
+        },
+        "p95": {
+          "lower_ns": 638976,
+          "upper_ns": 647167
+        },
+        "p99": {
+          "lower_ns": 753664,
+          "upper_ns": 761855
+        }
+      },
+      "successful_calls_per_second": 137663.04288862494,
+      "successful_items_per_second": 137663.04288862494,
+      "report_pin": {
+        "bytes": 1445259,
+        "sha256": "249b6838c952b5d0bc4d891032f853096e2b3500cdc18eabae0402d4bffb076a"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2043430,
+          "start_ticks": 175188903,
+          "samples": 190,
+          "rss_first_bytes": 16707584,
+          "rss_last_bytes": 515584000,
+          "rss_min_bytes": 16707584,
+          "rss_max_bytes": 515584000,
+          "rss_mean_bytes": 270797705.43157893,
+          "hwm_first_bytes": 16707584,
+          "hwm_last_bytes": 515584000,
+          "hwm_max_bytes": 515584000,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2043435,
+          "start_ticks": 175188904,
+          "samples": 190,
+          "rss_first_bytes": 29306880,
+          "rss_last_bytes": 617295872,
+          "rss_min_bytes": 29306880,
+          "rss_max_bytes": 617295872,
+          "rss_mean_bytes": 335619858.86315787,
+          "hwm_first_bytes": 29306880,
+          "hwm_last_bytes": 617295872,
+          "hwm_max_bytes": 617295872,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2043440,
+          "start_ticks": 175188905,
+          "samples": 190,
+          "rss_first_bytes": 16515072,
+          "rss_last_bytes": 515977216,
+          "rss_min_bytes": 16515072,
+          "rss_max_bytes": 515977216,
+          "rss_mean_bytes": 271058038.56842107,
+          "hwm_first_bytes": 16515072,
+          "hwm_last_bytes": 515977216,
+          "hwm_max_bytes": 515977216,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 877475602.8631579,
+      "sum_separate_voter_rss_max_bytes": 1648857088,
+      "healthy": true
+    },
+    {
+      "ordinal": 12,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/012-new-batch64-r000-p10001",
+      "api": "BatchPut64",
+      "role": "new",
+      "concurrency": 1,
+      "repeat": 1,
+      "elapsed_ns": 10000151379,
+      "successful_calls": 62026,
+      "successful_items": 3969664,
+      "completed_calls": 62026,
+      "issued": 62026,
+      "attempts": 62026,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 62026,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 62026,
+        "sum_ns": 9993107442,
+        "mean_ns": 161111.58936574985,
+        "p50": {
+          "lower_ns": 155648,
+          "upper_ns": 157695
+        },
+        "p95": {
+          "lower_ns": 178176,
+          "upper_ns": 180223
+        },
+        "p99": {
+          "lower_ns": 204800,
+          "upper_ns": 206847
+        }
+      },
+      "successful_calls_per_second": 6202.5061070828015,
+      "successful_items_per_second": 396960.3908532993,
+      "report_pin": {
+        "bytes": 1431317,
+        "sha256": "3d960092cec4c1afc65d66b7b466634deb81531e728d780af6cc4978b4cd6bf3"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2046423,
+          "start_ticks": 175191813,
+          "samples": 193,
+          "rss_first_bytes": 19185664,
+          "rss_last_bytes": 793227264,
+          "rss_min_bytes": 19185664,
+          "rss_max_bytes": 793227264,
+          "rss_mean_bytes": 404155418.5284974,
+          "hwm_first_bytes": 19185664,
+          "hwm_last_bytes": 793227264,
+          "hwm_max_bytes": 793227264,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2046428,
+          "start_ticks": 175191815,
+          "samples": 193,
+          "rss_first_bytes": 22704128,
+          "rss_last_bytes": 949309440,
+          "rss_min_bytes": 22704128,
+          "rss_max_bytes": 949309440,
+          "rss_mean_bytes": 484424560.746114,
+          "hwm_first_bytes": 22704128,
+          "hwm_last_bytes": 949309440,
+          "hwm_max_bytes": 949309440,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2046433,
+          "start_ticks": 175191816,
+          "samples": 193,
+          "rss_first_bytes": 19185664,
+          "rss_last_bytes": 792666112,
+          "rss_min_bytes": 19185664,
+          "rss_max_bytes": 792666112,
+          "rss_mean_bytes": 404230695.7927461,
+          "hwm_first_bytes": 19185664,
+          "hwm_last_bytes": 792666112,
+          "hwm_max_bytes": 792666112,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 1292810675.0673575,
+      "sum_separate_voter_rss_max_bytes": 2535202816,
+      "healthy": true
+    },
+    {
+      "ordinal": 13,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/013-old-batch64-r000-p10001",
+      "api": "BatchPut64",
+      "role": "old",
+      "concurrency": 1,
+      "repeat": 1,
+      "elapsed_ns": 10000070857,
+      "successful_calls": 62643,
+      "successful_items": 4009152,
+      "completed_calls": 62643,
+      "issued": 62643,
+      "attempts": 62643,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 62643,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 62643,
+        "sum_ns": 9992988301,
+        "mean_ns": 159522.82459333047,
+        "p50": {
+          "lower_ns": 153600,
+          "upper_ns": 155647
+        },
+        "p95": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p99": {
+          "lower_ns": 208896,
+          "upper_ns": 210943
+        }
+      },
+      "successful_calls_per_second": 6264.255613364,
+      "successful_items_per_second": 400912.359255296,
+      "report_pin": {
+        "bytes": 1431315,
+        "sha256": "7cd5657498d1ecbd6baa6e5656db0afaa114f13b87b0bf938d429a2d92f2fd84"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2050960,
+          "start_ticks": 175196310,
+          "samples": 194,
+          "rss_first_bytes": 18608128,
+          "rss_last_bytes": 803627008,
+          "rss_min_bytes": 18608128,
+          "rss_max_bytes": 803627008,
+          "rss_mean_bytes": 409316932.6185567,
+          "hwm_first_bytes": 18608128,
+          "hwm_last_bytes": 803627008,
+          "hwm_max_bytes": 803627008,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2050965,
+          "start_ticks": 175196312,
+          "samples": 194,
+          "rss_first_bytes": 21483520,
+          "rss_last_bytes": 962801664,
+          "rss_min_bytes": 21483520,
+          "rss_max_bytes": 962801664,
+          "rss_mean_bytes": 490467834.72164947,
+          "hwm_first_bytes": 21483520,
+          "hwm_last_bytes": 962801664,
+          "hwm_max_bytes": 962801664,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2050970,
+          "start_ticks": 175196313,
+          "samples": 194,
+          "rss_first_bytes": 18849792,
+          "rss_last_bytes": 804020224,
+          "rss_min_bytes": 18849792,
+          "rss_max_bytes": 804020224,
+          "rss_mean_bytes": 409583278.185567,
+          "hwm_first_bytes": 18849792,
+          "hwm_last_bytes": 804020224,
+          "hwm_max_bytes": 804020224,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 1309368045.525773,
+      "sum_separate_voter_rss_max_bytes": 2570448896,
+      "healthy": true
+    },
+    {
+      "ordinal": 14,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/014-new-point-r000-p10001",
+      "api": "Put",
+      "role": "new",
+      "concurrency": 1,
+      "repeat": 1,
+      "elapsed_ns": 10000035563,
+      "successful_calls": 195422,
+      "successful_items": 195422,
+      "completed_calls": 195422,
+      "issued": 195422,
+      "attempts": 195422,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 195422,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 195422,
+        "sum_ns": 9980012458,
+        "mean_ns": 51069.03244261137,
+        "p50": {
+          "lower_ns": 50176,
+          "upper_ns": 50687
+        },
+        "p95": {
+          "lower_ns": 58368,
+          "upper_ns": 58879
+        },
+        "p99": {
+          "lower_ns": 65024,
+          "upper_ns": 65535
+        }
+      },
+      "successful_calls_per_second": 19542.130502321295,
+      "successful_items_per_second": 19542.130502321295,
+      "report_pin": {
+        "bytes": 1431966,
+        "sha256": "e1af67e5018fb5db91a1250fd813bae8256e02f74ec7aa52e0daed923eb29fb3"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2055428,
+          "start_ticks": 175200840,
+          "samples": 195,
+          "rss_first_bytes": 15949824,
+          "rss_last_bytes": 85725184,
+          "rss_min_bytes": 15949824,
+          "rss_max_bytes": 85725184,
+          "rss_mean_bytes": 54274688.656410255,
+          "hwm_first_bytes": 15949824,
+          "hwm_last_bytes": 85725184,
+          "hwm_max_bytes": 85725184,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2055433,
+          "start_ticks": 175200841,
+          "samples": 195,
+          "rss_first_bytes": 17010688,
+          "rss_last_bytes": 94380032,
+          "rss_min_bytes": 17010688,
+          "rss_max_bytes": 94380032,
+          "rss_mean_bytes": 58847610.092307694,
+          "hwm_first_bytes": 17010688,
+          "hwm_last_bytes": 94380032,
+          "hwm_max_bytes": 94380032,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2055438,
+          "start_ticks": 175200843,
+          "samples": 195,
+          "rss_first_bytes": 15806464,
+          "rss_last_bytes": 85393408,
+          "rss_min_bytes": 15806464,
+          "rss_max_bytes": 85393408,
+          "rss_mean_bytes": 54868566.646153845,
+          "hwm_first_bytes": 15806464,
+          "hwm_last_bytes": 85393408,
+          "hwm_max_bytes": 85393408,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 167990865.3948718,
+      "sum_separate_voter_rss_max_bytes": 265498624,
+      "healthy": true
+    },
+    {
+      "ordinal": 15,
+      "directory": "/tmp/kv9-receipt-tail-performance-v3-timing-20260915-first/cohorts/015-old-point-r000-p10001",
+      "api": "Put",
+      "role": "old",
+      "concurrency": 1,
+      "repeat": 1,
+      "elapsed_ns": 10000036778,
+      "successful_calls": 194043,
+      "successful_items": 194043,
+      "completed_calls": 194043,
+      "issued": 194043,
+      "attempts": 194043,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 194043,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 194043,
+        "sum_ns": 9980511540,
+        "mean_ns": 51434.53533495153,
+        "p50": {
+          "lower_ns": 50688,
+          "upper_ns": 51199
+        },
+        "p95": {
+          "lower_ns": 58880,
+          "upper_ns": 59391
+        },
+        "p99": {
+          "lower_ns": 65536,
+          "upper_ns": 66559
+        }
+      },
+      "successful_calls_per_second": 19404.228635127925,
+      "successful_items_per_second": 19404.228635127925,
+      "report_pin": {
+        "bytes": 1431977,
+        "sha256": "53f5c37c22303ad54e4e5840576dbea9616a27ea6a5d76d4012fa6f0738964cd"
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2057579,
+          "start_ticks": 175202955,
+          "samples": 195,
+          "rss_first_bytes": 15962112,
+          "rss_last_bytes": 85196800,
+          "rss_min_bytes": 15962112,
+          "rss_max_bytes": 85196800,
+          "rss_mean_bytes": 54830547.364102565,
+          "hwm_first_bytes": 15962112,
+          "hwm_last_bytes": 85196800,
+          "hwm_max_bytes": 85196800,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2057584,
+          "start_ticks": 175202956,
+          "samples": 195,
+          "rss_first_bytes": 17022976,
+          "rss_last_bytes": 93786112,
+          "rss_min_bytes": 17022976,
+          "rss_max_bytes": 93786112,
+          "rss_mean_bytes": 58494744.94358975,
+          "hwm_first_bytes": 17022976,
+          "hwm_last_bytes": 93786112,
+          "hwm_max_bytes": 93786112,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2057589,
+          "start_ticks": 175202957,
+          "samples": 195,
+          "rss_first_bytes": 15777792,
+          "rss_last_bytes": 85053440,
+          "rss_min_bytes": 15777792,
+          "rss_max_bytes": 85053440,
+          "rss_mean_bytes": 54751232.0,
+          "hwm_first_bytes": 15777792,
+          "hwm_last_bytes": 85053440,
+          "hwm_max_bytes": 85053440,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "sum_sampled_voter_mean_rss_bytes": 168076524.30769232,
+      "sum_separate_voter_rss_max_bytes": 264036352,
+      "healthy": true
+    }
+  ],
+  "scope": "Two-repeat 10-second native v3 point Put/BatchPut64 c1/c64 shared-host tmpfs write screen; no read/mixed regression, Chaos, promotion, sustained-capacity, exact issued nonce ledger or full-history claim",
+  "latency_method": "Unchanged accepted histogram helper; merge integer counts/sums and percentile ranks; whole logical call, never divide batch latency by64 or average per-run percentiles.",
+  "rate_method": "Sum successful work / sum actual cohort_elapsed_ns, including completed in-flight calls as the original report does.",
+  "memory_method": "Audited in-measurement sampled RSS. Mean of run voter sums weighted by actual cohort duration; separate voter maxima are not necessarily simultaneous. HWM retained per voter is process-lifetime, not measurement-only.",
+  "selection_changed": false,
+  "actual_audit_terminal": {
+    "path": "/tmp/kv9-receipt-tail-performance-v3-execution-evidence-20260915-first/audit-terminal.json",
+    "bytes": 1309,
+    "sha256": "bddbb743422fcff2814e0be1df585624224d5db62440f5fa86a7ec9cf472ecaa"
+  }
+}

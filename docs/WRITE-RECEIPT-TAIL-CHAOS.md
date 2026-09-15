@@ -4,7 +4,9 @@ Completed locally on 2026-09-15 UTC. Experimental runtime
 `a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9` passes the complete 21-window
 Chaos Mesh baseline, independent full-history audit, complete local archive
 readback and exact-owned cleanup. CRC main remains selected. This adds
-correctness evidence; receipt-candidate throughput and latency remain unmeasured.
+correctness evidence; throughput and latency were unmeasured at this checkpoint.
+The later [complete matched performance screen](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
+records point-write gains and batch tradeoffs; CRC remains selected.
 
 | Complete history | Operations | OK | Unknown | Refused |
 | --- | ---: | ---: | ---: | ---: |
@@ -83,11 +85,12 @@ remain separately documented. This campaign does not claim cross-host,
 physical power-loss, dedicated client-link/quorum-loss or whole-Rust/Raft
 verification. No original industrial roadmap work-package checkbox closes.
 
-Next run the independent matched write screen against CRC main with the fixed
-native v3 benchmark client: point Put and BatchPut(64), c1/c64, both opposite
-orders, complete throughput/whole-call latency populations and unchanged
-correctness checks. Preserve the already measured FNV and directory candidates
-separately. The [development route](WRITE-PERFORMANCE-NEXT.md) keeps dynamic
+The subsequent independent matched write screen against CRC main now passes
+with the fixed native v3 client: point Put and BatchPut(64), c1/c64, both
+opposite orders and complete throughput/whole-call latency populations. Its
+[results and next diagnostic](WRITE-RECEIPT-TAIL-PERFORMANCE.md) keep the receipt,
+FNV and directory candidates separate. The [development route](WRITE-PERFORMANCE-NEXT.md) keeps dynamic
 multi-Raft, routing, recoverable membership and automatic splits after the
-write phase. Capacity must be freshly qualified; no new QPS or Redis parity is
-claimed. All work ran locally, with no hosted CI dispatched.
+write phase. Each future campaign requires fresh capacity. The Chaos campaign
+itself establishes no QPS or Redis parity. All work ran locally, with no hosted
+CI dispatched.

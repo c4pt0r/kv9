@@ -1,0 +1,61 @@
+{
+  "members": [
+    {
+      "bytes": 4402,
+      "member": "README.md",
+      "sha256": "2f28c9e6dfd49d319c35d060ea4e990fa78804a2ebe680f54671b3005d83c628",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/README.md"
+    },
+    {
+      "bytes": 10159,
+      "member": "extract.py",
+      "sha256": "c9ec9080930f1d7d257f867f4cd8c9ea8164d3da74274ac0e29f578bbfbac264",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/extract.py"
+    },
+    {
+      "bytes": 1456,
+      "member": "extraction-terminal.json",
+      "sha256": "0643d2191e3d150febba3878755396bfb90fa2fc4b0b836f86b333c8efb4acfc",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/extraction-terminal.json"
+    },
+    {
+      "bytes": 0,
+      "member": "extraction.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/extraction.stderr"
+    },
+    {
+      "bytes": 5180,
+      "member": "extraction.stdout",
+      "sha256": "8738a90ac9a2cd743929667e0de1f87a630d21c568dfc8967c9e0f25bd693306",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/extraction.stdout"
+    },
+    {
+      "bytes": 339,
+      "member": "initial-inspection-note.json",
+      "sha256": "efa9aeb5969795eae69de7ae4c802ed335f11ba432176fcd233fee13b604a975",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/initial-inspection-note.json"
+    },
+    {
+      "bytes": 13290,
+      "member": "input-hashes.json",
+      "sha256": "2e180a5b1870581107fe9ffa9b062ec03e0746adc5e5c483c72177e4606bde76",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/input-hashes.json"
+    },
+    {
+      "bytes": 1741,
+      "member": "inventory.json",
+      "sha256": "09dbf0fcdd85fe67f4f6fd5f9c6b84601e2e51da0f65565c76ef791ecc3d6ab3",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/inventory.json"
+    },
+    {
+      "bytes": 78364,
+      "member": "summary.json",
+      "sha256": "c71ad49a3f1c4ccca1153ba4bb2d858cc48d9d6788beefdbfe6f2585c7def773",
+      "source": "/tmp/kv9-receipt-tail-performance-summary-20260915-first/summary.json"
+    }
+  ],
+  "original_bytes": 114931,
+  "original_files": 9,
+  "scope": "Separate exact frozen analysis; histogram helper and all 60 inputs are in evidence.tar.gz."
+}

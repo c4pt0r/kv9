@@ -1,0 +1,10 @@
+{
+  "scope": "Reporting/preflight reader failed before launch; the frozen inventory uses files rather than rows. No workload ran and no prepared source was changed.",
+  "tool_result": {
+    "chunk_id": "bb46f2",
+    "wall_time_seconds": 0.000002755,
+    "exit_code": 1,
+    "original_token_count": 23,
+    "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 8, in <module>\nKeyError: 'rows'\n"
+  }
+}
