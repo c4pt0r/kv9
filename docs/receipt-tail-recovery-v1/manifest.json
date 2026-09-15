@@ -1,0 +1,29 @@
+{
+  "decoded_bytes": 4381993,
+  "excluded_members": [
+    "release/kv9",
+    "release/workload/kv9-batch-workload"
+  ],
+  "files": {
+    "README.md": {
+      "bytes": 2035,
+      "sha256": "ba6c4e61c718aa161297f685537881dcb00c34e233988586de8a03e1fe1fd559"
+    },
+    "input-inventory.json": {
+      "bytes": 42294,
+      "sha256": "10c78cfef99c643ad03d770a7e8b9f0d2c0d01c6fda92f3b3c50f8f94da35fda"
+    },
+    "original-evidence.tar.gz": {
+      "bytes": 451551,
+      "sha256": "41f16ed42dbfdd6283a7eb1f568ba809191b65c2a3c9f5661deaadde8255859c"
+    },
+    "verify.py": {
+      "bytes": 5157,
+      "sha256": "847c9a2464527e224288d905ba5666e02e3255f5aaac9bb4f29d99c027123cd3"
+    }
+  },
+  "members": 160,
+  "revision": "a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9",
+  "scope": "Exact default release and ordinary recovery; Chaos and performance pending",
+  "version": 1
+}
