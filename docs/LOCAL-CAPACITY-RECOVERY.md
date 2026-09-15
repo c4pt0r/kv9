@@ -55,6 +55,7 @@ A [six-member cross-voter WAL patch pilot](cross-voter-retention-pilot-v1/README
 now passes complete original-hash reconstruction and eight refusal controls.
 Including the retained base, its two selected triplets reduce ordinary
 compressed sizes by 63.404% and 66.568%. These are sample results, not reclaimed
-space. No original object or catalog was retired. Exact reconstruction of the
-old compressed-object bytes and a verified migration/restore transaction remain
-necessary before using this representation to recover capacity.
+space. No original object or catalog was retired. A follow-up also reconstructs
+the exact six old compressed-object identities and independently decodes their
+complete logical bytes. A verified whole-cohort migration/restore transaction
+remains necessary before using this representation to recover capacity.

@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "members": 68,
+  "decoded_bytes": 6007742,
+  "archive_bytes": 550941,
+  "archive_sha256": "0ad4c34b52c050d14b99cee4d71c5fe7755c35edacef3d2553e1daffe29cb62e",
+  "inventory_sha256": "9af8672a9db328288ef3e928ce170d34f920277dc3b40bfb850c951861a85164",
+  "scope": "Exact six-object reconstruction/readback and additional CRC full-screen eligibility metadata. No payloads, migration or reclaimed capacity."
+}

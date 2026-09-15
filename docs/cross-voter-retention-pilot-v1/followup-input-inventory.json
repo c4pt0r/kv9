@@ -1,0 +1,410 @@
+[
+  {
+    "name": "exact-object-preparation/README.md",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/README.md",
+    "bytes": 5952,
+    "sha256": "8da732f9ecb4fbe5fe218fd3b5295c7c6b2df0a8f5a75a6e5f713a2f28207eef"
+  },
+  {
+    "name": "exact-object-preparation/code-pins.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/code-pins.json",
+    "bytes": 376,
+    "sha256": "3573fee31ad469157fa94b24f3e85a0b0255dde4209d273b12596d17a7d5a77b"
+  },
+  {
+    "name": "exact-object-preparation/commands.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/commands.json",
+    "bytes": 1353,
+    "sha256": "f67acde2018cd0e8f236756e65702cad5c4baccdeeeb34fb22bde7d1d1bedb59"
+  },
+  {
+    "name": "exact-object-preparation/common.py",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/common.py",
+    "bytes": 7168,
+    "sha256": "ed81dbbb58a9267edf15ab1f7fd6273277cad3c01ef80edd370d624b82242d02"
+  },
+  {
+    "name": "exact-object-preparation/common.py.diff",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/common.py.diff",
+    "bytes": 2140,
+    "sha256": "774fd25217acd9ed819b54698c80ab354218856c588032b73a79c0480be8a78d"
+  },
+  {
+    "name": "exact-object-preparation/lineage.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/lineage.json",
+    "bytes": 427,
+    "sha256": "c320dffeb00a199aead7d4fcc3e6489dbc7a52199cf3349a6fd1814290128e06"
+  },
+  {
+    "name": "exact-object-preparation/origin/code-pins.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/origin/code-pins.json",
+    "bytes": 368,
+    "sha256": "2f5ef4c2ae55e0fa3214292ecd9e95071641b352164dbfbfe7544474fabfd028"
+  },
+  {
+    "name": "exact-object-preparation/origin/common.py",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/origin/common.py",
+    "bytes": 6737,
+    "sha256": "83dc44c951a6bbdaa06a301bcdca925c21d5a700f8ad8097fad89d8375e71ae1"
+  },
+  {
+    "name": "exact-object-preparation/origin/inventory.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/origin/inventory.json",
+    "bytes": 8994,
+    "sha256": "0dab1d4838bbe9abeb65b5319798da8bd7c37efc991d96f50bf1d97fd1c5b1a0"
+  },
+  {
+    "name": "exact-object-preparation/origin/original-compressed-retention.py",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/origin/original-compressed-retention.py",
+    "bytes": 25704,
+    "sha256": "1f87075106081831d689ddcb5d21ad744f2a1ea3c8554e1d048045ff74fdec6a"
+  },
+  {
+    "name": "exact-object-preparation/origin/selection.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/origin/selection.json",
+    "bytes": 26915,
+    "sha256": "a1071e78c46105e50417108b14b6f1b73d70aac0325f2719ecc017c4e9d24cc0"
+  },
+  {
+    "name": "exact-object-preparation/preparation-result.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/preparation-result.json",
+    "bytes": 443,
+    "sha256": "031fb25b0ba1aea24d4ef8703c2283f465e1e332e6a8d8e27beb284c9d5281f4"
+  },
+  {
+    "name": "exact-object-preparation/readback.py",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/readback.py",
+    "bytes": 3995,
+    "sha256": "5307fbf6768b7ace315ceb63fae6dd4a1297c8b06af08cea43b8d43cb73ec2b6"
+  },
+  {
+    "name": "exact-object-preparation/reconstruct.py",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruct.py",
+    "bytes": 3343,
+    "sha256": "b977c525a71551b8fce6dc7f6a0234ecdeba990d6ecd388b9bf5ffd372d5fccc"
+  },
+  {
+    "name": "exact-object-preparation/selection.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/selection.json",
+    "bytes": 30693,
+    "sha256": "9139d65fb7f1605219a0963af5379051a59a760346fb91bf2a61dc53eebff411"
+  },
+  {
+    "name": "exact-object-preparation/source-mode-excerpt.txt",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/source-mode-excerpt.txt",
+    "bytes": 1531,
+    "sha256": "a1a1de58097d6bca85a413961e4330c08e83747637b60aef675673ac8e41566f"
+  },
+  {
+    "name": "exact-object-preparation/inventory.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/inventory.json",
+    "bytes": 2658,
+    "sha256": "0bd557662d145a23266f90597323e4d7c1a0dbf2e93fda37129460384ce8e0ef"
+  },
+  {
+    "name": "crc-full-eligibility/README.md",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/README.md",
+    "bytes": 2723,
+    "sha256": "18c319a51675d3ad657e0bca75e7ddaca0090f2fafd75fa6e47a6d98fedd2dfa"
+  },
+  {
+    "name": "crc-full-eligibility/by-voter.json",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/by-voter.json",
+    "bytes": 1375,
+    "sha256": "2fb599d9c55ca99706f51a7a85b6ea87e703117f311d5a247d6f0c846683d39d"
+  },
+  {
+    "name": "crc-full-eligibility/cohorts.json",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/cohorts.json",
+    "bytes": 61426,
+    "sha256": "b35c73e50d0fac5f26acf6d770af31d9a3f1c9560dedf2b2a40e49fae20abb7d"
+  },
+  {
+    "name": "crc-full-eligibility/lineage.json",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/lineage.json",
+    "bytes": 776,
+    "sha256": "87b8825e27425ba5fa98341d2a18ff87da0fcaface21cdd21e766501f8e43d96"
+  },
+  {
+    "name": "crc-full-eligibility/members.json",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/members.json",
+    "bytes": 5703883,
+    "sha256": "07bb73ad4d77c8a05599b85cc8b8befa9e325110ce2fa8b077cec65ebb49c8da"
+  },
+  {
+    "name": "crc-full-eligibility/metadata-pins.json",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/metadata-pins.json",
+    "bytes": 20054,
+    "sha256": "2c7b780da4c930e689f536ab6e76a4dd53d3d397fbe04b90c3aef70edb1e4c11"
+  },
+  {
+    "name": "crc-full-eligibility/observe.py",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/observe.py",
+    "bytes": 10748,
+    "sha256": "2b834eb8ba366d00d1a60b1723a461e1ffc593ab6aada771a85f0865a5b7b7f3"
+  },
+  {
+    "name": "crc-full-eligibility/source-delta.diff",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/source-delta.diff",
+    "bytes": 10378,
+    "sha256": "8144deeac12aa8a355336be647fb6ed31d3b39a3af66600309ca365b9f98f64f"
+  },
+  {
+    "name": "crc-full-eligibility/summary.json",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/summary.json",
+    "bytes": 2075,
+    "sha256": "b216e2543b09d868d44cbc4c79e3475c6b7bfe234d7bd11eee5d07763c4a0920"
+  },
+  {
+    "name": "crc-full-eligibility/terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/terminal.json",
+    "bytes": 456,
+    "sha256": "b52f4f47f3909d7f44311d82d847f86958df03be29e5c064e5580b71e26082a5"
+  },
+  {
+    "name": "crc-full-eligibility/inventory.json",
+    "original_path": "/tmp/kv9-cross-voter-crc-full-retention-eligibility-20260915-first/inventory.json",
+    "bytes": 1703,
+    "sha256": "607ed1b07af5e9b49a5c72cf2137ea9de129d72a4d3901962b55495b7d50cceb"
+  },
+  {
+    "name": "exact-object-run/baseline.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/baseline.json",
+    "bytes": 103,
+    "sha256": "1ac9f529be0daaec606a689e6fb2ffe6242328bfd5dac1ba5bc944809a1a0680"
+  },
+  {
+    "name": "exact-object-run/batch-n1.original-object.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/batch-n1.original-object.zst.child.json",
+    "bytes": 1429,
+    "sha256": "e7f02579b33604add080d2b4eaad7c2335a1e25d64a3091d7a5cd69a8f78ba92"
+  },
+  {
+    "name": "exact-object-run/batch-n1.original-object.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/batch-n1.original-object.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/batch-n2.original-object.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/batch-n2.original-object.zst.child.json",
+    "bytes": 1429,
+    "sha256": "f9660df72bb4cf348603fd2f087a1a8ffd622d97617bc611880497cf666584b9"
+  },
+  {
+    "name": "exact-object-run/batch-n2.original-object.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/batch-n2.original-object.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/batch-n3.original-object.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/batch-n3.original-object.zst.child.json",
+    "bytes": 1429,
+    "sha256": "02d7d4df236561bf0f760bdbebef15f6614b5253c404cc58b2d44a4e2ea1c22a"
+  },
+  {
+    "name": "exact-object-run/batch-n3.original-object.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/batch-n3.original-object.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/point-n1.original-object.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/point-n1.original-object.zst.child.json",
+    "bytes": 1420,
+    "sha256": "356bfe861ecde3aec3e919419f75a38c44e15877f4a4a797281345db87a4d7dc"
+  },
+  {
+    "name": "exact-object-run/point-n1.original-object.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/point-n1.original-object.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/point-n2.original-object.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/point-n2.original-object.zst.child.json",
+    "bytes": 1428,
+    "sha256": "eea01a2f5378a417c7ca73625361d69a00d7e9c5eede30296fb548f8cc3f7e68"
+  },
+  {
+    "name": "exact-object-run/point-n2.original-object.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/point-n2.original-object.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/point-n3.original-object.zst.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/point-n3.original-object.zst.child.json",
+    "bytes": 1428,
+    "sha256": "3b5aa8bf4b5231bbc078b7f0f003621bcd28b288dfbb561e26efbf60a7d44fec"
+  },
+  {
+    "name": "exact-object-run/point-n3.original-object.zst.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/point-n3.original-object.zst.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/readback-first/batch-n1.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/batch-n1.decoded.child.json",
+    "bytes": 1438,
+    "sha256": "442193a9606701949847518d3119d184bb030366657414e8e186783e48f7b7a8"
+  },
+  {
+    "name": "exact-object-run/readback-first/batch-n1.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/batch-n1.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/readback-first/batch-n2.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/batch-n2.decoded.child.json",
+    "bytes": 1438,
+    "sha256": "47154683e27b6a0882e1b0d06fb7f1c77363f2a6ba76b7414dd5353eec09e6fa"
+  },
+  {
+    "name": "exact-object-run/readback-first/batch-n2.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/batch-n2.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/readback-first/batch-n3.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/batch-n3.decoded.child.json",
+    "bytes": 1438,
+    "sha256": "a63ec38013ed7f8ab923b0b44c13f6e5af213aeb52cdac45efe89745cf84339d"
+  },
+  {
+    "name": "exact-object-run/readback-first/batch-n3.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/batch-n3.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/readback-first/point-n1.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/point-n1.decoded.child.json",
+    "bytes": 1435,
+    "sha256": "4997a5038b90abfe58bc14e5cacf9d5dfea3b9bf6fa3ff3b8389820e7141e39c"
+  },
+  {
+    "name": "exact-object-run/readback-first/point-n1.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/point-n1.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/readback-first/point-n2.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/point-n2.decoded.child.json",
+    "bytes": 1435,
+    "sha256": "ed85a6c3a5a146a9ee521a48e7ac03b609d053150a4b9f9e72244a9aa7e4d446"
+  },
+  {
+    "name": "exact-object-run/readback-first/point-n2.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/point-n2.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/readback-first/point-n3.decoded.child.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/point-n3.decoded.child.json",
+    "bytes": 1437,
+    "sha256": "c0404386e77a57a65d7998a62ce6b409cbdb387176d8296cc79334e999d3271a"
+  },
+  {
+    "name": "exact-object-run/readback-first/point-n3.decoded.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/point-n3.decoded.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-run/readback-first/result.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/readback-first/result.json",
+    "bytes": 13398,
+    "sha256": "c8de3231874c222ce3d006b7cc3b34412a6a94a0ae31c59c60ddbf81f33ab566"
+  },
+  {
+    "name": "exact-object-run/result.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-preparation-20260915-first/reconstruction-first/result.json",
+    "bytes": 25407,
+    "sha256": "b5c49c7d848f7adf6d6cb101c985155332b081b3efefc777531e86064af01438"
+  },
+  {
+    "name": "exact-object-root/accepted-summary.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/accepted-summary.json",
+    "bytes": 1836,
+    "sha256": "2e3f7ec758846e538f74a7c17feebb82f36c9314cfbba64c6fd6d16b3928e354"
+  },
+  {
+    "name": "exact-object-root/commands.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/commands.json",
+    "bytes": 1376,
+    "sha256": "c30712dfff4f5b95cc22045cd2ef8c9f3a5cd4a784e126e499ea49d8819db71d"
+  },
+  {
+    "name": "exact-object-root/preflight.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/preflight.json",
+    "bytes": 376,
+    "sha256": "fe636574faed1296c4b8b8a455e59b41bda983b951fdcc3890ca7987a6f1f33e"
+  },
+  {
+    "name": "exact-object-root/readback-child-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/readback-child-terminal.json",
+    "bytes": 921,
+    "sha256": "f5d5e3bf898bf1e8fc50d1a99c9896163d9cd573ddcb915d0dd1e27c91e969d7"
+  },
+  {
+    "name": "exact-object-root/readback-invocation.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/readback-invocation.json",
+    "bytes": 719,
+    "sha256": "15f45e73181a52b922b8ed3982ee23f2db2304ebd20258bac1e8379c807976e4"
+  },
+  {
+    "name": "exact-object-root/readback-tool-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/readback-tool-terminal.json",
+    "bytes": 65,
+    "sha256": "be9aad3df33a97d95690d54924ffed0351a8bf09e619cfb55b4f3cd8bba8e142"
+  },
+  {
+    "name": "exact-object-root/readback.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/readback.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-root/readback.stdout",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/readback.stdout",
+    "bytes": 234,
+    "sha256": "21b315bfe291e0ab7d8c6ecd3d2cf8ba9e45bb1009a2bff935f9e10416f99dfd"
+  },
+  {
+    "name": "exact-object-root/reconstruct-child-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/reconstruct-child-terminal.json",
+    "bytes": 799,
+    "sha256": "d70b57479566ee3facdff4362aecb5a11bc8cea4e6557a23cdcca52e198c41c8"
+  },
+  {
+    "name": "exact-object-root/reconstruct-invocation.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/reconstruct-invocation.json",
+    "bytes": 612,
+    "sha256": "f34ecbacb3217dbde0faac9bd061c28323d7619016537e008943f09272b25f69"
+  },
+  {
+    "name": "exact-object-root/reconstruct-tool-terminal.json",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/reconstruct-tool-terminal.json",
+    "bytes": 65,
+    "sha256": "ae0e6747706a6525c3d514251264f2000733eb671140c50b528799e91586534e"
+  },
+  {
+    "name": "exact-object-root/reconstruct.stderr",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/reconstruct.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "exact-object-root/reconstruct.stdout",
+    "original_path": "/tmp/kv9-cross-voter-exact-object-restore-root-20260915-first/reconstruct.stdout",
+    "bytes": 253,
+    "sha256": "da8afd543c87d66d317c0d3263f558d037de2fed5ed5359b5c799e6a1e3b978d"
+  }
+]

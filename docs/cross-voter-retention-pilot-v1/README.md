@@ -45,13 +45,17 @@ That target allocation is a ceiling, not a forecast. Even impossible zero-byte
 patches would bring approximately 24.63 GB free space to only 76.50 GB, below
 the roughly 79.46 GB historical launch estimate before charging patches or
 metadata. The sample reductions must not be extrapolated into reclaimed space.
-Further eligible retention or added disk capacity is required to close that gap.
+A subsequent metadata-only assessment of the completed CRC full-regression
+screen adds 72 accepted catalogs and 2,447 eligible targets occupying
+27,797,909,504 bytes, with no missing, changed or unpaired targets. Together,
+the four scopes contain 79,671,627,776 bytes of eligible target allocation.
+This establishes an additional candidate scope, not actual savings or capacity.
 
-Before migration, verify reconstruction of the exact original compressed-object
-bytes, because existing catalogs and readers pin those hashes too. Then require
-bounded staging, independent complete readback, restore/refusal checks and exact
-accounting before retiring any named object. Database workloads, Raft rules and
-the complete performance comparison remain unchanged.
+The exact compressed-object follow-up below now passes for the six samples.
+Before retiring any named object, qualify bounded staging, independent complete
+readback, restore/refusal checks and exact accounting for a whole selected
+cohort. Database workloads, Raft rules and the complete performance comparison
+remain unchanged.
 
 ## Original reporting evidence
 
@@ -67,3 +71,27 @@ checks and the complete three-screen metadata assessment. Original WALs,
 compressed objects, valid patches and decoded/control payloads remain local;
 portable reporting readback does not rerun their codec checks. No database
 throughput or latency result is claimed.
+
+## Exact original compressed-object follow-up
+
+All six samples also reproduce the original compressed-object SHA-256 and
+length: 67,878,587 encoded bytes. The original encoder took a regular file
+descriptor as stdin; replaying its exact argv and input mode reproduces its
+bytes. The earlier pilot's named-file ordinary encodings are comparison
+outputs and are not substituted for these old objects.
+
+A separate reader checks each original compressed identity, then replays its
+original decoder and checks all 100,639,065 logical bytes. All twelve encoder
+and decoder lifetimes exit. Reconstruction `70c91b/0`, readback `35f5d0/0`, root
+summary `795310/0`. The maximum sampled added allocation is 168,681,472 bytes;
+minimum observed available space is 24,450,084,864 bytes. Old compressed
+objects were not opened by this follow-up; the already verified raw pilot
+files and original catalog digests supply its inputs. No object is retired.
+
+Run `python3 -B docs/cross-voter-retention-pilot-v1/verify-followup.py` for the
+separate follow-up reporting archive. It verifies 68 members / 6,007,742 bytes,
+the original compressed/logical counts and the additional CRC metadata ceiling.
+Portable readback is `4b3867/0`. Archive size is 550,941 bytes; SHA-256
+`0ad4c34b52c050d14b99cee4d71c5fe7755c35edacef3d2553e1daffe29cb62e`.
+This proves compatibility for six sampled objects, not a complete migration
+or a legacy whole-cohort audit after restoration. Those remain the next gate.

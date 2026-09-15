@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "scope": "Original reporting only; six exact object identities, no retirement or whole-cohort migration.",
+  "package_tool": {
+    "chunk_id": "40414f",
+    "exit_code": 0
+  },
+  "readback_tool": {
+    "chunk_id": "4b3867",
+    "exit_code": 0
+  },
+  "archive_sha256": "0ad4c34b52c050d14b99cee4d71c5fe7755c35edacef3d2553e1daffe29cb62e",
+  "verifier_sha256": "82308bf3809a3d173951eec69c240bc6eb3670ce338132bd73ae075fd648a295"
+}
