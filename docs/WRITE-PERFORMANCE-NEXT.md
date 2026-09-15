@@ -1,6 +1,6 @@
 # Write performance against three-copy Redis
 
-Updated: 2026-09-14. The current priority is write throughput and latency,
+Updated: 2026-09-15. The current priority is write throughput and latency,
 targeting Redis with one primary and two replicas. Read optimization is held at
 the selected ThinLTO/Safe ReadIndex baseline. The experimental lease work and
 its remaining clock/Chaos gates are retained; read parity is not claimed and is
@@ -58,7 +58,7 @@ empty groups cost more. The subsequent writer integration below preserves
 the original stream, sync/publication and failure semantics. The standalone
 kernel experiment remains a separate measurement; no database QPS gain is claimed.
 
-## Latest writer checkpoint (2026-09-14 UTC)
+## Latest writer checkpoint (2026-09-15 UTC)
 
 The [bounded four-lane FNV writer](WRITE-FNV-WRITER.md), experimental runtime
 `12f44d3`, now passes 15 writer plus six kernel proof statements and the local
@@ -102,12 +102,19 @@ Its [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.m
 now pass, including 364 complete operations and six fresh drained voters. The
 [actual 21-window Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md) also passes:
 9,372 complete operations, four fresh drains and all 33 observed server
-lifetimes exited. Next establish positive default-threshold segment rotation
-and same-store leader-crash recovery before the complete matched
-throughput/latency screen. The ordinary low-volume Chaos baseline does not
-establish that fast-path coverage. Review benchmark storage headroom against
-actual coexistence requirements while preserving all cohorts and retained
-byte coverage. No performance gain is claimed yet. Queue age and
+lifetimes exited. The separate [rotation supplement](WRITE-PUBLISHED-DIRECTORY-ROTATION.md)
+now passes positive default-threshold rotations before and after an actual
+leader kill, same-store acknowledged-value recovery, five fresh drains,
+independent full-history audit and exact cleanup. Both earlier fixture failures
+remain preserved. [Local capacity recovery](LOCAL-CAPACITY-RECOVERY.md) reaches
+the empirical storage-v3 launch budget without deleting retained logical
+bytes. The [complete eight-smoke/sixteen-timed screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
+and independent audit now pass. Loaded batch throughput improves 1.941% to
+1,076,849.048 items/s and pooled p99 improves to 6.554–6.619 ms; loaded point
+throughput regresses 0.518% to 138,734.094 calls/s. Both orders retain batch
+gains and loaded point regression. Keep CRC selected, preserve the directory
+candidate as a batch improvement, and qualify the receipt tail hint separately
+next. Do not combine candidates or infer a general gain before new evidence. Queue age and
 Ready/checksum group diagnostics remain secondary if this does not explain the
 cost. Preserve every quorum, publication and acknowledgment fence, required file
 and parent sync, and the original first-order FNV tail.
@@ -322,12 +329,17 @@ original failed audit and schema repair remain retained without workload reruns.
    failure-poisoning boundaries remain unchanged. The paired write screen now
    passes but does not justify promotion: pooled batch throughput gains 4.131%
    with worse p99, while point throughput changes only 0.351%. Keep CRC selected.
-   Completed next source checkpoint: published-directory reuse (`483b8c3`),
-   with conditional proof, workspace tests and syscall-fault acceptance. Next
-   run actual Chaos, then a paired write screen; exact default release and
-   independently audited ordinary recovery now pass.
-   Keep receipt and persistent-map ownership as
-   secondary targets; do not repeat rejected worker/transport sweeps.
+   Completed: published-directory reuse (`483b8c3`), with conditional proof,
+   workspace/syscall checks, default release, ordinary recovery, actual full21
+   Chaos and positive rotations before/after same-store leader recovery. Its
+   complete paired write screen improves loaded batch throughput 1.941% and
+   p99, while loaded point throughput regresses 0.518%. Keep CRC selected and
+   retain the directory candidate as a batch improvement. Next complete the
+   source/proof-qualified receipt tail hint's default release, recovery and
+   actual Chaos before an independent matched screen. Consider combinations
+   only after those separate results. Persistent-map work remains secondary;
+   do not repeat rejected owned-buffer or worker/transport sweeps without new
+   causal evidence.
    DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
 6. After the write phase, return to bounded dynamic multi-Raft (#22), epoch routing

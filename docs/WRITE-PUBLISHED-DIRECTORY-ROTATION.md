@@ -64,9 +64,11 @@ retain both later attempts. The successful archive contains 1,314 members /
 before cleanup. The archives include selected topology and segment headers,
 but are not complete raw PVC WAL/SST or executable backups.
 
-Next is the complete eight-smoke / sixteen-timed matched write screen with
-CRC main, reporting throughput and latency together. [Local capacity recovery](LOCAL-CAPACITY-RECOVERY.md)
-has reached its empirical launch budget; fresh guards still apply. Dynamic
+The subsequent [complete matched write screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
+now passes all eight smokes and sixteen timed cohorts. Batch throughput/tail
+improve, while loaded point throughput regresses slightly; CRC stays selected.
+[Local capacity recovery](LOCAL-CAPACITY-RECOVERY.md) enabled the campaign;
+future runs still require fresh space guards. Dynamic
 multi-Raft, routing, membership and automatic splits remain on the subsequent
 route. This checkpoint closes the rotation supplement, not an entire original
 industrial roadmap work package. All work ran locally; no hosted CI was dispatched.

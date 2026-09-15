@@ -74,11 +74,12 @@ opt-in and no-op watermark fixture failures remain preserved. The
 already covers explicit successor-file and parent-sync cuts, but does not
 replace this real cluster recovery check.
 
-After positive rotation coverage, run the complete matched write screen with
-CRC main and the fixed native v3 client: c1/c64, Put/BatchPut(64), two opposite
-orders, eight smokes and sixteen timed cohorts. Report throughput and tail
-latency together. The [latest completed results](WRITE-FNV-WRITER-PERFORMANCE.md)
-remain unchanged. The [development route](WRITE-PERFORMANCE-NEXT.md) retains
+The subsequent [complete matched write screen](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md)
+now passes with CRC main and the fixed native v3 client: c1/c64,
+Put/BatchPut(64), two opposite orders, eight smokes and sixteen timed cohorts.
+Loaded batch throughput and tail improve; loaded point throughput regresses
+slightly. CRC remains selected. Earlier [FNV results](WRITE-FNV-WRITER-PERFORMANCE.md)
+retain their original scope. The [development route](WRITE-PERFORMANCE-NEXT.md) retains
 dynamic multi-Raft, routing, membership and automatic splits after the write
 phase. Cross-host, physical power-loss and whole-system industrial acceptance
 remain open. No original roadmap work-package checkbox closes.

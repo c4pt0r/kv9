@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "members": 1123,
+  "decoded_bytes": 152832812,
+  "compressed_bytes": 19842904,
+  "archive_sha256": "cb86d1ce67c278c9cccf86edcb1fb8e17165472d4be25ceb9a2a744a1b9b5186",
+  "created_ns": 1789437286574137415,
+  "scope": "All 24 original reports/configs/datasets and selected resource/drain/lifecycle records, exact audit/retention inventories and decoder receipts, preparation provenance and original launch/summary failures. Compressed WAL objects, ELF files and unrelated full-host process dumps omitted; full local retention audit cannot be replayed from this package alone."
+}

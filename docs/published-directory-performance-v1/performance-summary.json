@@ -1,0 +1,305 @@
+{
+  "complete": true,
+  "audit_sha256": "628c6c7360fc808419dd76843689e85c51f6ade9adad318c6cd625ebcb9a3534",
+  "rows": [
+    {
+      "concurrency": 1,
+      "workload": "point-r000",
+      "old": {
+        "calls": 387084,
+        "input_items": 387084,
+        "elapsed_ns": 20000019012,
+        "calls_per_second": 19354.18160191497,
+        "items_per_second": 19354.18160191497,
+        "mean_us": 51.56665961910076,
+        "p99_us": {
+          "lower": 68.608,
+          "upper": 69.631
+        },
+        "latency": {
+          "count": 387084,
+          "sum_ns": 19960628872,
+          "mean_ns": 51566.65961910076,
+          "p50": {
+            "lower_ns": 50688,
+            "upper_ns": 51199
+          },
+          "p95": {
+            "lower_ns": 59392,
+            "upper_ns": 59903
+          },
+          "p99": {
+            "lower_ns": 68608,
+            "upper_ns": 69631
+          }
+        },
+        "ordinals": [
+          0,
+          15
+        ]
+      },
+      "new": {
+        "calls": 386005,
+        "input_items": 386005,
+        "elapsed_ns": 20000011590,
+        "calls_per_second": 19300.238815511606,
+        "items_per_second": 19300.238815511606,
+        "mean_us": 51.70963101773293,
+        "p99_us": {
+          "lower": 68.608,
+          "upper": 69.631
+        },
+        "latency": {
+          "count": 386005,
+          "sum_ns": 19960176121,
+          "mean_ns": 51709.63101773293,
+          "p50": {
+            "lower_ns": 50688,
+            "upper_ns": 51199
+          },
+          "p95": {
+            "lower_ns": 59904,
+            "upper_ns": 60415
+          },
+          "p99": {
+            "lower_ns": 68608,
+            "upper_ns": 69631
+          }
+        },
+        "ordinals": [
+          1,
+          14
+        ]
+      },
+      "throughput_change_percent": -0.2787138589111282,
+      "mean_change_percent": 0.2772554974245667
+    },
+    {
+      "concurrency": 1,
+      "workload": "batch64-r000",
+      "old": {
+        "calls": 123111,
+        "input_items": 7879104,
+        "elapsed_ns": 20000130714,
+        "calls_per_second": 6155.5097694348,
+        "items_per_second": 393952.6252438272,
+        "mean_us": 162.3461679703682,
+        "p99_us": {
+          "lower": 215.04,
+          "upper": 217.087
+        },
+        "latency": {
+          "count": 123111,
+          "sum_ns": 19986599085,
+          "mean_ns": 162346.1679703682,
+          "p50": {
+            "lower_ns": 155648,
+            "upper_ns": 157695
+          },
+          "p95": {
+            "lower_ns": 180224,
+            "upper_ns": 182271
+          },
+          "p99": {
+            "lower_ns": 215040,
+            "upper_ns": 217087
+          }
+        },
+        "ordinals": [
+          2,
+          13
+        ]
+      },
+      "new": {
+        "calls": 125709,
+        "input_items": 8045376,
+        "elapsed_ns": 20000086818,
+        "calls_per_second": 6285.4227156085335,
+        "items_per_second": 402267.05379894614,
+        "mean_us": 158.9873076390712,
+        "p99_us": {
+          "lower": 206.848,
+          "upper": 208.895
+        },
+        "latency": {
+          "count": 125709,
+          "sum_ns": 19986135456,
+          "mean_ns": 158987.3076390712,
+          "p50": {
+            "lower_ns": 155648,
+            "upper_ns": 157695
+          },
+          "p95": {
+            "lower_ns": 178176,
+            "upper_ns": 180223
+          },
+          "p99": {
+            "lower_ns": 206848,
+            "upper_ns": 208895
+          }
+        },
+        "ordinals": [
+          3,
+          12
+        ]
+      },
+      "throughput_change_percent": 2.110514823951992,
+      "mean_change_percent": -2.0689495620925813
+    },
+    {
+      "concurrency": 64,
+      "workload": "point-r000",
+      "old": {
+        "calls": 2789216,
+        "input_items": 2789216,
+        "elapsed_ns": 20000542690,
+        "calls_per_second": 139457.01590360198,
+        "items_per_second": 139457.01590360198,
+        "mean_us": 458.7980518084652,
+        "p99_us": {
+          "lower": 745.472,
+          "upper": 753.663
+        },
+        "latency": {
+          "count": 2789216,
+          "sum_ns": 1279686866873,
+          "mean_ns": 458798.05180846516,
+          "p50": {
+            "lower_ns": 438272,
+            "upper_ns": 442367
+          },
+          "p95": {
+            "lower_ns": 630784,
+            "upper_ns": 638975
+          },
+          "p99": {
+            "lower_ns": 745472,
+            "upper_ns": 753663
+          }
+        },
+        "ordinals": [
+          4,
+          11
+        ]
+      },
+      "new": {
+        "calls": 2774791,
+        "input_items": 2774791,
+        "elapsed_ns": 20000786604,
+        "calls_per_second": 138734.09356035345,
+        "items_per_second": 138734.09356035345,
+        "mean_us": 461.18574882720895,
+        "p99_us": {
+          "lower": 745.472,
+          "upper": 753.663
+        },
+        "latency": {
+          "count": 2774791,
+          "sum_ns": 1279694065174,
+          "mean_ns": 461185.74882720894,
+          "p50": {
+            "lower_ns": 442368,
+            "upper_ns": 446463
+          },
+          "p95": {
+            "lower_ns": 638976,
+            "upper_ns": 647167
+          },
+          "p99": {
+            "lower_ns": 745472,
+            "upper_ns": 753663
+          }
+        },
+        "ordinals": [
+          5,
+          10
+        ]
+      },
+      "throughput_change_percent": -0.5183836313751633,
+      "mean_change_percent": 0.5204244022685156
+    },
+    {
+      "concurrency": 64,
+      "workload": "batch64-r000",
+      "old": {
+        "calls": 330180,
+        "input_items": 21131520,
+        "elapsed_ns": 20004383023,
+        "calls_per_second": 16505.38282637241,
+        "items_per_second": 1056344.5008878342,
+        "mean_us": 3876.5489870555457,
+        "p99_us": {
+          "lower": 7536.64,
+          "upper": 7602.175
+        },
+        "latency": {
+          "count": 330180,
+          "sum_ns": 1279958944546,
+          "mean_ns": 3876548.9870555457,
+          "p50": {
+            "lower_ns": 3702784,
+            "upper_ns": 3735551
+          },
+          "p95": {
+            "lower_ns": 5701632,
+            "upper_ns": 5767167
+          },
+          "p99": {
+            "lower_ns": 7536640,
+            "upper_ns": 7602175
+          }
+        },
+        "ordinals": [
+          6,
+          9
+        ]
+      },
+      "new": {
+        "calls": 336583,
+        "input_items": 21541312,
+        "elapsed_ns": 20004021957,
+        "calls_per_second": 16825.766374557476,
+        "items_per_second": 1076849.0479716784,
+        "mean_us": 3802.6958991095808,
+        "p99_us": {
+          "lower": 6553.6,
+          "upper": 6619.135
+        },
+        "latency": {
+          "count": 336583,
+          "sum_ns": 1279922793810,
+          "mean_ns": 3802695.8991095806,
+          "p50": {
+            "lower_ns": 3637248,
+            "upper_ns": 3670015
+          },
+          "p95": {
+            "lower_ns": 5505024,
+            "upper_ns": 5570559
+          },
+          "p99": {
+            "lower_ns": 6553600,
+            "upper_ns": 6619135
+          }
+        },
+        "ordinals": [
+          7,
+          8
+        ]
+      },
+      "throughput_change_percent": 1.9410852299236225,
+      "mean_change_percent": -1.9051245887146795
+    }
+  ],
+  "calls": 7252679,
+  "input_items": 64934408,
+  "outcomes": {
+    "success": 7252679,
+    "refused": 0,
+    "unknown_write": 0,
+    "read_failure": 0,
+    "client_rejected": 0
+  },
+  "dropped_slots": 0,
+  "scope": "Only the sixteen accepted timed cohorts. Sum counts/elapsed, count-weighted means, merged original whole-call histograms. No smoke, historical or Redis pooling."
+}

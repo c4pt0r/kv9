@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "members": 1123,
+  "decoded_bytes": 152832812,
+  "files": {
+    "README.md": {
+      "bytes": 1312,
+      "sha256": "f6457abdc524904ba1a4711013c24e4417918591fa9da4afc23d86ce1b68664e"
+    },
+    "archive-result.json": {
+      "bytes": 600,
+      "sha256": "aed4286dc9ab738e8e4016bc66451dcc6943dc49f01be8319b1a282a189dc2b6"
+    },
+    "input-inventory.json": {
+      "bytes": 341221,
+      "sha256": "7f2f232af7416b2d9d40c0926b1e6f49c2f959bdfbc3cbcbd444622c9433b857"
+    },
+    "original-evidence.tar.gz": {
+      "bytes": 19842904,
+      "sha256": "cb86d1ce67c278c9cccf86edcb1fb8e17165472d4be25ceb9a2a744a1b9b5186"
+    },
+    "performance-summary.json": {
+      "bytes": 7687,
+      "sha256": "502577e4bb0609d6b8bae1e3909f4160e30061737d20ca55bfec896a68bfa079"
+    },
+    "verify.py": {
+      "bytes": 5778,
+      "sha256": "5f0fec07b38743ad1ca5c629c9cbaa0bfafce22b9e646e662b55fb658fb3ed21"
+    }
+  }
+}
