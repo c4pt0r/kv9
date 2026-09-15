@@ -123,8 +123,9 @@ inspection found repeated ancestor-directory fsync during every WAL rotation.
 A separate [published-directory candidate](WRITE-PUBLISHED-DIRECTORY.md) now
 passes conditional proof, 793 tests and actual syscall-result fault checks.
 Its [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.md)
-now pass. Next run actual Chaos Mesh, then a matched throughput/latency screen
-with every Raft fence retained.
+now pass. Its [actual 21-window Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md)
+also passes. Next establish positive segment-rotation/crash coverage, then run
+a matched throughput/latency screen with every Raft fence retained.
 Queue age and Ready/checksum group diagnostics remain secondary if needed.
 Preserve the original first-order tail instead of rerunning until it disappears.
 The [receipt tail-hint candidate](WRITE-RECEIPT-TAIL-HINT.md) remains a separate

@@ -99,8 +99,15 @@ TLAPS statements / 24 fresh obligations, 793 tests/doctests, formatting, Clippy,
 five actual syscall cases and four refusal controls. It retains full ancestor
 sync during creation/recovery and avoids repeating it during normal rotation.
 Its [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.md)
-now pass, including 364 complete operations and six fresh drained voters. Next
-run actual Chaos before a matched throughput/latency screen. No performance gain is claimed yet. Queue age and
+now pass, including 364 complete operations and six fresh drained voters. The
+[actual 21-window Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md) also passes:
+9,372 complete operations, four fresh drains and all 33 observed server
+lifetimes exited. Next establish positive default-threshold segment rotation
+and same-store leader-crash recovery before the complete matched
+throughput/latency screen. The ordinary low-volume Chaos baseline does not
+establish that fast-path coverage. Review benchmark storage headroom against
+actual coexistence requirements while preserving all cohorts and retained
+byte coverage. No performance gain is claimed yet. Queue age and
 Ready/checksum group diagnostics remain secondary if this does not explain the
 cost. Preserve every quorum, publication and acknowledgment fence, required file
 and parent sync, and the original first-order FNV tail.
