@@ -121,10 +121,26 @@ def main():
     valid = (MODEL / 'Owner.cfg').read_text()
     for name, config in [('one-operation', valid.replace('{1,2}', '{1}')), ('two-operations', valid)]:
         results[name] = model_case(args, name, model, config)
+    # Restrict negative evidence to an already applied identity, then require
+    # an actual trace that clears its journal while retaining Published Pending.
+    # This deliberately false extra invariant is a reachability witness, not a
+    # fault in the production protocol or one of its safety invariants.
+    late_model = proof.replace_once(model,
+        'CNegativeEvidence(o) == /\\ cJournal = o /\\ o \\in cPrepared\n',
+        'CNegativeEvidence(o) == /\\ cJournal = o /\\ o \\in cPrepared /\\ o \\in cEffects\n')
+    late_mc = ('---------------- MODULE CheckpointOwnerMC ----------------\n'
+               'EXTENDS CheckpointOwner\n'
+               'CNoAppliedNegativeClear == \\A o \\in cCleared :\n'
+               '    ~(o \\in cNegative /\\ o \\in cEffects /\\ cPending[o] = 2 /\\ cVersion[o] = 0)\n'
+               '=========================================================\n')
+    results['late-negative-retains-owner'] = model_case(args,
+        'late-negative-retains-owner', late_model,
+        valid.replace('{1,2}', '{1}') + '\nINVARIANT CNoAppliedNegativeClear\n',
+        'CNoAppliedNegativeClear', mc=late_mc)
     mutations = {
         'io-without-owner': ('cJournal = o /\\ CProtected(o)', 'cJournal = o /\\ TRUE', 'CCovered'),
         'verified-without-visible-bytes': ('cJournal = o /\\ o \\in cRemote', 'cJournal = o /\\ TRUE', 'CType'),
-        'apply-without-preparation': ('cJournal = o /\\ o \\in cPrepared\n', 'cJournal = o /\\ TRUE\n', 'CType'),
+        'apply-without-preparation': ('CApply(o) == /\\ cJournal = o /\\ o \\in cPrepared\n', 'CApply(o) == /\\ cJournal = o /\\ TRUE\n', 'CType'),
         'replace-active-intent': ('cJournal = CNone /\\ o \\notin cUsed', 'TRUE /\\ o \\notin cUsed', 'CSlot'),
         'clear-unknown-intent': ('(o \\in cNegative \\/ (o \\in cPositive /\\ cPending[o] = 4 /\\ cVersion[o] = 2))', 'TRUE', 'CSettled'),
         # Removing the last published owner first violates coverage (which is
@@ -141,9 +157,9 @@ def main():
     unsafe = proof.replace_once(model, *mutations['io-without-owner'][:2])
     results['unowned-io-proof'] = proof_case(args, 'unowned-io-proof', unsafe, source, 'CheckpointOwnerProof: TLAPS exit 10')
     save(args.output / 'summary.json', dict(status='PASS', theorems=7, obligations=43, positive_models=2,
-        model_counterexamples=6, proof_rejections=3, results=results, source_pins=inventory['source_pins'],
+        model_counterexamples=6, reachability_witnesses=1, proof_rejections=3, results=results, source_pins=inventory['source_pins'],
         scope='Durable journal/owner projection under atomic validated local journal recovery, exact ledger receipts and typed seam evidence. Restart stutters on durable state; volatile scheduling is separate. No complete legacy coverage, negative-owner release, destination admission, reader drainage or deletion proof.'))
-    print('PASS: checkpoint owner: 7 theorems / 43 obligations; 2 models, 6 counterexamples, 3 proof rejections', flush=True)
+    print('PASS: checkpoint owner: 7 theorems / 43 obligations; 2 models, 6 counterexamples, 1 reachability witness, 3 proof rejections', flush=True)
 
 
 if __name__ == '__main__':

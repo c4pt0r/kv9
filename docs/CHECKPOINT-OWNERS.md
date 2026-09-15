@@ -153,6 +153,26 @@ liveness or the scheduling counter. The scheduling argument above has a
 separate engine regression. Negative evidence does not prove that an uncertain
 original attempt never committed.
 
+The follow-up model explicitly permits a refused submission after an earlier
+submission of the same identity already applied. A stale receipt only rejects
+its own submission. The worker already retains Pending on negative settlement;
+this aligns the model with that conservative implementation without changing
+Rust. All seven theorems and 43 strict obligations still pass. The finite state
+counts remain 27 and 405; those counts alone do not establish event ordering.
+An additional constrained TLC witness therefore requires application before
+negative evidence and reaches journal clearing with Published Pending and no
+Version owner. Its nine-state trace demonstrates this ordering while the
+production safety invariants continue to hold. The witness's deliberately false
+extra invariant is a reachability check, not a production safety failure.
+
+The first follow-up runner stopped because broadening the negative-evidence
+guard made a fault's text selector ambiguous. The corrected selector names
+`CApply` explicitly; the six faults and three strict proof rejection checks
+pass again. Both attempts are retained under
+`/mnt/data/kv9-work/checkpoint-owner-late-refusal-proof-20260915-{first,second}`.
+Their [portable proof evidence](checkpoint-owner-late-refusal-v1/README.md)
+includes the original failure and the ordered witness.
+
 ## Current local validation
 
 The full local workspace library run passed **731 tests, four ignored** on the

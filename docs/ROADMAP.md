@@ -16,17 +16,20 @@
 > also passes: 9,639 complete operations, four fresh final drains, 36 exited server
 > lifetimes and 25 exited containers. The [actual schema-2 observer](WRITE-RECEIPT-UPPER-BOUND-OBSERVER.md)
 > also passes all 16 short cohorts: at c64 Put, about 88% of lookups skip the scan.
-> Fresh performance capacity and the full matched screen remain open; no
-> candidate-versus-CRC speedup is claimed.
-> The parallel [C04 contract increment](RECOVERY-RETENTION-CONTRACT.md) now
-> specifies recovery anchors, shared pin ownership and delayed-delete fencing;
-> its implementation, composition proof and fault acceptance remain open.
-> The [first retention component](RETENTION-RECORD.md) now supplies bounded pin
-> records, 10 checked theorems / 59 obligations and compiled source fault controls;
-> production ledger/anchor integration and actual fault acceptance remain open.
-> The [configuration-at-cut component](CONFIGURATION-AT-CUT.md) adds checked
-> historical membership, 11 theorems / 95 obligations and 257 passing Raft tests.
-> It is a recovery-only anchor input; complete binding and integration remain open.
+> New bulk outputs use `/mnt/data/kv9-work`, with separate root/data/tmpfs guards.
+> Capacity is sufficient. The missing historical benchmark client has an explicitly
+> [requalified replacement](WRITE-CLIENT-REQUALIFICATION.md): exact source/toolchain
+> checks, 60 source/report tests and all eight actual smokes with independent
+> dataset/accounting/lifetime checks pass. The sixteen-cohort matched screen and
+> enclosing audit remain the next gates; no new speedup is claimed from smokes.
+> C04 now has [automatic checkpoint ownership](CHECKPOINT-OWNERS.md): durable exact
+> upload bytes, replicated Pending before remote I/O and Version handoff after
+> positive settlement. The 731-test local library gate, strict composition proofs
+> and one actual default Chaos Mesh leader-failure cell pass. The model also covers
+> refusal after prior application, with an explicit ordered reachability witness.
+> Next run the separate pre-upload crash cut, then integrate typed negative
+> history and certified abort release, legacy coverage/fencing, reader drainage
+> and destination installation. C04 and physical object deletion remain open.
 > Next: complete that candidate's acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
