@@ -173,9 +173,11 @@ at the completed boundary. The controller subsequently failed during ordinal013
 because its reader confused a reused historical PID with a live producer.
 The [qualified identity repair and actual reconciliation](retention-pid-identity-v1/README.md)
 preserve that failure and complete a new 344-object readback and final COLD,
-extending the prefix to 14 cohorts and observing 57.387 GB available. Resume at
-ordinal014 with an explicitly bound continuation and a prospective 85 GB
-capacity stop; the original plan and benchmark guards stay intact.
+extending the prefix to 14 cohorts and observing 57.387 GB available. The
+[qualified continuation](cross-voter-multicohort-retention-v1/continuation/README.md)
+now executes from ordinal014 with a prospective 85 GB capacity stop; its 11
+distinct focused controls and independent source review pass. The original plan
+and benchmark guards stay intact.
 Actual restoration/readback
 now covers a [first cohort from all four reader families](cross-voter-multicohort-retention-v1/README.md#actual-coverage-of-all-four-reader-families),
 including independent full-CRC metadata review. After the migration exits and fresh capacity qualifies,
