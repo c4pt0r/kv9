@@ -144,9 +144,10 @@ budget for a complete new campaign. Qualify additional capacity before running
 the frozen commands; preparation does not count as new performance evidence.
 The [bounded WAL patch pilot](cross-voter-retention-pilot-v1/README.md) passes
 six full original-byte reconstructions and eight refusal controls. It supports
-testing a lossless retention migration, but has reclaimed no bytes. Verify
-exact old compressed-object reconstruction and safe restore before retiring
-any object; retain the full workload and consistency requirements.
+testing a lossless retention migration, but has reclaimed no bytes. The follow-up
+also reproduces all six old compressed-object identities. Next qualify one
+complete cohort's migration, original-path restoration and unchanged legacy
+reader before wider retirement; retain all workload and consistency requirements.
 
 ## Comparison contract
 
