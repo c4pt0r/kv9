@@ -21,6 +21,9 @@
 > The parallel [C04 contract increment](RECOVERY-RETENTION-CONTRACT.md) now
 > specifies recovery anchors, shared pin ownership and delayed-delete fencing;
 > its implementation, composition proof and fault acceptance remain open.
+> The [first retention component](RETENTION-RECORD.md) now supplies bounded pin
+> records, 10 checked theorems / 59 obligations and compiled source fault controls;
+> production ledger/anchor integration and actual fault acceptance remain open.
 > Next: complete that candidate's acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
