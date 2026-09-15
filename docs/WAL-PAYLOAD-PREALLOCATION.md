@@ -9,8 +9,11 @@ record format, accepted batch limit, CRC, fsync or Raft acknowledgment rules.
 The candidate passes source-bound capacity/CRC proofs and local regressions.
 Encoder microbenchmarks improve across the retained large-batch corpus and six
 small synthetic cases. **There is no new database QPS or Redis comparison.**
-Keep the selected CRC runtime until matching release, real recovery/Chaos and
-end-to-end throughput plus latency qualification establishes a useful gain.
+[Matching releases and ordinary recovery](WAL-PREALLOCATION-RUNTIME.md) now
+pass: four complete histories, 728 operations including 62 unknowns, twelve
+fresh drains and fourteen exited lifetimes. Keep the selected CRC runtime until
+actual candidate Chaos Mesh and end-to-end throughput plus latency qualification
+establish a useful gain.
 
 ## Implementation and safety
 
@@ -105,10 +108,11 @@ No completed comparison was repeated after adding the small-case harness.
 
 ## Next qualification
 
-1. Build and retain matching current-source default/feature server releases;
-   keep the fixed, previously requalified client and declared fixture storage.
-2. Verify real three-voter recovery and actual Chaos Mesh faults with complete
-   histories and final acknowledged-value checks. The existing C04 pre-upload
+1. Matching current-source default/feature releases and ordinary three-voter
+   recovery are complete. Preserve their original evidence and the fixed,
+   previously requalified performance client; do not rerun them unchanged.
+2. Verify actual candidate Chaos Mesh faults with complete histories and final
+   acknowledged-value checks. The existing C04 pre-upload
    acceptance remains separate and incomplete; this increment does not close it.
 3. Compare single Put and BatchPut throughput, mean and p99 in both orders.
    Include the three-copy Redis reference with clearly stated durability and

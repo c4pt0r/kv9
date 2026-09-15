@@ -1,0 +1,111 @@
+{
+  "actual_chaos_complete": false,
+  "archive": {
+    "bytes": 2035841,
+    "logical_bytes": 13278536,
+    "members": 239,
+    "sha256": "99f93ecbde7fcc6cc3c1c227b64c9517121f64758737537290bf045f68328b18"
+  },
+  "complete": true,
+  "complete_operations": 728,
+  "default_off": true,
+  "excluded_local_executables": [
+    {
+      "bytes": 16536120,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/client-feature/kv9",
+      "sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e"
+    },
+    {
+      "bytes": 3420912,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/client-feature/workload/kv9-batch-workload",
+      "sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730"
+    },
+    {
+      "bytes": 16536120,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/dirty-source/kv9",
+      "sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e"
+    },
+    {
+      "bytes": 3420912,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/dirty-source/workload/kv9-batch-workload",
+      "sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730"
+    },
+    {
+      "bytes": 16536120,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/extra-feature/kv9",
+      "sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e"
+    },
+    {
+      "bytes": 3420912,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/extra-feature/workload/kv9-batch-workload",
+      "sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730"
+    },
+    {
+      "bytes": 16536120,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/missing-engine-feature/kv9",
+      "sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e"
+    },
+    {
+      "bytes": 3420912,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/missing-engine-feature/workload/kv9-batch-workload",
+      "sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730"
+    },
+    {
+      "bytes": 16536120,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/missing-feature/kv9",
+      "sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e"
+    },
+    {
+      "bytes": 3420912,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/binding-controls/missing-feature/workload/kv9-batch-workload",
+      "sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730"
+    },
+    {
+      "bytes": 16535816,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/default/kv9",
+      "sha256": "04749125c176ab25b1a5cb9537ea55b9df3573201d3dfb7006b066cc8531c144"
+    },
+    {
+      "bytes": 16536120,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/preallocated/kv9",
+      "sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e"
+    },
+    {
+      "bytes": 3420912,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/correctness-client/kv9-batch-workload",
+      "sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730"
+    },
+    {
+      "bytes": 16535816,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/recovery-input-default/kv9",
+      "sha256": "04749125c176ab25b1a5cb9537ea55b9df3573201d3dfb7006b066cc8531c144"
+    },
+    {
+      "bytes": 3420912,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/recovery-input-default/workload/kv9-batch-workload",
+      "sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730"
+    },
+    {
+      "bytes": 16536120,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/recovery-input-preallocated/kv9",
+      "sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e"
+    },
+    {
+      "bytes": 3420912,
+      "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/recovery-input-preallocated/workload/kv9-batch-workload",
+      "sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730"
+    }
+  ],
+  "exited_lifetimes": 14,
+  "final_batch_reads": 4,
+  "fresh_voter_drains": 12,
+  "outcomes": {
+    "ok": 666,
+    "unknown": 62
+  },
+  "retained_wal_bytes": 2572835,
+  "retained_wal_files": 66,
+  "runtime_performance_complete": false,
+  "scope": "Matching release and ordinary owned three-voter recovery only. Original histories, logs and small WAL fixtures are included; large executables and checkout remain local. No historical failed preflight has been removed.",
+  "source_revision": "86aa6fc07d82f4d49b43fbfe309e0e5c20276da5"
+}

@@ -37,6 +37,15 @@ reusable development compiler cache can still grow on the root filesystem.
 Continue checking both devices. Do not change a running process's open output
 files or silently relocate a benchmark's WAL to a different storage class.
 
+The [WAL preallocation release/recovery increment](WAL-PREALLOCATION-RUNTIME.md)
+keeps matching server/client artifacts, all logs and the complete publication
+archive under `/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first`.
+Its two ordinary recovery fixtures use fresh declared NVMe directories. After
+all owned processes exit, 66 fixture files / 2,572,835 bytes are copied to the
+data volume and both copies are hash-checked; the originals remain available.
+New Chaos preparation also uses a fresh data-volume directory, with existing
+Kind tools and private kubeconfig there. Reused compiler caches remain on NVMe.
+
 The first [loaded write-stage capture](WRITE-STAGE-CAPTURE.md) also follows this
 placement: matching release artifacts, preparation, runtime logs, 4,234,585,489
 bytes of retained database payload, independent audit and correction-validation

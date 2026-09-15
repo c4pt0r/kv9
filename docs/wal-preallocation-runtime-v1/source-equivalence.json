@@ -1,0 +1,17 @@
+{
+  "candidate_overlays": {
+    "Cargo.toml": "927b4c75e46fb8c3e20b60ca3a51ff0e17f103e0a5676481d5a41cc3c17062d2",
+    "crates/engine/Cargo.toml": "9a4c4b1328f3ce889d028bf4bec840ecd6e4db3f4d8939ec04a76313ee4a2712",
+    "crates/engine/src/wal.rs": "3ae0d6c9f505bf852be25a50370a7877137146f8a3d385be4dc2c6ca9c1a0d7a",
+    "crates/engine/src/wal/preallocation_tests.rs": "83df57542d137e10e0b79c83eb5838e11506a48e22c0c4dfb9863a4333a50d05",
+    "crates/engine/src/wal_segment.rs": "996a32a6d73ff8e06dcfd26b5d4be7f9648f749184b69265cee7fcb40f5926de"
+  },
+  "changed_paths": [
+    "scripts/build-workload.py",
+    "scripts/check-source-inventory.py"
+  ],
+  "complete": true,
+  "published_source_proof_revision": "fb9d39013188f34a31a519ce2ac7512138203b79",
+  "scope": "All Rust, Cargo and proof inputs are unchanged. The two inventory helper edits are qualified separately; source-tree identity itself is different.",
+  "source_revision": "86aa6fc07d82f4d49b43fbfe309e0e5c20276da5"
+}

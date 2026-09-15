@@ -1,0 +1,79 @@
+{
+  "actual_tool_terminal": {
+    "bytes": 76,
+    "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/tool-terminal.json",
+    "sha256": "7885c7c71b95f4d615986f83275b33edafb55bd311a36726a40e5e733098c161"
+  },
+  "build_result": {
+    "bytes": 1645,
+    "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/build-result.json",
+    "sha256": "52060132b3adf23ab8138cb8ce03d8bc006c966f2f4a11216856e00f67d8bdab"
+  },
+  "cache_safety": {
+    "bytes": 23569,
+    "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/cache-safety.json",
+    "sha256": "978d5f07c662e5de919205df11ef0544a04177fcb49edec61df6ed24457b49a2"
+  },
+  "capacity_scope": "Preflight filesystem observation only; no continuous resource monitor was used for these local builds.",
+  "complete": true,
+  "ended_ns": 1789514527621917180,
+  "revision": "86aa6fc07d82f4d49b43fbfe309e0e5c20276da5",
+  "scope": "Independent original source/manifest/Cargo graph/codegen and retained binary readback; no server or workload execution.",
+  "source_files": 1529,
+  "source_tree_sha256": "8b7e112c7645f6a42fdedd4efe97a5368d6a1249340141b4d53752c40677ca90",
+  "started_ns": 1789514527428626247,
+  "variants": [
+    {
+      "binary": {
+        "bytes": 16535816,
+        "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/default/kv9",
+        "sha256": "04749125c176ab25b1a5cb9537ea55b9df3573201d3dfb7006b066cc8531c144"
+      },
+      "build": {
+        "bytes": 203737,
+        "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/default/build.json",
+        "sha256": "29e3fcd79abe4833fb7b466124a7b8ed67fd9c332882dadd6fd8a3cf78f6002f"
+      },
+      "cargo_jsonl": {
+        "bytes": 212931,
+        "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/default/kv9-cargo.jsonl",
+        "sha256": "0261511692cbbd3ddacf7b8bb5ed9bdfb06a7feba12c78268f899402bc30133b"
+      },
+      "features": {
+        "kv9": [],
+        "kv9-engine": [],
+        "kv9-raft": [],
+        "kv9-server": []
+      },
+      "variant": "default"
+    },
+    {
+      "binary": {
+        "bytes": 16536120,
+        "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/preallocated/kv9",
+        "sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e"
+      },
+      "build": {
+        "bytes": 204031,
+        "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/preallocated/build.json",
+        "sha256": "f6febda670eb6ceb228b739590e8e6608d91cde492ad5fb557e232f443a9eeb5"
+      },
+      "cargo_jsonl": {
+        "bytes": 212982,
+        "path": "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/preallocated/kv9-cargo.jsonl",
+        "sha256": "9a0aaa7c3db74844170bfe38968a9245cc204a9013cbaea6908cea7195f7296f"
+      },
+      "features": {
+        "kv9": [
+          "wal-payload-preallocation"
+        ],
+        "kv9-engine": [
+          "wal-payload-preallocation"
+        ],
+        "kv9-raft": [],
+        "kv9-server": []
+      },
+      "variant": "preallocated"
+    }
+  ]
+}

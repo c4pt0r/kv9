@@ -1,0 +1,16 @@
+{
+  "source_inventory_original_refusal": "77bda3/0 (wrapper recorded complete=false before Cargo)",
+  "source_inventory_regressions": "6a80e5/0 (11 passed)",
+  "source_inventory_commit": "1b1686/0 (86aa6fc07d82f4d49b43fbfe309e0e5c20276da5)",
+  "clean_source_worktree": "ce6685/0",
+  "paired_server_release": "28098/b14640/0",
+  "paired_release_readback": "dbdde0/0",
+  "reused_performance_client_readback": "4f494d/0",
+  "native_correctness_client_build": "1504/bc943b/0",
+  "explicit_composed_recovery_catalogs": "17d446/0",
+  "binding_positive_and_negative_controls": "a8cddc/0",
+  "default_ordinary_recovery": "66400/12f5b9/0",
+  "preallocated_ordinary_recovery": "18408/b609dc/0",
+  "independent_recovery_audit": "e8026c/0",
+  "scope": "Recorded actual terminal handles from completed tool calls. Original build, command, scenario and audit records remain separate. No performance or actual Chaos execution is claimed."
+}

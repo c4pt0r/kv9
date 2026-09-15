@@ -1,0 +1,42 @@
+{
+  "README.md": {
+    "bytes": 2886,
+    "sha256": "7c097b7c8d51c824ff3aa432e64466507e3c234589e49264fc53d7651fc014a5"
+  },
+  "actual-tool-receipts.json": {
+    "bytes": 926,
+    "sha256": "1a7dcc7e7d097cbe9623c6ca22ec763d29e84d3726eef5850b6a10630108add7"
+  },
+  "archive-inventory.json": {
+    "bytes": 37245,
+    "sha256": "8ab36011943360ff422cbab7c0d2174913a46a076e8790705a6a656ab99f2192"
+  },
+  "binding-controls.json": {
+    "bytes": 1241,
+    "sha256": "ed91a97725b110c35a17a045c5a45524fd030bc35f7bb04cdd5c415cd03957da"
+  },
+  "build-readback.json": {
+    "bytes": 3123,
+    "sha256": "75096ffb1d983aae42ac742cc016d07bafee9add718a5b2985054de1953baf2e"
+  },
+  "evidence.tar.gz": {
+    "bytes": 2035841,
+    "sha256": "99f93ecbde7fcc6cc3c1c227b64c9517121f64758737537290bf045f68328b18"
+  },
+  "output-placement-observation.json": {
+    "bytes": 415,
+    "sha256": "2ced82f684b03055c815145f3810c36e63d9c2aed1eb554785bd874aa0f53c33"
+  },
+  "recovery-audit.json": {
+    "bytes": 2306,
+    "sha256": "f62848e84c773586fc7ceff8e2c3b42c7faee8dcdab88502e3064d9e808e4f71"
+  },
+  "result.json": {
+    "bytes": 4951,
+    "sha256": "77eaa62641b5f36c98ff1f043fffad8f694e6978ff6963e9c090a6043a1e9a06"
+  },
+  "source-equivalence.json": {
+    "bytes": 973,
+    "sha256": "9a6b8579b5235e6460179093b317bb969002a99274f315dbdbf2860664a87998"
+  }
+}

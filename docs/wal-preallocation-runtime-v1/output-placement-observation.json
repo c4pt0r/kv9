@@ -1,0 +1,18 @@
+{
+  "filesystems": {
+    "/": {
+      "available_bytes": 859223523328,
+      "device": 66306
+    },
+    "/dev/shm": {
+      "available_bytes": 66274992128,
+      "device": 29
+    },
+    "/mnt/data": {
+      "available_bytes": 9621156343808,
+      "device": 2304
+    }
+  },
+  "observed_unix_ns": 1789515258400079288,
+  "scope": "Point-in-time available space; no reservation, continuous monitor or cleanup claim."
+}

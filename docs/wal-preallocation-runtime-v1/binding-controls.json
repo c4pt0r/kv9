@@ -1,0 +1,41 @@
+{
+  "positive": {
+    "default": {
+      "server_sha256": "04749125c176ab25b1a5cb9537ea55b9df3573201d3dfb7006b066cc8531c144",
+      "client_sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730",
+      "feature": false
+    },
+    "preallocated": {
+      "server_sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e",
+      "client_sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730",
+      "feature": true
+    }
+  },
+  "negative": [
+    {
+      "name": "missing-feature",
+      "rejected": true,
+      "reason": "server command lacks the exact preallocation-only feature"
+    },
+    {
+      "name": "extra-feature",
+      "rejected": true,
+      "reason": "server command lacks the exact preallocation-only feature"
+    },
+    {
+      "name": "missing-engine-feature",
+      "rejected": true,
+      "reason": "missing, ambiguous or unexpected Cargo artifact: kv9_engine"
+    },
+    {
+      "name": "client-feature",
+      "rejected": true,
+      "reason": "missing, ambiguous or unexpected Cargo artifact: kv9_engine"
+    },
+    {
+      "name": "dirty-source",
+      "rejected": true,
+      "reason": "normal transport acceptance requires a clean frozen source"
+    }
+  ]
+}

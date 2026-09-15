@@ -1,0 +1,75 @@
+{
+  "complete": true,
+  "started_ns": 1789514869782187276,
+  "variants": [
+    {
+      "variant": "default",
+      "server_sha256": "04749125c176ab25b1a5cb9537ea55b9df3573201d3dfb7006b066cc8531c144",
+      "client_sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730",
+      "cases": [
+        {
+          "transport": "tonic_stream",
+          "history_sha256": "055c9520f2db9764aaad26890c4c01d913eaa85ee2a2b0c6229ac9c110a58ddb",
+          "operations": 178,
+          "outcomes": {
+            "ok": 163,
+            "unknown": 15
+          },
+          "successful_final_batch_reads": 1,
+          "fresh_drained_voters": 3,
+          "fault_windows": 2
+        },
+        {
+          "transport": "tonic_unary",
+          "history_sha256": "ca6bfd45132b477a397519e464021167fbb1b4ee241cf12138e3b62f96b824f7",
+          "operations": 188,
+          "outcomes": {
+            "ok": 172,
+            "unknown": 16
+          },
+          "successful_final_batch_reads": 1,
+          "fresh_drained_voters": 3,
+          "fault_windows": 2
+        }
+      ],
+      "lifetimes": 7,
+      "retained_files": 33,
+      "retained_bytes": 1308446
+    },
+    {
+      "variant": "preallocated",
+      "server_sha256": "1a38b0a0223650f42aa306131787937f55d7cfc9db2963b2d4bdf8f3d2c8566e",
+      "client_sha256": "49ebe15e52f8851899372cf350cc8b7d9de1cc30fb3abcb8a76670d7a4369730",
+      "cases": [
+        {
+          "transport": "tonic_stream",
+          "history_sha256": "7805993d82fca08b414ffedf5ec5fb6f883ab66ecea47b2b989ccdfd6b118dc5",
+          "operations": 182,
+          "outcomes": {
+            "ok": 165,
+            "unknown": 17
+          },
+          "successful_final_batch_reads": 1,
+          "fresh_drained_voters": 3,
+          "fault_windows": 2
+        },
+        {
+          "transport": "tonic_unary",
+          "history_sha256": "89224a61634dd9b575e6c018facf2f90db343cbfe778b23db58da3c1a6992af9",
+          "operations": 180,
+          "outcomes": {
+            "ok": 166,
+            "unknown": 14
+          },
+          "successful_final_batch_reads": 1,
+          "fresh_drained_voters": 3,
+          "fault_windows": 2
+        }
+      ],
+      "lifetimes": 7,
+      "retained_files": 33,
+      "retained_bytes": 1264389
+    }
+  ],
+  "ended_ns": 1789514869911218458
+}
