@@ -1,0 +1,36 @@
+{
+  "artifact": "/tmp/kv9-chaos-e2e.w3ctnt",
+  "excluded_local_metadata": [],
+  "full_archive_bytes": 90257234,
+  "full_archive_sha256": "0223ce679994e34718bd7ba6f58ec9b94657f8e0cabd92b05eb180e620c4458b",
+  "members_sha256": "e85c9516de2dc437f49bb0ceacf0cdc539c203c0b4a11358dfa94ca530261600",
+  "operations": 9360,
+  "outcomes": {
+    "ok": 8852,
+    "refused": 24,
+    "unknown": 484
+  },
+  "post_root": "/tmp/kv9-receipt-tail-chaos-root-20260915-first",
+  "post_session_id": 73715,
+  "post_terminal_receipt": "d1e0ca",
+  "required_input_sha256": {
+    "/tmp/kv9-receipt-tail-chaos-preparation-20260915-first/archive-first/inventory.json": "7ac220cdd8dcbec8f13f2c36711676bce3e0472ef04fdc431d0eb984158a461f",
+    "/tmp/kv9-receipt-tail-chaos-preparation-20260915-first/archive-first/result.json": "c508bfd462f752936cea19628f77337e18dda1f34a0acda9ca13e5269f7b25b9",
+    "/tmp/kv9-receipt-tail-chaos-preparation-20260915-first/cleanup/all-server-lifetimes-exited.json": "8b75d56731d98fec42ce6f95b769146a637f405a21b876f4a72cb9f153554a45",
+    "/tmp/kv9-receipt-tail-chaos-preparation-20260915-first/cleanup/summary.json": "e105bd210a45a71e58f41eb1f88cd8ec344d20a6a02200c1424452f275d05fc8",
+    "/tmp/kv9-receipt-tail-chaos-preparation-20260915-first/independent/audit.json": "79a6a9a426bbfce66f07abfd682c1fbbddb8c716976ae1ca39652803d7343b7d",
+    "/tmp/kv9-receipt-tail-chaos-publication-preparation-20260915-first/qualification-summary.json": "c3ebcd9a19432eab272a883568cabbdb04f64fc051e2f4cd5ecebacd378cbef1",
+    "/tmp/kv9-receipt-tail-chaos-root-20260915-first/post-result.json": "fd9c4fe7deb1ebe66e5c3bfe033cd0c18f9578fd68bdeb3bb6fc0ac5e722ef3f",
+    "/tmp/kv9-receipt-tail-chaos-root-20260915-first/post-terminal.json": "86e7e664b843bff63e45f831bc7458059491eeeac24ccba8ca38be75517e8f34",
+    "/tmp/kv9-receipt-tail-chaos-root-20260915-first/result.json": "a874fde5c62ad8ee305770115ab7d0112fd137532f5958237c784a195151eaa5",
+    "/tmp/kv9-receipt-tail-chaos-root-20260915-first/terminal.json": "0b1ecd90754be3f3634a67f61aac8a0d50c3f74f0e8133486fa29fa1a9f7bda3"
+  },
+  "runtime_session_id": 9509,
+  "runtime_terminal_receipt": "1578ac",
+  "scope": "Derived only from actual completed root runtime/post/archive/cleanup metadata; portable publication pending.",
+  "selected_bytes": 413632915,
+  "selected_files": 2296,
+  "selection_inventory_sha256": "aeeb4ecca9b1e94db1e02f9f56c2844e2808a5c936953c244a4d4c36431d8e52",
+  "source_revision": "a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9",
+  "version": 1
+}
