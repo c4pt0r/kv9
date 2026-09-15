@@ -13,6 +13,7 @@ pub mod fs;
 pub mod ids;
 pub mod keyspace;
 pub mod metrics;
+pub mod retention;
 pub mod root;
 pub mod store_lifecycle;
 pub mod time;

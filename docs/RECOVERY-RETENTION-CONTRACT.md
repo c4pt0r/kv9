@@ -6,6 +6,10 @@ This defines the implementation contract for the remaining storage work. The
 common anchor codec, replicated retention ledger, deductive composition proof
 and new fault scenarios are still to be implemented. C04 remains open.
 
+The [per-resource record increment](RETENTION-RECORD.md) now implements bounded
+pin transitions and their recovery codec, with a checked parameterized component
+proof. It does not yet implement the enclosing durable ledger or complete anchor.
+
 ## Authority already implemented
 
 Recovery currently composes several records; there is no independently
