@@ -1,0 +1,10 @@
+{
+  "completion_directory_allocated_bytes": 192512,
+  "completion_directory_cap_bytes": 4194304,
+  "completion_directory_file_bytes": 160200,
+  "includes_inventory_and_this_record": true,
+  "parent_readme_after_allocated_bytes": 8192,
+  "parent_readme_allocated_delta_bytes": 0,
+  "parent_readme_before_allocated_bytes": 8192,
+  "scope": "New reporting allocation only, excluded from historical controller accounting. No new recovery claim."
+}

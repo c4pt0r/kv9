@@ -1,0 +1,1611 @@
+{
+  "member_cap_bytes": 1048576,
+  "members": [
+    {
+      "bytes": 1780,
+      "member": "terminal/child-terminal.json",
+      "sha256": "fa1c15268f7bd5c07058e99eaa4392216bf42d4bee0532ed248b58b228bcbfc7",
+      "source": "/tmp/kv9-retention-continuation-terminal-publication-20260915-first/child-terminal.json"
+    },
+    {
+      "bytes": 1240,
+      "member": "terminal/completion.json",
+      "sha256": "83243a994cf47ef21383ee47d26e44fc631fc3a2cc651bc8b70b08a5e90ff9b7",
+      "source": "/tmp/kv9-retention-continuation-terminal-publication-20260915-first/completion.json"
+    },
+    {
+      "bytes": 11721,
+      "member": "terminal/controller-result.json",
+      "sha256": "f4c73e095c97ae188c7e5d5e5c2e9cc5ba6d05e4f4db60eff76202934e5e7592",
+      "source": "/tmp/kv9-retention-continuation-terminal-publication-20260915-first/controller-result.json"
+    },
+    {
+      "bytes": 545,
+      "member": "terminal/reporting-correction.json",
+      "sha256": "c2c88df9d7d07c0d60926431bf3e23c839f2142990864ff84d17ee99605845e3",
+      "source": "/tmp/kv9-retention-continuation-terminal-publication-20260915-first/reporting-correction.json"
+    },
+    {
+      "bytes": 197,
+      "member": "terminal/status.json",
+      "sha256": "1ada92aceff6027b8d1a36a38f8886cf47d05897868206ac425374044125bd1b",
+      "source": "/tmp/kv9-retention-continuation-terminal-publication-20260915-first/status.json"
+    },
+    {
+      "bytes": 2052,
+      "member": "terminal/tool-terminal.json",
+      "sha256": "583eb7a04f73741f054203fce36cffb708361c29ab7c472a8950e4325c3af6ca",
+      "source": "/tmp/kv9-retention-continuation-terminal-publication-20260915-first/tool-terminal.json"
+    },
+    {
+      "bytes": 44386,
+      "member": "controller/binding.json",
+      "sha256": "2be1330e47362d251d7b5d71c85bdff151fb88c8db0c40874b7e4ae215da3bf4",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/binding.json"
+    },
+    {
+      "bytes": 7659,
+      "member": "controller/014/complete.json",
+      "sha256": "8ff96ad6b439101d1238217935753346d3ede0345d808613e59cc345465d8ce3",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/complete.json"
+    },
+    {
+      "bytes": 992,
+      "member": "controller/014/release.json",
+      "sha256": "4d0640447f27c4a19e676307005170259358e88748d5a7cb4e4405a70827eb44",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/014/stage-verify/child.json",
+      "sha256": "08cba0a861c557322280268fc77363666b26973e16a263cd3f09b593fb60d24f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/014/stage-verify/invocation.json",
+      "sha256": "10dce8d3e740bcbba4fc28ee88e2f8fa4493699fd1457649a74ee549adc765e2",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/014/stage-verify/result.json",
+      "sha256": "21558fe0dfa9a263c3293ad1fc50634a7b6c7a432f82ee36004cbc413654101f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/014/stage-verify/terminal.json",
+      "sha256": "c0bb0c5a1cf52cffd00eb96cebc08a49c3c54980003441684fc79af5beda43e7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/014/finish/child.json",
+      "sha256": "b326d90156c8dda44de958e9446cfde239f7678c49b6859cae5d1cbf1f5c0683",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/014/finish/invocation.json",
+      "sha256": "6160d228fc56c1ece8091423e2dda27d2f03858770b77f005e46521ea7ef04db",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/finish/invocation.json"
+    },
+    {
+      "bytes": 6478,
+      "member": "controller/014/finish/result.json",
+      "sha256": "76c7e8fa65cee4938429131e4d1ced421f1cd945f8ddf3333e8e8213d3130cf5",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/014/finish/terminal.json",
+      "sha256": "4261937686ced44552b43fd472ff47e6b449e579205b51a85932d8275c0fcc65",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/finish/terminal.json"
+    },
+    {
+      "bytes": 7897,
+      "member": "controller/015/complete.json",
+      "sha256": "4b5a6afcd77e1333f1fac5505ddbc4da3ea86d7aecbf6983ddf3a08f71cb1897",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/complete.json"
+    },
+    {
+      "bytes": 992,
+      "member": "controller/015/release.json",
+      "sha256": "c6024250d9e7f3bcb7e65a10a67dc49bc0b26c0b080ece4ffee4964f017d06c2",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/015/stage-verify/child.json",
+      "sha256": "f8cde0b240d83c831960052cd722f78db1b73e023408fbf21a7761b6d0792670",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/015/stage-verify/invocation.json",
+      "sha256": "7112c77b9f024c172f99d48bd08cd7d5beea53cca43b4b1a7f1e3668096aad6c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/015/stage-verify/result.json",
+      "sha256": "97629eac8842d832acfc5c35fe840245485fe4968815f13c244a7da138247db0",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/015/stage-verify/terminal.json",
+      "sha256": "0a0dba9d91f4d5c6226eaa6bc53e2445b70641f94ef2f68ff61a7cec44daf248",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/015/finish/child.json",
+      "sha256": "7c364cdeb1fe661e656f9318ec3ab6ed7d82052884ae18cbe5e513aaefcba967",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/015/finish/invocation.json",
+      "sha256": "537eb83224d56a424d23cd5b03ace35250a8c177bdb3d88ae39af3ce48d1ed7e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/finish/invocation.json"
+    },
+    {
+      "bytes": 6716,
+      "member": "controller/015/finish/result.json",
+      "sha256": "2736fbe925525d60f1e8c8c8e0d9886756820386f3af8d764c976ccf752ba644",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/015/finish/terminal.json",
+      "sha256": "bd0e52357a360624502d171710ce9d790558b55b58712da098adcfa484cebfd7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/finish/terminal.json"
+    },
+    {
+      "bytes": 8135,
+      "member": "controller/016/complete.json",
+      "sha256": "86dfa0273c340ab51611fc9828cf1b46fe58b61b2cb50c9c34bd8ce4632b06c5",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/complete.json"
+    },
+    {
+      "bytes": 991,
+      "member": "controller/016/release.json",
+      "sha256": "9a7f7388a32a10e2fb73b85f69e1114600d7793aa99bb1649091f1a2c88ff2ae",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/016/stage-verify/child.json",
+      "sha256": "d3bbd16f845ef08be3e4be37675a30871138da60839ba3cc2667349aa7c7d6a8",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/016/stage-verify/invocation.json",
+      "sha256": "4cb61aad102ae602685431391d2e2bc569a1d1031ba1a9c4c0d4b9854651ec73",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/016/stage-verify/result.json",
+      "sha256": "f4aceac76fc5d596aed25b3a2e3bce2292dd89bb599b9ef24b796bff4c2018df",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/016/stage-verify/terminal.json",
+      "sha256": "a05282a8574391d981ff3d0dad2998c946d5a3c8f47426c3bb5bd3e6a6db432e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/016/finish/child.json",
+      "sha256": "7c0bdef387da1d83982e5f4ab2e54b9a61ee3673cd67857c365083d6dba58825",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/016/finish/invocation.json",
+      "sha256": "ad83fdcc1bebe7eb2e7b737ddd1840596b6fe7ae0870a88059022a714d5938a6",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/finish/invocation.json"
+    },
+    {
+      "bytes": 6954,
+      "member": "controller/016/finish/result.json",
+      "sha256": "a7eec975d8adbcb27697c7cf8c3fe4b184533267568415bb836c98e8d7bbe00c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/016/finish/terminal.json",
+      "sha256": "135d426c77f2aba107ca043e302da067776cc179e8c424b3f7f634c32ed8e64d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/finish/terminal.json"
+    },
+    {
+      "bytes": 8373,
+      "member": "controller/017/complete.json",
+      "sha256": "fc8701ab06eea6cdf863825a5804a9a1b4683f656b4b4b5a4e48549f25a7b143",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/complete.json"
+    },
+    {
+      "bytes": 991,
+      "member": "controller/017/release.json",
+      "sha256": "ff765c364cd6021321719e76b6a62ab5a24710cc53f791ed5d62942fe565d057",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/017/stage-verify/child.json",
+      "sha256": "a47fdbe99339004b190b50bd2576ee715162bc1f420d5ae9fc6576a680e1a25c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/017/stage-verify/invocation.json",
+      "sha256": "04d55fb12d2cb522b47e25126e4df8d9a4545a73d0efb2d5b8bde9841382212a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/017/stage-verify/result.json",
+      "sha256": "f12c57dcbdadba6de81a9f4a959323fc60c817b4bc30da56be91770007a7d863",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/017/stage-verify/terminal.json",
+      "sha256": "b3478d738397c6579048c1fcb862b356c3f04989a9902eed4630029d9b01264d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/017/finish/child.json",
+      "sha256": "36032b878123f4ff7be8042e7107c664204e09f375f1ac68cc57e0c25310c95b",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/017/finish/invocation.json",
+      "sha256": "74b86ae1646883f97143f2bd1ceded68136ca30f90d7ef7a483528afa0e04e73",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/finish/invocation.json"
+    },
+    {
+      "bytes": 7192,
+      "member": "controller/017/finish/result.json",
+      "sha256": "ab9cd56606a584d9fe73b0616ca945fe65209cdc3c1e70c4bfa0850d7907693b",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/017/finish/terminal.json",
+      "sha256": "e105abe4938a7f52aa9f836bf613bd0a353a3661f2564a9ac70ef4b2e3752214",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/finish/terminal.json"
+    },
+    {
+      "bytes": 8611,
+      "member": "controller/018/complete.json",
+      "sha256": "f8c3ded13d7b9f7e6fd64e896438bea515abb364755ce3a91075a3b631780a38",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/complete.json"
+    },
+    {
+      "bytes": 991,
+      "member": "controller/018/release.json",
+      "sha256": "ddc67bb8d405ea09c1b08fb5a784fdeb3d3ae2fef92adc1c1f3779e4aa55ea28",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/018/stage-verify/child.json",
+      "sha256": "1aad698d2bdc5fe4a6456055529e54c8993788e7110405b15db26ee9ac82fb89",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/018/stage-verify/invocation.json",
+      "sha256": "8bdaf8f6f15c03c515dde61be55161cba15647ea35d7650b65f3dc618452bf3f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/018/stage-verify/result.json",
+      "sha256": "968a9a3d8c8d8621d3364defc4c0b522cbbdbdc63a3ca455716a621551d50dda",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/018/stage-verify/terminal.json",
+      "sha256": "bb27348bed378b5bc502daa273eac4627f93c7029e0f5f7784ea20a4967201fc",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/018/finish/child.json",
+      "sha256": "3c7ea1e40fd9b8c64cf06de1a0f7e91d864ac32d9d476d2356073d08e35486f6",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/018/finish/invocation.json",
+      "sha256": "80c565bfb7e3a94920309fe628b9db4354f2acc940c37d2914967dfb4d74ba54",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/finish/invocation.json"
+    },
+    {
+      "bytes": 7430,
+      "member": "controller/018/finish/result.json",
+      "sha256": "e60ae8422d595f02290112cad5f6f5de53573250a41259de2eb402a23dd29534",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/018/finish/terminal.json",
+      "sha256": "ddc3a95dded842298aaa28ab9b5c0bf641a971291ea2fd3a8ba22c6de852f5be",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/finish/terminal.json"
+    },
+    {
+      "bytes": 8850,
+      "member": "controller/019/complete.json",
+      "sha256": "248e5d0711eeae40fba9eab201d69daf8aa8f878fd00a58d3647f55db09062e8",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/complete.json"
+    },
+    {
+      "bytes": 991,
+      "member": "controller/019/release.json",
+      "sha256": "d02d9178af274001665781232b4a80a4ecc02e993c14c19608ba369345fb45ae",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/019/stage-verify/child.json",
+      "sha256": "08a07c6dbc38a693ab73ee72ca088744aae166e77600ea6fbda78df221121814",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/019/stage-verify/invocation.json",
+      "sha256": "7cce9140f79767fec8c135179824bbaad0bc57d850cbcc6b8f2836a7fe0b03a7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/019/stage-verify/result.json",
+      "sha256": "3f902cd46f02d5511aa476725550bf8a3ffaa356258f227a5b79f221b4cc590f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/019/stage-verify/terminal.json",
+      "sha256": "39cd498bc2b459a688bc38d228ca41d322496cf5e770cfdc3885ba50dd108b01",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/019/finish/child.json",
+      "sha256": "10d3cd25d03fc45c6c7525e9a25c23f1b8fbbc7f15bec9585415698f7b3236c7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/019/finish/invocation.json",
+      "sha256": "0ee684850838c256201619b5e3deb71d45fbf960302d0b30d6e8c1a157d338e6",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/finish/invocation.json"
+    },
+    {
+      "bytes": 7668,
+      "member": "controller/019/finish/result.json",
+      "sha256": "07ebde45c556d81db8abf7076b58a73814bdb10eb4704f9c49bf03f9166634cd",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/019/finish/terminal.json",
+      "sha256": "ca805658802d5334fc833c813d4b16d8a16bb574a860731a28fa9c0916eea76e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/019/finish/terminal.json"
+    },
+    {
+      "bytes": 9064,
+      "member": "controller/020/complete.json",
+      "sha256": "1f260809625f0afce74ce5d5b740b4c610f183484858b762e9a1adc0e55cc42e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/020/release.json",
+      "sha256": "2ea0a22af6b9d34ea56c2014733b71a6cdc08f28b874ad5b575ddae451b2d91f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/020/stage-verify/child.json",
+      "sha256": "84abcfda6f0cc8e90e825a83d59abf7fe89d6312fbd2fd6dcb8570cbedb72b43",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/020/stage-verify/invocation.json",
+      "sha256": "3eae658784025d4861b0a66485d9f31ed43b92ddfaf32f1cd365c4d199b3261e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/020/stage-verify/result.json",
+      "sha256": "e03170cc6cfb7f4709dea3a7f82a718eaba7f5c8686b4357b798863b6d17feac",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/020/stage-verify/terminal.json",
+      "sha256": "5360dd74a36ee527eaa79844ad5a8914563adc3466c2fcdbe4d67bf94d4aa62e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/020/finish/child.json",
+      "sha256": "db968abb4f7590fd3a1859144b184b51fa9244d501e63036b016bf812cf5facb",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/020/finish/invocation.json",
+      "sha256": "66f51c9ba9e707e5b0690a60598d49589eaec343f3ef9c409280aed6332a8efe",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/finish/invocation.json"
+    },
+    {
+      "bytes": 7882,
+      "member": "controller/020/finish/result.json",
+      "sha256": "f7884078549b6baca81011d2b338a69e3affe2adc6071aac318712c9af6e2e41",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/020/finish/terminal.json",
+      "sha256": "c781cfe74378fd6215070d7e53aa5f3212da61e527da11ddfa37beccb43b4760",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/020/finish/terminal.json"
+    },
+    {
+      "bytes": 9300,
+      "member": "controller/021/complete.json",
+      "sha256": "149217bedef487bf59f622e374caf1350f3a1141feb0554f608486e6bd07b399",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/complete.json"
+    },
+    {
+      "bytes": 987,
+      "member": "controller/021/release.json",
+      "sha256": "30894219b01fff634e3c6499c660ad3b5659d30ca5c0a54fafd4984663018061",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/021/stage-verify/child.json",
+      "sha256": "d99a7cc7188e86cc683392dea6f242f436b3520268dbe7b2b9cc4aaf05095bcc",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/021/stage-verify/invocation.json",
+      "sha256": "3422e0049da52a7792c39a3ff5434b7a02570cffdade7b0701b933d1fff23617",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 320,
+      "member": "controller/021/stage-verify/result.json",
+      "sha256": "0bf533e6ce16555327ff9fd55d55a7c433b7f6dfbbfe1cb4998cbb44814ac283",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/021/stage-verify/terminal.json",
+      "sha256": "b3d527eb351c209a614ae92445dacb31fa853ef4e83361e06bb452118b8c3617",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/021/finish/child.json",
+      "sha256": "ae495b2583e3c05ec4f865b89c87ddf2e9209efc282129eb7722712dbadd5e66",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/021/finish/invocation.json",
+      "sha256": "308d71fe21b3c117167ff885219e77550eaf7e4640a450d70a50185f3a559544",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/finish/invocation.json"
+    },
+    {
+      "bytes": 8115,
+      "member": "controller/021/finish/result.json",
+      "sha256": "03935d7b3a34e0e1b691fc60fd1a89146bd9ab30576e29c7d2fb4b50f5d5f913",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/021/finish/terminal.json",
+      "sha256": "fa521efbcb5844ffd7f3fcc6d6321619246fe616239aec4bc20357c0261ac1b1",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/021/finish/terminal.json"
+    },
+    {
+      "bytes": 9558,
+      "member": "controller/022/complete.json",
+      "sha256": "b302b2e293f55a281c7d68ff8c1c3346339997cbb2fbbfbf01fb6a0c7a9384a1",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/022/release.json",
+      "sha256": "4977748a32e47ddf3f679344398ff63d190a32aeb2772a03b06d8cb2c88a0084",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/022/stage-verify/child.json",
+      "sha256": "1690f57ab69f9ee652ac4284a6fb4ac48c897819e2d63d5b35d331c5ebe461ec",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/022/stage-verify/invocation.json",
+      "sha256": "54ea72d5cb1094a079cd11e854d8c159a1cccbfc4d391cc61c527d24ae1ba9c1",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/022/stage-verify/result.json",
+      "sha256": "c907ae9d1df95f88d1b0d0f8d92ec6a2b10f5df9d1b1d716073aba4750763923",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/022/stage-verify/terminal.json",
+      "sha256": "a7f77d9ffe8216f5aaee4145389bc8861c8c786fb846efced05681eb6f3426c4",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/022/finish/child.json",
+      "sha256": "0c3e5fe1cbc8b83c290d8d8da4a491c39c9a3bfe7c31c328759736965e41f3b2",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/022/finish/invocation.json",
+      "sha256": "a5c3e2de32b8c6e20b96c4bb6a0c883d90ccbdadf5dbcdce75b761bc1310fc8a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/finish/invocation.json"
+    },
+    {
+      "bytes": 8376,
+      "member": "controller/022/finish/result.json",
+      "sha256": "3536c7a0a99c40b4eb84473d3e4317d8294b54f3546b0b35f1130399b131b596",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/022/finish/terminal.json",
+      "sha256": "79d3e24eb964d7e25c62ad0c0e0b6b54dfb29ecfaeca0dcd8971e66255842590",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/022/finish/terminal.json"
+    },
+    {
+      "bytes": 9758,
+      "member": "controller/023/complete.json",
+      "sha256": "7a77da0eebfba38c49f51761c50cf0815a01a62ef1475d830d20d052f7e6b541",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/complete.json"
+    },
+    {
+      "bytes": 981,
+      "member": "controller/023/release.json",
+      "sha256": "6d26b5f998ecc07fb451332794492e906e55e67653172982ffb6a043001f171f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/023/stage-verify/child.json",
+      "sha256": "2d2da12a4aef6d6a986ab64e113b5e9a387ee115a637bf409c90b72f28974db0",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/023/stage-verify/invocation.json",
+      "sha256": "d57e49ba6ed2152a94d928df1759fe68c80a20043a8092cbac17b6cd075354b6",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 314,
+      "member": "controller/023/stage-verify/result.json",
+      "sha256": "36c6ae4de5defc23fb715e4d0e85362b8a40f49215611d0af23a2f42c9f4ce0f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/023/stage-verify/terminal.json",
+      "sha256": "9e30648b563381761ab0f2ea121d40b20146be00031a96df8a3bf7cd79a5f585",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/023/finish/child.json",
+      "sha256": "676c6bc6acd3d6c7f6857dceacef2c8541f2cf2936c9d7474cc646873dde3caf",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/023/finish/invocation.json",
+      "sha256": "c568e95c10aa15d7dcfc0e9b76ab997d5e1f86c55bb420e7db2c8dc1d66e7c39",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/finish/invocation.json"
+    },
+    {
+      "bytes": 8567,
+      "member": "controller/023/finish/result.json",
+      "sha256": "507069ac6e42c14a68c169e336b00b5c5bf1d47516a9c6cdf7b6f43a25b70f1d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/023/finish/terminal.json",
+      "sha256": "a120cef6ffb7809672315ea502f671ba8de899f7feb262b41aad0b4ebd0933cc",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/023/finish/terminal.json"
+    },
+    {
+      "bytes": 9999,
+      "member": "controller/024/complete.json",
+      "sha256": "70fc0cd22876e366e2b979de491893e2adf074bfb247f29814d42d29f495e209",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/complete.json"
+    },
+    {
+      "bytes": 987,
+      "member": "controller/024/release.json",
+      "sha256": "3d2197105fd77549f0fbc33a117df3cfcc9a0fbfee3ee23ffe7ddd5ace2a6ee9",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/024/stage-verify/child.json",
+      "sha256": "29f1384b027c9985a9e2129c8f2fdfe6c10bd02eb9fade5260dbd25de74f9889",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/024/stage-verify/invocation.json",
+      "sha256": "6b6133cdd77f51fbc3d940e17bb15555a7d61afaaff9f4566f38fe3ab9f39371",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 320,
+      "member": "controller/024/stage-verify/result.json",
+      "sha256": "61b49b5e6a59d3e56c0f3a57e0bf9dd2cc5921d656897f58788776216ecd0d8b",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/024/stage-verify/terminal.json",
+      "sha256": "729be10146ef8a92eec897d4846cd01cff8296c2f3245984a493926254a70b5a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/024/finish/child.json",
+      "sha256": "b823f1b254d3525ffc3470d9bbdbfedb7d3243c12f93a515fc599c5f64439ea0",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/024/finish/invocation.json",
+      "sha256": "b5d4c8a4ea8846f40b4acc4acc3bb173444ec52b3b02c2b2caad11bf9dde040e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/finish/invocation.json"
+    },
+    {
+      "bytes": 8814,
+      "member": "controller/024/finish/result.json",
+      "sha256": "baf7ca5d264837f245eb253ecf5195ed4140a6e0ba9b74d0ecc8105996b1ebe0",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/024/finish/terminal.json",
+      "sha256": "833466775ef98a92bc952f9b98442efdeff601339dc11b1de9eea6fad67ff6ed",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/024/finish/terminal.json"
+    },
+    {
+      "bytes": 10257,
+      "member": "controller/025/complete.json",
+      "sha256": "310b15e7665ce7880987da3cbb4bec2f98a4e1fbf99dad2b233508396a91ec00",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/025/release.json",
+      "sha256": "80f101c554086fc71fdc59d7c83e2e52ccd019487d118c59d570155013cce4ed",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/025/stage-verify/child.json",
+      "sha256": "f8dcdfdeec362ae19cf609f552cc76a6319d4a749ea1bb8c55d09a06c30e7676",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/025/stage-verify/invocation.json",
+      "sha256": "f4e3f497754f08439588400c27a72d16e4fe87e72b6e5dc5cfc8f69359957567",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/025/stage-verify/result.json",
+      "sha256": "2cb21ad0b3fe90d5027416268b0039b3c35559db720166b6f5cbb64cf844ecf8",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/025/stage-verify/terminal.json",
+      "sha256": "43a026fe97acaecfb8716f3074852085a30dbc570ba8806fc43307a0f5eeee0a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/025/finish/child.json",
+      "sha256": "78dee4b6256e7223d610ff987b3e84dfcc3fbf47eaf71ee6a33225b38058459f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/025/finish/invocation.json",
+      "sha256": "2fc2c1d1f937d167f02b8653bf0b1c9ebeb181c86595b6ceaf2adca95e219dca",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/finish/invocation.json"
+    },
+    {
+      "bytes": 9075,
+      "member": "controller/025/finish/result.json",
+      "sha256": "8965802b047396a90af0ff3ea7fb8762a59f1a39b38983239d7160dfb1d14319",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/025/finish/terminal.json",
+      "sha256": "0e34f27a68a826a2dc5474db297655f246b58ebf9886e889695c0deb9efac97a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/025/finish/terminal.json"
+    },
+    {
+      "bytes": 10457,
+      "member": "controller/026/complete.json",
+      "sha256": "953d0dd0d3204d9272644e7bdf82a3dda643987c217650a2f2b720086f2d66ca",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/complete.json"
+    },
+    {
+      "bytes": 981,
+      "member": "controller/026/release.json",
+      "sha256": "ca2c500cda92520ca62605849b70483f0ec7175e9652a17819230ca0ef2ddb8a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/026/stage-verify/child.json",
+      "sha256": "58d650ce6bc0d44994da29a77a252c3a812425525c4d7fa839b66a3df62e9c4a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/026/stage-verify/invocation.json",
+      "sha256": "880a4c6d03d5fed0067ad5990f422ffaebe9e2f86224b60db3fb1b4826c9e427",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 314,
+      "member": "controller/026/stage-verify/result.json",
+      "sha256": "565e5d1f536898dfe38efbf6e2092daef934855407b58f6d129e19dae68f602c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/026/stage-verify/terminal.json",
+      "sha256": "6fce078ac3d12f377a5b8232fe91523e1d0670ee4945894c2be27cd2fca4eb45",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/026/finish/child.json",
+      "sha256": "90e8162871c2369c57dd5628fa3112de6648e9feaec0335dc2b3324693b7c291",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/026/finish/invocation.json",
+      "sha256": "15a2ed823f6b420277e1c5c14c1e93d9fdc2a03c42d4a69bcc6ed7c6ce2cdfee",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/finish/invocation.json"
+    },
+    {
+      "bytes": 9266,
+      "member": "controller/026/finish/result.json",
+      "sha256": "016b90b335c7119910bcbf8f21f89fd211156663ee7df2a7d0de55f8e3cd69f7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/026/finish/terminal.json",
+      "sha256": "dc8b3f4ef6b3d62e3597bdc05710a943d40cb3df3e64c465429bc0a3ebc2caef",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/026/finish/terminal.json"
+    },
+    {
+      "bytes": 10698,
+      "member": "controller/027/complete.json",
+      "sha256": "f2c67fa271df8e6bed2575f77c90b732dfa22eba1308fe25c9ebf7cbd176f016",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/complete.json"
+    },
+    {
+      "bytes": 987,
+      "member": "controller/027/release.json",
+      "sha256": "98becbe4394d4e107c626919fa75bdf3f35324602ab3882a25373201c52b358a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/027/stage-verify/child.json",
+      "sha256": "fe38eef2a5f97f4dd116924d014c498bed7d51019064908d0fa5e0c018a76ef1",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/027/stage-verify/invocation.json",
+      "sha256": "cd2b7bb7366e09c523cc431b4aaa45cf9aea277dac674df3fd6b451a8e012cdb",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 320,
+      "member": "controller/027/stage-verify/result.json",
+      "sha256": "02ddbdfc6de881772c45724c522b4dc469d69c82f7ff13656e01b21fc86040ad",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/027/stage-verify/terminal.json",
+      "sha256": "3625c0084baed1c38942535613f12be14763e78007e4dbc2cc657c66746ac9fc",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/027/finish/child.json",
+      "sha256": "15175811000d92e9a05a90f0b31908f56b2df51086bb95136c3ca83ad9c2d29b",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/027/finish/invocation.json",
+      "sha256": "9377b44efb1f017c5223e11b4d711dc26c12d4be94dc17d155c312c1334bce10",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/finish/invocation.json"
+    },
+    {
+      "bytes": 9513,
+      "member": "controller/027/finish/result.json",
+      "sha256": "ef9571b5c662276fc6396a46b9a2f0f0541b8856757c70ee6ff81b7b99b8e6db",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/027/finish/terminal.json",
+      "sha256": "269d6de6cc4bec0c868b9c2700e4d1e092e28bc2d9330d8f1730b20a04129113",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/027/finish/terminal.json"
+    },
+    {
+      "bytes": 10933,
+      "member": "controller/028/complete.json",
+      "sha256": "513ba5c88fa0bf4c400e618a6237d04d18a795633cc4df7cdc818ed1ccfea4cc",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/028/release.json",
+      "sha256": "3574e39d55801d7e9b747d55760b59373c8aa34896af4444e0cd0f48cccf3d30",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/028/stage-verify/child.json",
+      "sha256": "da55d2ba5d9f7b0ef875731a62d7c6f8dac1551182ed469a13b456c6f1d334f8",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/028/stage-verify/invocation.json",
+      "sha256": "e93f5ef814e70f06c00c1bb96a89e96ba0ccada50d382d5588ca3c64ad413220",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/028/stage-verify/result.json",
+      "sha256": "4baa7ab51a2a540ada81f328a9302766c3ead8be6f406ab8283824c76de9b9d1",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/028/stage-verify/terminal.json",
+      "sha256": "45561d592f95459f39e0712f8b34cbfccf8b7e3274dcc3c7cd8ed243e572f45b",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/028/finish/child.json",
+      "sha256": "52987ceece0af0a2bc408a404c47130ebd36c22fe48beaa8094714e2ab9e6174",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/028/finish/invocation.json",
+      "sha256": "379725c1703c7cff12a4864ae6feafaaae19265b439e82b62bc284375d53bc4f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/finish/invocation.json"
+    },
+    {
+      "bytes": 9751,
+      "member": "controller/028/finish/result.json",
+      "sha256": "f5e57950574d9a6bff541c17201c3e61e5c70fc2efbd806c612773a880630257",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/028/finish/terminal.json",
+      "sha256": "b3555aed89680566d2b1db83c3332fcf7805b67b325020bd650592448e3d8e28",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/028/finish/terminal.json"
+    },
+    {
+      "bytes": 11156,
+      "member": "controller/029/complete.json",
+      "sha256": "c033e75df2ca1a8a62c9c70f92876702355540b90f4d5819f4b1542e13d7afcb",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/complete.json"
+    },
+    {
+      "bytes": 981,
+      "member": "controller/029/release.json",
+      "sha256": "e7828d89c2710dcd0c5f6838dc9fe16f3f7370d484409630430135c109fb4f37",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/029/stage-verify/child.json",
+      "sha256": "582c4ecfd08b00baefeec777448ce9ac272d275e5db30bda548a8f936a88050e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/029/stage-verify/invocation.json",
+      "sha256": "648c2df2410bf9699aa60151d09485e48d220cce43ea81848ecebfadcfd25ef2",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 314,
+      "member": "controller/029/stage-verify/result.json",
+      "sha256": "450d29aeb6a838918f5a2c2438c0e4ef254fd0c6d8b525fcf87b345d38be4f4c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/029/stage-verify/terminal.json",
+      "sha256": "3544229ae22ee8b6dfc377ee4eeb22d8a09d0f8142cedee7ff01f909b86e3920",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/029/finish/child.json",
+      "sha256": "60ee7a391bbd89eb44f090c68660a42e5e84348ffd4def4e13ae63c178b9d657",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/029/finish/invocation.json",
+      "sha256": "a101d786564f8b7bf658e0c8cd0d0537d1c22dfc1b227aab3d0fdf6f29f68f37",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/finish/invocation.json"
+    },
+    {
+      "bytes": 9965,
+      "member": "controller/029/finish/result.json",
+      "sha256": "67f6e8ffd0a0aea0208ba0f0d47a7ac2b3be1d61d870fc7dfefdd50c549432c5",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/finish/result.json"
+    },
+    {
+      "bytes": 1024,
+      "member": "controller/029/finish/terminal.json",
+      "sha256": "1fc56a6fe2ed010482d12643efa7404aa7ebde1108eac40362030d7f58df13cd",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/029/finish/terminal.json"
+    },
+    {
+      "bytes": 11397,
+      "member": "controller/030/complete.json",
+      "sha256": "f15777a4b0bf1c9cc9761416279120cfa8b6d07bb3aa1d7dd25360367a8f4da9",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/complete.json"
+    },
+    {
+      "bytes": 987,
+      "member": "controller/030/release.json",
+      "sha256": "22d0a016fb2a544d95d207620065f9deb1dc5c9dac0d3b09769e196a5b45f32d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/030/stage-verify/child.json",
+      "sha256": "91521ea053c17b49bc5885a7c2159f02bed85663aaeceedf1db4658963ffeee0",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/030/stage-verify/invocation.json",
+      "sha256": "0b23f5c72eb4cabcd17dac187dc24cc9c2d8095698346e85a64365bd0e849296",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 320,
+      "member": "controller/030/stage-verify/result.json",
+      "sha256": "d361abd9d5e19c1540608cce458309f4343a4322a39c472bde0da3727e410634",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/030/stage-verify/terminal.json",
+      "sha256": "88b34a688e3dfe444018a0ab9d97086c8b78d5f32f5ff01698d52c242f0860e3",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/030/finish/child.json",
+      "sha256": "d94691d187780a9f9c762158e8a7358dfa2bb5df91c2c5f50c9b543b049eb744",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/030/finish/invocation.json",
+      "sha256": "21e5674ab15f56da69763c7d381892d3018ea2d9138fc16892cd59247d4df62d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/finish/invocation.json"
+    },
+    {
+      "bytes": 10212,
+      "member": "controller/030/finish/result.json",
+      "sha256": "689ba7fd1d2d00f3586aef56b817ca3534ccf0275168b4da4b5bebeb80f8beff",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/030/finish/terminal.json",
+      "sha256": "d23051811293ad7e44b657a8d1bc01f39879e9f19833364f9c4b020b5f98cd2d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/030/finish/terminal.json"
+    },
+    {
+      "bytes": 11618,
+      "member": "controller/031/complete.json",
+      "sha256": "eb8cbae9a1578cb52fbe7d9e4420e981c2c2dc7b9721e8d5375ccb38ed6b1576",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/complete.json"
+    },
+    {
+      "bytes": 981,
+      "member": "controller/031/release.json",
+      "sha256": "2a39cea421327069d36623ea8b5079c4b4ff4b984f5344cd489a5a3a4c6dcc41",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/031/stage-verify/child.json",
+      "sha256": "9d1f7917291e7f4416565ed40db90447d9fffbcbb740b850180cd37945f74688",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/031/stage-verify/invocation.json",
+      "sha256": "03c121e3cf881fd6af85fd8b3502d98a90064443afd674195daf05572683bb4a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 314,
+      "member": "controller/031/stage-verify/result.json",
+      "sha256": "812e11c7f059805185b961dca63814c29ab1c8789df25ebf7093fccfcb08fbfc",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/031/stage-verify/terminal.json",
+      "sha256": "bc36ba3437efa7c0b33f9acefb5550da758ad70ff255a695e0f9bbb5cb8291fd",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/031/finish/child.json",
+      "sha256": "5a9f0272e6f31928df8ad9befa7802ed2934b4af2bc0acf35bc45eee8bb2f86a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/031/finish/invocation.json",
+      "sha256": "7605ce7df0eca7b7dab85f98b1c21ff35e51a9c49f76946242cbd19740978141",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/finish/invocation.json"
+    },
+    {
+      "bytes": 10427,
+      "member": "controller/031/finish/result.json",
+      "sha256": "bd20b531f70747351746a953e010ef1182eb1cb741915255fa9d2ab1d76a9bb5",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/031/finish/terminal.json",
+      "sha256": "8191e1096a974ee179b557d1d78416d37a6c4d3dcc774119869678d4533b491f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/031/finish/terminal.json"
+    },
+    {
+      "bytes": 11860,
+      "member": "controller/032/complete.json",
+      "sha256": "32bc7e7960f7e70cc347b7dad4cea557ae7d6994ab09d335a0c488fcea3baff1",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/032/release.json",
+      "sha256": "a2e08153d6020c57f910be273d147dc7b980bc5e647199e0136801125c88599d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/032/stage-verify/child.json",
+      "sha256": "6a4f51e4a9ae45f3b3ede4276770f697461ce5d57ffbd4b0fb9cf09eb0574b08",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/032/stage-verify/invocation.json",
+      "sha256": "28b495b0260fb5b0d26dc5c92d64731d790d2ae300a2dac4d8ae1229d4d5e278",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/032/stage-verify/result.json",
+      "sha256": "e66e8b9a9cb887c9e108b7b95213c7806b22a8153aa09e19835e822a982cb552",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/032/stage-verify/terminal.json",
+      "sha256": "834e0f63563d7984ea36f37f25da8ed302e4bb2b70c41386338da1c992be3606",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/032/finish/child.json",
+      "sha256": "19098c1ff177bbb92622b3ccccfd7e3e8f8f016b40954722dbdd0e5301fd2ad8",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/032/finish/invocation.json",
+      "sha256": "957d34a14c2176de8dfa76f10bd34302ba4a8d127566a9d0b808fe022c91e214",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/finish/invocation.json"
+    },
+    {
+      "bytes": 10678,
+      "member": "controller/032/finish/result.json",
+      "sha256": "643de0e7bd5ee03ed66defa0cf3e599e01b89e6668ed17dce30cdcbe9a7368ba",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/032/finish/terminal.json",
+      "sha256": "945f63874aa30bec1cf91cbfe58e33facce5f99ccbe56e6d94fa3c21d39c6660",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/032/finish/terminal.json"
+    },
+    {
+      "bytes": 12120,
+      "member": "controller/033/complete.json",
+      "sha256": "631672689287d3ec4db009464c2bb7537eeb7ffceff5058dfb69376ee8f5264c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/033/release.json",
+      "sha256": "b15d7c484a264f2e0c127a9a6439ea2964cb5b9d6f355fe5b6ec68011fd08bd3",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/033/stage-verify/child.json",
+      "sha256": "c4d62ed974bf411dbeeafa84246dad5e8953bbfedf906595f39d447af585e35a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/033/stage-verify/invocation.json",
+      "sha256": "c758837611ef11635952b0eba007adccd045e7703382a542e6afba5675b2aa7c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/033/stage-verify/result.json",
+      "sha256": "64f27896a8c1adfeadae8d6f1e56f51deaa7382bbdca9fa3d034944cedf3b886",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/033/stage-verify/terminal.json",
+      "sha256": "24fc5c0a3334c60e01defc550eea8fb22654c255beec1ffc42dbef7fbb2239b4",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/033/finish/child.json",
+      "sha256": "47f0c6b0cae1ea373bf44d5ea50c42dc78f3a541a6cb3d8efc0367de9930a936",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/033/finish/invocation.json",
+      "sha256": "075169625056a5cfdfc7516f145347deb557d8640fc8e1dbe98753acc81b11cd",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/finish/invocation.json"
+    },
+    {
+      "bytes": 10938,
+      "member": "controller/033/finish/result.json",
+      "sha256": "3d0117250d22e3dd6931965b370eba4fe9b70b5143f67476e9ccc831b5ddb3ff",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/033/finish/terminal.json",
+      "sha256": "c3c4eb24ccb801aa92d2c1ebe4ee7705ffd4644c717e92bceec53b7cdd165569",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/033/finish/terminal.json"
+    },
+    {
+      "bytes": 12357,
+      "member": "controller/034/complete.json",
+      "sha256": "afc41261677f0186b07da26facfb4bcfbc45f9e5306a52df721904d73269050b",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/034/release.json",
+      "sha256": "dffde6173a6c8358bcf18a4acf7dff2e1011ea62d9e626c3006df1b7de362eb0",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/034/stage-verify/child.json",
+      "sha256": "6fb4c3491231240971c9d8017a92d816148bb17248795bbc00d17add7fbaec09",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/034/stage-verify/invocation.json",
+      "sha256": "6a5bea8e83972fc0d135b443018881057bcc5aa6144a1bc2267a70f32149fba3",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/034/stage-verify/result.json",
+      "sha256": "c4817574e51f259e7ce8c400d82bd57e63e0db6f879b6255aa5d62a084aaca1f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/034/stage-verify/terminal.json",
+      "sha256": "7c713fa0910fb9d8ec1321c5c2c44fe050e49fb32824f0c7849b36df057f98a1",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/034/finish/child.json",
+      "sha256": "164579958a0f835f2b9a95d27333819f929cc9e2a84d0c27eabe29d7afc9e057",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/034/finish/invocation.json",
+      "sha256": "74a397cc0c8eed0e75a5354b474c539ffda94d6d95383b64e774b38a4c225318",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/finish/invocation.json"
+    },
+    {
+      "bytes": 11175,
+      "member": "controller/034/finish/result.json",
+      "sha256": "996b4cb84692cc84f2a13c0f9406a6f5a43985ee3a5cd129799021be2d47223d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/034/finish/terminal.json",
+      "sha256": "044ba4efb15a9f6e0b83d66fc0e882cc5ecfa60dcbbbc8b3a8f9f05f4d93a73d",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/034/finish/terminal.json"
+    },
+    {
+      "bytes": 12557,
+      "member": "controller/035/complete.json",
+      "sha256": "47bab60592597525d65555e226c7d31a3a6ef364e021ca470bbc42cf1bc144e5",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/complete.json"
+    },
+    {
+      "bytes": 981,
+      "member": "controller/035/release.json",
+      "sha256": "e8d479fbb0c212f7cb8acdb33c241b0ee3d20cb4bfd62eaa298a9d19fb51fe64",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/035/stage-verify/child.json",
+      "sha256": "cf1ac9eabe056a9d2ddec3e7dfff6e2b2ba689e1204f1b66ec443306e56e07e4",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/035/stage-verify/invocation.json",
+      "sha256": "93842f28908769d0e21aa2b532903d52be091bad55085bf35169b28f6eb3f199",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 314,
+      "member": "controller/035/stage-verify/result.json",
+      "sha256": "8a9b24f5a284ef59f4b931bb3747b4a7ea406854c1094d139a0b71420b8f0170",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/035/stage-verify/terminal.json",
+      "sha256": "24913f926620177d79f8a99072e0aa761a79d027263cedef1c6cd40254cc6831",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/035/finish/child.json",
+      "sha256": "5513c7e08b4f368c1bfbd0ca653b76ab7afb923fea2d877ab796477fb90811f6",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/035/finish/invocation.json",
+      "sha256": "53a710985cf23ca023676a7dc8e988fa1227266062776616a7528e2104d08295",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/finish/invocation.json"
+    },
+    {
+      "bytes": 11366,
+      "member": "controller/035/finish/result.json",
+      "sha256": "ea31e32f9447436476b4eaca9e8cc8d239099f1f10a0e9dd063526c370a7a619",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/035/finish/terminal.json",
+      "sha256": "79a6d8b95d6af6b764def304b048aa73fc993fcbd97a7bd0aae664737fc23bfa",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/035/finish/terminal.json"
+    },
+    {
+      "bytes": 12798,
+      "member": "controller/036/complete.json",
+      "sha256": "2ee631eb5aeac6e4320a39d68df7f14cd8230fe3242a934a6fefcc8996a3f4fa",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/complete.json"
+    },
+    {
+      "bytes": 987,
+      "member": "controller/036/release.json",
+      "sha256": "eb13046fb86db434e2751be7a0230943526c945117ce328d1c28bfcfd91e30d3",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/036/stage-verify/child.json",
+      "sha256": "d39c6863eb8fb21070905770a8f99936ed1ae1d43512e0fa4d7cde3ced030684",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/036/stage-verify/invocation.json",
+      "sha256": "3f47005458ccf4cfd7742a7e7f520be49b4630b17e84f535987a88eccad2104b",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 320,
+      "member": "controller/036/stage-verify/result.json",
+      "sha256": "5907c330cc99c876bdf7049a3ec36fbffac2d29f18f9debcfb615df59a855d44",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/036/stage-verify/terminal.json",
+      "sha256": "00b051000337538afb66f07f314c1133fab56451fc33ca5fc8f69e28ad91bc1b",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/036/finish/child.json",
+      "sha256": "cc5bb4f0a1cb5b8dea4ffb0509b88071f65cd1f3d7764fac886cfaae19af372f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/036/finish/invocation.json",
+      "sha256": "eb4ef8233aeea83e525f146c9e6f1311ba0ee2c987d2ccbaf0c076a0194b3b29",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/finish/invocation.json"
+    },
+    {
+      "bytes": 11613,
+      "member": "controller/036/finish/result.json",
+      "sha256": "f8c64e6bd62652e4deea9c14217f458fec3154c220b220be8999e004b1c79274",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/036/finish/terminal.json",
+      "sha256": "0b1f8147697b7a06f7be119507ebf75e782d6b062577dba42f86af21dd9e802f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/036/finish/terminal.json"
+    },
+    {
+      "bytes": 13032,
+      "member": "controller/037/complete.json",
+      "sha256": "c168c1ea31ba7beb00d271dfbbedf277d05feb409f94e5f10e663a32c71d8c35",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/complete.json"
+    },
+    {
+      "bytes": 987,
+      "member": "controller/037/release.json",
+      "sha256": "3e8a2f25dc2b74ca3a78adbfbd32c8bca8b245d5b046badf5dcc690f49decbee",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/037/stage-verify/child.json",
+      "sha256": "b367a5d2dfd2a0d62eced058189792e8d8ab1841e2caf5787cb1606504fbe70c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/037/stage-verify/invocation.json",
+      "sha256": "2361dbd19b8044ee95edbe4d108ad8486913cddc952e5f47c5c1243a8c4c2f52",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 320,
+      "member": "controller/037/stage-verify/result.json",
+      "sha256": "73aa8d743da4734ab8ad5c86ac7c330372feb054dabf0f097a35ddee2ac72b29",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/037/stage-verify/terminal.json",
+      "sha256": "d63c96d7d249c049080df8137997f15a0275ecbd9bd4ca684853e6b5d380b7f3",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/037/finish/child.json",
+      "sha256": "ef92e1142246a8c2fb4e68bb79e1181dbbb0d79719360e131f989fa0bb65fdc2",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/037/finish/invocation.json",
+      "sha256": "13db91240e98dfd0703f0834386727b84d2eec635d00a222806e337ec1ba57e7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/finish/invocation.json"
+    },
+    {
+      "bytes": 11847,
+      "member": "controller/037/finish/result.json",
+      "sha256": "d52391f5567ac9c0e66faddfc3f831ddcf5910f51cafde8bd1d785d8f8c8d7c3",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/037/finish/terminal.json",
+      "sha256": "a288f3ef86815065d1bfc210cb40450a45581ac184f1b0e694eaa8d23137abab",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/037/finish/terminal.json"
+    },
+    {
+      "bytes": 13267,
+      "member": "controller/038/complete.json",
+      "sha256": "939cb90fbd87669c3ed452ffc9fc6ab510db1f9568b8569828cc45e506720b9c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/038/release.json",
+      "sha256": "ed0ab66216e180ffa9e23e88d491b5b9c61a863349208ff2ac397f058046b89e",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/038/stage-verify/child.json",
+      "sha256": "bd37c3e5d908f8d9b901702689069a91879163fec5209e06db47499f4892a864",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/038/stage-verify/invocation.json",
+      "sha256": "2a168ca3de1fc90f7b91bdb0e5ec5b1ae47803c497ef989660b4130c361b4fba",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/038/stage-verify/result.json",
+      "sha256": "8fed129e23087e539c80b6eef2fedb8a6e96e057830e8f0f27497588015541d7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/038/stage-verify/terminal.json",
+      "sha256": "d3595788b01c2c89fff658afcc53fc94f6724787fbcd5ec49622ff4995a9b117",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/038/finish/child.json",
+      "sha256": "9d1380b691846a8b270170a3e2bec9b1ed14dbef729961ad874a516f746a4e6f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/038/finish/invocation.json",
+      "sha256": "e020d85c09c8706fd738a5b2fe8d58dcc2081c10fa34f2278a26ca4d61f16684",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/finish/invocation.json"
+    },
+    {
+      "bytes": 12085,
+      "member": "controller/038/finish/result.json",
+      "sha256": "6d7b32c7f6c5a1ab9c869a533e29d940177fd25d37e83096baa645f7ef56cd40",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/038/finish/terminal.json",
+      "sha256": "a66a7419ebd17d750af718bc631be5e2bb4b25828e3fa66d464a2ce99360e81c",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/038/finish/terminal.json"
+    },
+    {
+      "bytes": 13526,
+      "member": "controller/039/complete.json",
+      "sha256": "31901869f1dc8a181d717a219ef5813e404037171a4deefd176ed0a34a935ae2",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/complete.json"
+    },
+    {
+      "bytes": 990,
+      "member": "controller/039/release.json",
+      "sha256": "b9facde50e87109b2516ffc94d83b298f42cc08982ef72f354fc479c32798d9f",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/release.json"
+    },
+    {
+      "bytes": 339,
+      "member": "controller/039/stage-verify/child.json",
+      "sha256": "4c71408763b54da108bbbf50bbe9b0c7677667f6216532a5c6e739ac3e2133e6",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/stage-verify/child.json"
+    },
+    {
+      "bytes": 346,
+      "member": "controller/039/stage-verify/invocation.json",
+      "sha256": "2c1fa7e394dee82d4e83f9f0fff310590aef9dd9498d91a1289769b30727dae7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/stage-verify/invocation.json"
+    },
+    {
+      "bytes": 323,
+      "member": "controller/039/stage-verify/result.json",
+      "sha256": "98206174e9a6a76e057bfe0a3ca82a6b9c33b64a08cacdf7bce35e98511409b7",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/stage-verify/result.json"
+    },
+    {
+      "bytes": 634,
+      "member": "controller/039/stage-verify/terminal.json",
+      "sha256": "b65a0de7736d55b40c0b039ddd8a8f70c502c7ec9a9da3b24ef4fcee2f702a36",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/stage-verify/terminal.json"
+    },
+    {
+      "bytes": 728,
+      "member": "controller/039/finish/child.json",
+      "sha256": "55f5723fd0687da1a96732e12f87c346321b9a4763e0dafa24a4fd5e62d5954a",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/finish/child.json"
+    },
+    {
+      "bytes": 729,
+      "member": "controller/039/finish/invocation.json",
+      "sha256": "3a6283e4a888b98ffce4ad515461baf23af17c712828396a3937de79a9023d37",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/finish/invocation.json"
+    },
+    {
+      "bytes": 12345,
+      "member": "controller/039/finish/result.json",
+      "sha256": "02e69f114fb658cd916e08088c3c427acae2c803f197a485ec9db348ec74d646",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/finish/result.json"
+    },
+    {
+      "bytes": 1025,
+      "member": "controller/039/finish/terminal.json",
+      "sha256": "4137f08300e631ce70df144e48d8630427e11fd00f042734d323770be58347c0",
+      "source": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/039/finish/terminal.json"
+    }
+  ],
+  "original_bytes": 714436,
+  "original_files": 267,
+  "original_total_cap_bytes": 4194304,
+  "scope": "Terminal reporting metadata only; original phase results and payloads remain local authorities."
+}

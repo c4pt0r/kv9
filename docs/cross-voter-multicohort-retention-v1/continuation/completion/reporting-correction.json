@@ -1,0 +1,7 @@
+{
+  "actual_reporting_terminal": "9fbfc4/1",
+  "error": "AssertionError comparing the raw completed_ordinals counter to the total plan cohort count.",
+  "correction": "The frozen controller counter excludes separately bound bootstrap000. Validate 13 historical non-bootstrap rows plus 26 continuation rows against raw39, and cold_cohorts40 / next_ordinal40 against the complete plan prefix.",
+  "source_inspection_terminal": "249297/0",
+  "runtime_effect": "None. No controller, payload, source or acceptance receipt was changed or replayed."
+}

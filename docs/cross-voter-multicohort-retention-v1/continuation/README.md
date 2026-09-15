@@ -1,14 +1,24 @@
 # Qualified continuation after the retained ordinal-013 failure
 
-The separately bound continuation is running under actual tool session **85630**.
-Its original 000–012 prefix and independently accepted corrected ordinal 013
+The separately bound continuation **completed successfully**, actual tool
+session **85630**, terminal **b96c6f/0**. Its final completed boundary contains
+**40 COLD plan cohorts000–039**, **85,304,766,464 bytes available** and
+**59,995,123,712 bytes conservative net recovery**, before later reporting.
+The controller stopped at its prospective 85,000,000,000-byte target; the
+historical 100,000,000,000-byte target was not reached. The raw counter39
+excludes separately bound bootstrap000. No cohort remains partial or restored
+within this completed prefix. See the [terminal evidence](completion/README.md)
+and [exact completion record](completion/completion.json).
+
+The dated observations below preserve the earlier running snapshots. The
+original 000–012 prefix and independently accepted corrected ordinal013
 passed the startup gate. The [launch observation](launch-observation.json)
 records an actual live poll; the [runtime bindings](runtime-bindings.json)
-record ordinal **014** executing its verified finish phase. No new completed cohort or
-overall terminal success is claimed at that snapshot.
+record ordinal **014** executing its verified finish phase. No new completed
+cohort or overall terminal success was claimed at that snapshot.
 
 The preceding [PID reuse repair](../../retention-pid-identity-v1/README.md)
-completed 14 original plan cohorts. The old controller and its failed reader
+had completed 14 original plan cohorts. The old controller and its failed reader
 result remain FAILED and unchanged.
 
 ## First actual continuation cohort completed
@@ -34,8 +44,8 @@ remain separately labeled; prior FNV/CRC acceptance is reused without replay.
 The [reporting extraction](first-cohort-014.json) binds and archives the actual
 verification, restoration, readback, COLD, release and child terminals. Full
 archive readback passes (`e70e15/0`); no payload workload is replayed. The same
-live campaign has advanced to ordinal015. Overall migration and receipt
-performance acceptance remain incomplete.
+live campaign had advanced to ordinal015. Overall migration and receipt
+performance acceptance were incomplete at that snapshot.
 
 The [later completed-boundary snapshot](progress-20260915.json) records
 **19 completed plan cohorts**, **41,339,125,760 bytes** conservative net recovery
@@ -66,8 +76,8 @@ old/new controllers, repair sources, failure evidence and the independent audit.
 Ten initial focused controls (`6ccb31/0`) and three checks after adding the
 actual013 independent-acceptance binding (`e77548/0`) pass: **11 distinct tests**.
 Independent source review finds no blocker and confirms unchanged inherited
-verification bodies. These controls are metadata tests; the live continuation
-must still complete its actual per-cohort work.
+verification bodies. These controls were metadata tests; subsequent actual
+per-cohort completion is bound in the terminal evidence above.
 
 The new controller stops at **85,000,000,000 available bytes** after a complete
 cohort, or reports finite exhaustion of the original plan. The original

@@ -1,0 +1,14 @@
+{
+  "archive": "terminal-metadata.tar.gz",
+  "archive_bytes": 65095,
+  "archive_sha256": "5ed1fe52ef1ff7794dbc7944e1dd113a347724b5c7a2804c7cb956b96ae943eb",
+  "complete": true,
+  "decoded_tar_bytes": 993280,
+  "files": 268,
+  "gzip_eof_verified": true,
+  "member_bytes_including_inventory": 789892,
+  "members_sha256": "c4e3e3ecb928218ecc85103c0d7bf048d2dbc447357fd6d4081656c7b519f617",
+  "original_bytes": 714436,
+  "original_files": 267,
+  "scope": "One complete reporting-archive decode and exact member readback; no payload or runtime re-audit."
+}

@@ -1,0 +1,39 @@
+{
+  "scope": "Actual metadata publication tool receipts; no payload, control, workload or retention codec execution.",
+  "runtime": {
+    "session_id": 85630,
+    "terminal_receipt": "b96c6f",
+    "exit_code": 0,
+    "source": "tool-terminal.json"
+  },
+  "root_metadata_validation": {
+    "terminal_receipt": "a18ff2",
+    "exit_code": 0,
+    "provenance": "Parent root's observed metadata validation receipt; completion.json is the original output."
+  },
+  "package": {
+    "chunk_id": "074d75",
+    "exit_code": 0,
+    "execution_kind": "direct_tool_terminal",
+    "output": {
+      "complete": true,
+      "original_files": 267,
+      "original_bytes": 714436,
+      "archive_members": 268
+    }
+  },
+  "independent_readback": {
+    "chunk_id": "75149a",
+    "wall_time_seconds": 0.000004869,
+    "exit_code": 0,
+    "original_token_count": 132,
+    "output": "{\"archive\": \"terminal-metadata.tar.gz\", \"archive_bytes\": 65095, \"archive_sha256\": \"5ed1fe52ef1ff7794dbc7944e1dd113a347724b5c7a2804c7cb956b96ae943eb\", \"complete\": true, \"decoded_tar_bytes\": 993280, \"files\": 268, \"gzip_eof_verified\": true, \"member_bytes_including_inventory\": 789892, \"members_sha256\": \"c4e3e3ecb928218ecc85103c0d7bf048d2dbc447357fd6d4081656c7b519f617\", \"original_bytes\": 714436, \"original_files\": 267, \"scope\": \"One complete reporting-archive decode and exact member readback; no payload or runtime re-audit.\"}\n"
+  },
+  "parent_readme_before": {
+    "path": "/home/dongxu/kv9/docs/cross-voter-multicohort-retention-v1/continuation/README.md",
+    "bytes": 5714,
+    "sha256": "b6d02dc974747c13ffe4c31c1c11e31687c51f0a86a16d62c0086da24df80026",
+    "allocated_bytes": 8192
+  },
+  "affinity": "6-15,22-31"
+}

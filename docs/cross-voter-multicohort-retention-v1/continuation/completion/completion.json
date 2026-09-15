@@ -1,0 +1,26 @@
+{
+  "complete": true,
+  "observed_ns": 1789462182639163758,
+  "tool_terminal": "b96c6f",
+  "wrapper_terminal_sha256": "fa1c15268f7bd5c07058e99eaa4392216bf42d4bee0532ed248b58b228bcbfc7",
+  "status": {
+    "available_bytes": 85304766464,
+    "completed_ordinals": 39,
+    "next_ordinal": 40,
+    "observed_ns": 1789462058960627334,
+    "reason": "actual_available_target",
+    "state": "COMPLETE",
+    "target_reached": true
+  },
+  "result_path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/result-1789462058977435126.json",
+  "result_sha256": "f4c73e095c97ae188c7e5d5e5c2e9cc5ba6d05e4f4db60eff76202934e5e7592",
+  "completed_plan_cohorts": 40,
+  "raw_controller_completed_ordinals": 39,
+  "controller_counter_scope": "Non-bootstrap history plus continuation; bootstrap ordinal000 is separately bound, giving 40 plan cohorts in cold_cohorts.",
+  "net_recovered_bytes": 59995123712,
+  "available_at_final_boundary_bytes": 85304766464,
+  "available_now_bytes": 85303754752,
+  "incomplete_or_restored_cohorts": [],
+  "benchmark_runtime_ready": false,
+  "scope": "Actual tool/child terminal and controller completion metadata validation; no payload or control replay. Final accounting precedes this reporting allocation."
+}

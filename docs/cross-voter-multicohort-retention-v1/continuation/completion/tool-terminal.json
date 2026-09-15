@@ -1,0 +1,17 @@
+{
+  "session_id": 85630,
+  "terminal": {
+    "chunk_id": "b96c6f",
+    "wall_time_seconds": 0.000002184,
+    "exit_code": 0,
+    "original_token_count": 408,
+    "output": "{\"complete\": true, \"exit_code\": 0, \"pid\": 1501546, \"started_ns\": 1789457013524652116, \"ended_ns\": 1789462058990610051, \"argv\": [\"sudo\", \"-n\", \"env\", \"PYTHONDONTWRITEBYTECODE=1\", \"PYTHONOPTIMIZE=0\", \"taskset\", \"-c\", \"6-15,22-31\", \"python3\", \"/tmp/kv9-cross-voter-multicohort-continuation-preparation-20260915-first/campaign.py\", \"--mode\", \"run\", \"--inventory-sha256\", \"e1af4fc3b294a781c7393629e12d4066ad5c4b3f2ff62c4b10e71506421cfebb\", \"--cohort-zero-terminal\", \"/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-tool-terminal.json\", \"--cohort-zero-terminal-sha256\", \"1234e8dba38b60262e8ec024218b44608f04aba51b5b341ba07d005455c184f2\", \"--cohort-zero-child-terminal\", \"/tmp/kv9-cross-voter-multicohort-root-20260915-first/group-000-finish-child-terminal.json\", \"--cohort-zero-child-terminal-sha256\", \"62bca83a0e9c7937ba2844c3a1a9e6bbec5be1bd849aba1621b55ca4b3a7502c\", \"--reconciled-tool-terminal\", \"/tmp/kv9-retention-013-reconciliation-root-20260915-first/tool-terminal.json\", \"--reconciled-tool-terminal-sha256\", \"378a6b917cafad8da64ca7c1c47b891ccd3312e70464ebb164628718c6941ce0\", \"--reconciled-child-terminal\", \"/tmp/kv9-retention-013-reconciliation-root-20260915-first/launch-first/ordinal013_finish-child-terminal.json\", \"--reconciled-child-terminal-sha256\", \"b1231a26ef06a8d1949a7ec1f02d731f6c1ac9ac40b1ef18b6d5ce7f9eca2337\", \"--reconciled-result-sha256\", \"1214b0c5d70b79ae0edfb59b3c0341f958c63b48c95fffe3f2617ed1885d52ab\"], \"result_path\": \"/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/status.json\", \"result_sha256\": \"1ada92aceff6027b8d1a36a38f8886cf47d05897868206ac425374044125bd1b\"}\n"
+  },
+  "launch": {
+    "chunk_id": "59e10a",
+    "wall_time_seconds": 1.000992279,
+    "session_id": 85630,
+    "original_token_count": 0,
+    "output": ""
+  }
+}

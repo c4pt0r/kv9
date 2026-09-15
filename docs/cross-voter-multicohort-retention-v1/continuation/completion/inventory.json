@@ -1,0 +1,65 @@
+{
+  "files": [
+    {
+      "bytes": 3550,
+      "path": "README.md",
+      "sha256": "75fb8bf45351f379156a827c21bd31a3dc09c54e4a16aebad203077f2155b5a8"
+    },
+    {
+      "bytes": 1240,
+      "path": "completion.json",
+      "sha256": "83243a994cf47ef21383ee47d26e44fc631fc3a2cc651bc8b70b08a5e90ff9b7"
+    },
+    {
+      "bytes": 75456,
+      "path": "members.json",
+      "sha256": "c4e3e3ecb928218ecc85103c0d7bf048d2dbc447357fd6d4081656c7b519f617"
+    },
+    {
+      "bytes": 5279,
+      "path": "publish.py",
+      "sha256": "420fa9e90c42948982b5909ed18d7326f9384377088dfacccaaac20a5f386130"
+    },
+    {
+      "bytes": 444,
+      "path": "reporting-allocation.json",
+      "sha256": "f8646ce82bdd25b079986a670e5f35bd15804f4083e7a92ed00a488ef31cc372"
+    },
+    {
+      "bytes": 545,
+      "path": "reporting-correction.json",
+      "sha256": "c2c88df9d7d07c0d60926431bf3e23c839f2142990864ff84d17ee99605845e3"
+    },
+    {
+      "bytes": 1718,
+      "path": "reporting-terminals.json",
+      "sha256": "ae79376e8484379039db43a82fe513413d626623b4068608c63f565837ea2094"
+    },
+    {
+      "bytes": 65095,
+      "path": "terminal-metadata.tar.gz",
+      "sha256": "5ed1fe52ef1ff7794dbc7944e1dd113a347724b5c7a2804c7cb956b96ae943eb"
+    },
+    {
+      "bytes": 2052,
+      "path": "tool-terminal.json",
+      "sha256": "583eb7a04f73741f054203fce36cffb708361c29ab7c472a8950e4325c3af6ca"
+    },
+    {
+      "bytes": 552,
+      "path": "verification.json",
+      "sha256": "85769cefad7021aa418d5f207212aa672252211f971cf40e9deb11f4d83a2d6e"
+    },
+    {
+      "bytes": 2307,
+      "path": "verify.py",
+      "sha256": "64ceb11c1512a48036ec34ff4c2f57435ddee2f57534aa5e303d5a41a769c909"
+    }
+  ],
+  "parent_readme": {
+    "bytes": 6402,
+    "path": "../README.md",
+    "sha256": "095ddaf2ad407b59aa1ff741f1724138b28e52c537425ac3b9c1ab976bfdab8e"
+  },
+  "scope": "Exact publication-file hashes; inventory excludes itself. Original member hashes are in members.json."
+}
