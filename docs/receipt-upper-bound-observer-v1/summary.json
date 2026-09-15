@@ -1,0 +1,270 @@
+{
+  "actual_terminal_inputs": [
+    {
+      "bytes": 393,
+      "path": "/tmp/kv9-upper-bound-observer-root-20260915-first/tool-terminal.json",
+      "sha256": "a2b7d549d6fbca96b71ba0b3fdb417a7607e39c0b2914f1b21e7948ba1357061"
+    },
+    {
+      "bytes": 225,
+      "path": "/tmp/kv9-upper-bound-observer-root-20260915-first/freeze-terminal.json",
+      "sha256": "5d0bc9003e8d9ed7ab1b3e4c291df8df45eeab737fccb1fb962106626a4d9861"
+    },
+    {
+      "bytes": 327,
+      "path": "/tmp/kv9-upper-bound-observer-root-20260915-first/analysis-terminal.json",
+      "sha256": "f3d7004218f6271fa16842fcdefbebd237790176bea35e53fa503481e3bb1bd3"
+    },
+    {
+      "bytes": 308,
+      "path": "/tmp/kv9-upper-bound-observer-report-20260915-first/summary-terminal.json",
+      "sha256": "19ddb5e81e514c45c929cca46591131a07d6028dbc57bee3637f8adceeb21e98"
+    },
+    {
+      "bytes": 315,
+      "path": "/tmp/kv9-upper-bound-observer-report-20260915-first/lookup-terminal.json",
+      "sha256": "b02e5af24ba09393f4ec41d04fcf200ca4e9748d94260f78e23ae380265957db"
+    },
+    {
+      "bytes": 275,
+      "path": "/tmp/kv9-upper-bound-observer-report-20260915-first/controls-terminal.json",
+      "sha256": "3e3b65dbf3a33f4fc2639fba9fd1e5d058907d780f4fcdd0a831709a008b29d0"
+    }
+  ],
+  "analysis_result": {
+    "bytes": 1297917,
+    "path": "/tmp/kv9-upper-bound-observer-preparation-20260915-first/analysis-first/result.json",
+    "sha256": "3cc9e8f56593ca4f58eff29da7640b8b68dfca29b90169ecdb847a73f4a776a9"
+  },
+  "cohorts": 16,
+  "complete": true,
+  "diagnostic_schema_version": 2,
+  "fresh_drains": 48,
+  "health": [
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 0,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 1,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 2,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 3,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 4,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 5,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 6,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 7,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 8,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 9,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 10,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 11,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 12,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 13,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 14,
+      "warmup_measurement_verification_single_attempt": true
+    },
+    {
+      "allowed_reason": "not_leader",
+      "every_phase_logically_successful": true,
+      "initialization_read_discovery_retries": 1,
+      "initialization_writes_single_attempt": true,
+      "ordinal": 15,
+      "warmup_measurement_verification_single_attempt": true
+    }
+  ],
+  "initialization_read_discovery_retries": 16,
+  "interpretations": "Whole-capture counters span setup/warmup/completion/drains/readback within status boundaries. No exclusive CPU or per-call causality. Skip lengths are observed logical counts, not predicted speedup. All measured populations remain original.",
+  "lookup_algorithm": "upper_bound_then_first_match_linear_scan",
+  "lookup_summary": {
+    "bytes": 50353,
+    "path": "/tmp/kv9-upper-bound-observer-report-20260915-first/lookup-summary.json",
+    "sha256": "916b10d9883b80ca455aa6ecaa87011de1913d0ab2116f28b86569cf92a1216b"
+  },
+  "mandatory_inputs": {
+    "bytes": 57522,
+    "path": "/tmp/kv9-upper-bound-observer-preparation-20260915-first/analysis-inputs.json",
+    "sha256": "ca147443e44076a03420a85b06e4b19b8b7a373c07af053adc4ceadcc4e8b504"
+  },
+  "manifest": {
+    "bytes": 4221,
+    "path": "/tmp/kv9-upper-bound-observer-preparation-20260915-first/analysis-manifest.json",
+    "sha256": "77413f9e22253d450a6372366a970720ddf5dabdad5bc2a3b456d03ff39e9173"
+  },
+  "measured_calls": 1456098,
+  "measured_input_items": 12897528,
+  "measurement_ms": 2000,
+  "new_lookup_controls_only": 4,
+  "original_default_and_diagnostic_roles": {
+    "client": {
+      "binary_path": "/tmp/kv9-point-write-v3-release-first/native/kv9-batch-benchmark",
+      "binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+      "features": [],
+      "manifest": {
+        "bytes": 487,
+        "path": "/tmp/kv9-point-write-v3-release-first/native/build.json",
+        "sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c"
+      },
+      "source_path": "/tmp/kv9-point-write-measurement-v3",
+      "source_revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+      "sources": {
+        "bytes": 60425,
+        "path": "/tmp/kv9-point-write-v3-release-first/native/sources.json",
+        "sha256": "74298441490d8ecb5c17e7004597e1ab66173cd3fda7c5ae147f2e32a6dcc65c"
+      }
+    },
+    "default": {
+      "binary_path": "/tmp/kv9-upper-bound-release-20260915-first/kv9",
+      "binary_sha256": "6f074e867eae45274c17b54aa763888e92db2c45d5757974fa52ee0f15936d49",
+      "cargo": {
+        "bytes": 212186,
+        "path": "/tmp/kv9-upper-bound-release-20260915-first/kv9-cargo.jsonl",
+        "sha256": "f494c16bb05e43ecdfcafdfc3a672bc08b51dc84ef921011197a75d835d2668f"
+      },
+      "features": [],
+      "manifest": {
+        "bytes": 133869,
+        "path": "/tmp/kv9-upper-bound-release-20260915-first/build.json",
+        "sha256": "e6f3ebab9510cdf87c1e521d5b64578c224a08842956998cb2c9690f67498cb7"
+      },
+      "source_files": 1116,
+      "source_path": "/tmp/kv9-receipt-upper-bound-20260915-first",
+      "source_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "source_tree_sha256": "7ab7f993ca945ff1bd92017b31372eb40bb685fb725422a78c69777392f1f4ff"
+    },
+    "diagnostic": {
+      "binary_path": "/tmp/kv9-upper-bound-diagnostic-release-20260915-first/kv9",
+      "binary_sha256": "dbfb271302cc079c5fdd249a4c011a28aa759f4ad036b5e3707d446e078bc2e5",
+      "cargo": {
+        "bytes": 212315,
+        "path": "/tmp/kv9-upper-bound-diagnostic-release-20260915-first/kv9-cargo.jsonl",
+        "sha256": "5cce803a600f81f5b51c433b3da1fb2e7f853105701591f15ef7e73967d4ee4e"
+      },
+      "features": [
+        "write-path-diagnostics"
+      ],
+      "manifest": {
+        "bytes": 151152,
+        "path": "/tmp/kv9-upper-bound-diagnostic-release-20260915-first/build.json",
+        "sha256": "b20097b55b4f2ad72fbd0d231ba2089a0bfad29e1ae7c3b5e5ad200aa5db41b4"
+      },
+      "source_files": 1116,
+      "source_path": "/tmp/kv9-receipt-upper-bound-20260915-first",
+      "source_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+      "source_tree_sha256": "7ab7f993ca945ff1bd92017b31372eb40bb685fb725422a78c69777392f1f4ff"
+    }
+  },
+  "owned_lifetimes": 64,
+  "performance_promotion": false,
+  "restored_outer_isolation": true,
+  "retained_payload_bytes": 13176171178,
+  "scope": "Original observer evidence packaging only; not new analysis, candidate promotion or the full10s matched benchmark.",
+  "source_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27",
+  "source_timing_script_unchanged": {
+    "bytes": 6840,
+    "path": "/tmp/kv9-upper-bound-observer-report-20260915-first/summarize.py",
+    "sha256": "bdb36993cc3749d23b3cf5403b52a9f2dc16eda6e380df71f611a7bcd919f64b"
+  },
+  "timing_summary": {
+    "bytes": 319343,
+    "path": "/tmp/kv9-upper-bound-observer-report-20260915-first/summary.json",
+    "sha256": "cec0f051b0001a9d096afb18736a9266d6135b9ed9380ea9c26e6f0d6cb8cd09"
+  }
+}

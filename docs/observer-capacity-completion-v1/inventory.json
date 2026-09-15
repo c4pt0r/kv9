@@ -1,0 +1,53 @@
+{
+  "added_allocation_cap_bytes": 4194304,
+  "allocated_bytes_before_inventory": 1937408,
+  "complete": true,
+  "excludes": [
+    "inventory.json"
+  ],
+  "file_bytes": 1910116,
+  "file_count": 10,
+  "files": {
+    "README.md": {
+      "bytes": 2540,
+      "sha256": "4bb591c8f437c6bcc21df505ceae54e727d9e5e0fcfbb25cdcc3883fcc37a121"
+    },
+    "metadata.tar.gz": {
+      "bytes": 686665,
+      "sha256": "56fd19252ab840e23449009253d38ebb5a71334f791687d68d16ca2607dbdc31"
+    },
+    "overview.json": {
+      "bytes": 22642,
+      "sha256": "7d209f1fb383d816aa0e734e9186da91de9c1ba5a766b6b9c2d673e3e529487f"
+    },
+    "packet-manifest.json": {
+      "bytes": 1134385,
+      "sha256": "cd1c6237f71bfdd57bb7c6f9099d9189d17e3831a1829da7b4a4e8a769530b4c"
+    },
+    "packet-result.json": {
+      "bytes": 796,
+      "sha256": "025533b1838ffecf3a28ccb087ec767059bbb16d24cbd203b131cc6b33d7d8cb"
+    },
+    "readback.json": {
+      "bytes": 352,
+      "sha256": "37b87a45c14c4ac1d439e0f5227c339cdd0c005ad7566124ce4b0f0d9fa549e8"
+    },
+    "report.py": {
+      "bytes": 14971,
+      "sha256": "53d0608118714aaba868a3e158765d6bb690c7c27ac347f1f2aba905e74ebe8c"
+    },
+    "retained-locally.json": {
+      "bytes": 45356,
+      "sha256": "ffee16986d4d40c2903ca5f04555e6026e7e5f5483ce08ecd143edf7967a47aa"
+    },
+    "tool-terminals.json": {
+      "bytes": 919,
+      "sha256": "fd16e21b15b772946a1231e2710dce867093ace147f548cdd42ee9823d4fffc5"
+    },
+    "verify.py": {
+      "bytes": 1490,
+      "sha256": "a68ea9e0be6e35c19fc1afc97dce2ac9d12a4b6cfcceb1f43d36ecd0cb3b242d"
+    }
+  },
+  "new_reporting_outside_historical_accounting": true
+}

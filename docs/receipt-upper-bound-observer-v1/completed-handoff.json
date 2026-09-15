@@ -1,0 +1,99 @@
+{
+  "complete": true,
+  "compressed_bytes": 2144374,
+  "compressed_sha256": "0287c2cb5398d18a66d7ccd94d0c678335e97ea951e5353edd8d444a0c0e0234",
+  "decoded_bytes": 63457414,
+  "files": {
+    "README.md": {
+      "bytes": 3516,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/README.md",
+      "sha256": "a36fd8ed9f363e39b8eb78f2b335bf0255faf171f7bb950b00bca741368a4660"
+    },
+    "ROOT-COMMANDS.json": {
+      "bytes": 812,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/ROOT-COMMANDS.json",
+      "sha256": "793be42be31f8089039ed75fd3f1344a60fd5a9daf2d14cd9d4f40e182e6792e"
+    },
+    "input-hashes.json": {
+      "bytes": 84029,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/input-hashes.json",
+      "sha256": "45ad46607ae1eb3dd4d4dadfced25dda459bb8b8274c3af87db3be7cba562799"
+    },
+    "omissions.json": {
+      "bytes": 178116,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/omissions.json",
+      "sha256": "4340392eb61d022afea828a09c42299c23e692da4ed010de2dfc685a25b52959"
+    },
+    "package-bindings.json": {
+      "bytes": 4062,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/package-bindings.json",
+      "sha256": "8a54c2d5f6541e4f06fbf267d2644fe3893efe0a772c239e82df8f39759426e3"
+    },
+    "package-first/inventory.json": {
+      "bytes": 145819,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/package-first/inventory.json",
+      "sha256": "ef7801f7b597e9a5c56e2ee83f378984cbd6324e99231858911f7d762f5e018c"
+    },
+    "package-resource-samples.json": {
+      "bytes": 2866,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/package-resource-samples.json",
+      "sha256": "a1b33b6a3827f7b57e1145bab9a746d1f124e6adc3f1168628b174d20bf0882c"
+    },
+    "package-result.json": {
+      "bytes": 785,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/package-result.json",
+      "sha256": "90da7735998148fc17bfa7298b1df6fb92bc61382c927aafabe705d7b1624b04"
+    },
+    "package-terminal.json": {
+      "bytes": 638,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/package-terminal.json",
+      "sha256": "b89f1b197f58ff5f928594c1768f5eee0f7c1044d9cf098e5a585f2cf812449c"
+    },
+    "preparation-initial-failure.json": {
+      "bytes": 562,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/preparation-initial-failure.json",
+      "sha256": "09b0e3d64ee5daa42673a07313bb2cf898f00c795f5f1ffec9bd8f2c257284dc"
+    },
+    "preparation-inventory.json": {
+      "bytes": 2748,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/preparation-inventory.json",
+      "sha256": "329f3a23bf1aaa458e8ecde0ad69e34c1d823c8aedb0c0e25fd7d389748fd50d"
+    },
+    "preparation-terminal.json": {
+      "bytes": 265,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/preparation-terminal.json",
+      "sha256": "8be24e47b3607e4ef04ff42104024c53196bbc2437aded8e8614e36546f2d27d"
+    },
+    "selection.json": {
+      "bytes": 172014,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/selection.json",
+      "sha256": "3b70a3fa6dcd4532aa34145956e3ef4b868bb72d9db138c114e1785ac79e4f28"
+    },
+    "summary.json": {
+      "bytes": 10744,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/summary.json",
+      "sha256": "5f0cc041f947099757527a266ac33fa09395943d55426f5652eb392e58e99d5d"
+    },
+    "verify-result.json": {
+      "bytes": 743,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/verify-result.json",
+      "sha256": "f217d47f06904e5fc90f9cab95a563b79036c2dfb153745851d48865b026f405"
+    },
+    "verify-terminal.json": {
+      "bytes": 774,
+      "path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/verify-terminal.json",
+      "sha256": "c08180cd87c8caf0374721e14e408203c171ec8e2c82295f5e0cb7e1e11a82ec"
+    }
+  },
+  "mandatory_analysis_bytes": 59567269,
+  "mandatory_analysis_inputs": 261,
+  "members": 411,
+  "original_inputs_independently_checked": 411,
+  "packet_directory": "/tmp/kv9-upper-bound-observer-publication-20260915-first/package-first",
+  "packet_immutable_after_independent_readback": true,
+  "parts": 2,
+  "publication_root_allocated_bytes_before_handoff": 2908160,
+  "retained_payload_bytes_omitted_unchanged": 13176171178,
+  "scope": "Portable original observer metadata only. No candidate promotion, full ten-second matched screen, source/core change, payload deletion, or repeated workload/checker/control run. Root owns report interpretation and publication.",
+  "source_revision": "e2e23cca5e70a9ea0cc241877b3b35b5b6433d27"
+}

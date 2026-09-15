@@ -1,0 +1,22 @@
+{
+  "archive": {
+    "bytes": 686665,
+    "path": "/tmp/kv9-upper-bound-observer-capacity-report-20260915-first/metadata.tar.gz",
+    "sha256": "56fd19252ab840e23449009253d38ebb5a71334f791687d68d16ca2607dbdc31"
+  },
+  "complete": true,
+  "file_bytes": 8725874,
+  "manifest": {
+    "bytes": 1134385,
+    "path": "/tmp/kv9-upper-bound-observer-capacity-report-20260915-first/packet-manifest.json",
+    "sha256": "cd1c6237f71bfdd57bb7c6f9099d9189d17e3831a1829da7b4a4e8a769530b4c"
+  },
+  "members": 3036,
+  "overview": {
+    "bytes": 22642,
+    "path": "/tmp/kv9-upper-bound-observer-capacity-report-20260915-first/overview.json",
+    "sha256": "7d209f1fb383d816aa0e734e9186da91de9c1ba5a766b6b9c2d673e3e529487f"
+  },
+  "report_allocated_bytes_before_result": 1925120,
+  "report_cap_bytes": 4194304
+}

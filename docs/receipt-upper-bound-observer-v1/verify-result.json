@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "compressed_bytes": 2144374,
+  "compressed_sha256": "0287c2cb5398d18a66d7ccd94d0c678335e97ea951e5353edd8d444a0c0e0234",
+  "decoded_bytes": 63457414,
+  "ended_ns": 1789477464363463794,
+  "inventory_sha256": "ef7801f7b597e9a5c56e2ee83f378984cbd6324e99231858911f7d762f5e018c",
+  "mandatory_analysis_bytes": 59567269,
+  "mandatory_analysis_inputs": 261,
+  "members": 411,
+  "original_inputs_checked": 411,
+  "scope": "Every archived member and all 261 mandatory original analysis-input pins verified; optional original-input mode rechecks actual selected files. No observer, histogram, lookup, lifecycle, workload or control replay; local WAL/ELF payloads are omitted and unchanged.",
+  "started_ns": 1789477464210954126
+}

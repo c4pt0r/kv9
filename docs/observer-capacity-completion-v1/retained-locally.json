@@ -1,0 +1,690 @@
+{
+  "files": [
+    {
+      "bytes": 1445135,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/run/report.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "06c58d5a8b839a74b13e72c2af3fd72e25d56f5748302e4ae7447c6dcaf9ebba"
+    },
+    {
+      "bytes": 4669813,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "4777a355daddd9c30ae424915ec4c898cd40609047b5fdde89a39556ad3aec49"
+    },
+    {
+      "bytes": 3942,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/resource-coverage.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "79ce911f1e4a4eb2c8c48d3cb3da9a3f8a262a20234b07b77280fc5149db78ac"
+    },
+    {
+      "bytes": 2322093,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/host-resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "7c20e7264843d9587dead2e6fef665f09070b942a9f0521b935f00c124f7ec90"
+    },
+    {
+      "bytes": 655,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/storage-preflight.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "580b9f3cecab36e31192473990f8ec949921ba2272ece277c6cf6fa5b4b9ab93"
+    },
+    {
+      "bytes": 142915,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/storage-resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "6d92303add8e21a6a785dbfa57c66e9f37c113f8c60c94a1b9d7854218a1bebe"
+    },
+    {
+      "bytes": 3742821,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/sample-calls.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "8fcc3bc4c1ed02524af30e4636f49858787c54ce3553b3f9cd13188bb981e90e"
+    },
+    {
+      "bytes": 928602,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/before-metrics.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "86a50ea498888233147d64420df8a71a271528da7b8bfdca78a3ee2b76c0c0b3"
+    },
+    {
+      "bytes": 12752,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/before-status.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "fe11bc4027bcbdf1c5a80627452fe1bc9a3b50f21b9ab180a7df8f01808380d1"
+    },
+    {
+      "bytes": 1742,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/before-resources.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "e125aea599f880193c6776af6fa8ea0d232471dec0bdcc3b8a0e3775fab4dd5d"
+    },
+    {
+      "bytes": 931926,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/after-metrics.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "702f0980d1ee2ddf57aab417286ffeb48bc0ebbf493dec44e9e55500afe8101c"
+    },
+    {
+      "bytes": 12848,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/after-status.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "b181a68609e70d43a52a6c8cfa8e1dec8ee98a4dc7aa749e9218c4e34aa0b057"
+    },
+    {
+      "bytes": 1783,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/after-resources.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "2bec2d31153611e1ecdfd2e18a60eae107a3cbc960da3b9ad7f74d20e7f71480"
+    },
+    {
+      "bytes": 4168,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/before-allocator-provenance.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "f85c1b143e8fc2ec5167998c657ccc5875a5a4918be43de7137b3f6ac9771a88"
+    },
+    {
+      "bytes": 4235,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/post-client-allocator-provenance.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "7b340c992d776a5e193674a0c1d172ef2b6a7b2ca73a01b450d43e005ea91b1f"
+    },
+    {
+      "bytes": 939,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/listener-before.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "f699b8d17adb655299b43ddfda9ccbb15c55e826a61a52b5fefe9c0d715000f1"
+    },
+    {
+      "bytes": 939,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/listener-after.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "8f4951770788b71ab92815e4bc9cc1b88c175d20406d0597f1b0e51f39d6b1df"
+    },
+    {
+      "bytes": 36432,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/fixture/tmpfs-voters.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "26a207fcd86dd992f49c89f15ca5e6df1441318cc0d3dd7fc05492c8c9f9def3"
+    },
+    {
+      "bytes": 40568,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/before-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "02da45b84835adabf881b056f07fa44735f97453b3db9380e494ad58937569ff"
+    },
+    {
+      "bytes": 40862,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/post-client-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "f61140e59c3699f9ad26a0f5560dec4ea0f5cbe57cfae86fd331bfa19989faa8"
+    },
+    {
+      "bytes": 40862,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/post-readback-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "0bcbfe0ad44ce51531eabdf62dcd86293840fffdc7eaa3d0d01d95984103797e"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-00.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "8acf2a573844a99aa28e1500912f9be8be677e1482da073bd453e905e11e319a"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-01.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "9fc12751a68faa44300dc94e9d10c9bc0bc72d9b4332017fcf764f18c9f1ce9f"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-02.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "5ba3d6ade67cf792e8eaab3468d2543cc86d8e659a90235b702be9d87ffdd0b3"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-03.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "349c5d61e3f74513db0ce57115bb36a4fd8b7d70b48e6c1737f85894bccae9a7"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-04.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "5ab9ae242b136ede16105a7138fa5b30241cd22eb9588c83edb5e0dbb06d6cba"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-05.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "bee27a5095eebcf132a2498c3440c121269244f80d9eac1c7c83759d5cefc0cf"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-06.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "4152aae17bfec4e0783c77d1369c8da8c6dc68c3edd55ea933f63b4a9bb5bf51"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-07.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "3722a78a2954021d1d0808327db754b9cd089640ba578e26292ba24987d9dc23"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-08.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "29b4f12c158d4e5733b818252fba26945719fcfa1657fd40b31f82d3060f3e67"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-09.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "3f090998cad916e6856128ed394340dfe3c1b05962631d207e6f41f2e353a5f8"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-10.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "78575fcde1330428ee18c3e782dd4a5cd6136809f96ea4707617782016ab85e4"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-11.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "a4a0d5da09c52a6433e4ca75c4c4cdae4000892d456e250a9c13cae585d32cb1"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-12.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "17462f3358505325a14caf67fa1d0a6906e340d543b2ed05c27d105c0a44ba0f"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-13.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "1b1149c3e56d7acb3f52e292184b4fbaee0ef98fc3200596d7b6740a67b5d361"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-14.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "6dc86ef2c7adcdeb7d6965734b231133b62ed499c6e71f38bca525559932f60c"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-15.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "f8ce834e7ebb5ac6f5d2cda543c3990564139eea3ffdf041047bea0c0d516887"
+    },
+    {
+      "bytes": 330,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/readback-16.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "66e62d4437ccb7e442ed8fe512e603a6cc2ea05d1b451460844ca2fc3043181d"
+    },
+    {
+      "bytes": 1445211,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/run/report.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "018cf4459a6587cf4d5d93aa9d9104e254208fc964bbd52a723be98e6fe18451"
+    },
+    {
+      "bytes": 5668613,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "23eeaf7b93c4603e463ab8ae674546c8872e507b28eda34e68b2a24544dce26f"
+    },
+    {
+      "bytes": 6087,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/resource-coverage.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "8255c80f2ce2e0212ff5db1b4308698e213c7b1afda3a8918d678bedcd312b56"
+    },
+    {
+      "bytes": 2310621,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/host-resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "c8a91f1f2f4237c2c40885b103f7f075dfb484cd502affd0710fed68d1081dc6"
+    },
+    {
+      "bytes": 655,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/storage-preflight.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "9b057182297968086d03bcf8877416b0b6b54e368d2d9b670cacd7e3081895fa"
+    },
+    {
+      "bytes": 142211,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/storage-resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "c39b53859c05a57ffbf11774524fb259acd20657e4dda94fbb2ca031c346dd91"
+    },
+    {
+      "bytes": 4543845,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/sample-calls.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "0801f27782da133251fbb0e3de513a0c81f95c4880143de1d8de3b24bba1b036"
+    },
+    {
+      "bytes": 928662,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/before-metrics.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "0f531a2db7b4e0f66d1a1dc00b97a62327e60badbf926d2bfc9759b3bea7e041"
+    },
+    {
+      "bytes": 12752,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/before-status.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "c9ca57aaaf8fb1a083c1310ee9e7c1cf332ee164b35ec29355a0cc1fbbb08a36"
+    },
+    {
+      "bytes": 1742,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/before-resources.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "fbe99db0ed5dce9244b8cadf1b63923dfe7d8723f3902550fc773e9bcb2562dc"
+    },
+    {
+      "bytes": 931956,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/after-metrics.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "7ba3ba22eb35a750d80e0de0f19dfd50605d3d5a6b8b4ab82e559c39e2b08ebd"
+    },
+    {
+      "bytes": 12848,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/after-status.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "220a14c45f33680cd599955f3cea1f518d4ec7f0a35cfb039f29c303ace7b1c1"
+    },
+    {
+      "bytes": 1783,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/after-resources.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "e593a246dff296e55370e6fc6c20f512c31c66ea83b17b448a903cdd6b44a71c"
+    },
+    {
+      "bytes": 4178,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/before-allocator-provenance.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "1d4e729d7d752ac57acbd4f1b4b9d31b944a5631588b06d9acf3bbf7790a16e4"
+    },
+    {
+      "bytes": 4247,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/post-client-allocator-provenance.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "e75c0549733a146fd01986ae14393b437f21686e911c429b304d7d1f88d1b79b"
+    },
+    {
+      "bytes": 939,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/listener-before.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "2a3220910213dea4d4c5128715c83c4b9aa9e390d8d694817c865f7db07c45f4"
+    },
+    {
+      "bytes": 939,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/listener-after.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "f639aaeadd842f8de165e1ea29018e7a1cd92ea079e494a34f9bc00d58b8f193"
+    },
+    {
+      "bytes": 36399,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/fixture/tmpfs-voters.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "2f39f98b31e642fb2daca03e9cea5aa43eca026bc1aa0b68d0a04df9943b4562"
+    },
+    {
+      "bytes": 40568,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/before-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "591ffa75d811a21c8edba1532a7e080352a43a17ae34a3e9c6410e30ac681e45"
+    },
+    {
+      "bytes": 40862,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/post-client-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "806c57a8c8c1618d21e4d31fa6c123a8c9e370a2e7d1104b01753c5d3dcb601d"
+    },
+    {
+      "bytes": 40862,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/post-readback-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "57aa2663185d3d75c683c84ec3b785f1cb31abe64cd0729abe7759517655d271"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-00.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "ce3d3cb719b18321cfb7dea4bed306759903e079ced99d6339eb6d8dac524634"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-01.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "50dbef33b513f5a5cfd0de830ac0655684bcf44adda718bafc620e02bd4e37f1"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-02.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "b9d046e79c490f5eddbdeb57741fc357b2a499fb77c3224ec6469f1aae326120"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-03.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "b19d57c03645860780130107670431a1d4b33d79d82340c9453180180fe6de42"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-04.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "c4a9825b1fafb7092a7cff3e494bbef879e4007c84797856e61307f4fd25881d"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-05.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "9c0f62569e48358504ccb245db127009712546a77e7300db31892e07bce9443f"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-06.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "0eb6195dad997ab17a820754646b799d2710eeb8ce2af491a0331e77b847d430"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-07.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "519ccf61a44a150df2c5016d8b345086d0c64aa50273b986824eccafdc4841d3"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-08.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "4d69f7be5f17c6ebf9bc84e17c5c2f34e2b81cdde45e6c8bcb7732c6490c5ef7"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-09.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "1ad45b077c5568f8638a67ab7879eda868bbb73ca6a5c5efa374af6128e297b8"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-10.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "1e34b5c3b5e6ff4bc78d5c282ed739e9314016f67e072b326caf93e4a3d7b1b5"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-11.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "67f586b1ca8175c5f0a5656a2fda06cbbb72147661147bbefda33af5680e6e20"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-12.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "cc0cc350de6aa8d0f7c104aaf85dd4d61dde71139f3d1eb3e7acd8cb591f30d6"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-13.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "f5dc9a9561f79073fa47b3ddad04285cf00f293ba4ee12fe668e0c7e0cbb8cb2"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-14.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "1ac1c5d68c414c72ce5b7315567ce0fb79e0165103ca36c719c0cc2d14eee103"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-15.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "dedd54c0b1273a1cc653192cd710551e243ea78e350d52e1d2ff900c47f109b8"
+    },
+    {
+      "bytes": 330,
+      "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/readback-16.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "41e551842fbbf751692f8c069835e7b0130fe02fa84de9cbc8d846fbd6370bda"
+    },
+    {
+      "bytes": 1445126,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/run/report.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "899a630ff41de41d372dd5c8e5f863e803ed772a6e3e787e761cb88eedff5745"
+    },
+    {
+      "bytes": 4134359,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "fc81c6fb1f42bee495585ada9f66e78e7a780e2e9994995def5ee6aecfb80c89"
+    },
+    {
+      "bytes": 4064,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/resource-coverage.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "8d4fa4b1cc1b1216f3c77ed2846e340a5e0e49d59528b20d713b2e249cd6cbd6"
+    },
+    {
+      "bytes": 2333607,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/host-resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "98033799b1232ba20dce3b06ac53e51bfc13e45aa9a73ae52010d1bdf043a8de"
+    },
+    {
+      "bytes": 659,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/storage-preflight.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "bb2ea4a8f99b8b3e2e9c54c1e7954e1f8fa9e6bbe80419467502f04fa460b516"
+    },
+    {
+      "bytes": 144435,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/storage-resource-samples.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "23eed28f0e561b2f98e5a8e44ece3ca0cf855d6022aad36e5fe096722261602c"
+    },
+    {
+      "bytes": 3313383,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/sample-calls.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "4bb92cc267db551ae8f1ff092e69c6d53b250b78c0806de3bba07dffde6f2ba3"
+    },
+    {
+      "bytes": 928577,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/before-metrics.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "d009677596a8ee0fe5cbdbae13ba7b7263d0541362733cdfcc4a9eb9cb90f050"
+    },
+    {
+      "bytes": 12752,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/before-status.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "6e7c0bf8d878ab5c74454d1f77b4662d6c734233aad1b2ff33ea469659006d9a"
+    },
+    {
+      "bytes": 1742,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/before-resources.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "385f66d7fe51bcdf0e5e0734b19ce0b3ef8d6b57fe0a66d51cda568c64ead22d"
+    },
+    {
+      "bytes": 931890,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/after-metrics.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "883eb1cd6051f1ad5173ec86bd7c75fff05b6557d1e8a19824620da60caf4c33"
+    },
+    {
+      "bytes": 12848,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/after-status.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "718fd5016a25d14882aa0cb37863742e7b8e6f3bfad982da121ea64de9e3b0b7"
+    },
+    {
+      "bytes": 1783,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/after-resources.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "afb46c4e4bbeb586fa759fa58c6d4c472fc4f630a07ff98e5fb874586a48b331"
+    },
+    {
+      "bytes": 4178,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/before-allocator-provenance.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "6305c85ef94f68659e0477c98876a27a58d52ae8afb5d66c9e6efdcdcad41f33"
+    },
+    {
+      "bytes": 4245,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/post-client-allocator-provenance.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "55c790800e25fdcd437f4ae87d517bd8070944da649684d142f0beda77aa73a3"
+    },
+    {
+      "bytes": 939,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/listener-before.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "0343b0424fa1677fe56a28b95621b02cec92e2697c0c3d6c136ed0e27e7ded63"
+    },
+    {
+      "bytes": 939,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/listener-after.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "1b048a0a5d5c09456166752cf20a91ead082ded1bab56e804ca468229bc00b8c"
+    },
+    {
+      "bytes": 36468,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/fixture/tmpfs-voters.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "e6a9973f636a70c8e5590ccaca6e1c797900e420885fe5ac603e0a764301f232"
+    },
+    {
+      "bytes": 40567,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/before-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "3e2b6b6577b76727a3d7704d958d23e2f5dd54ddf77147c318192eeae0d470fa"
+    },
+    {
+      "bytes": 40862,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/post-client-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "29a2e4d1838c47f492170816bb9732b36e4f555f29800ef97f626611bfc300cc"
+    },
+    {
+      "bytes": 40862,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/post-readback-fresh-drain.json",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "8cecde3088151075a1f3319e3033ab44a6649818869292861d482c8737a3c84c"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-00.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "7704f56df9c3a4ce845eacbbe718bf99101510de63711a103b0addab0c888e6e"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-01.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "16f9cdc830f319b2f425a9630a643d88b26942eeb8f5b72648e74641f95ca82f"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-02.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "d8ceec7fb83982d74d3cc2baddc40eae23dac682580fecdfb6f62c6909a6f704"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-03.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "73e66afac04f3f62008882cc2131fceeb310d39e9b21464aed3e5b7bc77881e4"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-04.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "1ac7c4570a3ddbad2c8f3a21f5aba0a54ae3ffee8dbbac6a7cc9e6d24234bf10"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-05.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "a4b03fc49f5fe3f88ebc7fac381e996eb8025df4cd19f16d865524afa5042066"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-06.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "0d06ca7223055983002e514ac6086ce8882f6ce310f20860f409b8a302c0c5e6"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-07.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "d60a8c1d23e70700dd287784c5827b39e45282ac2f25c71d0e4ae09f91b44aca"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-08.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "bf3461a9e522b6b80a377f524c6b3775ba354abe0e89c155236ccedd11890bbe"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-09.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "a09b7fd1744793e824291d510ba7101ca57e1089680c230e2e5a836919676049"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-10.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "68008c479303aa8fe254d0c5dbb021fd228b4b3f8b758e451b50eba3b9373a0b"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-11.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "09f6385b457396b672aab6bbf85c58561905678fc81d8a03c263c7dec4fa6d1f"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-12.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "6fef9d20764d763f091c3e5d7440e1ef2f889b429f0845a4f96c73db18901172"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-13.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "3a9fc0b6d1b5881f81bf35785872425b19720863bbe9290f6e89307317ee8b8a"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-14.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "6166663106928b7e08d2589eb76698772bb1c287668bb62ec36b2bf9a82f52d6"
+    },
+    {
+      "bytes": 82442,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-15.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "50d2be7679269a2ce8dd2dd1fc3a7be1ffa554973730dd600a57ee52d094b6b2"
+    },
+    {
+      "bytes": 330,
+      "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/readback-16.txt",
+      "reason": "Historical benchmark input retained locally and hash-bound by exact original selection; not re-audited in this capacity completion.",
+      "sha256": "66e62d4437ccb7e442ed8fe512e603a6cc2ea05d1b451460844ca2fc3043181d"
+    }
+  ],
+  "payloads": "All WAL, ordinary compressed objects, patch objects, scratch and toolchain ELF bytes stay at their original local paths; identities and hashes are in the included original selections/stage/restore/catalog results.",
+  "scope": "Exact old workload inputs excluded from this small capacity packet; original selections retain every hash."
+}

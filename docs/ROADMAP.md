@@ -14,8 +14,10 @@
 > Both complete recovery histories pass: 360 operations, including 30 explicit
 > unknowns, six fresh drains and seven exited lifetimes. [Actual full21 Chaos](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md)
 > also passes: 9,639 complete operations, four fresh final drains, 36 exited server
-> lifetimes and 25 exited containers. Fresh performance capacity and the full
-> matched screen remain open; no new speedup is claimed.
+> lifetimes and 25 exited containers. The [actual schema-2 observer](WRITE-RECEIPT-UPPER-BOUND-OBSERVER.md)
+> also passes all 16 short cohorts: at c64 Put, about 88% of lookups skip the scan.
+> Fresh performance capacity and the full matched screen remain open; no
+> candidate-versus-CRC speedup is claimed.
 > Next: complete that candidate's acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton

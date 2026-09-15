@@ -1,0 +1,11 @@
+{
+  "all_members_exact": true,
+  "archive_sha256": "56fd19252ab840e23449009253d38ebb5a71334f791687d68d16ca2607dbdc31",
+  "complete": true,
+  "decoded_gzip_bytes": 11171840,
+  "file_bytes": 8725874,
+  "gzip_eof": true,
+  "manifest_sha256": "cd1c6237f71bfdd57bb7c6f9099d9189d17e3831a1829da7b4a4e8a769530b4c",
+  "members": 3036,
+  "no_extraction": true
+}

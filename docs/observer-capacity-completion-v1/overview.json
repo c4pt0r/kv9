@@ -1,0 +1,508 @@
+{
+  "actual_child_terminal": {
+    "bytes": 645,
+    "path": "/tmp/kv9-upper-bound-observer-capacity-20260915-first/launch-child-terminal.json",
+    "sha256": "be8e16021facae835279303fbfc56a7bc6d8c2cf7bbb6261d71ea0fa13484841"
+  },
+  "actual_tool_terminal": {
+    "bytes": 370,
+    "path": "/tmp/kv9-upper-bound-observer-capacity-20260915-first/tool-terminal.json",
+    "sha256": "f7c899b3430c595deb5465ae145fbea6debed2929f43a3041a1435db08ac3db5"
+  },
+  "baseline_available_bytes": 25404604416,
+  "cohorts": [
+    {
+      "acceptance": {
+        "cold_sha256": "9643d502da75fbcb44e9ba4d5b694eaddfd494511763d2cdb014978b51a85849",
+        "complete": true,
+        "ordinal": 61,
+        "readback_path": "/tmp/kv9-cross-voter-group-061-frame-buffer-crc-20260915-first/readback-1-repaired-first/result.json",
+        "readback_sha256": "726627198798716e8671150d11139c0959f015bf5a17955ac6b628a7db862b27",
+        "reader_binding": {
+          "failed_readback": null,
+          "original_reader": {
+            "bytes": 16408,
+            "path": "/tmp/kv9-frame-crc-performance-preparation-20260914-first/retention_audit.py",
+            "sha256": "1987e4ba28e1c0ddea87b2865394bbb3d24c4dc35dda9d54791ef37a160063c5"
+          },
+          "original_selected_reader": {
+            "bytes": 16554,
+            "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/frame-buffer-crc.py",
+            "sha256": "56ab02e54e0aff6cf4801acaa9a6b240079f624790b51312d69361c213e2d90e"
+          },
+          "prior_readback_scope": "readback_only_current_capacity_policy_adaptation",
+          "readback_reader": {
+            "bytes": 18297,
+            "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/frame-buffer-crc.py",
+            "sha256": "e24f468640b3c37873be78e9e8c13dc645f285aa03ddd4cc63f46265fb3daaba"
+          },
+          "readback_scope": "producer_lifetime_identity_repair_of_original_selected_readback_reader",
+          "reader_manifest": {
+            "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+            "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+          }
+        },
+        "restore_sha256": "334ae7d46580f539d82e893d144a310a415901a782c217b511e830a58099255a",
+        "selection_sha256": "5a4be9e288b3c0fa25be6397f6296d9e91154f4b521a5ef049e0371aff7d9660",
+        "state": "COLD",
+        "verified_sha256": "c2a589137da410c4654f2105b6be5db68c647cecf56d2a6f7f3fe614ec0dbef9"
+      },
+      "charged_decoded_bytes": 1589952402,
+      "cohort": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064",
+      "decode_cap_bytes": 10737418240,
+      "fresh_migration_codec_receipts": 252,
+      "fresh_whole_reader_decoder_receipts": 72,
+      "ordinal": 61,
+      "original_logical_bytes": 1589952402,
+      "original_objects": 72,
+      "original_target_allocation_bytes": 336265216,
+      "phase_pins": {
+        "readback-1-repaired": {
+          "bytes": 161717,
+          "path": "/tmp/kv9-cross-voter-group-061-frame-buffer-crc-20260915-first/readback-1-repaired-first/result.json",
+          "sha256": "726627198798716e8671150d11139c0959f015bf5a17955ac6b628a7db862b27"
+        },
+        "restore-1": {
+          "bytes": 191194,
+          "path": "/tmp/kv9-cross-voter-group-061-frame-buffer-crc-20260915-first/restore-1/result.json",
+          "sha256": "334ae7d46580f539d82e893d144a310a415901a782c217b511e830a58099255a"
+        },
+        "retire-1": {
+          "bytes": 15530,
+          "path": "/tmp/kv9-cross-voter-group-061-frame-buffer-crc-20260915-first/retire-1/result.json",
+          "sha256": "1eb2a635f6e8e8e41c91be54d3e168d1f404ff5aa0a05e93d039662bf60d1b14"
+        },
+        "retire-2": {
+          "bytes": 17465,
+          "path": "/tmp/kv9-cross-voter-group-061-frame-buffer-crc-20260915-first/retire-2/result.json",
+          "sha256": "9643d502da75fbcb44e9ba4d5b694eaddfd494511763d2cdb014978b51a85849"
+        },
+        "stage": {
+          "bytes": 192004,
+          "path": "/tmp/kv9-cross-voter-group-061-frame-buffer-crc-20260915-first/staged.json",
+          "sha256": "dcd91de1afdc9da8cb57d7521c4e2e257b60faf9727972b29fc08ade8b16fbab"
+        },
+        "verify": {
+          "bytes": 199038,
+          "path": "/tmp/kv9-cross-voter-group-061-frame-buffer-crc-20260915-first/verification-first/result.json",
+          "sha256": "c2a589137da410c4654f2105b6be5db68c647cecf56d2a6f7f3fe614ec0dbef9"
+        }
+      },
+      "retained_original_metadata": [
+        {
+          "bytes": 21643,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/summary.json",
+          "sha256": "82ec88dcad85b42fe4da3fa178879c0be7d640a20f139b82913dcfd061cfd077"
+        },
+        {
+          "bytes": 6195,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/cleanup.json",
+          "sha256": "70cea46f5e3c48594989c93ae06028dde2a6cc3a5c089ee94e3f0c6d42b9ba88"
+        },
+        {
+          "bytes": 812,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/requested-config.json",
+          "sha256": "c6640cd0cc310669d830ffabbb7997c81662bb5f05cd0e228e6a28657d1882cc"
+        },
+        {
+          "bytes": 64,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/client-exit.json",
+          "sha256": "476466190c11841026ebaf22a7ae4a3975c6b738eea9113ead63735d4db3d662"
+        },
+        {
+          "bytes": 26525,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/fixture/tmpfs-retention.json",
+          "sha256": "145028e99543f3bd262621d79b087a8e489af1a2847219e5285caba0a5a555af"
+        },
+        {
+          "bytes": 283241,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/fixture/retention-catalog.json",
+          "sha256": "8fd2756b04a3da075b8e1bf0de9b29d5af0eb17e69a654838682bbbe3e8686a9"
+        },
+        {
+          "bytes": 49553,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/fixture/retention-original.json",
+          "sha256": "fd6f64c169ff64de4de5a1bf452ac15afa48f893d2c616c36947c604d770df2b"
+        },
+        {
+          "bytes": 230,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/011-old-point-r000-p10064/fixture/retention-cleanup-intent.json",
+          "sha256": "8435823bcb3865c98e3fdc1ab43715f5e03a5bcf64319f7f841e7b5452c4fcf6"
+        }
+      ],
+      "screen": "frame-buffer-crc",
+      "selection": {
+        "bytes": 76258,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/061.json",
+        "sha256": "5a4be9e288b3c0fa25be6397f6296d9e91154f4b521a5ef049e0371aff7d9660"
+      },
+      "successful_fresh_codec_receipts": 324,
+      "targets": 28
+    },
+    {
+      "acceptance": {
+        "cold_sha256": "815807733817b8f20864a501c109d62a439a9343d4a793c0f4576f2c7aec8654",
+        "complete": true,
+        "ordinal": 62,
+        "readback_path": "/tmp/kv9-cross-voter-group-062-frame-buffer-crc-20260915-first/readback-1-repaired-first/result.json",
+        "readback_sha256": "e8fca419150c3c2830625028218a12a20cfcc9b9c750cc74e6d288a79c97970e",
+        "reader_binding": {
+          "failed_readback": null,
+          "original_reader": {
+            "bytes": 16408,
+            "path": "/tmp/kv9-frame-crc-performance-preparation-20260914-first/retention_audit.py",
+            "sha256": "1987e4ba28e1c0ddea87b2865394bbb3d24c4dc35dda9d54791ef37a160063c5"
+          },
+          "original_selected_reader": {
+            "bytes": 16554,
+            "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/frame-buffer-crc.py",
+            "sha256": "56ab02e54e0aff6cf4801acaa9a6b240079f624790b51312d69361c213e2d90e"
+          },
+          "prior_readback_scope": "readback_only_current_capacity_policy_adaptation",
+          "readback_reader": {
+            "bytes": 18297,
+            "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/frame-buffer-crc.py",
+            "sha256": "e24f468640b3c37873be78e9e8c13dc645f285aa03ddd4cc63f46265fb3daaba"
+          },
+          "readback_scope": "producer_lifetime_identity_repair_of_original_selected_readback_reader",
+          "reader_manifest": {
+            "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+            "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+          }
+        },
+        "restore_sha256": "7b149ec6b4ab7e341749e23fd9de611492f65b28a05214c2b2a409e03d42d8c8",
+        "selection_sha256": "c4eaa104a8b88f315d639260ba4346974621568bac3f81f0d0c780350d03fba2",
+        "state": "COLD",
+        "verified_sha256": "2ce64fcc0d6582648b27f6ef72b5084463afc23f547c9f94ce0293d6ebd38ad1"
+      },
+      "charged_decoded_bytes": 1587276832,
+      "cohort": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064",
+      "decode_cap_bytes": 10737418240,
+      "fresh_migration_codec_receipts": 252,
+      "fresh_whole_reader_decoder_receipts": 72,
+      "ordinal": 62,
+      "original_logical_bytes": 1587276832,
+      "original_objects": 72,
+      "original_target_allocation_bytes": 335695872,
+      "phase_pins": {
+        "readback-1-repaired": {
+          "bytes": 161712,
+          "path": "/tmp/kv9-cross-voter-group-062-frame-buffer-crc-20260915-first/readback-1-repaired-first/result.json",
+          "sha256": "e8fca419150c3c2830625028218a12a20cfcc9b9c750cc74e6d288a79c97970e"
+        },
+        "restore-1": {
+          "bytes": 191188,
+          "path": "/tmp/kv9-cross-voter-group-062-frame-buffer-crc-20260915-first/restore-1/result.json",
+          "sha256": "7b149ec6b4ab7e341749e23fd9de611492f65b28a05214c2b2a409e03d42d8c8"
+        },
+        "retire-1": {
+          "bytes": 15530,
+          "path": "/tmp/kv9-cross-voter-group-062-frame-buffer-crc-20260915-first/retire-1/result.json",
+          "sha256": "cf9337e02e4c2f2fc6d623e1126e339fb2006320314845143d8ac99fe3fac8e9"
+        },
+        "retire-2": {
+          "bytes": 17465,
+          "path": "/tmp/kv9-cross-voter-group-062-frame-buffer-crc-20260915-first/retire-2/result.json",
+          "sha256": "815807733817b8f20864a501c109d62a439a9343d4a793c0f4576f2c7aec8654"
+        },
+        "stage": {
+          "bytes": 192002,
+          "path": "/tmp/kv9-cross-voter-group-062-frame-buffer-crc-20260915-first/staged.json",
+          "sha256": "49be5922181c2a17f3d22f5a2a4ac875519fe629d72620d047c7ecfdb48a2cb0"
+        },
+        "verify": {
+          "bytes": 199035,
+          "path": "/tmp/kv9-cross-voter-group-062-frame-buffer-crc-20260915-first/verification-first/result.json",
+          "sha256": "2ce64fcc0d6582648b27f6ef72b5084463afc23f547c9f94ce0293d6ebd38ad1"
+        }
+      },
+      "retained_original_metadata": [
+        {
+          "bytes": 21645,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/summary.json",
+          "sha256": "af616fbaecb43068513adefbf49ba789aa8e355d1de350b88a4d64a5a6301c3e"
+        },
+        {
+          "bytes": 5872,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/cleanup.json",
+          "sha256": "bd28ce31536713bfa6d3e0d9035add5733906541d20cfcca4010b4afa7b237df"
+        },
+        {
+          "bytes": 812,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/requested-config.json",
+          "sha256": "904064ed0397038819789fe6642283c0bfa14fd654313e8d04e39ff66df0db75"
+        },
+        {
+          "bytes": 64,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/client-exit.json",
+          "sha256": "05a48aa685aa85fd9ed64aaa4839a247675b221c307e847251eb0aa1db692ba3"
+        },
+        {
+          "bytes": 26251,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/fixture/tmpfs-retention.json",
+          "sha256": "d2fecda595ada3eb5e06334d8332a99a5cd690cc06936537d56e7d1d0a92dae6"
+        },
+        {
+          "bytes": 282916,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/fixture/retention-catalog.json",
+          "sha256": "0377d7e3f8cf1fb2c7603dd9e9a3236921ba38706b491c44e7a791a6dc173902"
+        },
+        {
+          "bytes": 49230,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/fixture/retention-original.json",
+          "sha256": "db715de351b9c11e4e99e93fecc1dd83798107acaba347b18f6ccc030e9b5bcb"
+        },
+        {
+          "bytes": 230,
+          "path": "/tmp/kv9-frame-crc-performance-timing-20260914-first/cohorts/005-new-point-r000-p00064/fixture/retention-cleanup-intent.json",
+          "sha256": "394a5c34965868a8fe534cf617e759a3f919f7aba564041b79119ff5838f854a"
+        }
+      ],
+      "screen": "frame-buffer-crc",
+      "selection": {
+        "bytes": 76255,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/062.json",
+        "sha256": "c4eaa104a8b88f315d639260ba4346974621568bac3f81f0d0c780350d03fba2"
+      },
+      "successful_fresh_codec_receipts": 324,
+      "targets": 28
+    },
+    {
+      "acceptance": {
+        "cold_sha256": "673564fe2e26346ac5b390b1bdd1253cc86b5fc66456bfc6411b6d47ad3e77cd",
+        "complete": true,
+        "ordinal": 63,
+        "readback_path": "/tmp/kv9-cross-voter-group-063-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+        "readback_sha256": "4c1b001ba67aee5d74da498714af3bd7ee4786aff7913b9513b80b560cc5008d",
+        "reader_binding": {
+          "failed_readback": null,
+          "original_reader": {
+            "bytes": 16416,
+            "path": "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py",
+            "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+          },
+          "original_selected_reader": {
+            "bytes": 16562,
+            "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/crc-full-regression.py",
+            "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+          },
+          "prior_readback_scope": "readback_only_current_capacity_policy_adaptation",
+          "readback_reader": {
+            "bytes": 18305,
+            "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/crc-full-regression.py",
+            "sha256": "8ccef04d24c794ee8f0c2eda6c900bfe52478cda2c08ca9b7983384197e788ea"
+          },
+          "readback_scope": "producer_lifetime_identity_repair_of_original_selected_readback_reader",
+          "reader_manifest": {
+            "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+            "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+          }
+        },
+        "restore_sha256": "bc2005fac258dbd8d08469e43bdc3a394192629c42a2c3e074faae18d83f0796",
+        "selection_sha256": "657eb9f986e53e34832f2e8cd35264c3c9e635d6054f4a2f146c644d50edca39",
+        "state": "COLD",
+        "verified_sha256": "b532144da7627ced908e5bd57519d40ec604ebfb8cd433d9e8c97ddeff7ffa23"
+      },
+      "charged_decoded_bytes": 1585354494,
+      "cohort": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064",
+      "decode_cap_bytes": 10737418240,
+      "fresh_migration_codec_receipts": 252,
+      "fresh_whole_reader_decoder_receipts": 72,
+      "ordinal": 63,
+      "original_logical_bytes": 1585354494,
+      "original_objects": 72,
+      "original_target_allocation_bytes": 335314944,
+      "phase_pins": {
+        "readback-1-repaired": {
+          "bytes": 163190,
+          "path": "/tmp/kv9-cross-voter-group-063-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+          "sha256": "4c1b001ba67aee5d74da498714af3bd7ee4786aff7913b9513b80b560cc5008d"
+        },
+        "restore-1": {
+          "bytes": 192615,
+          "path": "/tmp/kv9-cross-voter-group-063-crc-full-regression-20260915-first/restore-1/result.json",
+          "sha256": "bc2005fac258dbd8d08469e43bdc3a394192629c42a2c3e074faae18d83f0796"
+        },
+        "retire-1": {
+          "bytes": 15726,
+          "path": "/tmp/kv9-cross-voter-group-063-crc-full-regression-20260915-first/retire-1/result.json",
+          "sha256": "1e11dfcf59660bfaf0ad4bb6f58f0393064a6b27d998fb9ad8478c9642a3eebd"
+        },
+        "retire-2": {
+          "bytes": 17682,
+          "path": "/tmp/kv9-cross-voter-group-063-crc-full-regression-20260915-first/retire-2/result.json",
+          "sha256": "673564fe2e26346ac5b390b1bdd1253cc86b5fc66456bfc6411b6d47ad3e77cd"
+        },
+        "stage": {
+          "bytes": 192757,
+          "path": "/tmp/kv9-cross-voter-group-063-crc-full-regression-20260915-first/staged.json",
+          "sha256": "04237934ab8660366cf86169c414f87ee8b1616c98fd3748775a9088a19eae85"
+        },
+        "verify": {
+          "bytes": 200546,
+          "path": "/tmp/kv9-cross-voter-group-063-crc-full-regression-20260915-first/verification-first/result.json",
+          "sha256": "b532144da7627ced908e5bd57519d40ec604ebfb8cd433d9e8c97ddeff7ffa23"
+        }
+      },
+      "retained_original_metadata": [
+        {
+          "bytes": 21645,
+          "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/summary.json",
+          "sha256": "ed2be8c5f70c6f2ff8f0b6fbd9401421e56964808ab2810cff8743c47272ae1d"
+        },
+        {
+          "bytes": 6189,
+          "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/cleanup.json",
+          "sha256": "71f1aa7ee07ff557a259a70f56eb1fb7acdc82419bec5412c6a5339c6c8df9d2"
+        },
+        {
+          "bytes": 812,
+          "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/requested-config.json",
+          "sha256": "4eb3cf0f255c66a40e46129e4f108736525bbf265b16091d194579e848d87278"
+        },
+        {
+          "bytes": 64,
+          "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/client-exit.json",
+          "sha256": "1d484307b77393766796cb94e87733d8a2d88cfcb7f9ad8902af657d003a6114"
+        },
+        {
+          "bytes": 26396,
+          "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/fixture/tmpfs-retention.json",
+          "sha256": "f6bd225ffd77789e3e1224f1bfcb9cfc1796d67dc585413d2c8f5f53216ca16e"
+        },
+        {
+          "bytes": 284112,
+          "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/fixture/retention-catalog.json",
+          "sha256": "d9c8cd4a427e9d463574e2730d30f29e3deab16e361b71bc5437774a0f6b22bc"
+        },
+        {
+          "bytes": 49551,
+          "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/fixture/retention-original.json",
+          "sha256": "e53b6205d7b047fda6ff6532c7bd57579b9255208746c84a6ae729d7dc938da8"
+        },
+        {
+          "bytes": 230,
+          "path": "/tmp/kv9-write-crc-slicing8-full-regression-timing-first/cohorts/035-old-point-r000-p10064/fixture/retention-cleanup-intent.json",
+          "sha256": "cf3dd457bdc5aa30832ecde6c5a92fb251e962aec10464a7b114f0c7d4cc29e9"
+        }
+      ],
+      "screen": "crc-full-regression",
+      "selection": {
+        "bytes": 76815,
+        "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/selections/063.json",
+        "sha256": "657eb9f986e53e34832f2e8cd35264c3c9e635d6054f4a2f146c644d50edca39"
+      },
+      "successful_fresh_codec_receipts": 324,
+      "targets": 28
+    }
+  ],
+  "complete": true,
+  "conservative_net_allocated_recovery_bytes": 954626048,
+  "controller_status": {
+    "bytes": 220,
+    "path": "/tmp/kv9-upper-bound-observer-capacity-20260915-first/status.json",
+    "sha256": "fec63eb72e925e938c43599812bb64e57bc01d441a7a0d02f4291ee55c1bcb3f"
+  },
+  "current_observation": {
+    "after_separate_observer": true,
+    "available_bytes": 13044555776,
+    "observed_ns": 1789476980560843436
+  },
+  "final_prefix": {
+    "bytes": 42322,
+    "path": "/tmp/kv9-upper-bound-observer-capacity-20260915-first/result-1789476480664356022.json",
+    "sha256": "2a1a4adf8c48737fe01858a5a8b12ab48b8ccf9a5b96a7ba0ad487aae16bc3dd"
+  },
+  "full_performance_capacity_funded": false,
+  "full_performance_current_gap_bytes": 66411294720,
+  "full_performance_launch_bytes": 79455850496,
+  "historical_capacity_is_not_current_or_reserved": true,
+  "historical_final_accounting_available_bytes": 26358747136,
+  "historical_final_status_available_bytes": 26358657024,
+  "historical_global_available_change_bytes": 954052608,
+  "historical_prefix": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60
+  ],
+  "new_completed_ordinals": [
+    61,
+    62,
+    63
+  ],
+  "new_reporting_allocation_outside_historical_controller_accounting": true,
+  "next_ordinal": 64,
+  "no_064_started": true,
+  "no_payload_codec_control_workload_or_old_acceptance_replay": true,
+  "observer_launch_bytes": 25778192384,
+  "observer_margin_target_bytes": 26315063296,
+  "observer_target_achieved_at_completed_boundary": true,
+  "original_logical_bytes": 4762583728,
+  "original_objects": 216,
+  "original_prelaunch_failure": {
+    "bytes": 323,
+    "path": "/tmp/kv9-upper-bound-observer-capacity-20260915-first/root-prelaunch-first-failure.json",
+    "sha256": "888240821fe01a6638c4758ec43b5c71d759e8cea66502b307fe43961bf4d7f8"
+  },
+  "scope": "Completed observer-capacity061..063 only; existing exact accepted metadata, no payload replay.",
+  "successful_fresh_codec_receipts": 972,
+  "targets": 84
+}

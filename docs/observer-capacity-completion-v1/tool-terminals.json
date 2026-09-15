@@ -1,0 +1,30 @@
+{
+  "complete": true,
+  "independent_readback": {
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result": {
+      "bytes": 352,
+      "sha256": "37b87a45c14c4ac1d439e0f5227c339cdd0c005ad7566124ce4b0f0d9fa549e8"
+    },
+    "script": {
+      "bytes": 1490,
+      "sha256": "a68ea9e0be6e35c19fc1afc97dce2ac9d12a4b6cfcceb1f43d36ecd0cb3b242d"
+    },
+    "terminal_receipt": "ba2f9b"
+  },
+  "report_package": {
+    "execution_kind": "direct_tool_terminal",
+    "exit_code": 0,
+    "result": {
+      "bytes": 796,
+      "sha256": "025533b1838ffecf3a28ccb087ec767059bbb16d24cbd203b131cc6b33d7d8cb"
+    },
+    "script": {
+      "bytes": 14971,
+      "sha256": "53d0608118714aaba868a3e158765d6bb690c7c27ac347f1f2aba905e74ebe8c"
+    },
+    "terminal_receipt": "4ea71d"
+  },
+  "scope": "Exactly one finite metadata archive and one complete independent gzip/member readback; no payload acceptance replay."
+}

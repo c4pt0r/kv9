@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "python3",
+    "-B",
+    "/tmp/kv9-upper-bound-observer-publication-20260915-first/package-first/verify.py",
+    "--output",
+    "/tmp/kv9-upper-bound-observer-publication-20260915-first/verify-result.json",
+    "--original-inputs"
+  ],
+  "complete": true,
+  "exit_code": 0,
+  "kind": "actual_direct_tool_terminal",
+  "result_path": "/tmp/kv9-upper-bound-observer-publication-20260915-first/verify-result.json",
+  "result_sha256": "f217d47f06904e5fc90f9cab95a563b79036c2dfb153745851d48865b026f405",
+  "scope": "Single actual metadata archive command; no semantic/control/workload replay.",
+  "session_id": null,
+  "terminal_receipt": "f1820b"
+}

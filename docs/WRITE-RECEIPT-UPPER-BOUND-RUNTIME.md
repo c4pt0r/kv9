@@ -4,8 +4,8 @@ The exact experimental candidate
 [`e2e23cc`](https://github.com/c4pt0r/kv9/commit/e2e23cca5e70a9ea0cc241877b3b35b5b6433d27)
 now has accepted default/native and diagnostic releases plus ordinary
 three-voter recovery. The subsequent [actual full21 Chaos Mesh gate](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md)
-also passes. **CRC remains selected. The complete matched performance screen
-and a live schema-2 observer capture remain pending.**
+also passes, followed by [the live schema-2 observer capture](WRITE-RECEIPT-UPPER-BOUND-OBSERVER.md).
+**CRC remains selected. The complete matched performance screen remains pending.**
 These results do not establish a throughput improvement.
 
 ## Retained release identity
@@ -74,8 +74,8 @@ repair or relabel that failed test run.
 1. Qualify fresh capacity and run the original 8 smokes and 16 ten-second matched performance cohorts
    against selected CRC, with the fixed native v3 measurement client. Compare
    throughput and latency in both opposite orders.
-2. Run the separate schema-2 observer capture to measure actual skipped scans.
-   Keep the held receipt-tail hint/fallback comparison separate.
+2. Use the accepted separate schema-2 observations for actual skipped scans.
+   Keep the pending held receipt-tail hint/fallback comparison separate.
 3. Decide promotion from complete evidence, then continue the industrial
    storage and dynamic multi-Raft/split dependencies in issue #9.
 
