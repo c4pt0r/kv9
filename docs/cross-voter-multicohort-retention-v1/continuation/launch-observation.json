@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "scope": "Actual continuation launch and a confirmed live tool poll; no completed new cohort or terminal acceptance is claimed.",
+  "tool_session": 85630,
+  "launch": {
+    "chunk_id": "59e10a",
+    "wall_time_seconds": 1.000992279,
+    "session_id": 85630,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "live_poll": {
+    "chunk_id": "004461",
+    "wall_time_seconds": 5.000846555,
+    "session_id": 85630,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "preparation_inventory_sha256": "e1af4fc3b294a781c7393629e12d4066ad5c4b3f2ff62c4b10e71506421cfebb",
+  "original_completed_plan_cohorts": 14,
+  "all_campaign_complete": false
+}

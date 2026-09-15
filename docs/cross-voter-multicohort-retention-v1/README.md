@@ -134,9 +134,11 @@ reader confused a reused historical PID with a live producer. The separate
 [PID identity repair and actual reconciliation](../retention-pid-identity-v1/README.md)
 preserve that failure, pass a fresh complete 344-object readback and final COLD,
 and extend the completed prefix to 14 cohorts. Available space immediately after
-the new command is 57.387 GB. The old controller remains FAILED; a separately
-qualified continuation is required before ordinal 014. The original snapshot
-above remains historical evidence.
+the new command is 57.387 GB. The old controller remains FAILED. The separately
+[qualified continuation](continuation/README.md) now runs ordinal 014 under
+actual session 85630 after validating the completed prefix. It uses the repaired
+reader authority and a prospective 85 GB capacity stop, preserving the original
+plan and benchmark guards. The original snapshot above remains historical evidence.
 
 ## Actual coverage of all four reader families
 

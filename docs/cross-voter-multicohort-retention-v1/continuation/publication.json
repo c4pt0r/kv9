@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "scope": "Exact source/control preparation publication; not migration runtime acceptance",
+  "preparation_inventory_sha256": "e1af4fc3b294a781c7393629e12d4066ad5c4b3f2ff62c4b10e71506421cfebb",
+  "archive": {
+    "path": "preparation.tar.gz",
+    "bytes": 54617,
+    "sha256": "b557535894ca1c64f41c4044a2a486aca65137ca4cd5a3337e315d6f4be28043",
+    "files": 29,
+    "original_file_bytes": 216556
+  },
+  "full_gzip_eof_and_all_member_hashes_checked": true,
+  "readable_source_copies_exact": true
+}

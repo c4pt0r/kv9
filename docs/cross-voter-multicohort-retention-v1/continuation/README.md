@@ -1,0 +1,60 @@
+# Qualified continuation after the retained ordinal-013 failure
+
+The separately bound continuation is running under actual tool session **85630**.
+Its original 000–012 prefix and independently accepted corrected ordinal 013
+passed the startup gate. The [launch observation](launch-observation.json)
+records an actual live poll; the [runtime bindings](runtime-bindings.json)
+record ordinal **014** executing its verified finish phase. No new completed cohort or
+overall terminal success is claimed at that snapshot.
+
+The [PID reuse repair](../../retention-pid-identity-v1/README.md) remains the
+latest completed capacity phase: 14 original plan cohorts and 32.066 GB
+conservative net recovery before later publication/continuation overhead.
+The old controller and its failed reader result remain FAILED and unchanged.
+
+## Execution and qualification
+
+The continuation retains the original plan, selections and code pins. Bootstrap
+000, original completed001–012, staging/verification, independent release,
+codec recipes, sidecar checks and process cleanup retain their original source
+bodies. The new prefix gate requires the actual repaired013 tool/child/COLD
+receipts and the separate independent audit before any014 action. Only a
+contiguous completed continuation prefix can be resumed; partial or restored
+transactions require separate reconciliation.
+
+Each next cohort runs original staging and independent verification, followed
+by the frozen corrected reader/restore adapter. Complete original-object
+readback and exact restored-target identities are required before final COLD.
+Future restore-2 and readback-2 remain available under that same authority.
+Every original and new allocation remains charged, including failed decoding,
+old/new controllers, repair sources, failure evidence and the independent audit.
+
+Ten initial focused controls (`6ccb31/0`) and three checks after adding the
+actual013 independent-acceptance binding (`e77548/0`) pass: **11 distinct tests**.
+Independent source review finds no blocker and confirms unchanged inherited
+verification bodies. These controls are metadata tests; the live continuation
+must still complete its actual per-cohort work.
+
+The new controller stops at **85,000,000,000 available bytes** after a complete
+cohort, or reports finite exhaustion of the original plan. The original
+**100,000,000,000-byte** target remains separately validated and reported.
+This prospective planning change does not modify benchmark guards or certify
+benchmark readiness. The full receipt screen's empirical launch budget remains
+**79,455,850,496 bytes**. After actual migration exit, fresh capacity and exclusive
+execution checks precede all eight smokes, full smoke readback, all sixteen
+timed cohorts and independent acceptance.
+
+## Exact source and controls
+
+The frozen preparation inventory is
+`e1af4fc3b294a781c7393629e12d4066ad5c4b3f2ff62c4b10e71506421cfebb`.
+`preparation.tar.gz` contains all 28 bound files plus that inventory: 29 files,
+216,556 original bytes. [Publication checks](publication.json) read the entire
+gzip stream and compare every file (`a3fd45/0`). The readable controller and test
+files are exact copies. Their absolute paths are retained execution bindings,
+not a portable installed utility; use the original frozen command arrays only
+in that qualified environment.
+
+No new database performance measurement or industrial roadmap checkbox follows
+from this test-environment continuation. Raft and durability fences, workloads
+and local-only CI policy remain unchanged.

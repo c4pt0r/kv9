@@ -1,0 +1,44 @@
+{
+  "scope": "Read-only snapshot of actual runtime authority and current progress. Binding and status are reporting observations, not a terminal result.",
+  "files": [
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/commands.json",
+      "bytes": 1631,
+      "sha256": "b1f245e14fab08c1031845657bb5fc6b84f33b9e411b3f5e6366f7e5a21a4d0e"
+    },
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/independent-review.json",
+      "bytes": 496,
+      "sha256": "ff4df030a9f07b47c2d829d34ee3212ac2486261ddec6b19ad7e77165162e095"
+    },
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/launch-first/campaign-invocation.json",
+      "bytes": 1616,
+      "sha256": "ea54ea00357e3d92473101c744ffe73a25fe646949f82607ee9dc759bf7feeb0"
+    },
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/binding.json",
+      "bytes": 44386,
+      "sha256": "2be1330e47362d251d7b5d71c85bdff151fb88c8db0c40874b7e4ae215da3bf4"
+    },
+    {
+      "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/status.json",
+      "bytes": 227,
+      "sha256": "f7c953c88e0f4b9af68c551298672ee5721de52cd37d09f11b993ee33873be67",
+      "preserved_snapshot": "status-at-capture.json"
+    }
+  ],
+  "status": {
+    "available_bytes": 58841890816,
+    "child": {
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "pid": 1517532,
+      "start_ticks": 174590663
+    },
+    "observed_ns": 1789457254422269005,
+    "ordinal": 14,
+    "phase": "finish",
+    "state": "RUNNING"
+  },
+  "new_completed_ordinals": []
+}
