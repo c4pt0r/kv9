@@ -87,9 +87,18 @@ subsequently passes 15 controls and independent review, then completes
 [ordinal 001](cross-voter-multicohort-retention-v1/controller-execution-001/README.md):
 216 exact restorations and full readback of 355 frame-buffer objects / 10.785 GB
 logical bytes. A [subsequent progress snapshot](cross-voter-multicohort-retention-v1/campaign-progress-20260915.json)
-records four of the 96 plan cohorts complete. Their conservative combined net
-recovery is **8,995,954,688 bytes**, including controller allocation and excluding
+records six of the 96 plan cohorts complete. Their conservative combined net
+recovery is **13,499,342,848 bytes**, including controller allocation and excluding
 the separate predecessor and later publication. The completed boundary observes
-**34,325,327,872 bytes available**. Ordinal 004 has started;
+**38,826,639,360 bytes available**. Ordinal 006 has started;
 the overall run and receipt performance remain pending. Restoration temporarily
 consumes space again, so intermediate free-space peaks are not net recovery.
+
+Actual restoration/readback now covers the first cohort from
+[all four historical reader families](cross-voter-multicohort-retention-v1/README.md#actual-coverage-of-all-four-reader-families):
+872 selected targets and 1,430 whole-cohort objects / 43,452,004,579 logical bytes.
+The directory reader is unchanged; FNV, frame-buffer and full-CRC readers use
+their explicitly qualified current-floor adaptations. Independent metadata
+review also accepts the full-CRC path and its 2,288 current codec lifetimes.
+This is reader-path coverage within the ongoing finite migration, not another
+recovery credit or acceptance of the historical full performance matrices.

@@ -167,9 +167,11 @@ The [continuous controller](cross-voter-multicohort-retention-v1/controller/READ
 now passes 15 controls and independent review, and its first actual iteration
 completes exact restoration and full readback of 355 frame-buffer objects. The
 [latest progress snapshot](cross-voter-multicohort-retention-v1/campaign-progress-20260915.json)
-records four of the 96 planned cohorts COLD, conservative net recovery of
-8.996 GB including controller allocation, and 34.325 GB actual available space
-at the completed boundary. Ordinal 004 is running. After the migration exits and fresh capacity qualifies,
+records six of the 96 planned cohorts COLD, conservative net recovery of
+13.499 GB including controller allocation, and 38.827 GB actual available space
+at the completed boundary. Ordinal 006 is running. Actual restoration/readback
+now covers a [first cohort from all four reader families](cross-voter-multicohort-retention-v1/README.md#actual-coverage-of-all-four-reader-families),
+including independent full-CRC metadata review. After the migration exits and fresh capacity qualifies,
 the existing receipt commands run all eight smokes, complete smoke readback,
 all sixteen timed cohorts and independent final acceptance. The completed
 16 focused controls and role binder need no repeat. Keep timing exclusive of
