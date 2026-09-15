@@ -1,0 +1,1300 @@
+{
+  "schema": 1,
+  "scope": "Read-only completed-boundary extraction from the live qualified continuation; not another payload verification or final campaign acceptance. Historical prefix000..013 remains separately accepted.",
+  "captured_ns": 1789458944033296873,
+  "tool_session": 85630,
+  "preparation_inventory_sha256": "e1af4fc3b294a781c7393629e12d4066ad5c4b3f2ff62c4b10e71506421cfebb",
+  "historical_completed_plan_cohorts": 14,
+  "completed_plan_cohorts": 19,
+  "last_completed_ordinal": 18,
+  "net_recovered_bytes": 41339125760,
+  "available_at_completed_boundary_bytes": 66648113152,
+  "subsequent_reporting_and_publication_overhead_excluded": true,
+  "status_at_capture": {
+    "available_bytes": 67109629952,
+    "child": {
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "pid": 1662213,
+      "start_ticks": 174758572
+    },
+    "observed_ns": 1789458943557905806,
+    "ordinal": 19,
+    "phase": "finish",
+    "state": "RUNNING"
+  },
+  "status_source_sha256": "4cf4b13d5073f1ba439e4bd67670c49147a739a1a39ad97cf7760379834a16ee",
+  "completed_continuation": [
+    {
+      "source": {
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/014/complete.json",
+        "bytes": 7659,
+        "sha256": "8ff96ad6b439101d1238217935753346d3ede0345d808613e59cc345465d8ce3"
+      },
+      "result": {
+        "acceptance": {
+          "cold_sha256": "da2df7f768f95457ccdbd6080062013d3a8dc75faeae4ee38eac7d6c33e0e1af",
+          "complete": true,
+          "ordinal": 14,
+          "readback_path": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+          "readback_sha256": "928971ffa6d6f38811cb0396c8822814e779d63fa29109defd2f3a75b1191ea2",
+          "reader_binding": {
+            "failed_readback": null,
+            "original_reader": {
+              "bytes": 16416,
+              "path": "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py",
+              "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+            },
+            "original_selected_reader": {
+              "bytes": 16562,
+              "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/crc-full-regression.py",
+              "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+            },
+            "prior_readback_scope": "readback_only_current_capacity_policy_adaptation",
+            "readback_reader": {
+              "bytes": 18305,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/crc-full-regression.py",
+              "sha256": "8ccef04d24c794ee8f0c2eda6c900bfe52478cda2c08ca9b7983384197e788ea"
+            },
+            "readback_scope": "producer_lifetime_identity_repair_of_original_selected_readback_reader",
+            "reader_manifest": {
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+              "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+            }
+          },
+          "restore_sha256": "5f6cba892b1daaf9eec9bc59a804140197528c7ad350c0d72bf40ff03eaf3286",
+          "selection_sha256": "0cbff1a97f4ad226ba5aa222213097d301cbc40ad18cf0c6ff7eccc55c2e1e02",
+          "state": "COLD",
+          "verified_sha256": "34721978dbf643261b447b7ab170f4a800798cde740fd4d5a61ee208d5e17070"
+        },
+        "accounting": {
+          "actual_available_bytes": 59401035776,
+          "all_selected_exhausted": false,
+          "benchmark_runtime_ready": false,
+          "cold_cohorts": 15,
+          "complete": true,
+          "conservative_net_allocated_change_bytes": 34086608896,
+          "continuation_capacity_stop_bytes": 85000000000,
+          "continuation_extra_allocations": [
+            {
+              "allocated_bytes": 159744,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 516096,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 1159168,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 73728,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 479232,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first"
+            },
+            {
+              "allocated_bytes": 262144,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 778240,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 679936,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first"
+            },
+            {
+              "allocated_bytes": 1028096,
+              "cap_bytes": 4194304,
+              "path": "/tmp/kv9-retention-013-independent-acceptance-20260915-first"
+            }
+          ],
+          "execution_allocated_bytes": 2371584,
+          "historical_plan_target_bytes": 100000000000,
+          "historical_plan_target_reached": false,
+          "incomplete_or_restored_cohorts": [],
+          "preparation_allocated_bytes": 14376960,
+          "rows": [
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 0,
+              "original_target_allocation": 2651586560,
+              "root": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 276627456
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 1,
+              "original_target_allocation": 2541572096,
+              "root": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 210022400
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 2,
+              "original_target_allocation": 2524422144,
+              "root": "/tmp/kv9-cross-voter-group-002-published-directory-20260915-first",
+              "transaction_allocated_bytes": 540921856
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 3,
+              "original_target_allocation": 2523504640,
+              "root": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 202170368
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 4,
+              "original_target_allocation": 2520895488,
+              "root": "/tmp/kv9-cross-voter-group-004-published-directory-20260915-first",
+              "transaction_allocated_bytes": 359305216
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 5,
+              "original_target_allocation": 2507677696,
+              "root": "/tmp/kv9-cross-voter-group-005-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 165400576
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 6,
+              "original_target_allocation": 2485563392,
+              "root": "/tmp/kv9-cross-voter-group-006-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 199147520
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 7,
+              "original_target_allocation": 2483888128,
+              "root": "/tmp/kv9-cross-voter-group-007-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 190832640
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 8,
+              "original_target_allocation": 2481725440,
+              "root": "/tmp/kv9-cross-voter-group-008-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 179613696
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 9,
+              "original_target_allocation": 2478395392,
+              "root": "/tmp/kv9-cross-voter-group-009-published-directory-20260915-first",
+              "transaction_allocated_bytes": 101683200
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 10,
+              "original_target_allocation": 2471063552,
+              "root": "/tmp/kv9-cross-voter-group-010-published-directory-20260915-first",
+              "transaction_allocated_bytes": 81297408
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 11,
+              "original_target_allocation": 2469474304,
+              "root": "/tmp/kv9-cross-voter-group-011-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 93536256
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 12,
+              "original_target_allocation": 2454212608,
+              "root": "/tmp/kv9-cross-voter-group-012-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 99815424
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 13,
+              "original_target_allocation": 2451808256,
+              "root": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 255827968
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 14,
+              "original_target_allocation": 2126999552,
+              "root": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 108093440
+            }
+          ],
+          "scope": "Metadata-only current allocation, not another payload acceptance. All existing selected transaction roots, retained scratch/toolchains/receipts, execution and preparation metadata charged. Prior first-cohort savings excluded. Also charges old failed controller/preparation, failure preservation, actual013 root, corrected reader/finish preparations, and this new preparation/controller; original plan target remains historical.",
+          "target_gross_allocation_decrease_bytes": 37172789248,
+          "target_reached": false,
+          "transaction_allocated_bytes": 3064295424
+        },
+        "complete": true,
+        "ordinal": 14,
+        "release_pin": {
+          "bytes": 992,
+          "sha256": "4d0640447f27c4a19e676307005170259358e88748d5a7cb4e4405a70827eb44"
+        },
+        "verified_sha256": "34721978dbf643261b447b7ab170f4a800798cde740fd4d5a61ee208d5e17070"
+      }
+    },
+    {
+      "source": {
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/015/complete.json",
+        "bytes": 7897,
+        "sha256": "4b5a6afcd77e1333f1fac5505ddbc4da3ea86d7aecbf6983ddf3a08f71cb1897"
+      },
+      "result": {
+        "acceptance": {
+          "cold_sha256": "602b2716408e7c85ac8d87ca052509fe8511ecf1804d412fe679a0f7cd598ca2",
+          "complete": true,
+          "ordinal": 15,
+          "readback_path": "/tmp/kv9-cross-voter-group-015-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+          "readback_sha256": "eaf72eb1b8eb71bff41a9ee641a87f2e0800e95907f4bfafd0b184a96163cbf4",
+          "reader_binding": {
+            "failed_readback": null,
+            "original_reader": {
+              "bytes": 16416,
+              "path": "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py",
+              "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+            },
+            "original_selected_reader": {
+              "bytes": 16562,
+              "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/crc-full-regression.py",
+              "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+            },
+            "prior_readback_scope": "readback_only_current_capacity_policy_adaptation",
+            "readback_reader": {
+              "bytes": 18305,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/crc-full-regression.py",
+              "sha256": "8ccef04d24c794ee8f0c2eda6c900bfe52478cda2c08ca9b7983384197e788ea"
+            },
+            "readback_scope": "producer_lifetime_identity_repair_of_original_selected_readback_reader",
+            "reader_manifest": {
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+              "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+            }
+          },
+          "restore_sha256": "b5fe60da8ff3efb2cdce738ac16250b549ed1e1bddf3cb95d656354a59f27a10",
+          "selection_sha256": "c1de30cb96cff182b48ac0543839bfe0d030676ee581f80a251c5dee3cb9ada5",
+          "state": "COLD",
+          "verified_sha256": "3c45930bd89fd52f63ba4568d772e5e958abced304e83c5ba87af2233c3b4497"
+        },
+        "accounting": {
+          "actual_available_bytes": 61426917376,
+          "all_selected_exhausted": false,
+          "benchmark_runtime_ready": false,
+          "cold_cohorts": 16,
+          "complete": true,
+          "conservative_net_allocated_change_bytes": 36115750912,
+          "continuation_capacity_stop_bytes": 85000000000,
+          "continuation_extra_allocations": [
+            {
+              "allocated_bytes": 675840,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 516096,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 1159168,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 73728,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 479232,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first"
+            },
+            {
+              "allocated_bytes": 262144,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 778240,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 679936,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first"
+            },
+            {
+              "allocated_bytes": 1028096,
+              "cap_bytes": 4194304,
+              "path": "/tmp/kv9-retention-013-independent-acceptance-20260915-first"
+            }
+          ],
+          "execution_allocated_bytes": 2531328,
+          "historical_plan_target_bytes": 100000000000,
+          "historical_plan_target_reached": false,
+          "incomplete_or_restored_cohorts": [],
+          "preparation_allocated_bytes": 14376960,
+          "rows": [
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 0,
+              "original_target_allocation": 2651586560,
+              "root": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 276627456
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 1,
+              "original_target_allocation": 2541572096,
+              "root": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 210022400
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 2,
+              "original_target_allocation": 2524422144,
+              "root": "/tmp/kv9-cross-voter-group-002-published-directory-20260915-first",
+              "transaction_allocated_bytes": 540921856
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 3,
+              "original_target_allocation": 2523504640,
+              "root": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 202170368
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 4,
+              "original_target_allocation": 2520895488,
+              "root": "/tmp/kv9-cross-voter-group-004-published-directory-20260915-first",
+              "transaction_allocated_bytes": 359305216
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 5,
+              "original_target_allocation": 2507677696,
+              "root": "/tmp/kv9-cross-voter-group-005-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 165400576
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 6,
+              "original_target_allocation": 2485563392,
+              "root": "/tmp/kv9-cross-voter-group-006-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 199147520
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 7,
+              "original_target_allocation": 2483888128,
+              "root": "/tmp/kv9-cross-voter-group-007-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 190832640
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 8,
+              "original_target_allocation": 2481725440,
+              "root": "/tmp/kv9-cross-voter-group-008-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 179613696
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 9,
+              "original_target_allocation": 2478395392,
+              "root": "/tmp/kv9-cross-voter-group-009-published-directory-20260915-first",
+              "transaction_allocated_bytes": 101683200
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 10,
+              "original_target_allocation": 2471063552,
+              "root": "/tmp/kv9-cross-voter-group-010-published-directory-20260915-first",
+              "transaction_allocated_bytes": 81297408
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 11,
+              "original_target_allocation": 2469474304,
+              "root": "/tmp/kv9-cross-voter-group-011-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 93536256
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 12,
+              "original_target_allocation": 2454212608,
+              "root": "/tmp/kv9-cross-voter-group-012-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 99815424
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 13,
+              "original_target_allocation": 2451808256,
+              "root": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 255827968
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 14,
+              "original_target_allocation": 2126999552,
+              "root": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 108093440
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 15,
+              "original_target_allocation": 2123059200,
+              "root": "/tmp/kv9-cross-voter-group-015-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 93241344
+            }
+          ],
+          "scope": "Metadata-only current allocation, not another payload acceptance. All existing selected transaction roots, retained scratch/toolchains/receipts, execution and preparation metadata charged. Prior first-cohort savings excluded. Also charges old failed controller/preparation, failure preservation, actual013 root, corrected reader/finish preparations, and this new preparation/controller; original plan target remains historical.",
+          "target_gross_allocation_decrease_bytes": 39295848448,
+          "target_reached": false,
+          "transaction_allocated_bytes": 3157536768
+        },
+        "complete": true,
+        "ordinal": 15,
+        "release_pin": {
+          "bytes": 992,
+          "sha256": "c6024250d9e7f3bcb7e65a10a67dc49bc0b26c0b080ece4ffee4964f017d06c2"
+        },
+        "verified_sha256": "3c45930bd89fd52f63ba4568d772e5e958abced304e83c5ba87af2233c3b4497"
+      }
+    },
+    {
+      "source": {
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/016/complete.json",
+        "bytes": 8135,
+        "sha256": "86dfa0273c340ab51611fc9828cf1b46fe58b61b2cb50c9c34bd8ce4632b06c5"
+      },
+      "result": {
+        "acceptance": {
+          "cold_sha256": "f6b904cd1d586dfcd73da0b087678904e3fba3698e476d385b1d6ed375542f0d",
+          "complete": true,
+          "ordinal": 16,
+          "readback_path": "/tmp/kv9-cross-voter-group-016-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+          "readback_sha256": "15a1c993032c1a516826d9c1e0328050acb523f41569d6d6809f7ce8c1243ab5",
+          "reader_binding": {
+            "failed_readback": null,
+            "original_reader": {
+              "bytes": 16416,
+              "path": "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py",
+              "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+            },
+            "original_selected_reader": {
+              "bytes": 16562,
+              "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/crc-full-regression.py",
+              "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+            },
+            "prior_readback_scope": "readback_only_current_capacity_policy_adaptation",
+            "readback_reader": {
+              "bytes": 18305,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/crc-full-regression.py",
+              "sha256": "8ccef04d24c794ee8f0c2eda6c900bfe52478cda2c08ca9b7983384197e788ea"
+            },
+            "readback_scope": "producer_lifetime_identity_repair_of_original_selected_readback_reader",
+            "reader_manifest": {
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+              "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+            }
+          },
+          "restore_sha256": "a7f73f70c0ec786311477f85fbb20ee38eb3731fa54037bf2ceebd2c5d5116cc",
+          "selection_sha256": "adf617fe64027dde3e9c886e626d59c01a7caa01ad11fec60c6ea222013e0c50",
+          "state": "COLD",
+          "verified_sha256": "dd105ab2a86cc52848b7c1b2cbcb63876efd3184fb2dae6c8841c7e8d42c1e9d"
+        },
+        "accounting": {
+          "actual_available_bytes": 63260434432,
+          "all_selected_exhausted": false,
+          "benchmark_runtime_ready": false,
+          "cold_cohorts": 17,
+          "complete": true,
+          "conservative_net_allocated_change_bytes": 37951164416,
+          "continuation_capacity_stop_bytes": 85000000000,
+          "continuation_extra_allocations": [
+            {
+              "allocated_bytes": 770048,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 516096,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 1159168,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 73728,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 479232,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first"
+            },
+            {
+              "allocated_bytes": 262144,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 778240,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 679936,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first"
+            },
+            {
+              "allocated_bytes": 1028096,
+              "cap_bytes": 4194304,
+              "path": "/tmp/kv9-retention-013-independent-acceptance-20260915-first"
+            }
+          ],
+          "execution_allocated_bytes": 2695168,
+          "historical_plan_target_bytes": 100000000000,
+          "historical_plan_target_reached": false,
+          "incomplete_or_restored_cohorts": [],
+          "preparation_allocated_bytes": 14376960,
+          "rows": [
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 0,
+              "original_target_allocation": 2651586560,
+              "root": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 276627456
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 1,
+              "original_target_allocation": 2541572096,
+              "root": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 210022400
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 2,
+              "original_target_allocation": 2524422144,
+              "root": "/tmp/kv9-cross-voter-group-002-published-directory-20260915-first",
+              "transaction_allocated_bytes": 540921856
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 3,
+              "original_target_allocation": 2523504640,
+              "root": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 202170368
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 4,
+              "original_target_allocation": 2520895488,
+              "root": "/tmp/kv9-cross-voter-group-004-published-directory-20260915-first",
+              "transaction_allocated_bytes": 359305216
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 5,
+              "original_target_allocation": 2507677696,
+              "root": "/tmp/kv9-cross-voter-group-005-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 165400576
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 6,
+              "original_target_allocation": 2485563392,
+              "root": "/tmp/kv9-cross-voter-group-006-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 199147520
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 7,
+              "original_target_allocation": 2483888128,
+              "root": "/tmp/kv9-cross-voter-group-007-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 190832640
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 8,
+              "original_target_allocation": 2481725440,
+              "root": "/tmp/kv9-cross-voter-group-008-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 179613696
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 9,
+              "original_target_allocation": 2478395392,
+              "root": "/tmp/kv9-cross-voter-group-009-published-directory-20260915-first",
+              "transaction_allocated_bytes": 101683200
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 10,
+              "original_target_allocation": 2471063552,
+              "root": "/tmp/kv9-cross-voter-group-010-published-directory-20260915-first",
+              "transaction_allocated_bytes": 81297408
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 11,
+              "original_target_allocation": 2469474304,
+              "root": "/tmp/kv9-cross-voter-group-011-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 93536256
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 12,
+              "original_target_allocation": 2454212608,
+              "root": "/tmp/kv9-cross-voter-group-012-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 99815424
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 13,
+              "original_target_allocation": 2451808256,
+              "root": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 255827968
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 14,
+              "original_target_allocation": 2126999552,
+              "root": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 108093440
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 15,
+              "original_target_allocation": 2123059200,
+              "root": "/tmp/kv9-cross-voter-group-015-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 93241344
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 16,
+              "original_target_allocation": 1910185984,
+              "root": "/tmp/kv9-cross-voter-group-016-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 74514432
+            }
+          ],
+          "scope": "Metadata-only current allocation, not another payload acceptance. All existing selected transaction roots, retained scratch/toolchains/receipts, execution and preparation metadata charged. Prior first-cohort savings excluded. Also charges old failed controller/preparation, failure preservation, actual013 root, corrected reader/finish preparations, and this new preparation/controller; original plan target remains historical.",
+          "target_gross_allocation_decrease_bytes": 41206034432,
+          "target_reached": false,
+          "transaction_allocated_bytes": 3232051200
+        },
+        "complete": true,
+        "ordinal": 16,
+        "release_pin": {
+          "bytes": 991,
+          "sha256": "9a7f7388a32a10e2fb73b85f69e1114600d7793aa99bb1649091f1a2c88ff2ae"
+        },
+        "verified_sha256": "dd105ab2a86cc52848b7c1b2cbcb63876efd3184fb2dae6c8841c7e8d42c1e9d"
+      }
+    },
+    {
+      "source": {
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/017/complete.json",
+        "bytes": 8373,
+        "sha256": "fc8701ab06eea6cdf863825a5804a9a1b4683f656b4b4b5a4e48549f25a7b143"
+      },
+      "result": {
+        "acceptance": {
+          "cold_sha256": "f301d1f9e3891bf8ec28844e5c5d6ea648b99e752fbfda5ca2757ef78257fcb1",
+          "complete": true,
+          "ordinal": 17,
+          "readback_path": "/tmp/kv9-cross-voter-group-017-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+          "readback_sha256": "2fb7f931e586f4d740ae48fb44aca438b7af81ab09d96d2140a16955f75aaa3c",
+          "reader_binding": {
+            "failed_readback": null,
+            "original_reader": {
+              "bytes": 16416,
+              "path": "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py",
+              "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+            },
+            "original_selected_reader": {
+              "bytes": 16562,
+              "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/crc-full-regression.py",
+              "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+            },
+            "prior_readback_scope": "readback_only_current_capacity_policy_adaptation",
+            "readback_reader": {
+              "bytes": 18305,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/crc-full-regression.py",
+              "sha256": "8ccef04d24c794ee8f0c2eda6c900bfe52478cda2c08ca9b7983384197e788ea"
+            },
+            "readback_scope": "producer_lifetime_identity_repair_of_original_selected_readback_reader",
+            "reader_manifest": {
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+              "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+            }
+          },
+          "restore_sha256": "39e35966096794f3d0330e308574cdd988a848334dffaac6b843ba0ce7ebe44f",
+          "selection_sha256": "6dd09de93cea792a1296cc37636f0cf26aee4a1b5df0aac5cb7abdb168721144",
+          "state": "COLD",
+          "verified_sha256": "a6993fda411e2dd88d50217979b36956b93a723ea30899f788d8cc728ffdb9a9"
+        },
+        "accounting": {
+          "actual_available_bytes": 65088094208,
+          "all_selected_exhausted": false,
+          "benchmark_runtime_ready": false,
+          "cold_cohorts": 18,
+          "complete": true,
+          "conservative_net_allocated_change_bytes": 39778947072,
+          "continuation_capacity_stop_bytes": 85000000000,
+          "continuation_extra_allocations": [
+            {
+              "allocated_bytes": 860160,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 516096,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 1159168,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 73728,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 479232,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first"
+            },
+            {
+              "allocated_bytes": 262144,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 778240,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 679936,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first"
+            },
+            {
+              "allocated_bytes": 1028096,
+              "cap_bytes": 4194304,
+              "path": "/tmp/kv9-retention-013-independent-acceptance-20260915-first"
+            }
+          ],
+          "execution_allocated_bytes": 2859008,
+          "historical_plan_target_bytes": 100000000000,
+          "historical_plan_target_reached": false,
+          "incomplete_or_restored_cohorts": [],
+          "preparation_allocated_bytes": 14376960,
+          "rows": [
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 0,
+              "original_target_allocation": 2651586560,
+              "root": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 276627456
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 1,
+              "original_target_allocation": 2541572096,
+              "root": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 210022400
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 2,
+              "original_target_allocation": 2524422144,
+              "root": "/tmp/kv9-cross-voter-group-002-published-directory-20260915-first",
+              "transaction_allocated_bytes": 540921856
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 3,
+              "original_target_allocation": 2523504640,
+              "root": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 202170368
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 4,
+              "original_target_allocation": 2520895488,
+              "root": "/tmp/kv9-cross-voter-group-004-published-directory-20260915-first",
+              "transaction_allocated_bytes": 359305216
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 5,
+              "original_target_allocation": 2507677696,
+              "root": "/tmp/kv9-cross-voter-group-005-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 165400576
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 6,
+              "original_target_allocation": 2485563392,
+              "root": "/tmp/kv9-cross-voter-group-006-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 199147520
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 7,
+              "original_target_allocation": 2483888128,
+              "root": "/tmp/kv9-cross-voter-group-007-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 190832640
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 8,
+              "original_target_allocation": 2481725440,
+              "root": "/tmp/kv9-cross-voter-group-008-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 179613696
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 9,
+              "original_target_allocation": 2478395392,
+              "root": "/tmp/kv9-cross-voter-group-009-published-directory-20260915-first",
+              "transaction_allocated_bytes": 101683200
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 10,
+              "original_target_allocation": 2471063552,
+              "root": "/tmp/kv9-cross-voter-group-010-published-directory-20260915-first",
+              "transaction_allocated_bytes": 81297408
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 11,
+              "original_target_allocation": 2469474304,
+              "root": "/tmp/kv9-cross-voter-group-011-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 93536256
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 12,
+              "original_target_allocation": 2454212608,
+              "root": "/tmp/kv9-cross-voter-group-012-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 99815424
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 13,
+              "original_target_allocation": 2451808256,
+              "root": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 255827968
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 14,
+              "original_target_allocation": 2126999552,
+              "root": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 108093440
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 15,
+              "original_target_allocation": 2123059200,
+              "root": "/tmp/kv9-cross-voter-group-015-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 93241344
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 16,
+              "original_target_allocation": 1910185984,
+              "root": "/tmp/kv9-cross-voter-group-016-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 74514432
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 17,
+              "original_target_allocation": 1876099072,
+              "root": "/tmp/kv9-cross-voter-group-017-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 48062464
+            }
+          ],
+          "scope": "Metadata-only current allocation, not another payload acceptance. All existing selected transaction roots, retained scratch/toolchains/receipts, execution and preparation metadata charged. Prior first-cohort savings excluded. Also charges old failed controller/preparation, failure preservation, actual013 root, corrected reader/finish preparations, and this new preparation/controller; original plan target remains historical.",
+          "target_gross_allocation_decrease_bytes": 43082133504,
+          "target_reached": false,
+          "transaction_allocated_bytes": 3280113664
+        },
+        "complete": true,
+        "ordinal": 17,
+        "release_pin": {
+          "bytes": 991,
+          "sha256": "ff765c364cd6021321719e76b6a62ab5a24710cc53f791ed5d62942fe565d057"
+        },
+        "verified_sha256": "a6993fda411e2dd88d50217979b36956b93a723ea30899f788d8cc728ffdb9a9"
+      }
+    },
+    {
+      "source": {
+        "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first/018/complete.json",
+        "bytes": 8611,
+        "sha256": "f8c3ded13d7b9f7e6fd64e896438bea515abb364755ce3a91075a3b631780a38"
+      },
+      "result": {
+        "acceptance": {
+          "cold_sha256": "7604fb48d33ec0667b686caebd94c43533be0c5eecf53c819d7d916b19b93f0a",
+          "complete": true,
+          "ordinal": 18,
+          "readback_path": "/tmp/kv9-cross-voter-group-018-crc-full-regression-20260915-first/readback-1-repaired-first/result.json",
+          "readback_sha256": "a20643927a6769d5b5c53b5548018f466e10042535a7ce54c498095859718944",
+          "reader_binding": {
+            "failed_readback": null,
+            "original_reader": {
+              "bytes": 16416,
+              "path": "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py",
+              "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+            },
+            "original_selected_reader": {
+              "bytes": 16562,
+              "path": "/tmp/kv9-cross-voter-multicohort-migration-preparation-20260915-first/readers/crc-full-regression.py",
+              "sha256": "829d3f64dfdc79a07cafdae120bbbc884bbe47bb671c313cc29f8c0f654d9635"
+            },
+            "prior_readback_scope": "readback_only_current_capacity_policy_adaptation",
+            "readback_reader": {
+              "bytes": 18305,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/readers/crc-full-regression.py",
+              "sha256": "8ccef04d24c794ee8f0c2eda6c900bfe52478cda2c08ca9b7983384197e788ea"
+            },
+            "readback_scope": "producer_lifetime_identity_repair_of_original_selected_readback_reader",
+            "reader_manifest": {
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first/reader-bindings.json",
+              "sha256": "3269e44abe84555e70ad1f07e86ea32e057d828515888b23e6663c4e4b724386"
+            }
+          },
+          "restore_sha256": "4d055824865316d5e1d56df68b10e144676a3d107277b9839de30dcf2c4834e9",
+          "selection_sha256": "a1dad175ec132169429e1d96bca021b974c826f7619e342a3da001bc265aaaec",
+          "state": "COLD",
+          "verified_sha256": "d40aa9306a3e2c01d29a1c14cf0926c016e0f934f2e96526bb0e2102474e9380"
+        },
+        "accounting": {
+          "actual_available_bytes": 66648113152,
+          "all_selected_exhausted": false,
+          "benchmark_runtime_ready": false,
+          "cold_cohorts": 19,
+          "complete": true,
+          "conservative_net_allocated_change_bytes": 41339125760,
+          "continuation_capacity_stop_bytes": 85000000000,
+          "continuation_extra_allocations": [
+            {
+              "allocated_bytes": 950272,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 516096,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-continuation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 1159168,
+              "cap_bytes": 268435456,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 73728,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 479232,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-cross-voter-multicohort-campaign-failure-013-20260915-first"
+            },
+            {
+              "allocated_bytes": 262144,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-root-20260915-first"
+            },
+            {
+              "allocated_bytes": 778240,
+              "cap_bytes": 33554432,
+              "path": "/tmp/kv9-retention-013-reconciliation-preparation-20260915-first"
+            },
+            {
+              "allocated_bytes": 679936,
+              "cap_bytes": 16777216,
+              "path": "/tmp/kv9-retention-pid-identity-repair-20260915-first"
+            },
+            {
+              "allocated_bytes": 1028096,
+              "cap_bytes": 4194304,
+              "path": "/tmp/kv9-retention-013-independent-acceptance-20260915-first"
+            }
+          ],
+          "execution_allocated_bytes": 3022848,
+          "historical_plan_target_bytes": 100000000000,
+          "historical_plan_target_reached": false,
+          "incomplete_or_restored_cohorts": [],
+          "preparation_allocated_bytes": 14376960,
+          "rows": [
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 0,
+              "original_target_allocation": 2651586560,
+              "root": "/tmp/kv9-cross-voter-group-000-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 276627456
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 1,
+              "original_target_allocation": 2541572096,
+              "root": "/tmp/kv9-cross-voter-group-001-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 210022400
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 2,
+              "original_target_allocation": 2524422144,
+              "root": "/tmp/kv9-cross-voter-group-002-published-directory-20260915-first",
+              "transaction_allocated_bytes": 540921856
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 3,
+              "original_target_allocation": 2523504640,
+              "root": "/tmp/kv9-cross-voter-group-003-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 202170368
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 4,
+              "original_target_allocation": 2520895488,
+              "root": "/tmp/kv9-cross-voter-group-004-published-directory-20260915-first",
+              "transaction_allocated_bytes": 359305216
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 5,
+              "original_target_allocation": 2507677696,
+              "root": "/tmp/kv9-cross-voter-group-005-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 165400576
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 6,
+              "original_target_allocation": 2485563392,
+              "root": "/tmp/kv9-cross-voter-group-006-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 199147520
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 7,
+              "original_target_allocation": 2483888128,
+              "root": "/tmp/kv9-cross-voter-group-007-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 190832640
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 8,
+              "original_target_allocation": 2481725440,
+              "root": "/tmp/kv9-cross-voter-group-008-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 179613696
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 9,
+              "original_target_allocation": 2478395392,
+              "root": "/tmp/kv9-cross-voter-group-009-published-directory-20260915-first",
+              "transaction_allocated_bytes": 101683200
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 10,
+              "original_target_allocation": 2471063552,
+              "root": "/tmp/kv9-cross-voter-group-010-published-directory-20260915-first",
+              "transaction_allocated_bytes": 81297408
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 11,
+              "original_target_allocation": 2469474304,
+              "root": "/tmp/kv9-cross-voter-group-011-frame-buffer-crc-20260915-first",
+              "transaction_allocated_bytes": 93536256
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 12,
+              "original_target_allocation": 2454212608,
+              "root": "/tmp/kv9-cross-voter-group-012-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 99815424
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 13,
+              "original_target_allocation": 2451808256,
+              "root": "/tmp/kv9-cross-voter-group-013-fnv-writer-20260915-first",
+              "transaction_allocated_bytes": 255827968
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 14,
+              "original_target_allocation": 2126999552,
+              "root": "/tmp/kv9-cross-voter-group-014-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 108093440
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 15,
+              "original_target_allocation": 2123059200,
+              "root": "/tmp/kv9-cross-voter-group-015-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 93241344
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 16,
+              "original_target_allocation": 1910185984,
+              "root": "/tmp/kv9-cross-voter-group-016-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 74514432
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 17,
+              "original_target_allocation": 1876099072,
+              "root": "/tmp/kv9-cross-voter-group-017-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 48062464
+            },
+            {
+              "current_target_allocated_bytes": 0,
+              "currently_cold": true,
+              "ordinal": 18,
+              "original_target_allocation": 1631952896,
+              "root": "/tmp/kv9-cross-voter-group-018-crc-full-regression-20260915-first",
+              "transaction_allocated_bytes": 71520256
+            }
+          ],
+          "scope": "Metadata-only current allocation, not another payload acceptance. All existing selected transaction roots, retained scratch/toolchains/receipts, execution and preparation metadata charged. Prior first-cohort savings excluded. Also charges old failed controller/preparation, failure preservation, actual013 root, corrected reader/finish preparations, and this new preparation/controller; original plan target remains historical.",
+          "target_gross_allocation_decrease_bytes": 44714086400,
+          "target_reached": false,
+          "transaction_allocated_bytes": 3351633920
+        },
+        "complete": true,
+        "ordinal": 18,
+        "release_pin": {
+          "bytes": 991,
+          "sha256": "ddc67bb8d405ea09c1b08fb5a784fdeb3d3ae2fef92adc1c1f3779e4aa55ea28"
+        },
+        "verified_sha256": "d40aa9306a3e2c01d29a1c14cf0926c016e0f934f2e96526bb0e2102474e9380"
+      }
+    }
+  ],
+  "overall_terminal_accepted": false,
+  "benchmark_runtime_ready": false
+}

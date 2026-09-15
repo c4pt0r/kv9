@@ -143,6 +143,11 @@ available at that boundary. It uses the repaired reader authority and a
 prospective 85 GB capacity stop, preserving the original plan and benchmark
 guards. The original snapshot above remains historical evidence.
 
+The [later continuation snapshot](continuation/progress-20260915.json) advances
+the completed prefix to 19 cohorts, with 41.339 GB conservative net recovery
+and 66.648 GB available at the latest completed boundary. Ordinal019 was in
+finish at capture; no in-progress cohort is counted as recovered capacity.
+
 ## Actual coverage of all four reader families
 
 The first completed cohort from each reader family now passes exact restoration,

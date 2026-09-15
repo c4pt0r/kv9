@@ -181,6 +181,11 @@ cohort completes corrected full-CRC readback of 303 objects and final COLD,
 extending the accepted prefix to 15 cohorts: 34.087 GB conservative net recovery
 and 59.401 GB available at that boundary. The original plan and benchmark
 guards stay intact.
+The [later completed-boundary snapshot](cross-voter-multicohort-retention-v1/continuation/progress-20260915.json)
+records 19 completed plan cohorts, 41.339 GB conservative net recovery and
+66.648 GB available at that boundary. Ordinal019 was executing finish at capture.
+This remains below the unchanged full-screen launch budget; continue the live
+capacity work before running the prepared benchmark commands.
 Actual restoration/readback
 now covers a [first cohort from all four reader families](cross-voter-multicohort-retention-v1/README.md#actual-coverage-of-all-four-reader-families),
 including independent full-CRC metadata review. After the migration exits and fresh capacity qualifies,

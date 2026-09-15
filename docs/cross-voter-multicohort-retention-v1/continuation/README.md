@@ -33,6 +33,15 @@ archive readback passes (`e70e15/0`); no payload workload is replayed. The same
 live campaign has advanced to ordinal015. Overall migration and receipt
 performance acceptance remain incomplete.
 
+The [later completed-boundary snapshot](progress-20260915.json) records
+**19 completed plan cohorts**, **41,339,125,760 bytes** conservative net recovery
+and **66,648,113,152 bytes available** at the last completed boundary. It binds
+the actual continuation records014–018 and retains the separately accepted
+historical prefix000–013. Ordinal019 is executing its finish phase at capture
+under the same live session85630. This metadata extraction (`3a4251/0`) neither
+replays payload verification nor accepts the overall campaign. Subsequent
+reporting/publication allocation is outside that historical boundary snapshot.
+
 ## Execution and qualification
 
 The continuation retains the original plan, selections and code pins. Bootstrap
