@@ -51,8 +51,16 @@
 > passes 53 dependency tests, but remains held: jemalloc overwrite index time
 > improves 12.269% while pure insertion regresses 12.121%. Source patches and the
 > exact corpus are retained; no runtime integration or new database QPS is claimed.
-> Next inspect its insertion cost before another kernel change. Retain prior
-> rejected buffer/index experiments. Finish the pending pre-upload crash cut, then continue industrial storage,
+> Its static follow-up found no supported correction; stop that variant.
+> The [WAL payload preallocation candidate](WAL-PAYLOAD-PREALLOCATION.md) now
+> reuses validated record size, behind a default-off feature. Eleven capacity
+> theorems/seven controls, the existing 47 CRC theorems/eight controls, and
+> both 851-test workspace/Clippy configurations pass locally. Large-batch
+> encoder mean time improves 27.339%; all six small cases also improve mean/p99.
+> These are CPU microbenchmarks, not database QPS. Next qualify matching server
+> releases, real recovery/Chaos and end-to-end throughput plus latency before
+> selection. Retain prior rejected buffer/index experiments and the pending
+> pre-upload crash acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
 > requirements remain mandatory. CI stays local.

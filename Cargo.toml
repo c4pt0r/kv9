@@ -136,6 +136,8 @@ rpc-experiment = ["kv9-server/rpc-experiment"]
 write-path-diagnostics = ["kv9-server/write-path-diagnostics"]
 # Bounded sampled timestamps for write-stage diagnosis; absent by default.
 write-stage-tracing = ["kv9-server/write-stage-tracing"]
+# Experimental allocation change; byte encoding and durability are unchanged.
+wal-payload-preallocation = ["kv9-engine/wal-payload-preallocation"]
 
 [dependencies]
 kv9-common.workspace = true

@@ -20,6 +20,8 @@ sha2.workspace = true
 # Gates `mod testing` (FaultyEngine) out of production builds. Consumers that need
 # fault injection enable this from [dev-dependencies] only, never from [dependencies].
 testing = []
+# Reuse the already validated segment-record size when allocating its payload.
+wal-payload-preallocation = []
 
 # The MinIO backend's deadline acceptance binds to WHERE an outcome came from
 # (`minio::Completion`), not to error text. That seam is gated behind `testing`, and a file

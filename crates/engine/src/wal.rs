@@ -130,7 +130,15 @@ fn cf_from_code(code: u8) -> Result<ColumnFamily> {
 
 /// Serialize a batch's mutations: `count(4)` then `tag(1) cf(1) klen(4) k vlen(4) v`.
 pub(crate) fn encode_batch(batch: &WriteBatch) -> Vec<u8> {
-    let mut out = Vec::new();
+    encode_batch_with_capacity(batch, 0)
+}
+
+/// Capacity is an allocation hint only. Both callers use the same byte encoder.
+/// The segmented writer supplies its already checked payload size; legacy and
+/// default callers retain zero initial capacity. No frame or I/O policy changes.
+#[inline]
+pub(crate) fn encode_batch_with_capacity(batch: &WriteBatch, capacity: usize) -> Vec<u8> {
+    let mut out = Vec::with_capacity(capacity);
     put_u32(&mut out, batch.mutations().len() as u32);
     for m in batch.mutations() {
         match m {
@@ -152,6 +160,9 @@ pub(crate) fn encode_batch(batch: &WriteBatch) -> Vec<u8> {
     }
     out
 }
+
+#[cfg(test)]
+mod preallocation_tests;
 
 /// Cursor-based reader over a record payload; every read is bounds-checked so malformed
 /// input yields a typed error rather than a panic.

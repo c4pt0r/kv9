@@ -19,7 +19,11 @@ use std::sync::Arc;
 use kv9_common::metrics::WalIoMetrics;
 use kv9_common::{AppliedPosition, Error, Result};
 
-use crate::wal::{crc32, crc32_parts, decode_batch, encode_batch};
+#[cfg(not(feature = "wal-payload-preallocation"))]
+use crate::wal::encode_batch;
+#[cfg(feature = "wal-payload-preallocation")]
+use crate::wal::encode_batch_with_capacity;
+use crate::wal::{crc32, crc32_parts, decode_batch};
 use crate::wal_v2::MAX_RECORD_LEN;
 use crate::WriteBatch;
 
@@ -246,7 +250,14 @@ impl WalSegment {
             return Err(bad("failed writer requires recovery"));
         }
         check_position(self.summary.last.or(self.header.previous), position)?;
-        encoded_size(batch)?;
+        let _frame_size = encoded_size(batch)?;
+        #[cfg(feature = "wal-payload-preallocation")]
+        let payload = encode_batch_with_capacity(
+            batch,
+            usize::try_from(_frame_size - FRAME_HEADER_BYTES as u64 - 4)
+                .map_err(|_| bad("record length overflow"))?,
+        );
+        #[cfg(not(feature = "wal-payload-preallocation"))]
         let payload = encode_batch(batch);
         let length = u32::try_from(payload.len()).map_err(|_| bad("record length overflow"))?;
         if length > MAX_RECORD_LEN {
