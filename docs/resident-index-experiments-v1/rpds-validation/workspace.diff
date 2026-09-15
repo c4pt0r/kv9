@@ -1,0 +1,9 @@
+--- original/Cargo.toml
++++ rpds/Cargo.toml
+@@ -204,3 +204,6 @@
+ 
+ [lints.rustdoc]
+ redundant-explicit-links = "allow"
++
++# Isolate this library test fixture from archival parent manifests.
++[workspace]

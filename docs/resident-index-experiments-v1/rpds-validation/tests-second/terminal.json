@@ -1,0 +1,25 @@
+{
+  "available_after": {
+    "/": 867600936960,
+    "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation": 9625271369728
+  },
+  "complete": true,
+  "elapsed_seconds": 14.261062675854191,
+  "error": null,
+  "exit_code": 0,
+  "lockfile_after": {
+    "bytes": 25968,
+    "sha256": "27632cb1ce125c83a87462e29329641798fcd711aa313db920e519a6a9a83f86"
+  },
+  "log": {
+    "bytes": 5701,
+    "sha256": "76d21678ae7dd050e1ac2737f37228818126e4186b6df5b878b40c93eabe5ec5"
+  },
+  "manifest_after": {
+    "bytes": 4083,
+    "sha256": "d5a7b9386a87c4bc7b44cc96933cbb33fd7656ddd3562a9cce9d4e169f2ac0c7"
+  },
+  "pid": 2717812,
+  "protected_unchanged": true,
+  "reaped": true
+}

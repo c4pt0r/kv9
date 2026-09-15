@@ -1,0 +1,761 @@
+{
+  "input": {
+    "source": "/mnt/data/kv9-work/write-stage-corrected-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/5fe1df1c2e94b97b460f7a0e325b6185/00000000000000000010.wal",
+    "retention_receipt": "/mnt/data/kv9-work/write-stage-corrected-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/tmpfs-retention.json",
+    "cohort": "00-default-batch64-r000-c64",
+    "selection": "Leader node 2, segment 10; fixed interior segment, selected before decoding.",
+    "bytes": 16520140,
+    "sha256": "87aef6bfacdb58dd5e271db5ab96f3d16a03a4264c1594b7bf2503b6660b37fa"
+  },
+  "frames": 106,
+  "mutations": 100096,
+  "redundant": 14448,
+  "min_batch": 64,
+  "max_batch": 2688,
+  "rows": [
+    {
+      "index": 14231,
+      "mutations": 640,
+      "unique_keys": 578,
+      "redundant": 62,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 14235,
+      "mutations": 256,
+      "unique_keys": 256,
+      "redundant": 0,
+      "descending_adjacent_pairs": 1
+    },
+    {
+      "index": 14251,
+      "mutations": 1024,
+      "unique_keys": 909,
+      "redundant": 115,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 14273,
+      "mutations": 1408,
+      "unique_keys": 1272,
+      "redundant": 136,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 14293,
+      "mutations": 1280,
+      "unique_keys": 1104,
+      "redundant": 176,
+      "descending_adjacent_pairs": 10
+    },
+    {
+      "index": 14297,
+      "mutations": 256,
+      "unique_keys": 256,
+      "redundant": 0,
+      "descending_adjacent_pairs": 1
+    },
+    {
+      "index": 14307,
+      "mutations": 640,
+      "unique_keys": 603,
+      "redundant": 37,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 14315,
+      "mutations": 512,
+      "unique_keys": 498,
+      "redundant": 14,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 14323,
+      "mutations": 512,
+      "unique_keys": 512,
+      "redundant": 0,
+      "descending_adjacent_pairs": 5
+    },
+    {
+      "index": 14343,
+      "mutations": 1280,
+      "unique_keys": 856,
+      "redundant": 424,
+      "descending_adjacent_pairs": 11
+    },
+    {
+      "index": 14357,
+      "mutations": 896,
+      "unique_keys": 856,
+      "redundant": 40,
+      "descending_adjacent_pairs": 6
+    },
+    {
+      "index": 14379,
+      "mutations": 1408,
+      "unique_keys": 1177,
+      "redundant": 231,
+      "descending_adjacent_pairs": 10
+    },
+    {
+      "index": 14387,
+      "mutations": 512,
+      "unique_keys": 512,
+      "redundant": 0,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 14405,
+      "mutations": 1152,
+      "unique_keys": 968,
+      "redundant": 184,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 14415,
+      "mutations": 640,
+      "unique_keys": 640,
+      "redundant": 0,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 14450,
+      "mutations": 2240,
+      "unique_keys": 1888,
+      "redundant": 352,
+      "descending_adjacent_pairs": 16
+    },
+    {
+      "index": 14469,
+      "mutations": 1216,
+      "unique_keys": 1166,
+      "redundant": 50,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 14479,
+      "mutations": 640,
+      "unique_keys": 473,
+      "redundant": 167,
+      "descending_adjacent_pairs": 5
+    },
+    {
+      "index": 14483,
+      "mutations": 256,
+      "unique_keys": 256,
+      "redundant": 0,
+      "descending_adjacent_pairs": 2
+    },
+    {
+      "index": 14513,
+      "mutations": 1920,
+      "unique_keys": 1545,
+      "redundant": 375,
+      "descending_adjacent_pairs": 15
+    },
+    {
+      "index": 14546,
+      "mutations": 2112,
+      "unique_keys": 1571,
+      "redundant": 541,
+      "descending_adjacent_pairs": 19
+    },
+    {
+      "index": 14547,
+      "mutations": 64,
+      "unique_keys": 64,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 14551,
+      "mutations": 256,
+      "unique_keys": 256,
+      "redundant": 0,
+      "descending_adjacent_pairs": 1
+    },
+    {
+      "index": 14585,
+      "mutations": 2176,
+      "unique_keys": 1691,
+      "redundant": 485,
+      "descending_adjacent_pairs": 15
+    },
+    {
+      "index": 14606,
+      "mutations": 1344,
+      "unique_keys": 1120,
+      "redundant": 224,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 14607,
+      "mutations": 64,
+      "unique_keys": 64,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 14609,
+      "mutations": 128,
+      "unique_keys": 128,
+      "redundant": 0,
+      "descending_adjacent_pairs": 1
+    },
+    {
+      "index": 14621,
+      "mutations": 768,
+      "unique_keys": 746,
+      "redundant": 22,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 14632,
+      "mutations": 704,
+      "unique_keys": 636,
+      "redundant": 68,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 14652,
+      "mutations": 1280,
+      "unique_keys": 1055,
+      "redundant": 225,
+      "descending_adjacent_pairs": 12
+    },
+    {
+      "index": 14673,
+      "mutations": 1344,
+      "unique_keys": 1066,
+      "redundant": 278,
+      "descending_adjacent_pairs": 11
+    },
+    {
+      "index": 14693,
+      "mutations": 1280,
+      "unique_keys": 1015,
+      "redundant": 265,
+      "descending_adjacent_pairs": 11
+    },
+    {
+      "index": 14716,
+      "mutations": 1472,
+      "unique_keys": 1327,
+      "redundant": 145,
+      "descending_adjacent_pairs": 12
+    },
+    {
+      "index": 14733,
+      "mutations": 1088,
+      "unique_keys": 1013,
+      "redundant": 75,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 14757,
+      "mutations": 1536,
+      "unique_keys": 1477,
+      "redundant": 59,
+      "descending_adjacent_pairs": 13
+    },
+    {
+      "index": 14762,
+      "mutations": 320,
+      "unique_keys": 320,
+      "redundant": 0,
+      "descending_adjacent_pairs": 2
+    },
+    {
+      "index": 14771,
+      "mutations": 576,
+      "unique_keys": 576,
+      "redundant": 0,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 14787,
+      "mutations": 1024,
+      "unique_keys": 861,
+      "redundant": 163,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 14801,
+      "mutations": 896,
+      "unique_keys": 853,
+      "redundant": 43,
+      "descending_adjacent_pairs": 6
+    },
+    {
+      "index": 14825,
+      "mutations": 1536,
+      "unique_keys": 1321,
+      "redundant": 215,
+      "descending_adjacent_pairs": 10
+    },
+    {
+      "index": 14835,
+      "mutations": 640,
+      "unique_keys": 640,
+      "redundant": 0,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 14849,
+      "mutations": 896,
+      "unique_keys": 821,
+      "redundant": 75,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 14857,
+      "mutations": 512,
+      "unique_keys": 512,
+      "redundant": 0,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 14864,
+      "mutations": 448,
+      "unique_keys": 409,
+      "redundant": 39,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 14869,
+      "mutations": 320,
+      "unique_keys": 320,
+      "redundant": 0,
+      "descending_adjacent_pairs": 2
+    },
+    {
+      "index": 14907,
+      "mutations": 2432,
+      "unique_keys": 1726,
+      "redundant": 706,
+      "descending_adjacent_pairs": 18
+    },
+    {
+      "index": 14913,
+      "mutations": 384,
+      "unique_keys": 384,
+      "redundant": 0,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 14932,
+      "mutations": 1216,
+      "unique_keys": 1024,
+      "redundant": 192,
+      "descending_adjacent_pairs": 8
+    },
+    {
+      "index": 14938,
+      "mutations": 384,
+      "unique_keys": 384,
+      "redundant": 0,
+      "descending_adjacent_pairs": 2
+    },
+    {
+      "index": 14959,
+      "mutations": 1344,
+      "unique_keys": 1214,
+      "redundant": 130,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 15001,
+      "mutations": 2688,
+      "unique_keys": 1825,
+      "redundant": 863,
+      "descending_adjacent_pairs": 22
+    },
+    {
+      "index": 15005,
+      "mutations": 256,
+      "unique_keys": 256,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15029,
+      "mutations": 1536,
+      "unique_keys": 1292,
+      "redundant": 244,
+      "descending_adjacent_pairs": 11
+    },
+    {
+      "index": 15030,
+      "mutations": 64,
+      "unique_keys": 64,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15043,
+      "mutations": 832,
+      "unique_keys": 832,
+      "redundant": 0,
+      "descending_adjacent_pairs": 6
+    },
+    {
+      "index": 15071,
+      "mutations": 1792,
+      "unique_keys": 1462,
+      "redundant": 330,
+      "descending_adjacent_pairs": 16
+    },
+    {
+      "index": 15072,
+      "mutations": 64,
+      "unique_keys": 64,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15094,
+      "mutations": 1408,
+      "unique_keys": 1136,
+      "redundant": 272,
+      "descending_adjacent_pairs": 11
+    },
+    {
+      "index": 15104,
+      "mutations": 640,
+      "unique_keys": 582,
+      "redundant": 58,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 15106,
+      "mutations": 128,
+      "unique_keys": 128,
+      "redundant": 0,
+      "descending_adjacent_pairs": 1
+    },
+    {
+      "index": 15134,
+      "mutations": 1792,
+      "unique_keys": 1485,
+      "redundant": 307,
+      "descending_adjacent_pairs": 12
+    },
+    {
+      "index": 15163,
+      "mutations": 1856,
+      "unique_keys": 1608,
+      "redundant": 248,
+      "descending_adjacent_pairs": 13
+    },
+    {
+      "index": 15170,
+      "mutations": 448,
+      "unique_keys": 448,
+      "redundant": 0,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 15190,
+      "mutations": 1280,
+      "unique_keys": 1188,
+      "redundant": 92,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 15202,
+      "mutations": 768,
+      "unique_keys": 725,
+      "redundant": 43,
+      "descending_adjacent_pairs": 6
+    },
+    {
+      "index": 15234,
+      "mutations": 2048,
+      "unique_keys": 1582,
+      "redundant": 466,
+      "descending_adjacent_pairs": 13
+    },
+    {
+      "index": 15250,
+      "mutations": 1024,
+      "unique_keys": 959,
+      "redundant": 65,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 15252,
+      "mutations": 128,
+      "unique_keys": 128,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15270,
+      "mutations": 1152,
+      "unique_keys": 1047,
+      "redundant": 105,
+      "descending_adjacent_pairs": 10
+    },
+    {
+      "index": 15299,
+      "mutations": 1856,
+      "unique_keys": 1482,
+      "redundant": 374,
+      "descending_adjacent_pairs": 17
+    },
+    {
+      "index": 15312,
+      "mutations": 832,
+      "unique_keys": 781,
+      "redundant": 51,
+      "descending_adjacent_pairs": 6
+    },
+    {
+      "index": 15313,
+      "mutations": 64,
+      "unique_keys": 64,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15316,
+      "mutations": 192,
+      "unique_keys": 192,
+      "redundant": 0,
+      "descending_adjacent_pairs": 1
+    },
+    {
+      "index": 15331,
+      "mutations": 960,
+      "unique_keys": 862,
+      "redundant": 98,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 15344,
+      "mutations": 832,
+      "unique_keys": 815,
+      "redundant": 17,
+      "descending_adjacent_pairs": 5
+    },
+    {
+      "index": 15363,
+      "mutations": 1216,
+      "unique_keys": 993,
+      "redundant": 223,
+      "descending_adjacent_pairs": 9
+    },
+    {
+      "index": 15371,
+      "mutations": 512,
+      "unique_keys": 512,
+      "redundant": 0,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 15391,
+      "mutations": 1280,
+      "unique_keys": 1037,
+      "redundant": 243,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 15395,
+      "mutations": 256,
+      "unique_keys": 256,
+      "redundant": 0,
+      "descending_adjacent_pairs": 3
+    },
+    {
+      "index": 15408,
+      "mutations": 832,
+      "unique_keys": 828,
+      "redundant": 4,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 15411,
+      "mutations": 192,
+      "unique_keys": 192,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15425,
+      "mutations": 896,
+      "unique_keys": 828,
+      "redundant": 68,
+      "descending_adjacent_pairs": 6
+    },
+    {
+      "index": 15441,
+      "mutations": 1024,
+      "unique_keys": 867,
+      "redundant": 157,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 15448,
+      "mutations": 448,
+      "unique_keys": 448,
+      "redundant": 0,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 15475,
+      "mutations": 1728,
+      "unique_keys": 1446,
+      "redundant": 282,
+      "descending_adjacent_pairs": 15
+    },
+    {
+      "index": 15476,
+      "mutations": 64,
+      "unique_keys": 64,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15509,
+      "mutations": 2112,
+      "unique_keys": 1570,
+      "redundant": 542,
+      "descending_adjacent_pairs": 15
+    },
+    {
+      "index": 15538,
+      "mutations": 1856,
+      "unique_keys": 1421,
+      "redundant": 435,
+      "descending_adjacent_pairs": 14
+    },
+    {
+      "index": 15539,
+      "mutations": 64,
+      "unique_keys": 64,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15540,
+      "mutations": 64,
+      "unique_keys": 64,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15552,
+      "mutations": 768,
+      "unique_keys": 727,
+      "redundant": 41,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 15572,
+      "mutations": 1280,
+      "unique_keys": 1081,
+      "redundant": 199,
+      "descending_adjacent_pairs": 8
+    },
+    {
+      "index": 15604,
+      "mutations": 2048,
+      "unique_keys": 1637,
+      "redundant": 411,
+      "descending_adjacent_pairs": 19
+    },
+    {
+      "index": 15616,
+      "mutations": 768,
+      "unique_keys": 704,
+      "redundant": 64,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 15621,
+      "mutations": 320,
+      "unique_keys": 320,
+      "redundant": 0,
+      "descending_adjacent_pairs": 2
+    },
+    {
+      "index": 15628,
+      "mutations": 448,
+      "unique_keys": 400,
+      "redundant": 48,
+      "descending_adjacent_pairs": 2
+    },
+    {
+      "index": 15641,
+      "mutations": 832,
+      "unique_keys": 763,
+      "redundant": 69,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 15653,
+      "mutations": 768,
+      "unique_keys": 660,
+      "redundant": 108,
+      "descending_adjacent_pairs": 6
+    },
+    {
+      "index": 15692,
+      "mutations": 2496,
+      "unique_keys": 1979,
+      "redundant": 517,
+      "descending_adjacent_pairs": 18
+    },
+    {
+      "index": 15705,
+      "mutations": 832,
+      "unique_keys": 773,
+      "redundant": 59,
+      "descending_adjacent_pairs": 5
+    },
+    {
+      "index": 15707,
+      "mutations": 128,
+      "unique_keys": 128,
+      "redundant": 0,
+      "descending_adjacent_pairs": 0
+    },
+    {
+      "index": 15717,
+      "mutations": 640,
+      "unique_keys": 530,
+      "redundant": 110,
+      "descending_adjacent_pairs": 4
+    },
+    {
+      "index": 15732,
+      "mutations": 960,
+      "unique_keys": 736,
+      "redundant": 224,
+      "descending_adjacent_pairs": 7
+    },
+    {
+      "index": 15734,
+      "mutations": 128,
+      "unique_keys": 128,
+      "redundant": 0,
+      "descending_adjacent_pairs": 1
+    },
+    {
+      "index": 15755,
+      "mutations": 1344,
+      "unique_keys": 1110,
+      "redundant": 234,
+      "descending_adjacent_pairs": 8
+    },
+    {
+      "index": 15785,
+      "mutations": 1920,
+      "unique_keys": 1456,
+      "redundant": 464,
+      "descending_adjacent_pairs": 14
+    }
+  ],
+  "scope": "One preselected retained segment; includes all of its frames, not the entire timed history. CRC/position checks are offline format checks, not Raft authority.",
+  "redundant_percent": 14.434143222506394
+}

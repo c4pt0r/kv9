@@ -1,0 +1,105 @@
+{
+  "decision": "Reject sorting/coalescing before runtime integration: higher index time and p99 in both orders and snapshot cases. No database gain or proof/Chaos acceptance claimed.",
+  "comparisons": [
+    {
+      "pinned_snapshot": false,
+      "mean_time_increase_percent": 25.26274996389106,
+      "inverse_time_rate_change_percent": -20.16780724610744
+    },
+    {
+      "pinned_snapshot": true,
+      "mean_time_increase_percent": 48.94255820570632,
+      "inverse_time_rate_change_percent": -32.86002254514199
+    }
+  ],
+  "raw": [
+    {
+      "batches": 1272,
+      "final_items": 4096,
+      "mean_ns": 126924.99528301887,
+      "optimized": false,
+      "p99_ns": 359472,
+      "pinned_snapshot": false,
+      "scope": "resident-map CPU only; not a database throughput or client latency result",
+      "total_ns": 161448594
+    },
+    {
+      "batches": 1272,
+      "final_items": 4096,
+      "mean_ns": 152297.90644654087,
+      "optimized": true,
+      "p99_ns": 385822,
+      "pinned_snapshot": false,
+      "scope": "resident-map CPU only; not a database throughput or client latency result",
+      "total_ns": 193722937
+    },
+    {
+      "batches": 1272,
+      "final_items": 4096,
+      "mean_ns": 150730.30817610063,
+      "optimized": true,
+      "p99_ns": 383427,
+      "pinned_snapshot": false,
+      "scope": "resident-map CPU only; not a database throughput or client latency result",
+      "total_ns": 191728952
+    },
+    {
+      "batches": 1272,
+      "final_items": 4096,
+      "mean_ns": 114989.07311320755,
+      "optimized": false,
+      "p99_ns": 308417,
+      "pinned_snapshot": false,
+      "scope": "resident-map CPU only; not a database throughput or client latency result",
+      "total_ns": 146266101
+    },
+    {
+      "batches": 1272,
+      "final_items": 4096,
+      "mean_ns": 132152.77751572328,
+      "optimized": false,
+      "p99_ns": 359883,
+      "pinned_snapshot": true,
+      "scope": "resident-map CPU only; not a database throughput or client latency result",
+      "total_ns": 168098333
+    },
+    {
+      "batches": 1272,
+      "final_items": 4096,
+      "mean_ns": 203584.37028301886,
+      "optimized": true,
+      "p99_ns": 473695,
+      "pinned_snapshot": true,
+      "scope": "resident-map CPU only; not a database throughput or client latency result",
+      "total_ns": 258959319
+    },
+    {
+      "batches": 1272,
+      "final_items": 4096,
+      "mean_ns": 188752.17059748428,
+      "optimized": true,
+      "p99_ns": 436395,
+      "pinned_snapshot": true,
+      "scope": "resident-map CPU only; not a database throughput or client latency result",
+      "total_ns": 240092761
+    },
+    {
+      "batches": 1272,
+      "final_items": 4096,
+      "mean_ns": 131261.88757861636,
+      "optimized": false,
+      "p99_ns": 354292,
+      "pinned_snapshot": true,
+      "scope": "resident-map CPU only; not a database throughput or client latency result",
+      "total_ns": 166965121
+    }
+  ],
+  "tests": "59375 / 1a4f36 / 0; 2 passed, 1 ignored",
+  "micro": "27713 / 931ba1 / 0",
+  "cpu": 4,
+  "allocator": "Default Rust system allocator in engine test binary, not the server allocator.",
+  "input": "input.json",
+  "corpus": "corpus-analysis.json",
+  "source_sha256": "634e5d2a1f8215abb29d9a51979674a3b7ac47a5db4b5abe04e2cab584d27273",
+  "elf_sha256": "2be943dca72823e7809e671afa0b3a6329aa00dbd3c1f3bed72da44013509978"
+}

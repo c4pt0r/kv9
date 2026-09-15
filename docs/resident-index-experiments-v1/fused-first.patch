@@ -1,0 +1,88 @@
+--- a/src/map/red_black_tree_map/mod.rs
++++ b/src/map/red_black_tree_map/mod.rs
+@@ -429,6 +429,69 @@
+         ins(root, key, value, true)
+     }
+ 
++    /// Inserts the entry and returns whether the key is new.
++    fn insert_cloned(root: &mut Option<SharedPointer<Node<K, V, P>, P>>, key: &K, value: &V) -> bool
++    where K: Clone, V: Clone,
++    {
++        fn ins<K: Ord + Clone, V: Clone, P: SharedPointerKind>(
++            node: &mut Option<SharedPointer<Node<K, V, P>, P>>,
++            k: &K,
++            v: &V,
++            is_root: bool,
++        ) -> bool {
++            match node {
++                Some(node) => {
++                    let node = SharedPointer::make_mut(node);
++
++                    let ret = match k.cmp(&node.entry.key) {
++                        Ordering::Less => {
++                            let is_new_key = ins(&mut node.left, k, v, false);
++
++                            // Small optimization: avoid unnecessary calls to balance.
++                            if is_new_key {
++                                node.balance();
++                            }
++
++                            is_new_key
++                        }
++                        Ordering::Equal => {
++                            SharedPointer::make_mut(&mut node.entry).value.clone_from(v);
++
++                            false
++                        }
++                        Ordering::Greater => {
++                            let is_new_key = ins(&mut node.right, k, v, false);
++
++                            // Small optimization: avoid unnecessary calls to balance.
++                            if is_new_key {
++                                node.balance();
++                            }
++
++                            is_new_key
++                        }
++                    };
++
++                    if is_root {
++                        node.color = Color::Black;
++                    }
++
++                    ret
++                }
++                None => {
++                    *node = if is_root {
++                        Some(SharedPointer::new(Node::new_black(Entry::new(k.clone(), v.clone()))))
++                    } else {
++                        Some(SharedPointer::new(Node::new_red(Entry::new(k.clone(), v.clone()))))
++                    };
++
++                    true
++                }
++            }
++        }
++
++        ins(root, key, value, true)
++    }
++
+     /// Returns `false` if node has no children to merge.
+     fn remove_fuse(
+         node: &mut Node<K, V, P>,
+@@ -972,6 +1035,15 @@
+     V: Clone,
+     P: SharedPointerKind,
+ {
++    /// Insert a cloned key/value in one traversal, or reuse an existing value.
++    /// The existing key is retained when it compares equal. Mutable access uses
++    /// structural copy-on-write, so owned map clones retain their old values.
++    pub fn insert_cloned_mut(&mut self, key: &K, value: &V) {
++        if Node::insert_cloned(&mut self.root, key, value) {
++            self.size += 1;
++        }
++    }
++
+     pub fn get_mut<Q: ?Sized>(&mut self, key: &Q) -> Option<&mut V>
+     where
+         K: Borrow<Q>,

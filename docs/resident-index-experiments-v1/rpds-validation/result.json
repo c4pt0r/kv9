@@ -1,0 +1,122 @@
+{
+  "all_28_protected_inputs_unchanged": true,
+  "candidate_selected": false,
+  "cargo": "cargo 1.94.0 (85eff7c80 2026-01-15)",
+  "changed_files": [
+    {
+      "after": {
+        "bytes": 4083,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/Cargo.after.toml",
+        "sha256": "d5a7b9386a87c4bc7b44cc96933cbb33fd7656ddd3562a9cce9d4e169f2ac0c7"
+      },
+      "before": {
+        "bytes": 4002,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/original/Cargo.toml",
+        "sha256": "133c68476554402efb8713b0b3635cd51a880fd6361bb37b7089f93f9d709211"
+      },
+      "change": "Append empty [workspace] so Cargo stops before archival parent manifest",
+      "diff": {
+        "bytes": 203,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/workspace.diff",
+        "sha256": "d5a2500faaad2158e2065912893c5f6f09cbdd44032abe2e816e9a815b815c75"
+      },
+      "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds/Cargo.toml"
+    }
+  ],
+  "complete": true,
+  "existing_red_black_tree_map_tests_passed": 52,
+  "failed": 0,
+  "filtered_outside_scope": 206,
+  "fixture_lockfile_unchanged": true,
+  "ignored": 0,
+  "insertion_regressions_remain_unaffected_by_tests": true,
+  "measured_benchmarks": 0,
+  "new_differential_tests_passed": 1,
+  "new_test_name": "map::red_black_tree_map::test::borrowed_upsert_preserves_exact_tree_and_retained_snapshots",
+  "prior_parent_manifest_failure": {
+    "bytes": 263,
+    "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/original/parent-rpds-tests.log",
+    "sha256": "dc246fb972ee56207f33f15bc14e88eced4c162a48165d96b85e59f396284aa7"
+  },
+  "protected_inputs": {
+    "bytes": 5965,
+    "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/protected-source-before.json",
+    "sha256": "69e5e96ba2d7fd65f67c6a51d1326a9752c30a4f6b090f933a4ac1b9a93ae8bf"
+  },
+  "receipts": [
+    {
+      "actual_cargo_exit_code": 101,
+      "actual_tool_exit_code": 1,
+      "actual_tool_receipt": "31ed80",
+      "actual_tool_session": null,
+      "attempt": "offline-first",
+      "child_lifetime_absent": true,
+      "invocation": {
+        "bytes": 924,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/offline-first/invocation.json",
+        "sha256": "d84e39f7feb76d75ba7415549533a0b8f32be4bc8253b0ed2fad0ade45640639"
+      },
+      "log": {
+        "bytes": 120,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/offline-first/cargo.log",
+        "sha256": "d7f0afc2b688565c4ec128ac20d28a5b2c01f797194be7d38bc92469c3415918"
+      },
+      "terminal": {
+        "bytes": 703,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/offline-first/terminal.json",
+        "sha256": "3eec3810a6b6f0c5c584fc5ed0c697d054ccf4238e899039eabe042160ffbdb0"
+      }
+    },
+    {
+      "actual_cargo_exit_code": 0,
+      "actual_tool_exit_code": 0,
+      "actual_tool_receipt": "380bd0",
+      "actual_tool_session": null,
+      "attempt": "dependency-fetch-first",
+      "child_lifetime_absent": true,
+      "invocation": {
+        "bytes": 850,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/dependency-fetch-first/invocation.json",
+        "sha256": "860dfee98cb2f97095baec81e40619396f8d3f8ad2913d29f9f295fa3c611a8f"
+      },
+      "log": {
+        "bytes": 514,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/dependency-fetch-first/cargo.log",
+        "sha256": "341d21fec2e8d3a385d7624117ec195c812e7aca6d92cccfc1ca670ebbb7a265"
+      },
+      "terminal": {
+        "bytes": 699,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/dependency-fetch-first/terminal.json",
+        "sha256": "21b3b9bbc6ef4220e4bf857682d88cc56843d95fb2d5109ca1b6caf75f4ba390"
+      }
+    },
+    {
+      "actual_cargo_exit_code": 0,
+      "actual_tool_exit_code": 0,
+      "actual_tool_receipt": "40896e",
+      "actual_tool_session": 56340,
+      "attempt": "tests-second",
+      "child_lifetime_absent": true,
+      "invocation": {
+        "bytes": 924,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/tests-second/invocation.json",
+        "sha256": "b0dba8dd6aae76bb7a106b45fb0fe256170814475860d79a1ac41868995690ea"
+      },
+      "log": {
+        "bytes": 5701,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/tests-second/cargo.log",
+        "sha256": "76d21678ae7dd050e1ac2737f37228818126e4186b6df5b878b40c93eabe5ec5"
+      },
+      "terminal": {
+        "bytes": 700,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/tests-second/terminal.json",
+        "sha256": "0b37ba1fc27f7d96ea2b05b01d4f419d8f691fcd741d81f6d879efcdfc74180a"
+      }
+    }
+  ],
+  "repository_and_fused_source_locks_unchanged": true,
+  "scope": "Isolated default-feature release rpds library tests only; no production/runtime/proof/Chaos/performance acceptance.",
+  "source_rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
+  "test_seconds": 1.76,
+  "tests_passed": 53
+}

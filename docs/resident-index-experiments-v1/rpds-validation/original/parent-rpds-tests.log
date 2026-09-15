@@ -1,0 +1,7 @@
+error: failed to parse manifest at `/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/Cargo.toml`
+
+Caused by:
+  error inheriting `edition` from workspace root manifest's `workspace.package.edition`
+
+Caused by:
+  failed to find a workspace root

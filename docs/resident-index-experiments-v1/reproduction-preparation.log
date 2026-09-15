@@ -1,0 +1,10 @@
+{
+  "source_revision": "de726b6d46391afdf11374a959441329c175b789",
+  "rpds_crate_sha256": "e025feb26210bc196b908e72deb063b1b4000754304341cbc168a1e72c857ebc",
+  "corpus_sha256": "ccb8790572eea92f20bc0cf8ef1a8bd66bfecb0c6106514551d4439b6869ab7e",
+  "source": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/reproduction-preparation/source",
+  "dependency": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/reproduction-preparation/rpds-1.2.1",
+  "patched_module_sha256": "a1e692861a611e11d3d7547dac49abd96891b995746b72ea27149f32475a6dfb",
+  "harness_sha256": "fd6093b4bb82c607d922f50861d88fb672e1b50157d92c1b98c755ff6123bfa6",
+  "scope": "Preparation only. The runtime write path is unchanged; candidate calls occur only in the test harness."
+}

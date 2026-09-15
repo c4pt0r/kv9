@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/home/dongxu/.cargo/bin/cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--release",
+    "-j4",
+    "--lib",
+    "map::red_black_tree_map",
+    "--",
+    "--test-threads=1"
+  ],
+  "available_before": {
+    "/": 867769118720,
+    "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation": 9625271394304
+  },
+  "cwd": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds",
+  "floor_bytes": 8589934592,
+  "inherited_lock": "/home/dongxu/kv9/target/.kv9-retained-build.lock",
+  "lockfile_before": {
+    "bytes": 25968,
+    "sha256": "27632cb1ce125c83a87462e29329641798fcd711aa313db920e519a6a9a83f86"
+  },
+  "manifest_before": {
+    "bytes": 4083,
+    "sha256": "d5a7b9386a87c4bc7b44cc96933cbb33fd7656ddd3562a9cce9d4e169f2ac0c7"
+  },
+  "max_decrease_bytes": 17179869184,
+  "target": "/home/dongxu/kv9/target",
+  "timeout_seconds": 1200
+}

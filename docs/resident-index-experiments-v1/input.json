@@ -1,0 +1,8 @@
+{
+  "source": "/mnt/data/kv9-work/write-stage-corrected-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/data/n2/catalog.segments/5fe1df1c2e94b97b460f7a0e325b6185/00000000000000000010.wal",
+  "retention_receipt": "/mnt/data/kv9-work/write-stage-corrected-capture-20260915-first/cohorts/00-default-batch64-r000-c64/fixture/tmpfs-retention.json",
+  "cohort": "00-default-batch64-r000-c64",
+  "selection": "Leader node 2, segment 10; fixed interior segment, selected before decoding.",
+  "bytes": 16520140,
+  "sha256": "87aef6bfacdb58dd5e271db5ab96f3d16a03a4264c1594b7bf2503b6660b37fa"
+}

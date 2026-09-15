@@ -1,0 +1,4 @@
+error: failed to download `alloca v0.4.0`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified

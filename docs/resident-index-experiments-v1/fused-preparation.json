@@ -1,0 +1,10 @@
+{
+  "original_revision": "de726b6d46391afdf11374a959441329c175b789",
+  "upstream_version": "1.2.1",
+  "upstream_module_sha256": "71189099680f42428692abb21eb19c6afe96da0e4695634f2866fb021a009e69",
+  "patched_module_sha256": "96a5eba8600b1c136dda88f21199828eb10e336020f854bea59a809594f43930",
+  "patch_sha256": "3f6b5100dfbb2bf7a7787447adf4e372866e033dd9587cf3cc3bd8fc5a8da285",
+  "original_insert_unchanged": true,
+  "source": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/source",
+  "note": "Isolated local experiment only. No root Cargo.lock or production dependency changes."
+}

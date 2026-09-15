@@ -1,0 +1,10 @@
+{
+  "bytes": 16516688,
+  "sha256": "ccb8790572eea92f20bc0cf8ef1a8bd66bfecb0c6106514551d4439b6869ab7e",
+  "compressed_bytes": 12132221,
+  "compressed_sha256": "99ae07573439ee4bb879fe720da41670357353115660bc311dec2251bd88aac6",
+  "source": "input.json",
+  "format": "Repeated little-endian u32 payload length followed by original kv9 encoded WriteBatch payload. No WAL headers or checksums in this derived corpus.",
+  "frames": 106,
+  "mutations": 100096
+}

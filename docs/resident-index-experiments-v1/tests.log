@@ -1,0 +1,27 @@
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling tokio-util v0.7.19
+   Compiling tower v0.5.3
+   Compiling tower-http v0.6.11
+   Compiling h2 v0.4.19
+   Compiling serde_json v1.0.151
+   Compiling chrono v0.4.45
+   Compiling serde_urlencoded v0.7.1
+   Compiling quick-xml v0.41.0
+   Compiling kv9-common v0.0.0 (/home/dongxu/kv9/crates/common)
+   Compiling hyper v1.11.0
+   Compiling hyper-util v0.1.20
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.13.4
+   Compiling object_store v0.14.1
+   Compiling kv9-engine v0.0.0 (/home/dongxu/kv9/crates/engine)
+    Finished `release` profile [optimized] target(s) in 21.85s
+     Running unittests src/lib.rs (target/release/deps/kv9_engine-f489eaa6cfa75627)
+
+running 3 tests
+test index_batch::tests::retained_corpus_microbenchmark ... ignored, local CPU experiment; requires KV9_INDEX_CORPUS and explicit output capture
+test index_batch::tests::unique_keys_keep_every_mutation_and_duplicates_keep_the_last_value ... ok
+test index_batch::tests::matches_sequential_updates_for_every_short_history_and_bounded_fallbacks ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 143 filtered out; finished in 0.14s
+

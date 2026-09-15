@@ -1,0 +1,74 @@
+{
+  "complete": true,
+  "receipts": [
+    {
+      "actual_cargo_exit_code": 101,
+      "actual_tool_exit_code": 1,
+      "actual_tool_receipt": "31ed80",
+      "actual_tool_session": null,
+      "attempt": "offline-first",
+      "child_lifetime_absent": true,
+      "invocation": {
+        "bytes": 924,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/offline-first/invocation.json",
+        "sha256": "d84e39f7feb76d75ba7415549533a0b8f32be4bc8253b0ed2fad0ade45640639"
+      },
+      "log": {
+        "bytes": 120,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/offline-first/cargo.log",
+        "sha256": "d7f0afc2b688565c4ec128ac20d28a5b2c01f797194be7d38bc92469c3415918"
+      },
+      "terminal": {
+        "bytes": 703,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/offline-first/terminal.json",
+        "sha256": "3eec3810a6b6f0c5c584fc5ed0c697d054ccf4238e899039eabe042160ffbdb0"
+      }
+    },
+    {
+      "actual_cargo_exit_code": 0,
+      "actual_tool_exit_code": 0,
+      "actual_tool_receipt": "380bd0",
+      "actual_tool_session": null,
+      "attempt": "dependency-fetch-first",
+      "child_lifetime_absent": true,
+      "invocation": {
+        "bytes": 850,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/dependency-fetch-first/invocation.json",
+        "sha256": "860dfee98cb2f97095baec81e40619396f8d3f8ad2913d29f9f295fa3c611a8f"
+      },
+      "log": {
+        "bytes": 514,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/dependency-fetch-first/cargo.log",
+        "sha256": "341d21fec2e8d3a385d7624117ec195c812e7aca6d92cccfc1ca670ebbb7a265"
+      },
+      "terminal": {
+        "bytes": 699,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/dependency-fetch-first/terminal.json",
+        "sha256": "21b3b9bbc6ef4220e4bf857682d88cc56843d95fb2d5109ca1b6caf75f4ba390"
+      }
+    },
+    {
+      "actual_cargo_exit_code": 0,
+      "actual_tool_exit_code": 0,
+      "actual_tool_receipt": "40896e",
+      "actual_tool_session": 56340,
+      "attempt": "tests-second",
+      "child_lifetime_absent": true,
+      "invocation": {
+        "bytes": 924,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/tests-second/invocation.json",
+        "sha256": "b0dba8dd6aae76bb7a106b45fb0fe256170814475860d79a1ac41868995690ea"
+      },
+      "log": {
+        "bytes": 5701,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/tests-second/cargo.log",
+        "sha256": "76d21678ae7dd050e1ac2737f37228818126e4186b6df5b878b40c93eabe5ec5"
+      },
+      "terminal": {
+        "bytes": 700,
+        "path": "/mnt/data/kv9-work/batch-index-coalescing-development-20260915-first/fused/rpds-validation/tests-second/terminal.json",
+        "sha256": "0b37ba1fc27f7d96ea2b05b01d4f419d8f691fcd741d81f6d879efcdfc74180a"
+      }
+    }
+  ]
+}

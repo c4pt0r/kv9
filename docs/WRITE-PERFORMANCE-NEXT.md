@@ -48,6 +48,17 @@ choosing a change. Existing metrics do not show direct tmpfs sync as the dominan
 cost. Preserve rejected owned-buffer and scheduling experiments; these internal
 tails are not complete client histories or a new performance-selection result.
 
+The next [resident-index experiments](RESIDENT-INDEX-EXPERIMENTS.md) reject
+sorting/coalescing and two-pass value reuse. A preselected retained segment has
+14.434% overwritten mutations within batches, but sorting costs more than it
+saves. A one-traversal borrowed upsert passes 53 dependency tests and preserves
+snapshots in differential checks. Under jemalloc, its prepopulated overwrite
+index time falls 12.269%, while pure insertion grows 12.121%; it remains held.
+All changes are isolated experiments, with reproducible source patches and the
+exact corpus. No runtime integration, new QPS, proof/Chaos acceptance or repeated
+full matrix is claimed. Inspect the new-key cost before any further kernel
+change; keep the selected runtime and existing consistency gates.
+
 During the earlier full-screen capacity constraint, the C04
 [checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local
 restart authority: an actual atomic winning manifest apply must match the exact
