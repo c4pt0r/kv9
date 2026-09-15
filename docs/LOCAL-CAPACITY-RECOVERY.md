@@ -57,5 +57,16 @@ Including the retained base, its two selected triplets reduce ordinary
 compressed sizes by 63.404% and 66.568%. These are sample results, not reclaimed
 space. No original object or catalog was retired. A follow-up also reconstructs
 the exact six old compressed-object identities and independently decodes their
-complete logical bytes. A verified whole-cohort migration/restore transaction
-remains necessary before using this representation to recover capacity.
+complete logical bytes. These two original pilots reclaimed no bytes.
+
+The subsequent [whole-cohort migration](cross-voter-cohort-retention-v1/README.md)
+now passes 19 controls, all 80 target reconstructions, exact original-path
+restoration and the unchanged reader over all 150 original objects. The final
+COLD transaction recovers **924,991,488 allocated bytes** after charging all
+transaction output; portable reporting has separate overhead. All 70 preserved
+objects retain their full hashes, original metadata is unchanged, and all 870
+fresh codec lifetimes have exited. Available space at its final audit was
+25,352,613,888 bytes, before publication overhead. This remains below the next
+complete receipt-screen estimate. Extend migration in bounded groups using
+actual capacity, with separately reviewed live readback-floor adaptations for
+older campaign readers and all historical validation preserved.

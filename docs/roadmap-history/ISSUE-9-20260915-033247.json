@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/c4pt0r/kv9/issues/9",
+  "updated_at": "2026-09-15T03:32:47Z",
+  "body_sha256": "f4718129a9a97a2bedd8abe7b3dfb8d35f40b2fd38c99465e55d683c2e815fc7",
+  "body_bytes": 59474,
+  "body_characters": 59446,
+  "checklist_lines": 25,
+  "scope": "Exact issue body before the completed one-cohort retention checkpoint; preserved before shortening the current progress section."
+}
