@@ -93,8 +93,12 @@ the table as an exact breakdown of request latency or causal speedup.
 
 The subsequent [standalone FNV interleaving experiment](WRITE-FNV-INTERLEAVE-KERNEL.md)
 now passes its computation proof, Rust equivalence tests and fixed kernel
-measurements. Its database writer integration and end-to-end gains remain pending.
-The following describes the hypothesis established by this CPU checkpoint.
+measurements. Its [database writer integration and matched screen](WRITE-FNV-WRITER-PERFORMANCE.md)
+have since completed: loaded batch throughput improves 4.131%, but pooled p99
+worsens, so CRC main remains selected. The following preserves the hypothesis
+established by this CPU checkpoint. The current next experiment is the separate
+[receipt tail hint](WRITE-RECEIPT-TAIL-HINT.md), whose proof, source, release,
+recovery and actual Chaos qualification pass; its matched timing remains pending.
 
 Start with a bounded experiment that interleaves independent legacy FNV states
 for entries already present in one Raft Ready. Establish a finite memory bound

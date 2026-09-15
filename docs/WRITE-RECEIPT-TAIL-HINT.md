@@ -119,6 +119,23 @@ passes all 21 windows and six post phases: 9,360 complete operations
 archive readback and all 32 observed server lifetimes exited. The owned
 namespace is removed and eight historical namespace identities remain intact.
 
+## Matched performance preparation
+
+The [frozen comparison and original local checks](receipt-tail-performance-preparation-v1/README.md)
+now bind the existing CRC server, receipt server and fixed native v3 client:
+859, 869 and 581 source files, their original executable hashes, compiler and
+default feature records. Eight source-binding controls and eight smoke-reader
+controls pass (`b4e952/0`). Independent portable readback (`1097f4/0`) verifies
+all 98 reporting/preparation members and 1,174,930 original bytes.
+
+The full eight-smoke/sixteen-timed protocol, latency accounting, final dataset
+checks, drains, lifetimes and storage-v3 requirements are unchanged. No new
+workload has run; fresh capacity remains necessary before launch. The last
+complete comparison retained 52,208,918,528 physical bytes, so the roughly
+25 GB currently available cannot support another full campaign and its
+operating envelope. Estimated launch capacity is 80–100 GB available, not a
+claim that this amount is a guaranteed output bound.
+
 ## Next gates
 
 Retain this source, release and Chaos checkpoint. Measure point/batch throughput

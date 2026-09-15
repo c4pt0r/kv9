@@ -44,3 +44,17 @@ terminals remain under the local
 `/tmp/kv9-published-directory-capacity-actions-preparation-20260915-first/`
 tree. This note does not claim a portable copy of those diagnostic WAL files.
 All CI and test work remains local; hosted workflows are manual only.
+
+## Subsequent receipt-screen preparation
+
+The completed directory comparison consumed its retained space; the earlier
+79.73 GB observation is not current capacity. The next receipt comparison has
+about 25 GB available and an estimated 80–100 GB launch budget.
+
+A [six-member cross-voter WAL patch pilot](cross-voter-retention-pilot-v1/README.md)
+now passes complete original-hash reconstruction and eight refusal controls.
+Including the retained base, its two selected triplets reduce ordinary
+compressed sizes by 63.404% and 66.568%. These are sample results, not reclaimed
+space. No original object or catalog was retired. Exact reconstruction of the
+old compressed-object bytes and a verified migration/restore transaction remain
+necessary before using this representation to recover capacity.
