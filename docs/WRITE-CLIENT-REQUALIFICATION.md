@@ -97,6 +97,9 @@ reader's result is under the preparation's `readiness/smoke-readback` directory.
 These checks qualify the new executable for the original comparison. Smoke
 rates are not reported as performance results.
 
-The sixteen-cohort matched comparison and enclosing retention audit remain
-pending. CRC remains selected; there is no new QPS, latency or promotion result
-in this qualification report.
+The sixteen-cohort matched comparison and enclosing retention audit now pass:
+timing `14114/1182dd/0`, audit `48940/2f82fd/0`, report `aad8c9/0`. All 7,154,151
+timed calls succeed once, covering 62,959,110 input items. The
+[separate performance report](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md) preserves
+both orders, throughput and whole-call tails. CRC remains selected because
+the loaded-point improvement does not establish an overall batch benefit.

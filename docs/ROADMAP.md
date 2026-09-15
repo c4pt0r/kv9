@@ -2,11 +2,14 @@
 
 > Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
 > Keep selected ThinLTO and Safe ReadIndex; read and lease optimization remain held.
-> CRC remains the selected write runtime. The latest [matched screen](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
-> measures the CRC reference at c64 / 128-byte values at **138,099 Put calls/s**
-> and **1,050,120 BatchPut(64) items/s**, with p99 **0.745–0.754 ms** and
-> **7.864–7.930 ms** respectively. The receipt-tail candidate improves point
-> writes but has batch/order tradeoffs; promotion remains held.
+> CRC remains the selected write runtime. The latest [matched screen](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
+> measures retained CRC `bd42e60` at c64 / 128-byte values at **135,562 Put calls/s**
+> and **1,030,729 BatchPut(64) items/s**, with p99 **0.778–0.786 ms** and
+> **7.799–7.864 ms** respectively. Upper-bound `e2e23cc` improves loaded Put
+> **3.169%** in the pooled comparison, with better mean/p99 in both orders, but
+> loaded batch loses **1.419%** and has worse pooled p99. Promotion remains held.
+> This new fixed-client comparison is separate from historical measurements and
+> does not measure the later checkpoint-owner integration on current main.
 > The [completed observer capture](WRITE-OBSERVER-CAPTURE.md) identifies repeated
 > receipt misses. The independent [upper-bound candidate](WRITE-RECEIPT-UPPER-BOUND.md)
 > now passes 14 source-bound theorem statements / 82 obligations, local
@@ -20,8 +23,9 @@
 > Capacity is sufficient. The missing historical benchmark client has an explicitly
 > [requalified replacement](WRITE-CLIENT-REQUALIFICATION.md): exact source/toolchain
 > checks, 60 source/report tests and all eight actual smokes with independent
-> dataset/accounting/lifetime checks pass. The sixteen-cohort matched screen and
-> enclosing audit remain the next gates; no new speedup is claimed from smokes.
+> dataset/accounting/lifetime checks pass. All sixteen timed cohorts and the
+> enclosing audit now pass: 7,154,151 one-attempt successes / 62,959,110 items,
+> 64 exited timed lifetimes, 48 fresh drains and all original retained bytes.
 > C04 now has [automatic checkpoint ownership](CHECKPOINT-OWNERS.md): durable exact
 > upload bytes, replicated Pending before remote I/O and Version handoff after
 > positive settlement. The 731-test local library gate, strict composition proofs
@@ -30,7 +34,8 @@
 > Next run the separate pre-upload crash cut, then integrate typed negative
 > history and certified abort release, legacy coverage/fencing, reader drainage
 > and destination installation. C04 and physical object deletion remain open.
-> Next: complete that candidate's acceptance, then continue industrial storage,
+> Next: analyze the retained batch-tail evidence before another performance
+> rewrite, finish the pending pre-upload crash cut, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
 > requirements remain mandatory. CI stays local.
