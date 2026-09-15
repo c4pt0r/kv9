@@ -4,8 +4,9 @@ Candidate
 [`e2e23cc`](https://github.com/c4pt0r/kv9/commit/e2e23cca5e70a9ea0cc241877b3b35b5b6433d27)
 passes the complete 21-window actual Chaos Mesh matrix, independent complete
 history checks, full local archive/readback and exact-owned cleanup.
-**CRC remains selected. The original matched performance screen and live
-schema-2 observer capture remain pending; this checkpoint establishes no QPS
+The subsequent [live schema-2 observer capture](WRITE-RECEIPT-UPPER-BOUND-OBSERVER.md)
+also passes. **CRC remains selected. The original matched performance screen
+remains pending; this Chaos checkpoint establishes no QPS
 improvement or Redis parity.**
 
 | Complete history | Operations | OK | Unknown | Refused |
@@ -96,17 +97,18 @@ The original eight-smoke/sixteen-ten-second matched screen is prepared with the
 selected CRC reference and fixed native v3 client. Actual source, binary,
 compiler and default-feature role readback passes (`d48f6f/0`). The established
 initial capacity scenario is 79,455,850,496 bytes; it remains subject to fresh
-space and every original per-phase guard. No smoke or timed cohort has run for
-this candidate. Capture actual upper-bound skips separately before drawing
-path-level conclusions; synthetic observer controls are not runtime evidence.
+space and every original per-phase guard. No full-screen smoke or ten-second
+cohort has run for this candidate. The subsequent separate observer capture measures actual skips;
+its two-second comparisons do not replace the original matched screen.
 
-A subsequent live filesystem check finds 25,415,081,984 bytes available
+A filesystem check before the subsequent observer campaign found 25,415,081,984 bytes available
 (23.67 GiB), leaving about 50.3 GiB below that approximately 74 GiB empirical
 scenario. The existing finite cache and lossless-retention candidates cannot
 close this gap even at their zero-cost allocation ceiling. Additional storage
 for retained evidence is needed before the full screen; 100 GiB available is a
 planning target with iteration headroom, not a measured worst-case bound.
-Availability must be refreshed at launch, and all original phase guards remain.
+The observer report records its later capacity use. Availability must be
+refreshed at launch, and all original phase guards remain.
 
 The separate [TCP fixture port repair](tcp-fixture-port-ownership-v1/README.md)
 passes its exact test and formatting on main. It changes no production runtime

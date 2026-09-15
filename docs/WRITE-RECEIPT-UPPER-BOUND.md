@@ -3,9 +3,10 @@
 Candidate [`e2e23cc`](https://github.com/c4pt0r/kv9/commit/e2e23cca5e70a9ea0cc241877b3b35b5b6433d27)
 adds a conservative negative-lookup filter to the applied-receipt vector.
 Its source-bound proof, local development checks, retained default/diagnostic
-releases, ordinary three-voter recovery and [actual full21 Chaos Mesh](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md)
-pass. **It is experimental: the full matched performance screen and live
-schema-2 observer capture remain open. CRC remains selected.**
+releases, ordinary three-voter recovery, [actual full21 Chaos Mesh](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md)
+and [the live schema-2 observer capture](WRITE-RECEIPT-UPPER-BOUND-OBSERVER.md)
+pass. **It is experimental: the full matched performance screen remains open.
+CRC remains selected.**
 
 ## Why this candidate
 
@@ -92,8 +93,10 @@ rejection and the original service/Ready accounting. It checks:
 
 Skipped samples must be a subpopulation of ring lengths and misses. Zero-probe
 counts must equal skipped lookups plus non-skipped empty-ring lookups. Eleven
-new synthetic controls pass. No live schema-2 capture has been interpreted,
-and schema-1 baseline captures retain their original meaning. Aggregate data
+new synthetic controls pass. The subsequent live schema-2 capture passes all
+16 cohorts and 24 instrumented per-node checks. At c64 Put, 87.973–88.013% of
+lookups skip the scan and actual comparisons average 121.234–121.650 per lookup.
+Schema-1 baseline captures retain their original meaning. Aggregate data
 cannot disambiguate every empty-miss reclassification; no per-event claim is
 made beyond the available counters.
 
@@ -117,8 +120,8 @@ post phases complete. The original failures remain preserved.
    eight-smoke/sixteen-ten-second point/batch matched screen
    with the fixed native v3 client and selected CRC reference. Judge throughput
    and latency by both opposite orders; no diagnostic sweep replaces this gate.
-2. Capture actual upper-bound skip/fallback populations separately and keep
-   the held tail-hint comparison distinct. Promote only after the complete
+2. Keep the accepted actual upper-bound observations and the pending
+   held tail-hint comparison distinct. Promote only after the complete
    correctness/performance decision, then continue the industrial storage and
    dynamic multi-Raft/split route recorded in issue #9.
 

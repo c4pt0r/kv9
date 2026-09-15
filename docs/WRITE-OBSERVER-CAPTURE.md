@@ -132,10 +132,13 @@ misses, alongside the held candidate's actual checked-hint and fallback paths.
 Bind those path counts to a separate candidate observer; tail distance in this
 baseline cannot be relabeled as a measured candidate hint hit. Separately, the
 [conservative upper-bound experiment](WRITE-RECEIPT-UPPER-BOUND.md) now passes
-source-bound refinement and local development checks. It rejects impossible
-future-index lookups without caching pending outcomes. Its retained release,
-ordinary recovery, actual Chaos and complete matched performance gates remain
-open; actual upper-bound skip counts are not yet measured.
+source-bound refinement, local development checks,
+[retained releases and ordinary recovery](WRITE-RECEIPT-UPPER-BOUND-RUNTIME.md),
+and [actual full21 Chaos](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md). It rejects impossible
+future-index lookups without caching pending outcomes. The subsequent
+[actual schema-2 capture](WRITE-RECEIPT-UPPER-BOUND-OBSERVER.md) measures the
+upper-bound branch separately; its complete matched performance gate remains
+open. This schema-1 report retains its original meaning and data.
 
 For a subsequent pending-inspection optimization, establish an explicit proof
 of when a previous pending result remains valid. Any skipped lookup must account
