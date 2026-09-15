@@ -79,9 +79,10 @@ summary used misleading nested p99 field names while its values were in us;
 the corrected summary explicitly names the enclosing us unit. Both summaries
 are retained; original measurements and audit results were unchanged.
 
-Next measure the [receipt tail hint](WRITE-RECEIPT-TAIL-HINT.md) separately on
-CRC. Its default release, ordinary recovery and actual full21 Chaos gates now
-pass; matched timing awaits fresh capacity. Consider combinations only after
+The subsequent [receipt-tail matched screen](WRITE-RECEIPT-TAIL-PERFORMANCE.md)
+now passes after its separate default release, recovery and actual full21 Chaos
+gates. It improves point writes in both orders but has batch tradeoffs; CRC
+remains selected. Keep these candidates separate until their interaction has
 independent evidence.
 Read optimization remains held; dynamic multi-Raft, routing, recoverable
 membership and automatic range splits follow the write phase. All testing

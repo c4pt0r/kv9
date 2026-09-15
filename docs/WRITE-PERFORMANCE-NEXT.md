@@ -113,8 +113,8 @@ and independent audit now pass. Loaded batch throughput improves 1.941% to
 1,076,849.048 items/s and pooled p99 improves to 6.554–6.619 ms; loaded point
 throughput regresses 0.518% to 138,734.094 calls/s. Both orders retain batch
 gains and loaded point regression. Keep CRC selected, preserve the directory
-candidate as a batch improvement, and qualify the receipt tail hint separately
-next. Do not combine candidates or infer a general gain before new evidence. Queue age and
+candidate as a batch improvement. The separate receipt screen below is now
+complete. Do not combine candidates or infer a general gain before new evidence. Queue age and
 Ready/checksum group diagnostics remain secondary if this does not explain the
 cost. Preserve every quorum, publication and acknowledgment fence, required file
 and parent sync, and the original first-order FNV tail.
@@ -130,18 +130,27 @@ operations (329 OK / 30 unknown), six fresh drains and seven exited lifetimes.
 [Original release/recovery evidence](receipt-tail-recovery-v1/README.md) is
 retained with complete byte readback. The [actual 21-window Chaos campaign](WRITE-RECEIPT-TAIL-CHAOS.md)
 now passes as well: 9,360 complete operations, four final drains, complete local
-archive/readback and 32 observed server lifetimes exited. Next qualify fresh
-capacity and run the independent matched write screen; database timing remains
-pending. It is not combined with FNV or selected on main. This advances the
-secondary receipt target without claiming that proof or a CPU percentage
-establishes performance gains.
+archive/readback and 32 observed server lifetimes exited. Its
+[complete matched write screen](WRITE-RECEIPT-TAIL-PERFORMANCE.md) now passes:
+all eight smokes, sixteen timed cohorts and independent final acceptance.
+Loaded Put improves **2.971% to 142,202.415 calls/s**, with pooled p99
+**720.896–729.087 us**, and both orders improve. Low concurrency BatchPut(64)
+regresses **0.698%**; loaded batch gains **1.711%** pooled but reverses direction
+and worsens p99 in the new-first order. **Keep CRC selected and hold receipt-tail
+promotion.** The timed population contains 7,296,894 successful single-attempt
+calls / 64,701,927 input items, with zero non-success outcomes or drops.
+Next capture actual receipt-queue length/age, checked-lookup/fallback counts,
+entries resolved per apply and Ready/group-commit sizes in a bounded diagnostic.
+Measure observer overhead separately. These measurements must establish the
+next causal target before another lookup change or combination experiment.
 
 The [receipt matched-screen preparation](receipt-tail-performance-preparation-v1/README.md)
 also passes its 16 focused controls and actual three-role source/binary/Cargo
 binding. Its complete eight-smoke/sixteen-timed workload and storage-v3 policy
 are unchanged. About 25 GB was available at preparation, versus an estimated
-80–100 GB launch budget for a complete new campaign. Qualify additional capacity before running
-the frozen commands; preparation does not count as new performance evidence.
+80–100 GB launch budget for a complete new campaign. The historical capacity
+work below enabled the now-completed screen; preparation itself was not
+performance evidence.
 The [bounded WAL patch pilot](cross-voter-retention-pilot-v1/README.md) passes
 six full original-byte reconstructions and eight refusal controls. It supports
 testing a lossless retention migration, but has reclaimed no bytes. The follow-up
@@ -201,11 +210,13 @@ The [PID-corrected derivatives now also have actual coverage across all four fam
 FNV013, full-CRC014, directory020 and frame021, with 947 successful current
 readback decoder receipts. New directory/frame metadata and lifetime validation
 passes independently; prior FNV/CRC evidence is reused without payload replay.
-After fresh capacity and process checks,
-the existing receipt commands run all eight smokes, complete smoke readback,
-all sixteen timed cohorts and independent final acceptance. The completed
-16 focused controls and role binder need no repeat. Keep timing exclusive of
-migration/codec activity and preserve the original workload and limits.
+Fresh source/capacity/process checks subsequently pass, followed by all eight
+smokes (`18934/899209/0`), smoke accounting/dataset checks (`d56257/0`), all
+sixteen timed cohorts with exact outer restoration (`84770/38c0ab/0`), and final
+independent acceptance (`16800/8faaea/0`). All 73,743,331,446 retained logical
+bytes across smoke and timing pass independent decoding. The earlier 16
+focused controls and role binder were not replayed. Timing had no overlap with
+migration/codecs; the original workload and limits remained unchanged.
 
 An [offline analysis of retained counters](write-amortization-v1/README.md)
 separately quantifies existing write amortization. It preserves the distinction
@@ -419,9 +430,13 @@ original failed audit and schema repair remain retained without workload reruns.
    complete paired write screen improves loaded batch throughput 1.941% and
    p99, while loaded point throughput regresses 0.518%. Keep CRC selected and
    retain the directory candidate as a batch improvement. The receipt tail hint's
-   default release, recovery and actual full21 Chaos now pass. Next recover
-   capacity for its prepared independent matched screen. Consider combinations
-   only after those separate results. Persistent-map work remains secondary;
+   default release, recovery, actual full21 Chaos and complete matched screen
+   now pass. Loaded Put gains 2.971% with better p99 in both orders; c1 batch
+   regresses 0.698%, and the loaded batch result is order-sensitive. Hold its
+   promotion and keep CRC selected. Next measure actual receipt queue lengths,
+   ages, lookup-path use and apply/Ready group sizes, including diagnostic
+   overhead, before choosing another lookup change or combination experiment.
+   Persistent-map work remains secondary;
    do not repeat rejected owned-buffer or worker/transport sweeps without new
    causal evidence.
    DPDK requires cross-host/NIC
