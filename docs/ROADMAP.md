@@ -46,9 +46,13 @@
 > lifetimes. Combined observer features cost 2.770% pooled throughput in this
 > short diagnostic. Deduplicated leader group apply means are 549.018 / 546.521 us;
 > locks and receipt publication/inspection are much smaller in the retained tails.
-> Next: attribute CPU work inside batch lowering, WAL encoding/checksum and index
-> publication before choosing an apply change. Retain prior rejected buffer/index
-> experiments. Finish the pending pre-upload crash cut, then continue industrial storage,
+> The [resident-index experiments](RESIDENT-INDEX-EXPERIMENTS.md) now reject
+> sorted coalescing and two-pass value reuse. A one-traversal borrowed upsert
+> passes 53 dependency tests, but remains held: jemalloc overwrite index time
+> improves 12.269% while pure insertion regresses 12.121%. Source patches and the
+> exact corpus are retained; no runtime integration or new database QPS is claimed.
+> Next inspect its insertion cost before another kernel change. Retain prior
+> rejected buffer/index experiments. Finish the pending pre-upload crash cut, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
 > requirements remain mandatory. CI stays local.

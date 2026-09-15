@@ -14,8 +14,8 @@ use crate::{Durability, Engine, ReadView, ScanEntry};
 ///
 /// Persistent (structurally shared) rather than a plain `BTreeMap` so that cloning is
 /// O(1) and a clone is unaffected by later mutations. That is what makes
-/// [`Engine::snapshot`] free and keeps every open [`ReadView`] pinned to its own version
-/// without copying anything.
+/// [`Engine::snapshot`] O(1) and keeps every open [`ReadView`] pinned to its own
+/// version. Later writes copy shared paths as needed to preserve those versions.
 type CfMap = RedBlackTreeMapSync<Vec<u8>, Vec<u8>>;
 
 /// All column families as one value.
@@ -86,12 +86,10 @@ impl State {
 /// In-memory engine. One persistent ordered map per column family behind a single
 /// `RwLock` (DESIGN §6.2). Suitable for the v0 skeleton and unit tests; **not durable**.
 ///
-/// Because the maps are persistent, [`Engine::snapshot`] is O(1) and costs *nothing* on
-/// the write side: a write mutates the live state in place while every open view keeps
-/// the version it was taken at, via structural sharing. The read-heavy paths that
-/// motivated this — routing lookups and catalog queries, each opening a view per
-/// transaction — therefore never pay for the snapshot, and writes never pay for having
-/// been snapshotted.
+/// Because the maps are persistent, [`Engine::snapshot`] is O(1). A write can
+/// mutate uniquely owned nodes in place; shared paths are copied so open views
+/// retain their original versions. Snapshot creation avoids a full-map copy,
+/// but a retained view can increase the allocation and copying cost of writes.
 #[derive(Debug, Default)]
 pub struct MemEngine {
     /// LOCK ORDER: this is the only lock in `crates/engine`, apart from
@@ -230,9 +228,8 @@ impl Engine for MemEngine {
     }
 
     fn snapshot(&self) -> Result<Box<dyn ReadView + '_>> {
-        // O(1): the persistent maps share structure, so this neither copies now nor
-        // forces a copy on the next write. A real engine hands back an equally cheap
-        // handle (immutable SSTs + a pinned memtable) behind this same signature.
+        // O(1): share the current roots. Later writes copy any shared paths they
+        // modify. No state guard escapes into caller code.
         Ok(Box::new(MemSnapshot { state: self.read() }))
     }
 }

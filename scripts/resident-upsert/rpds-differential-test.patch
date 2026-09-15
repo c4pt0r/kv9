@@ -1,0 +1,42 @@
+--- a/src/map/red_black_tree_map/test.rs
++++ b/src/map/red_black_tree_map/test.rs
+@@ -100,7 +100,7 @@
+     }
+ }
+ 
+-impl<K, V> RedBlackTreeMap<K, V>
++impl<K, V, P: SharedPointerKind> RedBlackTreeMap<K, V, P>
+ where
+     K: Ord + Clone,
+ {
+@@ -1838,3 +1838,30 @@
+ 
+     assert_eq!(map, decoded);
+ }
++
++
++#[test]
++fn borrowed_upsert_preserves_exact_tree_and_retained_snapshots() {
++    let mut actual = RedBlackTreeMapSync::<u32, Vec<u8>>::new_sync();
++    let mut reference = RedBlackTreeMapSync::<u32, Vec<u8>>::new_sync();
++    let mut snapshots = Vec::new();
++    for step in 0u32..2048 {
++        if step % 61 == 0 { snapshots.push((actual.clone(), reference.clone())); }
++        let key = step.wrapping_mul(71) % 257;
++        let value = alloc::vec![(step % 251) as u8; [0, 1, 128, 1024][step as usize % 4]];
++        actual.insert_cloned_mut(&key, &value);
++        reference.insert_mut(key, value);
++        if step % 7 == 0 {
++            actual.remove_mut(&(key / 2));
++            reference.remove_mut(&(key / 2));
++        }
++        actual.check_consistent().unwrap();
++        assert_eq!(actual.size(), reference.size());
++        assert_eq!(actual.root, reference.root);
++        for (old, expected) in &snapshots {
++            old.check_consistent().unwrap();
++            assert_eq!(old.root, expected.root);
++            assert_eq!(old.size(), expected.size());
++        }
++    }
++}
