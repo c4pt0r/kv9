@@ -79,9 +79,10 @@ summary used misleading nested p99 field names while its values were in us;
 the corrected summary explicitly names the enclosing us unit. Both summaries
 are retained; original measurements and audit results were unchanged.
 
-Next evaluate the already source/proof-qualified [receipt tail hint](WRITE-RECEIPT-TAIL-HINT.md)
-separately on CRC, completing its default release, recovery and actual Chaos
-gates before timing. Consider combinations only after independent evidence.
+Next measure the [receipt tail hint](WRITE-RECEIPT-TAIL-HINT.md) separately on
+CRC. Its default release, ordinary recovery and actual full21 Chaos gates now
+pass; matched timing awaits fresh capacity. Consider combinations only after
+independent evidence.
 Read optimization remains held; dynamic multi-Raft, routing, recoverable
 membership and automatic range splits follow the write phase. All testing
 was local, no hosted CI ran, and no original industrial roadmap checkbox closes.
