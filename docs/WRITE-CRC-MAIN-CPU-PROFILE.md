@@ -120,6 +120,14 @@ commit must not be reimplemented. DPDK still requires cross-host/NIC evidence.
 The [development order](WRITE-PERFORMANCE-NEXT.md) retains dynamic multi-Raft,
 routing, membership, splits and no-singleton requirements after the write phase.
 
+A subsequent [offline event-count analysis](write-amortization-v1/README.md)
+finds 12.718–15.407 command-apply events per engine-WAL write event for point
+writes and 15.860–19.250 for BatchPut(64), across the original full capture
+intervals. These are not group-size distributions or nominal-window QPS; WAL
+events include header/rotation work. The source also confirms that command-apply
+timers overlap within a group, so their sums are not exclusive CPU or wall time.
+No new workload, algorithm or performance claim is introduced.
+
 ## Evidence and execution
 
 [Portable source, samples, reports and execution receipts](https://github.com/c4pt0r/kv9/blob/13cdb54175e170eed6493d4187dab746a95c9ee8/docs/crc-main-current-cpu-v1/README.md)

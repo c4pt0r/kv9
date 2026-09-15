@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "scope": "New offline event arithmetic over an existing accepted CPU diagnostic; no workload, profiler, codec or source check suite rerun.",
+  "actual_analysis_terminal": "7a4a9c/0",
+  "copies": [
+    {
+      "path": "derive.py",
+      "source_path": "/tmp/kv9-write-amortization-analysis-20260915-first.py",
+      "bytes": 4756,
+      "sha256": "05a8f1d74a93df5267e7dae3c5924106fc3e9bf93e078040b8563b6a5c8247d9"
+    },
+    {
+      "path": "result.json",
+      "source_path": "/tmp/kv9-write-amortization-analysis-20260915-first.json",
+      "bytes": 4629,
+      "sha256": "3b7a2381b6f6bba3b0689f9b53db2a74d9a0200a91f54a564877c261b776e552"
+    }
+  ],
+  "source_mappings": [
+    {
+      "path": "crates/raft/src/driver.rs",
+      "baseline_source_path": "/tmp/kv9-crc-main-bd42-baseline-20260914-first/crates/raft/src/driver.rs",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "bytes": 155107,
+      "sha256": "0fdc107979a175af9ef8522e3c30531d6236c0bab43f90a60ca2219f1d5bc88e"
+    },
+    {
+      "path": "crates/raft/src/state_machine/raw_group.rs",
+      "baseline_source_path": "/tmp/kv9-crc-main-bd42-baseline-20260914-first/crates/raft/src/state_machine/raw_group.rs",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "bytes": 20676,
+      "sha256": "a6340bbd8bba3471d455501f2081606064b3f3c4d1af58920eebc59b5d154ec4"
+    },
+    {
+      "path": "crates/engine/src/wal_segment.rs",
+      "baseline_source_path": "/tmp/kv9-crc-main-bd42-baseline-20260914-first/crates/engine/src/wal_segment.rs",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "bytes": 31730,
+      "sha256": "8b4dcf628e065390a381cddd82bc9487a53713636f6d2974862e03d3147f1c6b"
+    },
+    {
+      "path": "crates/common/src/metrics.rs",
+      "baseline_source_path": "/tmp/kv9-crc-main-bd42-baseline-20260914-first/crates/common/src/metrics.rs",
+      "revision": "bd42e60f84657e22e36e34924a5c80a08eac623a",
+      "bytes": 11306,
+      "sha256": "2889dad19c8cf68c093a3d88f8c04d08830d371ef0d61c2c8e1469e248d8b0e2"
+    }
+  ],
+  "code_runtime_unchanged": true,
+  "accepted_input_authority": {
+    "path": "/tmp/kv9-crc-main-current-profile-evidence-worktree-20260914-first/docs/crc-main-current-cpu-v1/inventory.json",
+    "sha256": "fa32fdc7d5894129c396fee58a7b44bdcaf0af74417043347d100a0c970befe3",
+    "repository_path": "docs/crc-main-current-cpu-v1/inventory.json",
+    "published_revision": "13cdb54175e170eed6493d4187dab746a95c9ee8",
+    "members": [
+      {
+        "member": "originals/tmp/kv9-crc-main-current-profile-preparation-20260914-first/point_put/before-metrics.json",
+        "bytes": 928638,
+        "sha256": "3f4207c07ba573400a952daff20285e185c17c4a0ce3138c38a4e4359ecdcfad",
+        "source": "/tmp/kv9-crc-main-current-profile-preparation-20260914-first/point_put/before-metrics.json"
+      },
+      {
+        "member": "originals/tmp/kv9-crc-main-current-profile-preparation-20260914-first/point_put/after-metrics.json",
+        "bytes": 931825,
+        "sha256": "c694a540fe56135277e65ce140083c040b0186b51dd248e67244edc05b0f7257",
+        "source": "/tmp/kv9-crc-main-current-profile-preparation-20260914-first/point_put/after-metrics.json"
+      },
+      {
+        "member": "originals/tmp/kv9-crc-main-current-profile-preparation-20260914-first/batch_put/before-metrics.json",
+        "bytes": 928598,
+        "sha256": "bfba5ff7c5a6d0b589408bd3cb62a012b85919f48b106027d84b78d372c0fc0a",
+        "source": "/tmp/kv9-crc-main-current-profile-preparation-20260914-first/batch_put/before-metrics.json"
+      },
+      {
+        "member": "originals/tmp/kv9-crc-main-current-profile-preparation-20260914-first/batch_put/after-metrics.json",
+        "bytes": 931725,
+        "sha256": "8c9a2feb12eff7cb93b9f24d4a2975e28df4e07810f35631eecfca435b80b7b0",
+        "source": "/tmp/kv9-crc-main-current-profile-preparation-20260914-first/batch_put/after-metrics.json"
+      }
+    ],
+    "original_profile_terminal": "49065/16d5c2/0",
+    "original_perf_decoder_terminal": "13979/a9d140/0",
+    "separate_portable_readback_terminal": "f6df3d/0"
+  },
+  "independent_review": {
+    "scope": "Root record of the independent read-only review delivered by stream_review; six rows recomputed from original snapshots and source semantics checked.",
+    "actual_tool_terminal": "5b8699/0",
+    "result_sha256": "3b7a2381b6f6bba3b0689f9b53db2a74d9a0200a91f54a564877c261b776e552",
+    "rows": 6,
+    "input_inventory_matches": 4,
+    "remaining_findings": []
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "complete": true,
+  "scope": "Offline arithmetic on existing full-capture metric intervals; not new runtime or nominal timed-window acceptance.",
+  "limitations": [
+    "Metrics are coherent individually, not one simultaneous cross-metric snapshot.",
+    "Capture intervals include setup/warmup activity and exceed the nominal measured interval.",
+    "Engine write events include segment headers; they are not exactly Raw apply groups.",
+    "No group-size distribution, mutation count, duplicate-key rate or causal speedup is inferred.",
+    "Per-command apply intervals overlap inside a group; their duration sums are not exclusive CPU or wall time."
+  ],
+  "inputs": [
+    {
+      "path": "/tmp/kv9-crc-main-current-profile-preparation-20260914-first/point_put/before-metrics.json",
+      "bytes": 928638,
+      "sha256": "3f4207c07ba573400a952daff20285e185c17c4a0ce3138c38a4e4359ecdcfad"
+    },
+    {
+      "path": "/tmp/kv9-crc-main-current-profile-preparation-20260914-first/point_put/after-metrics.json",
+      "bytes": 931825,
+      "sha256": "c694a540fe56135277e65ce140083c040b0186b51dd248e67244edc05b0f7257"
+    },
+    {
+      "path": "/tmp/kv9-crc-main-current-profile-preparation-20260914-first/batch_put/before-metrics.json",
+      "bytes": 928598,
+      "sha256": "bfba5ff7c5a6d0b589408bd3cb62a012b85919f48b106027d84b78d372c0fc0a"
+    },
+    {
+      "path": "/tmp/kv9-crc-main-current-profile-preparation-20260914-first/batch_put/after-metrics.json",
+      "bytes": 931725,
+      "sha256": "8c9a2feb12eff7cb93b9f24d4a2975e28df4e07810f35631eecfca435b80b7b0"
+    }
+  ],
+  "rows": [
+    {
+      "workload": "point_put",
+      "voter": 1,
+      "process_id": 3742642,
+      "captured_before_ns": 1789413806488967582,
+      "captured_after_ns": 1789413832667583635,
+      "successful_event_deltas": {
+        "raft_command_apply": 653662,
+        "engine_wal_record_write": 43656,
+        "engine_wal_record_sync": 43662,
+        "raft_wal_record_write": 697303,
+        "raft_wal_record_sync": 64764
+      },
+      "command_apply_events_per_engine_write_event": 14.97301630932747
+    },
+    {
+      "workload": "point_put",
+      "voter": 2,
+      "process_id": 3742647,
+      "captured_before_ns": 1789413806507638585,
+      "captured_after_ns": 1789413832684421984,
+      "successful_event_deltas": {
+        "raft_command_apply": 653662,
+        "engine_wal_record_write": 51395,
+        "engine_wal_record_sync": 51401,
+        "raft_wal_record_write": 705051,
+        "raft_wal_record_sync": 131965
+      },
+      "command_apply_events_per_engine_write_event": 12.718396731199533
+    },
+    {
+      "workload": "point_put",
+      "voter": 3,
+      "process_id": 3742652,
+      "captured_before_ns": 1789413806515618068,
+      "captured_after_ns": 1789413832682998594,
+      "successful_event_deltas": {
+        "raft_command_apply": 653662,
+        "engine_wal_record_write": 42426,
+        "engine_wal_record_sync": 42432,
+        "raft_wal_record_write": 696077,
+        "raft_wal_record_sync": 61593
+      },
+      "command_apply_events_per_engine_write_event": 15.407108848347711
+    },
+    {
+      "workload": "batch_put",
+      "voter": 1,
+      "process_id": 3748071,
+      "captured_before_ns": 1789413836982026006,
+      "captured_after_ns": 1789413862167568717,
+      "successful_event_deltas": {
+        "raft_command_apply": 80870,
+        "engine_wal_record_write": 4272,
+        "engine_wal_record_sync": 4323,
+        "raft_wal_record_write": 85087,
+        "raft_wal_record_sync": 6763
+      },
+      "command_apply_events_per_engine_write_event": 18.930243445692884
+    },
+    {
+      "workload": "batch_put",
+      "voter": 2,
+      "process_id": 3748076,
+      "captured_before_ns": 1789413836999696660,
+      "captured_after_ns": 1789413862187885376,
+      "successful_event_deltas": {
+        "raft_command_apply": 80870,
+        "engine_wal_record_write": 5099,
+        "engine_wal_record_sync": 5150,
+        "raft_wal_record_write": 85918,
+        "raft_wal_record_sync": 12768
+      },
+      "command_apply_events_per_engine_write_event": 15.859972543636006
+    },
+    {
+      "workload": "batch_put",
+      "voter": 3,
+      "process_id": 3748081,
+      "captured_before_ns": 1789413837006413423,
+      "captured_after_ns": 1789413862187051057,
+      "successful_event_deltas": {
+        "raft_command_apply": 80870,
+        "engine_wal_record_write": 4201,
+        "engine_wal_record_sync": 4252,
+        "raft_wal_record_write": 85020,
+        "raft_wal_record_sync": 6387
+      },
+      "command_apply_events_per_engine_write_event": 19.250178528921687
+    }
+  ]
+}

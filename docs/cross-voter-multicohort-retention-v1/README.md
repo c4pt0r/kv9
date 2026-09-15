@@ -119,3 +119,9 @@ the separate 924,991,488-byte predecessor and subsequent portable publication.
 Actual available space at that boundary is **30,024,470,528 bytes**. Ordinal 002
 has started under the same live tool session, `79586`; the overall campaign is
 not terminal. No new performance result or benchmark-readiness claim follows.
+
+A [later progress snapshot](campaign-progress-20260915.json) records four completed
+plan cohorts, **8,995,954,688 bytes** of conservative net recovery and
+**34,325,327,872 bytes available** at the last completed boundary. Ordinal 004 is
+running under the same session. The snapshot binds the completed controller
+records and does not count the in-progress transaction as recovered capacity.
