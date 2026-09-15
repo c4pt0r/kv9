@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "scope": "Full archive member decode/hash/original-byte readback; no workload, WAL payload read or test execution.",
+  "members": 533,
+  "logical_bytes": 53476119,
+  "archive_bytes": 7950031,
+  "archive_sha256": "b935fc96de707a9bfe710af31066afbb0e0fbc64b945ceec223cbb6bcca84315",
+  "excluded_payload_bytes": 8418027444
+}

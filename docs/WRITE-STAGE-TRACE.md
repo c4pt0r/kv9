@@ -173,14 +173,16 @@ with input and reader hashes. `unique_compatible_pair` permits interval
 arithmetic and preserves the original outcome, including `fence_rejected`;
 it never certifies client success. Missing/ambiguous/time-incompatible matches
 have no interval arithmetic. Every result states that it is not a complete
-history or a causal proof. Synthetic qualification has not yet accepted a live
-trace capture. The later actual attempt and exporter-contention fix are tracked
-in [the capture report](WRITE-STAGE-CAPTURE.md), including its more recent tests.
+history or a causal proof. The first actual attempt and exporter-contention fix
+are tracked in [the capture report](WRITE-STAGE-CAPTURE.md), including its more
+recent tests. The separate [corrected-source capture](WRITE-STAGE-CAPTURE-RESULTS.md)
+now accepts all four diagnostic rows with zero recording loss and measured
+combined-feature overhead. Earlier overwritten samples remain unavailable.
 
-Next qualify matching default/tracing releases from the same source and compiler,
-then capture the loaded BatchPut(64) interval with separate outcome/lifetime,
-coverage/loss and observer-overhead checks. Preserve both execution orders and
-the same requalified measurement client. Outputs belong under
+The corrected pair uses the same source/compiler and requalified client, both
+execution orders and separate outcome/lifetime, coverage/loss and overhead checks.
+Next attribute the larger state-machine apply region before selecting another
+writer or scheduling change. Outputs belong under
 `/mnt/data/kv9-work`; active latency-sensitive data keeps its explicitly selected
 storage class. Do not repeat an unchanged candidate-selection matrix or promote
 the held upper-bound candidate from these diagnostic observations.

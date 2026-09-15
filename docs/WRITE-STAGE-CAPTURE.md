@@ -99,12 +99,12 @@ not a new mechanized consensus proof or new Chaos Mesh result.
 
 ## Next capture
 
-Qualify a new matching release pair from this corrected source, then run the
-four original focused rows again as a new experiment with explicit identity,
-coverage, loss and overhead checks. Preserve this refused attempt separately.
-Do not reuse its default row as the baseline for a different-source diagnostic
-build. A successful retained-tail capture is still not a complete request
-history or a way to identify a particular native-client p99 call.
+The separate [corrected-source capture](WRITE-STAGE-CAPTURE-RESULTS.md) now
+completes all four focused rows with zero recording loss, independent acceptance
+and measured observer overhead. It uses a newly qualified matching release pair
+and fresh default rows. This refused attempt remains unchanged and contributes
+no baseline row to that comparison. The accepted tails still do not constitute
+complete request histories or identify a particular native-client p99 call.
 
 All new logs, proof/build records and retained evidence remain under
 `/mnt/data/kv9-work`; reusable compiler targets and latency-sensitive fixtures

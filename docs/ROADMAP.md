@@ -37,12 +37,18 @@
 > The [retained batch-tail analysis](write-batch-tail-review-v1/README.md) now
 > narrows the missing observation to group preparation/apply/receipt insertion
 > and terminal inspection. [Default-off bounded timestamps](WRITE-STAGE-TRACE.md)
-> implement those exact-position joins; no live trace performance result exists.
+> implement those exact-position joins, with the diagnostic scope retained below.
 > The first [matching release pair and actual capture](WRITE-STAGE-CAPTURE.md)
 > exposed exporter/recording contention: five lost calls correctly refused the
 > instrumented row. A tested correction snapshots between existing Raft pumps.
-> Next: qualify corrected matching releases and capture the loaded batch
-> interval, finish the pending pre-upload crash cut, then continue industrial storage,
+> The [corrected four-row capture](WRITE-STAGE-CAPTURE-RESULTS.md) now passes:
+> 131,737 calls / 8,431,168 items, zero recording loss, 12 drains and 16 exited
+> lifetimes. Combined observer features cost 2.770% pooled throughput in this
+> short diagnostic. Deduplicated leader group apply means are 549.018 / 546.521 us;
+> locks and receipt publication/inspection are much smaller in the retained tails.
+> Next: attribute CPU work inside batch lowering, WAL encoding/checksum and index
+> publication before choosing an apply change. Retain prior rejected buffer/index
+> experiments. Finish the pending pre-upload crash cut, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
 > requirements remain mandatory. CI stays local.
