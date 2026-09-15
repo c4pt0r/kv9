@@ -24,6 +24,9 @@
 > The [first retention component](RETENTION-RECORD.md) now supplies bounded pin
 > records, 10 checked theorems / 59 obligations and compiled source fault controls;
 > production ledger/anchor integration and actual fault acceptance remain open.
+> The [configuration-at-cut component](CONFIGURATION-AT-CUT.md) adds checked
+> historical membership, 11 theorems / 95 obligations and 257 passing Raft tests.
+> It is a recovery-only anchor input; complete binding and integration remain open.
 > Next: complete that candidate's acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton

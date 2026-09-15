@@ -64,6 +64,10 @@ The [first pin-record component](RETENTION-RECORD.md) implements bounded
 per-resource transitions and a checked component proof. Complete recovery
 anchors, durable ledger integration and its actual fault acceptance remain open.
 
+The [configuration-at-cut component](CONFIGURATION-AT-CUT.md) implements checked
+historical membership for a retained committed cut. Complete anchor identity and
+publication binding, bounded online capture and the outer ledger remain open.
+
 - [x] [#10](https://github.com/c4pt0r/kv9/issues/10) **C00** - Integrate the takeover fixes and establish a reproducible acceptance baseline
 - [ ] [#11](https://github.com/c4pt0r/kv9/issues/11) **C01** - Build deterministic fault injection and a persistence recovery matrix
 - [ ] [#12](https://github.com/c4pt0r/kv9/issues/12) **C02** - Record and check linearizable Raw KV and metadata histories

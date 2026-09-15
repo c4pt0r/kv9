@@ -49,7 +49,7 @@ def messages(output, code, severity=0):
 
 def verdict(output, code, expected=None, temporal=False, coverage=False,
             action_property=False, module="MetadataPlanning", actions=ACTIONS,
-            minimum_distinct=3):
+            minimum_distinct=3, minimum_trace_states=2):
     require(messages(output, 2262) == [VERSION], "missing pinned TLC version")
     require(len(messages(output, 2186)) == 1, "missing TLC completion")
     stats = messages(output, 2199)
@@ -98,8 +98,12 @@ def verdict(output, code, expected=None, temporal=False, coverage=False,
                 "wrong invariant violation")
         require(set(errors) <= {"2110", "2121"}, "unrelated error in invariant control")
     if expected is not None:
+        require(minimum_trace_states >= 2 or (
+            minimum_trace_states == 1 and expected == "EventuallyDrained"
+            and "Stuttering" in output), "invalid counterexample trace threshold")
         require(not messages(output, 2193), "contradictory successful verdict")
-        require(len(messages(output, 2217, 4)) >= 2, "missing counterexample states")
+        require(len(messages(output, 2217, 4)) >= minimum_trace_states,
+                "missing counterexample states")
     return {"generated": generated, "distinct": distinct, "queued": queued}
 
 
