@@ -128,9 +128,13 @@ ordered-search and original first-match fallbacks. Its exact default release
 and ordinary three-voter recovery now also pass independent checks: 359 complete
 operations (329 OK / 30 unknown), six fresh drains and seven exited lifetimes.
 [Original release/recovery evidence](receipt-tail-recovery-v1/README.md) is
-retained with complete byte readback. Actual Chaos and database timing remain
-pending; it is not combined with FNV or selected on main. This advances the secondary receipt target without
-claiming that proof or a CPU percentage establishes performance gains.
+retained with complete byte readback. The [actual 21-window Chaos campaign](WRITE-RECEIPT-TAIL-CHAOS.md)
+now passes as well: 9,360 complete operations, four final drains, complete local
+archive/readback and 32 observed server lifetimes exited. Next qualify fresh
+capacity and run the independent matched write screen; database timing remains
+pending. It is not combined with FNV or selected on main. This advances the
+secondary receipt target without claiming that proof or a CPU percentage
+establishes performance gains.
 
 ## Comparison contract
 

@@ -2,8 +2,9 @@
 
 Candidate `a6ac335ef4567f2e1a2b33da1a723d694cd5b7d9` adds a checked tail-offset
 hint to receipt lookup, based on selected CRC runtime `bd42e60`. The candidate
-passes source-mapped proof, local source checks, its exact default release and
-ordinary three-voter recovery. It remains experimental:
+passes source-mapped proof, local source checks, its exact default release,
+ordinary three-voter recovery and the complete actual 21-window Chaos Mesh
+campaign. It remains experimental:
 there is no database throughput or latency result, and CRC main remains selected.
 The [FNV writer](WRITE-FNV-WRITER-PERFORMANCE.md) and
 [published-directory candidate](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md) have
@@ -112,10 +113,16 @@ The release's lowest observed available space is 26,451,251,200 bytes. These
 operational limits do not change quorum, synchronization, workload or history
 requirements; each subsequent stage requires a fresh capacity check.
 
+The subsequent [actual Chaos Mesh campaign](WRITE-RECEIPT-TAIL-CHAOS.md) also
+passes all 21 windows and six post phases: 9,360 complete operations
+(8,852 OK / 484 unknown / 24 refused), four fresh final replica drains, complete
+archive readback and all 32 observed server lifetimes exited. The owned
+namespace is removed and eight historical namespace identities remain intact.
+
 ## Next gates
 
-Retain this source and release checkpoint. Run the complete actual Chaos Mesh
-campaign with independently bound image and test clients, then measure
-point/batch throughput and whole-call tails against CRC main.
+Retain this source, release and Chaos checkpoint. Measure point/batch throughput
+and whole-call tails against CRC main with the fixed native v3 client, both
+opposite orders and freshly qualified storage capacity.
 Small kernel costs or the profile percentage cannot establish an end-to-end
 gain. Main's accepted performance numbers remain unchanged. All CI is local.
