@@ -35,7 +35,9 @@ CApply(o) == /\ cJournal = o /\ o \in cPrepared
 CPositiveEvidence(o) == /\ cJournal = o /\ o \in cEffects
                         /\ cPositive' = cPositive \cup {o}
                         /\ UNCHANGED <<cJournal,cUsed,cCleared,cPending,cVersion,cRemote,cPrepared,cEffects,cNegative>>
-CNegativeEvidence(o) == /\ cJournal = o /\ o \in cPrepared /\ o \notin cEffects
+\* A stale receipt rejects that submission, not necessarily an earlier one.
+\* Conservatively retain the owner even if this identity's effect already exists.
+CNegativeEvidence(o) == /\ cJournal = o /\ o \in cPrepared
                         /\ cNegative' = cNegative \cup {o}
                         /\ UNCHANGED <<cJournal,cUsed,cCleared,cPending,cVersion,cRemote,cPrepared,cEffects,cPositive>>
 CShare(o) == /\ cJournal = o /\ o \in cPositive /\ cPending[o] = 2 /\ cVersion[o] = 0

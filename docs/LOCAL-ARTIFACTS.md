@@ -21,6 +21,27 @@ remain historical identities. Cleanup must first identify inactive, expendable
 outputs; free space alone does not establish that an old binary can be removed.
 No global shell profile, mount, Docker configuration or hosted CI was changed.
 
+## Continuing automation
+
+The active write-comparison command manifest now places both the complete
+eight-cohort smoke output and sixteen-cohort timed output under
+`/mnt/data/kv9-work/upper-bound-requalified-{smoke,timing}-20260915-first`.
+Preparation, execution logs, independent readback and compressed retention also
+use the data volume. The owned pre-upload crash preparation and follow-up
+checkpoint-owner proofs use the same parent directory. New attempts must choose
+fresh names there instead of returning to a hard-coded `/tmp/kv9-*` output.
+
+This controls retained output, not every temporary byte: active performance
+voters still use `/dev/shm`, and explicitly selected NVMe test fixtures and the
+reusable development compiler cache can still grow on the root filesystem.
+Continue checking both devices. Do not change a running process's open output
+files or silently relocate a benchmark's WAL to a different storage class.
+
+At the current campaign launch check, available space was 877,222,043,648 bytes
+on root, 9,689,422,909,440 bytes on the data volume, and 66,274,971,648 bytes on
+tmpfs. The full campaign's 79,455,850,496-byte output requirement passed. These
+are observed available bytes, not a space reservation or a cleanup claim.
+
 ## Chaos output and capacity accounting
 
 `scripts/checkpoint-publication-chaos.py` and its ledger extension accept the
@@ -59,6 +80,9 @@ One recorded offline rebuild restored all 581 original client source files and
 used the retained Rust/Cargo 1.94 toolchain. The new 5,592,624-byte ELF does not
 match the historical 5,594,104-byte client. Matching source and compiler-artifact
 records do not establish byte identity or qualify a replacement benchmark
-client. The rebuilt client remains unqualified; it has not produced new QPS
-results. Recovery inputs, comparison and build output are retained under
+client by themselves. Subsequent source tests and all eight actual smokes with
+independent dataset/report/lifetime checks have
+[qualified that specific replacement](WRITE-CLIENT-REQUALIFICATION.md). The
+complete matched timing and retention audit remain separate gates. Recovery
+inputs, comparison and build output are retained under
 `/mnt/data/kv9-work/performance-input-recovery-20260915-first`.

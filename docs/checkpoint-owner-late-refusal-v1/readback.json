@@ -1,0 +1,19 @@
+{
+  "complete": true,
+  "archive_sha256": "f4044288cfc34a37b9af00446b47f5d10aa687edbc971074f7b182e41d62f7a0",
+  "archive_bytes": 48383,
+  "members": 120,
+  "decoded_bytes": 301672,
+  "baseline_commit": "dcdfd6764c7fc4fb633c20b77495c17eb6f289f4",
+  "accepted_terminal": "49145 / bbadb5 / 0",
+  "first_failure": "3311 / a525b0 / 1: non-unique mutation selector after the broadened model",
+  "accepted_checks": {
+    "theorems": 7,
+    "strict_obligations": 43,
+    "positive_models": 2,
+    "fault_counterexamples": 6,
+    "reachable_late_negative_trace": 1,
+    "proof_rejections": 3
+  },
+  "readback": "Every archived regular member compared with retained original bytes; no ELF/class, credentials or external tools included."
+}

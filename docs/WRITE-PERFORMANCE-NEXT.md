@@ -42,11 +42,13 @@ implement destination admission and atomic installation.
 New bulk output and proof tools now use `/mnt/data/kv9-work`; latency-sensitive
 test data keeps its original NVMe location. [Fresh capacity and input checks](LOCAL-ARTIFACTS.md)
 show enough space for the unchanged 79,455,850,496-byte full screen. The old fixed
-v3 benchmark client is missing after an external cleanup, so exact causal input
-restoration remains required. One source/toolchain-matched rebuild produced a
-different client ELF and remains unqualified. Qualify any replacement explicitly
-before comparing the two server candidates with it. No new matched performance
-result is claimed.
+v3 benchmark client is missing after an external cleanup. One source/toolchain-
+matched rebuild produced a different ELF. Its [explicit qualification](WRITE-CLIENT-REQUALIFICATION.md)
+now passes source tests and all eight actual smokes with independent dataset,
+report and lifetime checks. Both server candidates use that same new client;
+historical measurements are not pooled with it. Complete the original sixteen
+timed cohorts and enclosing audit before assessing throughput and latency.
+No new matched performance result is claimed by the smoke qualification.
 
 ## Local storage checkpoint (2026-09-14 UTC)
 
