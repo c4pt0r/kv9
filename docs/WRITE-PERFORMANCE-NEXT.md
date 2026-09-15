@@ -25,9 +25,13 @@ the replicated retention ledger remain the next storage prerequisites.
 The subsequent [historical base identity increment](CHECKPOINT-BASE-IDENTITY.md)
 derives upload scope from the exact frozen image and checks its certified root,
 schema and owner epoch before startup WAL replay. Valid newer tail epochs remain
-recoverable. The next anchor work composes this observation with the committed
-configuration and actual winning publication; destination admission and the
-replicated retention ledger remain separate requirements.
+recoverable. The [initial anchor envelope](RECOVERY-ANCHOR-ENVELOPE.md) now
+composes this observation with the committed configuration and actual winning
+publication. Its bounded description and private local recovery observation pass
+684 library tests, strict binding proofs and new actual three-voter/Chaos Mesh
+recovery. Next implement the replicated outer retention ledger and ownership
+transition evidence, then destination admission and atomic installation.
+This storage work adds no online write-path operation or new performance claim.
 
 ## Local storage checkpoint (2026-09-14 UTC)
 

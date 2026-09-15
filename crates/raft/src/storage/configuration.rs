@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 
 use kv9_common::{AppliedPosition, Error, Result};
+use protobuf::Message as _;
 use raft::prelude::ConfState;
 use raft::{GetEntriesContext, Storage};
 
@@ -72,6 +73,33 @@ impl CommittedConfiguration {
     }
     pub fn state(&self) -> &ConfState {
         &self.state
+    }
+
+    /// Copy all known configuration sets into the bounded anchor representation.
+    /// Reject unknown protobuf fields rather than silently losing future state.
+    pub fn anchor_state(&self) -> Result<kv9_common::anchor::AnchorConfiguration> {
+        if self.state.get_unknown_fields().iter().next().is_some() {
+            return Err(Error::Raft(
+                "unknown configuration fields cannot enter an anchor".into(),
+            ));
+        }
+        let sorted = |nodes: &[u64]| -> Result<Vec<u64>> {
+            if nodes.len() > kv9_common::anchor::MAX_ANCHOR_MEMBERS {
+                return Err(Error::Raft(
+                    "anchor configuration exceeds member bound".into(),
+                ));
+            }
+            let mut nodes = nodes.to_vec();
+            nodes.sort_unstable(); // Preserve duplicates for the anchor validator to reject.
+            Ok(nodes)
+        };
+        Ok(kv9_common::anchor::AnchorConfiguration {
+            voters: sorted(self.state.get_voters())?,
+            voters_outgoing: sorted(self.state.get_voters_outgoing())?,
+            learners: sorted(self.state.get_learners())?,
+            learners_next: sorted(self.state.get_learners_next())?,
+            auto_leave: self.state.get_auto_leave(),
+        })
     }
 }
 
@@ -242,6 +270,25 @@ mod tests {
             other => panic!("expected configuration, got {other:?}"),
         }
     }
+    #[test]
+    fn anchor_projection_preserves_joint_state_and_refuses_unknown_fields() {
+        let mut state = joint();
+        state.set_voters(vec![4, 1, 2]);
+        let mut checked = CommittedConfiguration {
+            cut: cut(5),
+            applied_at: Some(cut(4)),
+            state,
+        };
+        let projected = checked.anchor_state().unwrap();
+        assert_eq!(projected.voters, vec![1, 2, 4]);
+        assert_eq!(projected.voters_outgoing, vec![1, 2, 3]);
+        assert_eq!(projected.learners, vec![5]);
+        assert_eq!(projected.learners_next, vec![3]);
+        assert!(projected.auto_leave);
+        checked.state.mut_unknown_fields().add_varint(99, 1);
+        assert!(checked.anchor_state().is_err());
+    }
+
     #[test]
     fn historical_joint_and_initial_configuration_survive_newer_apply_and_restart() {
         let fs = ModelFs::default();
