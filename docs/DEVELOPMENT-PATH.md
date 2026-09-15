@@ -4,7 +4,7 @@
 > Selected ThinLTO and Safe ReadIndex remain the baseline. Read optimization is
 > held; remaining lease and industrial gates are retained.
 
-Updated: 2026-09-12. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
+Updated: 2026-09-15. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
 
 See [CURRENT-STATUS.md](CURRENT-STATUS.md) for accepted implementation and
 performance evidence. The [write plan](WRITE-PERFORMANCE-NEXT.md) specifies
@@ -53,6 +53,12 @@ Each issue remains open until its applicable proof, fault and availability oblig
 ### P0 - Verified foundation
 
 C00 integrates the baseline; C01/C02/C03/C04 can start independently afterward. Complete the fault model, history checker, measurements and retention contract before accepting P1 capacity or performance claims.
+
+The [C04 contract](RECOVERY-RETENTION-CONTRACT.md) and [log ownership ADR](ADR-DUAL-WAL.md)
+now specify the anchor/retention interfaces, crash rules and downstream work.
+Common validation capabilities, the durable owner ledger, checked composition
+proofs and new fault acceptance remain open; this design increment changes no
+checkbox or dependency below.
 
 - [x] [#10](https://github.com/c4pt0r/kv9/issues/10) **C00** - Integrate the takeover fixes and establish a reproducible acceptance baseline
 - [ ] [#11](https://github.com/c4pt0r/kv9/issues/11) **C01** - Build deterministic fault injection and a persistence recovery matrix

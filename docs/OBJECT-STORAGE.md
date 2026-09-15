@@ -16,6 +16,32 @@ open and records the contracts that round one must honour.
 
 ---
 
+## Recovery and retention amendment — 2026-09-15
+
+The [C04 recovery and retention contract](RECOVERY-RETENTION-CONTRACT.md)
+defines the common anchor, owner lifecycle and migration requirements for
+snapshots, incremental versions, GC and backups. It distinguishes today's
+component records from the complete protocol anchor still to be implemented.
+The [log ownership ADR](ADR-DUAL-WAL.md) retains separate protocol/application
+durability until physical unification has equivalent recovery authority.
+
+The production runtime now migrates verified legacy catalogs to the
+[segmented WAL](SEGMENTED-WAL.md). Normal checkpoint adoption publishes the
+topology before unlinking covered closed segments; the single-file O(tail)
+path below describes the earlier implementation and remaining legacy fallback.
+Group commit also exists; neither item should be implemented again from the
+older P1 wording. Full-state memory/checkpoint limits, retained protocol history,
+and the absence of SST GC and complete backup restoration remain current.
+
+Before object deletion can be enabled, every pending/build, reader/version,
+snapshot, transfer and backup reference needs an owner visible to the retention
+authority. Manifest-only refcount backfill is insufficient. Retirement must
+also permanently fence an object instance against new references: an already
+issued DELETE can arrive after leadership changes. Reusing a retired hash-only
+key would otherwise allow that old DELETE to destroy newly referenced data.
+The amendments to sections 7.4–7.6 below are requirements for future GC; this
+increment does not enable it or close C04's implementation/proof/fault gates.
+
 ## Implementation amendment — 2026-09-08
 
 The initial single-group remote KV path is now connected. The older sections below
@@ -829,10 +855,12 @@ no delete path  ⇒  nothing ever decrements, and nothing ever deletes
 ```
 
 **Enabling condition for Phase 3, written now so it is not rediscovered then:** before GC is switched
-on, refcounts must first be **backfilled from the set of committed manifests** — the manifest is
-authoritative, so the counts are computable — and only then may decrements and deletions begin.
-Turning on `-ref` against counts that were never maintained would start from zeros and delete live
-objects immediately.
+on, retention must first be **backfilled from every live owner**, including committed
+manifest history, pending/build attempts, versions/readers, snapshots, transfers and
+backups. Fence writers that do not register owners, and account for concurrent
+mutations before activation. Committed manifests supply part of this inventory;
+the current manifest alone cannot enumerate it. Turning on `-ref` against counts
+that were never maintained would start from zeros and delete live objects.
 
 > ### ⚠ Everything below in §7.4 is a **Phase-3 contract, not round-one acceptance.**
 > No part of it is implemented, tested, or owed by this slice. It is written now because the design
@@ -841,9 +869,11 @@ objects immediately.
 `DESIGN.md:205-213` already mandates it, and the landing point already exists:
 `crates/meta/src/schema.rs:219-226` — `SST_FILES` carries `refcount` (col 4) and `state` (col 9).
 
-> `+ref` commits **before** the manifest change that references the file; `-ref` only **after** the
-> manifest change that drops it. Hence `refcount = 0` is at any moment a sufficient condition for
-> safe deletion.
+> `+ref` commits **before** the manifest change that references the file; `-ref`
+> only **after** the manifest change drops it and the corresponding owner's use
+> ends. A zero count is a deletion candidate only after complete owner accounting.
+> Retirement must atomically exclude all owners and permanently forbid new
+> references to that object instance before physical deletion is allowed.
 
 **The directionality is the entire value of the rule:** over-count leaks an object and wastes money;
 under-count deletes live data. The rule can only err toward safety.
@@ -864,26 +894,24 @@ than an error. Both defences are required:
 design decision is live now — the ordering is the whole value of the rule, and it is far cheaper to
 write down while the reasoning is fresh than to reconstruct when someone is implementing GC.)*
 
-### 7.5 Deletion criterion — write the strong form now, use the weak form today
+### 7.5 Deletion criterion — account for every owner
 
 ```
-weak    (suffices today, breaks later)   no committed manifest of THIS region references it
-strong  (the criterion to write down)    no committed manifest ANYWHERE references it —
-                                         clones, branches and PITR snapshots included.
-                                         The test is a global refcount, not a per-manifest check.
+insufficient   no current manifest of THIS region references it
+required       no live owner anywhere requires this exact object instance,
+               and committed retirement permanently forbids future acquisition.
+               Counts accelerate complete ownership accounting; they do not replace it.
 ```
 
-The weak form is sound today **because exactly one manifest can reference an object**. But
-`DESIGN.md` plans backup/PITR/branch/clone as *reference* operations — re-referencing existing
-objects is precisely what makes a clone cheap — so **a planned feature voids the premise.** Region
-R's delete-intent would retire an object a clone's manifest still references, and the clone would
-never learn why its data vanished.
+The original single-referencer premise must not be used to enable deletion.
+The implementation retains historical manifests, and the common contract also
+includes pending attempts and reader/snapshot/backup owners. `DESIGN.md` plans
+backup/PITR/branch/clone as reference operations. Region R's isolated delete
+decision could therefore retire an object another owner still requires.
 
-Do not implement the cross-manifest refcount yet: clone does not exist, so it could not be
-verified. **Do write the criterion in its correct form, with the degradation reason and the
-condition that voids it in the same paragraph** — the reason it may degrade (a single referencer)
-*is* the future failure condition (clone makes refcount > 1). Split across two paragraphs, the next
-person inherits half a truth.
+Do not enable deletion until the [complete retention protocol](RECOVERY-RETENTION-CONTRACT.md)
+is implemented and verified. A per-manifest check or a count omitting other
+owners cannot supply global deletion authority.
 
 ### 7.6 Delete goes through raft; physical execution follows
 
@@ -894,6 +922,13 @@ GC therefore submits a **delete-intent** through the manifest path and may issue
 only after the receipt confirms it. Then who executes it, and how late, stops mattering — leader-only
 GC degrades to an efficiency convention and correctness no longer depends on the executor still
 being leader.
+
+This requires an additional fence: after retirement, that exact object instance
+can never gain a new reference. Identical content uploaded later needs a new
+instance/key generation, or the old instance must stay permanently retired.
+Without this rule, a delayed DELETE can destroy a newly referenced object even
+though its original delete intent was valid. Tombstones and legacy writer
+fencing must survive restart; a timeout cannot establish that old requests ended.
 
 *Same shape as the LeaderRead lesson: "I am leader, so I may delete" (**receives**) becomes "raft
 committed this delete, so it is safe" (**establishes**).*
