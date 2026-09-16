@@ -1,0 +1,146 @@
+{
+  "complete": true,
+  "theorems_checked_together": 367,
+  "additional_theorems": 28,
+  "new_rejecting_controls": 28,
+  "controls": [
+    {
+      "name": "leaf-prefix-too-long",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "leaf-new-byte-offset",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "leaf-wrong-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "branch-keeps-edge-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "branch-prefix-too-long",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "replace-selects-split",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "split-at-full-prefix",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "descent-skips-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "replace-keeps-old-value",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "terminal-always-inserted",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "edge-wrong-insertion-index",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "mutable-slot-wrong-index",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "context-discards-parent",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "context-skips-index-check",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "loop-loses-inserted-flag",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "loop-drops-ancestors",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-leaf-cut-offset",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-branch-keeps-edge-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-descent-skips-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-new-edge-byte-offset",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-loop-loses-inserted-flag",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-count-extra-increment",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "empty-root-wrong-size",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "insert-proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "insert-custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 31,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "insertion_loop_scope": "Reviewed value-level insertion correspondence: absolute-offset split helpers; separate six-way action selection/execution; mutable-slot ghost context with selected-child provenance; terminating insertion loop; actual word cut/drain/descent arithmetic; checked stored-count and returned flag refinement. Valid representable routing buffers and resident result count are explicit premises. No Arc/COW heap proof, verified extraction or performance result.",
+  "remaining_implementation_scope": "Indexed seek/pending-Vec correspondence, Arc/COW heap ownership, routing-buffer and resident-count premise bridges, and differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Indexed seek/depth and pending-Vec correspondence",
+    "Arc/COW heap ownership, snapshots, reclamation and resident-count representability; bridge routing-buffer fits and Rust/compiler/library contracts",
+    "Exact-source executable Rust/model differential evaluation before predeclared timing; promotion still requires recovery, actual Chaos Mesh and Redis throughput/latency"
+  ],
+  "prior_delete_packet_sha256": "b4d946414fc7ac4a24a26dcda6af6beb2911cbf658c9ab445e10d44437c73750"
+}
