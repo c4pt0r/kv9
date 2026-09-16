@@ -1,0 +1,18 @@
+[package]
+name = "kv9-engine-interface-experiment"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+[dependencies]
+kv9-common = { path = "../../crates/common" }
+kv9-engine = { path = "../../crates/engine" }
+serde_json = "1"
+sha2 = "0.10"
+tikv-jemallocator = { version = "=0.6.1", default-features = false }

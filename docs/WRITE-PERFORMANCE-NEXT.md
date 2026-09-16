@@ -64,10 +64,15 @@ regression (+15.943%); 64-byte function alignment leaves +12.364% and makes both
 absolute means slower. All 26 processes/40 rows pass independent checks.
 Four debugger-only first maps (16,384 nodes) have identical within-configuration
 relative layouts, shapes, bytes and resolved comparator implementation. Cause
-remains unresolved. Next qualify a bounded comparison through the actual
-MemEngine/ReadView interfaces, separating snapshot/owned/borrowed costs and
-per-call versus whole-pass timing. Preserve every original failed gate;
-no alignment sweep, unchanged full matrix or database-QPS claim follows.
+remains unresolved. The [actual engine-interface diagnostic](ENGINE-INTERFACE-SCREEN.md)
+now completes 90 processes / 152 rows: write mean improves 4.600%–13.903%,
+while warm owned GET hit regresses 2.599%–7.407%. Resident hit per-call means
+are nearly unchanged; owned misses show this is not solely value-copy cost.
+Snapshot, first-probe/warm and per-call/whole-pass scopes remain separate.
+Preserve every original failed gate. Next qualify shared-clone extraction alone
+with the original pointer callback, beginning with source/proof/codegen checks
+and no timing until engine correctness passes. No alignment sweep, unchanged
+matrix or database-QPS claim follows.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 
