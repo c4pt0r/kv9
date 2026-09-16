@@ -1,0 +1,13 @@
+{
+  "complete": true,
+  "source_hashes_checked": 66,
+  "unchanged_common_engine_files_checked": 38,
+  "index_sha256": "00235871d6f168b3549da377793429dd4db281549425dbab38b1a66c37103fcc",
+  "tests_sha256": "5573d0931c9890be425cef53ffdea4176903e0f9a2883632fb1cb2eb9a1333db",
+  "isolated_mem_change": "Only map import and alias; isolated module/test additions verified.",
+  "protected_drafts_unchanged": true,
+  "production_crates_unchanged": true,
+  "new_formal_proof": false,
+  "elapsed_time_benchmark": false,
+  "new_chaos_or_minio_acceptance": false
+}

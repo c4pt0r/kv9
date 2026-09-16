@@ -1,0 +1,13 @@
+{
+  "archive": "evidence.tar.gz",
+  "sha256": "03839a5c0a4bc7278c823e8d6599221f581c8d8a1c5cfe8f9883fcc000762a7a",
+  "bytes": 869169,
+  "members": 293,
+  "expanded_bytes": 5111048,
+  "all_members_read_back": true,
+  "excluded": [
+    "ELFs",
+    "Cargo target",
+    "Python bytecode"
+  ]
+}

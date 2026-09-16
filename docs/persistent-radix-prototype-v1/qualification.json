@@ -1,0 +1,44 @@
+{
+  "status": "Prototype/model/lifetime qualified; complete algorithm proof and performance gates open.",
+  "source_base": "3097e58388c81855bb99cd00a7e57763c13eca70",
+  "roots": {
+    "initial-clippy": "/mnt/data/kv9-work/radix-prototype-20260916-first",
+    "initial-models": "/mnt/data/kv9-work/radix-prototype-20260916-v2",
+    "initial-engine": "/mnt/data/kv9-work/radix-engine-qualification-20260916-first",
+    "coverage-gap-control": "/mnt/data/kv9-work/radix-controls-20260916-first",
+    "qualified-models": "/mnt/data/kv9-work/radix-prototype-20260916-v3",
+    "qualified-engine": "/mnt/data/kv9-work/radix-engine-qualification-20260916-v2",
+    "allocation-lifetime": "/mnt/data/kv9-work/radix-layout-20260916-first",
+    "qualified-controls": "/mnt/data/kv9-work/radix-controls-20260916-v2"
+  },
+  "standalone_tests": 11,
+  "engine_tests_including_standalone": 213,
+  "existing_ignored_engine_tests": 25,
+  "mutation_prefixes": 6770,
+  "bound_pairs": 818,
+  "mixed_iterator_patterns": 5,
+  "rejecting_rust_controls": 6,
+  "allocation_rows": 54,
+  "allocation_cases": 6,
+  "depth_small_stack": {
+    "levels": 4096,
+    "stack_bytes": 65536
+  },
+  "concurrent_release": {
+    "threads": 8,
+    "levels": 2048,
+    "stack_bytes": 65536
+  },
+  "layout_bytes": {
+    "map": 16,
+    "node": 48,
+    "branch": 96,
+    "edge": 16,
+    "entry": 48,
+    "arc": 8
+  },
+  "formal_refinement_complete": false,
+  "new_database_qps": false,
+  "production_promoted": false,
+  "next": "Source-bound finite-map proof of actual split/collapse/routing/cursor/frame/snapshot algorithms, then predeclared matched timing."
+}

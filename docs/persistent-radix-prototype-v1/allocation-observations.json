@@ -1,0 +1,765 @@
+{
+  "measurement": "requested allocations only",
+  "elapsed_time_recorded": false,
+  "allocator": "System",
+  "rows": [
+    {
+      "case": "empty",
+      "phase": "build",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "empty",
+      "phase": "snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "empty",
+      "phase": "second_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "empty",
+      "phase": "shared_overwrite_quarter",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "empty",
+      "phase": "absent_delete",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "empty",
+      "phase": "delete_third_with_snapshots",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "empty",
+      "phase": "drop_first_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "empty",
+      "phase": "drop_last_old_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "empty",
+      "phase": "drop_live_map",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "build",
+      "counts": [
+        4613,
+        289136,
+        263,
+        24512,
+        513,
+        32832
+      ],
+      "net_requested_bytes": 272672,
+      "peak_extra_requested_bytes": 272736
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "second_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "shared_overwrite_quarter",
+      "counts": [
+        3333,
+        214944,
+        0,
+        0,
+        1,
+        128
+      ],
+      "net_requested_bytes": 214816,
+      "peak_extra_requested_bytes": 214816
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "absent_delete",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "delete_third_with_snapshots",
+      "counts": [
+        341,
+        32736,
+        0,
+        0,
+        1362,
+        95934
+      ],
+      "net_requested_bytes": -63198,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "drop_first_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "drop_last_old_snapshot",
+      "counts": [
+        0,
+        0,
+        1,
+        8192,
+        3590,
+        243788
+      ],
+      "net_requested_bytes": -239692,
+      "peak_extra_requested_bytes": 4032
+    },
+    {
+      "case": "all_byte_edges",
+      "phase": "drop_live_map",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        2821,
+        184598
+      ],
+      "net_requested_bytes": -184598,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "build",
+      "counts": [
+        6145,
+        1360064,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 1360064,
+      "peak_extra_requested_bytes": 1360064
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "second_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "shared_overwrite_quarter",
+      "counts": [
+        5633,
+        999616,
+        0,
+        0,
+        511,
+        163328
+      ],
+      "net_requested_bytes": 836288,
+      "peak_extra_requested_bytes": 837436
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "absent_delete",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "delete_third_with_snapshots",
+      "counts": [
+        683,
+        35560,
+        2392,
+        11130240,
+        2052,
+        5877195
+      ],
+      "net_requested_bytes": -276515,
+      "peak_extra_requested_bytes": 24576
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "drop_first_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "drop_last_old_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        6145,
+        1360064
+      ],
+      "net_requested_bytes": -1360064,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "prefix_ladder_1024",
+      "phase": "drop_live_map",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        3753,
+        559773
+      ],
+      "net_requested_bytes": -559773,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "build",
+      "counts": [
+        13125,
+        904169,
+        819,
+        122304,
+        0,
+        0
+      ],
+      "net_requested_bytes": 965593,
+      "peak_extra_requested_bytes": 965593
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "second_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "shared_overwrite_quarter",
+      "counts": [
+        3892,
+        326573,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 326573,
+      "peak_extra_requested_bytes": 326573
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "absent_delete",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "delete_third_with_snapshots",
+      "counts": [
+        1366,
+        131136,
+        0,
+        0,
+        2392,
+        202272
+      ],
+      "net_requested_bytes": -71136,
+      "peak_extra_requested_bytes": 96
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "drop_first_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "drop_last_old_snapshot",
+      "counts": [
+        0,
+        0,
+        2,
+        1536,
+        6981,
+        540377
+      ],
+      "net_requested_bytes": -539609,
+      "peak_extra_requested_bytes": 288
+    },
+    {
+      "case": "common_prefix_4096",
+      "phase": "drop_live_map",
+      "counts": [
+        0,
+        0,
+        2,
+        1536,
+        9010,
+        682189
+      ],
+      "net_requested_bytes": -681421,
+      "peak_extra_requested_bytes": 288
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "build",
+      "counts": [
+        13125,
+        1396049,
+        819,
+        122304,
+        0,
+        0
+      ],
+      "net_requested_bytes": 1457473,
+      "peak_extra_requested_bytes": 1457473
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "second_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "shared_overwrite_quarter",
+      "counts": [
+        3892,
+        449573,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 449573,
+      "peak_extra_requested_bytes": 449573
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "absent_delete",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "delete_third_with_snapshots",
+      "counts": [
+        1366,
+        131136,
+        0,
+        0,
+        2392,
+        243312
+      ],
+      "net_requested_bytes": -112176,
+      "peak_extra_requested_bytes": 96
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "drop_first_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "drop_last_old_snapshot",
+      "counts": [
+        0,
+        0,
+        2,
+        1536,
+        6981,
+        786497
+      ],
+      "net_requested_bytes": -785729,
+      "peak_extra_requested_bytes": 288
+    },
+    {
+      "case": "long_prefix_4096",
+      "phase": "drop_live_map",
+      "counts": [
+        0,
+        0,
+        2,
+        1536,
+        9010,
+        1009909
+      ],
+      "net_requested_bytes": -1009141,
+      "peak_extra_requested_bytes": 288
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "build",
+      "counts": [
+        13059,
+        909427,
+        775,
+        122816,
+        0,
+        0
+      ],
+      "net_requested_bytes": 970835,
+      "peak_extra_requested_bytes": 970835
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "second_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "shared_overwrite_quarter",
+      "counts": [
+        3267,
+        245909,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 245909,
+      "peak_extra_requested_bytes": 245909
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "absent_delete",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "delete_third_with_snapshots",
+      "counts": [
+        1942,
+        211008,
+        0,
+        0,
+        2392,
+        202944
+      ],
+      "net_requested_bytes": 8064,
+      "peak_extra_requested_bytes": 66548
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "drop_first_snapshot",
+      "counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "net_requested_bytes": 0,
+      "peak_extra_requested_bytes": 0
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "drop_last_old_snapshot",
+      "counts": [
+        0,
+        0,
+        1,
+        8192,
+        6915,
+        544896
+      ],
+      "net_requested_bytes": -540800,
+      "peak_extra_requested_bytes": 4032
+    },
+    {
+      "case": "varied_prefix_4096",
+      "phase": "drop_live_map",
+      "counts": [
+        0,
+        0,
+        1,
+        8192,
+        8961,
+        688104
+      ],
+      "net_requested_bytes": -684008,
+      "peak_extra_requested_bytes": 4032
+    }
+  ],
+  "complete": true,
+  "all_six_cases_return_to_requested_byte_baseline": true
+}
