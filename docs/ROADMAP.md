@@ -6,9 +6,12 @@
 > dependency tests, 26 conditional lemmas, four engine smokes and 528 timing/count
 > rows. Original overwrite mean falls 18.220% / 11.893%, but unique insert gains
 > are smaller and pinned p99 regresses. Warm small-map GET hit regresses in both
-> orders; the declared component gate fails. Keep this candidate isolated and
-> diagnose the retained read codegen before further changes. Database QPS below
-> is unchanged; no industrial checkbox or runtime promotion follows.
+> orders; the declared component gate fails. The [bounded layout diagnosis](READ-LAYOUT-DIAGNOSIS.md)
+> reproduces the gap; fixed function alignment does not fix it. Four independently
+> checked first-map snapshots show matching structure and relative layouts within
+> each configuration. Next measure the unchanged engine read/write interfaces in
+> a bounded diagnostic; keep the candidate isolated and original failed gate.
+> Database QPS below is unchanged; no industrial checkbox or runtime promotion follows.
 > CRC remains the selected write runtime. The latest [same-source screen](WAL-PREALLOCATION-PERFORMANCE.md)
 > measures default `86aa6fc` at c64 / 128-byte values at **137,874 Put calls/s**
 > and **1,022,750 BatchPut(64) items/s**, with p99 **0.745–0.754 ms** and
