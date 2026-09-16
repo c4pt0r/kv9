@@ -14,9 +14,12 @@
 > earlier comparisons retain their own source and client attribution. The
 > [Raw apply experiment](RAW-APPLY-ATTRIBUTION.md) now joins exact original commands
 > and engine groups. Direct append lowers conversion mean 10.896%, saving only
-> 1.548 us/group, with lower p99 in both orders. Next compose it with real
-> MemEngine insertion/overwrite and snapshot workloads before runtime integration.
-> This is a component experiment; production and database QPS are unchanged.
+> 1.548 us/group, with lower p99 in both orders. The subsequent
+> [composed MemEngine screen](RAW-LOWERING-COMPOSED.md) holds this prototype:
+> overwrite mean -1.134% / -0.452% without/with snapshots, initial-fill unpinned
+> p99 +3.309%. All state/snapshot checks pass; the performance gate fails. Next
+> test [packed persistent nodes](RESIDENT-INDEX-LAYOUT-NEXT.md) with full ordered
+> access and snapshot semantics. Production and database QPS are unchanged.
 > The [completed observer capture](WRITE-OBSERVER-CAPTURE.md) identifies repeated
 > receipt misses. The independent [upper-bound candidate](WRITE-RECEIPT-UPPER-BOUND.md)
 > now passes 14 source-bound theorem statements / 82 obligations, local
