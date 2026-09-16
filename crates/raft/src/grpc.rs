@@ -6,9 +6,9 @@
 //!   runtime owned/handed in at the edge. Raft messages cross through a channel;
 //!   registration uses bounded blocking work because it waits for committed
 //!   metadata. `NodeDriver` and the state machine remain synchronous.
-//! - **Streams, not unary calls**: each peer pair keeps one long-lived
-//!   client-stream carrying [`pb::BatchRaftMessage`] — batching by count and
-//!   bytes amortizes messages already queued without delaying an idle peer's
+//! - **Streams, not unary calls**: each peer pair keeps at most two long-lived
+//!   client-streams (metadata and all data groups) carrying [`pb::BatchRaftMessage`].
+//!   Batching by count and bytes amortizes messages already queued without delaying an idle peer's
 //!   first message to wait for a future batch.
 //! - **Best-effort delivery**: raft tolerates loss; a full queue or a dead
 //!   connection drops messages and raft retransmits. Reconnection backs off.
@@ -41,6 +41,8 @@ use pb::kv9_raft_server::Kv9Raft;
 
 mod endpoint;
 mod groups;
+#[cfg(test)]
+mod wire_tests;
 pub use endpoint::{
     grpc_confirm_endpoint, EndpointConfirmError, EndpointConfirmationReceipt, EndpointRoute,
 };
@@ -101,6 +103,28 @@ const MAX_BATCH_MSGS: usize = 128;
 const MAX_BATCH_BYTES: usize = 1024 * 1024;
 /// Per-peer outbound queue; overflow drops (raft retransmits).
 const PEER_QUEUE: usize = 4096;
+
+/// The RPC method is part of the isolation boundary, on EVERY connection.
+/// Metadata and data never share a queue or fall back to each other's method.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum StreamClass {
+    Metadata,
+    Data,
+}
+
+impl StreamClass {
+    fn for_region(region: u64) -> Option<Self> {
+        match region {
+            0 => Some(Self::Metadata),
+            1 => None,
+            _ => Some(Self::Data),
+        }
+    }
+
+    fn accepts(self, region: u64) -> bool {
+        Self::for_region(region) == Some(self)
+    }
+}
 const RECONNECT_MIN: Duration = Duration::from_millis(100);
 const RECONNECT_MAX: Duration = Duration::from_secs(2);
 /// Hard budget over the whole `connect()` future (task #40). Covers the legs
@@ -385,17 +409,11 @@ impl RaftGrpcService {
     }
 }
 
-#[tonic::async_trait]
-impl Kv9Raft for RaftGrpcService {
-    async fn confirm_endpoint(
-        &self,
-        request: Request<pb::ConfirmEndpointRequest>,
-    ) -> std::result::Result<Response<pb::EndpointConfirmationReceipt>, Status> {
-        self.confirm_endpoint_request(request).await
-    }
-    async fn batch_raft(
+impl RaftGrpcService {
+    async fn receive_raft(
         &self,
         request: Request<Streaming<pb::BatchRaftMessage>>,
+        class: StreamClass,
     ) -> std::result::Result<Response<pb::Done>, Status> {
         let authenticated = *request
             .extensions()
@@ -415,6 +433,13 @@ impl Kv9Raft for RaftGrpcService {
             if !self.discovery.raft_receive_allowed() {
                 return Err(Status::failed_precondition(
                     "local replica has no Raft receive authority",
+                ));
+            }
+            // Reject a mixed/wrong-domain batch before admitting any message.
+            // The method, not the protobuf envelope alone, fences legacy peers.
+            if batch.msgs.iter().any(|env| !class.accepts(env.region_id)) {
+                return Err(Status::invalid_argument(
+                    "region is not allowed on this Raft method",
                 ));
             }
             for env in batch.msgs {
@@ -454,6 +479,29 @@ impl Kv9Raft for RaftGrpcService {
                 }
             }
         }
+    }
+}
+
+#[tonic::async_trait]
+impl Kv9Raft for RaftGrpcService {
+    async fn confirm_endpoint(
+        &self,
+        request: Request<pb::ConfirmEndpointRequest>,
+    ) -> std::result::Result<Response<pb::EndpointConfirmationReceipt>, Status> {
+        self.confirm_endpoint_request(request).await
+    }
+    async fn batch_raft(
+        &self,
+        request: Request<Streaming<pb::BatchRaftMessage>>,
+    ) -> std::result::Result<Response<pb::Done>, Status> {
+        self.receive_raft(request, StreamClass::Metadata).await
+    }
+
+    async fn batch_data_raft(
+        &self,
+        request: Request<Streaming<pb::BatchRaftMessage>>,
+    ) -> std::result::Result<Response<pb::Done>, Status> {
+        self.receive_raft(request, StreamClass::Data).await
     }
 
     async fn discover(
@@ -950,14 +998,15 @@ impl Drop for PeerSender {
 struct PeerRoute {
     destination: Arc<PeerDestination>,
     sender: Option<PeerSender>,
+    data_sender: Option<PeerSender>,
     catalog_generation: Option<u64>,
 }
 
 /// The outbound half + inbox drain: a [`RaftTransport`] carried by gRPC.
 ///
 /// `send` enqueues to a per-peer worker (spawned on the provided runtime
-/// handle) that owns one long-lived `BatchRaft` client-stream and flushes
-/// batches by count/bytes/window; `drain` empties the inbox the service side
+/// handle) that owns one long-lived `BatchRaft` or `BatchDataRaft` client-stream.
+/// It batches queued messages by count/bytes; `drain` empties the inbox the service side
 /// fills. The synchronous `NodeDriver` uses both without knowing tonic exists.
 pub struct GrpcTransport {
     me: NodeId,
@@ -1024,6 +1073,7 @@ impl GrpcTransport {
         let peer = peers.entry(id.0).or_insert_with(|| PeerRoute {
             destination: Arc::new(PeerDestination { addr }),
             sender: None,
+            data_sender: None,
             catalog_generation: None,
         });
         if peer.catalog_generation.is_some() {
@@ -1045,6 +1095,7 @@ impl GrpcTransport {
         let peer = peers.entry(id.0).or_insert_with(|| PeerRoute {
             destination: Arc::new(PeerDestination { addr }),
             sender: None,
+            data_sender: None,
             catalog_generation: None,
         });
         if let Some(current) = peer.catalog_generation {
@@ -1065,7 +1116,7 @@ impl GrpcTransport {
     fn install_route(peer: &mut PeerRoute, addr: SocketAddr) {
         if peer.destination.addr != addr {
             peer.destination = Arc::new(PeerDestination { addr });
-            if let Some(sender) = &peer.sender {
+            for sender in [&peer.sender, &peer.data_sender].into_iter().flatten() {
                 sender.destination.send_replace(peer.destination.clone());
             }
         }
@@ -1091,15 +1142,18 @@ impl GrpcTransport {
     }
 
     fn enqueue(&self, to: NodeId, envelope: pb::RaftEnvelope) {
+        let Some(class) = StreamClass::for_region(envelope.region_id) else {
+            return;
+        };
         let mut peers = self.peers.lock().expect("peers poisoned");
         let Some(peer) = peers.get_mut(&to.0) else {
             return; // unknown peer: Raft retransmits after registration
         };
-        if peer
-            .sender
-            .as_ref()
-            .is_none_or(|sender| sender.task.is_finished())
-        {
+        let slot = match class {
+            StreamClass::Metadata => &mut peer.sender,
+            StreamClass::Data => &mut peer.data_sender,
+        };
+        if slot.as_ref().is_none_or(|sender| sender.task.is_finished()) {
             let (queue, rx) = mpsc::channel(PEER_QUEUE);
             let (destination, updates) = watch::channel(peer.destination.clone());
             let task = self.handle.spawn(peer_worker(
@@ -1109,8 +1163,9 @@ impl GrpcTransport {
                 rx,
                 updates,
                 self.connect_attempts.clone(),
+                class,
             ));
-            peer.sender = Some(PeerSender {
+            *slot = Some(PeerSender {
                 queue,
                 destination,
                 task,
@@ -1118,15 +1173,10 @@ impl GrpcTransport {
         }
         // This enqueue is the send linearization point, serialized with
         // register_peer. Queue overflow still drops best-effort Raft traffic.
-        let _ = peer
-            .sender
-            .as_ref()
-            .unwrap()
-            .queue
-            .try_send(OutboundMessage {
-                destination: peer.destination.clone(),
-                envelope,
-            });
+        let _ = slot.as_ref().unwrap().queue.try_send(OutboundMessage {
+            destination: peer.destination.clone(),
+            envelope,
+        });
     }
     fn send_region(&self, region: u64, to: NodeId, msg: Message) {
         // Partition injection (task #28): drop outbound to a masked peer, as if
@@ -1194,6 +1244,7 @@ async fn peer_worker(
     mut rx: mpsc::Receiver<OutboundMessage>,
     mut updates: watch::Receiver<Arc<PeerDestination>>,
     connect_attempts: Arc<AtomicU64>,
+    class: StreamClass,
 ) {
     loop {
         // Clone and release the watch borrow before any await or route lock.
@@ -1204,7 +1255,7 @@ async fn peer_worker(
                 if changed.is_err() { return; }
             }
             _ = peer_session(me, &token, root_digest, &mut rx, &destination,
-                             &connect_attempts) => return,
+                             &connect_attempts, class) => return,
         }
     }
 }
@@ -1269,6 +1320,7 @@ async fn peer_session(
     rx: &mut mpsc::Receiver<OutboundMessage>,
     destination: &Arc<PeerDestination>,
     connect_attempts: &AtomicU64,
+    class: StreamClass,
 ) {
     let url = format!("http://{}", destination.addr);
     let mut backoff = RECONNECT_MIN;
@@ -1311,7 +1363,14 @@ async fn peer_session(
         let stream = tokio_stream::wrappers::ReceiverStream::new(batch_rx);
         let mut stream_req = Request::new(stream);
         attach_auth(&mut stream_req, token, me);
-        let rpc = client.batch_raft(stream_req);
+        // Select the method inside every session. There is deliberately no
+        // capability cache and no fallback after UNIMPLEMENTED or reconnect.
+        let rpc = async {
+            match class {
+                StreamClass::Metadata => client.batch_raft(stream_req).await,
+                StreamClass::Data => client.batch_data_raft(stream_req).await,
+            }
+        };
         tokio::pin!(rpc);
 
         // Batch loop: runs until the peer connection dies or we shut down.
@@ -1346,7 +1405,10 @@ async fn peer_session(
             }
         }
         drop(batch_tx);
-        // Loop back to reconnect.
+        // A reachable old/unauthorized server can reject the RPC immediately.
+        // Bound retries here as well as on connection failure; never spin on
+        // UNIMPLEMENTED. The outer worker can still cancel on a route update.
+        tokio::time::sleep(backoff).await;
     }
 }
 
@@ -1398,7 +1460,7 @@ mod tests {
             let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
                 .await
                 .unwrap();
-            let msgs = [(10, 4), (999, 5), (0, 6), (20, 7)]
+            let msgs = [(10, 4), (999, 5), (20, 7)]
                 .into_iter()
                 .map(|(region_id, term)| pb::RaftEnvelope {
                     region_id,
@@ -1416,14 +1478,13 @@ mod tests {
             }]));
             attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(1));
             client
-                .batch_raft(request)
+                .batch_data_raft(request)
                 .await
                 .expect("hot/unknown groups must not close a shared stream");
         });
-        assert_eq!(
-            transport.drain().iter().map(|m| m.term).collect::<Vec<_>>(),
-            [6],
-            "only metadata belongs in the metadata inbox"
+        assert!(
+            transport.drain().is_empty(),
+            "data stream must not reach the metadata inbox"
         );
         assert_eq!(
             healthy.drain().iter().map(|m| m.term).collect::<Vec<_>>(),
@@ -1559,8 +1620,12 @@ mod tests {
             let peers = shared.peers.lock().unwrap();
             assert_eq!(peers.len(), 2);
             assert!(
-                peers.values().all(|p| p.sender.is_some()),
-                "each peer stream is shared by all three groups"
+                peers.values().all(|p| p.data_sender.is_some()),
+                "the data groups must share one data stream to each peer"
+            );
+            assert!(
+                peers.values().any(|p| p.sender.is_some()),
+                "metadata must use its separate stream (followers need only their leader)"
             );
         }
     }
@@ -2321,6 +2386,12 @@ mod tests {
                 // Accept the stream, then never read a single message.
                 std::future::pending::<()>().await;
                 unreachable!()
+            }
+            async fn batch_data_raft(
+                &self,
+                request: Request<Streaming<pb::BatchRaftMessage>>,
+            ) -> std::result::Result<Response<pb::Done>, Status> {
+                self.batch_raft(request).await
             }
             async fn discover(
                 &self,
@@ -3301,6 +3372,12 @@ mod tests {
                         r: Request<Streaming<pb::BatchRaftMessage>>,
                     ) -> std::result::Result<Response<pb::Done>, Status> {
                         self.0.batch_raft(r).await
+                    }
+                    async fn batch_data_raft(
+                        &self,
+                        r: Request<Streaming<pb::BatchRaftMessage>>,
+                    ) -> std::result::Result<Response<pb::Done>, Status> {
+                        self.0.batch_data_raft(r).await
                     }
                     async fn discover(
                         &self,

@@ -30,8 +30,10 @@ They do not add qualified theorems or new performance evidence.
 
 Current increment: [replicated intents and durable local preparation](GROUP-PREPARATION.md)
 now connect metadata Raft to isolated group storage and restart discovery.
-Activation/capability negotiation, bounded workers and public data routing
-remain the next D01/D02 work; no full stage acceptance follows yet.
+The [data-group RPC fence](GROUP-WIRE-FENCING.md) now prevents legacy receivers
+from consuming group traffic, including after endpoint downgrade/replacement.
+Durable activation, bounded workers and public data routing remain the next
+D01/D02 work; no full stage acceptance follows yet.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |
