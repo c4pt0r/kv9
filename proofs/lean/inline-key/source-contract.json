@@ -1,0 +1,40 @@
+{
+  "sources": {
+    "repo/scripts/inline-key/mem_key.rs": "a03f1284f46ddea4fde651acecc3d55b2c19aa85c2a7a7167060c36ad68beff7",
+    "repo/scripts/inline-key/prepare.py": "cb3187086c4bc26c71e4114468e1c66bfc1bced5cb29a42959decad2fe9bdba5",
+    "experiment/baseline/crates/engine/src/mem.rs": "c932f851cd1b45518e6ff32ba61895bcaadecba8b5acc1d2d0a2edd2ad36ee25",
+    "experiment/candidate/crates/engine/src/mem.rs": "178e3c2d6a6465dda5e6d7e549a78863cc82f786aeab2a1b26253e510eb611f0",
+    "experiment/candidate/crates/engine/src/mem_key.rs": "a03f1284f46ddea4fde651acecc3d55b2c19aa85c2a7a7167060c36ad68beff7",
+    "experiment/candidate/crates/engine/src/lib.rs": "5bf938e5768cc8a4d447210fe16cc7522f50af73493884e59713f7cc83c07ba5",
+    "repo/proofs/lean/inline-key/InlineKey.lean": "34d920311af0f94c49f93e0a59697033937135943a0b5a793920037a68e22491"
+  },
+  "lean_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+  "theorems": [
+    "padding_unobservable",
+    "decode_encode",
+    "encoded_valid",
+    "inline_length_fits_u8",
+    "inline_length_cast",
+    "encode_injective",
+    "encoded_equality",
+    "encoded_order",
+    "borrowed_order",
+    "representation_independent",
+    "lookup_preserved",
+    "erase_preserved",
+    "put_preserved",
+    "range_preserved",
+    "reverse_preserved",
+    "limit_preserved",
+    "mutation_preserved",
+    "history_preserved",
+    "lookup_after_history"
+  ],
+  "scope": "Conditional representation refinement: bytes/padding/length cast, equality/order/borrow coherence, lookup, erase, put, range/reverse/limit and ordered mutation-history contents. Rust/compiler/Vec/Clone and rpds ordered-map/persistent-snapshot contracts are premises. Source hashes bind a reviewed mapping, not verified Rust extraction. No allocation, panic, lock or Raft proof.",
+  "source_mapping": {
+    "from_slice": "encode; safe copy and zero initialization map to bytes ++ zero padding, len <= 40 makes u8 cast exact",
+    "as_slice": "decode; len bounds established by private construction",
+    "Eq_Ord_Borrow": "All explicitly delegate to the same byte slice; no enum-derived ordering",
+    "engine": "Only private CfMap key, owned range bounds, output byte conversion and borrowed delete argument differ; refusal/revision/locks and all other engine source bytes unchanged"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "complete": true,
+  "selected_layout": "layout-formatted",
+  "tests_passed": 403,
+  "tests_ignored": 50,
+  "ignored_per_arm": 25,
+  "conditional_theorems": 19,
+  "rejecting_controls": 9,
+  "allocation_rows": 33,
+  "generated_live_states_per_arm": 240,
+  "generated_old_views_per_arm": 1080,
+  "registry_sources": [
+    {
+      "name": "archery",
+      "version": "1.2.3",
+      "archive_sha256": "33ca55ee147b1926dbea904f50fe4902494e97bc742205abbbf10c709e43815f",
+      "source_files_checked": 12
+    },
+    {
+      "name": "rpds",
+      "version": "1.2.1",
+      "archive_sha256": "e025feb26210bc196b908e72deb063b1b4000754304341cbc168a1e72c857ebc",
+      "source_files_checked": 26
+    },
+    {
+      "name": "triomphe",
+      "version": "0.1.16",
+      "archive_sha256": "b40688ea6389c8171614b25491f71d4a27946e0c7ce2da1c6de27e25abf1a0ae",
+      "source_files_checked": 12
+    }
+  ],
+  "source_mapping": "Strict reviewed patch; original engine/common bytes otherwise unchanged",
+  "constructor": "Recorded release wrapper: length < 41 path has memcpy only and no allocator call; allocator request counts independently checked",
+  "limits": "Debug engine/common suites and ordinary-release standalone constructor/map allocation probe. Conditional proof, not verified Rust extraction. No engine timing, database/Redis, new MinIO, ordinary distributed recovery or actual Chaos acceptance.",
+  "production_promoted": false
+}

@@ -1,0 +1,18 @@
+{
+  "status": "Qualification only; no timing or production promotion",
+  "source_base": "14f35ecb772e060b58b6898e648630a72033bf8c",
+  "scope": "Private safe inline key <= 40 bytes, Vec fallback; original dependencies",
+  "gates": [
+    "byte identity and explicit byte ordering",
+    "actual layout and allocation requests",
+    "independent model and existing engine/common correctness",
+    "conditional Lean proof with rejecting controls"
+  ],
+  "next": "Predeclare allocation/timing only after qualification, including long-key cost",
+  "preserved": [
+    "Raft/WAL/read authorization",
+    "public/wire/storage types",
+    "mutation and refusal ordering"
+  ],
+  "output_policy": "/mnt/data/kv9-work; reuse repository target; local CI only"
+}

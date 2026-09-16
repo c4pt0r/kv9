@@ -30,9 +30,12 @@ Keep snapshot/ownership/timer scopes separate and the old gate failed. After
 [completed screen](ISOLATED-OUTLINE-PERFORMANCE.md) retains 136 processes /
 152 timing / 76 allocation rows, with identical per-window allocation behavior.
 Write means improve 1.526%–10.803%, but three material-write cases and 16 read
-panels fail. Stop unchanged callback/alignment variants. Next qualify inline
-storage for short keys with an arbitrary-length fallback; this is a new private
-representation, not the rejected owned-buffer consumption experiment.
+panels fail. Stop unchanged callback/alignment variants. The [inline-key candidate](INLINE-KEY-QUALIFICATION.md)
+passes 200 baseline / 203 candidate tests, 19 conditional theorems / nine controls
+and 33 allocation observations. Short insertion removes one request; the key
+grows from 24 to 48 bytes and long/empty entries add 24 requested bytes. Next
+execute the predeclared staged engine screen after release preparation. No timing
+exists yet; this is a new private representation, not rejected owned-buffer consumption.
 
 The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
 uses current `86aa6fc` default/feature servers and one qualified client. Default

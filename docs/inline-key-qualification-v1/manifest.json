@@ -1,0 +1,33 @@
+{
+  "complete": true,
+  "members": 231,
+  "expanded_bytes": 25574119,
+  "compressed_bytes": 3999424,
+  "sha256": "a4ba06b9691df33b25ece57652898f13d79fc281da5090dabdaf3c8f568fc5ab",
+  "all_members_read_back": true,
+  "local_root": "/mnt/data/kv9-work/inline-key-qualification-20260916-v2",
+  "selected_layout": "layout-formatted",
+  "excluded_binaries_and_lean_objects": [
+    "layout/layout",
+    "layout-formatted/layout",
+    "proof/control-custom-axiom/InlineKey.olean",
+    "proof/positive/InlineKey.olean",
+    "tests-baseline/batch_atomicity-26136958daef1e71",
+    "tests-baseline/inline_key_model-6db71964b827ae2b",
+    "tests-baseline/kv9_common-3e3df2a75ffb1feb",
+    "tests-baseline/kv9_engine-5ecdab62c87a788a",
+    "tests-baseline/minio_backend-48c0a41a52debe3f",
+    "tests-baseline/minio_checkpoint-82fd9525aaa9be12",
+    "tests-baseline/object_safety-2c8a70434b3e91f3",
+    "tests-baseline/segment_publication_probe-c09f53b16a9d5269",
+    "tests-candidate/batch_atomicity-26136958daef1e71",
+    "tests-candidate/inline_key_model-6db71964b827ae2b",
+    "tests-candidate/kv9_common-3e3df2a75ffb1feb",
+    "tests-candidate/kv9_engine-5ecdab62c87a788a",
+    "tests-candidate/minio_backend-48c0a41a52debe3f",
+    "tests-candidate/minio_checkpoint-82fd9525aaa9be12",
+    "tests-candidate/object_safety-2c8a70434b3e91f3",
+    "tests-candidate/segment_publication_probe-c09f53b16a9d5269"
+  ],
+  "limits": "No timing, new database/Redis, external MinIO, distributed recovery or actual Chaos acceptance. Conditional proof; production unchanged."
+}
