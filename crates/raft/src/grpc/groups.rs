@@ -28,7 +28,7 @@ impl RegionInboxes {
         }
     }
 
-    fn register(&self, region: RegionId) -> kv9_common::Result<RaftInbox> {
+    pub(super) fn register(&self, region: RegionId) -> kv9_common::Result<RaftInbox> {
         let mut inboxes = self.inboxes.lock().expect("region inboxes poisoned");
         if region.0 == 0 || region == META_REGION_0 {
             return Err(Error::Config("metadata transport IDs are reserved".into()));

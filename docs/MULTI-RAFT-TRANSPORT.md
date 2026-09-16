@@ -5,6 +5,12 @@ single-group assumption at the gRPC transport boundary. It does not expose
 public data-group creation, range routing, split or horizontal scaling yet.
 See the [development and benchmark plan](HORIZONTAL-SCALING-PLAN.md).
 
+This document records the initial `3dc6a13` transport checkpoint. The subsequent
+[RPC fencing increment](GROUP-WIRE-FENCING.md) separates metadata from data
+streams, reserves metadata queue capacity and makes the old-receiver boundary
+safe on every connection. The one-stream description and compatibility gap
+below describe the historical first increment.
+
 ## Implementation
 
 `GrpcTransport` owns the node's existing peer routes and one outbound worker

@@ -15,6 +15,13 @@ service Kv9Raft {
   // own job, not the transport's.
   rpc BatchRaft(stream BatchRaftMessage) returns (Done);
 
+  // Data groups MUST use this method on every connection. Old V2 BatchRaft
+  // servers ignored region_id and would feed data traffic into metadata.
+  // A distinct RPC path fails with UNIMPLEMENTED on those servers, including
+  // after endpoint replacement/downgrade. Never fall back to BatchRaft.
+  // All data groups share one stream per peer; metadata has its own stream.
+  rpc BatchDataRaft(stream BatchRaftMessage) returns (Done);
+
   // Bootstrap discovery (fencing rule a). Unary: silence = transport error =
   // never an answer. The answer binds to the responder's declared voter set
   // via the fingerprint; callers count only exact matches.
@@ -58,7 +65,8 @@ message EndpointConfirmationReceipt {
 // Envelope mimicking kvproto's RaftMessage: routing/epoch metadata OUTSIDE
 // the opaque raft payload, so multi-region routing (Phase 4) needs no format
 // change. Legacy V2 metadata uses wire ID 0 (catalog META_REGION_0 is 1).
-// Data groups use their catalog IDs, greater than 1; wire ID 1 is reserved.
+// Data groups use their catalog IDs, greater than 1, on BatchDataRaft only;
+// BatchRaft accepts only wire ID 0. Wire ID 1 is reserved on both methods.
 message RaftEnvelope {
   uint64 region_id = 1;
   uint64 from_node = 2;

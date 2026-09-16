@@ -12,7 +12,7 @@ p99 9.306–9.437 ms per batch). It uses three voters on one host with tmpfs WAL
 it is not a physical-disk or cross-host scaling result. See the
 [qualified measurement](WAL-PREALLOCATION-PERFORMANCE.md).
 
-The new [durable group preparation](GROUP-PREPARATION.md) connects replicated,
+The [durable group preparation](GROUP-PREPARATION.md) connects replicated,
 operation-deduplicated creation intents to independent group directories and
 restart discovery. Nine focused tests cover sixteen persistence cuts and a
 real three-runtime metadata quorum with leader replacement and store restart.
@@ -21,6 +21,16 @@ Rust defect controls, strict Clippy and formatting. The preparation model proves
 nine theorems with four semantic and two proof-policy controls. The preceding
 [transport increment](MULTI-RAFT-TRANSPORT.md) already isolates three three-voter
 groups over shared loopback gRPC streams.
+
+The latest [data-group RPC fence](GROUP-WIRE-FENCING.md) uses a separate method
+on every session, with no fallback to legacy metadata receivers. Seven new
+HTTP/2 tests cover method/identity refusal, downgrade/replacement/recovery,
+retry budgets and separate bounded metadata/data queues. Its model checks
+15 theorems with six semantic controls and two proof-policy controls; six Rust
+defect controls reject the corresponding implementation failures. Durable
+group activation and bounded Ready/tick workers remain the next work. The
+latest local workspace run passes 872 tests/doctests (28 existing ignored),
+with strict Clippy and formatting passing; no hosted CI ran.
 
 The [horizontal scaling plan](HORIZONTAL-SCALING-PLAN.md) defines measurable
 3/6/9-node acceptance. RegionManager activation/retirement and bounded scheduling,
