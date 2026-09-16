@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "complete": true,
+  "archive_sha256": "7255c8433786c71f17951f96dee0821663ed122ec9383a4cf53ba5d419ab2928",
+  "archive_bytes": 4813411,
+  "members": 519,
+  "expanded_bytes": 29939817,
+  "member_manifest_sha256": "5ba6edf922d3c1f5f750ff1d4f36c3f3046db2a6e83f17c824ae95b11fd9238b",
+  "excluded": [
+    "Test and component executable binaries (identities retained).",
+    "Original groups.bin corpus (same retained corpus and SHA-256 as previous stages).",
+    "Issue body snapshot and later publication/continuation records."
+  ],
+  "readback": "Every archive member was streamed and matched against its original SHA-256 and byte size."
+}

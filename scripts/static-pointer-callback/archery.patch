@@ -1,0 +1,24 @@
+--- a/src/shared_pointer/kind/erased_ptr.rs
++++ b/src/shared_pointer/kind/erased_ptr.rs
+@@ -63 +63 @@
+-        as_ptr: fn(&P) -> *const T,
++        as_ptr: impl Fn(&P) -> *const T + Copy,
+@@ -68 +68 @@
+-        struct WriteBack<'a, T, P> {
++        struct WriteBack<'a, P, F: Fn(&P) -> *const ()> {
+@@ -71 +71 @@
+-            as_ptr: fn(&P) -> *const T,
++            as_ptr: F,
+@@ -74 +74 @@
+-        impl<T, P> Drop for WriteBack<'_, T, P> {
++        impl<P, F: Fn(&P) -> *const ()> Drop for WriteBack<'_, P, F> {
+@@ -77 +77 @@
+-                *self.slot = (self.as_ptr)(&self.owned).cast::<()>();
++                *self.slot = (self.as_ptr)(&self.owned);
+@@ -88 +88,5 @@
+-            WriteBack::<T, P> { slot: &mut self.ptr, owned: ManuallyDrop::new(owned), as_ptr };
++            WriteBack {
++                slot: &mut self.ptr,
++                owned: ManuallyDrop::new(owned),
++                as_ptr: move |value: &P| as_ptr(value).cast::<()>(),
++            };

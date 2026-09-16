@@ -37,10 +37,14 @@ frame-pointer observation: 13,601/13,605 apply samples retain a named boundary;
 tree/ownership leaves account for 56.462–59.944%, comparisons 17.997–24.915%,
 and byte-copy leaves 0.993–1.838%. These are diagnostic-build sample fractions,
 not production CPU shares. Default DWARF coverage failed and remains retained.
-Next qualify the isolated monomorphic pointer-write-back hypothesis: preserve
-the existing normal/unwind guard and reference counts, prove callback/ownership
-equivalence, test panic paths and inspect ordinary release code generation
-before any fresh matched component or database timing.
+The [isolated static pointer callback](STATIC-POINTER-CALLBACK.md) now passes
+58/58 baseline and candidate pointer-library tests, 276 patched rpds tests,
+18 conditional guard-equivalence lemmas, eight rejecting controls and eight
+ordinary release semantic smokes. Normal/unwind restoration and reference
+counts remain unchanged. Ordinary ThinLTO removes the 8-byte out-of-line
+callback and its 21 symbol references. This qualifies a fresh matched component
+screen across writes, snapshots, key distributions and read mean/p99; no
+performance gain or runtime promotion is established yet.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 
