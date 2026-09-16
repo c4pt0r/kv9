@@ -1,0 +1,162 @@
+{
+  "complete": true,
+  "theorems_checked_together": 679,
+  "additional_theorems": 125,
+  "new_rejecting_controls": 30,
+  "controls": [
+    {
+      "name": "child-cow-wrong-slot",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "root-assignment-reverses-tokens",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "shared-leaf-mutated-in-place",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "root-assignment-drops-new-root",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "edge-swap-releases-new-child",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "edge-assignment-drops-new-token",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "descent-borrows-next-edge",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "terminal-inverts-inserted-flag",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "insert-edge-shifts-wrong-boundary",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "two-edge-sort-reversed",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "wrapper-loses-retained-child",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "pair-wrapper-aliases-old-child",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "entry-move-leaves-old-payload",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "leaf-split-overwrites-old-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "leaf-split-loses-new-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "branch-split-keeps-routing-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "branch-split-reads-next-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "selection-compares-values",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "selection-splits-matching-prefix",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "stored-search-reverses-label-order",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "replace-reports-new-key",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "step-descends-extra-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "loop-flips-inserted-flag",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "empty-root-reports-replacement",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "added-leaf-discards-value",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "mutable-place-wrong-index",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "insertion-proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "insertion-custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 82,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "heap_insertion_scope": "Concrete graph insertion: borrowed mutable places, exact ownership transfer, COW ancestor/snapshot isolation, all six source insertion arms and split move/drain paths, root/edge assignment with iterative reclamation, stored-node selection, a terminating place loop, empty/nonempty root put, lookup semantics, returned inserted flag and mathematical cardinality. This is a source-bound reviewed executable graph model under explicit native library/compiler contracts, not verified Rust extraction or a native allocation/word proof.",
+  "remaining_implementation_scope": "Detached deletion/normalization, native Arc/concurrent COW and physical payload/allocator correspondence, machine-word/storage bridges and differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Concrete detached deletion and normalization with temporary references and full-root/snapshot invariants",
+    "Connect actual Rust and graph operations to pinned no-Weak Arc/concurrent COW, payload moves, Vec/Box/allocation and distinct Entry object storage; compose physical loops with native word arithmetic and derive representability premises",
+    "Exact-source Rust/model differential execution, meaningful model/source faults, then predeclared matched timing and allocation comparisons",
+    "Runtime promotion still requires local database correctness, ordinary recovery, actual Chaos Mesh and matched three-copy Redis throughput/latency"
+  ],
+  "prior_live_ownership_packet_sha256": "1fb8f82dd588b7d10f14ea1a8393aa88429ec9689c188a02eda5a3936007e05c"
+}
