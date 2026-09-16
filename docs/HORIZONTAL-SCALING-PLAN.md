@@ -28,6 +28,11 @@ They do not add qualified theorems or new performance evidence.
 
 ## Delivery sequence
 
+Current increment: [replicated intents and durable local preparation](GROUP-PREPARATION.md)
+now connect metadata Raft to isolated group storage and restart discovery.
+Activation/capability negotiation, bounded workers and public data routing
+remain the next D01/D02 work; no full stage acceptance follows yet.
+
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |
 | D01a / #22 | Shared transport, explicit group registration, isolated bounded inboxes and driver ownership | Actual multi-group Raft replication over shared gRPC streams; duplicate, unknown and saturated-group controls |

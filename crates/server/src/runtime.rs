@@ -2930,6 +2930,7 @@ type RouteSnapshotGate = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver
 
 /// A running real-process metadata member.
 pub struct NodeRuntime {
+    data_groups: crate::region_manager::RegionManager,
     node: Arc<Node<WalEngine>>,
     public_admission: Arc<crate::admission::PublicAdmission>,
     raft_io_metrics: Arc<kv9_common::metrics::WalIoMetrics>,
@@ -3482,6 +3483,9 @@ impl NodeRuntime {
             })
             .transpose()?;
 
+        let mut data_groups = crate::region_manager::RegionManager::new(&data_dir, store_identity);
+        data_groups.recover(&node.meta_raft.store)?;
+
         // No fallible startup work may follow owner creation. In particular,
         // a bind/auth/checkpoint setup failure must drop every store reference
         // before the local guard unlocks; dropping a JoinHandle detaches it.
@@ -3500,6 +3504,7 @@ impl NodeRuntime {
             None
         };
         Ok(Self {
+            data_groups,
             node,
             driver,
             transport,
@@ -3547,6 +3552,44 @@ impl NodeRuntime {
 
     pub fn status_path(&self) -> &Path {
         &self.status_path
+    }
+
+    /// Commit an immutable creation intent. This is an embedded control-plane
+    /// API; it does not publish a range or authorize a data group to serve.
+    /// Retrying the same operation ID confirms the same intent and allocation.
+    pub fn create_data_group_intent(
+        &self,
+        operation: [u8; 16],
+        voters: &[NodeId],
+    ) -> Result<kv9_meta::data_groups::CreationIntent> {
+        let backend = RuntimeBackend {
+            node: self.node.clone(),
+            driver: self.driver.clone(),
+            transport: self.transport.clone(),
+            endpoint_ready: self.endpoint_ready.clone(),
+            initial_voters: self.seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
+        };
+        backend.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = backend.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        let intent = kv9_meta::data_groups::plan_empty_group(&mut txn, operation, voters)?;
+        backend.commit_catalog(&Command::from_batch(&txn.into_batch()), term)?;
+        Ok(intent)
+    }
+
+    /// Prepare only from this replica's committed metadata view. A follower
+    /// may prepare the immutable intent once it has applied; no leader shortcut.
+    pub fn prepare_data_group(&mut self, task: u64) -> Result<crate::GroupPreparation> {
+        let creation = kv9_meta::data_groups::committed_creation(&self.node.meta_raft.store, task)?
+            .ok_or_else(|| {
+                Error::MetaNotReady("group creation intent is not locally applied".into())
+            })?;
+        self.data_groups.prepare(&creation)
+    }
+
+    pub fn data_group_preparations(&self) -> Vec<(RegionId, Result<crate::GroupPreparation>)> {
+        self.data_groups.observations()
     }
 
     /// Stay resident and advance bootstrap. Normal OS termination signals use
@@ -4501,6 +4544,7 @@ fn prepare_test_store(directory: &Path, id: NodeId) -> StoreIncarnation {
 #[cfg(test)]
 mod tests {
     mod async_batch_read_tests;
+    mod data_group_tests;
     mod lease_read_tests;
     mod retention_tests;
 

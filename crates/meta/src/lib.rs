@@ -27,6 +27,7 @@ pub mod admission;
 pub mod bootstrap;
 pub mod catalog;
 pub mod checkpoint;
+pub mod data_groups;
 pub mod endpoint;
 pub mod layered;
 pub mod leader;

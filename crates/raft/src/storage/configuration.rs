@@ -16,6 +16,9 @@ pub(super) struct ConfigurationHistory {
     ambiguous: bool,
 }
 impl ConfigurationHistory {
+    pub(super) fn is_unstarted(&self, expected: &ConfState) -> bool {
+        !self.ambiguous && self.applied.is_empty() && self.initial.as_ref() == Some(expected)
+    }
     pub(super) fn initial(&mut self, state: &ConfState) {
         // A later unindexed record cannot establish when its membership began.
         if self.initial.is_some() || !self.applied.is_empty() {

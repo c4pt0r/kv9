@@ -15,7 +15,9 @@ mod point_stream;
 #[cfg(test)]
 mod point_test_support;
 mod point_wire;
+mod region_manager;
 pub mod retention;
+pub use region_manager::GroupPreparation;
 pub mod routing;
 #[cfg(feature = "rpc-experiment")]
 pub mod rpc_experiment;
