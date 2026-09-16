@@ -1,0 +1,85 @@
+{
+  "complete": true,
+  "production_runtime_changed": false,
+  "new_database_qps": false,
+  "selected_groups": 106,
+  "selected_commands": 1564,
+  "selected_mutations": 100096,
+  "groups_byte_matched": true,
+  "components": {
+    "decode": {
+      "groups": 2544,
+      "mean_group_ns": 19721.864779874213,
+      "sum_ns": 50172424,
+      "p99_group_ns": 56707
+    },
+    "lower": {
+      "groups": 2544,
+      "mean_group_ns": 14648.589229559748,
+      "sum_ns": 37266011,
+      "p99_group_ns": 40385
+    },
+    "fence": {
+      "groups": 2544,
+      "mean_group_ns": 2336.3777515723273,
+      "sum_ns": 5943745,
+      "p99_group_ns": 6432
+    }
+  },
+  "direct_comparison": {
+    "old": {
+      "groups": 2544,
+      "mean_group_ns": 14208.219732704403,
+      "sum_ns": 36145711,
+      "p99_group_ns": 39744
+    },
+    "new": {
+      "groups": 2544,
+      "mean_group_ns": 12660.159591194968,
+      "sum_ns": 32207446,
+      "p99_group_ns": 34504
+    },
+    "mean_change_percent": -10.895525059667532,
+    "absolute_mean_saved_ns": 1548.0601415094352,
+    "pairs": [
+      {
+        "baseline_order": 0,
+        "candidate_order": 1,
+        "old_mean_ns": 14432.709119496856,
+        "new_mean_ns": 12747.024371069183,
+        "mean_change_percent": -11.67961423230317,
+        "old_p99_ns": 41177,
+        "new_p99_ns": 35215
+      },
+      {
+        "baseline_order": 3,
+        "candidate_order": 2,
+        "old_mean_ns": 13983.73034591195,
+        "new_mean_ns": 12573.294811320755,
+        "mean_change_percent": -10.086260959712556,
+        "old_p99_ns": 38952,
+        "new_p99_ns": 34184
+      }
+    ],
+    "allocation_counts_per_12_pass_row": {
+      "lower": {
+        "alloc_calls": 2422344,
+        "alloc_requested_bytes": 194941440,
+        "dealloc_calls_inside_interval": 18768,
+        "dealloc_layout_bytes_inside_interval": 67264512,
+        "realloc_calls": 79812,
+        "realloc_requested_bytes": 304346112
+      },
+      "flat_lower": {
+        "alloc_calls": 2403576,
+        "alloc_requested_bytes": 186463488,
+        "dealloc_calls_inside_interval": 0,
+        "dealloc_layout_bytes_inside_interval": 0,
+        "realloc_calls": 9828,
+        "realloc_requested_bytes": 186772992
+      }
+    },
+    "realloc_change_percent": -87.68606224627875
+  },
+  "scope": "Independent recomputation of original component samples and matching counts/source/group joins. No independent re-execution of every Raft/engine parser or complete apply/endpoint measurement. Different component means must not be subtracted from earlier runtime group timings."
+}

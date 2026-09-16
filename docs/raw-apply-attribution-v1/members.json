@@ -1,0 +1,492 @@
+{
+  "compressed_cap_bytes": 33554432,
+  "decoded_tar_cap_bytes": 83886080,
+  "member_cap_bytes": 8388608,
+  "members": [
+    {
+      "bytes": 622,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/README.md",
+      "sha256": "859f948a24626d6e1a215ff02d8bb653d6c06567368bb2ae1c14db05cb053f61",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/README.md"
+    },
+    {
+      "bytes": 2572,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/analysis-first.json",
+      "sha256": "fd873e45e18e03962f0e522d87eda3362f11aebf43a5e7b04f4d48e7ca3e02d4",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/analysis-first.json"
+    },
+    {
+      "bytes": 2504,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/analysis-inputs-first.json",
+      "sha256": "9010d822154cfd9ad2bfa3db085b8bd36057b624d9ee269eda93531c8eb16e2b",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/analysis-inputs-first.json"
+    },
+    {
+      "bytes": 2898,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/analysis-inputs.json",
+      "sha256": "70d50cdc49cb3d7bd2002021998d2c7600373433bd7034fa28f412060cd90610",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/analysis-inputs.json"
+    },
+    {
+      "bytes": 2572,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/analysis.json",
+      "sha256": "fd873e45e18e03962f0e522d87eda3362f11aebf43a5e7b04f4d48e7ca3e02d4",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/analysis.json"
+    },
+    {
+      "bytes": 5071,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/analyze.py",
+      "sha256": "dbf14eeacc55cee11e11054eefe8930601b87a5dda327f47f1f4e36f69bdf5e5",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/analyze.py"
+    },
+    {
+      "bytes": 67892,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/bench/Cargo.lock",
+      "sha256": "63d045daf865c22db2705b68e07a213c185c9f926d72b6d6513fe43c2db279ab",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/bench/Cargo.lock"
+    },
+    {
+      "bytes": 842,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/bench/Cargo.toml",
+      "sha256": "69902452d040e089daa26608967feb89501ec6c7ae1afc8dec220f630cb1c0fb",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/bench/Cargo.toml"
+    },
+    {
+      "bytes": 17302,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/bench/src/main.rs",
+      "sha256": "5678371ff977d758f8c75cc710b69698db040a6870d92a4ef05dac9cd269c1f9",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/bench/src/main.rs"
+    },
+    {
+      "bytes": 67892,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/Cargo.lock",
+      "sha256": "63d045daf865c22db2705b68e07a213c185c9f926d72b6d6513fe43c2db279ab",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/Cargo.lock"
+    },
+    {
+      "bytes": 213043,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/allocations.jsonl",
+      "sha256": "a104df1f941c4632acf1a7d9d0296a5f3c1487e71028808fa9b03e169a12fe2f",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/allocations.jsonl"
+    },
+    {
+      "bytes": 710,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/allocations.stderr",
+      "sha256": "b2c86a454a09061dce79698f0a20fd91ffa4b210d4f5ed26477048c40fe0c1af",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/allocations.stderr"
+    },
+    {
+      "bytes": 21,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-clean.stderr",
+      "sha256": "0bdaeb2aa6a92a0fdfec2d2cc4d0ab71946de5d0654e08c526e4629130ae0f28",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-clean.stdout"
+    },
+    {
+      "bytes": 3424,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-metadata.json",
+      "sha256": "fa881b520b8ab80446a51a3fc53103d1542ad41261a36d81f7eb18ea6f16e75e",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-metadata.log"
+    },
+    {
+      "bytes": 4517,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-safety.json",
+      "sha256": "55a031e9e8f73afc96bc42836089b8a0a9d1e3304604d0e1d1d031a343887423",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cache-safety.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cargo.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cargo.stderr"
+    },
+    {
+      "bytes": 336,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cargo.stdout",
+      "sha256": "88d4547e99fef084e4ef336a0165bd5df0774f41000e856a28c033835c0085e2",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/cargo.stdout"
+    },
+    {
+      "bytes": 182,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/dependency-binding.json",
+      "sha256": "eab1ac084b8cdb5a99554ebc1c733f6bd20b7d19683e415d479bf676fdc7cf9e",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/dependency-binding.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/resolve.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/resolve.stderr"
+    },
+    {
+      "bytes": 1374433,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/resolve.stdout",
+      "sha256": "ae14c98de73f388dca09b41e543230639c8dfc9dd0ef8225b176518eeb1410f5",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/resolve.stdout"
+    },
+    {
+      "bytes": 31267,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/result.json",
+      "sha256": "9ddd71a0a8bb1222a8f1d304c7d1a93c0ce5a494ef4438cba6af6c56740e22ab",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/result.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/rustc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/rustc.stderr"
+    },
+    {
+      "bytes": 196,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/rustc.stdout",
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/rustc.stdout"
+    },
+    {
+      "bytes": 213031,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/timing.jsonl",
+      "sha256": "37b539ffca438934e7c22680eab18bf6cd86a564f99feddcad71072d485e758e",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/timing.jsonl"
+    },
+    {
+      "bytes": 1495,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/timing.stderr",
+      "sha256": "036b396edafba675ef6590b4f1834b48f854109dcfc402fc15307701ea970e5b",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build-first/timing.stderr"
+    },
+    {
+      "bytes": 3495,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/build.py",
+      "sha256": "744f6901f4dc5c20844d39157cd9e5a7a25e91dd575567cb1b7e4823692e2780",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/build.py"
+    },
+    {
+      "bytes": 2343,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/extract-groups.py",
+      "sha256": "9e3495b6e43d7983b6186d1488ca49ab33ff003cd3bf36a5d6bacea8a3d894ae",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/extract-groups.py"
+    },
+    {
+      "bytes": 24716,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/groups.json",
+      "sha256": "0839f45ed18ad24f6c8f0da2391f9339d4b974bdd1269860d4d450c6ce8c37c1",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/groups.json"
+    },
+    {
+      "bytes": 2812,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/plan.json",
+      "sha256": "8578e062b3bda38e8f3a87c4d217c0218f2e874314656789dd47b120e9919de2",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/plan.json"
+    },
+    {
+      "bytes": 2246,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations-launch.json",
+      "sha256": "e1a050a047e748fbf60b2f366190aaa4dae800570078e42ef4c8d32c67b9417e",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations-launch.json"
+    },
+    {
+      "bytes": 2315,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations-terminal.json",
+      "sha256": "beeb9b850be69ce7dc0671efa67caf6957d8b1efb832caf4bd4da86fc1aadccc",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations-terminal.json"
+    },
+    {
+      "bytes": 376177,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations.json",
+      "sha256": "676a04768779f6d7ff90ff9bc03a2c5b7e58c5e538258b362d9f4237f838c0d0",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations.stderr"
+    },
+    {
+      "bytes": 88,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations.stdout",
+      "sha256": "2567cc72710c2cc104f3090c4d51004080d3b6b6a90c867f9d88d5f332dd5dad",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/allocations.stdout"
+    },
+    {
+      "bytes": 2236,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing-launch.json",
+      "sha256": "8e773cc7d7b51c529c929ea24d91fb9706da82e726473ac9337de8bdc986c15b",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing-launch.json"
+    },
+    {
+      "bytes": 2305,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing-terminal.json",
+      "sha256": "721e099a9774af07dba3f22bfe760ff23b85a5bb0e5742c854e48db4a552ba6a",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing-terminal.json"
+    },
+    {
+      "bytes": 500557,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing.json",
+      "sha256": "713641d8ba2723fad92a8ac6d21795a2e3bd8ee584b700b0d66817c7dfd3b43d",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing.stderr"
+    },
+    {
+      "bytes": 89,
+      "member": "mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing.stdout",
+      "sha256": "25c4e4d4667092550c3750ac5fd00335dcdae1247162a74bcc4f8f16959440a9",
+      "source": "/mnt/data/kv9-work/raw-apply-attribution-20260916-first/runs-first/timing.stdout"
+    },
+    {
+      "bytes": 295,
+      "member": "mnt/data/kv9-work/raw-apply-publication-20260916-first/terminals.json",
+      "sha256": "2fb9fe1e5193419ee98817124cda8d4e93baeac1a8fcb4c195411fd4ba63508d",
+      "source": "/mnt/data/kv9-work/raw-apply-publication-20260916-first/terminals.json"
+    },
+    {
+      "bytes": 3551,
+      "member": "mnt/data/kv9-work/raw-apply-publication-20260916-first/verify.py",
+      "sha256": "4c475dbfbbcdd1cd40fa8e46ec8226d983984e9a6d17d45ffd566ec80d639f55",
+      "source": "/mnt/data/kv9-work/raw-apply-publication-20260916-first/verify.py"
+    },
+    {
+      "bytes": 573,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/README.md",
+      "sha256": "9f184845a9951c2cffaf56241abce878eb4c862aef580b345ccfdae732e8ec5f",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/README.md"
+    },
+    {
+      "bytes": 67892,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/bench/Cargo.lock",
+      "sha256": "63d045daf865c22db2705b68e07a213c185c9f926d72b6d6513fe43c2db279ab",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/bench/Cargo.lock"
+    },
+    {
+      "bytes": 842,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/bench/Cargo.toml",
+      "sha256": "69902452d040e089daa26608967feb89501ec6c7ae1afc8dec220f630cb1c0fb",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/bench/Cargo.toml"
+    },
+    {
+      "bytes": 20191,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/bench/src/main.rs",
+      "sha256": "e4c1dfc1c0a01c154bfe1e8547c7a27986ae85de33db26b426e2ef08e6fd544b",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/bench/src/main.rs"
+    },
+    {
+      "bytes": 67892,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/Cargo.lock",
+      "sha256": "63d045daf865c22db2705b68e07a213c185c9f926d72b6d6513fe43c2db279ab",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/Cargo.lock"
+    },
+    {
+      "bytes": 213037,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/allocations.jsonl",
+      "sha256": "4f178b5e4ea6b81a5bc2c1974e2b1021274ed369d12b87b7626a96e0581a0ab6",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/allocations.jsonl"
+    },
+    {
+      "bytes": 170,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/allocations.stderr",
+      "sha256": "a9859f085e46bc1774c2fa63b52974ef18e064a2df7270146bc12d5b59396d2c",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/allocations.stderr"
+    },
+    {
+      "bytes": 36,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-clean.stderr",
+      "sha256": "8bc38e5a108c12a6f5207cf80962d82091cbae59b6dc42b92f57123d82e8e956",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-clean.stdout"
+    },
+    {
+      "bytes": 3412,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-metadata.json",
+      "sha256": "a270b0ec2e31b1bb623740605b0f0a1f03c22b3ebdd7c4374c4243514d1237b8",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-metadata.log"
+    },
+    {
+      "bytes": 5038,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-safety.json",
+      "sha256": "21048c221c140b9b324d6bff26f28640f6041c1f3732387c4e1472c3ebb13b97",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cache-safety.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cargo.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cargo.stderr"
+    },
+    {
+      "bytes": 336,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cargo.stdout",
+      "sha256": "88d4547e99fef084e4ef336a0165bd5df0774f41000e856a28c033835c0085e2",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/cargo.stdout"
+    },
+    {
+      "bytes": 182,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/dependency-binding.json",
+      "sha256": "eab1ac084b8cdb5a99554ebc1c733f6bd20b7d19683e415d479bf676fdc7cf9e",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/dependency-binding.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/resolve.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/resolve.stderr"
+    },
+    {
+      "bytes": 1374417,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/resolve.stdout",
+      "sha256": "da95a2c19d060c79a49353f8c31675ecd86037dae99a6100e44cf577d988af26",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/resolve.stdout"
+    },
+    {
+      "bytes": 31251,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/result.json",
+      "sha256": "9566edab8ac19961401c03ce9c06d687ca6546197803d82cd490d67e113e2ba9",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/result.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/rustc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/rustc.stderr"
+    },
+    {
+      "bytes": 196,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/rustc.stdout",
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/rustc.stdout"
+    },
+    {
+      "bytes": 287,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/semantics-test.stderr",
+      "sha256": "0670ef6c3d00dd25aaaab3850ca84f3a0d2a5d0b12e481b0ec345ee49441e7a5",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/semantics-test.stderr"
+    },
+    {
+      "bytes": 206,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/semantics-test.stdout",
+      "sha256": "f671e3949792b142a0b80411e172341855d04a6eac5806c74bbc637b1dfa27ad",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/semantics-test.stdout"
+    },
+    {
+      "bytes": 213016,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/timing.jsonl",
+      "sha256": "52c7f5f486d9c58255ff7b0f527216fcb10ec51044dbdde7b959ec52033c740f",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/timing.jsonl"
+    },
+    {
+      "bytes": 170,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/timing.stderr",
+      "sha256": "c7f3ef5105344a87c0d777627ba1645593d4f199a28dbb8346532a0b4f569f9d",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build-first/timing.stderr"
+    },
+    {
+      "bytes": 3976,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/build.py",
+      "sha256": "ea85e24ad0bf63c6b6f28d1ccc655adea07300934368cb526de5770a17d178c9",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/build.py"
+    },
+    {
+      "bytes": 24716,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/groups.json",
+      "sha256": "0839f45ed18ad24f6c8f0da2391f9339d4b974bdd1269860d4d450c6ce8c37c1",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/groups.json"
+    },
+    {
+      "bytes": 3204,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/plan.json",
+      "sha256": "db5ecfe3b516ad2caa25a737c9e43ad42d188e7b53ab598e853b9481996987ad",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/plan.json"
+    },
+    {
+      "bytes": 450,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations-launch.json",
+      "sha256": "63f704b0fbe1970c0809857f1d73f840ca39fa6e2a2cb0b20ec5f33120264b88",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations-launch.json"
+    },
+    {
+      "bytes": 519,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations-terminal.json",
+      "sha256": "b04ec6b7379587bc0afbc1b9a29b4adb084b411eb0f952a8c9331163dfd66e91",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations-terminal.json"
+    },
+    {
+      "bytes": 375255,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations.json",
+      "sha256": "f3eeab795afb9218f861cf3eaaeccd1ed8f82fda2b81f0f5c751a07b7c078133",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations.stderr"
+    },
+    {
+      "bytes": 88,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations.stdout",
+      "sha256": "2567cc72710c2cc104f3090c4d51004080d3b6b6a90c867f9d88d5f332dd5dad",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/allocations.stdout"
+    },
+    {
+      "bytes": 440,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing-launch.json",
+      "sha256": "e90a578d17b50951045d11dc7da044e920021782b1ba40726a0ee3760b64cf13",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing-launch.json"
+    },
+    {
+      "bytes": 509,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing-terminal.json",
+      "sha256": "37b582521bcf4f96028b7602e8088ba969d02b431c00bd6fe4da0fcfc1785278",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing-terminal.json"
+    },
+    {
+      "bytes": 459127,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing.json",
+      "sha256": "ff4c9ea25c03de2841d68133fe6f4ceb85eca7af3e293bba89fa0caf8eae99c4",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing.stderr"
+    },
+    {
+      "bytes": 89,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing.stdout",
+      "sha256": "25c4e4d4667092550c3750ac5fd00335dcdae1247162a74bcc4f8f16959440a9",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing.stdout"
+    }
+  ],
+  "original_bytes": 5803564,
+  "original_files": 80,
+  "report_inputs_included": 15,
+  "scope": "Original component/prototype sources, exact build graphs, source and input pins, all raw timings/counts and joined command identities. Large Raft/engine inputs and executables stay local; not standalone Raft replay.",
+  "total_cap_bytes": 83886080
+}

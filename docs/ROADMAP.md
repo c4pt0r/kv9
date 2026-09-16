@@ -11,9 +11,12 @@
 > smokes, sixteen timed cohorts and independent checks pass: **7,200,959 timed
 > calls / 63,451,454 items**, 48 drains, 64 exited timed lifetimes and complete
 > retained-byte verification. This measures current checkpoint-owner integration;
-> earlier comparisons retain their own source and client attribution. Next
-> quantify Raw-command lowering and fence evaluation separately from index work
-> using retained exact command/group inputs before choosing another runtime change.
+> earlier comparisons retain their own source and client attribution. The
+> [Raw apply experiment](RAW-APPLY-ATTRIBUTION.md) now joins exact original commands
+> and engine groups. Direct append lowers conversion mean 10.896%, saving only
+> 1.548 us/group, with lower p99 in both orders. Next compose it with real
+> MemEngine insertion/overwrite and snapshot workloads before runtime integration.
+> This is a component experiment; production and database QPS are unchanged.
 > The [completed observer capture](WRITE-OBSERVER-CAPTURE.md) identifies repeated
 > receipt misses. The independent [upper-bound candidate](WRITE-RECEIPT-UPPER-BOUND.md)
 > now passes 14 source-bound theorem statements / 82 obligations, local
