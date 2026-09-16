@@ -1,0 +1,57 @@
+{
+  "complete": true,
+  "members": 365,
+  "expanded_bytes": 154073960,
+  "compressed_bytes": 4776643,
+  "sha256": "80705ec8f41250dd46b6c4ea5ebf2b535aff496e5e2236fa59179307a4645a4a",
+  "all_members_read_back": true,
+  "local_root": "/mnt/data/kv9-work/inline-key-performance-20260916-first",
+  "processes": 52,
+  "timing_rows": 32,
+  "allocation_rows": 16,
+  "stage_one_gate_passed": false,
+  "stage_two": "not run; stopped by declared write gate",
+  "production_promoted": false,
+  "excluded_binaries": [
+    "build-counting-baseline/engine-interface",
+    "build-counting-candidate/engine-interface",
+    "build-timing-baseline/engine-interface",
+    "build-timing-candidate/engine-interface"
+  ],
+  "other_exclusions": [
+    "Duplicate groups.bin",
+    "Mutable progress/GitHub payloads and Python cache"
+  ],
+  "external": {
+    "corpus": "../outlined-mutation-path-v1/evidence.tar.gz:outlined/groups.bin",
+    "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+    "qualified_sources": "../inline-key-qualification-v1/evidence.tar.gz",
+    "qualification_sha256": "a4ba06b9691df33b25ece57652898f13d79fc281da5090dabdaf3c8f568fc5ab"
+  },
+  "binaries": {
+    "baseline": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/inline-key-performance-20260916-first/build-timing-baseline/engine-interface",
+        "sha256": "61154d00dad9a33f24bd3dad6d590fb2da5db8d35a45d7d797c9f3d8a074ec26",
+        "bytes": 1243104
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/inline-key-performance-20260916-first/build-counting-baseline/engine-interface",
+        "sha256": "680821b947f8a12a692684f0fe6f21fde37b75ade421c2383432ad705295946b",
+        "bytes": 1333128
+      }
+    },
+    "candidate": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/inline-key-performance-20260916-first/build-timing-candidate/engine-interface",
+        "sha256": "5998030ed82d5acf300ee30059283a15615995b86fbdb519de25ebc969b39fb9",
+        "bytes": 1246872
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/inline-key-performance-20260916-first/build-counting-candidate/engine-interface",
+        "sha256": "92b772a4cb21a582b5838b07afc1d70733079b163d093c4b6409bc16cb14a36e",
+        "bytes": 1337232
+      }
+    }
+  }
+}

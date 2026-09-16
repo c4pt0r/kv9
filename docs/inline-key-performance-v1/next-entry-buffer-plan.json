@@ -1,0 +1,30 @@
+{
+  "status": "Prospective source/layout/model/proof qualification only; no implementation or timing",
+  "question": "Can one owned buffer hold key and value bytes, removing one allocation for both short and long entries without enlarging the entry?",
+  "reason": "Inline40 reduced one request only for short keys, missed three material-write cases, and regressed long unique insertion by 5.077%/4.783%. Long final-index requested bytes rose by 2,402,302 bytes. Stop the inline40 and callback families; test a representation that can remove one buffer across lengths.",
+  "prior_work_checked": [
+    "docs/PERFORMANCE-EXPERIMENT-INDEX.md",
+    "docs/RESIDENT-INDEX-EXPERIMENTS.md",
+    "docs/RAWKV-PERFORMANCE-PATH.md",
+    "git log --all --regexp-ignore-case for coalloc/co.alloc/combined key/key.value buffer/packed entry: no matching prior candidate",
+    "Source search in docs for combined key/value buffer: no matching implementation"
+  ],
+  "source_evidence": {
+    "rpds_file": "/home/dongxu/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rpds-1.2.1/src/map/red_black_tree_map/mod.rs",
+    "sha256": "71189099680f42428692abb21eb19c6afe96da0e4695634f2866fb021a009e69",
+    "get_key_value_line": 821,
+    "equal_replacement_line": 394,
+    "finding": "rpds get_key_value returns the stored key, and insert replaces the entire Entry including the key on ordering equality. Existing node sharing remains unchanged."
+  },
+  "prototype": "Private owned entry key containing Box<[u8]> and a key-length boundary; its bytes are key || value. CfMap stores this private key and unit (). Equality/order/Borrow inspect only the key prefix. get_key_value returns the stored key from which the value suffix is borrowed or copied. Range output still returns independent public Vec key/value bytes. No new unsafe code or library mutation.",
+  "qualification": [
+    "First inspect actual type/entry layout, constructor code and allocation counts for empty/short/threshold/long keys and empty/small/large values. Do not assume size, one-allocation Vec-to-Box conversion, or an end-to-end speedup.",
+    "Use checked combined lengths before allocation; state representable-length/allocation premises explicitly. Preserve public key/value limits and error/atomic publication semantics. Never truncate or wrap a length.",
+    "Prove split/concatenate identity, key-only Eq/Ord/Borrow consistency and map operation refinement to byte key/value pairs. Same-key different-value replacement must replace the stored payload while old snapshots retain the old payload.",
+    "Keep original selected dependencies. Reuse independent engine model tests unchanged where applicable; add binary/empty/prefix key/value cross-boundary cases, same key with changing values, all CFs, ranges/seek/iter, deletion, refusal/revision and retained-view tests.",
+    "Keep range bounds and collected delete keys key-only to avoid copying irrelevant values. Preserve owned/borrowed read lifetimes and output ownership.",
+    "Only after source/layout/proof/model qualification, predeclare a matched original/long/pinned/unpinned allocation+timing screen. Values move into the private key representation; no value-mutating APIs may silently depend on the former map value type."
+  ],
+  "held": "Do not sweep inline capacities or repeat unchanged inline40, pointer callbacks, alignment, owned-buffer consumption, coalescing, borrowed upsert or packed-prefix candidates.",
+  "promotion": "Production unchanged. Material matched database benefit, full local correctness, ordinary recovery, actual Chaos Mesh and three-copy Redis throughput/latency remain required. No consistency or durability concession."
+}
