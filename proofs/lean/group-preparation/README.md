@@ -1,5 +1,12 @@
 # Durable group preparation model
 
+The 2026-09-16 source-pin review includes the new namespace binding module and
+private dispatch directory. Neither grants preparation authority or changes
+the recover-only StorageReady/Active path. Group identity is validated before
+its driver starts; directory handles are cleared before workers/store guards
+are released. The preparation model is unchanged; public scope is covered by
+the separate data-range model.
+
 `Preparation.lean` proves nine statements about the local preparation protocol,
 including inductive safety for arbitrary finite traces, exact binding and two
 durable stores before a successful observation, no initialization after durable

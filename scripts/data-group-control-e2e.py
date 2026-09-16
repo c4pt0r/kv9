@@ -24,6 +24,7 @@ def main():
     parser.add_argument('--bin', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--base-port', type=int, default=26810)
+    parser.add_argument('--exercise-raw', action='store_true', help='also bind new Raw keyspaces and verify public data-group IO')
     args = parser.parse_args()
     require(1024 < args.base_port < 32700, 'use non-ephemeral ports')
     binary, output = args.bin.resolve(), args.output.resolve()
@@ -39,7 +40,7 @@ def main():
                     runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                     revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
                     dirty=bool(subprocess.check_output(['git', 'status', '--porcelain'])),
-                    chaos_mesh=False, scaling_benchmark=False, public_data_routing=False)
+                    chaos_mesh=False, scaling_benchmark=False, public_data_routing=args.exercise_raw)
     (output / 'runner.py').write_bytes(Path(__file__).read_bytes())
     addresses = {i: f'127.0.0.1:{args.base_port+i}' for i in range(1, 4)}
 
@@ -48,11 +49,14 @@ def main():
         call_env = env if token is None else dict(env, KV9_CLIENT_TOKEN=token)
         result = subprocess.run([str(binary), *map(str, arguments)], env=call_env, text=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=40)
+        if success is None:
+            label = f'{label}-probe-{len(commands)}'
         (output / f'{label}.log').write_text(result.stdout)
         commands.append(dict(label=label, arguments=list(map(str, arguments)), exit_code=result.returncode,
                              started_ns=started, finished_ns=time.time_ns()))
-        require((result.returncode == 0) == success, f'{label}: unexpected exit; see {output}')
-        return dict(word.split('=', 1) for word in result.stdout.split() if '=' in word)
+        if success is not None:
+            require((result.returncode == 0) == success, f'{label}: unexpected exit; see {output}')
+        return dict(dict(word.split('=', 1) for word in result.stdout.split() if '=' in word), exit_code=result.returncode)
 
     def start(node, label):
         log = (output / f'{label}-{node}.log').open('w')
@@ -120,6 +124,42 @@ def main():
         return command(label, 'client', 'create-data-group', '--addr', addresses[node],
                        '--root-digest', root, '--operation-id', f'{operation:032x}', '--voters', '1,2,3', **kwargs)
 
+    keyspaces = {}
+
+    def data_leader(region):
+        return next((n for n in processes if groups(n).get(region, {}).get('role') == 'Leader'), None)
+
+    def raw_get(region, expected, label):
+        node = data_leader(region)
+        if node is None:
+            return False
+        result = command(label, 'client', 'raw-get', '--addr', addresses[node], '--keyspace', keyspaces[region],
+                         '--key-hex', '73616d652d6b6579', success=None)
+        return result['exit_code'] == 0 and result.get('value_hex') == expected
+
+    def raw_put(region, value, label):
+        node = data_leader(region)
+        require(node is not None, 'data leader absent before one-shot write')
+        receipt = command(label, 'client', 'raw-put', '--addr', addresses[node], '--keyspace', keyspaces[region],
+                          '--key-hex', '73616d652d6b6579', '--value-hex', value)
+        require(int(receipt['applied_term']) > 0 and int(receipt['applied_index']) > 0, 'missing exact write receipt')
+
+    def bind(request, label, node, root):
+        region = int(request['region_id'])
+        result = command(label, 'client', 'create-data-keyspace', '--addr', addresses[node], '--root-digest', root,
+                         '--creation-task', request['task_id'], '--name', f'raw-group-{region}')
+        require(int(result['region_id']) == region, 'namespace bound to another group')
+        keyspaces[region] = result['keyspace_id']
+        # Read-only probes may retry unconfirmed reads. Writes are never retried.
+        def available():
+            node = data_leader(region)
+            if node is None:
+                return False
+            r = command(f'{label}-ready', 'client', 'raw-get', '--addr', addresses[node], '--keyspace', keyspaces[region],
+                        '--key-hex', '73616d652d6b6579', success=None)
+            return r['exit_code'] == 0 and r.get('found') == 'false'
+        wait(f'public Raw route for group {region}', available)
+
     try:
         incarnations = []
         for node in addresses:
@@ -154,6 +194,21 @@ def main():
         require(first['group_outcome'] == second['group_outcome'] == 'requested', 'new desires lack mutation receipts')
         require(first['readiness'] == second['readiness'] == 'not_asserted', 'receipt overclaims readiness')
         wait('two independently elected durable groups', lambda: ready(regions))
+        if args.exercise_raw:
+            bind(first, 'bind-first', owner, root)
+            bind(second, 'bind-second', owner, root)
+            for region in regions:
+                raw_put(region, f'{region:08x}', f'write-{region}-before-loss')
+                wait(f'public read for {region}', lambda r=region: raw_get(r, f'{r:08x}', f'read-{r}-before-loss'))
+            victim = data_leader(regions[0])
+            stop(victim)
+            wait('data groups elect after data-leader process death', lambda: ready(regions))
+            for region in regions:
+                wait(f'acknowledged data survives for {region}', lambda r=region: raw_get(r, f'{r:08x}', f'read-{r}-after-data-loss'))
+                raw_put(region, f'{region:08x}', f'write-{region}-after-data-loss')
+            start(victim, 'data-leader-returned')
+            wait('data-leader voter catches up', lambda: ready(regions))
+            owner = wait('metadata leader before next failure', leader)
         capture('before-loss')
         stop(owner)
         successor = wait('metadata leader after process death', leader)
@@ -164,6 +219,9 @@ def main():
         third = create('request-third-with-one-node-down', successor, 3, root)
         regions.append(int(third['region_id']))
         wait('surviving replicas activate a new group', lambda: ready(regions))
+        if args.exercise_raw:
+            bind(third, 'bind-third-with-voter-down', successor, root)
+            raw_put(regions[-1], f'{regions[-1]:08x}', 'write-third-with-voter-down')
         start(owner, 'returned')
         wait('returned replica reconciles missing desire', lambda: ready(regions))
         capture('returned')
@@ -172,6 +230,9 @@ def main():
         for node in addresses:
             start(node, 'all-reopened')
         wait('all processes recover all active groups', lambda: ready(regions))
+        if args.exercise_raw:
+            for region in regions:
+                wait(f'public data recovered for {region}', lambda r=region: raw_get(r, f'{r:08x}', f'read-{r}-all-reopened'))
         capture('all-reopened')
         # Corrupt only one stopped replica's one group; other groups and metadata survive.
         stop(owner)
@@ -182,9 +243,12 @@ def main():
              and status(owner).get('endpoint_ready') == 'true' and ready(regions[1:]))
         require(not missing.exists(), 'recovery recreated a missing active log')
         capture('one-invalid-group')
+        if args.exercise_raw:
+            for region in regions[1:]:
+                wait(f'healthy data group remains readable {region}', lambda r=region: raw_get(r, f'{r:08x}', f'read-{r}-beside-invalid'))
         for node in processes:
             require(len(groups(node)) == 3, 'invalid requests or retries created an extra group')
-        manifest.update(verdict='accepted', regions=regions, independent_processes=3,
+        manifest.update(verdict='accepted', regions=regions, keyspaces=keyspaces, independent_processes=3,
                         checks=['credential/root/follower refusals', 'online request and autonomous activation',
                                 'new exact confirmation after leader loss', 'new group with one voter down',
                                 'returning voter catches durable desires', 'all-process recovery',

@@ -29,6 +29,8 @@ service Kv9 {
 
   // Metadata / administration.
   rpc CreateDataGroup(CreateDataGroupRequest) returns (CreateDataGroupResponse);
+  // Distinct method: old servers must refuse, never silently create a legacy keyspace.
+  rpc CreateDataKeyspace(CreateDataKeyspaceRequest) returns (CreateDataKeyspaceResponse);
   rpc CreateKeyspace(CreateKeyspaceRequest) returns (CreateKeyspaceResponse);
   rpc ListKeyspaces(ListKeyspacesRequest) returns (ListKeyspacesResponse);
   rpc GetRegion(GetRegionRequest) returns (GetRegionResponse);
@@ -44,6 +46,19 @@ service Kv9 {
 }
 
 message Empty {}
+
+message CreateDataKeyspaceRequest {
+  bytes root_digest = 1;
+  uint64 creation_task = 2;
+  string name = 3;
+  uint64 tenant_id = 4;
+}
+message CreateDataKeyspaceResponse {
+  bytes binding = 1; // Canonical KV9RNG01, not proof of data-group readiness.
+  bool changed = 2;
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
+}
 
 // Create an initially empty, fixed-voter group and request local activation.
 // This does not assign a key range or authorize public KV access.

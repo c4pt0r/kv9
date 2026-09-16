@@ -12,6 +12,13 @@ theorem's axioms, rejects six semantic defects, and rejects two proof-policy
 violations. The observed dependencies are standard Lean `propext`,
 `Classical.choice` and `Quot.sound`; no project axiom or proof hole is allowed.
 
+The 2026-09-16 source-pin review raises the internal package from V2 to V3 to
+exclude pre-range writers for both metadata and data traffic. There is still
+no fallback, and each generation uses distinct metadata/data methods. The
+same-generation old-method fixture continues to test method isolation; the
+separate production-binary V2-to-V3 upgrade gate tests the new version floor.
+This strengthens admission without changing the model's method/queue rules.
+
 ## Model and implementation mapping
 
 | Model | Implementation | Boundary |

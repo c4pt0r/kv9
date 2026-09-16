@@ -15,7 +15,8 @@ use crate::{Error, NodeId, Result, RootDescriptor, RootDigest, StoreIdentity, St
 pub const STORE_LIFECYCLE_FILE: &str = "kv9-store-lifecycle";
 const LOCK_FILE: &str = "kv9-store-lock";
 const LEGACY_MAGIC: &[u8; 8] = b"KV9LIFE1";
-const MAGIC: &[u8; 8] = b"KV9LIFE2";
+const PRE_RANGE_MAGIC: &[u8; 8] = b"KV9LIFE2";
+const MAGIC: &[u8; 8] = b"KV9LIFE3";
 const PAYLOAD_LEN: usize = 8 + 8 + 16 + 1 + 32;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -50,7 +51,10 @@ impl StoreRecord {
     }
 
     fn decode(bytes: &[u8]) -> Result<Self> {
-        if bytes.len() != PAYLOAD_LEN + 32 || (&bytes[..8] != MAGIC && &bytes[..8] != LEGACY_MAGIC)
+        if bytes.len() != PAYLOAD_LEN + 32
+            || (&bytes[..8] != MAGIC
+                && &bytes[..8] != LEGACY_MAGIC
+                && &bytes[..8] != PRE_RANGE_MAGIC)
         {
             return Err(Error::Config(
                 "invalid store lifecycle record format".into(),
@@ -118,7 +122,7 @@ impl StoreGuard {
                 crate::fs::sync_ancestors(&crate::fs::OsFileSystem, directory).map_err(|e| {
                     Error::Config(format!("publish recovered store lifecycle: {e}"))
                 })?;
-                (Some(record), &bytes[..8] == LEGACY_MAGIC)
+                (Some(record), &bytes[..8] != MAGIC)
             }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => (None, false),
             Err(e) => return Err(Error::Config(format!("read store lifecycle: {e}"))),
@@ -136,8 +140,8 @@ impl StoreGuard {
         self.record
     }
 
-    /// Persist the V2 format before this process opens its Raft owner. V1
-    /// readers reject this header; the V2 wire service rejects V1 processes
+    /// Persist the V3 format before this process opens its Raft owner. V1/V2
+    /// readers reject this header; the V3 wire service rejects V1/V2 processes
     /// that still own other stores. Preserve node, incarnation, phase and root.
     /// A failed publication poisons the guard, including a failed directory
     /// sync after rename, so no owner may start on a merely visible upgrade.
@@ -444,6 +448,38 @@ mod tests {
             assert!(!recovered.legacy_format);
             assert_eq!(recovered.record(), Some(record));
             drop(recovered);
+            fs::remove_dir_all(path).unwrap();
+        }
+    }
+
+    #[test]
+    fn pre_range_v2_writer_is_fenced_before_owner_reuse() {
+        for phase in [
+            StorePhase::Prepared,
+            StorePhase::Bound(RootDigest::from_bytes([7; 32])),
+            StorePhase::Active(RootDigest::from_bytes([7; 32])),
+        ] {
+            let path = directory();
+            fs::create_dir_all(&path).unwrap();
+            let record = StoreRecord {
+                node_id: NodeId(4),
+                incarnation: StoreIncarnation::mint().unwrap(),
+                phase,
+            };
+            let mut bytes = record.encode();
+            bytes[..8].copy_from_slice(PRE_RANGE_MAGIC);
+            let digest = RootDigest::sha256(&bytes[..PAYLOAD_LEN]);
+            bytes[PAYLOAD_LEN..].copy_from_slice(digest.as_bytes());
+            fs::write(path.join(STORE_LIFECYCLE_FILE), bytes).unwrap();
+            let mut guard = StoreGuard::lock(&path).unwrap();
+            assert!(guard.legacy_format);
+            guard.fence_legacy_writers().unwrap();
+            assert_eq!(guard.record(), Some(record));
+            assert_eq!(
+                &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()[..8],
+                MAGIC
+            );
+            drop(guard);
             fs::remove_dir_all(path).unwrap();
         }
     }

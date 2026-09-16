@@ -3,6 +3,10 @@
 Updated 2026-09-16. Parent issues: [#9](https://github.com/c4pt0r/kv9/issues/9),
 [#22](https://github.com/c4pt0r/kv9/issues/22).
 
+Follow-up: [public data routing](DATA-RANGE-ROUTING.md) raises the internal
+package to V3, retaining separate metadata/data methods and no fallback. The
+original V2 method-isolation evidence below remains an earlier checkpoint.
+
 ## Problem and resulting behavior
 
 Older V2 `BatchRaft` receivers ignored `region_id`. Sending a data-group message

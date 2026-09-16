@@ -16,18 +16,19 @@
     "selected_has_exact_identity_and_is_not_failed"
   ],
   "source_sha256": {
-    "crates/meta/src/data_groups.rs": "919abfcad3eadf96c7f6e7e4753f4116a65482c4882c9e099d6319023d1784e4",
+    "crates/meta/src/data_groups.rs": "472dcc10d1b2afa1e79d213dd80af7d82cd5297cff1ad8332ac22509b391393e",
     "crates/meta/src/data_groups/activation.rs": "cb13e683b0dc4d2508da9784c7e8da2396c7b753b4cfa91e73c79a7652e31f2d",
-    "crates/server/src/api.rs": "818807268a24459303b8200ff1246114dec781fe4a185a54c5967e52bfc91fd7",
-    "crates/server/src/data_groups.rs": "86c3bc74a15d99555d2a8e89910b1ca30b97ac88309326469ad5ee5a79a5a65d",
-    "crates/server/proto/kv9.proto": "bea58d46133f35d96dec6d0f74ff1ba1f7d090756809393cb7ac122f5d79686a",
-    "crates/server/src/grpc.rs": "688bbf773166620954b133191309f8c1b0bd1418cd77c1a8c604e911fd59b01e",
-    "crates/server/src/region_manager.rs": "1f7c1d6644f682395c4b1514428f64d23bc720f47acee370f951ac4baf0d6122",
+    "crates/server/src/api.rs": "219db67227dc492941054bc23849c8d154db2be23a4b7ac9e77835a179e490ef",
+    "crates/server/src/data_groups.rs": "030e45d2bf61ac2b0d6847b45a239a4d14d6e1f524b0e2f7a5dada358b6096aa",
+    "crates/server/proto/kv9.proto": "2bc0d3a7f30051cd98f4d07e936114f1f6538c0689d68ad03b569f2dc39d01df",
+    "crates/server/src/grpc.rs": "31b7f7edda603cac15c7f55cda1d4f9718e5e40a3d2dffde2ebaf36c1aedccc6",
+    "crates/server/src/region_manager.rs": "fee1851a3b840d8a0b6bdf8f3a2ec5eceb957d9dcaf75060789d1cc86a586391",
     "crates/server/src/region_manager/tests.rs": "92cc48a926399d6c2b61d6c5c33c61f71054ea4775d7846685c3d70a8fb3aac1",
-    "crates/server/src/runtime.rs": "81bce0a356dbd5c4a234d37a14bd3ee078a7dd6b4abd15d2523652e5d1a26432",
-    "src/data_group_cli.rs": "0bc47dfdd2a3f0641878ccae042ba6479d8550af7b539d4cceb1c18833cddb92",
+    "crates/server/src/runtime.rs": "341f4773e6646747368c5eea411c25a83dc137b975ca5d961576d06f680e4c6f",
+    "src/data_group_cli.rs": "5f9a487339c85cff9cdd077a41838f03e1a5111b19a7a803b30fd052bb7365ea",
     "proofs/lean/group-control/Control.lean": "9bfa17429829a42b876e706e6b6a23f439dbcddc3e99a869d1f012393907aca7",
     "scripts/prove-group-control.py": "b04ffb6c2bba0b01ab23c00a954b5ebdde2b6938cd72a2d63ccca888cacb7293",
-    "scripts/data-group-control-e2e.py": "9f7f35fd85684c108683fb8f170350039476b772f608b23a30a27790684a1351"
+    "scripts/data-group-control-e2e.py": "69d4d24c4b1d8ac4a6b1546ddb02ed32ee62c9bbf1e6aa2685cec14f45cca42f",
+    "proofs/lean/group-control/README.md": "479082d17333d0ea5981a717ea2e69b7dbb586a297f79bcc08e3fa9fd9bab3f4"
   }
 }

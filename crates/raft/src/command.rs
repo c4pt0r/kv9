@@ -176,6 +176,12 @@ impl ManifestChangePayload {
 /// The set of commands the metadata-plane raft group replicates (ROADMAP Phase 1).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
+    /// Initial local range publication or one-way sealing. The CAS and identity
+    /// check execute in this group's ordered apply, never against another log.
+    DataRange {
+        expected: Option<kv9_common::RootDigest>,
+        next: kv9_common::data_range::DataRange,
+    },
     /// A single raw put into the state machine's KV (the `propose(put)→apply→get`
     /// round-trip of the first Phase-1 task).
     Put {
@@ -298,6 +304,11 @@ impl Command {
     pub fn to_write_batch(&self) -> kv9_common::Result<WriteBatch> {
         let mut wb = WriteBatch::new();
         match self {
+            Command::DataRange { .. } => {
+                return Err(kv9_common::Error::Raft(
+                    "data range requires ordered ownership CAS".into(),
+                ));
+            }
             Command::Put { cf, key, value } => {
                 wb.put(cf_from_code(*cf), key.clone(), value.clone());
             }
@@ -373,6 +384,11 @@ impl Command {
                 out.extend_from_slice(&node.to_be_bytes());
             }
             Command::Noop => out.push(TAG_NOOP),
+            Command::DataRange { expected, next } => {
+                out.push(TAG_DATA_RANGE);
+                put_bytes(&mut out, expected.as_ref().map_or(&[], |d| d.as_bytes()));
+                put_bytes(&mut out, &next.encode());
+            }
             Command::ManifestChange(p) => {
                 out.push(TAG_MANIFEST_CHANGE);
                 out.extend_from_slice(&p.region.to_be_bytes());
@@ -411,6 +427,22 @@ impl Command {
             )));
         }
         let cmd = match r.u8()? {
+            TAG_DATA_RANGE => {
+                let expected = r.bytes()?;
+                let expected = if expected.is_empty() {
+                    None
+                } else {
+                    Some(kv9_common::RootDigest::from_bytes(
+                        expected.try_into().map_err(|_| {
+                            kv9_common::Error::Raft("invalid range predecessor digest".into())
+                        })?,
+                    ))
+                };
+                Command::DataRange {
+                    expected,
+                    next: kv9_common::data_range::DataRange::decode(&r.bytes()?)?,
+                }
+            }
             TAG_PUT => Command::Put {
                 cf: r.u8()?,
                 key: r.bytes()?,
@@ -488,6 +520,7 @@ const TAG_CONF_CHANGE: u8 = 3;
 const TAG_NOOP: u8 = 4;
 const TAG_WRITE: u8 = 5;
 const TAG_FENCED: u8 = 6;
+const TAG_DATA_RANGE: u8 = 8;
 const TAG_MANIFEST_CHANGE: u8 = 7;
 const OP_PUT: u8 = 1;
 const OP_DELETE: u8 = 2;

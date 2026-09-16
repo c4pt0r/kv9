@@ -2,13 +2,13 @@ use kv9_common::{NodeId, RootDigest};
 use kv9_server::data_groups::{DataGroupClient, DataGroupRpcError};
 use std::{collections::HashMap, process::ExitCode};
 
-pub(super) fn run(mut args: impl Iterator<Item = String>) -> ExitCode {
+pub(super) fn run(mut args: impl Iterator<Item = String>, keyspace: bool) -> ExitCode {
     let mut values = HashMap::new();
     while let Some(flag) = args.next() {
-        if !matches!(
-            flag.as_str(),
-            "--addr" | "--root-digest" | "--operation-id" | "--voters"
-        ) {
+        if !(matches!(flag.as_str(), "--addr" | "--root-digest")
+            || (keyspace && matches!(flag.as_str(), "--creation-task" | "--name" | "--tenant-id"))
+            || (!keyspace && matches!(flag.as_str(), "--operation-id" | "--voters")))
+        {
             return super::command_error(&format!("unknown data group flag {flag}"));
         }
         let Some(value) = args.next() else {
@@ -18,9 +18,55 @@ pub(super) fn run(mut args: impl Iterator<Item = String>) -> ExitCode {
             return super::command_error(&format!("duplicate data group flag {flag}"));
         }
     }
-    match execute(values) {
+    match if keyspace {
+        execute_keyspace(values)
+    } else {
+        execute(values)
+    } {
         Ok(code) => code,
         Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_keyspace(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let task = required("--creation-task")?
+        .parse::<u64>()
+        .map_err(|_| "invalid --creation-task")?;
+    let tenant = values
+        .get("--tenant-id")
+        .map(|v| v.parse::<u64>().map(kv9_common::TenantId))
+        .transpose()
+        .map_err(|_| "invalid --tenant-id")?
+        .unwrap_or(kv9_common::TenantId::DEFAULT);
+    let name = required("--name")?;
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.create_keyspace(root, task, name, tenant))
+    {
+        Ok(r) => {
+            let kind = if r.changed {
+                "mutation"
+            } else {
+                "confirmation"
+            };
+            println!("keyspace_outcome={}\nkeyspace_id={}\nregion_id={}\n{kind}_term={}\n{kind}_index={}\nreadiness=not_asserted",if r.changed {"requested"}else{"confirmed"},r.range.keyspace.0,r.range.region.0,r.applied.term,r.applied.index);
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(e) => {
+            println!("keyspace_outcome=unconfirmed");
+            eprintln!("{e}");
+            Ok(ExitCode::FAILURE)
+        }
     }
 }
 

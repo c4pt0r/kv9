@@ -9,6 +9,7 @@
 pub mod anchor;
 pub mod codec;
 pub mod config;
+pub mod data_range;
 pub mod error;
 pub mod fs;
 pub mod ids;

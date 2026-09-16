@@ -174,6 +174,7 @@ batch_service! {
     kv_check_txn_status: KvCheckTxnStatusRequest => KvCheckTxnStatusResponse,
     create_keyspace: CreateKeyspaceRequest => CreateKeyspaceResponse,
     create_data_group: CreateDataGroupRequest => CreateDataGroupResponse,
+    create_data_keyspace: CreateDataKeyspaceRequest => CreateDataKeyspaceResponse,
     list_keyspaces: ListKeyspacesRequest => ListKeyspacesResponse,
     get_region: GetRegionRequest => GetRegionResponse,
     split_region: SplitRegionRequest => Empty,

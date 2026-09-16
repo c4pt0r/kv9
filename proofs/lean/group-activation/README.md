@@ -12,6 +12,13 @@ errors, audits each theorem's axioms, rejects eight semantic defects and rejects
 two proof-policy violations. Accepted compiler: Lean 4.33.1. Standard Lean
 axioms are allowed; custom axioms and proof holes are forbidden.
 
+The 2026-09-16 source-pin review adds immutable group identity to the state
+machine before driver registration. Private Raw dispatch handles refer to that
+existing owner; they create no additional pump or slot. Shutdown clears the
+directory before stopping the worker pool and releasing group/store guards.
+Range installation follows activation and is covered by the data-range model.
+The existing activation model and its durable-before-voting premises remain.
+
 ## Refinement record
 
 | Model | Rust implementation and interpretation |

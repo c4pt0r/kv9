@@ -13,7 +13,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use kv9_common::{Error, RegionId, Result, RootDigest, StoreIdentity, StoreIncarnation};
-use kv9_engine::{DurableAppliedPosition, ReplicatedEngine, WalEngine};
+use kv9_engine::{DurableAppliedPosition, Engine, ReplicatedEngine, WalEngine};
 use kv9_meta::data_groups::{
     committed_creations, CommittedCreation, CreationIntent, MAX_INTENT_BYTES,
 };
@@ -85,6 +85,7 @@ pub struct GroupPreparation {
 }
 
 struct PreparedLocal {
+    range_proposal: Option<kv9_raft::ProposedAt>,
     observation: GroupPreparation,
     phase: Phase,
     intent: CreationIntent,
@@ -102,6 +103,7 @@ enum LocalGroup {
 /// The enclosing NodeRuntime owns the exclusive parent store lock. Each child
 /// also has its own lock; a second preparation cannot open its logs concurrently.
 pub(crate) struct RegionManager {
+    pub(crate) raw_directory: Arc<crate::runtime::range_api::RawDirectory>,
     directory: PathBuf,
     identity: StoreIdentity,
     groups: BTreeMap<RegionId, LocalGroup>,
@@ -201,6 +203,7 @@ fn publish(
 impl RegionManager {
     pub(crate) fn new(directory: &Path, identity: StoreIdentity) -> Self {
         Self {
+            raw_directory: Arc::default(),
             directory: directory.join("data-groups"),
             identity,
             groups: BTreeMap::new(),
@@ -276,7 +279,8 @@ impl RegionManager {
                 .take()
                 .ok_or_else(|| invalid("group storage already has a voter owner"))?,
         )?);
-        let state = MemStateMachine::with_engine(prepared.engine.clone())?;
+        let mut state = MemStateMachine::with_engine(prepared.engine.clone())?;
+        state.set_data_group(prepared.intent.root(), region, prepared.intent.digest())?;
         let driver = NodeDriver::new(peer, transport.register_group(region)?, state)?;
         self.pool.as_ref().unwrap().register(driver.clone())?;
         prepared.driver = Some(driver);
@@ -362,6 +366,69 @@ impl RegionManager {
         serde_json::to_string(&observations).expect("serialize group observations")
     }
 
+    /// Publish serving handles only after the range record is applied in the
+    /// target group. Propose at most one initialization per turn and term.
+    pub(crate) fn reconcile_ranges(
+        &mut self,
+        bindings: &[kv9_meta::data_groups::ranges::CommittedRange],
+    ) -> Result<()> {
+        for binding in bindings {
+            let range = binding.range();
+            let Some(LocalGroup::Ready(prepared)) = self.groups.get_mut(&range.region) else {
+                continue;
+            };
+            let Some(driver) = &prepared.driver else {
+                continue;
+            };
+            if prepared.intent != *binding.creation().intent() {
+                return Err(invalid("range and local creation differ"));
+            }
+            let status = driver.status();
+            if status.fatal.is_some() {
+                continue;
+            }
+            let current = prepared
+                .engine
+                .get(
+                    kv9_engine::ColumnFamily::Default,
+                    kv9_common::data_range::RANGE_KEY,
+                )?
+                .map(|b| kv9_common::data_range::DataRange::decode(&b))
+                .transpose()?;
+            if let Some(current) = current {
+                if current == *range {
+                    self.raw_directory
+                        .insert(crate::runtime::range_api::RawGroup::new(
+                            range.clone(),
+                            prepared.engine.clone(),
+                            driver.clone(),
+                        ));
+                } else if !current.may_follow(range) {
+                    return Err(invalid(
+                        "applied range differs from committed namespace binding",
+                    ));
+                }
+                continue;
+            }
+            if status.role == kv9_raft::Role::Leader
+                && prepared
+                    .range_proposal
+                    .is_none_or(|p| p.term != status.term)
+            {
+                match driver.propose(&kv9_raft::Command::DataRange {
+                    expected: None,
+                    next: range.clone(),
+                }) {
+                    Ok(at) => prepared.range_proposal = Some(at),
+                    Err(Error::NotLeader { .. }) => {}
+                    Err(error) => return Err(error),
+                }
+                break;
+            }
+        }
+        Ok(())
+    }
+
     fn driver(&self, region: RegionId) -> Result<&NodeDriver<DiskRaftStorage, WalEngine>> {
         match self.groups.get(&region) {
             Some(LocalGroup::Ready(p)) => p
@@ -374,7 +441,7 @@ impl RegionManager {
     }
 
     // Test harness access cannot escape through a public runtime API. D02
-    // must establish range/epoch authorization before public writes are wired.
+    // uses separate private RawGroup handles with ordered range/epoch fences.
     #[cfg(test)]
     pub(crate) fn driver_for_tests(
         &self,
@@ -384,6 +451,7 @@ impl RegionManager {
     }
 
     pub(crate) fn shutdown(&mut self) {
+        self.raw_directory.clear();
         // Join before releasing any group lock or the parent's StoreGuard.
         self.pool.take();
         self.groups.clear();
@@ -576,6 +644,7 @@ impl RegionManager {
             storage: Some(storage),
             engine,
             driver: None,
+            range_proposal: None,
             _lock: lock,
         })
     }

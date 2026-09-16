@@ -37,7 +37,7 @@ impl<E: ReplicatedEngine> CatalogFenceAdjudicator<E> {
 
 impl<E: ReplicatedEngine + 'static> FenceAdjudicator for CatalogFenceAdjudicator<E> {
     fn independent_of_raw_writes(&self) -> bool {
-        // The sole read below addresses REGIONS_DESC in the System keyspace.
+        // Both REGIONS_DESC and KEYSPACES_DESC reads use the System keyspace.
         // The apply grouper validates every mutation's Raw mode, non-system
         // keyspace and Default CF before relying on this declaration.
         true
@@ -71,6 +71,11 @@ impl<E: ReplicatedEngine + 'static> FenceAdjudicator for CatalogFenceAdjudicator
         let Some(region) = Tables::<E>::region_by_id_in(&txn, RegionId(fence.region_id))? else {
             return Ok(false);
         };
+        if Tables::<E>::keyspace_in(&txn, region.keyspace_id)?
+            .is_some_and(|ks| ks.config == kv9_meta::data_groups::ranges::DATA_KEYSPACE_CONFIG)
+        {
+            return Ok(false);
+        }
 
         let authoritative = RegionEpoch {
             conf_ver: region.epoch_conf,

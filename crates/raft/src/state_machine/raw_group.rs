@@ -75,7 +75,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
                     let adjudicator = self.adjudicator.as_ref().ok_or_else(|| {
                         Error::Raft("Raw apply group requires fence adjudicator".into())
                     })?;
-                    if adjudicator.is_fresh(fence)? {
+                    if adjudicator.is_fresh_write(fence, inner)? {
                         (inner.to_write_batch(), ApplyResult::write_ok(index))
                     } else {
                         (

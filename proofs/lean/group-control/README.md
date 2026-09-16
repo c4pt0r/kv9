@@ -13,6 +13,13 @@ including restart. A constructive trace shows that a successful request can
 be acknowledged before any local group is running. Reconciliation selects at
 most one eligible request per turn and skips foreign, running and failed slots.
 
+The 2026-09-16 source-pin review includes the new kind-102 namespace binding
+path. It may stage the same immutable kind-101 activation desire before adding
+its namespace row, under the same atomic planner/commit boundary. Subsequent
+range publication is separate from activation and covered by the data-range
+model. Existing creation-only requests still consume two TASKS rows; binding a
+namespace consumes a third. No control-model transition or theorem changes.
+
 Run with Lean 4.33.1:
 
 ```sh

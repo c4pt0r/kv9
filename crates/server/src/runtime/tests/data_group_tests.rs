@@ -127,6 +127,267 @@ impl Drop for ActiveCluster {
     }
 }
 
+#[test]
+fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
+    use crate::data_groups::DataGroupClient;
+    use crate::grpc::{RawClient, RawClientOutcome};
+    let mut cluster = ActiveCluster::start();
+    let first = cluster.create(81);
+    let second = cluster.create(82);
+    let metadata_leader = cluster_leader(&cluster.runtimes).unwrap();
+    let mut admin = DataGroupClient::connect(
+        &cluster.runtimes[metadata_leader].addr.to_string(),
+        "active-test",
+    )
+    .unwrap();
+    let a = admin
+        .create_keyspace(
+            cluster.root.digest(),
+            first.task(),
+            "public-first",
+            TenantId::DEFAULT,
+        )
+        .unwrap();
+    let b = admin
+        .create_keyspace(
+            cluster.root.digest(),
+            second.task(),
+            "public-second",
+            TenantId::DEFAULT,
+        )
+        .unwrap();
+    let retry = admin
+        .create_keyspace(
+            cluster.root.digest(),
+            first.task(),
+            "public-first",
+            TenantId::DEFAULT,
+        )
+        .unwrap();
+    assert!(!retry.changed);
+    assert_eq!(retry.range, a.range);
+    assert!(retry.applied.index > a.applied.index);
+    let bindings = [a.range, b.range];
+    // A pending/nonlocal dispatch entry must never send this namespace through
+    // the legacy metadata engine, even with its currently advertised epoch.
+    for range in &bindings {
+        let node = &cluster.runtimes[metadata_leader].node;
+        let txn = node.meta_raft.store.begin().unwrap();
+        assert!(matches!(
+            check_context_in(
+                &node.meta_raft.store,
+                &txn,
+                range.keyspace,
+                &kv9_region::RegionEpoch {
+                    conf_ver: 1,
+                    version: 1
+                },
+                KeySpan::Point(b"same-key")
+            ),
+            Err(Error::MetaNotReady(_))
+        ));
+        assert!(!kv9_raft::FenceAdjudicator::is_fresh(
+            &crate::fence::CatalogFenceAdjudicator::new(node.clone()),
+            &kv9_raft::RegionFence {
+                region_id: range.region.0,
+                conf_ver: 1,
+                version: 1
+            }
+        )
+        .unwrap());
+    }
+    wait_for(
+        &mut cluster.runtimes,
+        25,
+        "public data bindings applied",
+        |rts| {
+            bindings.iter().all(|r| {
+                rts.iter()
+                    .all(|rt| rt.data_groups.raw_directory.get(r.keyspace).is_some())
+                    && data_leader(rts, r.region).is_some()
+            })
+        },
+    );
+    for (i, range) in bindings.iter().enumerate() {
+        let leader = data_leader(&cluster.runtimes, range.region).unwrap();
+        let client = RawClient::connect(
+            &cluster.runtimes[leader].addr.to_string(),
+            "active-test",
+            range.keyspace.0,
+        )
+        .unwrap();
+        let value = vec![i as u8 + 1; 4];
+        let RawClientOutcome::Ok(receipt) =
+            client.put(b"same-key".to_vec(), value.clone()).unwrap()
+        else {
+            panic!("data leader refused write")
+        };
+        assert!(receipt.applied_index > 0 && receipt.applied_term > 0);
+        assert!(
+            matches!(client.get(b"same-key".to_vec()).unwrap(), RawClientOutcome::Ok(Some(actual)) if actual == value)
+        );
+        // Exercise both async batch handlers through the actual public service.
+        // More than one delete chunk checks the per-group selection/fence path.
+        let runtime = tokio::runtime::Runtime::new().unwrap();
+        runtime.block_on(async {
+            use crate::grpc::proto;
+            let mut peer = proto::kv9_client::Kv9Client::connect(format!(
+                "http://{}",
+                cluster.runtimes[leader].addr
+            ))
+            .await
+            .unwrap();
+            let context = Some(proto::RequestContext {
+                keyspace_id: range.keyspace.0,
+                region_epoch: Some(proto::RegionEpoch {
+                    conf_ver: 1,
+                    version: 1,
+                }),
+            });
+            let pairs: Vec<_> = (0..RAW_DELETE_RANGE_CHUNK + 1)
+                .map(|n| proto::KeyValue {
+                    key: format!("batch-{n:05}").into_bytes(),
+                    value: value.clone(),
+                })
+                .collect();
+            let mut put = tonic::Request::new(proto::RawBatchPutRequest {
+                context,
+                pairs: pairs.clone(),
+            });
+            put.metadata_mut()
+                .insert("authorization", "Bearer active-test".parse().unwrap());
+            let applied = peer.raw_batch_put(put).await.unwrap().into_inner();
+            assert!(applied.applied_term > 0 && applied.applied_index > receipt.applied_index);
+            let mut get = tonic::Request::new(proto::RawBatchGetRequest {
+                context,
+                keys: pairs.iter().map(|p| p.key.clone()).collect(),
+            });
+            get.metadata_mut()
+                .insert("authorization", "Bearer active-test".parse().unwrap());
+            let got = peer.raw_batch_get(get).await.unwrap().into_inner().values;
+            assert_eq!(got.len(), pairs.len());
+            assert!(got.iter().all(|v| v.found && v.value == value));
+        });
+        assert!(
+            matches!(client.scan(b"batch-".to_vec(), b"batch.".to_vec(), 2048).unwrap(),
+            RawClientOutcome::Ok(rows) if rows.len() == RAW_DELETE_RANGE_CHUNK + 1)
+        );
+        assert!(
+            matches!(client.delete_range(b"batch-".to_vec(), b"batch.".to_vec()).unwrap(),
+            RawClientOutcome::Ok(progress) if progress.committed_chunks == 2 && progress.last_applied_term > 0)
+        );
+        assert!(
+            matches!(client.scan(b"batch-".to_vec(), b"batch.".to_vec(), 2048).unwrap(),
+            RawClientOutcome::Ok(rows) if rows.is_empty())
+        );
+        assert!(matches!(
+            client.put(b"delete-me".to_vec(), vec![7]).unwrap(),
+            RawClientOutcome::Ok(_)
+        ));
+        assert!(matches!(
+            client.delete(b"delete-me".to_vec()).unwrap(),
+            RawClientOutcome::Ok(_)
+        ));
+        assert!(matches!(
+            client.get(b"delete-me".to_vec()).unwrap(),
+            RawClientOutcome::Ok(None)
+        ));
+        let physical = kv9_common::codec::encode_key(
+            kv9_common::codec::KeyMode::Raw,
+            range.keyspace,
+            b"same-key",
+        )
+        .unwrap();
+        assert!(
+            cluster.runtimes.iter().all(|rt| rt
+                .node
+                .meta_raft
+                .store
+                .engine()
+                .get(kv9_engine::ColumnFamily::Default, &physical)
+                .unwrap()
+                .is_none()),
+            "data leaked into metadata WAL"
+        );
+        let follower = cluster
+            .runtimes
+            .iter()
+            .position(|rt| rt.data_group_status(range.region).unwrap().role != Role::Leader)
+            .unwrap();
+        let follower = RawClient::connect(
+            &cluster.runtimes[follower].addr.to_string(),
+            "active-test",
+            range.keyspace.0,
+        )
+        .unwrap();
+        assert!(matches!(
+            follower.put(b"forbidden".to_vec(), vec![9]).unwrap(),
+            RawClientOutcome::NotLeader { .. }
+        ));
+    }
+    cluster.runtimes.clear();
+    for id in 1..=3 {
+        let listener = std::net::TcpListener::bind(cluster.addrs[id - 1]).unwrap();
+        cluster
+            .runtimes
+            .push(cluster.open(NodeId(id as u64), listener));
+    }
+    cluster.wait_serving();
+    wait_for(
+        &mut cluster.runtimes,
+        25,
+        "public routes recovered",
+        |rts| {
+            bindings.iter().all(|r| {
+                rts.iter()
+                    .all(|rt| rt.data_groups.raw_directory.get(r.keyspace).is_some())
+                    && data_leader(rts, r.region).is_some()
+            })
+        },
+    );
+    for (i, range) in bindings.iter().enumerate() {
+        let leader = data_leader(&cluster.runtimes, range.region).unwrap();
+        let client = RawClient::connect(
+            &cluster.runtimes[leader].addr.to_string(),
+            "active-test",
+            range.keyspace.0,
+        )
+        .unwrap();
+        assert!(
+            matches!(client.get(b"same-key".to_vec()).unwrap(), RawClientOutcome::Ok(Some(actual)) if actual == vec![i as u8 + 1; 4])
+        );
+    }
+    // An already published handle cannot keep authorizing reads/writes after
+    // the owning group's ordered seal. Metadata still advertises epoch 1 here.
+    let range = &bindings[0];
+    let leader = data_leader(&cluster.runtimes, range.region).unwrap();
+    let driver = cluster.runtimes[leader]
+        .data_groups
+        .driver_for_tests(range.region)
+        .unwrap();
+    let mut sealed = range.clone();
+    sealed.version += 1;
+    sealed.sealed = true;
+    let at = driver
+        .propose(&Command::DataRange {
+            expected: Some(range.digest()),
+            next: sealed,
+        })
+        .unwrap();
+    assert!(matches!(
+        driver.wait_applied(at, Duration::from_secs(5)).unwrap(),
+        ApplyWaitOutcome::Applied(_)
+    ));
+    let client = RawClient::connect(
+        &cluster.runtimes[leader].addr.to_string(),
+        "active-test",
+        range.keyspace.0,
+    )
+    .unwrap();
+    assert!(client.get(b"same-key".to_vec()).is_err());
+    assert!(client.put(b"after-seal".to_vec(), vec![8]).is_err());
+}
+
 fn data_leader(rts: &[NodeRuntime], group: RegionId) -> Option<usize> {
     rts.iter().position(|r| {
         r.data_group_status(group)

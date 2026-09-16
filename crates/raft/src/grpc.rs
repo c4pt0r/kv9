@@ -33,7 +33,7 @@ use crate::transport::RaftTransport;
 
 /// Generated protobuf/tonic types for `proto/kv9_raft.proto`.
 pub mod pb {
-    tonic::include_proto!("kv9.raft.v2");
+    tonic::include_proto!("kv9.raft.v3");
 }
 
 use pb::kv9_raft_client::Kv9RaftClient;

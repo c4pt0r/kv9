@@ -98,9 +98,9 @@ where
     }
 
     fn call(&mut self, mut request: http::Request<B>) -> Self::Future {
-        if !*self.modern.borrow() && request.uri().path() == "/kv9.raft.v2.Kv9Raft/BatchDataRaft" {
+        if !*self.modern.borrow() && request.uri().path() == "/kv9.raft.v3.Kv9Raft/BatchDataRaft" {
             self.rejected.fetch_add(1, Ordering::SeqCst);
-            *request.uri_mut() = "/kv9.raft.v2.Kv9Raft/UnknownLegacyMethod".parse().unwrap();
+            *request.uri_mut() = "/kv9.raft.v3.Kv9Raft/UnknownLegacyMethod".parse().unwrap();
         }
         self.service.call(request)
     }
