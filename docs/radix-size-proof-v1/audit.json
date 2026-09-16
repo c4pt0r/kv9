@@ -1,0 +1,87 @@
+{
+  "complete": true,
+  "theorems_checked_together": 207,
+  "additional_theorems": 52,
+  "new_rejecting_controls": 17,
+  "controls": [
+    {
+      "name": "count-empty-two",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "count-overwrite-increments",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "count-absent-decrements",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "count-delete-increments",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-empty-two",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-overwrite-increments",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-delete-keeps-count",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-absent-clears-count",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "seek-miss-increments",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "descent-two-byte-bound",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "restore-one-past-bound",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "count-proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "count-custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 13,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "machine_counter_scope": "Conditional on resident-result representability; heap correspondence remains open.",
+  "local_bounds_scope": "Loop/path/search/length premises remain to be established for the actual Rust loops.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Actual cursor seek/traversal/crossover and bytewise range/predecessor refinement",
+    "Explicit iterative Rust path/frame simulation, including discharge of the proved local indexing premises",
+    "Arc/COW heap correspondence and distinct addressable entry storage to discharge word-counter representability; compiler/library premises",
+    "Differential execution of the executable Lean model against the exact Rust candidate"
+  ],
+  "prior_point_packet_sha256": "54877ebc02ac08e1b63a98397dbec6ab0f5564867fc5b440381707dbac39918d"
+}
