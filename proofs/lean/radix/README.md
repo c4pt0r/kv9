@@ -1,5 +1,9 @@
 # Radix point-operation model proofs
 
+The latest [cursor/range extension](CURSOR-README.md) adds seven modules and
+80 theorems, with all 287 model theorems checked under its separate contract.
+Actual Rust loop and heap correspondence remain open.
+
 The subsequent [cardinality and local machine-bound extension](SIZE-README.md)
 adds two modules and 52 theorems under a separate contract. The ten-module
 point-operation checkpoint and its original contract remain preserved below.

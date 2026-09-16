@@ -3,6 +3,10 @@
 Updated: 2026-09-16 UTC. Tracking: [#51](https://github.com/c4pt0r/kv9/issues/51),
 parent [#9](https://github.com/c4pt0r/kv9/issues/9).
 
+Subsequent checkpoint: the [cursor/range model proof](RADIX-CURSOR-PROOF.md)
+adds 80 theorems and 25 controls. The cardinality checkpoint below is preserved;
+actual Rust loop and heap correspondence still remain open.
+
 The radix model now proves that its stored element count matches the number of
 distinct full keys throughout arbitrary finite mutation histories. The new
 checkpoint adds **52 Lean theorems**, with **207 checked together**, and a new

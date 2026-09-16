@@ -1,15 +1,15 @@
 # kv9 development roadmap
 
-> The [radix cardinality and local machine-bound proof](RADIX-CARDINALITY-PROOF.md)
-> adds 52 theorems, with all 207 model theorems checked together and 17 new
-> rejecting controls. Stored Nat counts now match distinct keys through arbitrary
-> finite histories. Local path/index bounds and conditional USize counts pass;
-> actual loops and Arc/heap correspondence must still discharge their premises.
-> Cursor/range refinement and Rust/model differential execution also remain open
-> before timing. The unchanged prototype retains its 213-test qualification
-> (25 existing ignored), six Rust fault controls and 54 allocation observations.
-> No radix speedup, new database QPS or runtime promotion is claimed; production
-> keeps rpds and previously rejected index families stay stopped. See #51.
+> The [radix cursor/range proof](RADIX-CURSOR-PROOF.md) adds 80 theorems,
+> with all 287 model theorems checked together and 25 new rejecting controls.
+> Complete forward/reverse bound filtering and arbitrary mixed-direction range
+> histories now refine independent entry-list specifications, including no
+> duplicate keys, exhaustive/fused behavior and inclusive predecessor maximality.
+> Actual Rust loop/vector/frame simulation, Arc/COW heap correspondence and
+> source differential execution remain open before timing. The unchanged
+> prototype retains its 213-test qualification (25 existing ignored), six Rust
+> fault controls and 54 allocation observations. No radix speedup, new database
+> QPS or runtime promotion is claimed; production keeps rpds. See #51.
 > Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
 > Keep selected ThinLTO and Safe ReadIndex; read and lease optimization remain held.
 > The latest [index mutation screen](OUTLINED-MUTATION-PATH.md) completes 446

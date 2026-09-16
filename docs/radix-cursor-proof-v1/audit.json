@@ -1,0 +1,126 @@
+{
+  "complete": true,
+  "theorems_checked_together": 287,
+  "additional_theorems": 80,
+  "new_rejecting_controls": 25,
+  "controls": [
+    {
+      "name": "forward-omits-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "reverse-child-order",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "forward-duplicates-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "yield-discards-pending",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "expansion-discards-ancestors",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "mismatch-prunes-wrong-side",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "exclusive-end-includes-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "reverse-end-includes-descendants",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "forward-match-skips-tail",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "reverse-skips-earlier-child",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "reverse-skips-branch-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "missing-edge-wrong-side",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "crossed-range-emits",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "equal-endpoint-stays-live",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "front-advances-back-cursor",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "back-emits-front",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "invalid-bounds-accepted",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "equal-inclusive-bounds-rejected",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "predecessor-excludes-equal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "cursor-proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "cursor-custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 20,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "cursor_model_scope": "Exact seek/traversal, two-end range histories, conservation and predecessor; reviewed source mapping, not extraction.",
+  "remaining_implementation_scope": "Actual Rust loops/Vec/frame simulation, Arc/COW heap correspondence, resident word-count premises and differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Explicit iterative Rust insertion/deletion/seek path and frame simulation, including sorted Vec search/partition and local depth/index premises",
+    "Arc/COW heap correspondence, saved-root ownership/reclamation and distinct addressable entry storage for word-counter representability; compiler/library premises",
+    "Differential execution of the executable Lean models against the exact Rust candidate"
+  ],
+  "prior_size_packet_sha256": "091794484ea1da74276c5464df1f0e47e6a85db8debedb82fa93bc8e4e8424d1"
+}
