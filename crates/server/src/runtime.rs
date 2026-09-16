@@ -3397,7 +3397,7 @@ impl NodeRuntime {
             driver: driver.clone(),
             catchup: catchup_capability.clone(),
         });
-        let raft_service = RaftGrpcService::new(id, transport.inbox_sender(), discovery.clone())
+        let raft_service = RaftGrpcService::new(id, transport.inbound_router(), discovery.clone())
             .with_registration(backend.clone() as Arc<dyn RegistrationBackend>);
         let raft_service = tonic::service::interceptor::InterceptedService::new(
             Kv9RaftServer::new(raft_service),

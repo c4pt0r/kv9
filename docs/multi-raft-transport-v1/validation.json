@@ -1,0 +1,123 @@
+{
+  "stage": "D01a: shared transport and isolated group inboxes",
+  "base_commit": "e7a67d62ef1bd4ce24fd622316f630bbbc75a021",
+  "toolchain": {
+    "cargo": "cargo 1.94.0 (85eff7c80 2026-01-15)",
+    "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)"
+  },
+  "commands": [
+    {
+      "command": "cargo test --workspace",
+      "exit_code": 0,
+      "passed": 856,
+      "failed": 0,
+      "ignored": 28,
+      "summary_count": 31,
+      "log": "workspace-final.log"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log": "clippy.log"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "focused_tests": {
+    "filter": "multi_group_",
+    "expected": 5,
+    "baseline_passed": 5,
+    "restored_passed": 5
+  },
+  "controls": [
+    {
+      "name": "legacy-region-fallback",
+      "test": "grpc::groups::tests::multi_group_legacy_inbox_refuses_nonmetadata_envelopes",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "legacy inbox must not consume data-group traffic",
+      "original_sha256": "658447909843439edcdfcdc14b2542be74156b6c6d93628b63ad8380c097ac71",
+      "mutated_sha256": "70bea0aadfdc93e8d7afacd032b76592deaccd754b66a3613efd3b550d992391"
+    },
+    {
+      "name": "group-wire-id-collapse",
+      "test": "grpc::tests::multi_group_three_voters_share_streams_and_isolate_committed_state",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "independent groups must make progress over shared streams",
+      "original_sha256": "658447909843439edcdfcdc14b2542be74156b6c6d93628b63ad8380c097ac71",
+      "mutated_sha256": "b70fa14cbed314853562f1e2e8eb152e2a57c129e982c5c5a19b391c520b6313"
+    },
+    {
+      "name": "wrong-driver-region",
+      "test": "grpc::groups::tests::multi_group_driver_binding_rejects_wrong_group_and_second_consumer",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "driver and transport region mismatch",
+      "original_sha256": "b0d7f23af9d8711861f3d936ffcf5026d420f73d1443c734f9f47a4da950c341",
+      "mutated_sha256": "7e7651d5712ac2c01470276c04166d8a31fc88f0cae7f3d5150d5cffebb2dc5b"
+    },
+    {
+      "name": "hot-group-stream-close",
+      "test": "grpc::tests::multi_group_wire_drops_do_not_interrupt_other_groups_in_one_batch",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "hot/unknown groups must not close a shared stream",
+      "original_sha256": "658447909843439edcdfcdc14b2542be74156b6c6d93628b63ad8380c097ac71",
+      "mutated_sha256": "5c93a77521be6c234654e48a3f85f6f588c8c42283a50399a088aaf517e5aa9c"
+    },
+    {
+      "name": "group-count-overflow",
+      "test": "grpc::groups::tests::multi_group_registration_is_bounded_unique_and_reserves_metadata",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "local group cap must be enforced",
+      "original_sha256": "b0d7f23af9d8711861f3d936ffcf5026d420f73d1443c734f9f47a4da950c341",
+      "mutated_sha256": "eb04653c965472111cceb4e1800434b3f8a4fd9729871c50c3d999ec82413565"
+    }
+  ],
+  "source_sha256": {
+    "crates/raft/src/grpc.rs": "658447909843439edcdfcdc14b2542be74156b6c6d93628b63ad8380c097ac71",
+    "crates/raft/src/grpc/groups.rs": "b0d7f23af9d8711861f3d936ffcf5026d420f73d1443c734f9f47a4da950c341",
+    "crates/raft/src/driver.rs": "2fcbbee975d7ed68d27b4e7433b07acca00d526ee1e9ba8efc8089aea7164969",
+    "crates/raft/src/transport.rs": "000a836f7ed6aa95469a14e1648d1d0cfd03cb04e58163389b283478fc7f689c",
+    "crates/server/src/runtime.rs": "03dbb3c06658645f7445f62ec1d4ff8b033584bafe6167ab430afe636df6b610",
+    "proto/kv9_raft.proto": "bd53cc39127d65fce8f1b018bba921d0d3788f83f6ac071043115e88676cf5f2"
+  },
+  "no_new_scaling_benchmark": true,
+  "no_new_chaos_acceptance": true,
+  "durable_region_manager_complete": false,
+  "hosted_ci_triggered": false,
+  "protected_drafts": {
+    "scripts/checkpoint-publication-chaos.py": "ebef796c6e19d4f3d391aa69b973e22df501f2e9af13f64dfcc7f34fd564d343",
+    "scripts/checkpoint-owned-crash.py": "3e9d4babe9f263b2360f676cdcdd92985f4722710394580659890b7c6abe617a"
+  },
+  "log_sha256": {
+    "check-mutations.py": "e37852559568e1110bcc84cb7bda5342867b8c8b310249f0afdcda9af84b51ba",
+    "clippy.log": "7ef1473834e1fe9a8100bbc64c2c18d019bec792272e3391cf183cd4136fe4db",
+    "group-count-overflow.log": "5955b51ca7f37c1f91156dc1299e91a129cb0669bb8decb91e737d6f0145431b",
+    "group-count-overflow.rs": "eb04653c965472111cceb4e1800434b3f8a4fd9729871c50c3d999ec82413565",
+    "group-tests-02.log": "af66a7b652c56a4d990ab0eb7e1c974a23c457b6ec5ec8b84dcca16f753e5c66",
+    "group-tests.log": "2a827fb2b723a0a3a081c8e94cd9e4fef8551a4c01a62673fbcb6bc0c9302234",
+    "group-wire-id-collapse.log": "c275f2b8030b64c61117e2b31eb2fd9b07919be609a27b0513e2ecca740afb59",
+    "group-wire-id-collapse.rs": "b70fa14cbed314853562f1e2e8eb152e2a57c129e982c5c5a19b391c520b6313",
+    "hot-group-stream-close.log": "61832378b49196e6a4fb9335265e95ec7c91fdd101e0eec7430ab80cecdbb980",
+    "hot-group-stream-close.rs": "5c93a77521be6c234654e48a3f85f6f588c8c42283a50399a088aaf517e5aa9c",
+    "legacy-region-fallback.log": "3605ea7f6f3fc94766ef90cb9a590fa72fd2524445707bbf8ae85145cf3cbb78",
+    "legacy-region-fallback.rs": "70bea0aadfdc93e8d7afacd032b76592deaccd754b66a3613efd3b550d992391",
+    "mutation-baseline.log": "7fef0aaf5e4df49718a3743d78ab1ff85f734343c23a0a5f249c152135040218",
+    "mutation-plan.json": "495334039fd87fd6390e734dd021057bb8e08ee27ea0602276fb272b930726b5",
+    "mutation-restored.log": "61fad68979881fd0b102d5ea878c7a85fda892645b773624dfde8e529767daa6",
+    "mutation-results.json": "3da206cd9dd14f77694d40e8ed52f6f9828e2c8cacb9a1b0f2042f11ffdad017",
+    "workspace-final.log": "8d6b82501aefec02c7b110f4386c7ab50a2e6221c81e327ab3ca4191b634debc",
+    "workspace-tests.log": "ce3b84750d2a207949f0ab43605aed08f4c51f9aa34357a26b2a2d0ffb2516de",
+    "wrong-driver-region.log": "b831ae5f64d4a0d47ebe1411d0ce3294c6d45b68c8563b1e4e0e4616b17e9195",
+    "wrong-driver-region.rs": "7e7651d5712ac2c01470276c04166d8a31fc88f0cae7f3d5150d5cffebb2dc5b"
+  }
+}

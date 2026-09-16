@@ -57,7 +57,8 @@ message EndpointConfirmationReceipt {
 
 // Envelope mimicking kvproto's RaftMessage: routing/epoch metadata OUTSIDE
 // the opaque raft payload, so multi-region routing (Phase 4) needs no format
-// change. Phase 1-final: region_id is always META_REGION_0's id.
+// change. Legacy V2 metadata uses wire ID 0 (catalog META_REGION_0 is 1).
+// Data groups use their catalog IDs, greater than 1; wire ID 1 is reserved.
 message RaftEnvelope {
   uint64 region_id = 1;
   uint64 from_node = 2;

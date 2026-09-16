@@ -40,9 +40,11 @@ use pb::kv9_raft_client::Kv9RaftClient;
 use pb::kv9_raft_server::Kv9Raft;
 
 mod endpoint;
+mod groups;
 pub use endpoint::{
     grpc_confirm_endpoint, EndpointConfirmError, EndpointConfirmationReceipt, EndpointRoute,
 };
+pub use groups::{GroupTransport, RegionInboxes};
 
 /// Metadata key carrying the shared cluster token (EdHuang's ruling: token
 /// auth ships with the gRPC rewrite). Threat boundary, stated where it will
@@ -300,8 +302,14 @@ pub trait RegistrationBackend: Send + Sync + 'static {
 /// retain their independent channel receivers to observe wire delivery.
 pub enum InboundSender {
     Bounded(crate::work::RaftInbox),
+    Regions(Arc<RegionInboxes>),
     #[cfg(test)]
     Fixture(mpsc::UnboundedSender<Message>),
+}
+impl From<Arc<RegionInboxes>> for InboundSender {
+    fn from(value: Arc<RegionInboxes>) -> Self {
+        Self::Regions(value)
+    }
 }
 impl From<crate::work::RaftInbox> for InboundSender {
     fn from(value: crate::work::RaftInbox) -> Self {
@@ -315,11 +323,12 @@ impl From<mpsc::UnboundedSender<Message>> for InboundSender {
     }
 }
 impl InboundSender {
-    fn send(&self, message: Message) -> bool {
+    fn send(&self, region: u64, message: Message) -> bool {
         match self {
-            Self::Bounded(inbox) => inbox.send(message).is_ok(),
+            Self::Bounded(inbox) => region == 0 && inbox.send(message).is_ok(),
+            Self::Regions(inboxes) => inboxes.send(region, message),
             #[cfg(test)]
-            Self::Fixture(inbox) => inbox.send(message).is_ok(),
+            Self::Fixture(inbox) => region == 0 && inbox.send(message).is_ok(),
         }
     }
 }
@@ -339,6 +348,7 @@ pub struct RaftGrpcService {
     /// Envelopes rejected for a wrong destination (diagnostic mirror of the
     /// TCP transport's step-error counter: growth = misconfiguration).
     misrouted: AtomicU64,
+    dropped: AtomicU64,
 }
 
 impl RaftGrpcService {
@@ -354,6 +364,7 @@ impl RaftGrpcService {
             registration: None,
             registration_capacity: Arc::new(tokio::sync::Semaphore::new(1)),
             misrouted: AtomicU64::new(0),
+            dropped: AtomicU64::new(0),
         }
     }
 
@@ -366,6 +377,11 @@ impl RaftGrpcService {
 
     pub fn misrouted(&self) -> u64 {
         self.misrouted.load(Ordering::Relaxed)
+    }
+
+    /// Unknown-group and full-inbox drops. Raft, not this service, retries.
+    pub fn dropped(&self) -> u64 {
+        self.dropped.load(Ordering::Relaxed)
     }
 }
 
@@ -425,10 +441,16 @@ impl Kv9Raft for RaftGrpcService {
                         "raft sender does not match authenticated node",
                     ));
                 }
+                if msg.to != self.me.0 {
+                    return Err(Status::invalid_argument(
+                        "raft destination does not match envelope destination",
+                    ));
+                }
                 // Bounded best-effort admission never blocks this runtime.
-                // Ending a saturated stream permits Raft retransmission.
-                if !self.inbox.send(msg) {
-                    return Err(Status::resource_exhausted("raft inbox is full"));
+                // One hot or unknown group must not close the shared stream
+                // and discard other groups' messages in the same batch.
+                if !self.inbox.send(env.region_id, msg) {
+                    self.dropped.fetch_add(1, Ordering::Relaxed);
                 }
             }
         }
@@ -945,6 +967,7 @@ pub struct GrpcTransport {
     // escapes it, and no socket I/O or await occurs under it.
     peers: Mutex<HashMap<u64, PeerRoute>>,
     inbox: crate::work::RaftInbox,
+    regions: Arc<RegionInboxes>,
     root_digest: RootDigest,
     /// Total (re)connect attempts across all peer workers. One relaxed
     /// increment per attempt; the observable that lets a regression prove a
@@ -973,12 +996,14 @@ impl GrpcTransport {
         root_digest: RootDigest,
     ) -> Arc<GrpcTransport> {
         let inbox = crate::work::RaftInbox::default();
+        let regions = Arc::new(RegionInboxes::new(inbox.clone()));
         Arc::new(GrpcTransport {
             me,
             token,
             handle,
             peers: Mutex::new(HashMap::new()),
             inbox,
+            regions,
             root_digest,
             connect_attempts: Arc::new(AtomicU64::new(0)),
             #[cfg(any(test, feature = "testing"))]
@@ -1103,13 +1128,7 @@ impl GrpcTransport {
                 envelope,
             });
     }
-}
-
-impl RaftTransport for GrpcTransport {
-    fn set_work_signal(&self, signal: Arc<crate::work::WorkSignal>) {
-        self.inbox.set_signal(signal);
-    }
-    fn send(&self, to: NodeId, msg: Message) {
+    fn send_region(&self, region: u64, to: NodeId, msg: Message) {
         // Partition injection (task #28): drop outbound to a masked peer, as if
         // the wire were cut. Same effect as the "unknown peer: drop" below —
         // raft retransmits, and a real partition drops packets identically.
@@ -1121,7 +1140,7 @@ impl RaftTransport for GrpcTransport {
             return;
         };
         let env = pb::RaftEnvelope {
-            region_id: 0, // META_REGION_0 in Phase 1-final
+            region_id: region,
             from_node: self.me.0,
             to_node: to.0,
             raft_message: bytes,
@@ -1131,7 +1150,7 @@ impl RaftTransport for GrpcTransport {
         self.enqueue(to, env);
     }
 
-    fn drain(&self) -> Vec<Message> {
+    fn drain_inbox(&self, inbox: &crate::work::RaftInbox) -> Vec<Message> {
         // Refresh the partition mask once per tick before delivering inbound
         // traffic to raft, so a partition written mid-run takes effect on the
         // next drain. Dropping a masked message here — after it was received but
@@ -1141,7 +1160,7 @@ impl RaftTransport for GrpcTransport {
         #[cfg(any(test, feature = "testing"))]
         self.partition.refresh();
         let mut out = Vec::new();
-        for msg in self.inbox.drain() {
+        for msg in inbox.drain() {
             #[cfg(any(test, feature = "testing"))]
             if self.partition.is_masked(msg.from) {
                 continue;
@@ -1149,6 +1168,20 @@ impl RaftTransport for GrpcTransport {
             out.push(msg);
         }
         out
+    }
+}
+
+impl RaftTransport for GrpcTransport {
+    fn set_work_signal(&self, signal: Arc<crate::work::WorkSignal>) {
+        self.inbox.set_signal(signal);
+    }
+
+    fn send(&self, to: NodeId, msg: Message) {
+        self.send_region(0, to, msg);
+    }
+
+    fn drain(&self) -> Vec<Message> {
+        self.drain_inbox(&self.inbox)
     }
 }
 
@@ -1330,6 +1363,205 @@ mod tests {
         RootWireIdentity {
             bootstrap_generation: BootstrapGeneration::from_bytes([0; 16]),
             root_digest: RootDigest::from_bytes([0; 32]),
+        }
+    }
+
+    #[test]
+    fn multi_group_wire_drops_do_not_interrupt_other_groups_in_one_batch() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let transport = GrpcTransport::new(
+            NodeId(2),
+            None,
+            rt.handle().clone(),
+            test_root().root_digest,
+        );
+        let hot = transport.register_group(RegionId(10)).unwrap();
+        let healthy = transport.register_group(RegionId(20)).unwrap();
+        let router = transport.inbound_router();
+        let message = |term| Message {
+            from: 1,
+            to: 2,
+            term,
+            ..Default::default()
+        };
+        // Saturate one group's count budget without allocating large payloads.
+        let mut filled = 0;
+        while router.send(10, message(3)) {
+            filled += 1;
+            assert!(filled <= 4096, "inbox count budget must remain bounded");
+        }
+        assert_eq!(filled, 4096);
+        let listener = cluster_listeners(1).pop().unwrap();
+        let addr = listener.local_addr().unwrap();
+        serve_reserved(rt.handle(), NodeId(2), listener, router, 42);
+        rt.block_on(async {
+            let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
+                .await
+                .unwrap();
+            let msgs = [(10, 4), (999, 5), (0, 6), (20, 7)]
+                .into_iter()
+                .map(|(region_id, term)| pb::RaftEnvelope {
+                    region_id,
+                    from_node: 1,
+                    to_node: 2,
+                    raft_message: message(term).write_to_bytes().unwrap(),
+                    epoch_conf_ver: 0,
+                    epoch_version: 0,
+                })
+                .collect();
+            let mut request = Request::new(tokio_stream::iter(vec![pb::BatchRaftMessage {
+                msgs,
+                flushed_unix_nanos: 0,
+                root_digest: test_root().root_digest.as_bytes().to_vec(),
+            }]));
+            attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(1));
+            client
+                .batch_raft(request)
+                .await
+                .expect("hot/unknown groups must not close a shared stream");
+        });
+        assert_eq!(
+            transport.drain().iter().map(|m| m.term).collect::<Vec<_>>(),
+            [6],
+            "only metadata belongs in the metadata inbox"
+        );
+        assert_eq!(
+            healthy.drain().iter().map(|m| m.term).collect::<Vec<_>>(),
+            [7],
+            "healthy group must survive a saturated neighbor"
+        );
+        assert!(hot.drain().iter().all(|m| m.term == 3));
+    }
+
+    #[test]
+    fn multi_group_three_voters_share_streams_and_isolate_committed_state() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let listeners = cluster_listeners(3);
+        let addrs: Vec<_> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();
+        let mut transports = Vec::new();
+        for (&id, listener) in ids.iter().zip(listeners) {
+            let transport = GrpcTransport::new(
+                id,
+                Some("test-cluster-token".into()),
+                rt.handle().clone(),
+                test_root().root_digest,
+            );
+            for (&other, &addr) in ids.iter().zip(&addrs) {
+                if other != id {
+                    transport.register_peer(other, addr);
+                }
+            }
+            serve_reserved(rt.handle(), id, listener, transport.inbound_router(), 42);
+            transports.push(transport);
+        }
+        // Register after server assembly: no listener restart or per-group
+        // peer worker. These are real raft-rs groups with independent engines.
+        let mut groups = Vec::new();
+        for region in [kv9_common::META_REGION_0, RegionId(10), RegionId(20)] {
+            let mut drivers = Vec::new();
+            for (&id, shared) in ids.iter().zip(&transports) {
+                let transport: Arc<dyn RaftTransport> = if region == kv9_common::META_REGION_0 {
+                    shared.clone()
+                } else {
+                    shared.register_group(region).unwrap()
+                };
+                drivers.push(
+                    NodeDriver::new(
+                        Arc::new(RaftPeer::new(id, region, &ids).unwrap()),
+                        transport,
+                        MemStateMachine::new(),
+                    )
+                    .unwrap(),
+                );
+            }
+            groups.push(drivers);
+        }
+        // Deterministically drive distinct leaders without a thread per group.
+        for (i, drivers) in groups.iter().enumerate() {
+            drivers[i].peer().campaign().unwrap();
+        }
+        let pump_until = |active: &[usize], predicate: &dyn Fn() -> bool| {
+            let deadline = std::time::Instant::now() + Duration::from_secs(10);
+            while !predicate() {
+                for &g in active {
+                    for driver in &groups[g] {
+                        driver.step().unwrap();
+                    }
+                }
+                assert!(
+                    std::time::Instant::now() < deadline,
+                    "independent groups must make progress over shared streams"
+                );
+                std::thread::sleep(Duration::from_millis(1));
+            }
+        };
+        pump_until(&[0, 1, 2], &|| {
+            groups
+                .iter()
+                .enumerate()
+                .all(|(i, g)| g[i].status().role == Role::Leader)
+        });
+        for (i, drivers) in groups.iter().enumerate() {
+            drivers[i]
+                .propose(&Command::Put {
+                    cf: 0,
+                    key: b"same-key".to_vec(),
+                    value: vec![i as u8],
+                })
+                .unwrap();
+        }
+        let cf = kv9_engine::ColumnFamily::Default;
+        pump_until(&[0, 1, 2], &|| {
+            groups.iter().enumerate().all(|(i, g)| {
+                g.iter()
+                    .all(|d| d.get(cf, b"same-key").unwrap() == Some(vec![i as u8]))
+            })
+        });
+        for (i, g) in groups.iter().enumerate() {
+            for d in g {
+                assert_eq!(
+                    d.get(cf, b"same-key").unwrap(),
+                    Some(vec![i as u8]),
+                    "committed values must never cross group boundaries"
+                );
+            }
+        }
+        // Stop servicing one complete group's Ready path. Its proposal stays
+        // unapplied, while metadata and the other group still commit.
+        for (i, g) in groups.iter().enumerate() {
+            g[i].propose(&Command::Put {
+                cf: 0,
+                key: b"after-pause".to_vec(),
+                value: vec![i as u8],
+            })
+            .unwrap();
+        }
+        pump_until(&[0, 2], &|| {
+            [0, 2].iter().all(|&i| {
+                groups[i]
+                    .iter()
+                    .all(|d| d.get(cf, b"after-pause").unwrap() == Some(vec![i as u8]))
+            })
+        });
+        assert!(
+            groups[1]
+                .iter()
+                .all(|d| d.get(cf, b"after-pause").unwrap().is_none()),
+            "paused group must actually remain unapplied"
+        );
+        pump_until(&[0, 1, 2], &|| {
+            groups[1]
+                .iter()
+                .all(|d| d.get(cf, b"after-pause").unwrap() == Some(vec![1]))
+        });
+        for shared in &transports {
+            let peers = shared.peers.lock().unwrap();
+            assert_eq!(peers.len(), 2);
+            assert!(
+                peers.values().all(|p| p.sender.is_some()),
+                "each peer stream is shared by all three groups"
+            );
         }
     }
 

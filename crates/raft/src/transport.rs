@@ -238,6 +238,16 @@ pub trait DiscoveryState: Send + Sync {
 /// `send` is non-blocking best-effort; `drain` returns messages delivered to
 /// this node since the last drain, in arrival order.
 pub trait RaftTransport: Send + Sync {
+    /// Bind a driver to its group before it can consume messages. Scoped
+    /// transports reject mismatched groups and a second inbox consumer.
+    fn bind_driver(
+        &self,
+        _region: kv9_common::RegionId,
+        signal: Arc<crate::work::WorkSignal>,
+    ) -> Result<()> {
+        self.set_work_signal(signal);
+        Ok(())
+    }
     /// Bind the exclusive driver wakeup. Custom harness transports may retain
     /// periodic delivery; all built-in transports notify admitted work.
     fn set_work_signal(&self, _signal: Arc<crate::work::WorkSignal>) {}

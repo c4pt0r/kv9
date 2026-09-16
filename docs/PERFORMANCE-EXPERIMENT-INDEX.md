@@ -1,5 +1,14 @@
 # Performance experiment index
 
+> **Current priority (2026-09-16): horizontal scaling.** The user ended the
+> current performance iteration at the validated CRC/rpds baseline. Redis parity
+> and radix completion are not prerequisites. Start dynamic multi-Raft (#22),
+> routing (#23), replica movement (#24), recoverable split (#25) and measured
+> placement/scale-out (#27). See the [implementation and benchmark contract](HORIZONTAL-SCALING-PLAN.md).
+> Acceptance requires actual 3/6/9-node throughput/latency scaling, strict
+> consistency proofs, actual Chaos Mesh and no database service singleton.
+> Earlier experiment reports below are retained historical evidence.
+
 The [radix cursor/range proof](RADIX-CURSOR-PROOF.md) adds 80 theorems,
 with all 287 model theorems checked together and 25 new rejecting controls.
 Complete forward/reverse bound filtering and arbitrary mixed-direction range

@@ -1,22 +1,22 @@
 # Detailed development path
 
-> Latest direction: [write throughput and latency against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
-> Selected ThinLTO and Safe ReadIndex remain the baseline. Read optimization is
-> held; remaining lease and industrial gates are retained.
+> **Current priority (2026-09-16): horizontal scaling.** The user ended the
+> current performance iteration at the validated CRC/rpds baseline. Redis parity
+> and radix completion are not prerequisites. Start dynamic multi-Raft (#22),
+> routing (#23), replica movement (#24), recoverable split (#25) and measured
+> placement/scale-out (#27). See the [implementation and benchmark contract](HORIZONTAL-SCALING-PLAN.md).
+> Acceptance requires actual 3/6/9-node throughput/latency scaling, strict
+> consistency proofs, actual Chaos Mesh and no database service singleton.
+> Earlier experiment reports below are retained historical evidence.
 
-Updated: 2026-09-15. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
+Updated: 2026-09-16. Tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
 
-See [CURRENT-STATUS.md](CURRENT-STATUS.md) for accepted implementation and
-performance evidence. The [write plan](WRITE-PERFORMANCE-NEXT.md) specifies
-replication-confirmed Redis comparisons, the existing CRC experiment to reuse
-and the qualification required before promotion. Earlier results remain in the
-[experiment index](PERFORMANCE-EXPERIMENT-INDEX.md).
-
-Dynamic multi-Raft and automatic splits follow this write phase and their
-existing storage/recovery/proof prerequisites. Preserve durable Raft writes,
-linearizable reads, bounded ownership and no service-critical singleton except
-object storage. Partial experiments do not close the work packages below.
-CI stays local; hosted workflows remain manual for releases/key milestones.
+The performance iteration is closed at the validated CRC/rpds write baseline;
+see [current status](CURRENT-STATUS.md). No new Redis parity, radix promotion or
+completion of storage/industrial gates is claimed. Dynamic multi-Raft is the
+mainline now, with storage/recovery prerequisites preserved for each dependent
+operation. Core proofs, actual Chaos Mesh and measured effective horizontal
+scaling are required. CI stays local; hosted workflows remain manual.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.

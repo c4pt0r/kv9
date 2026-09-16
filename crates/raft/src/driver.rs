@@ -298,7 +298,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         sm: MemStateMachine<E>,
     ) -> Result<Arc<NodeDriver<S, E>>> {
         let drain = crate::DrainToken::mint(&peer)?;
-        transport.set_work_signal(peer.work_signal.clone());
+        transport.bind_driver(
+            crate::RaftGroup::region_id(&*peer),
+            peer.work_signal.clone(),
+        )?;
         let async_reads = crate::async_read::AsyncReads::new(peer.work_signal.clone());
         let metrics = Arc::new(DriverMetrics {
             #[cfg(feature = "read-stage-timing")]
