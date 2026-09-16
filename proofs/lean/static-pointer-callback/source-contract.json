@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "proof_sha256": "db85f5fd4e95bbb74e3dee5f0159cfd66c04ae3c3260d21c820ef8d67821741b",
+  "sources": {
+    "baseline": {
+      "src/shared_pointer/kind/erased_ptr.rs": "be9b8fec1427ade3a52a653135e3e113e6c5e67d6b777d6b09915e142095b439",
+      "src/shared_pointer/kind/erased_ptr/callback_tests.rs": "61dc8c2ae1ddbe37a18f8c1b73732b03bd080db855a1ecfbed3775efaeffcbef",
+      "src/shared_pointer/kind/rc/mod.rs": "51ce60423de4529a5f4523b024cb8b5199a599ab7b66ba911b7956594337e882",
+      "src/shared_pointer/kind/arc/mod.rs": "ed800ff2964d474f56f155ff6e84cf65a4d93e7dbb13cea262e55fa248522e73",
+      "src/shared_pointer/kind/arct/mod.rs": "6a56f178124786c7511594a85348c66e7e2ab4391a8f138be845434418b8c833",
+      "src/shared_pointer/mod.rs": "2571af7d1234cece0307757daca67e917c4ee358708f330219b467bc8fabc272"
+    },
+    "candidate": {
+      "src/shared_pointer/kind/erased_ptr.rs": "87876ce3636a9f6a9182243820f4a50d99c3f57d1dff66b8737c1fc2663c1905",
+      "src/shared_pointer/kind/erased_ptr/callback_tests.rs": "61dc8c2ae1ddbe37a18f8c1b73732b03bd080db855a1ecfbed3775efaeffcbef",
+      "src/shared_pointer/kind/rc/mod.rs": "51ce60423de4529a5f4523b024cb8b5199a599ab7b66ba911b7956594337e882",
+      "src/shared_pointer/kind/arc/mod.rs": "ed800ff2964d474f56f155ff6e84cf65a4d93e7dbb13cea262e55fa248522e73",
+      "src/shared_pointer/kind/arct/mod.rs": "6a56f178124786c7511594a85348c66e7e2ab4391a8f138be845434418b8c833",
+      "src/shared_pointer/mod.rs": "2571af7d1234cece0307757daca67e917c4ee358708f330219b467bc8fabc272"
+    },
+    "registry": {
+      "triomphe-0.1.16/src/arc.rs": "b0d62f8dc704fe63cc7e67cc4954926d0209006db63366e0065613b056e2ca32",
+      "rpds-1.2.1/src/map/red_black_tree_map/mod.rs": "71189099680f42428692abb21eb19c6afe96da0e4695634f2866fb021a009e69"
+    }
+  },
+  "premises": [
+    "Correct Rust/compiler lowering and pointer provenance; no verified Rust extraction.",
+    "Correct and matching from_raw/as_ptr smart-pointer contracts for the six reviewed function-item callers.",
+    "from_raw reconstruction does not change strong counts. Callback f has identical behavior in both implementations.",
+    "ManuallyDrop suppresses the temporary owner destructor; the Copy function-item adapter has no Drop implementation.",
+    "Guard drop executes on normal return and ordinary unwind; abort, process termination and double panic are outside this local model.",
+    "as_ptr is total, read-only and non-panicking for a live owned pointer.",
+    "Callback preserves external views and leaves one valid owned reference whenever slot validity is claimed."
+  ]
+}
