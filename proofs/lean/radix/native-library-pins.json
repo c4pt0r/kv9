@@ -1,0 +1,18 @@
+{
+  "status": "pinned_reviewed_native_boundary_not_a_standard_library_or_compiler_proof",
+  "rustc": "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+  "rustc_sha256": "103b60e1b1339968c1d74202ea1d45686037e82c4ea3e0569de24b18a1e6836a",
+  "version": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8\n",
+  "cfg": "debug_assertions\npanic=\"unwind\"\ntarget_abi=\"\"\ntarget_arch=\"x86_64\"\ntarget_endian=\"little\"\ntarget_env=\"gnu\"\ntarget_family=\"unix\"\ntarget_feature=\"fxsr\"\ntarget_feature=\"sse\"\ntarget_feature=\"sse2\"\ntarget_has_atomic=\"16\"\ntarget_has_atomic=\"32\"\ntarget_has_atomic=\"64\"\ntarget_has_atomic=\"8\"\ntarget_has_atomic=\"ptr\"\ntarget_os=\"linux\"\ntarget_pointer_width=\"64\"\ntarget_vendor=\"unknown\"\nunix\n",
+  "library_root": "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library",
+  "sources": {
+    "alloc/src/sync.rs": "ce15d00d92133cf1f55cd1905d7fe6b4e23e62090dabff6c68fae2d7fe78fe8f",
+    "alloc/src/boxed.rs": "25d54ba919797977110ff0e5b4c4c4cec15c42ecfae3e37f6d8ed0c6fc13fe65",
+    "alloc/src/vec/mod.rs": "4a27ab4bcce0908cb3338cb0c94983a00fb01bb3b25f70d37f62750eff3fd5ae",
+    "alloc/src/raw_vec/mod.rs": "0c006d1bedcc8c1aa6d8f37ad5553e1b14c452c732745612cf23c4663c090965",
+    "core/src/slice/mod.rs": "d39047243321a69a9dd3bc22babbf03ce46621160ad28bf6de15475b90647c13",
+    "core/src/mem/mod.rs": "ad70d291fcddf9bd91e7b3d75d6d432d1473e078ab92bf21741fc1d47f786b78",
+    "core/src/alloc/layout.rs": "7bc98930cfa1ad8c04d24014ebe2293cf4b4fb8a0a0d46f2dc94ad72502c3974",
+    "core/src/ptr/non_null.rs": "c1b6db4d0b71413bd827ff9cc4dc7f53a5bbb4945be3e1356943fa630c48732f"
+  }
+}
