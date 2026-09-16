@@ -1,15 +1,15 @@
 # kv9 development roadmap
 
-> The [persistent compressed radix prototype](PERSISTENT-RADIX-PROTOTYPE.md)
-> now passes 213 isolated common/engine tests (25 existing ignored), including
-> 11 index tests. Independent models check 6,770 mutation prefixes, old roots
-> and 818 bound pairs. Six faulty Rust variants are rejected; 54 allocation
-> observations return all six datasets to their byte baseline after teardown.
-> Deep prefix mutation and concurrent release pass on 64 KiB thread stacks.
-> Next complete the actual algorithm's source-bound formal proof before timing.
-> No radix speedup, new database QPS, recovery/Chaos acceptance or runtime
-> promotion is claimed. Production keeps rpds; the failed single-buffer/accessor
-> family stays stopped. See #51 for the remaining proof and acceptance gates.
+> The [radix point-operation model proof](RADIX-POINT-PROOF.md) now checks
+> 155 theorems and rejects 17 controls. Full-key lookup, put/erase, split/collapse,
+> ordering/canonicality, inserted flags and arbitrary finite histories refine an
+> independent entry-list model. This is reviewed source mapping, not verified
+> Rust extraction or the complete index proof. Cursor/range refinement,
+> cardinality/machine bounds, iterative-loop simulation and Arc ownership remain
+> open before timing. The unchanged prototype retains its 213-test qualification
+> (25 existing ignored), six Rust fault controls and 54 allocation observations.
+> No radix speedup, new database QPS or runtime promotion is claimed; production
+> keeps rpds and the failed single-buffer/accessor family stays stopped. See #51.
 > Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
 > Keep selected ThinLTO and Safe ReadIndex; read and lease optimization remain held.
 > The latest [index mutation screen](OUTLINED-MUTATION-PATH.md) completes 446
