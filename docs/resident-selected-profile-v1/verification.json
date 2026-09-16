@@ -1,0 +1,36 @@
+{
+  "complete": true,
+  "members": 327,
+  "original_bytes": 156670175,
+  "archive_bytes": 5868510,
+  "archive_sha256": "b0dbcf362654a68ffbe8ab67b9e5dcd3bd0efb25eff709ec467fe6c96d903538",
+  "members_sha256": "8ad1041827c4f7c82eae1d93e4de5f3aa33c2e3de5702c6505cf2f0662f275f7",
+  "all_members_read_back": true,
+  "excluded": [
+    {
+      "path": "build-frame-pointers/resident-selected-profile",
+      "bytes": 1092808,
+      "sha256": "25be805486538c06cd879df7e1fd758cc382e487731f3349b8f93cab1658c94b",
+      "reason": "Retained executable stays local."
+    },
+    {
+      "path": "build-owner-corrected/resident-selected-profile",
+      "bytes": 1098416,
+      "sha256": "b06efb98229649430556b547cf8ad79d264ceab368c48ff6c1f50f8f048491e2",
+      "reason": "Retained executable stays local."
+    },
+    {
+      "path": "case-0/perf.data",
+      "bytes": 70843448,
+      "sha256": "5594de964c068beffaf5a0aa09b8faed1e81cf4c3becce90e1c1682b9fbaaddb",
+      "reason": "Large original input/failed DWARF recording or generated cache stays local."
+    },
+    {
+      "path": "groups.bin",
+      "bytes": 16519240,
+      "sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+      "reason": "Large original input/failed DWARF recording or generated cache stays local."
+    }
+  ],
+  "local_root": "/mnt/data/kv9-work/resident-selected-profile-20260916-first"
+}
