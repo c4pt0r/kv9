@@ -1,15 +1,15 @@
 # Write performance against three-copy Redis
 
-The [radix point-operation model proof](RADIX-POINT-PROOF.md) now checks
-155 theorems and rejects 17 controls. Full-key lookup, put/erase, split/collapse,
-ordering/canonicality, inserted flags and arbitrary finite histories refine an
-independent entry-list model. This is reviewed source mapping, not verified
-Rust extraction or the complete index proof. Cursor/range refinement,
-cardinality/machine bounds, iterative-loop simulation and Arc ownership remain
-open before timing. The unchanged prototype retains its 213-test qualification
+The [radix cardinality and local machine-bound proof](RADIX-CARDINALITY-PROOF.md)
+adds 52 theorems, with all 207 model theorems checked together and 17 new
+rejecting controls. Stored Nat counts now match distinct keys through arbitrary
+finite histories. Local path/index bounds and conditional USize counts pass;
+actual loops and Arc/heap correspondence must still discharge their premises.
+Cursor/range refinement and Rust/model differential execution also remain open
+before timing. The unchanged prototype retains its 213-test qualification
 (25 existing ignored), six Rust fault controls and 54 allocation observations.
 No radix speedup, new database QPS or runtime promotion is claimed; production
-keeps rpds and the failed single-buffer/accessor family stays stopped. See #51.
+keeps rpds and previously rejected index families stay stopped. See #51.
 
 Updated: 2026-09-16. The current priority is write throughput and latency,
 targeting Redis with one primary and two replicas. Read optimization is held at

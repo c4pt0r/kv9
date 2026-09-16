@@ -1,5 +1,9 @@
 # Radix point-operation model proofs
 
+The subsequent [cardinality and local machine-bound extension](SIZE-README.md)
+adds two modules and 52 theorems under a separate contract. The ten-module
+point-operation checkpoint and its original contract remain preserved below.
+
 These ten Lean modules contain 155 kernel-checked theorems for the isolated
 [Rust prototype](../../../scripts/resident-radix/src/lib.rs). The reviewed
 [source contract](source-contract.json) binds the exact Rust source, tests,

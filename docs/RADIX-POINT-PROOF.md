@@ -2,6 +2,10 @@
 
 Updated: 2026-09-16 UTC. Tracking: [#51](https://github.com/c4pt0r/kv9/issues/51).
 
+Subsequent checkpoint: [cardinality and local machine-bound proofs](RADIX-CARDINALITY-PROOF.md)
+add 52 theorems and 17 new controls. The original point checkpoint below is
+preserved; complete Rust index verification remains open.
+
 The isolated radix prototype now has **155 Lean-checked model theorems and
 17 rejecting controls**. The model proves full-key point lookup, insertion,
 replacement, deletion, the inserted/replaced flag, preservation of routing/
