@@ -1,0 +1,750 @@
+{
+  "compressed_cap_bytes": 33554432,
+  "decoded_tar_cap_bytes": 83886080,
+  "member_cap_bytes": 8388608,
+  "members": [
+    {
+      "bytes": 6910,
+      "member": "home/dongxu/kv9/scripts/resident-packed/Cargo.lock",
+      "sha256": "a8c9ed5e5332747b44a8b883ce937086ba9e34459e543b4101ac64c45a61bec4",
+      "source": "/home/dongxu/kv9/scripts/resident-packed/Cargo.lock"
+    },
+    {
+      "bytes": 330,
+      "member": "home/dongxu/kv9/scripts/resident-packed/Cargo.toml",
+      "sha256": "aa409c2155a99ae5552ce342e6a9f61ff8c03134c4b2a3360d1dade97cbe0b43",
+      "source": "/home/dongxu/kv9/scripts/resident-packed/Cargo.toml"
+    },
+    {
+      "bytes": 2196,
+      "member": "home/dongxu/kv9/scripts/resident-packed/README.md",
+      "sha256": "84f190e391a8292ef1b5387e7b35a8fd4aae0e74d9757eb23817ce2d62adab69",
+      "source": "/home/dongxu/kv9/scripts/resident-packed/README.md"
+    },
+    {
+      "bytes": 2425,
+      "member": "home/dongxu/kv9/scripts/resident-packed/src/bin/key-comparisons.rs",
+      "sha256": "78202e72dbe64ea1a2d65642d838d66d340dae4d4a35b82e55fc0745cc2651f8",
+      "source": "/home/dongxu/kv9/scripts/resident-packed/src/bin/key-comparisons.rs"
+    },
+    {
+      "bytes": 2320,
+      "member": "home/dongxu/kv9/scripts/resident-packed/src/counting.rs",
+      "sha256": "f3dda5f5d6edc584358181813b7cf2ee2d2c3014751757c3554519a4b7e7dbf1",
+      "source": "/home/dongxu/kv9/scripts/resident-packed/src/counting.rs"
+    },
+    {
+      "bytes": 13516,
+      "member": "home/dongxu/kv9/scripts/resident-packed/src/lib.rs",
+      "sha256": "f8b44a3f401d4e56886265025623df8502fa448fac4962bbb7346b841eec23da",
+      "source": "/home/dongxu/kv9/scripts/resident-packed/src/lib.rs"
+    },
+    {
+      "bytes": 18745,
+      "member": "home/dongxu/kv9/scripts/resident-packed/src/main.rs",
+      "sha256": "dd60128ac20aab11d8a9574ddd14ccaeb9d7f35b2b4eba03a20305ceb230cef5",
+      "source": "/home/dongxu/kv9/scripts/resident-packed/src/main.rs"
+    },
+    {
+      "bytes": 8759,
+      "member": "home/dongxu/kv9/scripts/resident-packed/src/tests.rs",
+      "sha256": "29d26709639ef7405feabb509899c6a5b60452a1d0156cd491300a65e036b80e",
+      "source": "/home/dongxu/kv9/scripts/resident-packed/src/tests.rs"
+    },
+    {
+      "bytes": 2021,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/analysis-inputs.json",
+      "sha256": "a9bcb29d6ee8d9262168557c0ba16232fde97ddc4ae470e6e28e6da518df415e",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/analysis-inputs.json"
+    },
+    {
+      "bytes": 26464,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/analysis.json",
+      "sha256": "a8ca68d3c79e8b9393f8698c8f2842d74d8eb31575923c92fc71395f214010e2",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/analysis.json"
+    },
+    {
+      "bytes": 8514,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/analyze.py",
+      "sha256": "fd1bfe41d8486af241a5e216f767e257607b4fed0b61032366d4a393a26e93d2",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/analyze.py"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/allocations-clippy.stderr",
+      "sha256": "88336cb88802a3f0177f5e94eac6a82b85c36c37015f3bb225591fdc64d47241",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/allocations-clippy.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/allocations-clippy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/allocations-clippy.stdout"
+    },
+    {
+      "bytes": 26595,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/allocations.jsonl",
+      "sha256": "ac7eaf8ed16a516caf9a918e024176e0144a56535e81bff94ac8c390dc1e895e",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/allocations.jsonl"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/allocations.stderr",
+      "sha256": "313427ef501b3fb329d55c086819f31eb5f4000029455574547f2d0dd45bbdd8",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/allocations.stderr"
+    },
+    {
+      "bytes": 36,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-clean.stderr",
+      "sha256": "55271c4559f3e72c4918f976cba0dec90bd3b39d725bea9c42654ccb8d143fd7",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-clean.stdout"
+    },
+    {
+      "bytes": 2260,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-metadata.json",
+      "sha256": "ec42a318ef7250682e19929d7e8e11a91ae904ad5b3ea2b5a7df88dbeb19afbc",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-metadata.log"
+    },
+    {
+      "bytes": 7028,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-safety.json",
+      "sha256": "b478589700ba341f757d1eddde76583b48c2c46a6670ce402ddf3c7a93833d9a",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/cache-safety.json"
+    },
+    {
+      "bytes": 1987,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/result.json",
+      "sha256": "f14774ae819ec42682c5d50fd60470cc51c93654b622d4cac822603002babc66",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/result.json"
+    },
+    {
+      "bytes": 6910,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/Cargo.lock",
+      "sha256": "a8c9ed5e5332747b44a8b883ce937086ba9e34459e543b4101ac64c45a61bec4",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/Cargo.lock"
+    },
+    {
+      "bytes": 330,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/Cargo.toml",
+      "sha256": "aa409c2155a99ae5552ce342e6a9f61ff8c03134c4b2a3360d1dade97cbe0b43",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/Cargo.toml"
+    },
+    {
+      "bytes": 2320,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/src/counting.rs",
+      "sha256": "f3dda5f5d6edc584358181813b7cf2ee2d2c3014751757c3554519a4b7e7dbf1",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/src/counting.rs"
+    },
+    {
+      "bytes": 13516,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/src/lib.rs",
+      "sha256": "f8b44a3f401d4e56886265025623df8502fa448fac4962bbb7346b841eec23da",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/src/lib.rs"
+    },
+    {
+      "bytes": 18745,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/src/main.rs",
+      "sha256": "dd60128ac20aab11d8a9574ddd14ccaeb9d7f35b2b4eba03a20305ceb230cef5",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/src/main.rs"
+    },
+    {
+      "bytes": 8759,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/src/tests.rs",
+      "sha256": "29d26709639ef7405feabb509899c6a5b60452a1d0156cd491300a65e036b80e",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/source/src/tests.rs"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/timing-clippy.stderr",
+      "sha256": "88336cb88802a3f0177f5e94eac6a82b85c36c37015f3bb225591fdc64d47241",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/timing-clippy.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/timing-clippy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/timing-clippy.stdout"
+    },
+    {
+      "bytes": 26553,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/timing.jsonl",
+      "sha256": "6771007a8927a3686dde88929906c40ba141ed564964b4d41a23c16cd5aa51b3",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/timing.jsonl"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/timing.stderr",
+      "sha256": "f4358c6a63471f1f84851feb3c0bf57f46443b8c6d0111d0a0fc5f196729727c",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-corrected/timing.stderr"
+    },
+    {
+      "bytes": 1974,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/allocations-clippy.stderr",
+      "sha256": "83df639dad3a579099252864e16cdc0dc9ecbdfe4db28f7c1bf03a3fed2637b7",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/allocations-clippy.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/allocations-clippy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/allocations-clippy.stdout"
+    },
+    {
+      "bytes": 2562,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/build-benchmark.py",
+      "sha256": "b7ed5deb1e820abe9f56cf2a697a7c3b168847130fc0a4280e2925218c09a57d",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/build-benchmark.py"
+    },
+    {
+      "bytes": 36,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-clean.stderr",
+      "sha256": "685d716505bc74f8129869cf86654e7d9998ee176d8558dc88b0adcc83aa4c87",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-clean.stdout"
+    },
+    {
+      "bytes": 2260,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-metadata.json",
+      "sha256": "ec42a318ef7250682e19929d7e8e11a91ae904ad5b3ea2b5a7df88dbeb19afbc",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-metadata.log"
+    },
+    {
+      "bytes": 4691,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-safety.json",
+      "sha256": "db023c4b2ff33dbf61ca2fa91a5c681a17902d660dadc60ae95fa5a99e151425",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/cache-safety.json"
+    },
+    {
+      "bytes": 1516,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/result.json",
+      "sha256": "cd1e415da5c0ff7341941a1ba993dc1c60b391cc63cf28c891c7309b9f20f340",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/result.json"
+    },
+    {
+      "bytes": 6910,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/Cargo.lock",
+      "sha256": "a8c9ed5e5332747b44a8b883ce937086ba9e34459e543b4101ac64c45a61bec4",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/Cargo.lock"
+    },
+    {
+      "bytes": 330,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/Cargo.toml",
+      "sha256": "aa409c2155a99ae5552ce342e6a9f61ff8c03134c4b2a3360d1dade97cbe0b43",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/Cargo.toml"
+    },
+    {
+      "bytes": 2320,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/src/counting.rs",
+      "sha256": "f3dda5f5d6edc584358181813b7cf2ee2d2c3014751757c3554519a4b7e7dbf1",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/src/counting.rs"
+    },
+    {
+      "bytes": 13516,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/src/lib.rs",
+      "sha256": "f8b44a3f401d4e56886265025623df8502fa448fac4962bbb7346b841eec23da",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/src/lib.rs"
+    },
+    {
+      "bytes": 18734,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/src/main.rs",
+      "sha256": "186d95227aaaa44466ff15ff82d6f778eca87fa48ee7822f073e2589d223d17b",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/src/main.rs"
+    },
+    {
+      "bytes": 8759,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/src/tests.rs",
+      "sha256": "29d26709639ef7405feabb509899c6a5b60452a1d0156cd491300a65e036b80e",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/source/src/tests.rs"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/timing-clippy.stderr",
+      "sha256": "12b6571a585a52d871d797471dda6e4f3dc3872e0e2fd170fe32b7f5c6d7e3a9",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/timing-clippy.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/timing-clippy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/timing-clippy.stdout"
+    },
+    {
+      "bytes": 26553,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/timing.jsonl",
+      "sha256": "6f8062a5c61686688d86ed72d23e0677ceec04344438b217bfe237921475cf56",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/timing.jsonl"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/timing.stderr",
+      "sha256": "bd1e2a16770575dcd5689ad8bf40c0f277ab55e27eddf8d034142dce4dc05104",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/benchmark-build-first/timing.stderr"
+    },
+    {
+      "bytes": 2566,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/build-benchmark.py",
+      "sha256": "53079ec75529ff941cd166c3e7521eb3e359f82576f7e8985b4b4181599d8ff0",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/build-benchmark.py"
+    },
+    {
+      "bytes": 336,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/cargo-observed-after-build.txt",
+      "sha256": "88d4547e99fef084e4ef336a0165bd5df0774f41000e856a28c033835c0085e2",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/cargo-observed-after-build.txt"
+    },
+    {
+      "bytes": 2036,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/compare-keys.py",
+      "sha256": "7aa3f8f7e87a5eccdc3c39396e9986da706c36608509177b99e7eb22941d0003",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/compare-keys.py"
+    },
+    {
+      "bytes": 26532,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/build.jsonl",
+      "sha256": "f02943c239b28fbb8f58911873a8268175db10fbd54fb51e7e9c5303c1c9d1aa",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/build.jsonl"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/build.stderr",
+      "sha256": "d1049c0b5caa5d6ae88f53aa418ba4632346a49219a860a5fb65f027fe4ab608",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/build.stderr"
+    },
+    {
+      "bytes": 36,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-clean.stderr",
+      "sha256": "0e2a973b2dba57eb7a0e468d57d017c926d8ccbc8bb826fbb7d3abf671d61d3b",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-clean.stdout"
+    },
+    {
+      "bytes": 2461,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-metadata.json",
+      "sha256": "8ab325e514c89757c4854a4c50ddedb3e0e531ee71b191a1ec0227a78cbe298f",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-metadata.log"
+    },
+    {
+      "bytes": 4157,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-safety.json",
+      "sha256": "b98b231caac86cf257ecaea7ef1dc316e873de25b3be443f695169d9e4822a48",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/cache-safety.json"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/clippy.stderr",
+      "sha256": "8b7ed03706526efb979c82e1f89cd9805f4bb012e7834332210bd0c764ad3d31",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/clippy.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/clippy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/clippy.stdout"
+    },
+    {
+      "bytes": 110203,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/comparisons.json",
+      "sha256": "5901efb2afd524cf0eb8a5badf81b356249e4f49b075d08d3d0bf5cd951bfa65",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/comparisons.json"
+    },
+    {
+      "bytes": 1218,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/result.json",
+      "sha256": "9e7ca41c7a7e8fb6769cdf996e807cc821b2e1dcaef5d0efae543f06c90e8700",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/result.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/run.stderr"
+    },
+    {
+      "bytes": 30,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/run.stdout",
+      "sha256": "4bcaca575a998b453f4324bebb2c7f18058abe7096120394934b469bef26cea4",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-first/run.stdout"
+    },
+    {
+      "bytes": 456961,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-input.json",
+      "sha256": "0f3fc3b311d026a1165c0d10940f24fa051a0797f167be3e38eb4db6a8e4a6eb",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-input.json"
+    },
+    {
+      "bytes": 1092,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-summary.json",
+      "sha256": "c636e54d8bcbc9b94c483216b111269f29e0247247d11d2e4d1febc0fa7b3774",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/key-comparison-summary.json"
+    },
+    {
+      "bytes": 1432,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/plan.json",
+      "sha256": "d455c973b33e7e317ca6a19d6e7454120eb2493361bf6c19401f6e407d838021",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/plan.json"
+    },
+    {
+      "bytes": 36,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-clean.stderr",
+      "sha256": "b733eaaecbb3aea358a0d3e3d74d05133a26fe6f301fb618ac2b6c9dc23ede02",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-clean.stdout"
+    },
+    {
+      "bytes": 2038,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-metadata.json",
+      "sha256": "802ff5ab885b33a53fb2199147f4f7a7a1af5584ecab162130c5efff996d85b7",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-metadata.log"
+    },
+    {
+      "bytes": 3104,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-safety.json",
+      "sha256": "b70ed8e67a295843fa9b6fab7cad65c47193329a67fd2fc90c565cfc92897961",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/cache-safety.json"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/clippy.stderr",
+      "sha256": "44c0be9b5afb3830f4697c00f50f04eb1f11360c367f11f0e38155b91b9d48e8",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/clippy.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/clippy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/clippy.stdout"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/metadata.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/metadata.stderr"
+    },
+    {
+      "bytes": 113012,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/metadata.stdout",
+      "sha256": "d6d304c54db476a5431472c6431d68f29310e26abc225873fca83bb3b75654fd",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/metadata.stdout"
+    },
+    {
+      "bytes": 1326,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/result.json",
+      "sha256": "ad8838ff71ac4572170888f67ec88f79ad0c74e0918aa49d2d5eee66bf595e55",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/result.json"
+    },
+    {
+      "bytes": 6910,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/source/Cargo.lock",
+      "sha256": "a8c9ed5e5332747b44a8b883ce937086ba9e34459e543b4101ac64c45a61bec4",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/source/Cargo.lock"
+    },
+    {
+      "bytes": 293,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/source/Cargo.toml",
+      "sha256": "838c4f78d3b446a1c39ec8bea0042589446d67873fb332e4e4f0550e442169b0",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/source/Cargo.toml"
+    },
+    {
+      "bytes": 13516,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/source/src/lib.rs",
+      "sha256": "f8b44a3f401d4e56886265025623df8502fa448fac4962bbb7346b841eec23da",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/source/src/lib.rs"
+    },
+    {
+      "bytes": 8759,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/source/src/tests.rs",
+      "sha256": "29d26709639ef7405feabb509899c6a5b60452a1d0156cd491300a65e036b80e",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/source/src/tests.rs"
+    },
+    {
+      "bytes": 25837,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/test-build.jsonl",
+      "sha256": "a88ff0d114d2c607f2be5e5fc7f0c8aeac7b7e194a796e0ffe8672151ed1c1a5",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/test-build.jsonl"
+    },
+    {
+      "bytes": 153,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/test-build.stderr",
+      "sha256": "712086a078dd8c86a65e86eff9d4328d8b7061401bb6fec1952f86a6147022e6",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/test-build.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/tests.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/tests.stderr"
+    },
+    {
+      "bytes": 561,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/tests.stdout",
+      "sha256": "034eb78aaab09ea9bd2ea46d3b870d313035568b983459865e564e4d56ba6c3a",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-corrected/tests.stdout"
+    },
+    {
+      "bytes": 21,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-clean.stderr",
+      "sha256": "0bdaeb2aa6a92a0fdfec2d2cc4d0ab71946de5d0654e08c526e4629130ae0f28",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-clean.stdout"
+    },
+    {
+      "bytes": 2038,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-metadata.json",
+      "sha256": "802ff5ab885b33a53fb2199147f4f7a7a1af5584ecab162130c5efff996d85b7",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-metadata.log"
+    },
+    {
+      "bytes": 3267,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-safety.json",
+      "sha256": "08b73773bc8e6f4c15b8dbd25e175235b0c33f625874bf95602a565e8d4f04ed",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/cache-safety.json"
+    },
+    {
+      "bytes": 1336,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/clippy.stderr",
+      "sha256": "e44ade755fe70ce9813017333c15cdb1b6e2eb4667290bc1f73b354eb614718d",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/clippy.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/clippy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/clippy.stdout"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/metadata.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/metadata.stderr"
+    },
+    {
+      "bytes": 113012,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/metadata.stdout",
+      "sha256": "d6d304c54db476a5431472c6431d68f29310e26abc225873fca83bb3b75654fd",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/metadata.stdout"
+    },
+    {
+      "bytes": 3174,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/qualify.py",
+      "sha256": "afc514c0dd996e7bc6a5cb280cf0e499d4bacf7ad2bb434a173c9b3cbffbbb93",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/qualify.py"
+    },
+    {
+      "bytes": 1351,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/result.json",
+      "sha256": "82b6d24d29314d44c463fe77bc105987688547a9c2d147424f2dc4e0852e0faf",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/result.json"
+    },
+    {
+      "bytes": 6910,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/source/Cargo.lock",
+      "sha256": "a8c9ed5e5332747b44a8b883ce937086ba9e34459e543b4101ac64c45a61bec4",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/source/Cargo.lock"
+    },
+    {
+      "bytes": 293,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/source/Cargo.toml",
+      "sha256": "838c4f78d3b446a1c39ec8bea0042589446d67873fb332e4e4f0550e442169b0",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/source/Cargo.toml"
+    },
+    {
+      "bytes": 13516,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/source/src/lib.rs",
+      "sha256": "f8b44a3f401d4e56886265025623df8502fa448fac4962bbb7346b841eec23da",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/source/src/lib.rs"
+    },
+    {
+      "bytes": 8750,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/source/src/tests.rs",
+      "sha256": "b64c9c96ad5d6a4fa9eb8950621746b1a578b59251e69dbaf57f7c5e2ebf4df9",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/source/src/tests.rs"
+    },
+    {
+      "bytes": 25855,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/test-build.jsonl",
+      "sha256": "0e49243dbb2d6b49bb0d77bcf73acc3d82a4330b518c07b65509990fedacc278",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/test-build.jsonl"
+    },
+    {
+      "bytes": 664,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/test-build.stderr",
+      "sha256": "f0d07f0ac6f4e1cc366727a4e9fd39b9c64ddb7f2a0976e72aced79efbd49ec8",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/test-build.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/tests.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/tests.stderr"
+    },
+    {
+      "bytes": 561,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/tests.stdout",
+      "sha256": "6cc7f8039aac9cccf030a6cb1883de48e5afdcaab7fee80f8b11b6d391c575d8",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualification-first/tests.stdout"
+    },
+    {
+      "bytes": 3178,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/qualify.py",
+      "sha256": "5fcd889eec85aba6c80dc9554f9ea7de7a02da3fa41023cd2c89482e3493945e",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/qualify.py"
+    },
+    {
+      "bytes": 1975,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/run.py",
+      "sha256": "13812e45e3e6874303e5a61464b446cb302b25dd8d00364b3f26e9cdf7d9f99a",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/run.py"
+    },
+    {
+      "bytes": 684,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations-launch.json",
+      "sha256": "ac74d7a46e7ec7a002ed87803ab95115bd4e3fe0ad89a08da5e08a4c3183984d",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations-launch.json"
+    },
+    {
+      "bytes": 848,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations-terminal.json",
+      "sha256": "e5513394c79e90e6df7f834a3bef61a4d2d6650e79ce08625b23e743b6dd9d8b",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations-terminal.json"
+    },
+    {
+      "bytes": 38509,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations.json",
+      "sha256": "c04af6ea1f9df79dc8cae9c243bfa9fc5d06529708fc57fbf0eace6c0c511bcb",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations.stderr"
+    },
+    {
+      "bytes": 2499,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations.stdout",
+      "sha256": "527c2bbac13ab34dc3068be97640d864d51629a185bc5ce83c02d1b53f9ce95b",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/allocations.stdout"
+    },
+    {
+      "bytes": 674,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing-launch.json",
+      "sha256": "8764eca6558e4e82a5d9a84f014a49f28aadf9f825d66adbdbb667c9cd2b084c",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing-launch.json"
+    },
+    {
+      "bytes": 840,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing-terminal.json",
+      "sha256": "62363db95c2e27bf39dfa891e85f0d8aa50cfc0e5a557a46e60cbaa24e8bd6d9",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing-terminal.json"
+    },
+    {
+      "bytes": 3498495,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing.json",
+      "sha256": "8089859b14cdd7f5b5bbe70af752113e62829d1b0750d833c6b4bc61b5086021",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing.stderr"
+    },
+    {
+      "bytes": 2500,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing.stdout",
+      "sha256": "b85a0be086af1655173b076c3ac6f5394378e2a642641f2634df5ed05e0dd53b",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/runs-first/timing.stdout"
+    },
+    {
+      "bytes": 196,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/rustc-observed-after-build.txt",
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/rustc-observed-after-build.txt"
+    },
+    {
+      "bytes": 2214,
+      "member": "mnt/data/kv9-work/packed-index-development-20260916-first/timing-plan.json",
+      "sha256": "3026df446336396134dba2135b407a8a4f54e4ca4195e7fc3024405904fb024a",
+      "source": "/mnt/data/kv9-work/packed-index-development-20260916-first/timing-plan.json"
+    },
+    {
+      "bytes": 3087,
+      "member": "mnt/data/kv9-work/packed-index-publication-20260916-first/package.py",
+      "sha256": "462303119ddf7b7eb8517dbb553b7686a1d7a3601e309b1f0faee3918ecfe17b",
+      "source": "/mnt/data/kv9-work/packed-index-publication-20260916-first/package.py"
+    },
+    {
+      "bytes": 593,
+      "member": "mnt/data/kv9-work/packed-index-publication-20260916-first/terminals.json",
+      "sha256": "cc88e76046c00ff03100476deaa0b41dcd218e9a84b32882fc8cf2ff26ff6a40",
+      "source": "/mnt/data/kv9-work/packed-index-publication-20260916-first/terminals.json"
+    },
+    {
+      "bytes": 3551,
+      "member": "mnt/data/kv9-work/packed-index-publication-20260916-first/verify.py",
+      "sha256": "4c475dbfbbcdd1cd40fa8e46ec8226d983984e9a6d17d45ffd566ec80d639f55",
+      "source": "/mnt/data/kv9-work/packed-index-publication-20260916-first/verify.py"
+    }
+  ],
+  "original_bytes": 4823973,
+  "original_files": 123,
+  "report_inputs_included": 9,
+  "scope": "Original packed-index experiment source and metadata. Large original group inputs and executables remain local; no production integration or runtime replay.",
+  "total_cap_bytes": 83886080
+}

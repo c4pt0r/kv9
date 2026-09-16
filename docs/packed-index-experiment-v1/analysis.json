@@ -1,0 +1,906 @@
+{
+  "complete": true,
+  "production_changed": false,
+  "new_database_qps": false,
+  "independent_final_states_and_query_identity": true,
+  "cases": [
+    {
+      "operation": "write",
+      "workload": "overwrite",
+      "pinned": false,
+      "baseline": {
+        "samples": 2544,
+        "mean_ns": 98882.0715408805,
+        "p99_ns": 267651
+      },
+      "packed": {
+        "samples": 2544,
+        "mean_ns": 125537.98427672956,
+        "p99_ns": 342321
+      },
+      "mean_change_percent": 26.957275793750735,
+      "p99_change_percent": 27.898270508983725,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": 25.68595246517109,
+          "baseline_mean_ns": 99499.89937106919,
+          "packed_mean_ns": 125057.39622641509,
+          "baseline_p99_ns": 267892,
+          "packed_p99_ns": 332914
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": 28.244585790601604,
+          "baseline_mean_ns": 98264.24371069182,
+          "packed_mean_ns": 126018.57232704402,
+          "baseline_p99_ns": 267080,
+          "packed_p99_ns": 345357
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 300288,
+          "alloc_requested_bytes": 21120256,
+          "dealloc_calls": 300288,
+          "dealloc_layout_bytes": 21120256,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 106
+        },
+        "packed": {
+          "alloc_calls": 300288,
+          "alloc_requested_bytes": 21921024,
+          "dealloc_calls": 300288,
+          "dealloc_layout_bytes": 21921024,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 106
+        }
+      },
+      "requested_live_bytes": {
+        "rpds": {
+          "final_map": 1093632,
+          "initial_map": 1093632,
+          "peak_during_group_with_optional_old_view": 1093843,
+          "released_after_drop": true
+        },
+        "packed": {
+          "final_map": 1004714,
+          "initial_map": 1004714,
+          "peak_during_group_with_optional_old_view": 1004933,
+          "released_after_drop": true
+        }
+      }
+    },
+    {
+      "operation": "write",
+      "workload": "overwrite",
+      "pinned": true,
+      "baseline": {
+        "samples": 2544,
+        "mean_ns": 118614.6411163522,
+        "p99_ns": 315541
+      },
+      "packed": {
+        "samples": 2544,
+        "mean_ns": 133326.82586477988,
+        "p99_ns": 354524
+      },
+      "mean_change_percent": 12.403346340690025,
+      "p99_change_percent": 12.35433747120025,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": 12.002227277466337,
+          "baseline_mean_ns": 119289.95283018867,
+          "packed_mean_ns": 133607.4040880503,
+          "baseline_p99_ns": 315541,
+          "packed_p99_ns": 354814
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": 12.809058958979858,
+          "baseline_mean_ns": 117939.32940251572,
+          "packed_mean_ns": 133046.24764150943,
+          "baseline_p99_ns": 317294,
+          "packed_p99_ns": 349144
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 392748,
+          "alloc_requested_bytes": 26298016,
+          "dealloc_calls": 43344,
+          "dealloc_layout_bytes": 3048528,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 106
+        },
+        "packed": {
+          "alloc_calls": 333269,
+          "alloc_requested_bytes": 24165875,
+          "dealloc_calls": 43344,
+          "dealloc_layout_bytes": 3164112,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 106
+        }
+      },
+      "requested_live_bytes": {
+        "rpds": {
+          "final_map": 1093632,
+          "initial_map": 1093632,
+          "peak_during_group_with_optional_old_view": 1628073,
+          "released_after_drop": true
+        },
+        "packed": {
+          "final_map": 958730,
+          "initial_map": 1004714,
+          "peak_during_group_with_optional_old_view": 1433357,
+          "released_after_drop": true
+        }
+      }
+    },
+    {
+      "operation": "write",
+      "workload": "initial_fill",
+      "pinned": false,
+      "baseline": {
+        "samples": 2544,
+        "mean_ns": 103681.8628144654,
+        "p99_ns": 278932
+      },
+      "packed": {
+        "samples": 2544,
+        "mean_ns": 132360.0243710692,
+        "p99_ns": 354253
+      },
+      "mean_change_percent": 27.659766885093706,
+      "p99_change_percent": 27.00335565657579,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": 25.409400106039847,
+          "baseline_mean_ns": 105359.7106918239,
+          "packed_mean_ns": 132130.98113207548,
+          "baseline_p99_ns": 284974,
+          "packed_p99_ns": 354253
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": 29.98416551722396,
+          "baseline_mean_ns": 102004.01493710691,
+          "packed_mean_ns": 132589.0676100629,
+          "baseline_p99_ns": 268984,
+          "packed_p99_ns": 359874
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 304384,
+          "alloc_requested_bytes": 21349632,
+          "dealloc_calls": 288000,
+          "dealloc_layout_bytes": 20256000,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 106
+        },
+        "packed": {
+          "alloc_calls": 301007,
+          "alloc_requested_bytes": 21974517,
+          "dealloc_calls": 288012,
+          "dealloc_layout_bytes": 21024324,
+          "realloc_calls": 239,
+          "realloc_requested_bytes": 73856,
+          "windows": 106
+        }
+      },
+      "requested_live_bytes": {
+        "rpds": {
+          "final_map": 1093632,
+          "initial_map": 0,
+          "peak_during_group_with_optional_old_view": 1093843,
+          "released_after_drop": true
+        },
+        "packed": {
+          "final_map": 987129,
+          "initial_map": 0,
+          "peak_during_group_with_optional_old_view": 987348,
+          "released_after_drop": true
+        }
+      }
+    },
+    {
+      "operation": "write",
+      "workload": "initial_fill",
+      "pinned": true,
+      "baseline": {
+        "samples": 2544,
+        "mean_ns": 120317.62932389937,
+        "p99_ns": 314789
+      },
+      "packed": {
+        "samples": 2544,
+        "mean_ns": 140002.81014150943,
+        "p99_ns": 370584
+      },
+      "mean_change_percent": 16.361011206941956,
+      "p99_change_percent": 17.724571061885896,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": 15.35625286631086,
+          "baseline_mean_ns": 121912.75628930818,
+          "packed_mean_ns": 140633.98742138364,
+          "baseline_p99_ns": 316723,
+          "packed_p99_ns": 379741
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": 17.392768930015645,
+          "baseline_mean_ns": 118722.50235849057,
+          "packed_mean_ns": 139371.6328616352,
+          "baseline_p99_ns": 311183,
+          "packed_p99_ns": 366847
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 392921,
+          "alloc_requested_bytes": 26307704,
+          "dealloc_calls": 43344,
+          "dealloc_layout_bytes": 3048528,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 106
+        },
+        "packed": {
+          "alloc_calls": 330739,
+          "alloc_requested_bytes": 24099373,
+          "dealloc_calls": 43356,
+          "dealloc_layout_bytes": 3164436,
+          "realloc_calls": 386,
+          "realloc_requested_bytes": 181632,
+          "windows": 106
+        }
+      },
+      "requested_live_bytes": {
+        "rpds": {
+          "final_map": 1093632,
+          "initial_map": 0,
+          "peak_during_group_with_optional_old_view": 1627569,
+          "released_after_drop": true
+        },
+        "packed": {
+          "final_map": 954985,
+          "initial_map": 0,
+          "peak_during_group_with_optional_old_view": 1427755,
+          "released_after_drop": true
+        }
+      }
+    },
+    {
+      "operation": "write",
+      "workload": "unique_insert",
+      "pinned": false,
+      "baseline": {
+        "samples": 2544,
+        "mean_ns": 261262.5334119497,
+        "p99_ns": 754993
+      },
+      "packed": {
+        "samples": 2544,
+        "mean_ns": 238587.17885220126,
+        "p99_ns": 710189
+      },
+      "mean_change_percent": -8.679145173867974,
+      "p99_change_percent": -5.934359656314692,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": -8.747756818560337,
+          "baseline_mean_ns": 259811.19732704404,
+          "packed_mean_ns": 237083.54559748428,
+          "baseline_p99_ns": 786271,
+          "packed_p99_ns": 706823
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": -8.611291605298332,
+          "baseline_mean_ns": 262713.86949685536,
+          "packed_mean_ns": 240090.81210691825,
+          "baseline_p99_ns": 749092,
+          "packed_p99_ns": 713887
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 400384,
+          "alloc_requested_bytes": 27526400,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 106
+        },
+        "packed": {
+          "alloc_calls": 313952,
+          "alloc_requested_bytes": 23801734,
+          "dealloc_calls": 12,
+          "dealloc_layout_bytes": 420,
+          "realloc_calls": 4406,
+          "realloc_requested_bytes": 1360608,
+          "windows": 106
+        }
+      },
+      "requested_live_bytes": {
+        "rpds": {
+          "final_map": 27526400,
+          "initial_map": 0,
+          "peak_during_group_with_optional_old_view": 27526400,
+          "released_after_drop": true
+        },
+        "packed": {
+          "final_map": 24481626,
+          "initial_map": 0,
+          "peak_during_group_with_optional_old_view": 24481626,
+          "released_after_drop": true
+        }
+      }
+    },
+    {
+      "operation": "write",
+      "workload": "unique_insert",
+      "pinned": true,
+      "baseline": {
+        "samples": 2544,
+        "mean_ns": 344363.90487421385,
+        "p99_ns": 1074802
+      },
+      "packed": {
+        "samples": 2544,
+        "mean_ns": 266818.5766509434,
+        "p99_ns": 858547
+      },
+      "mean_change_percent": -22.518425167584144,
+      "p99_change_percent": -20.120450092203022,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": -22.925214215047596,
+          "baseline_mean_ns": 345371.74449685536,
+          "packed_mean_ns": 266194.5322327044,
+          "baseline_p99_ns": 1059504,
+          "packed_p99_ns": 858547
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": -22.109248056174337,
+          "baseline_mean_ns": 343356.06525157235,
+          "packed_mean_ns": 267442.6210691824,
+          "baseline_p99_ns": 1076396,
+          "packed_p99_ns": 860351
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 820633,
+          "alloc_requested_bytes": 51060344,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 106
+        },
+        "packed": {
+          "alloc_calls": 485864,
+          "alloc_requested_bytes": 39311070,
+          "dealloc_calls": 12,
+          "dealloc_layout_bytes": 420,
+          "realloc_calls": 50088,
+          "realloc_requested_bytes": 20124912,
+          "windows": 106
+        }
+      },
+      "requested_live_bytes": {
+        "rpds": {
+          "final_map": 27526400,
+          "initial_map": 0,
+          "peak_during_group_with_optional_old_view": 28081752,
+          "released_after_drop": true
+        },
+        "packed": {
+          "final_map": 24970314,
+          "initial_map": 0,
+          "peak_during_group_with_optional_old_view": 25685506,
+          "released_after_drop": true
+        }
+      }
+    },
+    {
+      "operation": "get_hit",
+      "workload": "overwrite",
+      "pinned": false,
+      "baseline": {
+        "samples": 12288,
+        "mean_ns": 43.634033203125,
+        "p99_ns": 120
+      },
+      "packed": {
+        "samples": 12288,
+        "mean_ns": 134.02913411458334,
+        "p99_ns": 160
+      },
+      "mean_change_percent": 207.16650347367934,
+      "p99_change_percent": 33.33333333333333,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": 207.74900049556044,
+          "baseline_mean_ns": 43.68212890625,
+          "packed_mean_ns": 134.43131510416666,
+          "baseline_p99_ns": 120,
+          "packed_p99_ns": 160
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": 206.58272091772722,
+          "baseline_mean_ns": 43.5859375,
+          "packed_mean_ns": 133.626953125,
+          "baseline_p99_ns": 120,
+          "packed_p99_ns": 151
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        },
+        "packed": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        }
+      },
+      "requested_live_bytes": {}
+    },
+    {
+      "operation": "get_miss",
+      "workload": "overwrite",
+      "pinned": false,
+      "baseline": {
+        "samples": 12288,
+        "mean_ns": 59.028401692708336,
+        "p99_ns": 140
+      },
+      "packed": {
+        "samples": 12288,
+        "mean_ns": 133.263916015625,
+        "p99_ns": 151
+      },
+      "mean_change_percent": 125.76236556323161,
+      "p99_change_percent": 7.857142857142851,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": 129.7110716234557,
+          "baseline_mean_ns": 58.163248697916664,
+          "packed_mean_ns": 133.607421875,
+          "baseline_p99_ns": 140,
+          "packed_p99_ns": 151
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": 121.92773638127537,
+          "baseline_mean_ns": 59.8935546875,
+          "packed_mean_ns": 132.92041015625,
+          "baseline_p99_ns": 140,
+          "packed_p99_ns": 151
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        },
+        "packed": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        }
+      },
+      "requested_live_bytes": {}
+    },
+    {
+      "operation": "predecessor",
+      "workload": "overwrite",
+      "pinned": false,
+      "baseline": {
+        "samples": 12288,
+        "mean_ns": 182.48347981770834,
+        "p99_ns": 241
+      },
+      "packed": {
+        "samples": 12288,
+        "mean_ns": 135.45963541666666,
+        "p99_ns": 160
+      },
+      "mean_change_percent": -25.768822716454164,
+      "p99_change_percent": -33.60995850622407,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": -25.796988801822664,
+          "baseline_mean_ns": 182.59749348958334,
+          "packed_mean_ns": 135.49283854166666,
+          "baseline_p99_ns": 240,
+          "packed_p99_ns": 160
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": -25.740621413361097,
+          "baseline_mean_ns": 182.36946614583334,
+          "packed_mean_ns": 135.42643229166666,
+          "baseline_p99_ns": 250,
+          "packed_p99_ns": 151
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 1024,
+          "alloc_requested_bytes": 116480,
+          "dealloc_calls": 1024,
+          "dealloc_layout_bytes": 116480,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        },
+        "packed": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        }
+      },
+      "requested_live_bytes": {}
+    },
+    {
+      "operation": "scan16",
+      "workload": "overwrite",
+      "pinned": false,
+      "baseline": {
+        "samples": 12288,
+        "mean_ns": 415.96728515625,
+        "p99_ns": 591
+      },
+      "packed": {
+        "samples": 12288,
+        "mean_ns": 357.170166015625,
+        "p99_ns": 431
+      },
+      "mean_change_percent": -14.135034469967756,
+      "p99_change_percent": -27.072758037225043,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": -15.47968954555401,
+          "baseline_mean_ns": 420.9638671875,
+          "packed_mean_ns": 355.7999674479167,
+          "baseline_p99_ns": 622,
+          "packed_p99_ns": 431
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": -12.757682760106526,
+          "baseline_mean_ns": 410.970703125,
+          "packed_mean_ns": 358.5403645833333,
+          "baseline_p99_ns": 521,
+          "packed_p99_ns": 431
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 18388,
+          "alloc_requested_bytes": 1481390,
+          "dealloc_calls": 1536,
+          "dealloc_layout_bytes": 116736,
+          "realloc_calls": 1022,
+          "realloc_requested_bytes": 588672,
+          "windows": 512
+        },
+        "packed": {
+          "alloc_calls": 17364,
+          "alloc_requested_bytes": 1413806,
+          "dealloc_calls": 512,
+          "dealloc_layout_bytes": 49152,
+          "realloc_calls": 1022,
+          "realloc_requested_bytes": 588672,
+          "windows": 512
+        }
+      },
+      "requested_live_bytes": {}
+    },
+    {
+      "operation": "get_hit",
+      "workload": "unique_insert",
+      "pinned": false,
+      "baseline": {
+        "samples": 12288,
+        "mean_ns": 232.80777994791666,
+        "p99_ns": 962
+      },
+      "packed": {
+        "samples": 12288,
+        "mean_ns": 296.3192545572917,
+        "p99_ns": 902
+      },
+      "mean_change_percent": 27.280649565742053,
+      "p99_change_percent": -6.237006237006238,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": 33.900807634316045,
+          "baseline_mean_ns": 228.95524088541666,
+          "packed_mean_ns": 306.5729166666667,
+          "baseline_p99_ns": 962,
+          "packed_p99_ns": 872
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": 20.876027567310707,
+          "baseline_mean_ns": 236.66031901041666,
+          "packed_mean_ns": 286.0655924479167,
+          "baseline_p99_ns": 961,
+          "packed_p99_ns": 931
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        },
+        "packed": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        }
+      },
+      "requested_live_bytes": {}
+    },
+    {
+      "operation": "get_miss",
+      "workload": "unique_insert",
+      "pinned": false,
+      "baseline": {
+        "samples": 12288,
+        "mean_ns": 239.43505859375,
+        "p99_ns": 992
+      },
+      "packed": {
+        "samples": 12288,
+        "mean_ns": 277.889892578125,
+        "p99_ns": 882
+      },
+      "mean_change_percent": 16.06065302643145,
+      "p99_change_percent": -11.08870967741935,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": 17.689022682721923,
+          "baseline_mean_ns": 232.48697916666666,
+          "packed_mean_ns": 273.6116536458333,
+          "baseline_p99_ns": 991,
+          "packed_p99_ns": 821
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": 14.524124409259475,
+          "baseline_mean_ns": 246.38313802083334,
+          "packed_mean_ns": 282.1681315104167,
+          "baseline_p99_ns": 1012,
+          "packed_p99_ns": 932
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        },
+        "packed": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        }
+      },
+      "requested_live_bytes": {}
+    },
+    {
+      "operation": "predecessor",
+      "workload": "unique_insert",
+      "pinned": false,
+      "baseline": {
+        "samples": 12288,
+        "mean_ns": 480.981689453125,
+        "p99_ns": 1382
+      },
+      "packed": {
+        "samples": 12288,
+        "mean_ns": 284.6930338541667,
+        "p99_ns": 892
+      },
+      "mean_change_percent": -40.8100058491079,
+      "p99_change_percent": -35.45586107091172,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": -42.094788086107634,
+          "baseline_mean_ns": 491.4059244791667,
+          "packed_mean_ns": 284.5496419270833,
+          "baseline_p99_ns": 1513,
+          "packed_p99_ns": 901
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": -39.468300182802075,
+          "baseline_mean_ns": 470.5574544270833,
+          "packed_mean_ns": 284.83642578125,
+          "baseline_p99_ns": 1202,
+          "packed_p99_ns": 882
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 1024,
+          "alloc_requested_bytes": 153344,
+          "dealloc_calls": 1024,
+          "dealloc_layout_bytes": 153344,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        },
+        "packed": {
+          "alloc_calls": 0,
+          "alloc_requested_bytes": 0,
+          "dealloc_calls": 0,
+          "dealloc_layout_bytes": 0,
+          "realloc_calls": 0,
+          "realloc_requested_bytes": 0,
+          "windows": 512
+        }
+      },
+      "requested_live_bytes": {}
+    },
+    {
+      "operation": "scan16",
+      "workload": "unique_insert",
+      "pinned": false,
+      "baseline": {
+        "samples": 12288,
+        "mean_ns": 891.2914225260416,
+        "p99_ns": 2735
+      },
+      "packed": {
+        "samples": 12288,
+        "mean_ns": 691.7254231770834,
+        "p99_ns": 1784
+      },
+      "mean_change_percent": -22.390656333633384,
+      "p99_change_percent": -34.771480804387565,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "packed_order": 1,
+          "mean_change_percent": -28.702364346870024,
+          "baseline_mean_ns": 945.50341796875,
+          "packed_mean_ns": 674.12158203125,
+          "baseline_p99_ns": 2585,
+          "packed_p99_ns": 1804
+        },
+        {
+          "baseline_order": 3,
+          "packed_order": 2,
+          "mean_change_percent": -15.261414702968068,
+          "baseline_mean_ns": 837.0794270833334,
+          "packed_mean_ns": 709.3292643229166,
+          "baseline_p99_ns": 2815,
+          "packed_p99_ns": 1743
+        }
+      ],
+      "allocation_counts_per_one_pass": {
+        "rpds": {
+          "alloc_calls": 18432,
+          "alloc_requested_bytes": 1587200,
+          "dealloc_calls": 1536,
+          "dealloc_layout_bytes": 153600,
+          "realloc_calls": 1024,
+          "realloc_requested_bytes": 589824,
+          "windows": 512
+        },
+        "packed": {
+          "alloc_calls": 17408,
+          "alloc_requested_bytes": 1482752,
+          "dealloc_calls": 512,
+          "dealloc_layout_bytes": 49152,
+          "realloc_calls": 1024,
+          "realloc_requested_bytes": 589824,
+          "windows": 512
+        }
+      },
+      "requested_live_bytes": {}
+    }
+  ],
+  "tests_passed": 6,
+  "predeclared_gate": {
+    "material_overwrite_and_unique_both_snapshot_modes": false,
+    "all_write_order_means_better": false,
+    "reads_within_two_percent": false,
+    "advance": false
+  },
+  "scope": "Standalone index calls only. Same owned-key/value clone behavior in writes. Borrowed point/predecessor returns, owned scan16 results. Per-operation timer overhead remains. No engine lock, WAL, Raft, RPC or database QPS. Requested-live-byte counters are not RSS or allocator usable sizes."
+}

@@ -17,9 +17,13 @@
 > 1.548 us/group, with lower p99 in both orders. The subsequent
 > [composed MemEngine screen](RAW-LOWERING-COMPOSED.md) holds this prototype:
 > overwrite mean -1.134% / -0.452% without/with snapshots, initial-fill unpinned
-> p99 +3.309%. All state/snapshot checks pass; the performance gate fails. Next
-> test [packed persistent nodes](RESIDENT-INDEX-LAYOUT-NEXT.md) with full ordered
-> access and snapshot semantics. Production and database QPS are unchanged.
+> p99 +3.309%. All state/snapshot checks pass; the performance gate fails. The
+> [first packed-node implementation/screen](PACKED-INDEX-EXPERIMENT.md) also
+> fails selection: overwrite +26.957% / +12.403%, despite new-key gains. Semantic,
+> snapshot, allocation and independent dataset/statistic checks pass. Diagnose
+> comparator/minimum-refresh work and the 24-byte shared prefix before a changed
+> kernel; preserve the fixed-stride read-sampling limitation and use unbiased
+> future query selection. Production and database QPS are unchanged.
 > The [completed observer capture](WRITE-OBSERVER-CAPTURE.md) identifies repeated
 > receipt misses. The independent [upper-bound candidate](WRITE-RECEIPT-UPPER-BOUND.md)
 > now passes 14 source-bound theorem statements / 82 obligations, local

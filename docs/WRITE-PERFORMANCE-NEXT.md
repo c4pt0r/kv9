@@ -21,8 +21,13 @@ group. The [composed MemEngine screen](RAW-LOWERING-COMPOSED.md) now completes
 all six cases / 24 rows: overwrite mean -1.134% / -0.452% without/with snapshots,
 but initial-fill unpinned p99 +3.309%. All prefix/snapshot and final-state checks
 pass; the predeclared performance gate fails. Keep the prototype outside
-production. Next test [packed persistent index nodes](RESIDENT-INDEX-LAYOUT-NEXT.md)
-as a new layout hypothesis, with full ordered-access and snapshot semantics.
+production. The [first packed-index implementation and screen](PACKED-INDEX-EXPERIMENT.md)
+now pass semantic/state checks but fail performance selection: overwrite mean
++26.957% / +12.403% without/with snapshots; unique insert -8.679% / -22.518%.
+Hold that variant too. Its fixed-stride GET-hit samples favor shallow rpds nodes;
+retain this limitation. Next diagnose comparator/minimum-refresh costs and
+shared-prefix opportunities before a changed kernel, with independently proved
+order preservation, varied-prefix inputs and unbiased future query selection.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 

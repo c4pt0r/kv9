@@ -1,0 +1,15 @@
+{
+  "complete": true,
+  "original_files": 123,
+  "original_bytes": 4823973,
+  "archive_members": 124,
+  "report_inputs_included": 9,
+  "archive": {
+    "bytes": 469897,
+    "sha256": "915325a97e37fe912f8e76f60c247d38662b2dfde7652881b324f3957f15d0b8"
+  },
+  "members": {
+    "bytes": 42029,
+    "sha256": "0ad56d28cc18cb747ed539f78a83b35dfe6f40da3a45a91f87b4141dcce638dc"
+  }
+}

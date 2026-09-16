@@ -1,0 +1,16 @@
+{
+  "archive_bytes": 469897,
+  "archive_sha256": "915325a97e37fe912f8e76f60c247d38662b2dfde7652881b324f3957f15d0b8",
+  "complete": true,
+  "decoded_tar_bytes": 4966400,
+  "elapsed_seconds": 0.009889650857076049,
+  "files": 124,
+  "gzip_eof_verified": true,
+  "member_bytes_including_inventory": 4866002,
+  "members_sha256": "0ad56d28cc18cb747ed539f78a83b35dfe6f40da3a45a91f87b4141dcce638dc",
+  "original_bytes": 4823973,
+  "original_files": 123,
+  "report_inputs_included": 9,
+  "scope": "One complete reporting archive decode and exact bounded member readback. No audit, workload, controls, WAL payload decoding or independent source-tree/ELF replay.",
+  "tar_termination_verified": true
+}
