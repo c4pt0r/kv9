@@ -60,3 +60,11 @@ This does not prove range publication/epochs, snapshot installation, replica
 movement, retirement, total memory budgets, public API linearizability, physical
 power-loss behavior or throughput scaling. Actual Chaos Mesh is separate;
 local fault cuts and runtime-lifetime tests do not meet that acceptance gate.
+
+The protocol-snapshot increment preserves this fixed-voter scope: snapshot-backed
+logs fail the fixed-group recovery validator, and the peer constructor refuses
+a compacted base. Inbound MsgSnapshot is dropped before raft-rs changes state;
+a defensive Ready guard also refuses uncoordinated installation. No new startup
+path bypasses `validated` or `authorized`. Existing theorems/controls are rerun
+against these reviewed source changes. Dynamic membership still needs a separate
+activation/recovery authority protocol.

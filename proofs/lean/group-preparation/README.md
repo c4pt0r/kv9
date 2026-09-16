@@ -62,3 +62,10 @@ health or serving receipt. Active recovery permits committed data/voting
 history under its separate validator and never reinitializes a store. Current
 source pins are refreshed for this inspected refinement, and all nine original
 theorems/controls are rerun. The historical evidence packet is unchanged.
+
+The protocol-snapshot increment adds a separately bounded storage record. A
+snapshot-backed log cannot satisfy unstarted/fixed-group validation and cannot
+start a peer without the future coordinated engine installation. Existing
+preparation transitions therefore retain their proof mapping. Source pins and
+all original controls are rechecked; snapshot storage grants no creation or
+activation authority.

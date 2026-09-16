@@ -1,0 +1,13 @@
+{
+  "complete": true,
+  "archive_sha256": "486c589694497baddb5c62d0fb4f173e5d07028e1c8fb906ac2d8d28f2ed2bd4",
+  "members_checked": 1305,
+  "separate_extraction": "/mnt/data/kv9-work/protocol-snapshot-portable-readback-20260916",
+  "independent_reader_exit_code": 0,
+  "complete_chaos_history_and_cleanup": true,
+  "calls": [
+    28,
+    18
+  ],
+  "reader_sha256": "226d718da3a874ebfdf2f8d4e3fd3978760094f6b125462c49ec6eb1a09137da"
+}
