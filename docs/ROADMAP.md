@@ -17,9 +17,13 @@
 > now completes 136 processes / 152 timing / 76 allocation rows. All allocator
 > windows match. Write means improve 10.803% / 3.690% for overwrite and
 > 4.250% / 1.526% for unique insertion; small resident warm hit regresses.
-> Its material/read gates fail too. Stop these callback variants. Next qualify
-> safe inline storage for short map keys with a long-key fallback, byte-order
-> proofs and independent model tests before timing. Owned-buffer removal stays held.
+> Its material/read gates fail too. Stop these callback variants. The
+> [inline-key candidate](INLINE-KEY-QUALIFICATION.md) now passes 200 baseline /
+> 203 candidate tests, 19 conditional theorems / nine controls and 33 allocation
+> observations. Short insertion saves one request, but the key grows 24 to 48 bytes;
+> long/empty keys add 24 requested bytes per entry. Next run the predeclared staged
+> write/read/range screen after release preparation. No timing exists yet.
+> Owned-buffer removal stays held.
 > Database QPS below is unchanged; no industrial checkbox or runtime promotion follows.
 > CRC remains the selected write runtime. The latest [same-source screen](WAL-PREALLOCATION-PERFORMANCE.md)
 > measures default `86aa6fc` at c64 / 128-byte values at **137,874 Put calls/s**

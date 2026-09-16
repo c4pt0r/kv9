@@ -74,9 +74,13 @@ the [completed timing/allocation screen](ISOLATED-OUTLINE-PERFORMANCE.md) retain
 136 processes / 152 timing / 76 allocation rows. All windows match allocator
 requests and live-byte behavior. Writes improve 1.526%–10.803%, but three cases
 miss the material gate and 16 read panels exceed the no-regression bound.
-Stop these callback variants. Next qualify a private short-key inline
-representation with long-key fallback, exact byte-order/model proofs and no
-format or Raft/WAL change. No new database-QPS claim follows.
+Stop these callback variants. The [private inline-key candidate](INLINE-KEY-QUALIFICATION.md)
+now passes source/model qualification (200 baseline / 203 candidate tests),
+19 conditional theorems / nine controls and 33 allocation observations. Short
+insertion saves one request; the key grows 24 to 48 bytes and long/empty entries
+add 24 requested bytes. Next build/prepare the release engine pair and execute
+the predeclared write-first screen, proceeding to read/range panels only if it
+passes. No timing or new database-QPS claim follows.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 
