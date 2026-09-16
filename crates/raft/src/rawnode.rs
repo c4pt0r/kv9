@@ -322,6 +322,14 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             Arc<dyn LeaseClock>,
         )>,
     ) -> Result<RaftPeer<S>> {
+        // A protocol snapshot is insufficient to authorize serving. Until the
+        // engine installation journal is connected, no constructor may silently
+        // start from a compacted base (including the experimental lease path).
+        if storage.first_index().map_err(raft_err)? != 1 {
+            return Err(Error::Raft(
+                "snapshot base requires coordinated engine installation".into(),
+            ));
+        }
         let cfg = Config {
             id: node.0,
             election_tick: 10,
@@ -505,6 +513,13 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// skipping means divergence (droppable iff someone resends it).
     fn step(&self, msg: Message) {
         let mut g = self.lock();
+        // RawNode::step restores snapshot membership and commitment immediately.
+        // Our driver cannot yet install the corresponding engine image. Drop
+        // before step, preserving all local protocol state and sending no ACK.
+        if g.alive && msg.get_msg_type() == raft::eraftpb::MessageType::MsgSnapshot {
+            g.step_errors = g.step_errors.saturating_add(1);
+            return;
+        }
         #[cfg(any(test, feature = "experimental-leader-lease"))]
         if g.alive && lease_wire::reserved(&msg) {
             // Even an uninstalled peer must not turn a lease request into an
@@ -569,6 +584,12 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             return Ok(());
         }
         let mut ready = g.raw.ready();
+        if !ready.snapshot().is_empty() {
+            return Err(g.fail_storage(
+                "snapshot ready",
+                Error::Raft("uncoordinated engine snapshot installation".into()),
+            ));
+        }
         #[cfg(feature = "write-path-diagnostics")]
         let ready_entry_count = ready.entries().len();
         // Quorum-confirmed read states (task #28): drained HERE because this

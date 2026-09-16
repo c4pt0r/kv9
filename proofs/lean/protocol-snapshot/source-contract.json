@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "scope": "Protocol-only snapshot record durability, old-or-new recovery, no serving before coordinated engine installation; no verified Rust extraction or remote snapshot authorization",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "recovery_selects_one_complete_tuple",
+    "success_requires_durable_pair",
+    "failed_write_never_publishes",
+    "recovery_preserves_term",
+    "recovery_preserves_same_term_vote",
+    "compacted_base_cannot_start",
+    "uninstalled_receive_preserves_state",
+    "snapshot_reply_is_exact"
+  ],
+  "source_sha256": {
+    "crates/raft/src/storage.rs": "841388cae68ef9c8a6e6d520ccac504e253db18f5f934c7e1a3e13034e54abaf",
+    "crates/raft/src/storage/snapshot.rs": "c5e7e0201e4304e391d2ae48c7d604b2348244aba07b16e5bbae67b61d1c0bce",
+    "crates/raft/src/storage/snapshot/tests.rs": "11ee6f75dd47e31cddd8739f371beaf30a0dfa87d504e5af2cd92e40cd401c85",
+    "crates/raft/src/rawnode.rs": "ac89ef6a549879495bb691c2005c66683a41a78977cb61eb6408163106d18f8b",
+    "proofs/lean/protocol-snapshot/Snapshot.lean": "be852412d0111a721c889555489780f4b1bdeb67d3b904c4e6cac27388cee2c8",
+    "scripts/prove-protocol-snapshot.py": "d0bf9b6c48ecad1ec9cd5a2082a49ca75d9dcfd64e2174a4c20251c5e102ef1e",
+    "proofs/lean/protocol-snapshot/README.md": "938a7faa3d3adf1e145f46404d979bd18e0b69547afddc8e1b5b795228700547"
+  }
+}

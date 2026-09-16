@@ -24,7 +24,7 @@
 //!   HardState/ConfState records are last-write-wins; Entry records append (a
 //!   re-appended index overwrites the suffix, mirroring raft log truncation).
 //!
-//! Scope honesty: no compaction, no snapshots-to-disk — the log grows until
+//! Scope honesty: no physical compaction — the log grows until
 //! Phase 2's real log store (DESIGN "6.4 Raft log vs. WAL stream") replaces
 //! this. `persisted()`-style flush watermarks live in the engine (Ren's lane);
 //! this file is only the raft-protocol state.
@@ -46,8 +46,10 @@ use crate::lease_policy::{LeaseEpoch, LeasePolicy};
 use crate::rawnode::PersistentRaftStorage;
 
 mod configuration;
+mod snapshot;
 use configuration::ConfigurationHistory;
 pub use configuration::{CommittedConfiguration, ConfigurationLookup, ConfigurationUnavailable};
+pub use snapshot::MAX_PROTOCOL_SNAPSHOT_BYTES;
 
 const REC_CONF_STATE: u8 = 1;
 const REC_HARD_STATE: u8 = 2;
@@ -60,6 +62,9 @@ const REC_ENTRY: u8 = 3;
 const REC_CONF_STATE_AT: u8 = 4;
 /// Always decoded. Builds predating leases refuse this unknown record kind.
 const REC_LEASE_EPOCH: u8 = 5;
+/// Snapshot plus its HardState is one indivisible replay record. Older readers
+/// reject this kind. It is not an engine installation or admission certificate.
+const REC_SNAPSHOT: u8 = 6;
 
 /// Max record body; anything larger is corrupt (same spirit as the frame cap).
 const MAX_RECORD_LEN: u32 = 64 * 1024 * 1024;
@@ -89,6 +94,7 @@ pub struct DiskRaftStorage<F: FileSystem = OsFileSystem> {
     /// the protocol log; they do not change Ready or ordinary write admission.
     conf_history: Mutex<ConfigurationHistory>,
     lease_epoch: Mutex<Option<LeaseEpoch>>,
+    snapshot: Mutex<Option<raft::prelude::Snapshot>>,
     io_metrics: Arc<WalIoMetrics>,
 }
 
@@ -211,6 +217,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         let mut conf_idx: u64 = 0;
         let mut conf_history = ConfigurationHistory::default();
         let mut lease_epoch: Option<LeaseEpoch> = None;
+        let mut snapshot = None;
         let mut cursor: usize = 0;
         // The loop ends where records stop parsing — a torn tail
         // (short/checksum-fail) or the clean end of file; either way the valid
@@ -219,7 +226,30 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             // From here the record is checksum-valid: decode failures are real
             // inconsistencies, not crash artifacts — refuse to open.
             match kind {
+                REC_SNAPSHOT => {
+                    if lease_epoch.is_some() {
+                        return Err(Error::Raft(
+                            "snapshot cannot replace a lease configuration".into(),
+                        ));
+                    }
+                    let (image, hs) = snapshot::decode(payload)?;
+                    snapshot::validate_transition(&mem, snapshot.as_ref(), &image, &hs)?;
+                    conf_idx = image.get_metadata().index;
+                    mem.wl()
+                        .apply_snapshot(image.clone())
+                        .map_err(|e| Error::Raft(format!("replay snapshot: {e}")))?;
+                    mem.wl().set_hardstate(hs);
+                    // Earlier membership history no longer describes the selected
+                    // base. Historical lookups refuse compacted protocol history.
+                    conf_history = ConfigurationHistory::default();
+                    snapshot = Some(image);
+                }
                 REC_LEASE_EPOCH => {
+                    if snapshot.is_some() {
+                        return Err(Error::Raft(
+                            "lease policy cannot adopt a snapshot base".into(),
+                        ));
+                    }
                     let next = LeaseEpoch::decode(payload)?;
                     if LeaseEpoch::successor(lease_epoch.as_ref(), &next.policy)? != next {
                         return Err(Error::Raft(
@@ -301,6 +331,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             conf_index: Mutex::new(conf_idx),
             conf_history: Mutex::new(conf_history),
             lease_epoch: Mutex::new(lease_epoch),
+            snapshot: Mutex::new(snapshot),
             io_metrics,
         };
         let was_pristine = !saw_any;
@@ -516,8 +547,18 @@ impl<F: FileSystem> raft::Storage for DiskRaftStorage<F> {
         self.mem.last_index()
     }
 
-    fn snapshot(&self, request_index: u64, to: u64) -> raft::Result<raft::prelude::Snapshot> {
-        self.mem.snapshot(request_index, to)
+    fn snapshot(&self, request_index: u64, _to: u64) -> raft::Result<raft::prelude::Snapshot> {
+        // MemStorage synthesizes an empty image at commit and can relabel its
+        // index to request_index. Neither is an actual installed state image.
+        self.snapshot
+            .lock()
+            .expect("snapshot poisoned")
+            .as_ref()
+            .filter(|snapshot| snapshot.get_metadata().index >= request_index)
+            .cloned()
+            .ok_or(raft::Error::Store(
+                raft::StorageError::SnapshotTemporarilyUnavailable,
+            ))
     }
 }
 
@@ -532,6 +573,11 @@ impl<F: FileSystem> PersistentRaftStorage for DiskRaftStorage<F> {
     fn begin_lease_incarnation(&self, policy: &LeasePolicy) -> Result<LeaseEpoch> {
         let mut published = None;
         self.with_writer(|file| {
+            if self.snapshot.lock().expect("snapshot poisoned").is_some() {
+                return Err(Error::Raft(
+                    "lease policy cannot adopt a snapshot base".into(),
+                ));
+            }
             let mut current = self.lease_epoch.lock().expect("lease epoch poisoned");
             let next = LeaseEpoch::successor(current.as_ref(), policy)?;
             Self::write_record(&self.io_metrics, file, REC_LEASE_EPOCH, &next.encode())?;

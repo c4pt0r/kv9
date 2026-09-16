@@ -44,6 +44,11 @@ adds surviving metadata discovery, bounded scope refresh and terminal unknown
 writes. Split/move publication, routed scans/delete-range, retirement and complete
 resource/fault acceptance remain open. No full stage acceptance or measured
 scaling gain follows from these checks.
+The [protocol snapshot storage prerequisite](PROTOCOL-SNAPSHOT.md) now persists
+and recovers an exact snapshot/HardState pair, with uncoordinated reception and
+startup fenced. It does not enable remote install or reclaim logs. The next D03
+work is the destination-bound engine installation journal and retained source
+bundle, followed by learner/membership transitions.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |
