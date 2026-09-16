@@ -1,0 +1,176 @@
+{
+  "complete": true,
+  "theorems_checked_together": 723,
+  "additional_theorems": 44,
+  "new_rejecting_controls": 28,
+  "controls": [
+    {
+      "name": "detachment-retains-selected-edge",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "detachment-skips-parent-cow",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "terminal-take-retains-entry",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "terminal-leaf-wrong-value",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "prefix-merge-reversed",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "prefix-child-cow-skipped",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "pop-retains-child-edge",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "promotion-releases-child",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "empty-branch-remains-root",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "terminal-normalization-loses-entry",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "restore-inserts-at-next-index",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "restore-normalizes-old-heap",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "unwind-selects-oldest-frame",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "delete-search-selects-next-index",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "delete-detaches-next-edge",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "clear-terminal-loses-prefix",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "temporary-token-never-released",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "leaf-current-omitted-during-unwind",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "descent-skips-two-bytes",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "descent-prepends-frame",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "lookup-miss-returns-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "lookup-leaf-inverts-equality",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "absent-delete-clears-root",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "present-delete-reports-false",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 95,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "heap_deletion_scope": "Concrete graph deletion: source-ordered parent COW, stored-node search, detached edge ownership, bottom-first physical parent frames, all normalization branches including transient prefix moves and parent release, checked restoring unwind, a terminating deletion loop, borrowed presence lookup, exact absent no-op, root token movement, late leaf-current scope release, saved-root/ownership preservation, removed flag and mathematical cardinality. This is a source-bound reviewed executable graph model under explicit native library/compiler contracts, not verified Rust extraction or a native allocation/word proof.",
+  "leaf_scope_drop_observation": {
+    "status": "observed_compiler_output_not_a_compiler_proof",
+    "compiler": "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+    "compiler_sha256": "103b60e1b1339968c1d74202ea1d45686037e82c4ea3e0569de24b18a1e6836a",
+    "version": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8\n",
+    "source": "scripts/resident-radix/src/lib.rs",
+    "source_sha256": "00235871d6f168b3549da377793429dd4db281549425dbab38b1a66c37103fcc",
+    "mir_sha256": "3ca4eff015b558575c9828d70a33971d3adf695a0fe2f926705f5362b36740f9",
+    "remove_mut_mir_sha256": "6693fc37e51912d5d00946b8fa8a3df2592c414a95ec02f574a3b280c73283ff",
+    "command": [
+      "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+      "--edition=2021",
+      "--crate-type",
+      "lib",
+      "--emit=mir",
+      "scripts/resident-radix/src/lib.rs",
+      "-o",
+      "/mnt/data/kv9-work/radix-heap-delete-development-20260916-first/radix-source.mir"
+    ],
+    "terminal_receipt": [
+      "3ac5a7",
+      0
+    ],
+    "finding": "On the leaf arm bb12 sets replacement=None without moving current (_7). Unwind starts at bb29. bb38 installs the replacement root, bb40 updates size and drops the empty frame Vec, and bb41/bb46 release current according to its drop flag. The terminal arm bb17 moves current into normalize, clearing the drop flag. The graph deletion model must retain leaf current through unwind and release it afterward. Native size arithmetic and source/compiler bridges remain separate obligations."
+  },
+  "remaining_implementation_scope": "Native Arc/concurrent COW and physical payload/allocator correspondence, machine-word/storage bridges and differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Connect actual Rust and graph operations to pinned no-Weak Arc/concurrent COW, payload moves, Vec/Box/allocation and distinct Entry object storage; compose physical loops with native word arithmetic and derive representability premises",
+    "Exact-source Rust/model differential execution, meaningful model/source faults, then predeclared matched timing and allocation comparisons",
+    "Runtime promotion still requires local database correctness, ordinary recovery, actual Chaos Mesh and matched three-copy Redis throughput/latency"
+  ],
+  "prior_heap_insertion_packet_sha256": "f097ecf28febe77a47d301ab95ef9ae51ffd4baca76478542d9e054cae548669"
+}
