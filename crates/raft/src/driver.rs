@@ -25,8 +25,10 @@ use crate::{Command, EntryKind, MemStateMachine, Role, StateMachine};
 
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 mod lease_read;
+mod pool;
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 pub use lease_read::{LeaseReadView, ReadPreparation};
+pub use pool::DriverPool;
 
 /// Queryable node state (the server's `status` surface, agreed seam with the
 /// acceptance harness: success is judged on these fields, not on log text).

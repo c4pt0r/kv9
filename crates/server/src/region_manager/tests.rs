@@ -90,6 +90,206 @@ impl Drop for Fixture {
     }
 }
 
+fn test_transport(runtime: &tokio::runtime::Runtime, f: &Fixture) -> Arc<GrpcTransport> {
+    GrpcTransport::new(
+        f.identity.node_id,
+        None,
+        runtime.handle().clone(),
+        f.identity.root_digest,
+    )
+}
+
+#[test]
+fn group_activation_publication_cuts_never_start_an_unfenced_voter() {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    for step in [
+        PrepareStep::ActiveFileSync,
+        PrepareStep::ActiveRename,
+        PrepareStep::ActiveDirectorySync,
+    ] {
+        for after in [false, true] {
+            let f = Fixture::new();
+            let mut manager = f.manager();
+            manager.prepare(&f.creation).unwrap();
+            let transport = test_transport(&runtime, &f);
+            let region = f.creation.intent().region();
+            let mut fired = false;
+            let result = manager.start_group(
+                region,
+                &transport,
+                Duration::from_secs(60),
+                &mut |at, done| {
+                    if at == step && done == after {
+                        fired = true;
+                        return Err(invalid("injected activation interruption"));
+                    }
+                    Ok(())
+                },
+            );
+            assert!(fired && result.is_err());
+            assert!(
+                manager.status(region).is_err(),
+                "failed publication exposed a voter"
+            );
+            assert!(
+                transport.register_group(region).is_ok(),
+                "inbox was bound before Active publication finished"
+            );
+            assert!(
+                manager
+                    .activate(&f.creation, &transport, Duration::from_secs(60))
+                    .is_err(),
+                "ambiguous activation must require recovery"
+            );
+            drop(manager);
+            let mut recovered = f.manager();
+            recovered.recover(&f.store).unwrap();
+            let transport = test_transport(&runtime, &f);
+            recovered
+                .activate(&f.creation, &transport, Duration::from_secs(60))
+                .unwrap();
+            assert!(recovered.status(region).is_ok());
+            assert_eq!(
+                read_record(&f.group_dir().join(RECORD))
+                    .unwrap()
+                    .unwrap()
+                    .phase,
+                Phase::Active
+            );
+        }
+    }
+}
+
+#[test]
+fn group_activation_recovery_refuses_missing_or_empty_stores_and_foreign_history() {
+    use kv9_raft::rawnode::PersistentRaftStorage;
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    for mode in 0..10 {
+        let f = Fixture::new();
+        let mut manager = f.manager();
+        manager
+            .activate(
+                &f.creation,
+                &test_transport(&runtime, &f),
+                Duration::from_secs(60),
+            )
+            .unwrap();
+        drop(manager);
+        let log = f.group_dir().join("raft/raft.log");
+        let engine = f.group_dir().join("data.wal");
+        match mode {
+            0 => fs::remove_file(&log).unwrap(),
+            1 => fs::write(&log, []).unwrap(),
+            2 => fs::remove_file(&engine).unwrap(),
+            3 => {
+                fs::remove_file(&log).unwrap();
+                DiskRaftStorage::open(&f.group_dir().join("raft"), &[1, 2, 4]).unwrap();
+            }
+            4 => {
+                let e = WalEngine::open(&engine).unwrap().0;
+                let mut batch = kv9_engine::WriteBatch::new();
+                batch.put(ColumnFamily::Default, b"foreign".to_vec(), b"data".to_vec());
+                e.write(batch).unwrap();
+            }
+            5 => {
+                // A rollback to Ready must not turn a previously voting store
+                // into an empty replica, even if the local record is valid.
+                let storage = DiskRaftStorage::recover(&f.group_dir().join("raft")).unwrap();
+                storage
+                    .set_hardstate(&raft::eraftpb::HardState {
+                        term: 3,
+                        vote: 1,
+                        ..Default::default()
+                    })
+                    .unwrap();
+                let mut record = read_record(&f.group_dir().join(RECORD)).unwrap().unwrap();
+                record.phase = Phase::StorageReady;
+                publish(&f.group_dir(), &record, &mut |_, _| Ok(())).unwrap();
+            }
+            6 | 7 => {
+                if mode == 7 {
+                    let storage = DiskRaftStorage::recover(&f.group_dir().join("raft")).unwrap();
+                    storage
+                        .append(&[raft::eraftpb::Entry {
+                            index: 1,
+                            term: 2,
+                            data: kv9_raft::Command::Noop.encode().into(),
+                            ..Default::default()
+                        }])
+                        .unwrap();
+                    storage
+                        .set_hardstate(&raft::eraftpb::HardState {
+                            term: 2,
+                            vote: 1,
+                            commit: 1,
+                            ..Default::default()
+                        })
+                        .unwrap();
+                }
+                let e = WalEngine::open(&engine).unwrap().0;
+                e.write_applied(
+                    kv9_engine::WriteBatch::new(),
+                    kv9_common::AppliedPosition { term: 3, index: 1 },
+                )
+                .unwrap();
+            }
+            8 => fs::remove_dir_all(f.group_dir().join("data.segments")).unwrap(),
+            9 => {
+                let storage = DiskRaftStorage::recover(&f.group_dir().join("raft")).unwrap();
+                storage
+                    .append(&[1, 2].map(|index| raft::eraftpb::Entry {
+                        index,
+                        term: 2,
+                        data: kv9_raft::Command::Noop.encode().into(),
+                        ..Default::default()
+                    }))
+                    .unwrap();
+                storage
+                    .set_hardstate(&raft::eraftpb::HardState {
+                        term: 2,
+                        vote: 1,
+                        commit: 2,
+                        ..Default::default()
+                    })
+                    .unwrap();
+                let e = WalEngine::open(&engine).unwrap().0;
+                e.write_applied(
+                    kv9_engine::WriteBatch::new(),
+                    kv9_common::AppliedPosition { term: 1, index: 1 },
+                )
+                .unwrap();
+                e.write_applied(
+                    kv9_engine::WriteBatch::new(),
+                    kv9_common::AppliedPosition { term: 2, index: 2 },
+                )
+                .unwrap();
+                // The final position agrees; an earlier frame is from a wrong
+                // term. Validation must inspect the replay, not just its tail.
+            }
+            _ => unreachable!(),
+        }
+        let mut recovered = f.manager();
+        recovered.recover(&f.store).unwrap();
+        assert!(
+            recovered.prepare(&f.creation).is_err(),
+            "unsafe active recovery accepted mode={mode}"
+        );
+        if mode == 0 {
+            assert!(!log.exists(), "missing Active log was recreated");
+        }
+        if mode == 1 {
+            assert_eq!(
+                fs::metadata(log).unwrap().len(),
+                0,
+                "empty Active log was initialized"
+            );
+        }
+        if mode == 2 {
+            assert!(!engine.exists(), "missing Active engine was recreated");
+        }
+    }
+}
+
 #[test]
 fn group_preparation_recovers_every_publication_boundary() {
     use PrepareStep::*;

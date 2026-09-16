@@ -2,20 +2,25 @@
 //!
 //! A committed metadata intent authorizes preparation on its exact store
 //! incarnation. StorageReady is not permission to vote, serve or publish a
-//! range. Network capability negotiation and activation are subsequent steps.
+//! range. Active is durable before any voting; public range publication remains
+//! separate. Data groups use the dedicated, non-fallback group RPC.
 
 use std::collections::BTreeMap;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use std::time::Duration;
 
 use kv9_common::{Error, RegionId, Result, RootDigest, StoreIdentity, StoreIncarnation};
 use kv9_engine::{DurableAppliedPosition, ReplicatedEngine, WalEngine};
 use kv9_meta::data_groups::{
     committed_creations, CommittedCreation, CreationIntent, MAX_INTENT_BYTES,
 };
+use kv9_raft::driver::{DriverPool, NodeDriver, NodeStatus};
+use kv9_raft::grpc::GrpcTransport;
 use kv9_raft::storage::DiskRaftStorage;
+use kv9_raft::{MemStateMachine, RaftPeer};
 
 const RECORD: &str = "group-record";
 const LOCK: &str = "group-lock";
@@ -27,6 +32,7 @@ const MAX_LOCAL_GROUPS: usize = 255;
 enum Phase {
     IntentDurable = 0,
     StorageReady = 1,
+    Active = 2,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -58,6 +64,7 @@ impl Record {
         let phase = match bytes[8] {
             0 => Phase::IntentDurable,
             1 => Phase::StorageReady,
+            2 => Phase::Active,
             _ => return Err(invalid("unknown local group phase")),
         };
         Ok(Self {
@@ -79,10 +86,11 @@ pub struct GroupPreparation {
 
 struct PreparedLocal {
     observation: GroupPreparation,
-    // Held until manager shutdown under the parent StoreGuard. No driver or
-    // public engine handle can escape while activation is not implemented.
-    _storage: DiskRaftStorage,
-    _engine: Arc<WalEngine>,
+    phase: Phase,
+    intent: CreationIntent,
+    storage: Option<DiskRaftStorage>,
+    engine: Arc<WalEngine>,
+    driver: Option<Arc<NodeDriver<DiskRaftStorage, WalEngine>>>,
     _lock: File,
 }
 
@@ -97,6 +105,7 @@ pub(crate) struct RegionManager {
     directory: PathBuf,
     identity: StoreIdentity,
     groups: BTreeMap<RegionId, LocalGroup>,
+    pool: Option<DriverPool<DiskRaftStorage, WalEngine>>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -109,6 +118,9 @@ enum PrepareStep {
     ReadyFileSync,
     ReadyRename,
     ReadyDirectorySync,
+    ActiveFileSync,
+    ActiveRename,
+    ActiveDirectorySync,
 }
 
 fn invalid(message: &str) -> Error {
@@ -164,6 +176,11 @@ fn publish(
             PrepareStep::ReadyRename,
             PrepareStep::ReadyDirectorySync,
         ],
+        Phase::Active => [
+            PrepareStep::ActiveFileSync,
+            PrepareStep::ActiveRename,
+            PrepareStep::ActiveDirectorySync,
+        ],
     };
     let temporary = directory.join(format!(".group-record-{}.tmp", StoreIncarnation::mint()?));
     let mut file = OpenOptions::new()
@@ -187,11 +204,134 @@ impl RegionManager {
             directory: directory.join("data-groups"),
             identity,
             groups: BTreeMap::new(),
+            pool: None,
         }
     }
 
     pub(crate) fn prepare(&mut self, creation: &CommittedCreation) -> Result<GroupPreparation> {
         self.prepare_observed(creation, &mut |_, _| Ok(()))
+    }
+
+    pub(crate) fn activate(
+        &mut self,
+        creation: &CommittedCreation,
+        transport: &Arc<GrpcTransport>,
+        tick: Duration,
+    ) -> Result<()> {
+        self.prepare(creation)?;
+        self.start_group(creation.intent().region(), transport, tick, &mut |_, _| {
+            Ok(())
+        })
+    }
+
+    fn start_group(
+        &mut self,
+        region: RegionId,
+        transport: &Arc<GrpcTransport>,
+        tick: Duration,
+        observe: &mut impl FnMut(PrepareStep, bool) -> Result<()>,
+    ) -> Result<()> {
+        match self.groups.get(&region) {
+            Some(LocalGroup::Ready(p)) if p.driver.is_some() => {
+                return match p.driver.as_ref().unwrap().status().fatal {
+                    Some(cause) => Err(Error::Raft(cause)),
+                    None => Ok(()),
+                };
+            }
+            Some(LocalGroup::Ready(_)) => {}
+            _ => return Err(invalid("group is not prepared for activation")),
+        }
+        // Fixed data workers are separate from the metadata owner. Thread
+        // allocation failure precedes publication or acquisition of a voter.
+        if self.pool.is_none() {
+            self.pool = Some(DriverPool::new(2, tick)?);
+        }
+        let LocalGroup::Ready(mut prepared) = self.groups.remove(&region).unwrap() else {
+            unreachable!()
+        };
+        self.groups.insert(
+            region,
+            LocalGroup::Failed("activation did not complete; recovery required".into()),
+        );
+        let directory = self.directory.join(region.0.to_string());
+        if prepared.phase == Phase::StorageReady {
+            publish(
+                &directory,
+                &Record {
+                    phase: Phase::Active,
+                    node: self.identity.node_id,
+                    incarnation: self.identity.store_incarnation,
+                    intent: prepared.intent.clone(),
+                },
+                observe,
+            )?;
+            prepared.phase = Phase::Active;
+        }
+        // No peer, inbox or worker can vote/send before durable Active.
+        let peer = Arc::new(RaftPeer::with_storage(
+            self.identity.node_id,
+            region,
+            prepared
+                .storage
+                .take()
+                .ok_or_else(|| invalid("group storage already has a voter owner"))?,
+        )?);
+        let state = MemStateMachine::with_engine(prepared.engine.clone())?;
+        let driver = NodeDriver::new(peer, transport.register_group(region)?, state)?;
+        self.pool.as_ref().unwrap().register(driver.clone())?;
+        prepared.driver = Some(driver);
+        self.groups.insert(region, LocalGroup::Ready(prepared));
+        Ok(())
+    }
+
+    /// Resume only already durable Active groups, after the enclosing runtime
+    /// has recovered membership/endpoint authority. A bad group stays isolated.
+    pub(crate) fn resume_active(&mut self, transport: &Arc<GrpcTransport>, tick: Duration) {
+        let regions: Vec<_> = self
+            .groups
+            .iter()
+            .filter_map(|(id, group)| match group {
+                LocalGroup::Ready(p) if p.phase == Phase::Active && p.driver.is_none() => Some(*id),
+                _ => None,
+            })
+            .collect();
+        for region in regions {
+            if let Err(error) = self.start_group(region, transport, tick, &mut |_, _| Ok(())) {
+                self.groups
+                    .insert(region, LocalGroup::Failed(error.to_string()));
+            }
+        }
+    }
+
+    pub(crate) fn status(&self, region: RegionId) -> Result<NodeStatus> {
+        Ok(self.driver(region)?.status())
+    }
+
+    fn driver(&self, region: RegionId) -> Result<&NodeDriver<DiskRaftStorage, WalEngine>> {
+        match self.groups.get(&region) {
+            Some(LocalGroup::Ready(p)) => p
+                .driver
+                .as_deref()
+                .ok_or_else(|| invalid("data group is not active")),
+            Some(LocalGroup::Failed(cause)) => Err(invalid(cause)),
+            None => Err(invalid("unknown data group")),
+        }
+    }
+
+    // Test harness access cannot escape through a public runtime API. D02
+    // must establish range/epoch authorization before public writes are wired.
+    #[cfg(test)]
+    pub(crate) fn driver_for_tests(
+        &self,
+        region: RegionId,
+    ) -> Result<&NodeDriver<DiskRaftStorage, WalEngine>> {
+        self.driver(region)
+    }
+
+    pub(crate) fn shutdown(&mut self) {
+        // Join before releasing any group lock or the parent's StoreGuard.
+        self.pool.take();
+        self.groups.clear();
     }
 
     fn prepare_observed(
@@ -298,7 +438,7 @@ impl RegionManager {
             }
         };
         let storage = operation(PrepareStep::RaftOpen, observe, || {
-            if record.phase == Phase::StorageReady {
+            if record.phase != Phase::IntentDurable {
                 DiskRaftStorage::recover(&directory.join("raft"))
             } else {
                 let voters: Vec<_> = intent.replicas().iter().map(|r| r.node.0).collect();
@@ -307,9 +447,13 @@ impl RegionManager {
         })?;
         let engine = operation(PrepareStep::EngineOpen, observe, || {
             let voters: Vec<_> = intent.replicas().iter().map(|r| r.node.0).collect();
-            storage.validate_unstarted_group(&voters)?;
+            if record.phase == Phase::Active {
+                storage.validate_fixed_group(&voters)?;
+            } else {
+                storage.validate_unstarted_group(&voters)?;
+            }
             let path = directory.join("data.wal");
-            if record.phase == Phase::StorageReady
+            if record.phase != Phase::IntentDurable
                 && (!path.is_file() || !path.with_extension("segments").is_dir())
             {
                 return Err(invalid("prepared group is missing its engine WAL topology"));
@@ -325,7 +469,15 @@ impl RegionManager {
                     }
                 },
                 |batch, at| {
-                    if batch.is_empty() && at.is_none() {
+                    if record.phase == Phase::Active {
+                        match at {
+                            Some(at) if storage.committed_term(at.index)? == at.term => Ok(()),
+                            None if batch.is_empty() => Ok(()),
+                            _ => Err(invalid(
+                                "active group engine lacks matching committed Raft history",
+                            )),
+                        }
+                    } else if batch.is_empty() && at.is_none() {
                         Ok(())
                     } else {
                         Err(invalid(
@@ -334,18 +486,22 @@ impl RegionManager {
                     }
                 },
             )?;
-            if engine.applied_position()? != DurableAppliedPosition::AppliedNothing {
-                return Err(invalid("unstarted group has an applied position"));
+            match engine.applied_position()? {
+                DurableAppliedPosition::AppliedNothing => {}
+                DurableAppliedPosition::AppliedThrough(at)
+                    if record.phase == Phase::Active
+                        && storage.committed_term(at.index)? == at.term => {}
+                _ => return Err(invalid("group engine has an unauthorized applied position")),
             }
             engine.enable_segmentation()?;
             Ok(Arc::new(engine))
         })?;
-        if record.phase != Phase::StorageReady {
+        if record.phase == Phase::IntentDurable {
             publish(
                 &directory,
                 &Record {
                     phase: Phase::StorageReady,
-                    ..record
+                    ..record.clone()
                 },
                 observe,
             )?;
@@ -356,8 +512,15 @@ impl RegionManager {
                 region: intent.region(),
                 intent_digest: intent.digest(),
             },
-            _storage: storage,
-            _engine: engine,
+            phase: if record.phase == Phase::Active {
+                Phase::Active
+            } else {
+                Phase::StorageReady
+            },
+            intent: intent.clone(),
+            storage: Some(storage),
+            engine,
+            driver: None,
             _lock: lock,
         })
     }
@@ -419,6 +582,12 @@ impl RegionManager {
                 )
             })
             .collect()
+    }
+}
+
+impl Drop for RegionManager {
+    fn drop(&mut self) {
+        self.shutdown();
     }
 }
 

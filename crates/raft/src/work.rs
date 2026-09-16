@@ -6,7 +6,7 @@
 //! Notifications do not advance Raft time and grant no persistence authority.
 
 use std::collections::VecDeque;
-use std::sync::{Arc, Condvar, Mutex};
+use std::sync::{Arc, Condvar, Mutex, OnceLock, Weak};
 use std::time::{Duration, Instant};
 
 use protobuf::Message as _;
@@ -88,6 +88,9 @@ struct State {
 pub struct WorkSignal {
     state: Mutex<State>,
     changed: Condvar,
+    // A shared pump may subscribe once. Weak ownership prevents a driver/pool
+    // cycle. The dedicated metadata pump keeps this empty (no extra mutex).
+    parent: OnceLock<Weak<WorkSignal>>,
     #[cfg(test)]
     park_observer: Mutex<Option<std::sync::mpsc::Sender<()>>>,
 }
@@ -98,13 +101,37 @@ impl WorkSignal {
         if !state.stopped {
             state.pending = true;
             self.changed.notify_one();
+            drop(state);
+            self.notify_parent();
         }
+    }
+
+    fn notify_parent(&self) {
+        if let Some(parent) = self.parent.get().and_then(Weak::upgrade) {
+            parent.notify();
+        }
+    }
+
+    pub(crate) fn subscribe(&self, parent: &Arc<WorkSignal>) -> kv9_common::Result<()> {
+        self.parent.set(Arc::downgrade(parent)).map_err(|_| {
+            kv9_common::Error::Raft("work signal already has a shared owner".into())
+        })?;
+        // Covers work published before or racing with subscription.
+        parent.notify();
+        Ok(())
+    }
+
+    pub(crate) fn has_work(&self) -> bool {
+        let state = self.state.lock().expect("work signal poisoned");
+        state.pending || state.stopped
     }
 
     pub(crate) fn stop(&self) {
         let mut state = self.state.lock().expect("work signal poisoned");
         state.stopped = true;
         self.changed.notify_all();
+        drop(state);
+        self.notify_parent();
     }
 
     /// Consume BEFORE reading work queues. No work/peer lock nests inside this

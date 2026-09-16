@@ -3592,6 +3592,25 @@ impl NodeRuntime {
         self.data_groups.observations()
     }
 
+    /// Activate a fixed-voter group from locally applied creation authority.
+    /// This embedded control call does not publish a public range or route.
+    pub fn activate_data_group(&mut self, task: u64) -> Result<()> {
+        if !self.endpoint_ready.load(Ordering::Acquire) || !self.discovery.raft_receive_allowed() {
+            return Err(Error::MetaNotReady(
+                "local endpoint is not authorized for group activation".into(),
+            ));
+        }
+        let creation = kv9_meta::data_groups::committed_creation(&self.node.meta_raft.store, task)?
+            .ok_or_else(|| {
+                Error::MetaNotReady("group creation intent is not locally applied".into())
+            })?;
+        self.data_groups.activate(&creation, &self.transport, TICK)
+    }
+
+    pub fn data_group_status(&self, region: RegionId) -> Result<kv9_raft::driver::NodeStatus> {
+        self.data_groups.status(region)
+    }
+
     /// Stay resident and advance bootstrap. Normal OS termination signals use
     /// the platform default action; no shutdown hook is required for safety
     /// because both durable logs fsync before visibility/messages.
@@ -3742,6 +3761,9 @@ impl NodeRuntime {
         let ready = self.advance_endpoint_recovery()?;
         self.endpoint_ready
             .store(serving && ready, Ordering::Release);
+        if serving && ready && self.discovery.raft_receive_allowed() {
+            self.data_groups.resume_active(&self.transport, TICK);
+        }
         if serving && !ready {
             self.node
                 .meta
@@ -4501,6 +4523,7 @@ fn validate_discovery_answer(
 
 impl Drop for NodeRuntime {
     fn drop(&mut self) {
+        self.data_groups.shutdown();
         self.point_shutdown.cancel();
         #[cfg(feature = "rpc-experiment")]
         self.experimental_rpc.take();

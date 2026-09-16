@@ -12,29 +12,25 @@ p99 9.306–9.437 ms per batch). It uses three voters on one host with tmpfs WAL
 it is not a physical-disk or cross-host scaling result. See the
 [qualified measurement](WAL-PREALLOCATION-PERFORMANCE.md).
 
-The [durable group preparation](GROUP-PREPARATION.md) connects replicated,
-operation-deduplicated creation intents to independent group directories and
-restart discovery. Nine focused tests cover sixteen persistence cuts and a
-real three-runtime metadata quorum with leader replacement and store restart.
-Final local validation passes 865 tests/doctests (28 existing ignored), nine
-Rust defect controls, strict Clippy and formatting. The preparation model proves
-nine theorems with four semantic and two proof-policy controls. The preceding
-[transport increment](MULTI-RAFT-TRANSPORT.md) already isolates three three-voter
-groups over shared loopback gRPC streams.
+The latest [durable activation/shared-worker increment](GROUP-ACTIVATION.md)
+runs independent fixed-voter data groups, preserves acknowledged writes across
+leader loss and all-store reopening, and refuses a lost group log without
+blocking another group or metadata. Two data workers serve up to 255 slots;
+metadata retains its dedicated owner. Six new focused tests, eight Rust defect
+controls, fifteen model theorems with eight semantic controls, and rechecked
+preparation proofs pass. Final local validation: **878 tests/doctests passed**,
+28 existing ignored, strict Clippy and formatting passed. No hosted CI ran.
 
-The latest [data-group RPC fence](GROUP-WIRE-FENCING.md) uses a separate method
-on every session, with no fallback to legacy metadata receivers. Seven new
-HTTP/2 tests cover method/identity refusal, downgrade/replacement/recovery,
-retry budgets and separate bounded metadata/data queues. Its model checks
-15 theorems with six semantic controls and two proof-policy controls; six Rust
-defect controls reject the corresponding implementation failures. Durable
-group activation and bounded Ready/tick workers remain the next work. The
-latest local workspace run passes 872 tests/doctests (28 existing ignored),
-with strict Clippy and formatting passing; no hosted CI ran.
+This builds on [replicated creation/durable preparation](GROUP-PREPARATION.md)
+and the [data-group RPC fence](GROUP-WIRE-FENCING.md). Creation is bound to exact
+store incarnations; every data session uses the distinct method with no legacy
+fallback. Historical validation packets retain the prior 865/872-test runs;
+the latest run above includes those regression tests.
 
 The [horizontal scaling plan](HORIZONTAL-SCALING-PLAN.md) defines measurable
-3/6/9-node acceptance. RegionManager activation/retirement and bounded scheduling,
-public range routing, migration and recoverable splits remain incomplete.
+3/6/9-node acceptance. Online control/reconciliation, retirement, complete
+resource/fault acceptance, public routing, migration and splits remain open.
+Public user KV still uses the existing metadata group.
 There are no horizontal-scaling benchmark results yet.
 
 Existing storage, snapshot, retention, proof, actual Chaos Mesh and availability

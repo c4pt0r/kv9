@@ -1,5 +1,378 @@
 use super::*;
 
+struct ActiveCluster {
+    base: PathBuf,
+    root: RootDescriptor,
+    addrs: Vec<std::net::SocketAddr>,
+    runtimes: Vec<NodeRuntime>,
+}
+
+impl ActiveCluster {
+    fn start() -> Self {
+        let base = std::env::var_os("KV9_TEST_DATA_DIR")
+            .map(PathBuf::from)
+            .unwrap_or_else(std::env::temp_dir)
+            .join(format!(
+                "kv9-group-active-{}",
+                StoreIncarnation::mint().unwrap()
+            ));
+        let listeners: Vec<_> = (0..3).map(|_| bound_listener_for_e2e()).collect();
+        let addrs: Vec<_> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();
+        let voters = (1..=3)
+            .map(|id| kv9_common::RootVoter {
+                node_id: NodeId(id),
+                addr: addrs[id as usize - 1],
+                store_incarnation: prepare_test_store(&base.join(format!("n{id}")), NodeId(id)),
+            })
+            .collect();
+        let root = RootDescriptor::new(
+            kv9_common::ClusterId::mint().unwrap(),
+            kv9_common::BootstrapGeneration::mint().unwrap(),
+            voters,
+            b"active-groups",
+        )
+        .unwrap();
+        let mut cluster = Self {
+            base,
+            root,
+            addrs,
+            runtimes: Vec::new(),
+        };
+        for (i, listener) in listeners.into_iter().enumerate() {
+            cluster
+                .runtimes
+                .push(cluster.open(NodeId(i as u64 + 1), listener));
+        }
+        cluster.wait_serving();
+        cluster
+    }
+
+    fn open(&self, id: NodeId, listener: std::net::TcpListener) -> NodeRuntime {
+        NodeRuntime::start_core(
+            id,
+            Config {
+                advertise_addr: None,
+                addr: self.addrs[id.0 as usize - 1].to_string(),
+                data_dir: self
+                    .base
+                    .join(format!("n{}", id.0))
+                    .to_string_lossy()
+                    .into_owned(),
+                join: vec![],
+                wal_streams: 1,
+                replication_factor: 3,
+            },
+            RuntimeAuth {
+                cluster_token: "active-groups-cluster".into(),
+                client_tokens: vec![("active-test".into(), "active-groups-client".into())],
+            },
+            self.root.clone(),
+            StoreIdentity::for_voter(&self.root, id).unwrap(),
+            None,
+            StartOverrides {
+                listener: Some(listener),
+                ..Default::default()
+            },
+        )
+        .unwrap()
+    }
+
+    fn wait_serving(&mut self) {
+        wait_for(
+            &mut self.runtimes,
+            30,
+            "active fixture metadata serving",
+            |rts| rts.iter().all(|r| r.endpoint_ready.load(Ordering::Acquire)),
+        );
+    }
+
+    fn create(&mut self, operation: u8) -> kv9_meta::data_groups::CreationIntent {
+        wait_for(
+            &mut self.runtimes,
+            20,
+            "metadata leader before creation",
+            |rts| cluster_leader(rts).is_some(),
+        );
+        let leader = cluster_leader(&self.runtimes).unwrap();
+        let intent = self.runtimes[leader]
+            .create_data_group_intent([operation; 16], &[NodeId(1), NodeId(2), NodeId(3)])
+            .unwrap();
+        wait_for(
+            &mut self.runtimes,
+            20,
+            "creation applied before activation",
+            |rts| {
+                rts.iter().all(|r| {
+                    kv9_meta::data_groups::committed_creation(
+                        &r.node.meta_raft.store,
+                        intent.task(),
+                    )
+                    .unwrap()
+                    .is_some()
+                })
+            },
+        );
+        intent
+    }
+}
+
+impl Drop for ActiveCluster {
+    fn drop(&mut self) {
+        self.runtimes.clear();
+        if std::thread::panicking() {
+            eprintln!("retained active group fixture: {}", self.base.display());
+        } else {
+            fs::remove_dir_all(&self.base).unwrap();
+        }
+    }
+}
+
+fn data_leader(rts: &[NodeRuntime], group: RegionId) -> Option<usize> {
+    rts.iter().position(|r| {
+        r.data_group_status(group)
+            .is_ok_and(|s| s.role == Role::Leader)
+    })
+}
+
+fn data_write(rt: &NodeRuntime, group: RegionId, key: &[u8], value: &[u8]) {
+    let driver = rt.data_groups.driver_for_tests(group).unwrap();
+    let at = driver
+        .propose(&Command::Put {
+            cf: 0,
+            key: key.to_vec(),
+            value: value.to_vec(),
+        })
+        .unwrap();
+    assert!(
+        matches!(
+            driver.wait_applied(at, Duration::from_secs(5)),
+            Ok(ApplyWaitOutcome::Applied(_))
+        ),
+        "data write must have its exact applied receipt"
+    );
+}
+
+fn has_data(rt: &NodeRuntime, group: RegionId, key: &[u8], value: &[u8]) -> bool {
+    rt.data_groups.driver_for_tests(group).is_ok_and(|d| {
+        d.get(kv9_engine::ColumnFamily::Default, key)
+            .unwrap()
+            .as_deref()
+            == Some(value)
+    })
+}
+
+#[test]
+fn group_activation_runs_independent_durable_groups_and_recovers_all_voters() {
+    let mut cluster = ActiveCluster::start();
+    let first = cluster.create(71);
+    let second = cluster.create(72);
+    let groups = [first.region(), second.region()];
+    for rt in &mut cluster.runtimes {
+        // Dynamic registration on already live listeners; no static group list.
+        rt.activate_data_group(first.task()).unwrap();
+        rt.activate_data_group(second.task()).unwrap();
+        rt.activate_data_group(first.task())
+            .expect("activation retries are idempotent");
+    }
+    for (i, group) in groups.iter().enumerate() {
+        cluster.runtimes[i]
+            .data_groups
+            .driver_for_tests(*group)
+            .unwrap()
+            .peer()
+            .campaign()
+            .unwrap();
+        wait_for(&mut cluster.runtimes, 20, "data group elected", |rts| {
+            data_leader(rts, *group).is_some()
+        });
+        let mut next_transfer = Instant::now();
+        wait_for(
+            &mut cluster.runtimes,
+            20,
+            "different leaders for independent groups",
+            |rts| {
+                let statuses: Vec<_> = rts
+                    .iter()
+                    .map(|r| r.data_group_status(*group).unwrap())
+                    .collect();
+                assert!(
+                    statuses.iter().all(|s| s.fatal.is_none()),
+                    "data group failed: {statuses:?}"
+                );
+                if statuses[i].role == Role::Leader {
+                    return true;
+                }
+                // A local Leader observation may belong to an election that
+                // is already superseded on another voter. Transfer is best
+                // effort; re-address the current leader under one deadline.
+                if Instant::now() >= next_transfer {
+                    eprintln!("group {} leadership before transfer: {statuses:?}", group.0);
+                    if let Some(leader) = data_leader(rts, *group) {
+                        rts[leader]
+                            .data_groups
+                            .driver_for_tests(*group)
+                            .unwrap()
+                            .peer()
+                            .transfer_leader_for_tests(NodeId(i as u64 + 1));
+                    }
+                    next_transfer = Instant::now() + Duration::from_millis(200);
+                }
+                false
+            },
+        );
+        data_write(&cluster.runtimes[i], *group, b"same-key", &[i as u8]);
+    }
+    wait_for(
+        &mut cluster.runtimes,
+        20,
+        "isolated values on every durable replica",
+        |rts| {
+            rts.iter().all(|rt| {
+                groups
+                    .iter()
+                    .enumerate()
+                    .all(|(i, g)| has_data(rt, *g, b"same-key", &[i as u8]))
+            })
+        },
+    );
+    for rt in &cluster.runtimes {
+        rt.data_groups
+            .driver_for_tests(groups[0])
+            .unwrap()
+            .pause_apply(true);
+        assert!(
+            rt.node
+                .meta_raft
+                .store
+                .begin()
+                .unwrap()
+                .get(&kv9_meta::schema::REGIONS_DESC, &[memcmp_uint(groups[0].0)])
+                .unwrap()
+                .is_none(),
+            "activation cannot publish a public range"
+        );
+    }
+    let frozen = cluster.runtimes[0]
+        .data_groups
+        .driver_for_tests(groups[0])
+        .unwrap()
+        .propose(&Command::Put {
+            cf: 0,
+            key: b"paused".to_vec(),
+            value: b"resume".to_vec(),
+        })
+        .unwrap();
+    data_write(&cluster.runtimes[1], groups[1], b"during-pause", b"healthy");
+    let third = cluster.create(73); // Metadata still commits beside a paused data group.
+    for rt in &cluster.runtimes {
+        assert!(!has_data(rt, groups[0], b"paused", b"resume"));
+        rt.data_groups
+            .driver_for_tests(groups[0])
+            .unwrap()
+            .pause_apply(false);
+    }
+    assert!(matches!(
+        cluster.runtimes[0]
+            .data_groups
+            .driver_for_tests(groups[0])
+            .unwrap()
+            .wait_applied(frozen, Duration::from_secs(5)),
+        Ok(ApplyWaitOutcome::Applied(_))
+    ));
+
+    // Lose the first data leader, retain the majority, and commit on its successor.
+    let lost = cluster.runtimes.remove(0).node.id;
+    wait_for(
+        &mut cluster.runtimes,
+        20,
+        "surviving data quorum elected",
+        |rts| groups.iter().all(|g| data_leader(rts, *g).is_some()),
+    );
+    for group in groups {
+        let leader = data_leader(&cluster.runtimes, group).unwrap();
+        data_write(
+            &cluster.runtimes[leader],
+            group,
+            b"after-loss",
+            b"committed",
+        );
+    }
+    let listener = std::net::TcpListener::bind(cluster.addrs[lost.0 as usize - 1]).unwrap();
+    cluster.runtimes.push(cluster.open(lost, listener));
+    cluster.wait_serving();
+    wait_for(
+        &mut cluster.runtimes,
+        20,
+        "recovered replica catches up independently",
+        |rts| {
+            rts.iter().all(|rt| {
+                groups.iter().enumerate().all(|(i, g)| {
+                    has_data(rt, *g, b"same-key", &[i as u8])
+                        && has_data(rt, *g, b"after-loss", b"committed")
+                })
+            })
+        },
+    );
+    // Stop every voter and reopen every store. No in-memory peer/engine survives.
+    cluster.runtimes.clear();
+    for id in 1..=3 {
+        let listener = std::net::TcpListener::bind(cluster.addrs[id - 1]).unwrap();
+        cluster
+            .runtimes
+            .push(cluster.open(NodeId(id as u64), listener));
+    }
+    cluster.wait_serving();
+    wait_for(
+        &mut cluster.runtimes,
+        20,
+        "all stores recovered acknowledged data",
+        |rts| {
+            rts.iter().all(|rt| {
+                groups.iter().enumerate().all(|(i, g)| {
+                    has_data(rt, *g, b"same-key", &[i as u8])
+                        && has_data(rt, *g, b"after-loss", b"committed")
+                })
+            })
+        },
+    );
+    for rt in &cluster.runtimes {
+        assert!(
+            rt.data_group_status(third.region()).is_err(),
+            "unactivated intent must stay inactive"
+        );
+    }
+    let lost_index = cluster
+        .runtimes
+        .iter()
+        .position(|r| r.node.id == NodeId(1))
+        .unwrap();
+    drop(cluster.runtimes.remove(lost_index));
+    let missing = cluster
+        .base
+        .join("n1/data-groups")
+        .join(groups[0].0.to_string())
+        .join("raft/raft.log");
+    fs::remove_file(&missing).unwrap();
+    let listener = std::net::TcpListener::bind(cluster.addrs[0]).unwrap();
+    cluster.runtimes.push(cluster.open(NodeId(1), listener));
+    cluster.wait_serving();
+    let recovered = cluster
+        .runtimes
+        .iter()
+        .find(|r| r.node.id == NodeId(1))
+        .unwrap();
+    assert!(recovered.data_group_status(groups[0]).is_err());
+    assert!(
+        !missing.exists(),
+        "missing voting log must not be recreated"
+    );
+    assert!(
+        has_data(recovered, groups[1], b"after-loss", b"committed"),
+        "bad group prevented healthy group recovery"
+    );
+    cluster.create(74); // A failed data store must not prevent metadata work.
+}
+
 #[test]
 fn group_preparation_real_metadata_quorum_survives_leader_loss_and_store_restart() {
     let base = std::env::var_os("KV9_TEST_DATA_DIR")
