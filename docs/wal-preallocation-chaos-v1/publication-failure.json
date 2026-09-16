@@ -1,0 +1,7 @@
+{
+  "terminal": "32081/1b098f/1",
+  "scope": "Portable metadata selection only; actual runtime and all six post phases already passed.",
+  "reason": "The full archive contains its own inventory.json, which is not listed recursively in its member map. The first selector assumed every regular member appeared in that map.",
+  "correction": "A new output directory preserves the failed selection. The embedded inventory is checked against its separately retained SHA-256; all other members retain exact original size/hash verification.",
+  "retry_terminal": "61178/0c0aa8/0"
+}

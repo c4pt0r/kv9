@@ -1,0 +1,29 @@
+{
+  "complete": true,
+  "archive": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/archive-first/evidence.tar.gz",
+  "bytes": 89254172,
+  "sha256": "7ba029e91b670cd2ecd797ea69b696f8b256356cea06abb6f2bbc6f2e7f3c761",
+  "inventory": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/archive-first/inventory.json",
+  "inventory_sha256": "3315e57c3ea1014a94aa3f7be6f2688323b1d61b50c3fac7b12618ba0f2a09cb",
+  "members": 4836,
+  "files": 4486,
+  "file_bytes": 908891813,
+  "roots": [
+    "/mnt/data/kv9-work/kv9-chaos-e2e.Bgl9Cx",
+    "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first",
+    "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/preallocated",
+    "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/persistent-build-second",
+    "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/pressure-build-first",
+    "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/image-context-first",
+    "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/historical-lineage"
+  ],
+  "all_members_read_back": true,
+  "all_inputs_rehashed": true,
+  "started_unix_ns": 1789516947877959075,
+  "ended_unix_ns": 1789516952020069455,
+  "scope": "Freeze, archive and independently read back current native Chaos evidence before cleanup.",
+  "outer_root_logs_retained_separately": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/roots",
+  "original_fixture_exit_code": 0,
+  "independent_retained_evidence_accepted": true,
+  "cleanup_in_separate_supplement": true
+}

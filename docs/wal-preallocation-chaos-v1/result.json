@@ -1,0 +1,89 @@
+{
+  "complete": true,
+  "default_off": true,
+  "excluded_file_count": 2094,
+  "exited_containers": 25,
+  "fresh_final_drains": 4,
+  "full_local_archive": {
+    "all_inputs_rehashed": true,
+    "all_members_read_back": true,
+    "archive": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/archive-first/evidence.tar.gz",
+    "bytes": 89254172,
+    "cleanup_in_separate_supplement": true,
+    "complete": true,
+    "ended_unix_ns": 1789516952020069455,
+    "file_bytes": 908891813,
+    "files": 4486,
+    "independent_retained_evidence_accepted": true,
+    "inventory": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/archive-first/inventory.json",
+    "inventory_sha256": "3315e57c3ea1014a94aa3f7be6f2688323b1d61b50c3fac7b12618ba0f2a09cb",
+    "members": 4836,
+    "original_fixture_exit_code": 0,
+    "outer_root_logs_retained_separately": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/roots",
+    "roots": [
+      "/mnt/data/kv9-work/kv9-chaos-e2e.Bgl9Cx",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first",
+      "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/preallocated",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/persistent-build-second",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/pressure-build-first",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/image-context-first",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/historical-lineage"
+    ],
+    "scope": "Freeze, archive and independently read back current native Chaos evidence before cleanup.",
+    "sha256": "7ba029e91b670cd2ecd797ea69b696f8b256356cea06abb6f2bbc6f2e7f3c761",
+    "started_unix_ns": 1789516947877959075
+  },
+  "histories": {
+    "cli": {
+      "bytes": 2820802,
+      "invokes": 4987,
+      "outcomes": {
+        "ok": 4528,
+        "refused": 11,
+        "unknown": 448
+      },
+      "returns": 4987,
+      "sha256": "ccc714b69be2aff3a20973bdf03e842ef02bfb3f826ff6c691c3acd285fda058"
+    },
+    "native": {
+      "bytes": 6909209,
+      "invokes": 2724,
+      "outcomes": {
+        "ok": 2693,
+        "refused": 9,
+        "unknown": 22
+      },
+      "returns": 2724,
+      "sha256": "af77007e03d6d4aafa78b5c5b8a9a536b64d39e1be6188cc67b6dbcefacf7232"
+    },
+    "persistent": {
+      "bytes": 1128157,
+      "invokes": 1530,
+      "outcomes": {
+        "ok": 1513,
+        "refused": 5,
+        "unknown": 12
+      },
+      "returns": 1530,
+      "sha256": "7b888a9549614768345a31cf27a531256e05284248672193e64758ef1de61665"
+    }
+  },
+  "metadata_archive": {
+    "bytes": 4029620,
+    "logical_bytes": 38580640,
+    "members": 2495,
+    "sha256": "7518653c9ac17c4fbcb2aa98dbaf1336638b8200fe7bb8cb3b70f5c1ef786f2d"
+  },
+  "operations": 9241,
+  "outcomes": {
+    "ok": 8734,
+    "refused": 25,
+    "unknown": 482
+  },
+  "performance_measured": false,
+  "preserved_namespaces": 8,
+  "scope": "Actual local single-node Kind/Chaos Mesh qualification and complete independent histories; no cross-host availability, physical power-loss, C04 pre-upload, performance or industrial completion claim. Portable selection includes the three full histories; large intermediate/observer streams and executables remain in the separately verified full local archive.",
+  "server_lifetimes": 31,
+  "source_revision": "86aa6fc07d82f4d49b43fbfe309e0e5c20276da5",
+  "windows": 21
+}

@@ -1,0 +1,441 @@
+{
+  "complete": true,
+  "namespace": "kv9-chaos-wal-preallocation-86aa6fc-1789516395-3149184",
+  "namespace_uid": "a6a0794e-b668-4dfc-8a1f-836bd374f26e",
+  "namespace_absent": true,
+  "precleanup_archive": {
+    "complete": true,
+    "archive": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/archive-first/evidence.tar.gz",
+    "bytes": 89254172,
+    "sha256": "7ba029e91b670cd2ecd797ea69b696f8b256356cea06abb6f2bbc6f2e7f3c761",
+    "inventory": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/archive-first/inventory.json",
+    "inventory_sha256": "3315e57c3ea1014a94aa3f7be6f2688323b1d61b50c3fac7b12618ba0f2a09cb",
+    "members": 4836,
+    "files": 4486,
+    "file_bytes": 908891813,
+    "roots": [
+      "/mnt/data/kv9-work/kv9-chaos-e2e.Bgl9Cx",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first",
+      "/mnt/data/kv9-work/wal-preallocation-runtime-20260915-first/build/preallocated",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/persistent-build-second",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/pressure-build-first",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/image-context-first",
+      "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/historical-lineage"
+    ],
+    "all_members_read_back": true,
+    "all_inputs_rehashed": true,
+    "started_unix_ns": 1789516947877959075,
+    "ended_unix_ns": 1789516952020069455,
+    "scope": "Freeze, archive and independently read back current native Chaos evidence before cleanup.",
+    "outer_root_logs_retained_separately": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/roots",
+    "original_fixture_exit_code": 0,
+    "independent_retained_evidence_accepted": true,
+    "cleanup_in_separate_supplement": true
+  },
+  "processes": [
+    {
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 2393895,
+      "start_ticks": 180515959,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "absent": true
+    },
+    {
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 2648136,
+      "start_ticks": 180543964,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "absent": true
+    },
+    {
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 2648908,
+      "start_ticks": 180544047,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "absent": true
+    },
+    {
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 2669911,
+      "start_ticks": 180546504,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "absent": true
+    },
+    {
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 2670423,
+      "start_ticks": 180546547,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "absent": true
+    },
+    {
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 2692684,
+      "start_ticks": 180549127,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "absent": true
+    },
+    {
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 2693497,
+      "start_ticks": 180549251,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "absent": true
+    },
+    {
+      "node": "kv9-chaos-ci-p0-20260908-control-plane",
+      "pid": 2702643,
+      "start_ticks": 180550290,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "absent": true
+    }
+  ],
+  "containers": [
+    {
+      "container": "b5935a7ec4714833a6534c82b4792b99e08edb00730ab1cc0f01420814f16240",
+      "pod_uid": "d64c80d9-600d-4c0f-ba43-288810b130e5",
+      "state": "removed"
+    },
+    {
+      "container": "eca929ebbf0ca08104dbead18049448834ed698f10cf75fbfc06331a606e445e",
+      "pod_uid": "790e28c1-05ae-4f6b-9ad2-ec4718ecbc90",
+      "state": "removed"
+    },
+    {
+      "container": "602b391fe92d4047956d42e1b9ecf7dbd0388b8032f471368569480bef13a328",
+      "pod_uid": "cc63ab6e-9518-4347-b0c4-350a0a5f64fb",
+      "state": "removed"
+    },
+    {
+      "container": "54990d1a2cfb172f0f3646a401f5bcaf85d25c79d9f451088cbca135c0c52e13",
+      "pod_uid": "27127604-14c3-4491-96a4-323363bcce64",
+      "state": "removed"
+    },
+    {
+      "container": "3b5956650b7509a19dc7f3011b59117534a37c5dc92b5f0c48a7bc38cb88e857",
+      "pod_uid": "877ad1ca-8bdb-4a09-ba2c-8f34588695c1",
+      "state": "removed"
+    }
+  ],
+  "historical_namespaces_unchanged": {
+    "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+    "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+    "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+    "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+    "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+    "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+    "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+    "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+  },
+  "fixture_pid": 3149184,
+  "observer_pid": 3149271,
+  "host_fixture_observer_exited": true,
+  "commands": [
+    {
+      "command": [
+        "kubectl",
+        "--kubeconfig",
+        "/mnt/data/kv9-work/chaos-tools-20260915-first/kubeconfig",
+        "--request-timeout=10s",
+        "get",
+        "namespace",
+        "kv9-chaos-wal-preallocation-86aa6fc-1789516395-3149184",
+        "-o",
+        "json"
+      ],
+      "started_unix_ns": 1789516952133824655,
+      "ended_unix_ns": 1789516952158279295,
+      "exit_code": 0,
+      "stdout": "namespace-identity-recheck.stdout",
+      "stderr": "namespace-identity-recheck.stderr"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--kubeconfig",
+        "/mnt/data/kv9-work/chaos-tools-20260915-first/kubeconfig",
+        "--request-timeout=10s",
+        "get",
+        "pods",
+        "-n",
+        "kv9-chaos-wal-preallocation-86aa6fc-1789516395-3149184",
+        "-o",
+        "json"
+      ],
+      "started_unix_ns": 1789516952158454132,
+      "ended_unix_ns": 1789516952184356292,
+      "exit_code": 0,
+      "stdout": "pods-identity-recheck.stdout",
+      "stderr": "pods-identity-recheck.stderr"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--kubeconfig",
+        "/mnt/data/kv9-work/chaos-tools-20260915-first/kubeconfig",
+        "--request-timeout=10s",
+        "delete",
+        "podchaos,networkchaos,iochaos",
+        "--all",
+        "-n",
+        "kv9-chaos-wal-preallocation-86aa6fc-1789516395-3149184",
+        "--ignore-not-found",
+        "--wait=true"
+      ],
+      "started_unix_ns": 1789516952187304029,
+      "ended_unix_ns": 1789516952215128507,
+      "exit_code": 0,
+      "stdout": "delete-owned-faults.stdout",
+      "stderr": "delete-owned-faults.stderr"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--kubeconfig",
+        "/mnt/data/kv9-work/chaos-tools-20260915-first/kubeconfig",
+        "--request-timeout=10s",
+        "delete",
+        "namespace",
+        "kv9-chaos-wal-preallocation-86aa6fc-1789516395-3149184",
+        "--wait=true"
+      ],
+      "started_unix_ns": 1789516952215326006,
+      "ended_unix_ns": 1789517001438989145,
+      "exit_code": 0,
+      "stdout": "delete-owned-namespace.stdout",
+      "stderr": "delete-owned-namespace.stderr"
+    },
+    {
+      "command": [
+        "kubectl",
+        "--kubeconfig",
+        "/mnt/data/kv9-work/chaos-tools-20260915-first/kubeconfig",
+        "--request-timeout=10s",
+        "get",
+        "namespaces",
+        "-o",
+        "json"
+      ],
+      "started_unix_ns": 1789517001450294553,
+      "ended_unix_ns": 1789517001479748046,
+      "exit_code": 0,
+      "stdout": "namespaces-after.stdout",
+      "stderr": "namespaces-after.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "bash",
+        "-c",
+        "set -e; cat /proc/sys/kernel/random/boot_id; if test -e /proc/\"$1\"/stat; then cat /proc/\"$1\"/stat; else printf \"absent\\n\"; fi",
+        "owned-exit",
+        "2393895"
+      ],
+      "started_unix_ns": 1789517001497255462,
+      "ended_unix_ns": 1789517001541828451,
+      "exit_code": 0,
+      "stdout": "exited-2393895.stdout",
+      "stderr": "exited-2393895.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "bash",
+        "-c",
+        "set -e; cat /proc/sys/kernel/random/boot_id; if test -e /proc/\"$1\"/stat; then cat /proc/\"$1\"/stat; else printf \"absent\\n\"; fi",
+        "owned-exit",
+        "2648136"
+      ],
+      "started_unix_ns": 1789517001542069993,
+      "ended_unix_ns": 1789517001560026720,
+      "exit_code": 0,
+      "stdout": "exited-2648136.stdout",
+      "stderr": "exited-2648136.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "bash",
+        "-c",
+        "set -e; cat /proc/sys/kernel/random/boot_id; if test -e /proc/\"$1\"/stat; then cat /proc/\"$1\"/stat; else printf \"absent\\n\"; fi",
+        "owned-exit",
+        "2648908"
+      ],
+      "started_unix_ns": 1789517001560258724,
+      "ended_unix_ns": 1789517001577658438,
+      "exit_code": 0,
+      "stdout": "exited-2648908.stdout",
+      "stderr": "exited-2648908.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "bash",
+        "-c",
+        "set -e; cat /proc/sys/kernel/random/boot_id; if test -e /proc/\"$1\"/stat; then cat /proc/\"$1\"/stat; else printf \"absent\\n\"; fi",
+        "owned-exit",
+        "2669911"
+      ],
+      "started_unix_ns": 1789517001578027258,
+      "ended_unix_ns": 1789517001595392458,
+      "exit_code": 0,
+      "stdout": "exited-2669911.stdout",
+      "stderr": "exited-2669911.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "bash",
+        "-c",
+        "set -e; cat /proc/sys/kernel/random/boot_id; if test -e /proc/\"$1\"/stat; then cat /proc/\"$1\"/stat; else printf \"absent\\n\"; fi",
+        "owned-exit",
+        "2670423"
+      ],
+      "started_unix_ns": 1789517001624702582,
+      "ended_unix_ns": 1789517001664497740,
+      "exit_code": 0,
+      "stdout": "exited-2670423.stdout",
+      "stderr": "exited-2670423.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "bash",
+        "-c",
+        "set -e; cat /proc/sys/kernel/random/boot_id; if test -e /proc/\"$1\"/stat; then cat /proc/\"$1\"/stat; else printf \"absent\\n\"; fi",
+        "owned-exit",
+        "2692684"
+      ],
+      "started_unix_ns": 1789517001664760782,
+      "ended_unix_ns": 1789517001682707931,
+      "exit_code": 0,
+      "stdout": "exited-2692684.stdout",
+      "stderr": "exited-2692684.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "bash",
+        "-c",
+        "set -e; cat /proc/sys/kernel/random/boot_id; if test -e /proc/\"$1\"/stat; then cat /proc/\"$1\"/stat; else printf \"absent\\n\"; fi",
+        "owned-exit",
+        "2693497"
+      ],
+      "started_unix_ns": 1789517001682980501,
+      "ended_unix_ns": 1789517001699474490,
+      "exit_code": 0,
+      "stdout": "exited-2693497.stdout",
+      "stderr": "exited-2693497.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "bash",
+        "-c",
+        "set -e; cat /proc/sys/kernel/random/boot_id; if test -e /proc/\"$1\"/stat; then cat /proc/\"$1\"/stat; else printf \"absent\\n\"; fi",
+        "owned-exit",
+        "2702643"
+      ],
+      "started_unix_ns": 1789517001747524517,
+      "ended_unix_ns": 1789517001788237923,
+      "exit_code": 0,
+      "stdout": "exited-2702643.stdout",
+      "stderr": "exited-2702643.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "b5935a7ec4714833a6534c82b4792b99e08edb00730ab1cc0f01420814f16240"
+      ],
+      "started_unix_ns": 1789517001794191465,
+      "ended_unix_ns": 1789517001817822281,
+      "exit_code": 1,
+      "stdout": "container-exit-b5935a7ec471.stdout",
+      "stderr": "container-exit-b5935a7ec471.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "eca929ebbf0ca08104dbead18049448834ed698f10cf75fbfc06331a606e445e"
+      ],
+      "started_unix_ns": 1789517001818169821,
+      "ended_unix_ns": 1789517001839822114,
+      "exit_code": 1,
+      "stdout": "container-exit-eca929ebbf0c.stdout",
+      "stderr": "container-exit-eca929ebbf0c.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "602b391fe92d4047956d42e1b9ecf7dbd0388b8032f471368569480bef13a328"
+      ],
+      "started_unix_ns": 1789517001850247485,
+      "ended_unix_ns": 1789517001896277742,
+      "exit_code": 1,
+      "stdout": "container-exit-602b391fe92d.stdout",
+      "stderr": "container-exit-602b391fe92d.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "54990d1a2cfb172f0f3646a401f5bcaf85d25c79d9f451088cbca135c0c52e13"
+      ],
+      "started_unix_ns": 1789517001913243234,
+      "ended_unix_ns": 1789517001954287208,
+      "exit_code": 1,
+      "stdout": "container-exit-54990d1a2cfb.stdout",
+      "stderr": "container-exit-54990d1a2cfb.stderr"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "kv9-chaos-ci-p0-20260908-control-plane",
+        "crictl",
+        "inspect",
+        "3b5956650b7509a19dc7f3011b59117534a37c5dc92b5f0c48a7bc38cb88e857"
+      ],
+      "started_unix_ns": 1789517001954684221,
+      "ended_unix_ns": 1789517001977978638,
+      "exit_code": 1,
+      "stdout": "container-exit-3b5956650b75.stdout",
+      "stderr": "container-exit-3b5956650b75.stderr"
+    }
+  ],
+  "completed_unix_ns": 1789517001978363177,
+  "scope": "Cleanup only the exact archived native matrix namespace; verify every retained process exit.",
+  "original_fixture_exit_code": 0,
+  "independent_evidence_accepted": true
+}

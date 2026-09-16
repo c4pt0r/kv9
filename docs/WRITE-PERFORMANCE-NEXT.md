@@ -1,6 +1,6 @@
 # Write performance against three-copy Redis
 
-Updated: 2026-09-15. The current priority is write throughput and latency,
+Updated: 2026-09-16. The current priority is write throughput and latency,
 targeting Redis with one primary and two replicas. Read optimization is held at
 the selected ThinLTO/Safe ReadIndex baseline. The experimental lease work and
 its remaining clock/Chaos gates are retained; read parity is not claimed and is
@@ -67,8 +67,10 @@ on the original batch corpus; six small cases improve mean and both-order p99.
 [Matching release and ordinary recovery](WAL-PREALLOCATION-RUNTIME.md) now pass:
 four complete histories / 728 operations (666 OK, 62 unknown), twelve fresh
 drains and fourteen exited lifetimes. The feature remains off by default.
-Next verify actual candidate Chaos Mesh, then compare end-to-end write
-throughput and latency with the same qualified client. These microbenchmarks
+[Actual candidate Chaos Mesh](WAL-PREALLOCATION-CHAOS.md) now passes all 21
+windows, 9,241 complete operations, four final drains, 31 server lifetimes and
+25 exited containers, with independent audit/archive/cleanup. Next compare
+end-to-end write throughput and latency with the same qualified client. These microbenchmarks
 and correctness runs establish no database QPS or Redis parity. Keep
 CRC selected and avoid replaying the completed index/capture/full matrices.
 

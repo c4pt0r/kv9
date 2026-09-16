@@ -1,0 +1,117 @@
+{
+  "complete": true,
+  "started_ns": 1789516935565422621,
+  "runtime_terminal": "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/roots/runtime/terminal.json",
+  "phases": [
+    {
+      "name": "independent",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/independent/audit.py"
+      ],
+      "started_ns": 1789516935565472334,
+      "complete": true,
+      "pid": 3860712,
+      "exit_code": 0,
+      "ended_ns": 1789516947181663165
+    },
+    {
+      "name": "cleanup-capture",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/cleanup/capture.py"
+      ],
+      "started_ns": 1789516947181863661,
+      "complete": true,
+      "pid": 3862573,
+      "exit_code": 0,
+      "ended_ns": 1789516947646162851
+    },
+    {
+      "name": "process-tree",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/cleanup/process-tree.py"
+      ],
+      "started_ns": 1789516947646436223,
+      "complete": true,
+      "pid": 3863042,
+      "exit_code": 0,
+      "ended_ns": 1789516947860413686
+    },
+    {
+      "name": "archive",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/archive.py"
+      ],
+      "started_ns": 1789516947860597821,
+      "complete": true,
+      "pid": 3863233,
+      "exit_code": 0,
+      "ended_ns": 1789516952079151957
+    },
+    {
+      "name": "cleanup",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/cleanup/execute.py"
+      ],
+      "started_ns": 1789516952079343685,
+      "complete": true,
+      "pid": 3863914,
+      "exit_code": 0,
+      "ended_ns": 1789517002000704660
+    },
+    {
+      "name": "all-lifetimes",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/cleanup/all-lifetimes.py"
+      ],
+      "started_ns": 1789517002000967201,
+      "complete": true,
+      "pid": 3872919,
+      "exit_code": 0,
+      "ended_ns": 1789517002916064126
+    }
+  ],
+  "ended_ns": 1789517002916242550,
+  "final_available_bytes": 859069722624
+}

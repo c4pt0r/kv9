@@ -1,0 +1,64 @@
+{
+  "complete": true,
+  "started_ns": 1789516394930084755,
+  "argv": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/overlay/runner.py"
+  ],
+  "release": {
+    "plan_sha256": "df4967b98423292e25378940f99f8e71106970baf9fc5a20d2e980e901e5518d",
+    "revision": "86aa6fc07d82f4d49b43fbfe309e0e5c20276da5",
+    "single_use": true,
+    "observed_ns": 1789516394929970211,
+    "preflight_sha256": "11f0dd938f6008b344de99be897178e66c0a4c5af7668434bf108cd86adfe215"
+  },
+  "commands": [
+    {
+      "name": "runtime",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/overlay/runner.py"
+      ],
+      "pid": 3148923,
+      "started_ns": 1789516394930290890,
+      "exit_code": 0,
+      "ended_ns": 1789516894959796202
+    },
+    {
+      "name": "point-capture",
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONOPTIMIZE=0",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/mnt/data/kv9-work/wal-preallocation-chaos-preparation-20260915-first/capture-point-client.py"
+      ],
+      "pid": 3150713,
+      "started_ns": 1789516399932186435,
+      "exit_code": 0,
+      "ended_ns": 1789516454943426840
+    }
+  ],
+  "artifact": "/mnt/data/kv9-work/kv9-chaos-e2e.Bgl9Cx",
+  "fixture_pid": 3149184,
+  "observer_pid": 3149271,
+  "fixture_exit_code": 0,
+  "observer_exit_code": 0,
+  "ended_ns": 1789516894968043048,
+  "final_available_bytes": 859053920256
+}

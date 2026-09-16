@@ -1,6 +1,6 @@
 # WAL payload preallocation
 
-Updated 2026-09-15. The new `wal-payload-preallocation` feature is **off by
+Updated 2026-09-16. The new `wal-payload-preallocation` feature is **off by
 default**. It reuses the segmented writer's already validated record length to
 reserve the payload buffer before encoding. Both configurations execute the
 same byte emitter. This removes a source of buffer growth without changing the
@@ -11,9 +11,10 @@ Encoder microbenchmarks improve across the retained large-batch corpus and six
 small synthetic cases. **There is no new database QPS or Redis comparison.**
 [Matching releases and ordinary recovery](WAL-PREALLOCATION-RUNTIME.md) now
 pass: four complete histories, 728 operations including 62 unknowns, twelve
-fresh drains and fourteen exited lifetimes. Keep the selected CRC runtime until
-actual candidate Chaos Mesh and end-to-end throughput plus latency qualification
-establish a useful gain.
+fresh drains and fourteen exited lifetimes. [Actual 21-window Chaos Mesh](WAL-PREALLOCATION-CHAOS.md)
+now also passes: 9,241 complete operations, four final drains and 31 exited
+server lifetimes. Keep the selected CRC runtime until end-to-end throughput
+plus latency qualification establishes a useful gain.
 
 ## Implementation and safety
 
@@ -111,8 +112,9 @@ No completed comparison was repeated after adding the small-case harness.
 1. Matching current-source default/feature releases and ordinary three-voter
    recovery are complete. Preserve their original evidence and the fixed,
    previously requalified performance client; do not rerun them unchanged.
-2. Verify actual candidate Chaos Mesh faults with complete histories and final
-   acknowledged-value checks. The existing C04 pre-upload
+2. Actual candidate Chaos Mesh acceptance is complete, including independent
+   full histories, recovery, archive/readback and cleanup. Preserve the original
+   evidence. The existing C04 pre-upload
    acceptance remains separate and incomplete; this increment does not close it.
 3. Compare single Put and BatchPut throughput, mean and p99 in both orders.
    Include the three-copy Redis reference with clearly stated durability and
