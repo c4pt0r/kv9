@@ -5,6 +5,10 @@ package kv9.v1;
 // The public client surface. Authentication is transport metadata interpreted
 // by the server interceptor; callers may not self-assert an identity in a body.
 service Kv9 {
+  // Scoped methods are distinct: an older service cannot ignore routing identity.
+  rpc LookupRawRoute(LookupRawRouteRequest) returns (LookupRawRouteResponse);
+  rpc RoutedRaw(RoutedRawRequest) returns (RoutedRawResponse);
+
   // Direct/raw KV.
   rpc RawGet(RawGetRequest) returns (RawGetResponse);
   rpc RawBatchGet(RawBatchGetRequest) returns (RawBatchGetResponse);
@@ -438,4 +442,38 @@ message ClusterInfoResponse {
   uint64 node_count = 1;
   uint64 keyspace_count = 2;
   uint64 region_count = 3;
+}
+
+// A follower may return only directory hints. Only a successful metadata
+// ReadIndex plus one catalog snapshot may return an authoritative range.
+message LookupRawRouteRequest {
+  bytes root_digest = 1;
+  uint64 tenant_id = 2;
+  uint32 keyspace_id = 3;
+  bytes key = 4;
+}
+message LookupRawRouteResponse {
+  bytes root_digest = 1;
+  repeated NodeEndpoint metadata_peers = 2;
+  optional uint64 metadata_leader = 3;
+  bytes binding = 4; // Empty for a redirect; otherwise canonical KV9RNG01.
+  repeated NodeEndpoint replicas = 5;
+  optional uint64 data_leader = 6;
+}
+message RoutedRawRequest {
+  bytes binding = 1; // Exact root/creation/group/namespace/bounds/epochs.
+  oneof operation {
+    RoutedKeys get = 2;
+    RoutedPairs put = 3;
+    bytes delete_key = 4;
+  }
+}
+message RoutedKeys { repeated bytes keys = 1; }
+message RoutedPairs { repeated KeyValue pairs = 1; }
+message RoutedRawResponse {
+  bytes binding_digest = 1;
+  oneof result {
+    RawBatchGetResponse values = 2;
+    RawWriteResponse applied = 3;
+  }
 }

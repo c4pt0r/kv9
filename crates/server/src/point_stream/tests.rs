@@ -680,7 +680,7 @@ async fn invalid_server_frames_close_the_stream_before_backend_dispatch() {
     let (server, client) = server(Kv9Grpc::new(backend.clone())).await;
     for (id, operation, remaining) in [
         (0, 1, 1_000_000),
-        (1, 5, 1_000_000),
+        (1, 6, 1_000_000),
         (1, 257, 1_000_000),
         (1, 1, 0),
         (1, 1, 30_000_001),

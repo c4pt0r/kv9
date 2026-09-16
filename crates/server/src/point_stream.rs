@@ -192,7 +192,7 @@ impl wire::point_stream_server::PointStream for Service {
                                 break;
                             }
                         };
-                        if frame.id <= last_id || frame.operation > 4 ||
+                        if frame.id <= last_id || frame.operation > 5 ||
                             !(1..=30_000_000).contains(&frame.remaining_micros) {
                             reserved.send(Err(Status::invalid_argument("invalid point stream frame")));
                             break;
@@ -342,6 +342,7 @@ pub(crate) async fn start(
 }
 
 enum Decoded {
+    Routed(Response<proto::RoutedRawResponse>),
     Get(Response<proto::RawGetResponse>),
     BatchGet(Response<proto::RawBatchGetResponse>),
     Write(Response<proto::RawWriteResponse>),
@@ -349,6 +350,7 @@ enum Decoded {
 impl Decoded {
     fn valid(&self, expected_items: usize) -> bool {
         match self {
+            Self::Routed(reply) => crate::client::routed::valid_reply(reply, expected_items),
             Self::Get(reply) => {
                 !crate::client::has_control(reply.metadata())
                     && reply.get_ref().value.as_ref().is_some_and(|value| {
@@ -544,6 +546,7 @@ impl StreamClient {
                 let reply = WireReply::from(reply);
                 let decoded = match pending.operation {
                     0 => reply.decode().map(Decoded::Get),
+                    5 => reply.decode().map(Decoded::Routed),
                     3 => reply.decode().map(Decoded::BatchGet),
                     _ => reply.decode().map(Decoded::Write),
                 };
@@ -551,13 +554,25 @@ impl StreamClient {
                     Ok(reply) => !reply.valid(pending.expected_items),
                     Err(status) => {
                         status.code() == tonic::Code::DataLoss
-                            || matches!(
-                                crate::client::classify_status(
-                                    status,
-                                    matches!(pending.operation, 0 | 3)
-                                ),
-                                crate::client::Reason::Protocol
-                            )
+                            || if pending.operation == 5 {
+                                matches!(
+                                    crate::client::routed::classify(
+                                        status,
+                                        pending.expected_items > 0
+                                    ),
+                                    crate::client::routed::Failure::Rpc {
+                                        reason: crate::client::Reason::Protocol
+                                    }
+                                )
+                            } else {
+                                matches!(
+                                    crate::client::classify_status(
+                                        status,
+                                        matches!(pending.operation, 0 | 3)
+                                    ),
+                                    crate::client::Reason::Protocol
+                                )
+                            }
                     }
                 };
                 if invalid {
@@ -640,6 +655,17 @@ impl StreamClient {
         let result = receive.await.map_err(|_| unconfirmed())?;
         guard.armed = false;
         result
+    }
+    pub(crate) async fn routed_raw(
+        &self,
+        request: Request<proto::RoutedRawRequest>,
+        count: usize,
+        deadline: Instant,
+    ) -> Result<Response<proto::RoutedRawResponse>, Status> {
+        match self.call(5, count, request, deadline).await? {
+            Decoded::Routed(reply) => Ok(reply),
+            _ => Err(unconfirmed()),
+        }
     }
     pub(crate) async fn raw_get(
         &self,

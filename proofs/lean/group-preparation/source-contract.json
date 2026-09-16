@@ -15,7 +15,7 @@
   "source_sha256": {
     "crates/meta/src/data_groups.rs": "472dcc10d1b2afa1e79d213dd80af7d82cd5297cff1ad8332ac22509b391393e",
     "crates/server/src/region_manager.rs": "fee1851a3b840d8a0b6bdf8f3a2ec5eceb957d9dcaf75060789d1cc86a586391",
-    "crates/server/src/runtime.rs": "341f4773e6646747368c5eea411c25a83dc137b975ca5d961576d06f680e4c6f",
+    "crates/server/src/runtime.rs": "d353771602306ae65f69ccf3388ffbc0870c75c6e6a4d262ad0b6bb74ac0469b",
     "crates/raft/src/storage.rs": "4913a16e70972513ac2be6545376a56e1e4f0c8e38b30b075f0d02c9c0279c38",
     "crates/raft/src/storage/configuration.rs": "e319b1bb289dabcbd550f141f27f971994891ff2ebe86d202889c69c02d12253",
     "proofs/lean/group-preparation/Preparation.lean": "eaf5394d4860db94a8c6889cfa17f4ae4204e2d0dce9e75b5aefb091918d0872",

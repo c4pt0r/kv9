@@ -101,6 +101,11 @@ pub trait TxnApi {
 
 /// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).
 pub trait RawApi: Send + Sync + 'static {
+    /// Resolve an exact scoped data group. Never delegates to a legacy backend.
+    fn routed_target(&self, _scope: &kv9_common::data_range::DataRange) -> Result<Arc<dyn RawApi>> {
+        Err(kv9_common::Error::NotImplemented("RawApi::routed_target"))
+    }
+
     /// Prepare a write on the blocking boundary, then await its completion
     /// without retaining a blocking worker. The public boundary owns the
     /// admission reservation across both phases, including RPC cancellation.
@@ -301,6 +306,18 @@ pub struct RetentionUpdateResult {
 
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
 pub trait AdminApi {
+    fn lookup_raw_route(
+        &self,
+        _root: kv9_common::RootDigest,
+        _tenant: kv9_common::TenantId,
+        _keyspace: KeyspaceId,
+        _key: &[u8],
+    ) -> Result<RawRouteLookup> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::lookup_raw_route",
+        ))
+    }
+
     fn create_data_keyspace(
         &self,
         _caller: &str,
@@ -403,4 +420,16 @@ pub struct ClusterInfo {
 /// The router API: locate a region for a key (DESIGN §11 Router surface).
 pub trait RouterApi {
     fn locate(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation>;
+}
+
+/// Directory entries are routing hints. A range is returned only after a
+/// metadata quorum barrier; data requests must still present its exact scope.
+#[derive(Debug, Clone)]
+pub struct RawRouteLookup {
+    pub root: kv9_common::RootDigest,
+    pub metadata_peers: Vec<kv9_meta::endpoint::NodeEndpoint>,
+    pub metadata_leader: Option<kv9_common::NodeId>,
+    pub range: Option<kv9_common::data_range::DataRange>,
+    pub replicas: Vec<kv9_meta::endpoint::NodeEndpoint>,
+    pub data_leader: Option<kv9_common::NodeId>,
 }

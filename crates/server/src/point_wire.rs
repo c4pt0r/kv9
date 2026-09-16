@@ -243,6 +243,10 @@ impl Handler {
                     Err(error) => Err(error),
                 },
             ),
+            5 => WireReply::encode(match self.request(&authorization, &payload) {
+                Ok(request) => self.api.routed_raw(request).await,
+                Err(error) => Err(error),
+            }),
             _ => WireReply::error(Status::unimplemented("unknown point operation")),
         }
     }

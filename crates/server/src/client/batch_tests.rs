@@ -175,6 +175,8 @@ batch_service! {
     create_keyspace: CreateKeyspaceRequest => CreateKeyspaceResponse,
     create_data_group: CreateDataGroupRequest => CreateDataGroupResponse,
     create_data_keyspace: CreateDataKeyspaceRequest => CreateDataKeyspaceResponse,
+    lookup_raw_route: LookupRawRouteRequest => LookupRawRouteResponse,
+    routed_raw: RoutedRawRequest => RoutedRawResponse,
     list_keyspaces: ListKeyspacesRequest => ListKeyspacesResponse,
     get_region: GetRegionRequest => GetRegionResponse,
     split_region: SplitRegionRequest => Empty,

@@ -153,8 +153,27 @@ struct BlockingBackend {
 impl BlockingBackend {
     async fn prepared_write(
         &self,
+        reservation: Reservation,
+        preparation: crate::api::RawWritePreparation,
+    ) -> Result<AppliedPosition, Status> {
+        self.prepared_write_mapped(reservation, preparation, error_status)
+            .await
+    }
+    async fn prepared_read<T: Send + 'static>(
+        &self,
+        reservation: Reservation,
+        preparation: crate::api::RawReadPreparation<T>,
+        kind: PreparedReadKind,
+    ) -> Result<T, Status> {
+        self.prepared_read_mapped(reservation, preparation, kind, error_status)
+            .await
+    }
+
+    async fn prepared_write_mapped(
+        &self,
         mut reservation: Reservation,
         preparation: crate::api::RawWritePreparation,
+        map_error: fn(Error) -> Status,
     ) -> Result<AppliedPosition, Status> {
         // Dropping the RPC's JoinHandle detaches this task. It owns the SAME
         // reservation until preparation and the internal logical wait finish.
@@ -174,17 +193,18 @@ impl BlockingBackend {
                 Err(error) => Err(error),
             };
             reservation.finish(result.is_err());
-            result.map_err(error_status)
+            result.map_err(map_error)
         })
         .await
         .map_err(|error| Status::internal(format!("write completion task failed: {error}")))?
     }
 
-    async fn prepared_read<T: Send + 'static>(
+    async fn prepared_read_mapped<T: Send + 'static>(
         &self,
         mut reservation: Reservation,
         preparation: crate::api::RawReadPreparation<T>,
         kind: PreparedReadKind,
+        map_error: fn(Error) -> Status,
     ) -> Result<T, Status> {
         // Preparation is an async, cancellable read wait. Once the engine job
         // exists, move the SAME reservation into it so RPC cancellation cannot
@@ -194,7 +214,7 @@ impl BlockingBackend {
             Ok(job) => job,
             Err(error) => {
                 reservation.finish(true);
-                return Err(error_status(error));
+                return Err(map_error(error));
             }
         };
         let job = match job {
@@ -215,7 +235,7 @@ impl BlockingBackend {
         })
         .await
         .map_err(|error| Status::internal(format!("blocking read worker failed: {error}")))?
-        .map_err(error_status)
+        .map_err(map_error)
     }
 
     async fn call<T, F>(&self, mut reservation: Reservation, operation: F) -> Result<T, Status>
@@ -1089,6 +1109,19 @@ fn api_type(value: i32) -> Result<ApiType, Status> {
 
 #[tonic::async_trait]
 impl proto::kv9_server::Kv9 for Kv9Grpc {
+    async fn lookup_raw_route(
+        &self,
+        request: Request<proto::LookupRawRouteRequest>,
+    ) -> Result<Response<proto::LookupRawRouteResponse>, Status> {
+        self.lookup_routed(request).await
+    }
+    async fn routed_raw(
+        &self,
+        request: Request<proto::RoutedRawRequest>,
+    ) -> Result<Response<proto::RoutedRawResponse>, Status> {
+        self.call_routed(request).await
+    }
+
     async fn raw_get(
         &self,
         request: Request<proto::RawGetRequest>,
@@ -2662,3 +2695,5 @@ mod tests {
         );
     }
 }
+
+mod routed;

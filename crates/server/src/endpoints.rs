@@ -59,7 +59,7 @@ pub(crate) fn encode_endpoint(value: NodeEndpoint) -> proto::NodeEndpoint {
     }
 }
 
-fn decode_endpoint(value: proto::NodeEndpoint) -> Result<NodeEndpoint, Error> {
+pub(crate) fn decode_endpoint(value: proto::NodeEndpoint) -> Result<NodeEndpoint, Error> {
     let previous_address = value.previous_address.as_deref().map(socket).transpose()?;
     if value.node_id == 0 || (value.generation == 0) != previous_address.is_none() {
         return Err(Error::Config(

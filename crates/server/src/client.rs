@@ -94,7 +94,8 @@ impl ClientConfig {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum RawOperation {
     Get { key: Vec<u8> },
     Put { key: Vec<u8>, value: Vec<u8> },
@@ -798,3 +799,6 @@ mod tests;
 
 #[cfg(test)]
 mod batch_tests;
+
+/// Root-pinned discovery and scoped dynamic data-group routing.
+pub mod routed;

@@ -8,20 +8,29 @@ use kv9_common::data_range::{DataRange, RANGE_KEY};
 use kv9_engine::ColumnFamily;
 
 #[derive(Default)]
-pub(crate) struct RawDirectory(Mutex<BTreeMap<KeyspaceId, Arc<RawGroup>>>);
+pub(crate) struct RawDirectory(Mutex<BTreeMap<RegionId, Arc<RawGroup>>>);
 impl RawDirectory {
     pub(crate) fn get(&self, keyspace: KeyspaceId) -> Option<Arc<RawGroup>> {
-        self.0
-            .lock()
-            .expect("raw directory poisoned")
-            .get(&keyspace)
-            .cloned()
+        let groups = self.0.lock().expect("raw directory poisoned");
+        let mut matches = groups.values().filter(|g| g.binding.keyspace == keyspace);
+        let only = matches.next()?.clone();
+        matches.next().is_none().then_some(only)
+    }
+    pub(crate) fn scoped(&self, scope: &DataRange) -> Result<Arc<dyn RawApi>> {
+        let groups = self.0.lock().expect("raw directory poisoned");
+        let group = groups
+            .get(&scope.region)
+            .filter(|g| g.binding == *scope)
+            .ok_or(Error::StaleEpoch {
+                region: scope.region,
+            })?;
+        Ok(group.clone())
     }
     pub(crate) fn insert(&self, group: Arc<RawGroup>) {
         self.0
             .lock()
             .expect("raw directory poisoned")
-            .entry(group.binding.keyspace)
+            .entry(group.binding.region)
             .or_insert(group);
     }
     pub(crate) fn clear(&self) {
