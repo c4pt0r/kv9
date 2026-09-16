@@ -25,9 +25,15 @@ production. The [first packed-index implementation and screen](PACKED-INDEX-EXPE
 now pass semantic/state checks but fail performance selection: overwrite mean
 +26.957% / +12.403% without/with snapshots; unique insert -8.679% / -22.518%.
 Hold that variant too. Its fixed-stride GET-hit samples favor shallow rpds nodes;
-retain this limitation. Next diagnose comparator/minimum-refresh costs and
-shared-prefix opportunities before a changed kernel, with independently proved
-order preservation, varied-prefix inputs and unbiased future query selection.
+retain this limitation. The [shared-prefix follow-up](PACKED-PREFIX-EXPERIMENT.md)
+now passes eight semantic tests, 18 conditional order/cache lemmas, eight
+rejecting controls and all 252 timing/count rows per executable. It also fails:
+original overwrite is another +4.145% / +4.241% slower than packed; every write
+case across three key distributions regresses versus packed in both orders.
+Seeded read probes now have representative comparison-depth coverage, but GET
+remains substantially slower than rpds. Stop this packed/prefix family. Next
+obtain bounded selected-index CPU attribution with complete caller coverage for
+allocation/copy, comparison and traversal before choosing a different kernel.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 

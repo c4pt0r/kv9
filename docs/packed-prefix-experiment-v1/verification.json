@@ -1,0 +1,62 @@
+{
+  "complete": true,
+  "members": 203,
+  "original_bytes": 29470089,
+  "archive_bytes": 3220055,
+  "archive_sha256": "6dcd0b087cd6e6b3dd86c4fc2c1c94fe1802afae1c995a0b09af4d180d0c81af",
+  "members_sha256": "9ba6eb6f9b24b0632329d37a020380434ba28b6b8bbb6c3e2f5a100abf75ee35",
+  "all_members_read_back": true,
+  "excluded": [
+    {
+      "path": "benchmark-build-corrected/key-comparisons",
+      "bytes": 564832,
+      "sha256": "61ce04a8d3ea068e7883fe7dfeb255b700e0d3bff57ca674e61610b4dfd60fac",
+      "reason": "retained local executable"
+    },
+    {
+      "path": "benchmark-build-corrected/packed-allocations",
+      "bytes": 1406200,
+      "sha256": "f9e2966d5764e843d873da4e5fddac8e754a1994bfe6748689f2e62bc563de73",
+      "reason": "retained local executable"
+    },
+    {
+      "path": "benchmark-build-corrected/packed-timing",
+      "bytes": 1293944,
+      "sha256": "f419667499b34482789253bf7334a6ad820300930e6ccb9669f571e68bfa73a9",
+      "reason": "retained local executable"
+    },
+    {
+      "path": "candidate-qualification-first/packed-tests",
+      "bytes": 1623248,
+      "sha256": "a0e94c39c592fc098a81a4885bb40ebe13d1a90acdc037b6f20c28c291cb9e1d",
+      "reason": "retained local executable"
+    },
+    {
+      "path": "continuation.json",
+      "bytes": 1706,
+      "reason": "large original corpus, mutable continuation or generated cache/module"
+    },
+    {
+      "path": "diagnostic-corrected/packed-comparisons",
+      "bytes": 1088464,
+      "sha256": "c414f6b8ce785b86c12414be9db417ad58de7ab10d9922d830d63f7bd707e40d",
+      "reason": "retained local executable"
+    },
+    {
+      "path": "groups.bin",
+      "bytes": 16519240,
+      "reason": "large original corpus, mutable continuation or generated cache/module"
+    },
+    {
+      "path": "strict-proof-second/control-custom-axiom/Prefix.olean",
+      "bytes": 278064,
+      "reason": "large original corpus, mutable continuation or generated cache/module"
+    },
+    {
+      "path": "strict-proof-second/positive/Prefix.olean",
+      "bytes": 278600,
+      "reason": "large original corpus, mutable continuation or generated cache/module"
+    }
+  ],
+  "local_original_root": "/mnt/data/kv9-work/packed-prefix-development-20260916-first"
+}
