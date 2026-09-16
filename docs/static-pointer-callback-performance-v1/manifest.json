@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "archive_sha256": "a1602dee6c9e62c6805d50816131549c4a0b9c1a78490ada2f588a0488b6f92f",
+  "archive_bytes": 4944921,
+  "members": 1804,
+  "expanded_bytes": 53415387,
+  "member_manifest_sha256": "7982f5aa07af2dabffefb30035f1db58d7a67a49eb80c2ba8773d7187f411ad2",
+  "readback": "Every member was streamed and matched against its original size and SHA-256.",
+  "excluded": [
+    "Original groups.bin corpus, SHA-256 d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350.",
+    "Four timing/counting executables; source/build records and ELF identities retained.",
+    "Issue snapshot, redundant progress snapshot and subsequent publication/continuation records."
+  ]
+}
