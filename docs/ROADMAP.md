@@ -60,13 +60,15 @@
 > These are CPU microbenchmarks, not database QPS. [Matching releases and ordinary
 > recovery](WAL-PREALLOCATION-RUNTIME.md) now pass: 728 complete operations
 > (666 OK / 62 unknown), twelve fresh drains and fourteen exited lifetimes.
-> Next qualify actual candidate Chaos Mesh and end-to-end throughput plus
-> latency before selection. Retain prior rejected buffer/index experiments and the pending
+> [Actual candidate Chaos Mesh](WAL-PREALLOCATION-CHAOS.md) now passes all 21
+> windows, 9,241 complete operations, four final drains and 31 exited server
+> lifetimes. Next compare end-to-end throughput plus latency before selection.
+> Retain prior rejected buffer/index experiments and the pending
 > pre-upload crash acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the
 > original dependencies. Proof, actual Chaos Mesh and no critical singleton
 > requirements remain mandatory. CI stays local.
-Updated: 2026-09-15. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
+Updated: 2026-09-16. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
 
 The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 25 work packages,

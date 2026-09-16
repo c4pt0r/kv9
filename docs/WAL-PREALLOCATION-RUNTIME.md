@@ -4,9 +4,10 @@ Updated 2026-09-15. Matching default and `wal-payload-preallocation` releases
 now pass actual three-voter recovery over both native streaming and unary RPC.
 All four complete histories pass independent linearizability checks, including
 unknown outcomes, final reads and progress after leader loss and restart.
-The feature remains **off by default**. Actual candidate Chaos Mesh and
-end-to-end throughput/latency qualification are next; this stage adds no QPS
-or Redis comparison.
+The feature remains **off by default**. The subsequent
+[actual candidate Chaos Mesh qualification](WAL-PREALLOCATION-CHAOS.md) now
+passes. End-to-end throughput/latency qualification is next; this stage adds
+no QPS or Redis comparison.
 
 ## Exact releases
 
@@ -98,8 +99,8 @@ new symlinks; no historical directory or symlink was replaced. Originals remain
 available for readback. Compiler caches retain their declared location. Capacity
 checks here are launch/point-in-time observations, not continuous monitoring.
 
-Next run the candidate's actual Chaos Mesh qualification with exact image and
-feature bindings, then compare point Put and BatchPut throughput, mean and p99
+The candidate's actual Chaos Mesh qualification now passes with exact image and
+feature bindings. Next compare point Put and BatchPut throughput, mean and p99
 in both orders with the same qualified performance client. Keep the Redis
 reference's acknowledgment/durability settings explicit. CRC remains selected;
 the industrial roadmap and separate C04 pre-upload acceptance remain open.
