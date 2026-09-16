@@ -1,0 +1,14 @@
+{
+  "archive": "evidence.tar.gz",
+  "sha256": "798c29619a5bef88a7f7719bc3d398529af507120b59eefa92ef683226e4b1d3",
+  "bytes": 4664199,
+  "members": 5811,
+  "expanded_bytes": 26639736,
+  "all_members_read_back": true,
+  "excluded": [
+    "Lean compiler outputs",
+    "Python bytecode"
+  ],
+  "complete_algorithm_gate": false,
+  "prior_insert_packet_sha256": "0bb26bd499b3482b537968b3971fdafaaf1ad24dd9b562a058d0d9c5af98b62b"
+}

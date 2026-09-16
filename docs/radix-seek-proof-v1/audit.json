@@ -1,0 +1,180 @@
+{
+  "complete": true,
+  "theorems_checked_together": 408,
+  "additional_theorems": 41,
+  "new_rejecting_controls": 35,
+  "controls": [
+    {
+      "name": "vec-pops-head",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "vec-drops-head",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "forward-child-push-order",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "reverse-terminal-push-order",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "expansion-prepends-pushes",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "endpoint-ignores-exclusion",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "seek-keeps-matched-child",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "seek-reverses-before-push",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "mismatch-wrong-order",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "hit-skips-depth-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "miss-rejects-end-index",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "hit-selects-next-child",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "seek-rejects-end-depth",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "full-prefix-classified-mismatch",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "seek-skips-query-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "leaf-inverts-bound",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "loop-drops-prior-pending",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "loop-pushes-before-ancestors",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-mismatch-skips-byte",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-after-extra-increment",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-miss-index-shift",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-descent-extra-increment",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-prefix-offset-shift",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-loop-loses-terminal-pushes",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-loop-resumes-wrong-depth",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-root-starts-too-deep",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "range-loads-wrong-direction",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "range-inverts-crossover",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "range-advances-wrong-frontier",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "range-initializes-wrong-upper",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "seek-proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "seek-custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 38,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "indexed_seek_scope": "Reviewed value-level indexed seek correspondence: physical bottom-first pending Vec push/pop and traversal; sorted search hit/miss partitions; exact depth and checked index/slice descent; terminating natural-number and native-word loops; bounded root initialization and arbitrary mixed-direction range histories. Query length and ordinary Rust/compiler/library contracts remain explicit premises. No Arc/COW heap proof, verified Rust extraction or performance result.",
+  "remaining_implementation_scope": "Arc/COW heap ownership, routing-buffer/query-length/resident-count premise bridges and exact-source differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Arc/COW heap ownership, immutable saved roots, reclamation and distinct addressable resident storage; bridge routing-buffer, query-length and resident-count premises to Rust storage",
+    "Exact-source executable Rust/model differential evaluation before predeclared matched timing; promotion still requires recovery, actual Chaos Mesh and three-copy Redis throughput/latency"
+  ],
+  "prior_insert_packet_sha256": "0bb26bd499b3482b537968b3971fdafaaf1ad24dd9b562a058d0d9c5af98b62b"
+}
