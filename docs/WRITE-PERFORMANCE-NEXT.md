@@ -74,13 +74,14 @@ the [completed timing/allocation screen](ISOLATED-OUTLINE-PERFORMANCE.md) retain
 136 processes / 152 timing / 76 allocation rows. All windows match allocator
 requests and live-byte behavior. Writes improve 1.526%–10.803%, but three cases
 miss the material gate and 16 read panels exceed the no-regression bound.
-Stop these callback variants. The [private inline-key candidate](INLINE-KEY-QUALIFICATION.md)
-now passes source/model qualification (200 baseline / 203 candidate tests),
-19 conditional theorems / nine controls and 33 allocation observations. Short
-insertion saves one request; the key grows 24 to 48 bytes and long/empty entries
-add 24 requested bytes. Next build/prepare the release engine pair and execute
-the predeclared write-first screen, proceeding to read/range panels only if it
-passes. No timing or new database-QPS claim follows.
+Stop these callback variants. After [inline-key qualification](INLINE-KEY-QUALIFICATION.md),
+the [write screen](INLINE-KEY-PERFORMANCE.md) completes 52 processes / 32 timing /
+16 count rows and validates 10,176 allocation-window pairs. Original means
+improve 1.685%–10.831%, but three cases miss the material gate; long unique
+means regress 5.077% / 4.783%. Hold inline40 and stop before the declared read
+stage. Next qualify a single private key/value buffer using key-only ordering
+and exact replacement/snapshot semantics. Verify actual layout and allocation
+before timing; this new candidate is not implemented. No database-QPS change.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 

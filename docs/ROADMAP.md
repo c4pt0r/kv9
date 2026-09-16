@@ -18,11 +18,12 @@
 > windows match. Write means improve 10.803% / 3.690% for overwrite and
 > 4.250% / 1.526% for unique insertion; small resident warm hit regresses.
 > Its material/read gates fail too. Stop these callback variants. The
-> [inline-key candidate](INLINE-KEY-QUALIFICATION.md) now passes 200 baseline /
-> 203 candidate tests, 19 conditional theorems / nine controls and 33 allocation
-> observations. Short insertion saves one request, but the key grows 24 to 48 bytes;
-> long/empty keys add 24 requested bytes per entry. Next run the predeclared staged
-> write/read/range screen after release preparation. No timing exists yet.
+> [inline-key write screen](INLINE-KEY-PERFORMANCE.md) now completes 52 processes /
+> 32 timing / 16 count rows. Short means improve 1.685%–10.831%, but three miss
+> the material gate; long unique means regress 5.077% / 4.783%. Stop before the
+> predeclared read stage and hold inline40. Next qualify one buffer for key/value
+> bytes, checking actual layout, key-only ordering and replacement/snapshot
+> semantics before timing. This new representation is not implemented yet.
 > Owned-buffer removal stays held.
 > Database QPS below is unchanged; no industrial checkbox or runtime promotion follows.
 > CRC remains the selected write runtime. The latest [same-source screen](WAL-PREALLOCATION-PERFORMANCE.md)
