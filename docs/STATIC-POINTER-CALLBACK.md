@@ -5,8 +5,9 @@ Date: 2026-09-16 UTC. Base: `bd0f6e6f7f4101056b83de5c910b4de7b79bc6ad`.
 The isolated callback patch passes dependency tests, conditional guard
 equivalence checks and ordinary release semantic smokes. Release assembly
 confirms removal of the targeted out-of-line pointer callback. It is ready for
-the predeclared component performance screen; it is not selected for the
-database. No new database QPS, Redis comparison or latency gain is claimed.
+the predeclared component performance screen. That [subsequent screen](STATIC-POINTER-CALLBACK-PERFORMANCE.md)
+is now complete: writes improve, but material-gain and read-tail gates fail.
+The patch remains isolated. No new database QPS or Redis comparison is claimed.
 
 ## Change and safety boundary
 

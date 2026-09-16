@@ -42,9 +42,17 @@ The [isolated static pointer callback](STATIC-POINTER-CALLBACK.md) now passes
 18 conditional guard-equivalence lemmas, eight rejecting controls and eight
 ordinary release semantic smokes. Normal/unwind restoration and reference
 counts remain unchanged. Ordinary ThinLTO removes the 8-byte out-of-line
-callback and its 21 symbol references. This qualifies a fresh matched component
-screen across writes, snapshots, key distributions and read mean/p99; no
-performance gain or runtime promotion is established yet.
+callback and its 21 symbol references. Its [matched component screen](STATIC-POINTER-CALLBACK-PERFORMANCE.md)
+now completes all 168 timing and 168 counting rows: original overwrite mean
+-9.951% / -7.069%, unique insertion -6.071% / -5.478%, without/with snapshots.
+Every write mean improves in both orders and allocation/live-byte counts match.
+The declared gate still fails: not every required write reaches 10%, and three
+read cells exceed the 2% mean/p99 limit. Read-pass review locates the largest
+tail in one early pass; the driver's excluded warmup creates a different map.
+Keep all samples and the failed gate. Next qualify a named inline mutation
+adapter with unchanged Arc::make_mut/guard behavior, then declare separate
+first-touch and same-map warm read panels for that changed candidate. The
+proposal is untested; no runtime promotion or database-QPS gain is established.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 
