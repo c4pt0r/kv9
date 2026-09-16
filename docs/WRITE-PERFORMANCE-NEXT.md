@@ -1,5 +1,11 @@
 # Write performance against three-copy Redis
 
+The new [single key/value buffer qualification](ENTRY-BUFFER-QUALIFICATION.md)
+passes 202 baseline / 206 candidate tests, 23 conditional theorems, 13 rejecting
+controls and 198 allocation rows. Nonempty key/value insertion and overwrite
+save one request and 24 entry bytes, including long keys. Next run its declared
+write-first engine screen with preflight inside timing; no new QPS is claimed.
+
 Updated: 2026-09-16. The current priority is write throughput and latency,
 targeting Redis with one primary and two replicas. Read optimization is held at
 the selected ThinLTO/Safe ReadIndex baseline. The experimental lease work and
@@ -79,9 +85,9 @@ the [write screen](INLINE-KEY-PERFORMANCE.md) completes 52 processes / 32 timing
 16 count rows and validates 10,176 allocation-window pairs. Original means
 improve 1.685%–10.831%, but three cases miss the material gate; long unique
 means regress 5.077% / 4.783%. Hold inline40 and stop before the declared read
-stage. Next qualify a single private key/value buffer using key-only ordering
-and exact replacement/snapshot semantics. Verify actual layout and allocation
-before timing; this new candidate is not implemented. No database-QPS change.
+stage. The single private key/value buffer is now qualified as recorded above,
+including key-only ordering and replacement/snapshot semantics. Next measure
+its declared engine write screen. No database-QPS change.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 

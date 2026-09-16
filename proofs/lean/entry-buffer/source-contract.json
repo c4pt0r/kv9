@@ -1,0 +1,46 @@
+{
+  "sources": {
+    "repo/proofs/lean/entry-buffer/EntryBuffer.lean": "3b04c7cd2afe48aef1db294597785ae57e4466031f4f2f6da77f8030ae72441b",
+    "repo/scripts/entry-buffer/entry_buffer.rs": "e207157f34781c5b7c3f59d94e8ed961db948aa855031271352aa85e8f863a09",
+    "repo/scripts/entry-buffer/model.rs": "d8e1318676ed1e41aab3cc196c26fcec7820f2fce2fccc592c8b292553097428",
+    "repo/scripts/entry-buffer/prepare.py": "74a0c3e4e77ee671cf1a66de05631af9bf9e24a87432b784b89a7747f5389848",
+    "repo/scripts/entry-buffer/layout.rs": "e304b8efdcd681a4fb1edf324dca20dda1e4bd8d41dae78ca71c9004c2304539",
+    "repo/scripts/entry-buffer/prove.py": "fb3f2d2e27bbb52a2b41accb447d537b09f277233e392d3258c89199a522b808",
+    "evidence/candidate/crates/engine/src/mem.rs": "520b641634e7ccbbe3d5b0fb41d8fd196854324b7c4b2e39e02c2425a77c327c",
+    "evidence/candidate/crates/engine/src/lib.rs": "67bc1e8e345ff88835e7c8690e84453c52dd5574c011ad7dacb18c8321c35c1e",
+    "evidence/candidate/crates/engine/src/entry_buffer.rs": "e207157f34781c5b7c3f59d94e8ed961db948aa855031271352aa85e8f863a09",
+    "evidence/baseline/crates/engine/src/mem.rs": "c932f851cd1b45518e6ff32ba61895bcaadecba8b5acc1d2d0a2edd2ad36ee25"
+  },
+  "theorems": [
+    "key_round_trip",
+    "value_round_trip",
+    "pair_round_trip",
+    "encoded_valid",
+    "split_preserves_all_bytes",
+    "encode_injective",
+    "length_check_exact",
+    "accepted_length_is_exact",
+    "values_do_not_affect_equality",
+    "compare_preserved",
+    "equality_preserved",
+    "borrowed_order",
+    "lookup_preserved",
+    "erase_preserved",
+    "put_preserved",
+    "replacement_returns_new_value",
+    "range_preserved",
+    "reverse_preserved",
+    "limit_preserved",
+    "mutation_preserved",
+    "history_preserved",
+    "rejected_batch_preserves_state",
+    "accepted_batch_refines_history"
+  ],
+  "lean_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+  "rpds_source": {
+    "path": "/home/dongxu/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rpds-1.2.1/src/map/red_black_tree_map/mod.rs",
+    "sha256": "71189099680f42428692abb21eb19c6afe96da0e4695634f2866fb021a009e69",
+    "premise": "Equal-key insert_mut replaces the entire Entry including the stored key; get_key_value returns it. Persistent roots retain the old entry."
+  },
+  "scope": "Conditional representation refinement with reviewed Rust mapping; safe Vec/Box/slice/compiler and rpds persistence/order/replacement contracts are premises. Not verified Rust extraction, tree balancing, allocation-failure, lock, or Raft proof."
+}
