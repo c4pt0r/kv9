@@ -1,0 +1,342 @@
+{
+  "compressed_cap_bytes": 33554432,
+  "decoded_tar_cap_bytes": 83886080,
+  "member_cap_bytes": 8388608,
+  "members": [
+    {
+      "bytes": 2965,
+      "member": "mnt/data/kv9-work/raw-composed-publication-20260916-first/package.py",
+      "sha256": "c9387990121fb08f1278f9de1831f2faab1ff791748b0000305e03c61ee567b8",
+      "source": "/mnt/data/kv9-work/raw-composed-publication-20260916-first/package.py"
+    },
+    {
+      "bytes": 229,
+      "member": "mnt/data/kv9-work/raw-composed-publication-20260916-first/terminals.json",
+      "sha256": "c706655cc88e23ae98d97e915392fcaf3fb87a97a3754d6cf0e957911a521617",
+      "source": "/mnt/data/kv9-work/raw-composed-publication-20260916-first/terminals.json"
+    },
+    {
+      "bytes": 3551,
+      "member": "mnt/data/kv9-work/raw-composed-publication-20260916-first/verify.py",
+      "sha256": "4c475dbfbbcdd1cd40fa8e46ec8226d983984e9a6d17d45ffd566ec80d639f55",
+      "source": "/mnt/data/kv9-work/raw-composed-publication-20260916-first/verify.py"
+    },
+    {
+      "bytes": 1551,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/analysis-inputs.json",
+      "sha256": "f2c2c78d309d11502395de76f913b1821f46d2f29de0e69435e7109ecf3f974f",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/analysis-inputs.json"
+    },
+    {
+      "bytes": 7200,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/analysis.json",
+      "sha256": "c4061b911bc057292c940200ed08dbd05c0957054a40ba4bfa179e2ec0392fa5",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/analysis.json"
+    },
+    {
+      "bytes": 7861,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/analyze.py",
+      "sha256": "3f520fdb265f9de3912a2ca991e7253fd13774b9bbf62f3a752d49158e8c5acc",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/analyze.py"
+    },
+    {
+      "bytes": 67892,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/bench/Cargo.lock",
+      "sha256": "95b347236079a5dd9d6194219d5f0753cc81260db714cfaaa9c44c42215eee86",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/bench/Cargo.lock"
+    },
+    {
+      "bytes": 806,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/bench/Cargo.toml",
+      "sha256": "29feb63d7a83cc4258d9f15356165f66faa949aff7fcb1fccca34859e6dfdf68",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/bench/Cargo.toml"
+    },
+    {
+      "bytes": 27064,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/bench/src/main.rs",
+      "sha256": "53eb1e4d7fb849923e14b3b503ce5f09e044803b4e09986f4e17d0b10968403e",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/bench/src/main.rs"
+    },
+    {
+      "bytes": 67892,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/Cargo.lock",
+      "sha256": "95b347236079a5dd9d6194219d5f0753cc81260db714cfaaa9c44c42215eee86",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/Cargo.lock"
+    },
+    {
+      "bytes": 36,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-clean.stderr",
+      "sha256": "bd926a2fb9010f926406292ede7e1ff9753cad4a161e38c70792d0d8a7ab9cc0",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-clean.stdout"
+    },
+    {
+      "bytes": 3400,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-metadata.json",
+      "sha256": "f56f6936a11113b540180c0059d225549bee03f3d969fbbbe4002a32890e4afc",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-metadata.log"
+    },
+    {
+      "bytes": 3461,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-safety.json",
+      "sha256": "d9d3ae63732d135313741b0b9290e0ba41a257ef8d4ed6230c00bbb1b56279c5",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cache-safety.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cargo.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cargo.stderr"
+    },
+    {
+      "bytes": 336,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cargo.stdout",
+      "sha256": "88d4547e99fef084e4ef336a0165bd5df0774f41000e856a28c033835c0085e2",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/cargo.stdout"
+    },
+    {
+      "bytes": 182,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/dependency-binding.json",
+      "sha256": "6757e006dcb7813c4999787ea58355b592dd60d026bde6162d4cd4061a013c93",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/dependency-binding.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/resolve.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/resolve.stderr"
+    },
+    {
+      "bytes": 1374409,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/resolve.stdout",
+      "sha256": "f92a9ea3dcbcd21b72ee8c5deac451ea62a81d69955d5a2879b511569610dc62",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/resolve.stdout"
+    },
+    {
+      "bytes": 30631,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/result.json",
+      "sha256": "88e628633b2e459e3b69112416bb71d3bef090f21d3350a35ee26259e1b3e9f1",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/result.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/rustc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/rustc.stderr"
+    },
+    {
+      "bytes": 196,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/rustc.stdout",
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/rustc.stdout"
+    },
+    {
+      "bytes": 289,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/semantics-test.stderr",
+      "sha256": "a02f523fb797f041bfc484c03f93f11696a83ee9111354482dc4e61bb7b252a4",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/semantics-test.stderr"
+    },
+    {
+      "bytes": 301,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/semantics-test.stdout",
+      "sha256": "c612095c6b58a4b27d35088d2bca38ab6d90cb444b078fc0267c5d21d92555d1",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/semantics-test.stdout"
+    },
+    {
+      "bytes": 213022,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/timing.jsonl",
+      "sha256": "1fc91d8ca2d5ada59cb0da95f91266267cd270e4bc61bcc18b3e9401017a8a2e",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/timing.jsonl"
+    },
+    {
+      "bytes": 172,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/timing.stderr",
+      "sha256": "2b7c6724dca2db7de46a627ee8884be03b68108f37b602205cf18e104511bc0c",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-corrected/timing.stderr"
+    },
+    {
+      "bytes": 67892,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/Cargo.lock",
+      "sha256": "95b347236079a5dd9d6194219d5f0753cc81260db714cfaaa9c44c42215eee86",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/Cargo.lock"
+    },
+    {
+      "bytes": 3842,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/build.py",
+      "sha256": "cf04dfec0ab9b348669ccbcb495e07b4f3d0729e1cf561ec096e1af3b7c014a3",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/build.py"
+    },
+    {
+      "bytes": 21,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-clean.stderr",
+      "sha256": "0bdaeb2aa6a92a0fdfec2d2cc4d0ab71946de5d0654e08c526e4629130ae0f28",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-clean.stderr"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-clean.stdout"
+    },
+    {
+      "bytes": 3400,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-metadata.json",
+      "sha256": "f56f6936a11113b540180c0059d225549bee03f3d969fbbbe4002a32890e4afc",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-metadata.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-metadata.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-metadata.log"
+    },
+    {
+      "bytes": 2211,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-safety.json",
+      "sha256": "6e03d2bf1efb415e751a421ab293486cf6f6297ccaa53de39599bd080a6d0358",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cache-safety.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cargo.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cargo.stderr"
+    },
+    {
+      "bytes": 336,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cargo.stdout",
+      "sha256": "88d4547e99fef084e4ef336a0165bd5df0774f41000e856a28c033835c0085e2",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/cargo.stdout"
+    },
+    {
+      "bytes": 182,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/dependency-binding.json",
+      "sha256": "6757e006dcb7813c4999787ea58355b592dd60d026bde6162d4cd4061a013c93",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/dependency-binding.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/resolve.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/resolve.stderr"
+    },
+    {
+      "bytes": 1374409,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/resolve.stdout",
+      "sha256": "f92a9ea3dcbcd21b72ee8c5deac451ea62a81d69955d5a2879b511569610dc62",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/resolve.stdout"
+    },
+    {
+      "bytes": 769,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/result.json",
+      "sha256": "5e782682199af188635f97bf262d1fe6550d39104c74cdc5c6240cbed69bd0a8",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/result.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/rustc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/rustc.stderr"
+    },
+    {
+      "bytes": 196,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/rustc.stdout",
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/rustc.stdout"
+    },
+    {
+      "bytes": 27040,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/source.rs",
+      "sha256": "1019a30840df5e3a74857d9652ca88bbc41a9c90cf3c1b8fefa059757e7707fd",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/source.rs"
+    },
+    {
+      "bytes": 212275,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/timing.jsonl",
+      "sha256": "2cba0a1361f9ad9c7fdc91660bb53ab3c549e6d43226c8db57e6a56b4093c0cb",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/timing.jsonl"
+    },
+    {
+      "bytes": 2120,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/timing.stderr",
+      "sha256": "60b3413bc515b9d881da04cd5c11ebb5387db6dce1ba6bc1eaa1cac4a5d14c23",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build-first/timing.stderr"
+    },
+    {
+      "bytes": 3846,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/build.py",
+      "sha256": "1189119ca5ebf91a57f29348785ac3d46fb26b045635cb51950c955126466ea2",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/build.py"
+    },
+    {
+      "bytes": 24716,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/groups.json",
+      "sha256": "0839f45ed18ad24f6c8f0da2391f9339d4b974bdd1269860d4d450c6ce8c37c1",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/groups.json"
+    },
+    {
+      "bytes": 4315,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/plan.json",
+      "sha256": "a8e89abb31a105a66d4ec64c62bd9451761a1dd99312d21036d313c3d1cd88bc",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/plan.json"
+    },
+    {
+      "bytes": 1821,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/run.py",
+      "sha256": "aa11645b945da611b890ee4c01588d852c0aec40e2911cb4103fbebddd925b8c",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/run.py"
+    },
+    {
+      "bytes": 690,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing-launch.json",
+      "sha256": "64ab84f0ba7f7d22b094b05ee6ac8ce5717c9efec5e43f2a920099049c12c79c",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing-launch.json"
+    },
+    {
+      "bytes": 855,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing-terminal.json",
+      "sha256": "864babf64d45ba1eef3920ef77f1c3e55ea687e27581979173e2f8db8fa1837a",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing-terminal.json"
+    },
+    {
+      "bytes": 951661,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing.json",
+      "sha256": "4064dfe20048834b4b1ea32006b35a214e7dcd168e54c8c17a59c5c72f863502",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing.json"
+    },
+    {
+      "bytes": 0,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing.stderr"
+    },
+    {
+      "bytes": 3416,
+      "member": "mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing.stdout",
+      "sha256": "b5533b17e7838f6d0965edb719ef5a0fc00e6e7d6f904335319fd40bf61e661e",
+      "source": "/mnt/data/kv9-work/raw-lowering-composed-20260916-first/runs-first/timing.stdout"
+    },
+    {
+      "bytes": 459127,
+      "member": "mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing.json",
+      "sha256": "ff4c9ea25c03de2841d68133fe6f4ceb85eca7af3e293bba89fa0caf8eae99c4",
+      "source": "/mnt/data/kv9-work/raw-lowering-direct-20260916-first/runs-first/timing.json"
+    }
+  ],
+  "original_bytes": 4958586,
+  "original_files": 55,
+  "report_inputs_included": 7,
+  "scope": "Original composed experiment source and metadata. Exact large group/Raft inputs and executable remain local; no standalone runtime or full-source replay.",
+  "total_cap_bytes": 83886080
+}

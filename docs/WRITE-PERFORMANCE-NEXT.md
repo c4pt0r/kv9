@@ -17,10 +17,13 @@ The [exact Raw apply attribution](RAW-APPLY-ATTRIBUTION.md) now joins 1,564
 original Raft commands to all 106 retained engine groups. Decode/lower/fence
 means are 19.722 / 14.649 / 2.336 us per group. A separate direct-append prototype
 reduces lowering mean 10.896% and p99 in both orders, but saves only 1.548 us per
-group. Production remains unchanged. Next measure lowering together with real
-MemEngine insertion/overwrite and retained-snapshot workloads before runtime
-integration. Preserve mutation/fence order and snapshot/publication semantics;
-do not repeat completed screens or rejected clone-removal, coalescing and
+group. The [composed MemEngine screen](RAW-LOWERING-COMPOSED.md) now completes
+all six cases / 24 rows: overwrite mean -1.134% / -0.452% without/with snapshots,
+but initial-fill unpinned p99 +3.309%. All prefix/snapshot and final-state checks
+pass; the predeclared performance gate fails. Keep the prototype outside
+production. Next test [packed persistent index nodes](RESIDENT-INDEX-LAYOUT-NEXT.md)
+as a new layout hypothesis, with full ordered-access and snapshot semantics.
+Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 
 The earlier [complete write-observer capture](WRITE-OBSERVER-CAPTURE.md) measures

@@ -1,0 +1,238 @@
+{
+  "complete": true,
+  "production_changed": false,
+  "new_database_qps": false,
+  "cases": [
+    {
+      "workload": "overwrite",
+      "pinned": false,
+      "baseline": {
+        "groups": 2544,
+        "mean_group_ns": 126660.31210691824,
+        "p99_group_ns": 351601
+      },
+      "direct": {
+        "groups": 2544,
+        "mean_group_ns": 125224.28773584905,
+        "p99_group_ns": 346522
+      },
+      "mean_change_percent": -1.133760328852651,
+      "p99_change_percent": -1.4445351406850326,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "direct_order": 1,
+          "mean_change_percent": -1.2616084653405246,
+          "baseline_mean_ns": 126062.68081761006,
+          "direct_mean_ns": 124472.26336477988,
+          "baseline_p99_ns": 351601,
+          "direct_p99_ns": 345219
+        },
+        {
+          "baseline_order": 3,
+          "direct_order": 2,
+          "mean_change_percent": -1.0071129982964888,
+          "baseline_mean_ns": 127257.94339622642,
+          "direct_mean_ns": 125976.31210691824,
+          "baseline_p99_ns": 356640,
+          "direct_p99_ns": 353574
+        }
+      ]
+    },
+    {
+      "workload": "overwrite",
+      "pinned": true,
+      "baseline": {
+        "groups": 2544,
+        "mean_group_ns": 140154.40880503145,
+        "p99_group_ns": 380856
+      },
+      "direct": {
+        "groups": 2544,
+        "mean_group_ns": 139521.2873427673,
+        "p99_group_ns": 378281
+      },
+      "mean_change_percent": -0.45173139229953696,
+      "p99_change_percent": -0.6761085554645274,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "direct_order": 1,
+          "mean_change_percent": -0.5676341492122705,
+          "baseline_mean_ns": 139741.57704402515,
+          "direct_mean_ns": 138948.35613207548,
+          "baseline_p99_ns": 380856,
+          "direct_p99_ns": 369214
+        },
+        {
+          "baseline_order": 3,
+          "direct_order": 2,
+          "mean_change_percent": -0.3365094247235967,
+          "baseline_mean_ns": 140567.24056603774,
+          "direct_mean_ns": 140094.21855345913,
+          "baseline_p99_ns": 382089,
+          "direct_p99_ns": 381607
+        }
+      ]
+    },
+    {
+      "workload": "initial_fill",
+      "pinned": false,
+      "baseline": {
+        "groups": 2544,
+        "mean_group_ns": 129934.66981132075,
+        "p99_group_ns": 345409
+      },
+      "direct": {
+        "groups": 2544,
+        "mean_group_ns": 129671.1371855346,
+        "p99_group_ns": 356840
+      },
+      "mean_change_percent": -0.20281932925895196,
+      "p99_change_percent": 3.309410003792612,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "direct_order": 1,
+          "mean_change_percent": -0.03517269128009426,
+          "baseline_mean_ns": 130946.44811320755,
+          "direct_mean_ns": 130900.39072327044,
+          "baseline_p99_ns": 345991,
+          "direct_p99_ns": 361219
+        },
+        {
+          "baseline_order": 3,
+          "direct_order": 2,
+          "mean_change_percent": -0.37309732662955675,
+          "baseline_mean_ns": 128922.89150943396,
+          "direct_mean_ns": 128441.88364779874,
+          "baseline_p99_ns": 345409,
+          "direct_p99_ns": 356690
+        }
+      ]
+    },
+    {
+      "workload": "initial_fill",
+      "pinned": true,
+      "baseline": {
+        "groups": 2544,
+        "mean_group_ns": 145753.2429245283,
+        "p99_group_ns": 389192
+      },
+      "direct": {
+        "groups": 2544,
+        "mean_group_ns": 142118.46383647798,
+        "p99_group_ns": 377179
+      },
+      "mean_change_percent": -2.4937895137828514,
+      "p99_change_percent": -3.086651318629363,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "direct_order": 1,
+          "mean_change_percent": -1.6964938860345447,
+          "baseline_mean_ns": 143435.02044025157,
+          "direct_mean_ns": 141001.6540880503,
+          "baseline_p99_ns": 385856,
+          "direct_p99_ns": 372701
+        },
+        {
+          "baseline_order": 3,
+          "direct_order": 2,
+          "mean_change_percent": -3.266120052602506,
+          "baseline_mean_ns": 148071.46540880503,
+          "direct_mean_ns": 143235.27358490566,
+          "baseline_p99_ns": 394371,
+          "direct_p99_ns": 383070
+        }
+      ]
+    },
+    {
+      "workload": "unique_insert",
+      "pinned": false,
+      "baseline": {
+        "groups": 2544,
+        "mean_group_ns": 289118.0039308176,
+        "p99_group_ns": 849596
+      },
+      "direct": {
+        "groups": 2544,
+        "mean_group_ns": 280486.96540880506,
+        "p99_group_ns": 819140
+      },
+      "mean_change_percent": -2.9852995678808836,
+      "p99_change_percent": -3.5847626401254273,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "direct_order": 1,
+          "mean_change_percent": -3.656362067436414,
+          "baseline_mean_ns": 294704.50786163524,
+          "direct_mean_ns": 283929.0440251572,
+          "baseline_p99_ns": 913797,
+          "direct_p99_ns": 823177
+        },
+        {
+          "baseline_order": 3,
+          "direct_order": 2,
+          "mean_change_percent": -2.2877927875905035,
+          "baseline_mean_ns": 283531.5,
+          "direct_mean_ns": 277044.88679245283,
+          "baseline_p99_ns": 839177,
+          "direct_p99_ns": 815012
+        }
+      ]
+    },
+    {
+      "workload": "unique_insert",
+      "pinned": true,
+      "baseline": {
+        "groups": 2544,
+        "mean_group_ns": 378384.94536163524,
+        "p99_group_ns": 1174157
+      },
+      "direct": {
+        "groups": 2544,
+        "mean_group_ns": 370134.8168238994,
+        "p99_group_ns": 1092594
+      },
+      "mean_change_percent": -2.1803532722082575,
+      "p99_change_percent": -6.946515670391607,
+      "pairs": [
+        {
+          "baseline_order": 0,
+          "direct_order": 1,
+          "mean_change_percent": -2.6679503822950257,
+          "baseline_mean_ns": 378838.3844339623,
+          "direct_mean_ns": 368731.1643081761,
+          "baseline_p99_ns": 1206047,
+          "direct_p99_ns": 1110106
+        },
+        {
+          "baseline_order": 3,
+          "direct_order": 2,
+          "mean_change_percent": -1.6915861322214454,
+          "baseline_mean_ns": 377931.5062893082,
+          "direct_mean_ns": 371538.46933962265,
+          "baseline_p99_ns": 1152355,
+          "direct_p99_ns": 1092594
+        }
+      ]
+    }
+  ],
+  "independent_payload_and_final_state_models": true,
+  "source_files": 165,
+  "registry_packages": 269,
+  "timed_group_samples": 30528,
+  "timed_mutations": 28827648,
+  "validated_timed_final_states": 288,
+  "checked_correctness_live_prefixes": 1272,
+  "checked_old_snapshots": 636,
+  "predeclared_gate": {
+    "material_overwrite_gain": false,
+    "all_order_means_better": true,
+    "all_pooled_p99_nonregressing": false,
+    "advance": false
+  },
+  "scope": "Offline lowering plus actual MemEngine::write_applied, including final batch destruction; no WAL/Raft/RPC/quorum/queue or full state-machine timing. Synthetic unique insert preserves original grouping and values, appends eight key bytes. Shared host, 12 passes per row; no database QPS or new core proof/Chaos claim."
+}

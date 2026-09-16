@@ -20,8 +20,10 @@ pooled p99 and order-dependent batch gains. All eight smokes, sixteen timed
 cohorts, 7,200,959 calls / 63,451,454 items and independent audit pass. Keep the
 feature default-off. The [exact Raw apply attribution](RAW-APPLY-ATTRIBUTION.md)
 now checks 1,564 original commands / 106 groups. Direct append reduces lowering
-mean 10.896% (1.548 us/group) with lower p99 in both orders. Next combine it with
-real MemEngine insertion/overwrite and snapshot workloads before integration;
+mean 10.896% (1.548 us/group) with lower p99 in both orders. The
+[composed MemEngine screen](RAW-LOWERING-COMPOSED.md) now holds the prototype:
+overwrite mean -1.134% / -0.452% without/with snapshots, initial-fill unpinned
+p99 +3.309%. Next test the [packed-node layout hypothesis](RESIDENT-INDEX-LAYOUT-NEXT.md);
 no production or database-QPS change follows. Do not repeat completed comparisons.
 
 The earlier [complete upper-bound screen](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
@@ -112,7 +114,7 @@ adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
-| Direct Raw mutation append | [Exact retained command/group attribution and changed-variable experiment](RAW-APPLY-ATTRIBUTION.md): 1,564 commands / 106 groups / 100,096 mutations byte-match original payloads. Lowering mean 14.208 to 12.660 us/group (-10.896%), p99 39.744 to 34.504 us, with both orders improving. Reallocation calls fall 87.686%; saving is only 1.548 us/group. Standalone semantics test passes. Compose with actual MemEngine workloads before integration; no production change, new proof/Chaos gate or database-QPS result. |
+| Direct Raw mutation append | [Exact attribution](RAW-APPLY-ATTRIBUTION.md): 1,564 commands / 106 groups / 100,096 mutations byte-match; lowering mean -10.896% (1.548 us/group). [Composed MemEngine screen](RAW-LOWERING-COMPOSED.md): all six cases / 24 rows and state/snapshot checks pass. Overwrite mean -1.134% / -0.452% without/with snapshots, but initial-fill unpinned p99 +3.309%; predeclared gate fails. Hold outside production; no new proof/Chaos acceptance or database QPS. Do not rerun unchanged. |
 | WAL payload preallocation | [Default-off candidate, proofs and exact encoder results](WAL-PAYLOAD-PREALLOCATION.md): reuse validated size with unchanged emitter/framing/sync. Eleven capacity theorems/seven controls and 47 CRC theorems/eight controls pass; both default/feature workspace configurations pass 851 tests and Clippy. Original-corpus encoder mean −27.339%; six small cases improve mean/p99. [Matching releases and ordinary recovery](WAL-PREALLOCATION-RUNTIME.md) pass: four complete histories, 728 operations (666 OK / 62 unknown), twelve fresh drains and fourteen exited lifetimes. [Actual 21-window Chaos Mesh](WAL-PREALLOCATION-CHAOS.md) also passes: 9,241 complete operations, four final drains, 31 exited server lifetimes and 25 exited containers. [Same-source end-to-end timing](WAL-PREALLOCATION-PERFORMANCE.md) passes: loaded Put +0.545%, batch +1.474% pooled, unchanged loaded pooled p99, and batch direction changes between orders. Keep default-off; no Redis parity or unchanged rerun. |
 | Resident-index coalescing and value reuse | [Exact corpus, patches and measurements](RESIDENT-INDEX-EXPERIMENTS.md): sorting/coalescing and two-pass reuse rejected; one-traversal borrowed upsert remains held. Under jemalloc, overwrite index time −12.269% but pure insertion +12.121%. All 53 dependency tests pass. Isolated CPU experiments only: no selected-runtime change, mechanized proof/Chaos acceptance or database-QPS claim. |
 | Conservative receipt upper bound `e2e23cc` | [Source-bound proof](WRITE-RECEIPT-UPPER-BOUND.md), [default release/recovery](WRITE-RECEIPT-UPPER-BOUND-RUNTIME.md), [actual full21 Chaos](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md) and [all 8 smokes / 16 timed cohorts](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md) pass. One explicitly requalified client is shared by both arms. Loaded Put +3.169% with better mean/p99 in both orders; loaded batch -1.419% pooled with worse p99 and an order reversal. Keep CRC selected, hold promotion and preserve the original input failures. |

@@ -6,6 +6,11 @@ unchanged. The [latest end-to-end write results](WAL-PREALLOCATION-PERFORMANCE.m
 remain 137,873.776 Put calls/s and 1,022,750.059 BatchPut(64) items/s at c64
 for their recorded source, client and volatile three-voter fixture.
 
+The subsequent [composed MemEngine screen](RAW-LOWERING-COMPOSED.md) is now
+complete. It holds the prototype: overwrite gains shrink to 1.134% / 0.452%
+without/with snapshots, and initial-fill unpinned p99 worsens 3.309%. The original
+component evidence and pre-composition reasoning below remain separately scoped.
+
 Directly appending each command's mutations into the final batch removes
 temporary mutation vectors. On exact retained commands, lowering mean falls
 **10.896%**, from **14.208 to 12.660 us/group**, and pooled p99 falls from

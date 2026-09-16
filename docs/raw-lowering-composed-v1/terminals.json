@@ -1,0 +1,6 @@
+{
+  "initial_build": "a56002/1: explicit slice/array comparison type error; original source and logs retained",
+  "corrected_build_and_tests": "9199/1e0993/0",
+  "timing": "52204/bd6356/0",
+  "independent_analysis": "50f415/0"
+}
