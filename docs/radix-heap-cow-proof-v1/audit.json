@@ -1,0 +1,121 @@
+{
+  "complete": true,
+  "theorems_checked_together": 484,
+  "additional_theorems": 76,
+  "new_rejecting_controls": 22,
+  "controls": [
+    {
+      "name": "heap-read-next-cell",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "allocation-prepends-cell",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "heap-write-next-cell",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "edge-slot-next-index",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "edge-owner-wrong-parent",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "omit-outgoing-references",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "duplicate-root-references",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "count-different-node",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "shared-root-treated-unique",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "root-clone-keeps-old-slot",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "root-cow-does-not-copy",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "child-clone-writes-wrong-parent",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "child-clone-writes-wrong-edge",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "child-clone-writes-dangling-reference",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "accepts-shared-parent-borrow",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "child-uses-parent-uniqueness",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "child-clones-parent-payload",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "heap-count-forgets-child-edges",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "heap-proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "heap-custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 48,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "heap_cow_scope": "Concrete node-identity graph and root/child COW primitive models: finite representation and acyclicity; explicit external/edge strong-reference slots and counts; root and nested child uniqueness/separation; shallow graph cloning, selected parent-reference replacement, exact fresh-node counts, immutable saved-root interpretations and preservation of all existing roots. Owned Vec/Box payloads remain value abstractions. This is not full mutation/reclamation/Rust heap verification or a performance result.",
+  "remaining_implementation_scope": "Complete mutations, native Arc/live allocation correspondence, reclamation, owned buffer storage, representability bridges and exact-source differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Compose concrete heap transitions with all insertion actions, split helpers, deletion/detached frames and normalization; account for reference changes and native Arc/library contracts across complete mutations",
+    "Prove iterative/concurrent reclamation and live allocation accounting; connect owned Vec/Box/buffer storage, query/routing lengths and distinct resident Entry storage to machine-word representability",
+    "Exact-source executable Rust/model differential evaluation before matched timing; promotion still requires recovery, actual Chaos Mesh and three-copy Redis throughput/latency"
+  ],
+  "prior_seek_packet_sha256": "798c29619a5bef88a7f7719bc3d398529af507120b59eefa92ef683226e4b1d3"
+}
