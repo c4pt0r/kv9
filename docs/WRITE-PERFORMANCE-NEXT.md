@@ -69,12 +69,14 @@ now completes 90 processes / 152 rows: write mean improves 4.600%–13.903%,
 while warm owned GET hit regresses 2.599%–7.407%. Resident hit per-call means
 are nearly unchanged; owned misses show this is not solely value-copy cost.
 Snapshot, first-probe/warm and per-call/whole-pass scopes remain separate.
-Preserve every original failed gate. The [triomphe-only extraction qualification](ISOLATED-OUTLINE-QUALIFICATION.md)
-passes 523 tests, 29 conditional lemmas / 14 controls, both release builds and
-848 live states / 424 old views. Actual codegen removes the mutation callback
-without changing original archery. Its next bounded timing/allocation screen is
-predeclared but not implemented or executed. No alignment sweep, unchanged
-matrix or database-QPS claim follows.
+Preserve every original failed gate. After [triomphe-only qualification](ISOLATED-OUTLINE-QUALIFICATION.md),
+the [completed timing/allocation screen](ISOLATED-OUTLINE-PERFORMANCE.md) retains
+136 processes / 152 timing / 76 allocation rows. All windows match allocator
+requests and live-byte behavior. Writes improve 1.526%–10.803%, but three cases
+miss the material gate and 16 read panels exceed the no-regression bound.
+Stop these callback variants. Next qualify a private short-key inline
+representation with long-key fallback, exact byte-order/model proofs and no
+format or Raft/WAL change. No new database-QPS claim follows.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 

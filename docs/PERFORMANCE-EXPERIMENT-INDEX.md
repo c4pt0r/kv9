@@ -25,13 +25,14 @@ relative layouts/comparator targets. Stop alignment sweeps. The completed
 [engine-interface diagnostic](ENGINE-INTERFACE-SCREEN.md) retains 90 processes /
 152 rows: actual apply mean improves 4.600%–13.903%, but warm owned GET hit
 regresses 2.599%–7.407%. Resident hit per-call means are nearly unchanged.
-Keep snapshot/ownership/timer scopes separate and the old gate failed. The
-[triomphe-only extraction](ISOLATED-OUTLINE-QUALIFICATION.md) now passes source,
-29-lemma/14-control proof, release-codegen and 523-test qualification, plus
-848 live states / 424 old views. Its actual mutation callback is removed with
-original archery unchanged. Next implement the separate allocation companion
-and execute the predeclared engine screen; no performance result exists yet.
-Do not replay unchanged matrices or previously rejected owned-buffer removal.
+Keep snapshot/ownership/timer scopes separate and the old gate failed. After
+[triomphe-only qualification](ISOLATED-OUTLINE-QUALIFICATION.md), its
+[completed screen](ISOLATED-OUTLINE-PERFORMANCE.md) retains 136 processes /
+152 timing / 76 allocation rows, with identical per-window allocation behavior.
+Write means improve 1.526%–10.803%, but three material-write cases and 16 read
+panels fail. Stop unchanged callback/alignment variants. Next qualify inline
+storage for short keys with an arbitrary-length fallback; this is a new private
+representation, not the rejected owned-buffer consumption experiment.
 
 The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
 uses current `86aa6fc` default/feature servers and one qualified client. Default
