@@ -1,0 +1,15 @@
+{
+  "archive": "evidence.tar.gz",
+  "sha256": "7a746bfffc89a503cafe651c02ae80f54920f08a430656a7e11de2647fffcf12",
+  "bytes": 5228618,
+  "members": 5591,
+  "expanded_bytes": 28661683,
+  "all_members_read_back": true,
+  "excluded": [
+    "Lean compiler outputs",
+    "Python bytecode",
+    "layout observer executable (hash in receipt)"
+  ],
+  "complete_algorithm_gate": false,
+  "prior_heap_deletion_packet_sha256": "674294cf93f8fbb04747eec7185bf7e52a894cce60f37ec163d47235d0cc692a"
+}

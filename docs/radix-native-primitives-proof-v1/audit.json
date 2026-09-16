@@ -1,0 +1,139 @@
+{
+  "complete": true,
+  "theorems_checked_together": 789,
+  "additional_theorems": 66,
+  "new_rejecting_controls": 18,
+  "controls": [
+    {
+      "name": "entry-address-omits-field-offset",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "branch-entry-uses-arc-payload",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "zero-sized-entry-layout",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "overwrite-all-object-owners",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "leaf-retains-branch-box",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "reclaim-clears-surviving-object",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "reclaim-keeps-dead-object",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "copy-skips-old-release",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "copy-returns-old-identity",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "copy-loses-child-token",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "copy-release-does-not-hold-source",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "copy-begins-without-child-work",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "assignment-duplicates-old-token",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "assignment-loses-old-token",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "custom-false-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 105,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "native_primitives_scope": "Native object primitives: distinct resident Entry addresses derive cardinality bounds; disjoint occupied Arc<Node> payload and Box<Branch> regions survive allocation, same-shape writes, branch-to-leaf conversion and justified reclamation. Explicit per-child retained Arc tokens support arbitrary snapshot-release interleavings during COW. Successful payload allocation moves those tokens into edges; assignment and interleaved old-token teardown preserve the copied value, unique fresh root, saved roots and object-region invariants. The no-Weak Arc behavior is an explicit pinned library/compiler contract. This does not establish all Rust/native layouts, buffers, mutation places, physical word loops or full algorithm extraction.",
+  "layout_observation": {
+    "status": "observed_layout_not_a_compiler_proof",
+    "command": [
+      "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+      "--edition=2021",
+      "--crate-type",
+      "bin",
+      "-Dwarnings",
+      "/mnt/data/kv9-work/radix-native-bridge-development-20260916-first/layout-observer.rs",
+      "-o",
+      "/mnt/data/kv9-work/radix-native-bridge-development-20260916-first/layout-observer"
+    ],
+    "compiler_sha256": "103b60e1b1339968c1d74202ea1d45686037e82c4ea3e0569de24b18a1e6836a",
+    "compiler_version": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8\n",
+    "candidate_sha256": "00235871d6f168b3549da377793429dd4db281549425dbab38b1a66c37103fcc",
+    "exact_candidate_prefix_bytes": 20506,
+    "observer_sha256": "7bf2f96512705c375383e39a4aac84c92c03e51795f1bf7703d24b88ec0ecc81",
+    "executable_sha256": "d39610bb728bab0318ad9e1a51d8b8a505b29ed3a56a88604876cece91c61ea9",
+    "linked_rust_library_inputs": {
+      "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-267b04dbd87607fb.rlib": "09e7898c66eca781c296bc27298409734f79ecf76fa2c1f086ceee7d3b33c654",
+      "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/lib/liballoc-62a1c58f46ae5b5d.rlib": "d11700a12ad0f7f730bc074d95d6bbd0c76d057405d308140115bc7462e173d5",
+      "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/lib/libcore-12bcfe474901f35f.rlib": "f206f411f420f7d36771e46db8735e41acac8045289863110cd83de537334fd7"
+    },
+    "layout": {
+      "pointer_bits": 64,
+      "node_payload_bytes": 48,
+      "branch_payload_bytes": 96,
+      "entry_bytes": 48,
+      "leaf_entry_offset": 0,
+      "branch_entry_offset": 48,
+      "empty_buffers_share_pointer": true,
+      "entry_objects_distinct": true,
+      "occupied_regions_disjoint": true
+    },
+    "scope": "Two entries created with the unmodified candidate API. The observer only borrows stored Arc/Box/Entry objects and does not clone their owning references. The recorded Arc region is the Node payload, excluding Arc reference-counter/header storage. This observation supplies pinned layout data for the native contract, not a universal Rust/model differential qualification."
+  },
+  "remaining_implementation_scope": "Mutation-place applications, external clone interference, native buffers/transient payload placement, physical words and differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Compose pinned Arc contracts with root and mutable edge slots in all concrete mutation paths; cover external snapshot cloning as well as the proved release-only environment and connect private source representation to token ownership",
+    "Native byte/edge/frame buffers and in-flight payload/Box moves, allocation/layout correspondence and successful-operation limits",
+    "Derive routing/query buffer bounds and compose concrete graph loops and size updates with native word arithmetic, preserving late leaf scope release",
+    "Exact-source Rust/model differential histories and meaningful faults before predeclared original/long/injective-varied-prefix throughput/mean/p99 and allocation comparisons",
+    "Runtime promotion still requires matched benefit, local correctness, ordinary recovery, actual Chaos Mesh and three-copy Redis throughput/latency"
+  ],
+  "prior_heap_deletion_packet_sha256": "674294cf93f8fbb04747eec7185bf7e52a894cce60f37ec163d47235d0cc692a"
+}
