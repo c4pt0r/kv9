@@ -44,5 +44,10 @@ testing = ["kv9-common/testing"]
 [build-dependencies]
 tonic-prost-build.workspace = true
 
+[[example]]
+name = "joint-install-probe"
+required-features = ["testing"]
+
 [dev-dependencies]
+serde_json.workspace = true
 kv9-common = { workspace = true, features = ["testing"] }

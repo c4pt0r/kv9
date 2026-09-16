@@ -1077,6 +1077,7 @@ dependencies = [
  "protobuf",
  "raft",
  "serde",
+ "serde_json",
  "slog",
  "tokio",
  "tokio-stream",

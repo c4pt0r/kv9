@@ -47,8 +47,11 @@ scaling gain follows from these checks.
 The [protocol snapshot storage prerequisite](PROTOCOL-SNAPSHOT.md) now persists
 and recovers an exact snapshot/HardState pair, with uncoordinated reception and
 startup fenced. It does not enable remote install or reclaim logs. The next D03
-work is the destination-bound engine installation journal and retained source
-bundle, followed by learner/membership transitions.
+work now includes an [offline joint-generation installer](JOINT-SNAPSHOT-INSTALL.md):
+it verifies the destination-bound engine/protocol pair and atomically selects a
+durable generation. Existing peer startup and network snapshot guards remain.
+Next are committed source/migration authority and retention owners, unified-cut
+capture, runtime installation and learner/membership transitions.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

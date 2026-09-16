@@ -136,6 +136,12 @@ impl StoreGuard {
         })
     }
 
+    /// Directory protected by this guard's exclusive store lock. Child storage
+    /// owners must borrow the guard for their entire lifetime.
+    pub fn directory(&self) -> &Path {
+        &self.directory
+    }
+
     pub fn record(&self) -> Option<StoreRecord> {
         self.record
     }
