@@ -1,0 +1,146 @@
+{
+  "complete": true,
+  "theorems_checked_together": 554,
+  "additional_theorems": 70,
+  "new_rejecting_controls": 27,
+  "controls": [
+    {
+      "name": "reference-indicator-inverted",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "zero-owner-allowed",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "zero-owner-required",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "release-unique-two",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "release-clears-next",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "release-retains-dead-node",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "release-loses-child-tokens",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "release-duplicates-child-tokens",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "release-keeps-consumed-shared-token",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-pop-first",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-forgets-held",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-forgets-pending",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-unique-two",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-clears-next",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-discards-child-work",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-duplicates-child-work",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-prepends-child-work",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-retains-popped-token",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-pops-twice",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-empty-fails",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "drop-done-erases-held",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "pool-forgets-other-workers",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "pool-does-not-update-selected-worker",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "live-proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "live-custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 56,
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "live_ownership_scope": "Concrete graph ownership: exact reference deltas, positive live-owner invariants, COW preservation, root reachability/no orphan cells, explicit final-owner token transfer, physical last-pop/child-append teardown, terminating sequential reclamation and arbitrary finite interleaved worker histories. Native Arc linearization, physical allocation/buffer destruction, scheduling fairness and full mutations remain implementation contracts or open obligations.",
+  "remaining_implementation_scope": "Complete mutations, native Arc/concurrent COW and physical payload/allocator correspondence, buffer storage, representability and differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Compose actual insertion/split and deletion/detached-frame/normalization transitions with concrete mutable places, owned references and the proven release primitives",
+    "Connect graph token transfer and worker steps to native Arc/no-Weak atomic handoff, payload lifetimes, allocator/Vec/Box destruction and machine-word representability; the model does not prove native atomics or scheduling fairness",
+    "Exact-source Rust/model differential execution before matched timing; runtime promotion still needs ordinary recovery, actual Chaos Mesh and three-copy Redis throughput/latency"
+  ],
+  "prior_heap_cow_packet_sha256": "93034c8c62a3c8b24a6ddd0fea4c37280ea13ef1f641179bcf407f29ad45d9aa"
+}
