@@ -1,0 +1,148 @@
+{
+  "complete": true,
+  "rows": [
+    {
+      "dataset": "original",
+      "workload": "overwrite",
+      "keys": 4096,
+      "branches": 273,
+      "leaves": 4096,
+      "branch_terminal_keys": 0,
+      "compressed_prefix_bytes": 24,
+      "fanout_histogram": {
+        "16": 273
+      },
+      "hit_node_visits_histogram": {
+        "4": 4096
+      },
+      "mean_hit_node_visits": 4.0,
+      "maximum_hit_node_visits": 4,
+      "checked_all_hits": true,
+      "checked_misses": 512,
+      "mean_miss_node_visits": 4.0
+    },
+    {
+      "dataset": "original",
+      "workload": "unique_insert",
+      "keys": 100096,
+      "branches": 14407,
+      "leaves": 100096,
+      "branch_terminal_keys": 0,
+      "compressed_prefix_bytes": 20516,
+      "fanout_histogram": {
+        "2": 6001,
+        "3": 119,
+        "4": 223,
+        "5": 335,
+        "6": 330,
+        "7": 508,
+        "8": 569,
+        "9": 684,
+        "10": 660,
+        "11": 686,
+        "12": 548,
+        "13": 563,
+        "14": 474,
+        "15": 448,
+        "16": 615,
+        "17": 389,
+        "18": 350,
+        "19": 259,
+        "20": 132,
+        "21": 137,
+        "22": 185,
+        "23": 76,
+        "24": 55,
+        "25": 23,
+        "26": 16,
+        "27": 8,
+        "28": 7,
+        "29": 7
+      },
+      "hit_node_visits_histogram": {
+        "5": 305,
+        "6": 95919,
+        "7": 3872
+      },
+      "mean_hit_node_visits": 6.035635789641944,
+      "maximum_hit_node_visits": 7,
+      "checked_all_hits": true,
+      "checked_misses": 512,
+      "mean_miss_node_visits": 6.03125
+    },
+    {
+      "dataset": "wide128",
+      "workload": "overwrite",
+      "keys": 4096,
+      "branches": 273,
+      "leaves": 4096,
+      "branch_terminal_keys": 0,
+      "compressed_prefix_bytes": 24,
+      "fanout_histogram": {
+        "16": 273
+      },
+      "hit_node_visits_histogram": {
+        "4": 4096
+      },
+      "mean_hit_node_visits": 4.0,
+      "maximum_hit_node_visits": 4,
+      "checked_all_hits": true,
+      "checked_misses": 512,
+      "mean_miss_node_visits": 4.0
+    },
+    {
+      "dataset": "wide128",
+      "workload": "unique_insert",
+      "keys": 100096,
+      "branches": 14407,
+      "leaves": 100096,
+      "branch_terminal_keys": 0,
+      "compressed_prefix_bytes": 434212,
+      "fanout_histogram": {
+        "2": 6001,
+        "3": 119,
+        "4": 223,
+        "5": 335,
+        "6": 330,
+        "7": 508,
+        "8": 569,
+        "9": 684,
+        "10": 660,
+        "11": 686,
+        "12": 548,
+        "13": 563,
+        "14": 474,
+        "15": 448,
+        "16": 615,
+        "17": 389,
+        "18": 350,
+        "19": 259,
+        "20": 132,
+        "21": 137,
+        "22": 185,
+        "23": 76,
+        "24": 55,
+        "25": 23,
+        "26": 16,
+        "27": 8,
+        "28": 7,
+        "29": 7
+      },
+      "hit_node_visits_histogram": {
+        "5": 305,
+        "6": 95919,
+        "7": 3872
+      },
+      "mean_hit_node_visits": 6.035635789641944,
+      "maximum_hit_node_visits": 7,
+      "checked_all_hits": true,
+      "checked_misses": 512,
+      "mean_miss_node_visits": 6.03125
+    }
+  ],
+  "binary_prefix_model_keys": 40,
+  "input_sha256": "92583f75c59f3f000e47d8c98374f0bb94c2dc94a158ebc9da81d61b716b40ba",
+  "implementation_exists": false,
+  "elapsed_time_recorded": false,
+  "limits": "Ideal static topology over these validated datasets only. No allocator layout, mutation/COW cost, cache behavior, Rust implementation, algorithm proof, latency or DB speedup is established."
+}

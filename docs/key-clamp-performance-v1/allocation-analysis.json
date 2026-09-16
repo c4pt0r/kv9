@@ -1,0 +1,582 @@
+{
+  "complete": true,
+  "accepted": true,
+  "rows": 24,
+  "cells": [
+    {
+      "case": 0,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "original",
+        "workload": "overwrite",
+        "pinned": false
+      },
+      "window_effects_verified": 1272,
+      "index_footprint_requested_bytes": {
+        "baseline": 1093964,
+        "single_buffer_control": 995612,
+        "clamped_candidate": 995612
+      },
+      "arms": {
+        "baseline": {
+          "allocation_counts": [
+            3603456,
+            253443072,
+            0,
+            0,
+            6007032,
+            533293056
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 211,
+          "sum_window_live_delta_bytes": -279849984,
+          "windows": 1272
+        },
+        "single_buffer_control": {
+          "allocation_counts": [
+            2402304,
+            224615424,
+            0,
+            0,
+            4805880,
+            504465408
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 187,
+          "sum_window_live_delta_bytes": -279849984,
+          "windows": 1272
+        },
+        "clamped_candidate": {
+          "allocation_counts": [
+            2402304,
+            224615424,
+            0,
+            0,
+            4805880,
+            504465408
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 187,
+          "sum_window_live_delta_bytes": -279849984,
+          "windows": 1272
+        }
+      }
+    },
+    {
+      "case": 1,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "original",
+        "workload": "overwrite",
+        "pinned": true
+      },
+      "window_effects_verified": 1272,
+      "index_footprint_requested_bytes": {
+        "baseline": 1093964,
+        "single_buffer_control": 995612,
+        "clamped_candidate": 995612
+      },
+      "arms": {
+        "baseline": {
+          "allocation_counts": [
+            4712976,
+            315576192,
+            0,
+            0,
+            2923704,
+            316432320
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 534441,
+          "sum_window_live_delta_bytes": -856128,
+          "windows": 1272
+        },
+        "single_buffer_control": {
+          "allocation_counts": [
+            3511824,
+            286748544,
+            0,
+            0,
+            2750328,
+            312271296
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 486945,
+          "sum_window_live_delta_bytes": -25522752,
+          "windows": 1272
+        },
+        "clamped_candidate": {
+          "allocation_counts": [
+            3511824,
+            286748544,
+            0,
+            0,
+            2750328,
+            312271296
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 486945,
+          "sum_window_live_delta_bytes": -25522752,
+          "windows": 1272
+        }
+      }
+    },
+    {
+      "case": 2,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "original",
+        "workload": "unique_insert",
+        "pinned": false
+      },
+      "window_effects_verified": 1272,
+      "index_footprint_requested_bytes": {
+        "baseline": 27526732,
+        "single_buffer_control": 25124380,
+        "clamped_candidate": 25124380
+      },
+      "arms": {
+        "baseline": {
+          "allocation_counts": [
+            4804608,
+            330316800,
+            0,
+            0,
+            2403576,
+            289459200
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 739200,
+          "sum_window_live_delta_bytes": 40857600,
+          "windows": 1272
+        },
+        "single_buffer_control": {
+          "allocation_counts": [
+            3603456,
+            301489152,
+            0,
+            0,
+            2403576,
+            289459200
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 674688,
+          "sum_window_live_delta_bytes": 12029952,
+          "windows": 1272
+        },
+        "clamped_candidate": {
+          "allocation_counts": [
+            3603456,
+            301489152,
+            0,
+            0,
+            2403576,
+            289459200
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 674688,
+          "sum_window_live_delta_bytes": 12029952,
+          "windows": 1272
+        }
+      }
+    },
+    {
+      "case": 3,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "original",
+        "workload": "unique_insert",
+        "pinned": true
+      },
+      "window_effects_verified": 1272,
+      "index_footprint_requested_bytes": {
+        "baseline": 27526732,
+        "single_buffer_control": 25124380,
+        "clamped_candidate": 25124380
+      },
+      "arms": {
+        "baseline": {
+          "allocation_counts": [
+            9847596,
+            612724128,
+            0,
+            0,
+            2403576,
+            289459200
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 1437416,
+          "sum_window_live_delta_bytes": 323264928,
+          "windows": 1272
+        },
+        "single_buffer_control": {
+          "allocation_counts": [
+            8646444,
+            583896480,
+            0,
+            0,
+            2403576,
+            289459200
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 1377512,
+          "sum_window_live_delta_bytes": 294437280,
+          "windows": 1272
+        },
+        "clamped_candidate": {
+          "allocation_counts": [
+            8646444,
+            583896480,
+            0,
+            0,
+            2403576,
+            289459200
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 1377512,
+          "sum_window_live_delta_bytes": 294437280,
+          "windows": 1272
+        }
+      }
+    },
+    {
+      "case": 4,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "wide128",
+        "workload": "overwrite",
+        "pinned": false
+      },
+      "window_effects_verified": 1272,
+      "index_footprint_requested_bytes": {
+        "baseline": 1507660,
+        "single_buffer_control": 1409308,
+        "clamped_candidate": 1409308
+      },
+      "arms": {
+        "baseline": {
+          "allocation_counts": [
+            3603456,
+            374759424,
+            0,
+            0,
+            6007032,
+            775925760
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 312,
+          "sum_window_live_delta_bytes": -401166336,
+          "windows": 1272
+        },
+        "single_buffer_control": {
+          "allocation_counts": [
+            2402304,
+            345931776,
+            0,
+            0,
+            4805880,
+            747098112
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 288,
+          "sum_window_live_delta_bytes": -401166336,
+          "windows": 1272
+        },
+        "clamped_candidate": {
+          "allocation_counts": [
+            2402304,
+            345931776,
+            0,
+            0,
+            4805880,
+            747098112
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 288,
+          "sum_window_live_delta_bytes": -401166336,
+          "windows": 1272
+        }
+      }
+    },
+    {
+      "case": 5,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "wide128",
+        "workload": "overwrite",
+        "pinned": true
+      },
+      "window_effects_verified": 1272,
+      "index_footprint_requested_bytes": {
+        "baseline": 1507660,
+        "single_buffer_control": 1409308,
+        "clamped_candidate": 1409308
+      },
+      "arms": {
+        "baseline": {
+          "allocation_counts": [
+            4712976,
+            436892544,
+            0,
+            0,
+            2923704,
+            455259648
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 734320,
+          "sum_window_live_delta_bytes": -18367104,
+          "windows": 1272
+        },
+        "single_buffer_control": {
+          "allocation_counts": [
+            3511824,
+            408064896,
+            0,
+            0,
+            2750328,
+            451098624
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 686824,
+          "sum_window_live_delta_bytes": -43033728,
+          "windows": 1272
+        },
+        "clamped_candidate": {
+          "allocation_counts": [
+            3511824,
+            408064896,
+            0,
+            0,
+            2750328,
+            451098624
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 686824,
+          "sum_window_live_delta_bytes": -43033728,
+          "windows": 1272
+        }
+      }
+    },
+    {
+      "case": 6,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "wide128",
+        "workload": "unique_insert",
+        "pinned": false
+      },
+      "window_effects_verified": 1272,
+      "index_footprint_requested_bytes": {
+        "baseline": 37636428,
+        "single_buffer_control": 35234076,
+        "clamped_candidate": 35234076
+      },
+      "arms": {
+        "baseline": {
+          "allocation_counts": [
+            4804608,
+            451633152,
+            0,
+            0,
+            2403576,
+            410775552
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 1010688,
+          "sum_window_live_delta_bytes": 40857600,
+          "windows": 1272
+        },
+        "single_buffer_control": {
+          "allocation_counts": [
+            3603456,
+            422805504,
+            0,
+            0,
+            2403576,
+            410775552
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 946176,
+          "sum_window_live_delta_bytes": 12029952,
+          "windows": 1272
+        },
+        "clamped_candidate": {
+          "allocation_counts": [
+            3603456,
+            422805504,
+            0,
+            0,
+            2403576,
+            410775552
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 946176,
+          "sum_window_live_delta_bytes": 12029952,
+          "windows": 1272
+        }
+      }
+    },
+    {
+      "case": 7,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "wide128",
+        "workload": "unique_insert",
+        "pinned": true
+      },
+      "window_effects_verified": 1272,
+      "index_footprint_requested_bytes": {
+        "baseline": 37636428,
+        "single_buffer_control": 35234076,
+        "clamped_candidate": 35234076
+      },
+      "arms": {
+        "baseline": {
+          "allocation_counts": [
+            9847596,
+            734040480,
+            0,
+            0,
+            2403576,
+            410775552
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 1689512,
+          "sum_window_live_delta_bytes": 323264928,
+          "windows": 1272
+        },
+        "single_buffer_control": {
+          "allocation_counts": [
+            8646444,
+            705212832,
+            0,
+            0,
+            2403576,
+            410775552
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 1629608,
+          "sum_window_live_delta_bytes": 294437280,
+          "windows": 1272
+        },
+        "clamped_candidate": {
+          "allocation_counts": [
+            8646444,
+            705212832,
+            0,
+            0,
+            2403576,
+            410775552
+          ],
+          "elapsed_time_recorded": false,
+          "maximum_window_extra_live_bytes": 1629608,
+          "sum_window_live_delta_bytes": 294437280,
+          "windows": 1272
+        }
+      }
+    }
+  ],
+  "windows_compared": 20352,
+  "control_equivalence_windows": 10176,
+  "elapsed_time_recorded": false,
+  "input_acceptance": {
+    "complete": true,
+    "models": [
+      {
+        "dataset": "original",
+        "workload": "overwrite",
+        "groups": 106,
+        "initial_keys": 4096,
+        "final_keys": 4096,
+        "final_state_sha256": "98a301258d1b77e1273fd1830456c51b9cff58f39b39e16bbff23f80f0da6894"
+      },
+      {
+        "dataset": "original",
+        "workload": "unique_insert",
+        "groups": 106,
+        "initial_keys": 0,
+        "final_keys": 100096,
+        "final_state_sha256": "01b58bb87fea4b7b4d8bdcdb44bf6cf8ee6afecf618809d5110df57d9143347b"
+      },
+      {
+        "dataset": "wide128",
+        "workload": "overwrite",
+        "groups": 106,
+        "initial_keys": 4096,
+        "final_keys": 4096,
+        "final_state_sha256": "347f3e40f21d7578c67649e7029042e3905aaa5b65b6fef269d95e6e31c017de"
+      },
+      {
+        "dataset": "wide128",
+        "workload": "unique_insert",
+        "groups": 106,
+        "initial_keys": 0,
+        "final_keys": 100096,
+        "final_state_sha256": "583af75ccde9fe092ce41981522d7bfa50f151f401d7ee13e9f0e31704a2dc76"
+      }
+    ],
+    "prepared_sha256": {
+      "prepare-timing-baseline": "92583f75c59f3f000e47d8c98374f0bb94c2dc94a158ebc9da81d61b716b40ba",
+      "prepare-timing-single_buffer_control": "92583f75c59f3f000e47d8c98374f0bb94c2dc94a158ebc9da81d61b716b40ba",
+      "prepare-timing-clamped_candidate": "92583f75c59f3f000e47d8c98374f0bb94c2dc94a158ebc9da81d61b716b40ba",
+      "prepare-counting-baseline": "e85fcfa52b8cfdef8c2f8196855da339a347d4669e248fbce0acbfbcdec3ca85",
+      "prepare-counting-single_buffer_control": "e85fcfa52b8cfdef8c2f8196855da339a347d4669e248fbce0acbfbcdec3ca85",
+      "prepare-counting-clamped_candidate": "e85fcfa52b8cfdef8c2f8196855da339a347d4669e248fbce0acbfbcdec3ca85"
+    },
+    "live_prefixes": 5088,
+    "old_views": 2544,
+    "refusal_checks": 10176,
+    "independent_reconstruction": true,
+    "query_identities": [
+      {
+        "dataset": "original",
+        "workload": "overwrite",
+        "operation": "get_hit",
+        "sha256": "b39bcf10f06ee94cc3343f4f13019f08a1f2a15b65ae7c2563847761346d5569"
+      },
+      {
+        "dataset": "original",
+        "workload": "overwrite",
+        "operation": "get_miss",
+        "sha256": "51d9fe9034a8ffbbdb05456328b5703a442a1007e3f213a0d1ae10f9c01e3bc8"
+      },
+      {
+        "dataset": "original",
+        "workload": "unique_insert",
+        "operation": "get_hit",
+        "sha256": "0da2bdb0851196975c2e4c4e207a49dc60cfbc60fd00c1344131e8f0a7362c01"
+      },
+      {
+        "dataset": "original",
+        "workload": "unique_insert",
+        "operation": "get_miss",
+        "sha256": "4b1bc40905b197d2c6236d1d86e76304e89af534ceb0237d5ff303911839771d"
+      },
+      {
+        "dataset": "wide128",
+        "workload": "overwrite",
+        "operation": "get_hit",
+        "sha256": "97aa33e36195310deba6f227196c6248ed6e8bc1bd782dd12031adf3014bfc95"
+      },
+      {
+        "dataset": "wide128",
+        "workload": "overwrite",
+        "operation": "get_miss",
+        "sha256": "03aa4108da98221395428b4c437e876deba66c2de4835555d11970bd5bdbb088"
+      },
+      {
+        "dataset": "wide128",
+        "workload": "unique_insert",
+        "operation": "get_hit",
+        "sha256": "d51892e1abe6a539d7bbe81014e7ef2f62a33d633586485314472c268ff26c55"
+      },
+      {
+        "dataset": "wide128",
+        "workload": "unique_insert",
+        "operation": "get_miss",
+        "sha256": "20179de2a2c99bd44b0599b8d87b0bb5a53457d347d0ba54520a38db9decd1a0"
+      }
+    ]
+  },
+  "limits": "Rust requested bytes, not physical jemalloc/RSS. Net window bytes include input destruction; final-index footprint is observed separately with full reclamation."
+}

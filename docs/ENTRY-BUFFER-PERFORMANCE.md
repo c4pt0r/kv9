@@ -1,5 +1,9 @@
 # Single-buffer engine write screen
 
+Subsequent result: the [qualified safe-accessor three-arm screen](KEY-CLAMP-PERFORMANCE.md)
+also fails. Stop the single-buffer/accessor family; the original result below
+remains retained and production is unchanged.
+
 Date: 2026-09-16 UTC. Execution base: `e17d1b33fa4d76cb03a7457942f4a1bbba6beabb`.
 
 The qualified single key/value buffer **fails the declared write gate**. It

@@ -1,0 +1,97 @@
+{
+  "complete": true,
+  "members": 827,
+  "expanded_bytes": 251802029,
+  "compressed_bytes": 9970710,
+  "sha256": "2ca7e32b9dabff6d250dc9ae0ca5cdccb37d25f89cee2c8978f3216ca2cc38eb",
+  "all_members_read_back": true,
+  "local_roots": {
+    "accepted": "/mnt/data/kv9-work/key-clamp-performance-20260916-v2",
+    "qualification": "/mnt/data/kv9-work/key-clamp-qualification-20260916-first",
+    "failed_preparation": "/mnt/data/kv9-work/key-clamp-performance-20260916-first"
+  },
+  "accepted_processes": 78,
+  "timing_rows": 48,
+  "allocation_rows": 24,
+  "failed_preparation_processes": 1,
+  "failed_attempt_timing_rows": 0,
+  "stage_one_gate_passed": false,
+  "stage_two": "not run; stopped by declared write gate",
+  "production_promoted": false,
+  "excluded_binaries_and_lean_objects": [
+    "experiment/build-counting-baseline/engine-interface",
+    "experiment/build-counting-clamped_candidate/engine-interface",
+    "experiment/build-counting-single_buffer_control/engine-interface",
+    "experiment/build-timing-baseline/engine-interface",
+    "experiment/build-timing-clamped_candidate/engine-interface",
+    "experiment/build-timing-single_buffer_control/engine-interface",
+    "qualification/layout/layout",
+    "qualification/proof/control-custom-axiom/KeyClamp.olean",
+    "qualification/proof/positive/KeyClamp.olean",
+    "qualification/tests-candidate/batch_atomicity-26136958daef1e71",
+    "qualification/tests-candidate/entry_buffer_model-f2f93fe1e04dce7d",
+    "qualification/tests-candidate/inline_key_model-6db71964b827ae2b",
+    "qualification/tests-candidate/kv9_common-3e3df2a75ffb1feb",
+    "qualification/tests-candidate/kv9_engine-5ecdab62c87a788a",
+    "qualification/tests-candidate/minio_backend-48c0a41a52debe3f",
+    "qualification/tests-candidate/minio_checkpoint-82fd9525aaa9be12",
+    "qualification/tests-candidate/object_safety-2c8a70434b3e91f3",
+    "qualification/tests-candidate/segment_publication_probe-c09f53b16a9d5269",
+    "failed-preparation/build-counting-baseline/engine-interface",
+    "failed-preparation/build-counting-clamped_candidate/engine-interface",
+    "failed-preparation/build-counting-single_buffer_control/engine-interface",
+    "failed-preparation/build-timing-baseline/engine-interface",
+    "failed-preparation/build-timing-clamped_candidate/engine-interface",
+    "failed-preparation/build-timing-single_buffer_control/engine-interface"
+  ],
+  "other_exclusions": [
+    "Duplicate corpus",
+    "Mutable progress/continuation/GitHub payloads and Python caches"
+  ],
+  "external": {
+    "corpus": "../outlined-mutation-path-v1/evidence.tar.gz:outlined/groups.bin",
+    "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+    "unchanged_qualification": "../entry-buffer-qualification-v1/evidence.tar.gz",
+    "qualification_sha256": "401e3194629ef3138736df1d2b08f12067a9cb2d523a3613fe4b6e92a50cb2fa",
+    "prior_codegen_and_plan": "../entry-buffer-performance-v1/evidence.tar.gz",
+    "prior_performance_sha256": "93931fa137c702f53b81f6a87af4a2ba42252a60de2eb6b0d23b4056c8514db5"
+  },
+  "accepted_binaries": {
+    "baseline": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/key-clamp-performance-20260916-v2/build-timing-baseline/engine-interface",
+        "sha256": "079a1c18aebf161995feac7a8f005bc8866850cbd31281897d633ca2b9e0e818",
+        "bytes": 1243600
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/key-clamp-performance-20260916-v2/build-counting-baseline/engine-interface",
+        "sha256": "5b6551f49b8a8476458b0923ee8c65bebef48f60de539f52d4051badaa5e04ff",
+        "bytes": 1333680
+      }
+    },
+    "single_buffer_control": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/key-clamp-performance-20260916-v2/build-timing-single_buffer_control/engine-interface",
+        "sha256": "435326546378d34c8d77fb88ca462e72f13da8e84235f3336f214f6fb9c3eaae",
+        "bytes": 1244560
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/key-clamp-performance-20260916-v2/build-counting-single_buffer_control/engine-interface",
+        "sha256": "a6377ffe2b629af058f42b0c75d1e93ef82450a7e2c0bac1303a09ee0a71390a",
+        "bytes": 1335072
+      }
+    },
+    "clamped_candidate": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/key-clamp-performance-20260916-v2/build-timing-clamped_candidate/engine-interface",
+        "sha256": "f26394fefdacd869e67157aa8211c9e51714d4a8e6e9aab66733d44981bc505d",
+        "bytes": 1243360
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/key-clamp-performance-20260916-v2/build-counting-clamped_candidate/engine-interface",
+        "sha256": "e0d074fb89e5fdd7d00c6b1432fee00f3f908d37f264babbcc149b6dc13bd7cd",
+        "bytes": 1334656
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "declared_plan_sha256": "36e3dca1dca50fa55d27e97154717161bde8fc41b2ec0073fa348bf5a33fb67a",
+  "execution_base": "b23506dc5ee43d52b3a82a0c7f2b3d5abe0003ad",
+  "qualified_root": "/mnt/data/kv9-work/key-clamp-qualification-20260916-first",
+  "source_roots": {
+    "baseline": "/mnt/data/kv9-work/entry-buffer-qualification-20260916-first/baseline",
+    "single_buffer_control": "/mnt/data/kv9-work/entry-buffer-qualification-20260916-first/candidate",
+    "clamped_candidate": "/mnt/data/kv9-work/key-clamp-qualification-20260916-first/candidate"
+  },
+  "arms": [
+    "baseline",
+    "single_buffer_control",
+    "clamped_candidate"
+  ],
+  "orders": [
+    "baseline",
+    "single_buffer_control",
+    "clamped_candidate",
+    "clamped_candidate",
+    "single_buffer_control",
+    "baseline"
+  ],
+  "write_passes": 12,
+  "write_excluded_passes": 1,
+  "read_epochs": 12,
+  "read_warm_passes": 12,
+  "snapshot_passes": 12,
+  "read_warmup_passes": 8,
+  "snapshot_warmup_passes": 8,
+  "query_count": 512,
+  "query_seed": 71,
+  "snapshot_queries_per_pass": 512,
+  "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+  "cpu": 4,
+  "helper_cpus": "6-15,22-31",
+  "process_timeout_seconds": 180,
+  "process_output_max_bytes": 67108864,
+  "minimum_free_bytes": 8589934592,
+  "expected_prepare_processes": 6,
+  "expected_counting_processes": 24,
+  "expected_timing_processes": 48,
+  "cases": [
+    {
+      "operation": "write_applied",
+      "dataset": "original",
+      "workload": "overwrite",
+      "pinned": false
+    },
+    {
+      "operation": "write_applied",
+      "dataset": "original",
+      "workload": "overwrite",
+      "pinned": true
+    },
+    {
+      "operation": "write_applied",
+      "dataset": "original",
+      "workload": "unique_insert",
+      "pinned": false
+    },
+    {
+      "operation": "write_applied",
+      "dataset": "original",
+      "workload": "unique_insert",
+      "pinned": true
+    },
+    {
+      "operation": "write_applied",
+      "dataset": "wide128",
+      "workload": "overwrite",
+      "pinned": false
+    },
+    {
+      "operation": "write_applied",
+      "dataset": "wide128",
+      "workload": "overwrite",
+      "pinned": true
+    },
+    {
+      "operation": "write_applied",
+      "dataset": "wide128",
+      "workload": "unique_insert",
+      "pinned": false
+    },
+    {
+      "operation": "write_applied",
+      "dataset": "wide128",
+      "workload": "unique_insert",
+      "pinned": true
+    }
+  ],
+  "gates": {
+    "original_mean_percent": -10,
+    "original_p99_percent": 2,
+    "original_mean_improves_both_orders": true,
+    "wide128_mean_percent": 2,
+    "wide128_p99_percent": 2
+  },
+  "scopes": "Same actual write_applied group window including whole-batch preflight, input destruction and position/revision. Old-view acquisition/drop and batch construction stay outside. No time from counted builds.",
+  "stage_two": {
+    "condition": "Only if stage-one gates pass",
+    "scope": "Reuse original engine-interface snapshot/owned/resident, first-probe/warm, per-call/512-query-pass read panels for both datasets and both map sizes. Add scan, iter, iter_rev, seek_le, checksum and delete_range windows for both datasets and map sizes.",
+    "cases": 60,
+    "case_count_derivation": "2 datasets x 18 existing non-write cases + 2 datasets x 2 map sizes x 6 range/delete operations",
+    "orders": [
+      "baseline",
+      "candidate",
+      "candidate",
+      "baseline"
+    ],
+    "allocation_processes": 120,
+    "timing_processes": 240,
+    "read_epochs": 12,
+    "warm_passes_per_epoch": 12,
+    "excluded_warm_passes_per_epoch": 8,
+    "ranges": "Deterministic 512 probe anchors without replacement, 16-entry half-open ranges; scan/iter/reverse return and retain 16 owned rows until after the measured window. Reverse seek returns at most one row. Consume streaming iterators inside the window; validate/drop outputs outside. Timed delete_range starts from a fresh independently verified state, preserves an old view and checks exact remaining rows; no state reset inside timing.",
+    "snapshot_scope": "Separate acquisition/drop and bounded snapshot allocation observations. One fixed captured view per read epoch; verify old view after an untimed mutation.",
+    "gate": "Every read/snapshot/range/delete pooled mean and p99 increases no more than 2%; retain both orders and each timer scope. Whole-pass p99 is never request p99."
+  },
+  "allocation_scope": "Retain per-window requests/live/peak and final-index requested bytes; control and new accessor must match exactly; no elapsed time from counted builds",
+  "causal_contrast": "New accessor vs failed single-buffer control, both order directions; primary selection remains vs concurrently built original baseline"
+}

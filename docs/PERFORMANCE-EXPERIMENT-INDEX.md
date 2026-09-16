@@ -1,12 +1,14 @@
 # Performance experiment index
 
-The [single-buffer write screen](ENTRY-BUFFER-PERFORMANCE.md) now completes
-52 processes / 32 timing / 16 allocation rows. Original overwrite mean changes
--1.469% / +0.143%, unique insert +2.480% / +0.430%; all four miss the material
-gate. Long pinned overwrite p99 regresses 2.690%. Read timing stops by plan.
-Allocation savings are exact, but do not establish speed. A safe key-accessor
-codegen control removes two comparison failure branches; prove/model-qualify
-it before a three-arm timing comparison. No new database QPS or promotion.
+The [safe accessor three-arm screen](KEY-CLAMP-PERFORMANCE.md) now completes
+26 conditional theorems / 15 rejecting controls, 206 changed-candidate tests,
+198 identical allocation observations and 78 accepted workload processes.
+Original-key write means regress 2.462%–6.486% against baseline; the accessor
+also has no consistent gain against its single-buffer control. Stop this family
+and the skipped read stage. Next implement and prove an isolated persistent
+compressed byte-radix index with ordered scans and immutable snapshots; an
+offline topology census is available, but no Rust index or speedup exists yet.
+No new database QPS, runtime promotion or industrial checkbox closure.
 
 Consult this index and `git log --all` before proposing another experiment.
 Several completed reports live on evidence branches rather than the current

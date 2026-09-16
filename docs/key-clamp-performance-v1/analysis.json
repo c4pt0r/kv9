@@ -1,0 +1,593 @@
+{
+  "complete": true,
+  "processes": 78,
+  "timing_rows": 48,
+  "counting_rows": 24,
+  "comparisons": [
+    {
+      "case": 0,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "original",
+        "workload": "overwrite",
+        "pinned": false
+      },
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 278850087,
+        "mean_ns": 109610.88325471699,
+        "p50_ns": 97400,
+        "p95_ns": 249812,
+        "p99_ns": 305335
+      },
+      "single_buffer_control": {
+        "windows": 2544,
+        "sum_ns": 286690959,
+        "mean_ns": 112692.98702830188,
+        "p50_ns": 99644,
+        "p95_ns": 255001,
+        "p99_ns": 308400
+      },
+      "clamped_candidate": {
+        "windows": 2544,
+        "sum_ns": 289626191,
+        "mean_ns": 113846.7731918239,
+        "p50_ns": 100987,
+        "p95_ns": 257055,
+        "p99_ns": 314932
+      },
+      "percent_change": {
+        "mean_ns": 3.8644793393949994,
+        "p99_ns": 3.143105114055045
+      },
+      "by_order": [
+        {
+          "mean_ns": 5.411520725768981,
+          "p99_ns": 7.346782121550821
+        },
+        {
+          "mean_ns": 2.3471966133369104,
+          "p99_ns": 0.3986186355816823
+        }
+      ],
+      "accessor_control_effect": {
+        "pooled": {
+          "mean_ns": 1.0238313793494935,
+          "p99_ns": 2.1180285343709526
+        },
+        "by_order": [
+          {
+            "mean_ns": 1.0130665821339813,
+            "p99_ns": 3.000368262254405
+          },
+          {
+            "mean_ns": 1.0347075395220395,
+            "p99_ns": 1.4325551232166056
+          }
+        ]
+      },
+      "failed_metrics": [
+        "pooled_mean",
+        "pooled_p99",
+        "both_order_means"
+      ]
+    },
+    {
+      "case": 1,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "original",
+        "workload": "overwrite",
+        "pinned": true
+      },
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 306252017,
+        "mean_ns": 120382.08215408806,
+        "p50_ns": 108050,
+        "p95_ns": 268536,
+        "p99_ns": 318519
+      },
+      "single_buffer_control": {
+        "windows": 2544,
+        "sum_ns": 313959996,
+        "mean_ns": 123411.94811320755,
+        "p50_ns": 109893,
+        "p95_ns": 275719,
+        "p99_ns": 328448
+      },
+      "clamped_candidate": {
+        "windows": 2544,
+        "sum_ns": 313791388,
+        "mean_ns": 123345.6713836478,
+        "p50_ns": 110023,
+        "p95_ns": 277813,
+        "p99_ns": 331343
+      },
+      "percent_change": {
+        "mean_ns": 2.4618192147286333,
+        "p99_ns": 4.026133448868041
+      },
+      "by_order": [
+        {
+          "mean_ns": 2.766800781504264,
+          "p99_ns": 2.187824788973902
+        },
+        {
+          "mean_ns": 2.1583438357015705,
+          "p99_ns": 5.10936964202009
+        }
+      ],
+      "accessor_control_effect": {
+        "pooled": {
+          "mean_ns": -0.05370365720096526,
+          "p99_ns": 0.881418063133288
+        },
+        "by_order": [
+          {
+            "mean_ns": 0.3100006737255745,
+            "p99_ns": -0.2891930280706778
+          },
+          {
+            "mean_ns": -0.41513552359727646,
+            "p99_ns": 1.723256040530008
+          }
+        ]
+      },
+      "failed_metrics": [
+        "pooled_mean",
+        "pooled_p99",
+        "both_order_means"
+      ]
+    },
+    {
+      "case": 2,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "original",
+        "workload": "unique_insert",
+        "pinned": false
+      },
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 643840369,
+        "mean_ns": 253081.90605345913,
+        "p50_ns": 231368,
+        "p95_ns": 619044,
+        "p99_ns": 738405
+      },
+      "single_buffer_control": {
+        "windows": 2544,
+        "sum_ns": 656003868,
+        "mean_ns": 257863.15566037735,
+        "p50_ns": 242509,
+        "p95_ns": 639552,
+        "p99_ns": 774682
+      },
+      "clamped_candidate": {
+        "windows": 2544,
+        "sum_ns": 665021734,
+        "mean_ns": 261407.9143081761,
+        "p50_ns": 244933,
+        "p95_ns": 654700,
+        "p99_ns": 800650
+      },
+      "percent_change": {
+        "mean_ns": 3.289847300643567,
+        "p99_ns": 8.429655812189797
+      },
+      "by_order": [
+        {
+          "mean_ns": 2.813909789409541,
+          "p99_ns": 7.94117049586609
+        },
+        {
+          "mean_ns": 3.768622790438192,
+          "p99_ns": 7.97804582906616
+        }
+      ],
+      "accessor_control_effect": {
+        "pooled": {
+          "mean_ns": 1.3746665896183563,
+          "p99_ns": 3.352085113633718
+        },
+        "by_order": [
+          {
+            "mean_ns": 0.4302593388777032,
+            "p99_ns": 2.886474708331943
+          },
+          {
+            "mean_ns": 2.333805810344547,
+            "p99_ns": 4.306458918496525
+          }
+        ]
+      },
+      "failed_metrics": [
+        "pooled_mean",
+        "pooled_p99",
+        "both_order_means"
+      ]
+    },
+    {
+      "case": 3,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "original",
+        "workload": "unique_insert",
+        "pinned": true
+      },
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 846424524,
+        "mean_ns": 332714.0424528302,
+        "p50_ns": 312728,
+        "p95_ns": 812982,
+        "p99_ns": 974542
+      },
+      "single_buffer_control": {
+        "windows": 2544,
+        "sum_ns": 901715626,
+        "mean_ns": 354447.96619496855,
+        "p50_ns": 329750,
+        "p95_ns": 864258,
+        "p99_ns": 1056824
+      },
+      "clamped_candidate": {
+        "windows": 2544,
+        "sum_ns": 901327424,
+        "mean_ns": 354295.3710691824,
+        "p50_ns": 328166,
+        "p95_ns": 860101,
+        "p99_ns": 1050693
+      },
+      "percent_change": {
+        "mean_ns": 6.486449582124831,
+        "p99_ns": 7.8140295646570435
+      },
+      "by_order": [
+        {
+          "mean_ns": 9.20326620704175,
+          "p99_ns": 9.147373843302798
+        },
+        {
+          "mean_ns": 3.7585365800876014,
+          "p99_ns": 6.177801523504223
+        }
+      ],
+      "accessor_control_effect": {
+        "pooled": {
+          "mean_ns": -0.043051488607559474,
+          "p99_ns": -0.5801344405501729
+        },
+        "by_order": [
+          {
+            "mean_ns": 3.3986144292955434,
+            "p99_ns": 1.444773579975167
+          },
+          {
+            "mean_ns": -3.439578893158002,
+            "p99_ns": -1.353486942240134
+          }
+        ]
+      },
+      "failed_metrics": [
+        "pooled_mean",
+        "pooled_p99",
+        "both_order_means"
+      ]
+    },
+    {
+      "case": 4,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "wide128",
+        "workload": "overwrite",
+        "pinned": false
+      },
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 280473579,
+        "mean_ns": 110249.0483490566,
+        "p50_ns": 97510,
+        "p95_ns": 249882,
+        "p99_ns": 301127
+      },
+      "single_buffer_control": {
+        "windows": 2544,
+        "sum_ns": 279152814,
+        "mean_ns": 109729.87971698113,
+        "p50_ns": 96578,
+        "p95_ns": 250383,
+        "p99_ns": 297611
+      },
+      "clamped_candidate": {
+        "windows": 2544,
+        "sum_ns": 271449009,
+        "mean_ns": 106701.65448113208,
+        "p50_ns": 94485,
+        "p95_ns": 242639,
+        "p99_ns": 297931
+      },
+      "percent_change": {
+        "mean_ns": -3.2176185836028326,
+        "p99_ns": -1.0613462094066661
+      },
+      "by_order": [
+        {
+          "mean_ns": -3.903719088282631,
+          "p99_ns": -4.728422569412016
+        },
+        {
+          "mean_ns": -2.532578864566626,
+          "p99_ns": -0.9399008247104601
+        }
+      ],
+      "accessor_control_effect": {
+        "pooled": {
+          "mean_ns": -2.7597088811721515,
+          "p99_ns": 0.10752290741942172
+        },
+        "by_order": [
+          {
+            "mean_ns": -3.0103416175586317,
+            "p99_ns": -2.5964902708343285
+          },
+          {
+            "mean_ns": -2.5117156012031128,
+            "p99_ns": 0.8641228618305741
+          }
+        ]
+      },
+      "failed_metrics": []
+    },
+    {
+      "case": 5,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "wide128",
+        "workload": "overwrite",
+        "pinned": true
+      },
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 317555419,
+        "mean_ns": 124825.24331761006,
+        "p50_ns": 111877,
+        "p95_ns": 276882,
+        "p99_ns": 330451
+      },
+      "single_buffer_control": {
+        "windows": 2544,
+        "sum_ns": 326433745,
+        "mean_ns": 128315.15133647798,
+        "p50_ns": 117037,
+        "p95_ns": 287452,
+        "p99_ns": 339277
+      },
+      "clamped_candidate": {
+        "windows": 2544,
+        "sum_ns": 323925018,
+        "mean_ns": 127329.01650943396,
+        "p50_ns": 116135,
+        "p95_ns": 285287,
+        "p99_ns": 338355
+      },
+      "percent_change": {
+        "mean_ns": 2.0058228009643964,
+        "p99_ns": 2.3918826089193157
+      },
+      "by_order": [
+        {
+          "mean_ns": 1.011426272077598,
+          "p99_ns": 0.430623602288982
+        },
+        {
+          "mean_ns": 2.99916170739456,
+          "p99_ns": 2.113207319428345
+        }
+      ],
+      "accessor_control_effect": {
+        "pooled": {
+          "mean_ns": -0.7685256314416855,
+          "p99_ns": -0.271754348216946
+        },
+        "by_order": [
+          {
+            "mean_ns": -2.856932293124226,
+            "p99_ns": -2.1877588071807286
+          },
+          {
+            "mean_ns": 1.36634570212526,
+            "p99_ns": 1.6582801351858745
+          }
+        ]
+      },
+      "failed_metrics": [
+        "pooled_mean",
+        "pooled_p99"
+      ]
+    },
+    {
+      "case": 6,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "wide128",
+        "workload": "unique_insert",
+        "pinned": false
+      },
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 794583229,
+        "mean_ns": 312336.1749213837,
+        "p50_ns": 276151,
+        "p95_ns": 828582,
+        "p99_ns": 1114310
+      },
+      "single_buffer_control": {
+        "windows": 2544,
+        "sum_ns": 750495450,
+        "mean_ns": 295006.07311320753,
+        "p50_ns": 263397,
+        "p95_ns": 782276,
+        "p99_ns": 985102
+      },
+      "clamped_candidate": {
+        "windows": 2544,
+        "sum_ns": 752174303,
+        "mean_ns": 295665.99960691825,
+        "p50_ns": 265161,
+        "p95_ns": 787015,
+        "p99_ns": 1076009
+      },
+      "percent_change": {
+        "mean_ns": -5.337254104063149,
+        "p99_ns": -3.437194317559744
+      },
+      "by_order": [
+        {
+          "mean_ns": -4.123443511274361,
+          "p99_ns": 11.247328736945894
+        },
+        {
+          "mean_ns": -6.524245352330227,
+          "p99_ns": -14.228198116074143
+        }
+      ],
+      "accessor_control_effect": {
+        "pooled": {
+          "mean_ns": 0.22369929091510254,
+          "p99_ns": 9.22818144720039
+        },
+        "by_order": [
+          {
+            "mean_ns": -0.09262113982232423,
+            "p99_ns": 13.034893848555784
+          },
+          {
+            "mean_ns": 0.5429938606109186,
+            "p99_ns": -0.9766079808065431
+          }
+        ]
+      },
+      "failed_metrics": []
+    },
+    {
+      "case": 7,
+      "spec": {
+        "operation": "write_applied",
+        "dataset": "wide128",
+        "workload": "unique_insert",
+        "pinned": true
+      },
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 1009599419,
+        "mean_ns": 396855.11753144657,
+        "p50_ns": 350678,
+        "p95_ns": 1023983,
+        "p99_ns": 1443039
+      },
+      "single_buffer_control": {
+        "windows": 2544,
+        "sum_ns": 967457291,
+        "mean_ns": 380289.8156446541,
+        "p50_ns": 336312,
+        "p95_ns": 985452,
+        "p99_ns": 1283715
+      },
+      "clamped_candidate": {
+        "windows": 2544,
+        "sum_ns": 981958706,
+        "mean_ns": 385990.0573899371,
+        "p50_ns": 339558,
+        "p95_ns": 993027,
+        "p99_ns": 1441136
+      },
+      "percent_change": {
+        "mean_ns": -2.7377901056418907,
+        "p99_ns": -0.1318744677032302
+      },
+      "by_order": [
+        {
+          "mean_ns": -4.4772151168143814,
+          "p99_ns": -2.7810532634023777
+        },
+        {
+          "mean_ns": -0.9723018941718786,
+          "p99_ns": 2.975223949780248
+        }
+      ],
+      "accessor_control_effect": {
+        "pooled": {
+          "mean_ns": 1.4989204314136417,
+          "p99_ns": 12.262924403002229
+        },
+        "by_order": [
+          {
+            "mean_ns": 0.22649188263446085,
+            "p99_ns": 3.0905131921029394
+          },
+          {
+            "mean_ns": 2.776399155453979,
+            "p99_ns": 13.179093490377536
+          }
+        ]
+      },
+      "failed_metrics": []
+    }
+  ],
+  "allocations_accepted": true,
+  "stage_one_gate_passed": false,
+  "failures": [
+    {
+      "case": 0,
+      "metrics": [
+        "pooled_mean",
+        "pooled_p99",
+        "both_order_means"
+      ]
+    },
+    {
+      "case": 1,
+      "metrics": [
+        "pooled_mean",
+        "pooled_p99",
+        "both_order_means"
+      ]
+    },
+    {
+      "case": 2,
+      "metrics": [
+        "pooled_mean",
+        "pooled_p99",
+        "both_order_means"
+      ]
+    },
+    {
+      "case": 3,
+      "metrics": [
+        "pooled_mean",
+        "pooled_p99",
+        "both_order_means"
+      ]
+    },
+    {
+      "case": 5,
+      "metrics": [
+        "pooled_mean",
+        "pooled_p99"
+      ]
+    }
+  ],
+  "stage_two_status": "not run; stopped by declared write gate",
+  "production_promoted": false,
+  "limits": "Shared-host engine component, three arms and two order directions; not WAL/Raft/RPC/database QPS or Redis comparison."
+}

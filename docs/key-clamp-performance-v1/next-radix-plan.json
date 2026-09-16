@@ -1,0 +1,43 @@
+{
+  "status": "Prospective: offline topology census only; no Rust radix index, algorithm proof or performance result exists",
+  "decision": "Stop single-buffer and clamped-accessor variants after their failed matched gates. Move to a structurally different persistent byte-radix index prototype.",
+  "evidence": [
+    "Selected index CPU attribution identifies traversal/ownership as the largest exclusive sample category; this is historical diagnostic evidence, not a new CPU capture.",
+    "Key coallocation and branch-to-cmov accessors preserve semantics and allocation expectations but fail material original-write gates.",
+    "Independent static radix census over all validated corpus keys gives four hit-node visits for 4096-key maps and mean6.035636/max7 for100096-key maps; this predicts topology only, not cycles, allocations or snapshot cost."
+  ],
+  "prior_search": "Current experiment index, packed/prefix reports and git log --all checked. Packed32/prefix, inline40, shared callback, owned-buffer, coalescing and borrowed-upsert variants stay rejected; imbl was replaced earlier and is not reintroduced.",
+  "reference": {
+    "title": "The Adaptive Radix Tree: ARTful Indexing for Main-Memory Databases",
+    "authors": [
+      "Viktor Leis",
+      "Alfons Kemper",
+      "Thomas Neumann"
+    ],
+    "url": "https://db.in.tum.de/~leis/papers/ART.pdf",
+    "checked": "2026-09-16 UTC",
+    "scope": "Primary algorithm background for ordered byte routing and path compression. Its benchmark and space claims do not establish our copy-on-write implementation behavior."
+  },
+  "implementation": [
+    "Write a safe Rust isolated path-compressed byte-radix index using shared immutable roots and copy-on-write modified paths. Preserve arbitrary empty/binary/prefix/long keys, exact value replacement and bytewise ordered APIs. Do not reintroduce the held key/value coallocation or callback changes.",
+    "Support point lookup, insert, remove, predecessor and bounded ascending/descending iteration. Distinguish terminal keys from byte edges; insertion splits and deletion collapses must preserve full key bytes. Avoid a full-map scan for range seek.",
+    "Keep snapshots O(1) and immutable. Use bounded iterative traversal/update/teardown paths for adversarial prefix ladders; a recursive destructor on arbitrarily deep byte-prefix chains is not acceptable. Do not add a new public key-length limit to avoid this requirement.",
+    "Review concrete branch/leaf layout and sharing before choosing adaptive child containers. Fix one design based on source/layout evidence; no fanout or alignment sweep. Preserve original input ownership in the first comparison to isolate the index change."
+  ],
+  "proof_gate": [
+    "Define the byte-path/terminal/unique-edge/compressed-prefix invariants and finite-map interpretation. Prove lookup, replacement, insertion split, deletion collapse, ordered range/seek and snapshot refinement for the modeled algorithms, with source-bound mapping and rejecting controls.",
+    "State Rust/compiler/shared-pointer assumptions explicitly. Do not label key-order lemmas alone as a complete index proof. Keep recursion/termination, length arithmetic and representation cases explicit."
+  ],
+  "test_gate": [
+    "Use an independent BTreeMap model for every prefix of adversarial and generated mutation histories, retaining multiple old roots and checking exact bytes, range order, reverse iteration and predecessor.",
+    "Cover empty keys, embedded zero/255, prefix keys, repeated replacement, absent deletion, all256edge labels, branch growth/shrink, root split/collapse, shared subtrees and long prefix ladders. Validate reclamation without stack overflow and no index growth after complete teardown.",
+    "Before actual engine timing, integrate only an isolated engine copy and recheck allCFs, atomic batches, owned/resident views, iterator-bound lifetimes, checksums/range deletion, position refusal and revision publication."
+  ],
+  "measurement_gate": [
+    "After proof/model/layout qualification, declare fixed ordinary-release and allocation-only comparisons against the selected original engine. Include original, padded-long and an injective varied-prefix dataset to avoid selecting solely for the corpus common prefix.",
+    "Count allocations, requested live/peak memory, path/node work and retained-snapshot lifetime costs separately. Do not interpret static node visits or allocation requests as runtime speedup.",
+    "Retain material write and no-regression read/range criteria, both order directions and raw mean/p99 samples. A failed bounded screen is retained and not replayed unchanged."
+  ],
+  "promotion": "Material matched database benefit, complete local correctness, ordinary recovery, actual Chaos Mesh and matched three-copy Redis throughput/latency remain mandatory. Raft/WAL/read-authorization semantics and no-singleton requirements remain hard constraints.",
+  "output_policy": "All repository/GitHub content English; local-only CI; bulk artifacts under /mnt/data/kv9-work; reuse repository target; keep blocked C04 fault and unrelated drafts untouched"
+}

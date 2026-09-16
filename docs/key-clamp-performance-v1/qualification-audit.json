@@ -1,0 +1,42 @@
+{
+  "complete": true,
+  "new_candidate_tests_passed": 206,
+  "existing_ignored": 25,
+  "reused_tests": {
+    "baseline": 202,
+    "single_buffer_control": 206
+  },
+  "reused_ignored_per_arm": 25,
+  "old_control_tests_reexecuted": false,
+  "conditional_theorems": 26,
+  "rejecting_controls": 15,
+  "allocation_rows": 198,
+  "allocation_observations_exactly_equal_to_control": true,
+  "source_changes": [
+    "crates/engine/src/entry_buffer.rs"
+  ],
+  "generated_live_states": 240,
+  "generated_old_views": 1080,
+  "payload_model_tests": 2,
+  "registry_sources": [
+    {
+      "name": "archery",
+      "version": "1.2.3",
+      "archive_sha256": "33ca55ee147b1926dbea904f50fe4902494e97bc742205abbbf10c709e43815f",
+      "source_files_checked": 12
+    },
+    {
+      "name": "rpds",
+      "version": "1.2.1",
+      "archive_sha256": "e025feb26210bc196b908e72deb063b1b4000754304341cbc168a1e72c857ebc",
+      "source_files_checked": 26
+    },
+    {
+      "name": "triomphe",
+      "version": "0.1.16",
+      "archive_sha256": "b40688ea6389c8171614b25491f71d4a27946e0c7ce2da1c6de27e25abf1a0ae",
+      "source_files_checked": 12
+    }
+  ],
+  "limits": "Source-bound conditional refinement, not verified Rust extraction. No new timing, database/Redis, MinIO/recovery/Chaos acceptance or production promotion."
+}
