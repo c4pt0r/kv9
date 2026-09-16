@@ -93,16 +93,22 @@ snapshots, observer streams, duplicate evidence and executable payloads remain
 in the full local archive. The portable selection is not a standalone replay
 of every original payload check.
 
-## Next write comparison
+## Subsequent write comparison
 
-The prepared comparison uses the same clean source for default and preallocated
+The [completed comparison](WAL-PREALLOCATION-PERFORMANCE.md) passes all eight
+smokes and sixteen timed cohorts with independent acceptance. Loaded Put gains
+0.545%, loaded batch gains 1.474% pooled, and loaded pooled p99 is unchanged.
+Batch direction reverses by order; keep the feature default-off and preserve
+the completed experiment.
+
+The comparison uses the same clean source for default and preallocated
 servers and the existing qualified performance client `1b8060e`. Fresh role
 readback and feature controls pass. The measured request loops, workloads,
 storage guards and fixed client are unchanged: eight smokes, then sixteen
 ten-second cohorts covering Put and BatchPut(64), c1/c64 and both orders.
 Active storage is volatile tmpfs; keep that panel separate from real-disk
 durability and state the Redis reference's acknowledgment settings explicitly.
-Final selection requires useful throughput and latency results.
+The small and inconsistent gains do not justify default selection.
 
 The broad industrial roadmap, separate C04 pre-upload acceptance, clock/lease
 qualification and dynamic multi-Raft/split dependencies remain open. CI stays

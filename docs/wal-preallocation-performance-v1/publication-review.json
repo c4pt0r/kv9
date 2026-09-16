@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "report_numbers_and_links": true,
+  "copied_packet_files": 9,
+  "source_inputs": 1573,
+  "source_inventory_dirty": true,
+  "ordinary_file_limit": 2097152,
+  "ordinary_total_limit": 67108864,
+  "scope": "Current publication readback and existing source/documentation bounds. No repeated runtime, correctness, proof or workload gate."
+}

@@ -116,10 +116,12 @@ No completed comparison was repeated after adding the small-case harness.
    full histories, recovery, archive/readback and cleanup. Preserve the original
    evidence. The existing C04 pre-upload
    acceptance remains separate and incomplete; this increment does not close it.
-3. Compare single Put and BatchPut throughput, mean and p99 in both orders.
-   Include the three-copy Redis reference with clearly stated durability and
-   acknowledgement settings. Reject a negligible or regressing runtime result;
-   an encoder microbenchmark is insufficient for default selection.
+3. The [same-source end-to-end comparison](WAL-PREALLOCATION-PERFORMANCE.md)
+   now passes all eight smokes and sixteen timed cohorts. Loaded Put gains
+   0.545%; loaded batch gains 1.474% pooled but changes direction by order,
+   with unchanged loaded pooled p99. Keep default-off and do not repeat the
+   unchanged screen. Redis was not rerun; its earlier reference retains
+   separate acknowledgment and durability semantics.
 4. Keep the industrial roadmap, write goal and split/multi-Raft prerequisites
    open. Do not restart the completed resident-index experiments: their static
    follow-up supplied no justified correction for the insertion regression.

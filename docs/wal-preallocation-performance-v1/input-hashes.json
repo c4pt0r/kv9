@@ -1,0 +1,314 @@
+{
+  "/mnt/data/kv9-work/upper-bound-requalified-report-preparation-20260915-first/summarize.py": {
+    "bytes": 20463,
+    "sha256": "b908f62bb0ec2314bd1ceda9389e96da8014247a16d4ab117355810f6a0655c3"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-execution-20260916-first/audit-terminal.json": {
+    "bytes": 538,
+    "sha256": "e751808ce7a56d590b81c15984c8c0879fe74487e9cb6c91c9ea55d027c0c644"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-preparation-20260915-first/audit.py": {
+    "bytes": 58819,
+    "sha256": "b4a05390e4c8ff4aecc9ce3d96b742f802609fa2f786b8fae0e9475d619b1fc8"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-preparation-20260915-first/matched-driver.py": {
+    "bytes": 54674,
+    "sha256": "ef5cc5aa29dbe705732e7903420c1ffd4ed45525e38d5c451e80a4315ecf5686"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-preparation-20260915-first/protocol.json": {
+    "bytes": 23162,
+    "sha256": "6f0050ca6b857f3501ccb28fc6168b3255a981bb69529c9845d2f55984e9be6c"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-preparation-20260915-first/readiness/role-binding-current.json": {
+    "bytes": 470923,
+    "sha256": "d18f8bdb46a4882ce007b501249c8e2f26eae76ce05bc49325ee6f7addb7f1ab"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-preparation-20260915-first/results-first/audit.json": {
+    "bytes": 456130,
+    "sha256": "71ce123e31591eb908c96fca51716607a945097df1b04eca156beb34495f97f9"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-preparation-20260915-first/results-first/input-inventory.json": {
+    "bytes": 934464,
+    "sha256": "3dd3702760a68a5a052ddec57d49d3878669fa5e95285ce5400582cf050d4233"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-preparation-20260915-first/storage-policy.json": {
+    "bytes": 822,
+    "sha256": "593d2ac290287ee8fafd000beff61dbe388759b5fc81dada34b29a042b59a14c"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-report-20260916-first/original-summarize.py": {
+    "bytes": 20463,
+    "sha256": "b908f62bb0ec2314bd1ceda9389e96da8014247a16d4ab117355810f6a0655c3"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-report-20260916-first/preparation-pins.json": {
+    "bytes": 1915,
+    "sha256": "fafe8949f102c4a1b14aa556ac26c7a8842ee9cc4f82cd88f383d37ca9c2c61d"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-report-20260916-first/summarize.py": {
+    "bytes": 20529,
+    "sha256": "5836e1bd306bbeb9ebfff9039991c3917a0ebf398f338a9d145d8e6b1cb566ef"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-smoke-20260915-first/matrix.json": {
+    "bytes": 689135,
+    "sha256": "ef45494a5ff1bd5cfa21892a5513385aad23cc4e5ef9a67f7ef70f2851c57080"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/000-old-point-r000-p00001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "65edc432beff10570c37cb5438a9edb999d18f1570717d6c1227adddbd5909ef"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/000-old-point-r000-p00001/resource-coverage.json": {
+    "bytes": 1683,
+    "sha256": "07d23930362cfc259fbfb2c963cb5b7ba0118bf53307c7030571ac062b592b0d"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/000-old-point-r000-p00001/resource-samples.json": {
+    "bytes": 1481830,
+    "sha256": "bb50a9e603177f6fe69f9ab102a95338978ebed9ed872d91e0d1850aea242628"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/000-old-point-r000-p00001/run/report.json": {
+    "bytes": 1432038,
+    "sha256": "935f221459fb221dc7f2447bb3b6977b5c4bc586289aa4bcf8c69e4d03f90274"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/001-new-point-r000-p00001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "d9267e615daaeac626a924a32282c67818286ccc943175f5eb7a6fad4eaf9833"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/001-new-point-r000-p00001/resource-coverage.json": {
+    "bytes": 1680,
+    "sha256": "372a19811a8a71c45f9b6dd46926b58a2413d981e95daeb8cdfbcf40d809dd82"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/001-new-point-r000-p00001/resource-samples.json": {
+    "bytes": 1481826,
+    "sha256": "430e3dc21e801f2952219dda258d49291b431cff4a8b732d4f4eedd916ddc885"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/001-new-point-r000-p00001/run/report.json": {
+    "bytes": 1432059,
+    "sha256": "c654bd5ab1400be0f58ee39b2f178205d55012c5d8b5397fffa5db0415b92eb6"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "f06944694e99c2bf0ca3d14e6a785dde7def27badbf8a49e36c812deabf12a18"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/resource-coverage.json": {
+    "bytes": 1686,
+    "sha256": "0a7d48b51ec94c698818c86d9b8f992367abd97dcdd77bf0d713719ffa45ddcc"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/resource-samples.json": {
+    "bytes": 1389490,
+    "sha256": "7f6fba192b39d4fcccaf808dea2071a17ed562873873628894b85477166a4873"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/002-old-batch64-r000-p00001/run/report.json": {
+    "bytes": 1431334,
+    "sha256": "32952150e7554ed1606921e834400a55604f4dc1bfa7bffbce6d683dd6e5001f"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "d083109e6c19c09c9af9d79ec506ff051ebbabf9f180a1cdcd9906c4d107b724"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/resource-coverage.json": {
+    "bytes": 1695,
+    "sha256": "de556afd7b56dbbf82a682a49b780a3597a3506d6f8a5932ce1ea54b5e98f826"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/resource-samples.json": {
+    "bytes": 1389562,
+    "sha256": "bb9b207183c192e3eada7e6bf08c2483e3e537f4f2fa6f9a39477e6494b8d243"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/003-new-batch64-r000-p00001/run/report.json": {
+    "bytes": 1431312,
+    "sha256": "14d86217ebfe0dd4092168d23aea5386645a6b276285e319ef71a441768d4310"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/004-old-point-r000-p00064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "4a61b13189a9fab457fab9ab2838f80e70dc1ca5495c604f1c8289ccb6569387"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/004-old-point-r000-p00064/resource-coverage.json": {
+    "bytes": 3644,
+    "sha256": "a63bcdbe48b2ac7564237fa105d080347d40e99ad4e42e5adf18f818a466c871"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/004-old-point-r000-p00064/resource-samples.json": {
+    "bytes": 4572505,
+    "sha256": "b4caf810541b7a4633b759400a3678cf3e67a756ec5b8b0d5d8833e05e658fa7"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/004-old-point-r000-p00064/run/report.json": {
+    "bytes": 1445193,
+    "sha256": "75ed51b29681df5a786c9a3d7d3afa52e0681bb5c1b741a1a8803dc24ab1ef68"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/005-new-point-r000-p00064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "91e9c4c7d9f9d23a3bee01cb38f251a6c2ad532ee1a266d122804a94f2a86b83"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/005-new-point-r000-p00064/resource-coverage.json": {
+    "bytes": 3446,
+    "sha256": "0d433e87dd0a1f4f9aff1dd6dcf2157c728dd4a488f61d4feaae4e4c73ab8cc7"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/005-new-point-r000-p00064/resource-samples.json": {
+    "bytes": 4233982,
+    "sha256": "b25052d5a78a7d1c6988df818883291d04f4823a157a180c2c3f40da1e4c8f99"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/005-new-point-r000-p00064/run/report.json": {
+    "bytes": 1445250,
+    "sha256": "5950e65e73eb73c19c1c92fb8f905d9337ea31ce3c81401bf7b8b08ca8ffaadc"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "e90bda4564353f9e76a9f4d74ba7044168321ccc97ab3a57fba7d9f858d63e5c"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/resource-coverage.json": {
+    "bytes": 3533,
+    "sha256": "dcb1d7d02401718e7db444dde2c30dece32d1161482ae2229093743f21028b64"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/resource-samples.json": {
+    "bytes": 4063803,
+    "sha256": "dea801add6a8b5afe42fb4fd53e8cd71cc169e171ca3f44e1040003b57d4414a"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/006-old-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444201,
+    "sha256": "8b6c82777cf1f4fe9b8cac4953587c6ce9d771be99258f9024cadc1099c11a04"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "ba9f3c813e6095bdf3afb6813cf96fdf5a2deb58b73105a78e3e9be5a47e9051"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/resource-coverage.json": {
+    "bytes": 4269,
+    "sha256": "7d17cece5c9687a0fe8b19d3f0f908b5597bdc09027d63776ad8c28d35b5dc4b"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/resource-samples.json": {
+    "bytes": 3891733,
+    "sha256": "5e264d31196d35ff63253765323a2f9b4353e594e75c84479cc4d69a17f43ad7"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/007-new-batch64-r000-p00064/run/report.json": {
+    "bytes": 1444279,
+    "sha256": "ec46dcf3de34d6fc34141707b67ea7e5dc3f97bf39751550c4c1f616087c12b3"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "b6fc7476db9f603a0e307d5235b05c9971d1a77a83358337443f4332c74027f8"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/resource-coverage.json": {
+    "bytes": 3608,
+    "sha256": "1fe104c5e14bd795d39550b6a42871e532e0058fbeedb85a7881c815c590599e"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/resource-samples.json": {
+    "bytes": 3755595,
+    "sha256": "26a0e8f5e4806651af530f68203b01efd531ffd5f65e9e902eba853251b3e2fb"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/008-new-batch64-r000-p10064/run/report.json": {
+    "bytes": 1444097,
+    "sha256": "3750d40ffcc14b9c8582da3047ddd116a9e63939a3a1f0b80732be7e3ee9f73b"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/requested-config.json": {
+    "bytes": 813,
+    "sha256": "ac0cbf5fa2f8b71077047b52af0dfcd84769d4746ce97b1342123fdd8cd1001d"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/resource-coverage.json": {
+    "bytes": 3521,
+    "sha256": "a68a9abe45437a2484c824c08e471652b7e20ed247892240d1d019cb33e0aadf"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/resource-samples.json": {
+    "bytes": 3933017,
+    "sha256": "9fe96d57cb60314515618ea35161854b0291b6bb0b93ffca1e7b907984e11958"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/009-old-batch64-r000-p10064/run/report.json": {
+    "bytes": 1444173,
+    "sha256": "df88614192ccb5ce3f6de2d50810f702fb6055c41a3f72b01a0b2453e4b153ab"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/010-new-point-r000-p10064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "e7d43efb9cdbef27a04efd95cf5ac4ff96283039d9ec6a6570eed61739cb2c55"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/010-new-point-r000-p10064/resource-coverage.json": {
+    "bytes": 3735,
+    "sha256": "2a719f257d5807a9bec95a274baad26ae0f2bc9323a26f42755fd30f30bc5d94"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/010-new-point-r000-p10064/resource-samples.json": {
+    "bytes": 4187031,
+    "sha256": "dd737e7be69a86c7b4588640716c0584a91c843d8b8a61c17856a9e26c3c4484"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/010-new-point-r000-p10064/run/report.json": {
+    "bytes": 1445219,
+    "sha256": "9c32c23158e4871a5d338ad3f92ff91145e84b3659808fc4b4b7f6a6b0bb90ec"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/011-old-point-r000-p10064/requested-config.json": {
+    "bytes": 812,
+    "sha256": "1465b4799429636036ca21ec4c4a1b3a444e0d0c9d83fd61e76ec69c6651059f"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/011-old-point-r000-p10064/resource-coverage.json": {
+    "bytes": 3483,
+    "sha256": "bbb562c7638d590f397c80e688c6215dd06a89645dc819622820e0d93ea0dc38"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/011-old-point-r000-p10064/resource-samples.json": {
+    "bytes": 4446395,
+    "sha256": "aef854c414386f37f80ed71e793b1cdb99073b8bbce53febe0877283d3ea724a"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/011-old-point-r000-p10064/run/report.json": {
+    "bytes": 1445352,
+    "sha256": "11195a26f49c0d83446081f8b37ee354d4b6e639c2170e82677e281e076caa1a"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "d8a918c6b016344e71e823252dfa3f921b54d7e408cdedd5c552d35f2f60ff91"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/resource-coverage.json": {
+    "bytes": 1694,
+    "sha256": "27ca4b83a88b7f8f0e290f60efcab76598bb6a9ede84e9d61758793abf40c1be"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/resource-samples.json": {
+    "bytes": 1389521,
+    "sha256": "e3bf392ce7a82ddfbaa634d54474d1f6e4724af28ae038788b82440767489927"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/012-new-batch64-r000-p10001/run/report.json": {
+    "bytes": 1431345,
+    "sha256": "6d126c270c016e6e0702ff6a637190dee55d1498f65a712fd9da5990b91c9cea"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/requested-config.json": {
+    "bytes": 811,
+    "sha256": "415fcf6b872f81c2ea1d83ad536dbc230947c6ff43b6cb26db567801846a2069"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/resource-coverage.json": {
+    "bytes": 1691,
+    "sha256": "7b71fb6364057aac369e0ef79f2e4c3f1433220a315cd8fe866824d6cdfd66a9"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/resource-samples.json": {
+    "bytes": 1389442,
+    "sha256": "cbdd62f1aac242d5116f7715689b9b14cb1a9c8f40562645e2bfd8d3b7f974c6"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/013-old-batch64-r000-p10001/run/report.json": {
+    "bytes": 1431323,
+    "sha256": "4f424f76f115dbc186fea6f6d2d83d84917d7ae5b4a9e61a50ec60cdfd4a0517"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/014-new-point-r000-p10001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "ba6bbac77f77b5a9451f963194310f15c032bd85c3ccb4dbeeafb6ff83150772"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/014-new-point-r000-p10001/resource-coverage.json": {
+    "bytes": 1682,
+    "sha256": "76aff0417628b78eeca2ec7b9f74b77b3b37399941023f7b687d274aca542aaa"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/014-new-point-r000-p10001/resource-samples.json": {
+    "bytes": 1481838,
+    "sha256": "0058c04805ba3455714fa6bc608a3f2633705a056890e3ad8e445d6c1c65392c"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/014-new-point-r000-p10001/run/report.json": {
+    "bytes": 1432060,
+    "sha256": "95cd6b30165058010716d344cc05b9d5f25c4543929c3fd5df4027b2113e88bd"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/015-old-point-r000-p10001/requested-config.json": {
+    "bytes": 810,
+    "sha256": "3433ec844764a9d5d3a6e386300884ea2ba5f3632f064d270d00b16f89adfcf7"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/015-old-point-r000-p10001/resource-coverage.json": {
+    "bytes": 1682,
+    "sha256": "73c80ad8b44d52402de1b3ea42ed946d77f6abb6f8eede740f4d255723463ffa"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/015-old-point-r000-p10001/resource-samples.json": {
+    "bytes": 1513009,
+    "sha256": "47c4cab6fd0c6ae0e5b78df23626a30ac55a97b4e33477090a5d47cda56cec9f"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/015-old-point-r000-p10001/run/report.json": {
+    "bytes": 1432035,
+    "sha256": "b72082aa92964bb7d8311b5101cfc18d84e7f22aa3aab5b080bb8bd39c8474c4"
+  },
+  "/mnt/data/kv9-work/wal-preallocation-performance-timing-20260915-first/cohorts/matrix.json": {
+    "bytes": 903379,
+    "sha256": "3ce1f58191bee1ba20c43b35fd3640500ebd46b76660561091f2d0d404f33467"
+  }
+}

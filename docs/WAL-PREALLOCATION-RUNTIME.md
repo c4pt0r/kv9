@@ -100,8 +100,9 @@ available for readback. Compiler caches retain their declared location. Capacity
 checks here are launch/point-in-time observations, not continuous monitoring.
 
 The candidate's actual Chaos Mesh qualification now passes with exact image and
-feature bindings. Next compare point Put and BatchPut throughput, mean and p99
-in both orders with the same qualified performance client. Keep the Redis
-reference's acknowledgment/durability settings explicit. CRC remains selected;
+feature bindings. The [completed same-source write comparison](WAL-PREALLOCATION-PERFORMANCE.md)
+retains small point gains and order-dependent batch gains; keep the feature
+default-off. The Redis reference retains separate acknowledgment/durability
+settings. CRC remains selected;
 the industrial roadmap and separate C04 pre-upload acceptance remain open.
 CI stays local.

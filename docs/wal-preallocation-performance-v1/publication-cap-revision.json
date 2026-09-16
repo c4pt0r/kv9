@@ -1,0 +1,13 @@
+{
+  "complete": true,
+  "reason": "Keep every reporter input and all eight smoke reports after finite selection exceeded the inherited publication-only cap.",
+  "first_failure": "6c1584/1",
+  "measured_selection_bytes": 91902507,
+  "old_total_decoded_cap_bytes": 83886080,
+  "new_total_decoded_cap_bytes": 100663296,
+  "unchanged_member_cap_bytes": 8388608,
+  "unchanged_compressed_cap_bytes": 33554432,
+  "unchanged_member_count_limit": 512,
+  "available_bytes": 9569250709504,
+  "scope": "Metadata packaging only. Timing, correctness, retention and independent-audit predicates and limits are unchanged. No workload or audit rerun."
+}

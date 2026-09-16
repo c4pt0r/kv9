@@ -12,7 +12,16 @@ only to its recorded source, client, workload and duration. Historical numbers
 must not be relabeled as current measurements or full industrial qualification.
 
 The priority remains [writes against Redis with one primary and two replicas](WRITE-PERFORMANCE-NEXT.md).
-The latest [complete upper-bound screen](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
+The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
+uses current `86aa6fc` default/feature servers and one qualified client. Default
+reaches **137,873.776 Put/s / 1,022,750.059 BatchPut(64) items/s** at c64.
+Preallocation changes throughput **+0.545% / +1.474%**, with unchanged loaded
+pooled p99 and order-dependent batch gains. All eight smokes, sixteen timed
+cohorts, 7,200,959 calls / 63,451,454 items and independent audit pass. Keep the
+feature default-off; quantify Raw lowering/fence costs from retained exact
+inputs before a different candidate. Do not repeat the completed comparison.
+
+The earlier [complete upper-bound screen](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
 uses one explicitly requalified client for both retained servers. CRC reaches
 **135,562.425 point Put/s** and **1,030,729.153 batch items/s** at c64. Candidate
 `e2e23cc` reaches 139,858.145 / 1,016,106.575: point **+3.169%** with better
@@ -100,7 +109,7 @@ adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
-| WAL payload preallocation | [Default-off candidate, proofs and exact encoder results](WAL-PAYLOAD-PREALLOCATION.md): reuse validated size with unchanged emitter/framing/sync. Eleven capacity theorems/seven controls and 47 CRC theorems/eight controls pass; both default/feature workspace configurations pass 851 tests and Clippy. Original-corpus encoder mean −27.339%; six small cases improve mean/p99. [Matching releases and ordinary recovery](WAL-PREALLOCATION-RUNTIME.md) pass: four complete histories, 728 operations (666 OK / 62 unknown), twelve fresh drains and fourteen exited lifetimes. [Actual 21-window Chaos Mesh](WAL-PREALLOCATION-CHAOS.md) also passes: 9,241 complete operations, four final drains, 31 exited server lifetimes and 25 exited containers. End-to-end timing is next; no new database QPS or Redis result. |
+| WAL payload preallocation | [Default-off candidate, proofs and exact encoder results](WAL-PAYLOAD-PREALLOCATION.md): reuse validated size with unchanged emitter/framing/sync. Eleven capacity theorems/seven controls and 47 CRC theorems/eight controls pass; both default/feature workspace configurations pass 851 tests and Clippy. Original-corpus encoder mean −27.339%; six small cases improve mean/p99. [Matching releases and ordinary recovery](WAL-PREALLOCATION-RUNTIME.md) pass: four complete histories, 728 operations (666 OK / 62 unknown), twelve fresh drains and fourteen exited lifetimes. [Actual 21-window Chaos Mesh](WAL-PREALLOCATION-CHAOS.md) also passes: 9,241 complete operations, four final drains, 31 exited server lifetimes and 25 exited containers. [Same-source end-to-end timing](WAL-PREALLOCATION-PERFORMANCE.md) passes: loaded Put +0.545%, batch +1.474% pooled, unchanged loaded pooled p99, and batch direction changes between orders. Keep default-off; no Redis parity or unchanged rerun. |
 | Resident-index coalescing and value reuse | [Exact corpus, patches and measurements](RESIDENT-INDEX-EXPERIMENTS.md): sorting/coalescing and two-pass reuse rejected; one-traversal borrowed upsert remains held. Under jemalloc, overwrite index time −12.269% but pure insertion +12.121%. All 53 dependency tests pass. Isolated CPU experiments only: no selected-runtime change, mechanized proof/Chaos acceptance or database-QPS claim. |
 | Conservative receipt upper bound `e2e23cc` | [Source-bound proof](WRITE-RECEIPT-UPPER-BOUND.md), [default release/recovery](WRITE-RECEIPT-UPPER-BOUND-RUNTIME.md), [actual full21 Chaos](WRITE-RECEIPT-UPPER-BOUND-CHAOS.md) and [all 8 smokes / 16 timed cohorts](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md) pass. One explicitly requalified client is shared by both arms. Loaded Put +3.169% with better mean/p99 in both orders; loaded batch -1.419% pooled with worse p99 and an order reversal. Keep CRC selected, hold promotion and preserve the original input failures. |
 | Published WAL directory capability `483b8c3` | Experimental on CRC main. [Conditional proof, 793 tests and syscall fault checks](WRITE-PUBLISHED-DIRECTORY.md), [default release and ordinary recovery](WRITE-PUBLISHED-DIRECTORY-RECOVERY.md), and the [actual 21-window Chaos baseline](WRITE-PUBLISHED-DIRECTORY-CHAOS.md) pass. The latter retains 9,372 operations and 33 exited server lifetimes. The [complete rotation supplement](WRITE-PUBLISHED-DIRECTORY-ROTATION.md) now passes selected rotations before and after an actual leader kill, same-store acknowledged-value recovery, five fresh drains, independent audit and exact cleanup. Both earlier fixture failures are preserved. [All 8 smokes / 16 timed cohorts](WRITE-PUBLISHED-DIRECTORY-PERFORMANCE.md) pass: c64 point -0.518%, batch +1.941%, and batch p99 improves to 6.554–6.619 ms. Both orders retain loaded point regression and batch gains. Hold the candidate as a batch improvement; keep CRC main selected. Initial creation/recovery retain full ancestor sync; rotation reuses the live validated parent directory. |
