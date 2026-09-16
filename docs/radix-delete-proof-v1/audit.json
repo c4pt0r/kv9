@@ -1,0 +1,128 @@
+{
+  "complete": true,
+  "theorems_checked_together": 339,
+  "additional_theorems": 52,
+  "new_rejecting_controls": 24,
+  "controls": [
+    {
+      "name": "remove-loses-tail",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "insert-loses-suffix",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "set-loses-suffix",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "search-hit-off-by-one",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "search-reversed-partition",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "replacement-deletes-child",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "restore-wrong-index",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "unwind-skips-parent",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "restore-rejects-end-insertion",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "delete-prefix-offset",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "delete-retains-terminal",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "delete-retains-leaf",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "delete-edge-offset",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "delete-discards-ancestors",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "absent-delete-drops-root",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-prefix-offset",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-edge-offset",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-count-double-decrement",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "word-success-flag",
+      "kind": "semantic",
+      "checked": true
+    },
+    {
+      "name": "delete-proof-hole",
+      "kind": "hole",
+      "checked": true
+    },
+    {
+      "name": "delete-custom-axiom",
+      "kind": "axiom",
+      "checked": true
+    }
+  ],
+  "positive_compiler_commands": 25,
+  "prior_qualification_failure_retained": "ValueError('no substantive proof failure: restore-wrong-index')",
+  "classification_fix": "Recognize Lean Application type mismatch as a substantive proof rejection; the incorrect restore index already failed the compiler.",
+  "sources_match": true,
+  "protected_drafts_unchanged": true,
+  "candidate_rust_and_production_unchanged": true,
+  "deletion_loop_scope": "Reviewed value-level Rust deletion-loop correspondence: indexed vector/search contracts; iterative descent without repeated prefix checks; detached-parent frames and checked restoration; termination; word-offset simulation and stored word-count/return-flag refinement. Sorted search/Vec/Arc/compiler library contracts remain explicit. This is not verified Rust extraction or heap correspondence. No timing or promotion.",
+  "remaining_implementation_scope": "Insertion and indexed seek loop correspondence, Arc/COW heap ownership, resident word-count premises and differential execution remain open.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Insertion action/depth/split and mutable-slot simulation; indexed seek/pending Vec correspondence",
+    "Arc/COW heap ownership, snapshots, concurrent reclamation and distinct resident storage for word-count representability; Rust/compiler/library premises",
+    "Exact-source executable Rust/model differential evaluation, then predeclared matched performance and recovery/Chaos/Redis gates"
+  ],
+  "prior_cursor_packet_sha256": "fb53d91310bf49c55776dd3f9f7f330d8fc2764e50123d45ba93ad4c5f02bc6d"
+}
