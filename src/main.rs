@@ -24,6 +24,7 @@ use kv9_server::{
     RawClientOutcome, RuntimeAuth,
 };
 
+mod data_group_cli;
 mod endpoint_cli;
 mod retention_cli;
 
@@ -55,6 +56,7 @@ fn print_usage() {
            KV9_JOIN_TICKET=<ticket> kv9 join --root <file> --node-id <id> --addr <ip:port> --data-dir <path>\n\
            KV9_CLUSTER_TOKEN=<token> KV9_CLIENT_TOKENS=<principal=token,...> kv9 start --node-id <id> --addr <ip:port> --data-dir <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client create-keyspace --addr <ip:port> --name <name> --api-type <txn|raw> [--tenant-id <id>]\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client create-data-group --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --voters <id,id,id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client get-node-endpoint --addr <leader-ip:port> --node-id <id>\n\
@@ -788,6 +790,7 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
             run_raw_client(&command, args)
         }
         "create-keyspace" => run_create_keyspace(args),
+        "create-data-group" => data_group_cli::run(args),
         "admit-node" => run_admit_node(args),
         "promote-node" => run_promote_node(args),
         "get-node-endpoint" => endpoint_cli::run(args, false),

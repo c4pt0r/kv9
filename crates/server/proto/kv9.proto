@@ -28,6 +28,7 @@ service Kv9 {
   rpc KvCheckTxnStatus(KvCheckTxnStatusRequest) returns (KvCheckTxnStatusResponse);
 
   // Metadata / administration.
+  rpc CreateDataGroup(CreateDataGroupRequest) returns (CreateDataGroupResponse);
   rpc CreateKeyspace(CreateKeyspaceRequest) returns (CreateKeyspaceResponse);
   rpc ListKeyspaces(ListKeyspacesRequest) returns (ListKeyspacesResponse);
   rpc GetRegion(GetRegionRequest) returns (GetRegionResponse);
@@ -43,6 +44,22 @@ service Kv9 {
 }
 
 message Empty {}
+
+// Create an initially empty, fixed-voter group and request local activation.
+// This does not assign a key range or authorize public KV access.
+message CreateDataGroupRequest {
+  bytes root_digest = 1; // Exact 32-byte certified metadata root.
+  bytes operation_id = 2; // Nonzero 16-byte immutable retry identity.
+  repeated uint64 voters = 3; // Exactly 3, 5 or 7 active registered stores.
+}
+message CreateDataGroupResponse {
+  bytes creation_intent = 1; // Canonical KV9GRP01 observation.
+  bool changed = 2;
+  // When changed=false, this is a NEW confirmation, not an original receipt.
+  // Applied desire is not quorum readiness or proof that any replica started.
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
+}
 
 message ApplyRetentionRequest {
   // Canonical KV9RTX01 frame, including exact root; at most 16 KiB.

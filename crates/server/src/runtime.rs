@@ -1116,6 +1116,35 @@ where
 }
 
 impl AdminApi for RuntimeBackend {
+    fn create_data_group(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        voters: &[NodeId],
+    ) -> Result<crate::api::CreateDataGroupResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("data group request root differs".into()));
+        }
+        let intent = kv9_meta::data_groups::plan_empty_group(&mut txn, operation, voters)?;
+        let changed = kv9_meta::data_groups::activation::plan_activation(&mut txn, &intent)?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::CreateDataGroupResult {
+            intent,
+            changed,
+            applied,
+        })
+    }
+
     fn apply_retention(
         &self,
         _caller: &str,
@@ -2931,6 +2960,8 @@ type RouteSnapshotGate = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver
 /// A running real-process metadata member.
 pub struct NodeRuntime {
     data_groups: crate::region_manager::RegionManager,
+    next_group_reconcile: Instant,
+    group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
     public_admission: Arc<crate::admission::PublicAdmission>,
     raft_io_metrics: Arc<kv9_common::metrics::WalIoMetrics>,
@@ -3505,6 +3536,8 @@ impl NodeRuntime {
         };
         Ok(Self {
             data_groups,
+            next_group_reconcile: Instant::now(),
+            group_control_error: None,
             node,
             driver,
             transport,
@@ -3763,6 +3796,20 @@ impl NodeRuntime {
             .store(serving && ready, Ordering::Release);
         if serving && ready && self.discovery.raft_receive_allowed() {
             self.data_groups.resume_active(&self.transport, TICK);
+            if Instant::now() >= self.next_group_reconcile {
+                self.next_group_reconcile = Instant::now() + Duration::from_millis(100);
+                self.group_control_error =
+                    match kv9_meta::data_groups::activation::committed_activations(
+                        &self.node.meta_raft.store,
+                    ) {
+                        Ok(requests) => {
+                            self.data_groups
+                                .reconcile_activation(&requests, &self.transport, TICK);
+                            None
+                        }
+                        Err(error) => Some(error.to_string()),
+                    };
+            }
         }
         if serving && !ready {
             self.node
@@ -4385,6 +4432,16 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        // Observations only: status output never grants routing or voter authority.
+        body.push_str("data_groups=");
+        body.push_str(&self.data_groups.status_json());
+        body.push('\n');
+        body.push_str("data_group_control_error=");
+        body.push_str(
+            &serde_json::to_string(&self.group_control_error)
+                .expect("serialize control observation"),
+        );
+        body.push('\n');
         #[cfg(feature = "write-stage-tracing")]
         {
             if let Ok(trace) = serde_json::to_string(&self.driver.write_stage_trace()) {
