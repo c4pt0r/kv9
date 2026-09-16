@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "scope": "Durable preparation only; not data-group activation or a complete RegionManager proof",
+  "theorems": [
+    "initial_safe",
+    "step_preserves",
+    "reachable_safe",
+    "report_requires_durable_binding",
+    "ready_never_initializes",
+    "failed_never_initializes",
+    "failed_has_no_report",
+    "ready_is_monotone",
+    "restart_discards_report"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups.rs": "1bab2ecabcc02cf65b8c6b5db55b29d15b89629482cdb7d7091675f646cce13a",
+    "crates/server/src/region_manager.rs": "bdc1fa369d043e7614c7c2db370767bead55caedd5e0193cf447265bda580126",
+    "crates/server/src/runtime.rs": "85ed2bedf4a519de9df776b81205a41110a51cd6a0b20ece93c05949856f9e7d",
+    "crates/raft/src/storage.rs": "88ee74c08c4da0c2e0cf75eb0028ca68147577ad0627dc600097e3342787b250",
+    "crates/raft/src/storage/configuration.rs": "e319b1bb289dabcbd550f141f27f971994891ff2ebe86d202889c69c02d12253",
+    "proofs/lean/group-preparation/Preparation.lean": "eaf5394d4860db94a8c6889cfa17f4ae4204e2d0dce9e75b5aefb091918d0872"
+  }
+}

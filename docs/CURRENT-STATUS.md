@@ -12,11 +12,18 @@ p99 9.306–9.437 ms per batch). It uses three voters on one host with tmpfs WAL
 it is not a physical-disk or cross-host scaling result. See the
 [qualified measurement](WAL-PREALLOCATION-PERFORMANCE.md).
 
-The [horizontal scaling plan](HORIZONTAL-SCALING-PLAN.md) defines the development
-sequence and measurable 3/6/9-node acceptance. The first [#22 transport increment](MULTI-RAFT-TRANSPORT.md) now passes
-856 local workspace tests/doctests (28 existing ignored), five rejecting defect
-controls, formatting and strict Clippy. Three independent three-voter groups
-replicate through shared loopback gRPC streams with separate inboxes and engines. Durable RegionManager lifecycle,
+The new [durable group preparation](GROUP-PREPARATION.md) connects replicated,
+operation-deduplicated creation intents to independent group directories and
+restart discovery. Nine focused tests cover sixteen persistence cuts and a
+real three-runtime metadata quorum with leader replacement and store restart.
+Final local validation passes 865 tests/doctests (28 existing ignored), nine
+Rust defect controls, strict Clippy and formatting. The preparation model proves
+nine theorems with four semantic and two proof-policy controls. The preceding
+[transport increment](MULTI-RAFT-TRANSPORT.md) already isolates three three-voter
+groups over shared loopback gRPC streams.
+
+The [horizontal scaling plan](HORIZONTAL-SCALING-PLAN.md) defines measurable
+3/6/9-node acceptance. RegionManager activation/retirement and bounded scheduling,
 public range routing, migration and recoverable splits remain incomplete.
 There are no horizontal-scaling benchmark results yet.
 

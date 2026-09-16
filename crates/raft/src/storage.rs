@@ -113,6 +113,43 @@ impl DiskRaftStorage<OsFileSystem> {
 }
 
 impl<F: FileSystem> DiskRaftStorage<F> {
+    /// Validate storage prepared for a group which has never been activated.
+    /// A creation intent cannot adopt another log or reset a voting history.
+    /// Active group recovery must use a separate lifecycle state and contract.
+    pub fn validate_unstarted_group(&self, voters: &[u64]) -> Result<()> {
+        use raft::Storage;
+        let writer = self.file.lock().expect("raft log file poisoned");
+        if writer.is_none() {
+            return Err(Error::Raft("unstarted group has failed storage".into()));
+        }
+        let state = self
+            .mem
+            .initial_state()
+            .map_err(|e| Error::Raft(e.to_string()))?;
+        let history = self.conf_history.lock().expect("conf history poisoned");
+        let expected = ConfState::from((voters.to_vec(), vec![]));
+        if state.hard_state != HardState::default()
+            || state.conf_state != expected
+            || self
+                .mem
+                .last_index()
+                .map_err(|e| Error::Raft(e.to_string()))?
+                != 0
+            || !history.is_unstarted(&expected)
+            || self
+                .lease_epoch
+                .lock()
+                .expect("lease epoch poisoned")
+                .is_some()
+        {
+            return Err(Error::Raft(
+                "unstarted group contains voting history or a different initial configuration"
+                    .into(),
+            ));
+        }
+        Ok(())
+    }
+
     fn open_on(fs: F, data_dir: &Path, voters: &[u64]) -> Result<(Self, bool)> {
         Self::open_mode(fs, data_dir, voters, true)
     }

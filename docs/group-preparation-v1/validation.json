@@ -1,0 +1,197 @@
+{
+  "stage": "D01b durable preparation; activation remains open",
+  "base_commit": "3dc6a131c825ba7a97d233d3bc1138630ea1b9be",
+  "toolchain": {
+    "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
+    "cargo": "cargo 1.94.0 (85eff7c80 2026-01-15)",
+    "lean_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550"
+  },
+  "checks": {
+    "cargo test --workspace": {
+      "exit_code": 0,
+      "passed": 865,
+      "ignored": 28,
+      "failed": 0
+    },
+    "cargo clippy --workspace --all-targets -- -D warnings": {
+      "exit_code": 0
+    },
+    "cargo fmt --all --check": {
+      "exit_code": 0
+    },
+    "git diff --check": {
+      "exit_code": 0
+    }
+  },
+  "focused_tests": 9,
+  "publication_cuts": 16,
+  "rust_single_defect_controls": [
+    {
+      "name": "dedup",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "same operation must reserve the same group",
+      "source_sha256": "1bab2ecabcc02cf65b8c6b5db55b29d15b89629482cdb7d7091675f646cce13a",
+      "mutated_sha256": "fb028350e090baad28a6347b85a675662432f3e35e0bd6b266c5d49750317810"
+    },
+    {
+      "name": "replica-binding",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "an operation must not silently authorize a replacement disk",
+      "source_sha256": "1bab2ecabcc02cf65b8c6b5db55b29d15b89629482cdb7d7091675f646cce13a",
+      "mutated_sha256": "6d32ba6739c498b978a76275ab5187b6c0d18e5e66f0a0043bc82935c84fb618"
+    },
+    {
+      "name": "task-phase",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "unknown task phase must not grant creation authority",
+      "source_sha256": "1bab2ecabcc02cf65b8c6b5db55b29d15b89629482cdb7d7091675f646cce13a",
+      "mutated_sha256": "1618b504616fa0565aecca55d043750cd40dfdbf5986162ac133160a40fe074d"
+    },
+    {
+      "name": "failure-fence",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "failed publication must poison this group until recovery",
+      "source_sha256": "bdc1fa369d043e7614c7c2db370767bead55caedd5e0193cf447265bda580126",
+      "mutated_sha256": "37c4f4f3afc775f81383fa3e2db9ae6d31dbc21649d2af90c17faf464d25fb48"
+    },
+    {
+      "name": "store-incarnation",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "replacement disk must refuse before preparing any local files",
+      "source_sha256": "bdc1fa369d043e7614c7c2db370767bead55caedd5e0193cf447265bda580126",
+      "mutated_sha256": "8c863d6a5554e1cee67a1a6445faea886b28ca9d03d6d5dbf0c495dd9976b30e"
+    },
+    {
+      "name": "ready-reinitialize",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "must refuse instead of reinitializing",
+      "source_sha256": "bdc1fa369d043e7614c7c2db370767bead55caedd5e0193cf447265bda580126",
+      "mutated_sha256": "c1cb6abb388cce8e26f26de8894128c933bca2ba8646934729e0e451e2661714"
+    },
+    {
+      "name": "voting-history",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "unstarted group must reject nonempty or foreign storage, mode=0",
+      "source_sha256": "bdc1fa369d043e7614c7c2db370767bead55caedd5e0193cf447265bda580126",
+      "mutated_sha256": "f36c8af1eae08d0cb70b6c3765d8a0c89103863a9eabbc44ebc58631289c0b34"
+    },
+    {
+      "name": "group-failure-isolation",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "one corrupt group must not abort peer group recovery",
+      "source_sha256": "bdc1fa369d043e7614c7c2db370767bead55caedd5e0193cf447265bda580126",
+      "mutated_sha256": "5d719cc62c2e84f39e7ffb16141d8b8aa9274a00e66797c07046d785ba16f2a1"
+    },
+    {
+      "name": "startup-recovery",
+      "selected": 1,
+      "exit_code": 101,
+      "expected_failure": "restart must discover both durable group preparations",
+      "source_sha256": "85ed2bedf4a519de9df776b81205a41110a51cd6a0b20ece93c05949856f9e7d",
+      "mutated_sha256": "c665cb9775f393a0404fc0c7d17012b3665c8e90249babf13de383911a781ade"
+    }
+  ],
+  "proof": {
+    "theorems": 9,
+    "semantic_controls": 4,
+    "hole_and_axiom_controls": 2,
+    "source_pins_verified": true,
+    "axioms": [
+      "propext"
+    ],
+    "verified_rust_extraction": false
+  },
+  "source_sha256": {
+    "crates/meta/src/data_groups.rs": "1bab2ecabcc02cf65b8c6b5db55b29d15b89629482cdb7d7091675f646cce13a",
+    "crates/meta/src/lib.rs": "cc32a4858ce64af23f08a5b495f08b5c26669ccce5670e7268daaf5ff301049f",
+    "crates/raft/src/storage.rs": "88ee74c08c4da0c2e0cf75eb0028ca68147577ad0627dc600097e3342787b250",
+    "crates/raft/src/storage/configuration.rs": "e319b1bb289dabcbd550f141f27f971994891ff2ebe86d202889c69c02d12253",
+    "crates/server/src/lib.rs": "a7ae569a0971b6ac49d20d54c267b1e2953d4ef217a0d34618a6f4fad18ef294",
+    "crates/server/src/region_manager.rs": "bdc1fa369d043e7614c7c2db370767bead55caedd5e0193cf447265bda580126",
+    "crates/server/src/region_manager/tests.rs": "7c2e8617b8c7a51449417ecfe6baa8e212b6809198cd0d2e7005547118b1548f",
+    "crates/server/src/runtime.rs": "85ed2bedf4a519de9df776b81205a41110a51cd6a0b20ece93c05949856f9e7d",
+    "crates/server/src/runtime/tests/data_group_tests.rs": "a46d109be9adb468641cba790a9d7cf153a31b9182bbdba7632156a05e0823eb",
+    "proofs/lean/group-preparation/Preparation.lean": "eaf5394d4860db94a8c6889cfa17f4ae4204e2d0dce9e75b5aefb091918d0872",
+    "proofs/lean/group-preparation/source-contract.json": "98e608877025ac13006967022b256ca2042d529a1f1743c77ba925ef465f9437",
+    "scripts/prove-group-preparation.py": "b31119135f88c08934c33241b32d8831f408c5f7a750ed653d3b39bdcc6bb549"
+  },
+  "artifact_sha256": {
+    "check-rust-mutations.py": "e31b59c1d737393bcc3ee2af21c5ebe7dd9c90f2a8663ad948e0ef6696593927",
+    "clippy-01.log": "5f45477b3381491393c2a256b475010a15ca8498011018ec264f33b9de76a1f2",
+    "clippy-final.log": "39e78f2f80651c2123b2115e548d4e9a4ab11a69e9b2650641f8e1870b3848b3",
+    "dedup.log": "09f3f907d9e14e788315355cf5195ca749d5d26105f5671239659f1d93441ac0",
+    "dedup.rs": "fb028350e090baad28a6347b85a675662432f3e35e0bd6b266c5d49750317810",
+    "failure-fence.log": "6eb92c2ae6a520bec2fede16dd8692fbc75252130be12f58c3f3aef76764e939",
+    "failure-fence.rs": "37c4f4f3afc775f81383fa3e2db9ae6d31dbc21649d2af90c17faf464d25fb48",
+    "focused-01.log": "0f99bf78541b2d0a76931a63446c20a95b5eac593cc306d6b10efc5b9a46ae6b",
+    "focused-02.log": "b8131d41acedc8d71aa9fb34f12cbb14559072801777a815349c86b0d8233230",
+    "focused-03.log": "37486704fd1c24d5bc77f36698d3f8c378dc1b4b72ca832473834485076416d8",
+    "format.log": "5a008d4a0694affd52730a5778968a292edb396d14d151955831b88b1b514b06",
+    "group-failure-isolation.log": "5fde357abe824e2fc07896a0df6d48b67e460afa9916fe718c10230b3f5201d8",
+    "group-failure-isolation.rs": "5d719cc62c2e84f39e7ffb16141d8b8aa9274a00e66797c07046d785ba16f2a1",
+    "meta-check.log": "937798e90bc12f0cd2bae3708a331105906b98eed45059ee1a1a5b821317ebb0",
+    "mutation-baseline.log": "ac51d475ba351b7a03f7297ff04af412eb2180ee1a1677af636e12e317424e56",
+    "mutation-restored.log": "f8a20e749aaa59445c8e83ac1b8b6fc5c891e2922f3a2d45d92833b3aca93df0",
+    "proof-01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "proof-final/axioms.log": "2d0ae5c1e99aa5918326b11a68661fc9c1bf09e962360cb2e30f9a247f59f13e",
+    "proof-final/failed-report/Preparation.lean": "cf8f1846032f66853dac78d9a89bdd4270def1f38b2f5e1c6ed5c42df49fea2d",
+    "proof-final/failed-report/compiler.log": "0a186638f85135e9370e76ac3b41c5ea7b3a6cdd67d9aa92c3a22c0c76ef4b12",
+    "proof-final/missing-engine-gate/Preparation.lean": "97de40b13d4d78818514b75c50bef723b9ec86df361c0dfec86c8f1ab4b97e1a",
+    "proof-final/missing-engine-gate/compiler.log": "6e993972597f731b56ffcd5a90f2847a21b0c6c5f301f5fa4f93f6d8d8cd5cf0",
+    "proof-final/positive/Audit.lean": "419a58671bba2afc55c4a353e691146d290947e954ec3ef7ff1c1acb84863f62",
+    "proof-final/positive/Preparation.lean": "eaf5394d4860db94a8c6889cfa17f4ae4204e2d0dce9e75b5aefb091918d0872",
+    "proof-final/positive/compiler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "proof-final/ready-reinitialization/Preparation.lean": "422f76f3ac13f04ddb8148f62566a18a7194243c2c3c66a92b940499fc2c4dd7",
+    "proof-final/ready-reinitialization/compiler.log": "321aa54ff1012e21198561bd39b6a25891df3f4a92459eda0981caa7a97eabba",
+    "proof-final/result.json": "aac79a7be725fc90778c98d943bd9216a882d71b3fa49e4d59cf473f2ce2a63f",
+    "proof-final/wrong-binding/Preparation.lean": "d4d677c0acc59a7384f36ccaf5df551144b3bed929794f4320c41529d3aa5e1f",
+    "proof-final/wrong-binding/compiler.log": "7d1a31704d773b53babb46693f48459bbec8928005d03715e7b38493dc35da1c",
+    "proof-qualification-01/positive/Preparation.lean": "eaf5394d4860db94a8c6889cfa17f4ae4204e2d0dce9e75b5aefb091918d0872",
+    "proof-qualification-01/positive/compiler.log": "8922665439f7241066e0caa34b89a070258f2ca0177e5ccbc137dd7ddabd7b19",
+    "proof-qualification-02/axioms.log": "2d0ae5c1e99aa5918326b11a68661fc9c1bf09e962360cb2e30f9a247f59f13e",
+    "proof-qualification-02/failed-report/Preparation.lean": "cf8f1846032f66853dac78d9a89bdd4270def1f38b2f5e1c6ed5c42df49fea2d",
+    "proof-qualification-02/failed-report/compiler.log": "1eb149c002f830f45ccc0aab05d44ce2b4b253c5938099b162e9ed5d937026c5",
+    "proof-qualification-02/missing-engine-gate/Preparation.lean": "97de40b13d4d78818514b75c50bef723b9ec86df361c0dfec86c8f1ab4b97e1a",
+    "proof-qualification-02/missing-engine-gate/compiler.log": "6bfe767af64b608598bf2808e1b6ea5fe4a7c43d8cf926718aaee47666a61681",
+    "proof-qualification-02/positive/Audit.lean": "419a58671bba2afc55c4a353e691146d290947e954ec3ef7ff1c1acb84863f62",
+    "proof-qualification-02/positive/Preparation.lean": "eaf5394d4860db94a8c6889cfa17f4ae4204e2d0dce9e75b5aefb091918d0872",
+    "proof-qualification-02/positive/compiler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "proof-qualification-02/ready-reinitialization/Preparation.lean": "422f76f3ac13f04ddb8148f62566a18a7194243c2c3c66a92b940499fc2c4dd7",
+    "proof-qualification-02/ready-reinitialization/compiler.log": "7536a8aacfc39d3f01d06e09ac34d281ea2cde03e0ec9d274e04732bd55b056f",
+    "proof-qualification-02/result.json": "be2cda73fa756826147d4892895d69f313fa478f95846d66d58194f04b50d415",
+    "proof-qualification-02/wrong-binding/Preparation.lean": "d4d677c0acc59a7384f36ccaf5df551144b3bed929794f4320c41529d3aa5e1f",
+    "proof-qualification-02/wrong-binding/compiler.log": "4cfd916bd92e836dcf2a5ab42f55ecc62f448735c9aa0c876791ecf12c708e4a",
+    "ready-reinitialize.log": "b28eef262ab207bcb3a8fb7794bf399336d7078b9e66529713575fb04e371c21",
+    "ready-reinitialize.rs": "c1cb6abb388cce8e26f26de8894128c933bca2ba8646934729e0e451e2661714",
+    "replica-binding.log": "b543378679fe69d01bbf9f568844680221fbfde46ec44f83d56f8bef83ff0bd0",
+    "replica-binding.rs": "6d32ba6739c498b978a76275ab5187b6c0d18e5e66f0a0043bc82935c84fb618",
+    "rust-mutation-plan.json": "f67b0b60fab3b2f519d186d3bd6848116c7f727d4d9781bef57461f6921271d2",
+    "rust-mutation-results.json": "3539e0cf32c50705a178ecc50a7be3b11b310f635f74184b1b093ad5bf621806",
+    "server-check-02.log": "af44a82b4fca51ce2d564b83b267cefba09278741e4e01b0db6e67953bb3e76f",
+    "server-check-03.log": "c2fb81ca4b23d370d4589b2f92af86dafb674390e865480056735083a4951d71",
+    "server-check-04.log": "18ca67e8d8f857a482e4e7af470d3614fabc06c41055cebaed4930df51b3a32a",
+    "startup-recovery.log": "68ea83fd4f4ff437d63bfbb255b778f570b5a6367f5f690342289f6a2ffd13a6",
+    "startup-recovery.rs": "c665cb9775f393a0404fc0c7d17012b3665c8e90249babf13de383911a781ade",
+    "store-incarnation.log": "117a0b0ad3c1c6cb6b598945430979dac545658e8849fce37e78dcceef54abf7",
+    "store-incarnation.rs": "8c863d6a5554e1cee67a1a6445faea886b28ca9d03d6d5dbf0c495dd9976b30e",
+    "task-phase.log": "5b885f2bdf1e7c6f56052de523a9dcb52d92df82f29163dde5e2cc4d3cd6efd9",
+    "task-phase.rs": "1618b504616fa0565aecca55d043750cd40dfdbf5986162ac133160a40fe074d",
+    "voting-history.log": "aa538dfd7870c539bf33eea9d8229b0cb0bcbf53493c829d5053fa6770f37772",
+    "voting-history.rs": "f36c8af1eae08d0cb70b6c3765d8a0c89103863a9eabbc44ebc58631289c0b34",
+    "workspace-01.log": "44b4d658bc5477c955568da18311516711578b8f2daddf3162f0aecaaae4337d",
+    "workspace-final.log": "d3935ef9fab024a2b263f1fee1925e07ffa8b36bf07afb9d2e431b9d54118ae4"
+  },
+  "full_D01_complete": false,
+  "new_chaos_acceptance": false,
+  "new_qps": false,
+  "horizontal_scaling_measured": false,
+  "hosted_ci_triggered": false
+}
