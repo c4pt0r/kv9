@@ -1,0 +1,11 @@
+[package]
+name = "kv9-radix-index-experiment"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

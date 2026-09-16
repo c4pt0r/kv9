@@ -1,14 +1,15 @@
 # Write performance against three-copy Redis
 
-The [safe accessor three-arm screen](KEY-CLAMP-PERFORMANCE.md) now completes
-26 conditional theorems / 15 rejecting controls, 206 changed-candidate tests,
-198 identical allocation observations and 78 accepted workload processes.
-Original-key write means regress 2.462%–6.486% against baseline; the accessor
-also has no consistent gain against its single-buffer control. Stop this family
-and the skipped read stage. Next implement and prove an isolated persistent
-compressed byte-radix index with ordered scans and immutable snapshots; an
-offline topology census is available, but no Rust index or speedup exists yet.
-No new database QPS, runtime promotion or industrial checkbox closure.
+The [persistent compressed radix prototype](PERSISTENT-RADIX-PROTOTYPE.md)
+now passes 213 isolated common/engine tests (25 existing ignored), including
+11 index tests. Independent models check 6,770 mutation prefixes, old roots
+and 818 bound pairs. Six faulty Rust variants are rejected; 54 allocation
+observations return all six datasets to their byte baseline after teardown.
+Deep prefix mutation and concurrent release pass on 64 KiB thread stacks.
+Next complete the actual algorithm's source-bound formal proof before timing.
+No radix speedup, new database QPS, recovery/Chaos acceptance or runtime
+promotion is claimed. Production keeps rpds; the failed single-buffer/accessor
+family stays stopped. See #51 for the remaining proof and acceptance gates.
 
 Updated: 2026-09-16. The current priority is write throughput and latency,
 targeting Redis with one primary and two replicas. Read optimization is held at
