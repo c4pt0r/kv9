@@ -1,0 +1,49 @@
+{
+  "sources": {
+    "repo/proofs/lean/key-clamp/KeyClamp.lean": "67d4b392277a70a5fb39595a9d7469a5a3cbe7eaa7825a0c3862046f23e39dc4",
+    "repo/scripts/key-clamp/prepare.py": "25a9122c929b3d0d7b97ba6f4c3fe0317a58cccec73b94ea6570218e4aa923e5",
+    "repo/scripts/key-clamp/test.py": "907e9908d94da15619410bbef913eb54a1452f6a6f4937132b7a3909605a395c",
+    "repo/scripts/key-clamp/layout.py": "b8c86936963974887ce9713e6ebcf3bd874c3ce064c713d33399d66161aa0c34",
+    "repo/scripts/key-clamp/prove.py": "8e9da05672a500ac85d87a5a08e10ddcc4e87984a8912780670a530babf67ef7",
+    "repo/scripts/entry-buffer/model.rs": "d8e1318676ed1e41aab3cc196c26fcec7820f2fce2fccc592c8b292553097428",
+    "repo/scripts/inline-key/model.rs": "b104d352e8a8035e010205b11b850d5487d6fc605f030130ecb2a241bb08009b",
+    "evidence/candidate/crates/engine/src/mem.rs": "520b641634e7ccbbe3d5b0fb41d8fd196854324b7c4b2e39e02c2425a77c327c",
+    "evidence/candidate/crates/engine/src/lib.rs": "67bc1e8e345ff88835e7c8690e84453c52dd5574c011ad7dacb18c8321c35c1e",
+    "evidence/candidate/crates/engine/src/entry_buffer.rs": "ac910ae8ab7154821459f3832335204dbdf19a8963019344e8d192dc2c10a51a"
+  },
+  "theorems": [
+    "key_round_trip",
+    "value_round_trip",
+    "pair_round_trip",
+    "encoded_valid",
+    "split_preserves_all_bytes",
+    "encode_injective",
+    "length_check_exact",
+    "accepted_length_is_exact",
+    "values_do_not_affect_equality",
+    "compare_preserved",
+    "equality_preserved",
+    "borrowed_order",
+    "lookup_preserved",
+    "erase_preserved",
+    "put_preserved",
+    "replacement_returns_new_value",
+    "range_preserved",
+    "reverse_preserved",
+    "limit_preserved",
+    "mutation_preserved",
+    "history_preserved",
+    "rejected_batch_preserves_state",
+    "accepted_batch_refines_history",
+    "valid_clamp_identity",
+    "valid_key_matches_original",
+    "cloned_entry_valid"
+  ],
+  "lean_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+  "rpds_source": {
+    "path": "/home/dongxu/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rpds-1.2.1/src/map/red_black_tree_map/mod.rs",
+    "sha256": "71189099680f42428692abb21eb19c6afe96da0e4695634f2866fb021a009e69",
+    "premise": "Equal-key insert_mut replaces the entire Entry including the stored key; get_key_value returns it. Persistent roots retain the old entry."
+  },
+  "scope": "Conditional representation refinement for the clamped key accessor; 23 inherited statements rechecked with the new abstract key definition plus valid-clamp identity, original-accessor equivalence and clone validity. Safe Rust/compiler and original rpds contracts remain premises. Private fields are built only by checked construction and derived Clone; no deserialization or mutable field API. Not verified Rust extraction, allocation failure, locking or Raft proof."
+}
