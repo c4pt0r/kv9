@@ -1,0 +1,168 @@
+{
+  "complete": true,
+  "timing_authorized": true,
+  "source_patch": false,
+  "alignment_intervention": "64-byte alignment for all compiled Rust functions, not one isolated read function. Assembly shape equality excludes address/RIP-displacement values. ELF locations and branch/call distances still change.",
+  "function_shapes_equal": {
+    "answer": true,
+    "read_panels": true
+  },
+  "functions": {
+    "answer": {
+      "ordinary-baseline": {
+        "start": 331824,
+        "bytes": 2184,
+        "mod64": 48,
+        "mod4096": 48
+      },
+      "ordinary-candidate": {
+        "start": 331264,
+        "bytes": 2184,
+        "mod64": 0,
+        "mod4096": 3584
+      },
+      "aligned64-baseline": {
+        "start": 335680,
+        "bytes": 2184,
+        "mod64": 0,
+        "mod4096": 3904
+      },
+      "aligned64-candidate": {
+        "start": 335104,
+        "bytes": 2184,
+        "mod64": 0,
+        "mod4096": 3328
+      }
+    },
+    "read_panels": {
+      "ordinary-baseline": {
+        "start": 268624,
+        "bytes": 14014,
+        "mod64": 16,
+        "mod4096": 2384
+      },
+      "ordinary-candidate": {
+        "start": 268064,
+        "bytes": 14014,
+        "mod64": 32,
+        "mod4096": 1824
+      },
+      "aligned64-baseline": {
+        "start": 272448,
+        "bytes": 14014,
+        "mod64": 0,
+        "mod4096": 2112
+      },
+      "aligned64-candidate": {
+        "start": 271872,
+        "bytes": 14014,
+        "mod64": 0,
+        "mod4096": 1536
+      }
+    }
+  },
+  "dispatch_tables": {
+    "ordinary-baseline": {
+      "address": 69132,
+      "operation_lengths": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "relative_targets": [
+        346,
+        59,
+        83,
+        1883,
+        1883,
+        258
+      ]
+    },
+    "ordinary-candidate": {
+      "address": 69132,
+      "operation_lengths": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "relative_targets": [
+        346,
+        59,
+        83,
+        1883,
+        1883,
+        258
+      ]
+    },
+    "aligned64-baseline": {
+      "address": 69132,
+      "operation_lengths": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "relative_targets": [
+        346,
+        59,
+        83,
+        1883,
+        1883,
+        258
+      ]
+    },
+    "aligned64-candidate": {
+      "address": 69132,
+      "operation_lengths": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "relative_targets": [
+        346,
+        59,
+        83,
+        1883,
+        1883,
+        258
+      ]
+    }
+  },
+  "memcmp_symbols": {
+    "ordinary-baseline": {
+      "slot": 1030512,
+      "relocation": "00000000000fb970  0000000c00000006 R_X86_64_GLOB_DAT      0000000000000000 memcmp@GLIBC_2.2.5 + 0",
+      "symbol": "memcmp@GLIBC_2.2.5",
+      "runtime_ifunc_resolved": false
+    },
+    "ordinary-candidate": {
+      "slot": 1030320,
+      "relocation": "00000000000fb8b0  0000000c00000006 R_X86_64_GLOB_DAT      0000000000000000 memcmp@GLIBC_2.2.5 + 0",
+      "symbol": "memcmp@GLIBC_2.2.5",
+      "runtime_ifunc_resolved": false
+    },
+    "aligned64-baseline": {
+      "slot": 1048656,
+      "relocation": "0000000000100050  0000000c00000006 R_X86_64_GLOB_DAT      0000000000000000 memcmp@GLIBC_2.2.5 + 0",
+      "symbol": "memcmp@GLIBC_2.2.5",
+      "runtime_ifunc_resolved": false
+    },
+    "aligned64-candidate": {
+      "slot": 1048336,
+      "relocation": "00000000000fff10  0000000c00000006 R_X86_64_GLOB_DAT      0000000000000000 memcmp@GLIBC_2.2.5 + 0",
+      "symbol": "memcmp@GLIBC_2.2.5",
+      "runtime_ifunc_resolved": false
+    }
+  }
+}

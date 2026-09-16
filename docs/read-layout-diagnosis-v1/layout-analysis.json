@@ -1,0 +1,274 @@
+{
+  "complete": true,
+  "snapshots": {
+    "ordinary-baseline": {
+      "nodes": 4096,
+      "black_height": 13,
+      "max_depth": 12,
+      "digest": "98a301258d1b77e1273fd1830456c51b9cff58f39b39e16bbff23f80f0da6894",
+      "runtime_memcmp": {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "file_offset": 1672832,
+        "permissions": "r-xp",
+        "library_sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "entry_bytes_hex": "f30f1efa4883fa207736b8ffffffffc4e268f5c0c5fb92d062e17faa6f1662f36d223e0f04c5fb93c185c07503c366900fbcc00fb60c060fb6040729c8c36690"
+      },
+      "allocations": {
+        "node": {
+          "origin": 127770496140168,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "8": 4096
+          }
+        },
+        "entry": {
+          "origin": 127770496139528,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "8": 4096
+          }
+        },
+        "key": {
+          "origin": 127770609786880,
+          "virtual_pages": 53,
+          "mod64_counts": {
+            "0": 2052,
+            "32": 2044
+          }
+        },
+        "value": {
+          "origin": 127770715889664,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "0": 4096
+          }
+        }
+      }
+    },
+    "ordinary-candidate": {
+      "nodes": 4096,
+      "black_height": 13,
+      "max_depth": 12,
+      "digest": "98a301258d1b77e1273fd1830456c51b9cff58f39b39e16bbff23f80f0da6894",
+      "runtime_memcmp": {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "file_offset": 1672832,
+        "permissions": "r-xp",
+        "library_sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "entry_bytes_hex": "f30f1efa4883fa207736b8ffffffffc4e268f5c0c5fb92d062e17faa6f1662f36d223e0f04c5fb93c185c07503c366900fbcc00fb60c060fb6040729c8c36690"
+      },
+      "allocations": {
+        "node": {
+          "origin": 130904480088968,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "8": 4096
+          }
+        },
+        "entry": {
+          "origin": 130904480088328,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "8": 4096
+          }
+        },
+        "key": {
+          "origin": 130904593735680,
+          "virtual_pages": 53,
+          "mod64_counts": {
+            "0": 2052,
+            "32": 2044
+          }
+        },
+        "value": {
+          "origin": 130904699838464,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "0": 4096
+          }
+        }
+      }
+    },
+    "aligned64-baseline": {
+      "nodes": 4096,
+      "black_height": 13,
+      "max_depth": 12,
+      "digest": "98a301258d1b77e1273fd1830456c51b9cff58f39b39e16bbff23f80f0da6894",
+      "runtime_memcmp": {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "file_offset": 1672832,
+        "permissions": "r-xp",
+        "library_sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "entry_bytes_hex": "f30f1efa4883fa207736b8ffffffffc4e268f5c0c5fb92d062e17faa6f1662f36d223e0f04c5fb93c185c07503c366900fbcc00fb60c060fb6040729c8c36690"
+      },
+      "allocations": {
+        "node": {
+          "origin": 123420866597768,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "8": 4096
+          }
+        },
+        "entry": {
+          "origin": 123420866597128,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "8": 4096
+          }
+        },
+        "key": {
+          "origin": 123420980371456,
+          "virtual_pages": 53,
+          "mod64_counts": {
+            "0": 2052,
+            "32": 2044
+          }
+        },
+        "value": {
+          "origin": 123421069836288,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "0": 4096
+          }
+        }
+      }
+    },
+    "aligned64-candidate": {
+      "nodes": 4096,
+      "black_height": 13,
+      "max_depth": 12,
+      "digest": "98a301258d1b77e1273fd1830456c51b9cff58f39b39e16bbff23f80f0da6894",
+      "runtime_memcmp": {
+        "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "file_offset": 1672832,
+        "permissions": "r-xp",
+        "library_sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "entry_bytes_hex": "f30f1efa4883fa207736b8ffffffffc4e268f5c0c5fb92d062e17faa6f1662f36d223e0f04c5fb93c185c07503c366900fbcc00fb60c060fb6040729c8c36690"
+      },
+      "allocations": {
+        "node": {
+          "origin": 130077919105928,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "8": 4096
+          }
+        },
+        "entry": {
+          "origin": 130077919105288,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "8": 4096
+          }
+        },
+        "key": {
+          "origin": 130078032879616,
+          "virtual_pages": 53,
+          "mod64_counts": {
+            "0": 2052,
+            "32": 2044
+          }
+        },
+        "value": {
+          "origin": 130078122344448,
+          "virtual_pages": 129,
+          "mod64_counts": {
+            "0": 4096
+          }
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "ordinary-baseline vs ordinary-candidate": {
+      "tree_shape_counts_capacity_and_bytes_equal": true,
+      "runtime_memcmp_identity_equal": true,
+      "allocation_relative_offsets_equal": {
+        "node": true,
+        "entry": true,
+        "key": true,
+        "value": true
+      },
+      "combined_relative_offsets_equal": {
+        "node": true,
+        "entry": true,
+        "key": true,
+        "value": true
+      },
+      "page_offsets_equal": {
+        "node": true,
+        "entry": true,
+        "key": true,
+        "value": true
+      }
+    },
+    "aligned64-baseline vs aligned64-candidate": {
+      "tree_shape_counts_capacity_and_bytes_equal": true,
+      "runtime_memcmp_identity_equal": true,
+      "allocation_relative_offsets_equal": {
+        "node": true,
+        "entry": true,
+        "key": true,
+        "value": true
+      },
+      "combined_relative_offsets_equal": {
+        "node": true,
+        "entry": true,
+        "key": true,
+        "value": true
+      },
+      "page_offsets_equal": {
+        "node": true,
+        "entry": true,
+        "key": true,
+        "value": true
+      }
+    },
+    "ordinary-baseline vs aligned64-baseline": {
+      "tree_shape_counts_capacity_and_bytes_equal": true,
+      "runtime_memcmp_identity_equal": true,
+      "allocation_relative_offsets_equal": {
+        "node": false,
+        "entry": false,
+        "key": false,
+        "value": false
+      },
+      "combined_relative_offsets_equal": {
+        "node": false,
+        "entry": false,
+        "key": false,
+        "value": false
+      },
+      "page_offsets_equal": {
+        "node": true,
+        "entry": true,
+        "key": true,
+        "value": true
+      }
+    },
+    "ordinary-candidate vs aligned64-candidate": {
+      "tree_shape_counts_capacity_and_bytes_equal": true,
+      "runtime_memcmp_identity_equal": true,
+      "allocation_relative_offsets_equal": {
+        "node": false,
+        "entry": false,
+        "key": false,
+        "value": false
+      },
+      "combined_relative_offsets_equal": {
+        "node": false,
+        "entry": false,
+        "key": false,
+        "value": false
+      },
+      "page_offsets_equal": {
+        "node": true,
+        "entry": true,
+        "key": true,
+        "value": true
+      }
+    }
+  },
+  "performance_evidence": false,
+  "decoded_nodes": 16384,
+  "scope": "Four first-map snapshots only. Identical relative virtual layouts do not establish identical physical placement, cache state, branch state or later-epoch placement. Debugger-affected samples are not performance evidence."
+}

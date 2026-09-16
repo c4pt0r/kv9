@@ -1,0 +1,25 @@
+{
+  "status": "Prospective diagnostic scope; no engine comparison built or measured yet",
+  "question": "Does the isolated-index read regression persist through the unchanged production MemEngine/ReadView interfaces, and how much write-group improvement survives engine composition?",
+  "source_base": "9ff177672659c0f99954812461c73defed2445aa",
+  "qualification_dependency_root": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first",
+  "selected_runtime_unchanged": true,
+  "interfaces": [
+    "ReplicatedEngine::write_applied with exact applied-position and old-view checks",
+    "ReadView::get on a captured snapshot, including owned value copy",
+    "ReadView::get_resident on that same captured snapshot, borrowing values",
+    "Snapshot acquisition reported separately, not silently folded into a lookup-only result"
+  ],
+  "method": [
+    "Use the retained original physical-key corpus and independently reconstructed probe/state identities. The prior proposed/losing mutations are not rerun.",
+    "Use ordinary release settings, no alignment flag, no frame pointers or per-call polymorphic multi-operation dispatcher introduced by the harness.",
+    "Predeclare distinct first-probe and same-snapshot warm panels. Retain per-call latency and complementary whole-pass timing as different units; whole-pass p99 is never request p99.",
+    "Validate source/compiled path correspondence, all outputs, stable old snapshots and applied positions before performance. Bind exact sources/dependencies and fresh cached artifacts.",
+    "Run one bounded representative comparison with both orders; do not launch another 42-case index grid or an alignment sweep."
+  ],
+  "interpretation": [
+    "The original component selection gate remains failed; this diagnostic cannot retroactively pass it.",
+    "No proof of a cache/branch cause, production read slowdown or a new database QPS is inferred from standalone values.",
+    "A later production candidate still requires material end-to-end benefit, local correctness, ordinary recovery, actual Chaos Mesh and matched database/three-copy Redis throughput and latency."
+  ]
+}

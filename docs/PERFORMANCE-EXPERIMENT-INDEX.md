@@ -17,9 +17,13 @@ qualification and 528 timing/count rows. The named adapter is rejected at
 codegen without timing. Real shared-clone extraction improves original
 overwrite 18.220% / 11.893%, but unique insertion only 7.722% / 1.922%; pinned
 unique-insert p99 worsens 5.665%. All write means improve in both orders, yet
-19 read-panel cells fail, including repeatable warm GET regressions. Hold it;
-inspect retained codegen/targets and qualify a bounded diagnostic before any
-changed candidate. Do not rerun this or previous unchanged full matrices.
+19 read-panel cells fail, including repeatable warm GET regressions. Hold it.
+The [completed layout control](READ-LAYOUT-DIAGNOSIS.md) uses 26 processes/40 rows:
+ordinary warm GET hit regresses 15.943%, fixed function alignment still 12.364%.
+Four first-map captures validate 16,384 nodes and matching within-configuration
+relative layouts/comparator targets. Stop alignment sweeps; next use a bounded
+MemEngine/ReadView diagnostic with separate snapshot/owned/borrowed and timing
+scopes. Keep the old failed gate and do not replay unchanged full matrices.
 
 The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
 uses current `86aa6fc` default/feature servers and one qualified client. Default

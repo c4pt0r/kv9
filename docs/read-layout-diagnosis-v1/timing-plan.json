@@ -1,0 +1,129 @@
+{
+  "base_revision": "9ff177672659c0f99954812461c73defed2445aa",
+  "scope": "Bounded code-layout sensitivity diagnosis, not performance selection. Reuse ordinary binaries, rebuild identical source with 64-byte function alignment. No algorithm/source patch.",
+  "passes": 12,
+  "count_passes": 1,
+  "orders": [
+    "baseline",
+    "candidate",
+    "candidate",
+    "baseline"
+  ],
+  "datasets": [
+    "original24",
+    "short4",
+    "dispersed0"
+  ],
+  "write_workloads": [
+    "overwrite",
+    "initial_fill",
+    "unique_insert"
+  ],
+  "read_workloads": [
+    "overwrite",
+    "unique_insert"
+  ],
+  "read_operations": [
+    "get_hit",
+    "get_miss",
+    "predecessor",
+    "scan16"
+  ],
+  "read_queries": 512,
+  "read_query_seed": 71,
+  "timing_method": "One process per case/arm/order on CPU 4, ABBA. Writes: one excluded pass then 12 measured passes. Reads: 12 fresh maps, first measured probe pass then validation, 8 untimed passes and 12 measured warm passes on each same map. Retain every sample.",
+  "allocator": "tikv-jemallocator0.6.1, same allocator in separate counting build; requested bytes only.",
+  "cpu": 4,
+  "helper_cpus": "6-15,22-31",
+  "shared_host": true,
+  "minimum_free_bytes": 8589934592,
+  "timeout_seconds_per_process": 180,
+  "process_output_max_bytes": 67108864,
+  "expected_cases": 42,
+  "expected_rows_per_mode": 264,
+  "correctness_live_prefixes_per_arm": 1908,
+  "correctness_old_views_per_arm": 954,
+  "gate": "Original overwrite/unique-insert mean >=10% lower in both snapshot modes; all18write means improve in both orders; each of48read first-touch/warm cells pooled mean andp99 regression<=2%.",
+  "qualified_dependency_root": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first",
+  "rejected_variants_not_rerun": true,
+  "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+  "read_epochs": 12,
+  "read_warm_passes": 12,
+  "read_warmup_passes": 8,
+  "expected_comparison_cells": 66,
+  "read_scope": {
+    "same_code": "Identical harness and remaining registry versions; baseline archery versus static as_ptr archery plus outlined triomphe shared clone branch.",
+    "write_passes": 12,
+    "read_epochs": 12,
+    "first_touch": "For each fresh map, time the first512 probe queries before query-output validation; map construction touches nodes, no cache flush is implied. Then validate every query result outside timing.",
+    "warm": "After validation, execute8 untimed probe passes on this same live map, then12 measured probe passes. Retain both panels, every sample and per-epoch grouping.",
+    "counting": "Separate build;1 fresh map, first probe pass, same-map8 untimed passes and1 measured warm pass; writes1pass.",
+    "orders": [
+      "baseline",
+      "candidate",
+      "candidate",
+      "baseline"
+    ],
+    "gate": "At least10% pooled original overwrite and unique-insert mean reduction in both snapshot modes; all18write means improve in both orders; every read first-touch AND warm pooled mean/p99 regress<=2%. No production promotion from this component result."
+  },
+  "diagnostic_cases": [
+    18,
+    19,
+    5
+  ],
+  "configurations": [
+    "ordinary",
+    "aligned64"
+  ],
+  "alignment_rustflags": "-Cllvm-args=--align-all-functions=6",
+  "diagnostic_sequence": [
+    [
+      "ordinary",
+      "baseline",
+      0
+    ],
+    [
+      "ordinary",
+      "candidate",
+      1
+    ],
+    [
+      "aligned64",
+      "candidate",
+      1
+    ],
+    [
+      "aligned64",
+      "baseline",
+      0
+    ],
+    [
+      "aligned64",
+      "baseline",
+      3
+    ],
+    [
+      "aligned64",
+      "candidate",
+      2
+    ],
+    [
+      "ordinary",
+      "candidate",
+      2
+    ],
+    [
+      "ordinary",
+      "baseline",
+      3
+    ]
+  ],
+  "expected_measurement_processes": 24,
+  "expected_preparation_processes": 2,
+  "diagnostic_interpretation": {
+    "replication": "Original small-map warm GET hit must reproduce >5% mean regression in both ordinary orders before calling that phenomenon reproduced. Otherwise record an unstable observation and do not infer an alignment effect.",
+    "alignment": "Record every mean/p99 panel in both configurations and orders. A changed gap after alignment establishes sensitivity to this build-layout intervention only, not one instruction or a cache/branch cause. Compare instruction bodies, jump tables, call/relocation targets and output equivalence.",
+    "cost": "Original pinned unique insertion remains a separate diagnostic cell; report its mean/p99 with all samples. No allocation counter or profile instrumentation added.",
+    "scope": "No aggregate promotion verdict, no change to the original failed gate, no fresh database/Redis claim, no full matrix replay."
+  }
+}

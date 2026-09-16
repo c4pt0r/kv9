@@ -1,0 +1,60 @@
+{
+  "complete": true,
+  "archive_sha256": "46a1bd427cfdecd42185b652139c8221daa125e75d734349dc0f58baf8219bb7",
+  "archive_bytes": 8280302,
+  "expanded_bytes": 66440506,
+  "members": 253,
+  "all_members_readback_verified": true,
+  "excluded": [
+    {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/build-baseline/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/build-baseline/timing",
+      "bytes": 1225040,
+      "sha256": "bd6aed1a93ce7c7270a54b764ff869de81490d13682f6a163f79f82f8d0841f2"
+    },
+    {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/build-candidate/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/build-candidate/timing",
+      "bytes": 1224536,
+      "sha256": "9f6b10db201f0ffa708090ff7ea33afc61279b2d9cf355d6d292f72499edf4ac"
+    },
+    {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/continuation.json",
+      "bytes": 434,
+      "sha256": "77ae34d0e26712eb6f4c1f64421ed947de413f9a0a11a43051ac963749f0581c"
+    },
+    {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/groups.bin",
+      "bytes": 16519240,
+      "sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350"
+    },
+    {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/issue9-before.json",
+      "bytes": 65471,
+      "sha256": "dd84e26d1ce55e55184f45a32daac9c9313fc89d48593deffcc49cdec470ae19"
+    },
+    {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/run-progress.json",
+      "bytes": 29686,
+      "sha256": "a051fe982186c74f2a38fa027cb8f3232deea3d09c0ad8dd5df98e8f055bc528"
+    }
+  ],
+  "external_inputs": {
+    "qualified_dependency_sources": "../outlined-mutation-path-v1/evidence.tar.gz (outlined/ subtree)",
+    "groups_bin": {
+      "archive": "../outlined-mutation-path-v1/evidence.tar.gz",
+      "member": "outlined/groups.bin",
+      "sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350"
+    },
+    "ordinary_elfs": "Exact prior ELFs retained in /mnt/data/kv9-work/outlined-mutation-path-20260916-first/bench-build-{baseline,candidate}/timing; hashes in codegen inspections"
+  },
+  "scope": "Retains every planned timing row, independent preparation, source/cache/build evidence, static code inspection and debugger snapshots/failures. Debugger timings are not performance evidence. Executables remain in retained roots. Duplicate corpus, changing continuation/progress and GitHub body snapshots are excluded."
+}

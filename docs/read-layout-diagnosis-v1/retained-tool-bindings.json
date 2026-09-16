@@ -1,0 +1,9 @@
+{
+  "reason": "After timing, rename inspect.py to inspect_elf.py to avoid shadowing Python stdlib inspect in error reporting. Only the build helper reference changes; retain the exact original helper bytes for its existing source pin. No Rust, ELF, plan or measurement changes.",
+  "bindings": {
+    "/home/dongxu/kv9/scripts/read-layout-diagnostic/build.py": {
+      "path": "/mnt/data/kv9-work/read-layout-diagnosis-20260916-first/original-tools/build.py",
+      "sha256": "271870552e96a91a00b1a9297470186470bf03f310d634bfef86063cebddfc24"
+    }
+  }
+}

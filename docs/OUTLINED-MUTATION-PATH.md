@@ -130,6 +130,12 @@ in both orders (+1.002% / +9.223%).
 
 ## Read limits and next investigation
 
+Follow-up: the [completed layout diagnosis](READ-LAYOUT-DIAGNOSIS.md) reproduces
+the warm gap and rejects fixed function alignment as a remedy. First-map
+structure/relative allocation and actual comparator targets match within each
+configuration. The remaining cause is unresolved; the next bounded diagnostic
+moves to the engine interfaces. This report's failed selection gate is unchanged.
+
 These are component calls, including timing overhead, with no engine locks,
 Raft, RPC or snapshot creation. Full baselines, candidate values and both-order
 comparisons for all 66 cells are in the [analysis](outlined-mutation-path-v1/analysis.json).

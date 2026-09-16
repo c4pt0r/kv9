@@ -58,9 +58,16 @@ counting rows. Original overwrite improves 18.220% / 11.893%, but unique insert
 only 7.722% / 1.922%, and pinned unique-insert p99 regresses 5.665%. All write
 means improve in both orders. Material and read gates still fail: small-map
 warm GET hit is 14.504–15.353% slower across all key distributions in both
-orders, and 19 read-panel cells exceed the 2% bound. Hold the candidate. Next
-inspect retained GET codegen/targets and qualify a bounded causal diagnostic;
-do not rerun the unchanged matrix. No database-QPS gain is established.
+orders, and 19 read-panel cells exceed the 2% bound. Hold the candidate. The
+[bounded layout diagnosis](READ-LAYOUT-DIAGNOSIS.md) reproduces warm GET-hit
+regression (+15.943%); 64-byte function alignment leaves +12.364% and makes both
+absolute means slower. All 26 processes/40 rows pass independent checks.
+Four debugger-only first maps (16,384 nodes) have identical within-configuration
+relative layouts, shapes, bytes and resolved comparator implementation. Cause
+remains unresolved. Next qualify a bounded comparison through the actual
+MemEngine/ReadView interfaces, separating snapshot/owned/borrowed costs and
+per-call versus whole-pass timing. Preserve every original failed gate;
+no alignment sweep, unchanged full matrix or database-QPS claim follows.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 

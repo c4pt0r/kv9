@@ -1,0 +1,13 @@
+{
+  "scope": "Read-only first-map snapshots under GDB; no debugger run supplies performance evidence. Capture ordinary/aligned baseline/candidate once each. No sampling, syscall tracing or core-file collection.",
+  "derive_layout_from": "Retained answer GET loop and rpds source. Private layout is only accepted after complete 4096-key/value/edge/digest correspondence; do not assume a stable Rust ABI.",
+  "validate": [
+    "Every node unique, exactly 4096 nodes, strict key ordering and red-black invariants",
+    "All key/value bytes equal independent original24/overwrite model",
+    "Same probe first key as independent seeded query reconstruction",
+    "Compare tree shape by key/path, reference counts, node/entry/key/value relative offsets, pages and cache-line modulo",
+    "Resolve actual memcmp GOT entry to libc file offset and entry bytes; compare all four snapshots"
+  ],
+  "source_immutable": true,
+  "maximum_seconds_per_child": 120
+}
