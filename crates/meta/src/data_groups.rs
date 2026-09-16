@@ -12,6 +12,7 @@ use crate::schema::{ColumnId, TASKS_DESC};
 use crate::store::{MetaStore, MetaTxn, Row, SequenceKind, FIRST_DYNAMIC_ID};
 
 pub mod activation;
+pub mod ranges;
 
 /// Stable task kind and encoding. This uses the existing tasks table, not a
 /// new table/schema version. No other task may reuse this kind.

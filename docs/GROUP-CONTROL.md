@@ -3,6 +3,10 @@
 Updated 2026-09-16. Tracks [#9](https://github.com/c4pt0r/kv9/issues/9) and
 [#22](https://github.com/c4pt0r/kv9/issues/22).
 
+Follow-up: [initial public data routing](DATA-RANGE-ROUTING.md) adds namespace
+bindings to these groups and raises the writer/wire floor to V3. The validation
+counts below describe this earlier control checkpoint.
+
 ## Behavior and operational boundary
 
 Authenticated `CreateDataGroup` and `kv9 client create-data-group` now request

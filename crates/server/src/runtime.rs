@@ -5,6 +5,8 @@
 //! durable catalog apply, election-first bootstrap, and a machine-readable status
 //! file for external acceptance. The status file is evidence; log timing is not.
 
+pub(crate) mod range_api;
+
 use std::collections::{BTreeMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -775,6 +777,7 @@ impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::ReplicatedEngin
 /// proposals go through `NodeDriver` so the response can return and verify the
 /// exact `(term,index)` that the production apply loop committed.
 struct RuntimeBackend {
+    raw_directory: Arc<range_api::RawDirectory>,
     node: Arc<Node<WalEngine>>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
     transport: Arc<GrpcTransport>,
@@ -1116,6 +1119,37 @@ where
 }
 
 impl AdminApi for RuntimeBackend {
+    fn create_data_keyspace(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        creation_task: u64,
+        name: &str,
+        tenant: TenantId,
+    ) -> Result<crate::api::CreateDataKeyspaceResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        let (range, changed) = kv9_meta::data_groups::ranges::plan_keyspace(
+            &mut txn,
+            root,
+            creation_task,
+            name,
+            tenant,
+        )?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::CreateDataKeyspaceResult {
+            range,
+            changed,
+            applied,
+        })
+    }
     fn create_data_group(
         &self,
         _caller: &str,
@@ -1301,7 +1335,11 @@ impl AdminApi for RuntimeBackend {
     fn get_region(&self, caller: &str, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation> {
         self.ensure_serving()?;
         let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
-        self.node.get_region(caller, keyspace, key)
+        let mut location = self.node.get_region(caller, keyspace, key)?;
+        if let Some(group) = self.raw_directory.get(keyspace) {
+            location.leader = group.leader();
+        }
+        Ok(location)
     }
 
     fn split_region(&self, caller: &str, region: RegionId, split_key: UserKey) -> Result<()> {
@@ -1833,6 +1871,11 @@ mod gate {
     ) -> Result<ValidatedFence> {
         let keyspace = Tables::<E>::keyspace_in(txn, keyspace_id)?
             .ok_or(Error::KeyspaceNotFound(keyspace_id))?;
+        if keyspace.config == kv9_meta::data_groups::ranges::DATA_KEYSPACE_CONFIG {
+            return Err(Error::MetaNotReady(
+                "data range is not available through the metadata group".into(),
+            ));
+        }
         if keyspace.api_type != ApiType::Raw {
             return Err(Error::ApiTypeMismatch {
                 keyspace: keyspace_id,
@@ -2069,7 +2112,7 @@ impl<'a> KeySpan<'a> {
 /// Kept standalone so a failure can be injected at chunk N in a test. The interesting
 /// behaviour here is not the deleting — it is what is reported when the loop stops early,
 /// and that is exactly the part a live-cluster test cannot easily force.
-fn run_delete_range<V, P, C>(
+fn run_delete_range<V, P, C, F>(
     start: &[u8],
     end: &[u8],
     mut revalidate: V,
@@ -2081,9 +2124,9 @@ where
     // Threading the capability through the signature rather than trusting the endpoint to
     // pair them is what makes "fence chunk N with chunk 1's authorisation" unwriteable
     // rather than merely discouraged — see [`ValidatedFence`].
-    V: FnMut(&[u8]) -> Result<ValidatedFence>,
+    V: FnMut(&[u8]) -> Result<F>,
     P: FnMut(Option<&[u8]>) -> Result<Option<(kv9_engine::WriteBatch, UserKey)>>,
-    C: FnMut(ValidatedFence, kv9_engine::WriteBatch) -> Result<AppliedPosition>,
+    C: FnMut(F, kv9_engine::WriteBatch) -> Result<AppliedPosition>,
 {
     let mut cursor: Option<UserKey> = None;
     let mut committed_chunks = 0u64;
@@ -2248,12 +2291,16 @@ impl RuntimeBackend {
     /// Inventory invariant (re-runnable; classify every hit — an
     /// unclassifiable one is a signal that must be explained, not absorbed):
     ///   git grep -n -F '.snapshot()' <head> -- crates/server/src
-    /// Expected ENGINE classification: PRODUCTION calls exactly 1 (this
-    /// function); TEST calls exactly 1 (the deliberately stale bypass control
+    /// Legacy metadata-backed ENGINE classification: one production call
+    /// here, plus the resident constructor below. Data-group calls live in
+    /// range_api.rs: one proposal-only fence snapshot, sync/async reads that
+    /// authorize and consume the same post-barrier snapshot, and DeleteRange
+    /// with a post-barrier selection view and per-chunk proposal fences.
+    /// Legacy TEST calls exactly 1 (the deliberately stale bypass control
     /// in the committed-but-unapplied cell). Classify admission-ledger and
     /// latency-histogram snapshots separately: they construct no engine view.
-    /// Other hits are doc/comment text. The invariant is the two ENGINE
-    /// counts, never the raw method-name total. Additionally inventory the one
+    /// Other hits are doc/comment text. Review the classified engine access
+    /// paths, never the raw method-name total. Additionally inventory the one
     /// production `.try_resident_snapshot()` call in the resident constructor.
     /// Experimental lease reads use the driver's positioned snapshot constructor
     /// instead; inventory `try_positioned_resident_snapshot` across engine/raft
@@ -2520,6 +2567,9 @@ impl RawApi for RuntimeBackend {
     ) -> crate::api::RawWritePreparation {
         Box::new(move || {
             self.ensure_serving()?;
+            if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+                return group.prepare_raw_write(ctx, operation)();
+            }
             let (fence, batch) = match operation {
                 crate::api::RawWrite::Put { key, value } => {
                     let fence = self.validated_context(&ctx, KeySpan::Point(&key))?;
@@ -2593,6 +2643,14 @@ impl RawApi for RuntimeBackend {
         ctx: RequestContext,
         key: UserKey,
     ) -> crate::api::RawReadPreparation<Option<Value>> {
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            if !self.endpoint_ready.load(Ordering::Acquire) {
+                return Box::pin(async {
+                    Err(Error::MetaNotReady("local endpoint is not ready".into()))
+                });
+            }
+            return group.prepare_raw_get(ctx, key);
+        }
         // The published endpoint predicate is false through bootstrap/recovery.
         // Its cold path retains the original synchronous lifecycle/error order.
         if !self.endpoint_ready.load(Ordering::Acquire) {
@@ -2623,6 +2681,9 @@ impl RawApi for RuntimeBackend {
 
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
         self.ensure_serving()?;
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            return group.raw_get(ctx, key);
+        }
         let view = self.established_read(ctx, KeySpan::Point(key))?;
         let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
         RawExecutor.get(&read, ctx.keyspace, key)
@@ -2633,6 +2694,14 @@ impl RawApi for RuntimeBackend {
         ctx: RequestContext,
         keys: Vec<UserKey>,
     ) -> crate::api::RawReadPreparation<Vec<Option<Value>>> {
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            if !self.endpoint_ready.load(Ordering::Acquire) {
+                return Box::pin(async {
+                    Err(Error::MetaNotReady("local endpoint is not ready".into()))
+                });
+            }
+            return group.prepare_raw_batch_get(ctx, keys);
+        }
         if !self.endpoint_ready.load(Ordering::Acquire)
             || keys.len() > MAX_RESIDENT_BATCH_READ_KEYS
             || keys
@@ -2669,6 +2738,9 @@ impl RawApi for RuntimeBackend {
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
         self.ensure_serving()?;
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            return group.raw_batch_get(ctx, keys);
+        }
         let view = self.established_read(ctx, KeySpan::BatchKeys(keys))?;
         let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
         RawExecutor.batch_get(&read, ctx.keyspace, keys)
@@ -2676,6 +2748,9 @@ impl RawApi for RuntimeBackend {
 
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition> {
         self.ensure_serving()?;
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            return group.raw_put(ctx, key, value);
+        }
         let fence = self.validated_context(ctx, KeySpan::Point(&key))?;
         let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
         self.commit_batch(fence, plan)
@@ -2687,6 +2762,9 @@ impl RawApi for RuntimeBackend {
         pairs: &[(UserKey, Value)],
     ) -> Result<AppliedPosition> {
         self.ensure_serving()?;
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            return group.raw_batch_put(ctx, pairs);
+        }
         let fence = self.validated_context(ctx, KeySpan::BatchPairs(pairs))?;
         // One batch ⇒ one entry ⇒ all of these land together or none do.
         let plan = RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?;
@@ -2695,6 +2773,9 @@ impl RawApi for RuntimeBackend {
 
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
         self.ensure_serving()?;
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            return group.raw_delete(ctx, key);
+        }
         let fence = self.validated_context(ctx, KeySpan::Point(key))?;
         let plan = RawExecutor.plan_delete(ctx.keyspace, key)?;
         self.commit_batch(fence, plan)
@@ -2708,6 +2789,9 @@ impl RawApi for RuntimeBackend {
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>> {
         self.ensure_serving()?;
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            return group.raw_scan(ctx, start, end, limit);
+        }
         let view = self.established_read(ctx, KeySpan::Range { start, end })?;
         let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
         RawExecutor.scan(&read, ctx.keyspace, start, end, limit)
@@ -2720,6 +2804,9 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
     ) -> Result<DeleteRangeReceipt> {
         self.ensure_serving()?;
+        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            return group.raw_delete_range(ctx, start, end);
+        }
         // ONE barrier for the whole request, exchanged for ONE stable snapshot that every
         // chunk plans from (@Tess's ruling; neither my "skip the barrier in the planner" nor
         // @Rafa's "re-anchor per chunk on the previous receipt").
@@ -3358,6 +3445,7 @@ impl NodeRuntime {
         let status_path = data_dir.join("status");
 
         let backend = Arc::new(RuntimeBackend {
+            raw_directory: Arc::default(),
             node: node.clone(),
             driver: driver.clone(),
             transport: transport.clone(),
@@ -3515,6 +3603,7 @@ impl NodeRuntime {
             .transpose()?;
 
         let mut data_groups = crate::region_manager::RegionManager::new(&data_dir, store_identity);
+        data_groups.raw_directory = backend.raw_directory.clone();
         data_groups.recover(&node.meta_raft.store)?;
 
         // No fallible startup work may follow owner creation. In particular,
@@ -3596,6 +3685,7 @@ impl NodeRuntime {
         voters: &[NodeId],
     ) -> Result<kv9_meta::data_groups::CreationIntent> {
         let backend = RuntimeBackend {
+            raw_directory: Arc::default(),
             node: self.node.clone(),
             driver: self.driver.clone(),
             transport: self.transport.clone(),
@@ -3805,7 +3895,12 @@ impl NodeRuntime {
                         Ok(requests) => {
                             self.data_groups
                                 .reconcile_activation(&requests, &self.transport, TICK);
-                            None
+                            kv9_meta::data_groups::ranges::committed_ranges(
+                                &self.node.meta_raft.store,
+                            )
+                            .and_then(|bindings| self.data_groups.reconcile_ranges(&bindings))
+                            .err()
+                            .map(|e| e.to_string())
                         }
                         Err(error) => Some(error.to_string()),
                     };
@@ -5894,6 +5989,7 @@ mod tests {
         .expect("drain token minted once per peer");
         (
             RuntimeBackend {
+                raw_directory: Arc::default(),
                 node,
                 driver,
                 transport,
@@ -6469,7 +6565,7 @@ mod tests {
                 panic!("the validator must not be asked about a range that is already empty, got {remaining_start:?}")
             },
             |_cursor| panic!("nothing may be planned for an empty range"),
-            |_fence, _batch| panic!("nothing may be committed for an empty range"),
+            |_fence: ValidatedFence, _batch| panic!("nothing may be committed for an empty range"),
         )
         .expect("an already-empty bounded range is complete, not stale");
 
@@ -7187,6 +7283,7 @@ mod tests {
 
     fn backend_view(rt: &NodeRuntime, root: &RootDescriptor) -> RuntimeBackend {
         RuntimeBackend {
+            raw_directory: Arc::default(),
             node: rt.node.clone(),
             driver: rt.driver.clone(),
             transport: rt.transport.clone(),
@@ -9448,6 +9545,7 @@ mod tests {
             Arc::new(Node::with_raft_and_engine(NodeId(1), Config::default(), p1, wal1).unwrap());
         let tokio_rt = tokio::runtime::Runtime::new().unwrap();
         let backend = RuntimeBackend {
+            raw_directory: Arc::default(),
             node,
             driver: d1.clone(),
             endpoint_ready: Arc::new(AtomicBool::new(false)),
@@ -9829,6 +9927,7 @@ mod fence_firing_tests {
 
     fn backend_of(runtime: &NodeRuntime) -> RuntimeBackend {
         RuntimeBackend {
+            raw_directory: Arc::default(),
             node: runtime.node.clone(),
             driver: runtime.driver.clone(),
             transport: runtime.transport.clone(),

@@ -21,6 +21,7 @@ use crate::command::ManifestChangePayload;
 use crate::{CommittedEntry, LogIndex};
 
 pub mod checkpoint_recovery;
+mod data_range;
 pub(crate) mod raw_group;
 
 /// The apply-side storage capability (task #9, the capability-narrowing half
@@ -379,6 +380,16 @@ pub trait FenceAdjudicator: Send + Sync {
     /// (review round).
     fn is_fresh(&self, fence: &crate::RegionFence) -> Result<bool>;
 
+    /// Data groups additionally validate every mutation's namespace and range.
+    /// Both single-entry and grouped apply must use this method for writes.
+    fn is_fresh_write(
+        &self,
+        fence: &crate::RegionFence,
+        _inner: &crate::FencedInner,
+    ) -> Result<bool> {
+        self.is_fresh(fence)
+    }
+
     /// Opt into deferred application of validated Raw Default-CF mutations.
     ///
     /// Returning true asserts that this adjudicator's verdict depends only on
@@ -410,6 +421,11 @@ pub trait StateMachine: Send + Sync {
 /// `kv9_meta::MetaStore` reads. Swapping `MemEngine` for the real disaggregated engine
 /// is Phase-2 and does not change this type's shape (it is generic over [`ApplyStore`]).
 pub struct MemStateMachine<E: ApplyStore = MemEngine> {
+    data_identity: Option<(
+        kv9_common::RootDigest,
+        kv9_common::RegionId,
+        kv9_common::RootDigest,
+    )>,
     engine: Arc<E>,
     applied: LogIndex,
     /// Adjudicates [`Command::Fenced`] entries. `None` — the default — makes a
@@ -458,6 +474,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
             engine,
             applied: LogIndex(applied),
             adjudicator: None,
+            data_identity: None,
         })
     }
 
@@ -486,6 +503,9 @@ impl<E: ApplyStore> MemStateMachine<E> {
         let index = LogIndex(at.index);
         if index <= self.applied {
             return Ok(ApplyResult::write_ok(index));
+        }
+        if let Command::DataRange { expected, next } = cmd {
+            return self.apply_data_range(at, *expected, next);
         }
         // EVERY applied entry advances the durable watermark — including
         // commands with no data mutations (Noop/ConfChange). Advancing those
@@ -645,7 +665,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
                 // `?` on the verdict itself: an adjudicator whose authoritative
                 // read fails has no verdict to offer — that propagates as an
                 // apply error (poison), never as a fabricated Fresh/Stale.
-                if adjudicator.is_fresh(fence)? {
+                if adjudicator.is_fresh_write(fence, inner)? {
                     (inner.to_write_batch(), None)
                 } else {
                     (

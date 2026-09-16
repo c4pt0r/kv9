@@ -36,9 +36,12 @@ The [fixed-voter activation increment](GROUP-ACTIVATION.md) now runs/restarts
 independent durable groups on two shared data workers per runtime. The
 [online control increment](GROUP-CONTROL.md) now submits authenticated durable
 creation/activation requests and reconciles them on each eligible node, including
-after process loss. Public range/epoch routing is next; retirement and complete
-resource/fault acceptance remain D01/D02 work. No full stage acceptance or
-measured scaling gain follows from these control-path checks.
+after process loss. The [initial public routing increment](DATA-RANGE-ROUTING.md)
+now binds new Raw keyspaces to their own groups with ordered namespace/range
+fences and terminal sealing. It requires an offline V3 writer upgrade. The
+current mapping is one full-keyspace range per group; client discovery, bounded
+route refresh, retirement and complete resource/fault acceptance remain D01/D02
+work. No full stage acceptance or measured scaling gain follows from these checks.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

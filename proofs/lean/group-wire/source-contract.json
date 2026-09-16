@@ -19,11 +19,12 @@
     "reachable_bounded"
   ],
   "source_sha256": {
-    "proto/kv9_raft.proto": "ac199ef4bce78df2f8ebb0b7624a0f3ba700d12da21910e808c42646aabdd3b3",
-    "crates/raft/src/grpc.rs": "afae229615e57697e79bfc1e39f9bdd6268c87ed054b968319cce90deda9b30a",
+    "proto/kv9_raft.proto": "3e4eb44bcb17c4bbd6b04ab4b4fd979676b608fb8308c8a633b0cbe5483d3142",
+    "crates/raft/src/grpc.rs": "b1ea8f1db263f8626b819a3b57836ac6ae018e5a78db7edc87f3d01a216d0640",
     "crates/raft/src/grpc/groups.rs": "b926f10fc7b61ff45b743a3d008b88b1680a40fb99e92305c4c006970e1f4ba3",
-    "crates/raft/src/grpc/wire_tests.rs": "1a22c6b39684e58d1289840eb6a50e52303fb3d7199e97eacc5fe2b0b42d918d",
+    "crates/raft/src/grpc/wire_tests.rs": "89d98855dba6c1c21b52eb7b0736335a4e14a68f32ba9c8fc1dd86e70d6cfa0a",
     "proofs/lean/group-wire/Wire.lean": "ec06b07ad9e9f069c05afa01344d7a9789cc85cf88e27524bf38d3d7b0069f58",
-    "scripts/prove-group-wire.py": "f721bb418bc1ce13e60ec67a18379d64e10807e5cfc81a74c943c3bdd80531dd"
+    "scripts/prove-group-wire.py": "f721bb418bc1ce13e60ec67a18379d64e10807e5cfc81a74c943c3bdd80531dd",
+    "proofs/lean/group-wire/README.md": "54fa8b4e035c98c5bf417c82b10d4d50615df5415f53a3c815e0007b5b32163c"
   }
 }

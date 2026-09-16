@@ -54,7 +54,7 @@ def audit_cell(root, overrides=None):
     uuid.UUID(pvc['metadata']['uid'])
     before = fields(scene / 'before/status.txt')
     lifecycle = read(scene / 'before/kv9-store-lifecycle')
-    require(len(lifecycle) == 97 and lifecycle[:8] == b'KV9LIFE2'
+    require(len(lifecycle) == 97 and lifecycle[:8] == b'KV9LIFE3'
             and hashlib.sha256(lifecycle[:65]).digest() == lifecycle[65:]
             and int.from_bytes(lifecycle[8:16], 'big') == 4 and lifecycle[32] == 2
             and lifecycle[16:32].hex() == before['store_incarnation'] and lifecycle[33:65].hex() == before['root_digest'],

@@ -1458,6 +1458,40 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         Ok(Response::new(txn_status_response(status)))
     }
 
+    async fn create_data_keyspace(
+        &self,
+        request: Request<proto::CreateDataKeyspaceRequest>,
+    ) -> Result<Response<proto::CreateDataKeyspaceResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.create_data_keyspace(
+                    &caller,
+                    root,
+                    request.creation_task,
+                    &request.name,
+                    TenantId(request.tenant_id),
+                )
+            })
+            .await?;
+        Ok(Response::new(proto::CreateDataKeyspaceResponse {
+            binding: result.range.encode(),
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+        }))
+    }
+
     async fn create_data_group(
         &self,
         request: Request<proto::CreateDataGroupRequest>,

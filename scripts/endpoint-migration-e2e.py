@@ -34,12 +34,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bin', required=True, type=Path)
     parser.add_argument('--previous-bin', required=True, type=Path)
+    parser.add_argument('--previous-generation', type=int, choices=(1, 2), default=1)
     parser.add_argument('--wire-probe', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--base-port', type=int, default=26400)
     args = parser.parse_args()
     require(1024 < args.base_port < 32700, 'ports must stay below the ephemeral range')
     args.bin, args.previous_bin, output = args.bin.resolve(), args.previous_bin.resolve(), args.output.resolve()
+    require(sha(args.bin) != sha(args.previous_bin), 'upgrade fixture requires distinct built binaries')
     output.mkdir(parents=True, exist_ok=False)
     env = dict(os.environ, KV9_CLUSTER_TOKEN='endpoint-e2e-cluster',
                KV9_CLIENT_TOKENS='admin=endpoint-e2e-client', KV9_CLIENT_TOKEN='endpoint-e2e-client',
@@ -49,7 +51,7 @@ def main():
             'run this fixture without inherited testing/object-store configuration')
     processes, handles, commands, guards = {}, [], [], []
     args.wire_probe = args.wire_probe.resolve()
-    manifest = dict(version=1, binaries={str(p): sha(p) for p in (args.bin, args.previous_bin, args.wire_probe)},
+    manifest = dict(version=1, previous_generation=args.previous_generation, current_generation=3, binaries={str(p): sha(p) for p in (args.bin, args.previous_bin, args.wire_probe)},
                     base_port=args.base_port, commands=commands, verdict='running',
                     source_sha256=sha(Path(__file__).resolve()),
                     revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
@@ -149,7 +151,7 @@ def main():
         original = {}
         for node in addresses:
             data = output / f'n{node}'
-            require((data / 'kv9-store-lifecycle').read_bytes()[:8] == b'KV9LIFE1', 'old writer fixture is not V1')
+            require((data / 'kv9-store-lifecycle').read_bytes()[:8] == f'KV9LIFE{args.previous_generation}'.encode(), 'old writer fixture has another generation')
             original[node] = {name: sha(data / name) for name in ('kv9-root-descriptor', 'kv9-store-identity')}
             (output / f'old-status-{node}.txt').write_text((data / 'status').read_text())
         # Briefly expose both binaries only to test the wire refusal floor.
@@ -158,7 +160,7 @@ def main():
         stop(first)
         start(first, args.bin, addresses[first], 'wire-probe-upgraded-owner')
         wait('upgraded process exposes its distinct internal service path', lambda: status(first))
-        command('bidirectional-wire-floor', args.wire_probe, addresses[old_leader], addresses[first])
+        command('bidirectional-wire-floor', args.wire_probe, addresses[old_leader], addresses[first], args.previous_generation)
         # Offline upgrade is the supported operational boundary.
         for node in list(processes):
             stop(node)
@@ -170,7 +172,7 @@ def main():
         require(recovered.get('value_hex') == '64757261626c65', 'upgrade lost the previous writer acknowledgement')
         for node in addresses:
             data = output / f'n{node}'
-            require((data / 'kv9-store-lifecycle').read_bytes()[:8] == b'KV9LIFE2', 'writer floor not published')
+            require((data / 'kv9-store-lifecycle').read_bytes()[:8] == b'KV9LIFE3', 'writer floor not published')
             require(original[node] == {name: sha(data / name) for name in original[node]}, 'upgrade changed root/store identity')
         victim = next(node for node in addresses if node != current_leader)
         before = fields(client('endpoint-before', 'get-node-endpoint', addresses[current_leader], '--node-id', victim))
@@ -235,7 +237,7 @@ def main():
         (output / 'stable-status.txt').write_text((data / 'status').read_text())
         manifest.update(verdict='accepted', original_leader=old_leader, victim=victim,
                         mutation=mutation, duplicate=confirmed, recovered=migrated, stable=stable)
-        print('PASS: production CLI endpoint CAS, retained-store migration, durable confirmation, V1 upgrade and downgrade refusal', flush=True)
+        print(f'PASS: production CLI endpoint CAS, retained-store migration, durable confirmation, V{args.previous_generation}-to-V3 upgrade and downgrade refusal', flush=True)
     finally:
         for node in list(processes):
             stop(node)

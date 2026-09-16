@@ -243,6 +243,13 @@ pub struct CreateDataGroupResult {
     pub applied: AppliedPosition,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CreateDataKeyspaceResult {
+    pub range: kv9_common::data_range::DataRange,
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
 // Defined in `kv9-common`, re-exported here so the existing public path keeps working.
 // It moved because it is a cross-layer apply receipt -- the drain worker needs it to decide
 // WAL truncation eligibility -- not a server data-transfer type. Fields and semantics are
@@ -294,6 +301,18 @@ pub struct RetentionUpdateResult {
 
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
 pub trait AdminApi {
+    fn create_data_keyspace(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _creation_task: u64,
+        _name: &str,
+        _tenant: kv9_common::TenantId,
+    ) -> Result<CreateDataKeyspaceResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::create_data_keyspace",
+        ))
+    }
     fn create_data_group(
         &self,
         _caller: &str,

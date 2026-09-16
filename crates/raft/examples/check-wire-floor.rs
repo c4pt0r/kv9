@@ -7,16 +7,23 @@ use tonic_prost::ProstCodec;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 2 {
-        return Err("usage: check-wire-floor <old-address> <new-address>".into());
+    if args.len() < 2 || args.len() > 3 {
+        return Err(
+            "usage: check-wire-floor <old-address> <new-address> [previous-generation=1|2]".into(),
+        );
     }
     tokio::runtime::Runtime::new()?.block_on(async {
-        for (server, address) in args.iter().enumerate() {
+        let old_path = match args.get(2).map(String::as_str).unwrap_or("1") {
+            "1" => "/kv9.raft.Kv9Raft/Discover",
+            "2" => "/kv9.raft.v2.Kv9Raft/Discover",
+            _ => return Err("invalid previous generation".into()),
+        };
+        for (server, address) in args[..2].iter().enumerate() {
             let endpoint = tonic::transport::Endpoint::from_shared(format!("http://{address}"))?
                 .connect_timeout(std::time::Duration::from_secs(3))
                 .timeout(std::time::Duration::from_secs(3));
             let channel = endpoint.connect().await?;
-            for (generation, path) in ["/kv9.raft.Kv9Raft/Discover", "/kv9.raft.v2.Kv9Raft/Discover"].iter().enumerate() {
+            for (generation, path) in [old_path, "/kv9.raft.v3.Kv9Raft/Discover"].iter().enumerate() {
                 let mut client = Grpc::new(channel.clone());
                 client.ready().await?;
                 let result = client.unary(Request::new(DiscoverRequest::default()),

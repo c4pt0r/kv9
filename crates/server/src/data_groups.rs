@@ -46,6 +46,62 @@ pub struct DataGroupClient {
     runtime: tokio::runtime::Runtime,
 }
 impl DataGroupClient {
+    pub fn create_keyspace(
+        &mut self,
+        root: RootDigest,
+        creation_task: u64,
+        name: &str,
+        tenant: kv9_common::TenantId,
+    ) -> Result<crate::api::CreateDataKeyspaceResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32]
+            || creation_task < 100
+            || name.is_empty()
+            || name.len() > 1024
+        {
+            return Err(DataGroupRpcError::Local(
+                "invalid data keyspace request".into(),
+            ));
+        }
+        let mut request = Request::new(proto::CreateDataKeyspaceRequest {
+            root_digest: root.as_bytes().to_vec(),
+            creation_task,
+            name: name.to_string(),
+            tenant_id: tenant.0,
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(30));
+        let response = self
+            .runtime
+            .block_on(self.client.create_data_keyspace(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        let range = kv9_common::data_range::DataRange::decode(&response.binding)
+            .map_err(|e| DataGroupRpcError::Unconfirmed(e.to_string()))?;
+        if range.root != root
+            || range.tenant != tenant
+            || range.sealed
+            || range.version != 1
+            || range.conf_ver != 1
+            || !range.start.is_empty()
+            || !range.end.is_empty()
+            || response.applied_term == 0
+            || response.applied_index == 0
+        {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "data keyspace response lacks exact initial binding/receipt".into(),
+            ));
+        }
+        Ok(crate::api::CreateDataKeyspaceResult {
+            range,
+            changed: response.changed,
+            applied: AppliedPosition {
+                term: response.applied_term,
+                index: response.applied_index,
+            },
+        })
+    }
     pub fn connect(address: &str, token: &str) -> Result<Self, DataGroupRpcError> {
         let address = crate::endpoints::socket(address)
             .map_err(|e| DataGroupRpcError::Local(e.to_string()))?;

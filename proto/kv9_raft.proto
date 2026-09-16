@@ -4,9 +4,9 @@
 // channels — nothing in this service implies an async core.
 syntax = "proto3";
 // A distinct service path prevents either generation from silently accepting
-// the other's registration or Raft traffic. V2 requires versioned endpoint
-// writers and the durable V2 lifecycle fence before an owner starts.
-package kv9.raft.v2;
+// the other's registration or Raft traffic. V3 additionally requires data-range
+// aware writers and the durable V3 lifecycle fence before an owner starts.
+package kv9.raft.v3;
 
 service Kv9Raft {
   // Long-lived client-streaming raft transport: a peer opens one stream and
