@@ -25,10 +25,13 @@ relative layouts/comparator targets. Stop alignment sweeps. The completed
 [engine-interface diagnostic](ENGINE-INTERFACE-SCREEN.md) retains 90 processes /
 152 rows: actual apply mean improves 4.600%–13.903%, but warm owned GET hit
 regresses 2.599%–7.407%. Resident hit per-call means are nearly unchanged.
-Keep snapshot/ownership/timer scopes separate and the old gate failed. Next
-qualify shared-clone extraction alone with original archery; source/proof/codegen
-and engine correctness precede any timing. Do not replay unchanged matrices or
-the previously rejected owned-mutation-buffer removal.
+Keep snapshot/ownership/timer scopes separate and the old gate failed. The
+[triomphe-only extraction](ISOLATED-OUTLINE-QUALIFICATION.md) now passes source,
+29-lemma/14-control proof, release-codegen and 523-test qualification, plus
+848 live states / 424 old views. Its actual mutation callback is removed with
+original archery unchanged. Next implement the separate allocation companion
+and execute the predeclared engine screen; no performance result exists yet.
+Do not replay unchanged matrices or previously rejected owned-buffer removal.
 
 The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
 uses current `86aa6fc` default/feature servers and one qualified client. Default

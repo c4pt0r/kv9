@@ -13,10 +13,12 @@
 > passes 90 processes / 152 rows and independent checks: write mean improves
 > 4.600%–13.903%, but warm owned GET hit regresses 2.599%–7.407%; resident reads
 > do not share the same uniform regression. Keep the candidate isolated and the
-> original failed gate. Next qualify shared-clone extraction alone with the
-> original pointer callback: source/proof and actual release codegen first,
-> engine correctness before any timing. Previously rejected owned-buffer removal
-> stays held. Do not repeat unchanged matrices.
+> original failed gate. The [isolated triomphe extraction](ISOLATED-OUTLINE-QUALIFICATION.md)
+> now passes 523 tests (three existing ignored), 29 conditional lemmas / 14 controls
+> and 848 live states / 424 old views. Actual codegen removes the mutation callback
+> while retaining original archery. Next implement the separate allocation
+> companion and run the predeclared engine screen; no timing has run for this
+> candidate. Previously rejected owned-buffer removal stays held.
 > Database QPS below is unchanged; no industrial checkbox or runtime promotion follows.
 > CRC remains the selected write runtime. The latest [same-source screen](WAL-PREALLOCATION-PERFORMANCE.md)
 > measures default `86aa6fc` at c64 / 128-byte values at **137,874 Put calls/s**
