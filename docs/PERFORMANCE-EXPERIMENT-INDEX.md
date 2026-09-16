@@ -1,5 +1,11 @@
 # Performance experiment index
 
+The new [single key/value buffer qualification](ENTRY-BUFFER-QUALIFICATION.md)
+passes 202 baseline / 206 candidate tests, 23 conditional theorems, 13 rejecting
+controls and 198 allocation rows. Nonempty key/value insertion and overwrite
+save one request and 24 entry bytes, including long keys. Next run its declared
+write-first engine screen with preflight inside timing; no new QPS is claimed.
+
 Consult this index and `git log --all` before proposing another experiment.
 Several completed reports live on evidence branches rather than the current
 main tree. Searching only current files missed prior rejected scheduling work.
@@ -34,9 +40,10 @@ panels fail. Stop unchanged callback/alignment variants. After [inline-key quali
 its [write screen](INLINE-KEY-PERFORMANCE.md) completes 52 processes / 32 timing /
 16 allocation rows. Short means improve 1.685%–10.831%, but three material cases
 fail and long unique means regress 5.077% / 4.783%. Read timing is skipped by
-the declared write gate. Hold inline40; next qualify one private key/value buffer
-with key-only ordering, checked lengths and replacement/snapshot proofs. No
-implementation/timing exists for that new representation; owned-buffer consumption stays held.
+the declared write gate. Hold inline40. The new single-buffer representation
+is now qualified above, with key-only ordering, checked lengths and replacement
+proofs. Its declared engine timing remains next.
+Owned-buffer consumption stays held.
 
 The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
 uses current `86aa6fc` default/feature servers and one qualified client. Default

@@ -1,5 +1,11 @@
 # kv9 development roadmap
 
+> The [single key/value buffer candidate](ENTRY-BUFFER-QUALIFICATION.md) now
+> passes 202 baseline / 206 candidate local tests, 23 conditional theorems,
+> 13 rejecting controls and 198 allocation observations. Nonempty key/value
+> insertion or overwrite saves one request and 24 requested entry bytes, also
+> for long keys. Next run its declared engine write screen with the length
+> preflight inside timing; no new timing or database QPS exists yet.
 > Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
 > Keep selected ThinLTO and Safe ReadIndex; read and lease optimization remain held.
 > The latest [index mutation screen](OUTLINED-MUTATION-PATH.md) completes 446
@@ -21,9 +27,9 @@
 > [inline-key write screen](INLINE-KEY-PERFORMANCE.md) now completes 52 processes /
 > 32 timing / 16 count rows. Short means improve 1.685%–10.831%, but three miss
 > the material gate; long unique means regress 5.077% / 4.783%. Stop before the
-> predeclared read stage and hold inline40. Next qualify one buffer for key/value
-> bytes, checking actual layout, key-only ordering and replacement/snapshot
-> semantics before timing. This new representation is not implemented yet.
+> predeclared read stage and hold inline40. The new buffer qualification above
+> checks layout, key-only ordering and replacement/snapshot semantics. Its
+> declared matched engine timing remains next.
 > Owned-buffer removal stays held.
 > Database QPS below is unchanged; no industrial checkbox or runtime promotion follows.
 > CRC remains the selected write runtime. The latest [same-source screen](WAL-PREALLOCATION-PERFORMANCE.md)

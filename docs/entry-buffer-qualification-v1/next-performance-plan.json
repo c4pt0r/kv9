@@ -1,0 +1,82 @@
+{
+  "status": "Prospective, not implemented or executed; only qualified source/layout/proof results exist",
+  "source_base": "e9ebdc42f2171fd5ab62f3fc2d2d010d88e55d22",
+  "candidate_root": "/mnt/data/kv9-work/entry-buffer-qualification-20260916-first/candidate",
+  "baseline_root": "/mnt/data/kv9-work/entry-buffer-qualification-20260916-first/baseline",
+  "candidate_engine_sha256": "520b641634e7ccbbe3d5b0fb41d8fd196854324b7c4b2e39e02c2425a77c327c",
+  "corpus": {
+    "source": "docs/outlined-mutation-path-v1/evidence.tar.gz:outlined/groups.bin",
+    "sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+    "groups": 106,
+    "mutations": 100096
+  },
+  "inputs": [
+    {
+      "name": "original",
+      "overwrite_key_bytes": 27,
+      "unique_key_bytes": 35,
+      "transform": "Original corpus, appending the monotonically increasing 8-byte BE mutation ordinal for unique insertion"
+    },
+    {
+      "name": "wide128",
+      "overwrite_key_bytes": 128,
+      "unique_key_bytes": 136,
+      "transform": "Pad each original 27-byte key to 128 bytes with zeroes; then append the same ordinal for unique insertion. Fixed-length padding preserves original key order and equality."
+    }
+  ],
+  "before_timing": [
+    "Build fresh ordinary ThinLTO release baseline/candidate with original registry dependencies; identify exact source and ELF hashes and invalidate first-party artifacts.",
+    "Qualify actual engine release paths with independent decoded/rekeyed models, every prefix, old snapshots, applied position/revision and CF sentinels.",
+    "Use a separate allocation-only companion with exact operation/output lifetime correspondence. No elapsed time from counted builds.",
+    "Retain the 198 selected allocation observations across empty/nonempty, short/long keys and values. Actual EntryBuffer is 24 bytes; entry requests save 24 bytes and one buffer allocation iff both key and value are nonempty. Qualify full-map/pinned lifetimes independently."
+  ],
+  "stage_one": {
+    "cases": 8,
+    "case_product": "2 datasets x overwrite/unique insertion x no old view/retained old view",
+    "orders": [
+      "baseline",
+      "candidate",
+      "candidate",
+      "baseline"
+    ],
+    "write_passes": 12,
+    "excluded_warmup_passes": 1,
+    "scope": "ReplicatedEngine::write_applied per retained group; batch construction and old-view acquisition/drop outside; consumed input destruction and position/revision updates inside; the new whole-batch length preflight remains inside write_applied timing",
+    "allocation_processes": 16,
+    "timing_processes": 32,
+    "gate": "All four original-dataset write means improve at least 10% pooled, improve in both orders, and p99 increases no more than 2%. Wide128 write mean/p99 increase no more than 2%. Exact data/position/refusal checks must pass. If any write gate fails, hold the candidate and stop before the remaining timing panels; never relabel skipped panels as passed."
+  },
+  "stage_two": {
+    "condition": "Only if stage-one gates pass",
+    "scope": "Reuse original engine-interface snapshot/owned/resident, first-probe/warm, per-call/512-query-pass read panels for both datasets and both map sizes. Add scan, iter, iter_rev, seek_le, checksum and delete_range windows for both datasets and map sizes.",
+    "cases": 60,
+    "case_count_derivation": "2 datasets x 18 existing non-write cases + 2 datasets x 2 map sizes x 6 range/delete operations",
+    "orders": [
+      "baseline",
+      "candidate",
+      "candidate",
+      "baseline"
+    ],
+    "allocation_processes": 120,
+    "timing_processes": 240,
+    "read_epochs": 12,
+    "warm_passes_per_epoch": 12,
+    "excluded_warm_passes_per_epoch": 8,
+    "ranges": "Deterministic 512 probe anchors without replacement, 16-entry half-open ranges; scan/iter/reverse return and retain 16 owned rows until after the measured window. Reverse seek returns at most one row. Consume streaming iterators inside the window; validate/drop outputs outside. Timed delete_range starts from a fresh independently verified state, preserves an old view and checks exact remaining rows; no state reset inside timing.",
+    "snapshot_scope": "Separate acquisition/drop and bounded snapshot allocation observations. One fixed captured view per read epoch; verify old view after an untimed mutation.",
+    "gate": "Every read/snapshot/range/delete pooled mean and p99 increases no more than 2%; retain both orders and each timer scope. Whole-pass p99 is never request p99."
+  },
+  "allocation_acceptance": "Independently account six request fields, requested live/peak bytes and every window. For nonempty key/value puts, predict one fewer buffer allocation and 24 fewer requested bytes per newly constructed entry. Retained old entries/CF sentinels and intermediate persistent paths must be modeled explicitly; final live-index reduction should be 24 bytes per live entry in each dataset, including sentinels. Empty key/value behavior is separately qualified. No time from counted builds; counts do not prove jemalloc size-class/RSS behavior.",
+  "bounds": {
+    "cpu": 4,
+    "helper_cpus": "6-15,22-31",
+    "process_timeout_seconds": 180,
+    "process_output_max_bytes": 67108864,
+    "minimum_free_bytes": 8589934592,
+    "maximum_timing_processes": 272,
+    "maximum_allocation_processes": 136,
+    "maximum_preparation_processes": 8
+  },
+  "limits": "Shared-host component screen, not database QPS. No parameter/alignment sweep or retry of a completed matrix. Production remains unchanged until material matched database benefit, full local correctness, ordinary recovery, actual Chaos Mesh and three-copy Redis throughput/latency pass. Industrial durability, bounded multi-Raft and automatic range splits remain open.",
+  "candidate_entry_buffer_sha256": "e207157f34781c5b7c3f59d94e8ed961db948aa855031271352aa85e8f863a09"
+}

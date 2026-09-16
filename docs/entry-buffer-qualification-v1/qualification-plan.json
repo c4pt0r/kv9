@@ -1,0 +1,13 @@
+{
+  "status": "Source/layout/model/proof qualification; no timing or production promotion",
+  "source_base": "e9ebdc42f2171fd5ab62f3fc2d2d010d88e55d22",
+  "representation": "Private EntryBuffer { Box<[u8]>, key_len }; CfMap<EntryBuffer, ()>",
+  "length_contract": "Checked sum <= isize::MAX before allocating. Validate every Put before changing any CF; replicated-position refusal retains priority. Allocation failure keeps ordinary Vec/Box behavior.",
+  "preserved": [
+    "Public key/value/wire/storage types",
+    "Ordered mutations, snapshot ownership and position/revision publication",
+    "Raft/WAL/read authorization"
+  ],
+  "next": "Declare performance only after source/model/proof/layout qualification",
+  "output_policy": "/mnt/data/kv9-work with reused repository target; local CI only"
+}
