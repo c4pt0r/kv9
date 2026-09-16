@@ -1,0 +1,21 @@
+[package]
+name = "kv9-packed-prefix-experiment"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[features]
+allocation-counting = []
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+[dependencies]
+packed-reference = { package = "kv9-packed-index-experiment", path = "../resident-packed" }
+rpds = "=1.2.1"
+tikv-jemallocator = { version = "=0.6.1", default-features = false }
+serde_json = "1"
+sha2 = "0.10"
