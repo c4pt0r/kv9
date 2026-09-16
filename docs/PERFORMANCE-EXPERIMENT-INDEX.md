@@ -1,10 +1,12 @@
 # Performance experiment index
 
-The new [single key/value buffer qualification](ENTRY-BUFFER-QUALIFICATION.md)
-passes 202 baseline / 206 candidate tests, 23 conditional theorems, 13 rejecting
-controls and 198 allocation rows. Nonempty key/value insertion and overwrite
-save one request and 24 entry bytes, including long keys. Next run its declared
-write-first engine screen with preflight inside timing; no new QPS is claimed.
+The [single-buffer write screen](ENTRY-BUFFER-PERFORMANCE.md) now completes
+52 processes / 32 timing / 16 allocation rows. Original overwrite mean changes
+-1.469% / +0.143%, unique insert +2.480% / +0.430%; all four miss the material
+gate. Long pinned overwrite p99 regresses 2.690%. Read timing stops by plan.
+Allocation savings are exact, but do not establish speed. A safe key-accessor
+codegen control removes two comparison failure branches; prove/model-qualify
+it before a three-arm timing comparison. No new database QPS or promotion.
 
 Consult this index and `git log --all` before proposing another experiment.
 Several completed reports live on evidence branches rather than the current
@@ -42,7 +44,7 @@ its [write screen](INLINE-KEY-PERFORMANCE.md) completes 52 processes / 32 timing
 fail and long unique means regress 5.077% / 4.783%. Read timing is skipped by
 the declared write gate. Hold inline40. The new single-buffer representation
 is now qualified above, with key-only ordering, checked lengths and replacement
-proofs. Its declared engine timing remains next.
+proofs. Its write screen now fails as recorded above.
 Owned-buffer consumption stays held.
 
 The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
