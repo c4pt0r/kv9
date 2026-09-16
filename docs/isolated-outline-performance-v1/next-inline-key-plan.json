@@ -1,0 +1,20 @@
+{
+  "status": "Prospective source/type-layout/proof qualification only; no inline-key implementation or measurement yet",
+  "question": "Can short engine keys be stored inside the persistent-map entry, removing one separately allocated key buffer without weakening ordering, snapshots or write semantics?",
+  "evidence": "Current counting companion observes exactly3allocator requests/overwrite and4/unique insertion without old views, identical for baseline/candidate. MemEngine currently inserts key.clone() and value.clone() into Vec-keyed rpds. Original corpus keys are27bytes; unique-suffix keys are35bytes. This motivates a changed representation, not another callback/layout sweep.",
+  "prior_work_checked": [
+    "docs/PERFORMANCE-EXPERIMENT-INDEX.md",
+    "rg inline-key/small-key/smallvec/compact-key terms in docs/*.md",
+    "git log --all --oneline with inline key, small key, smallvec, compact key terms; no matching completed candidate found"
+  ],
+  "scope": "Start from selected original production dependencies, not either held extraction candidate. Prototype a private safe Rust key wrapper with up to40inline bytes and a Vec fallback. Preserve arbitrary binary/empty/long keys, value representation, all public/storage wire formats and the existing persistent ordered map. Do not consume owned WriteBatch buffers or repeat that rejected variant.",
+  "qualification": [
+    "Inspect actual enum/type layout and compiled constructor before measuring. A short-key constructor must avoid heap allocation, while long keys retain correct ownership. Do not assume a Rust layout size in advance.",
+    "Prove encode/decode byte identity, length and zero-padding non-observability, Eq/Ord/Borrow<[u8]> consistency, and preservation of lookup/range/update/delete behavior under that embedding. State source/compiler/allocator premises explicitly; no admitted proof or custom axiom.",
+    "Use safe slice copying only. Implement Eq/Ord from bytes rather than enum discriminants. Preserve cloned old snapshots and all applied-position/refusal/revision semantics; no Raft/WAL/read-authorization changes.",
+    "Validate empty/binary/prefix-sharing keys, lengths around40, long-key heap fallback, mixed representations, overwrites/deletes, all CFs and forward/reverse/range boundaries. Compare deterministic and generated operation histories against an independent byte-key model.",
+    "Only after layout/proof/state/engine qualification, predeclare one bounded allocation+timing screen on short and long keys, pinned/unpinned writes and all read/range interfaces affected. Actual allocated bytes, live footprint and long-key regressions matter as well as allocation-call reduction."
+  ],
+  "held": "Both extracted-pointer variants fail their declared component screens. Stop unchanged callback, alignment, key-buffer-consumption, borrowed-upsert, coalescing and packed-prefix variants. This private key representation is a new variable and has no performance claim.",
+  "promotion": "Requires material matched end-to-end benefit, full local correctness, ordinary recovery, actual Chaos Mesh and matched three-copy Redis throughput/latency. Industrial durability, bounded multi-Raft and automatic splits remain open."
+}

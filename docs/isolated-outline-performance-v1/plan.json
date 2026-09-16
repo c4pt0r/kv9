@@ -1,0 +1,228 @@
+{
+  "source_base": "0fd8fa68a452b16d05b6e7f787186d0d276fd8a4",
+  "scope": "New isolated triomphe-only candidate versus original dependencies through the qualified engine interface. No production promotion or reinterpretation of the failed combined candidate.",
+  "qualified_dependency_root": "/mnt/data/kv9-work/isolated-outline-20260916-first",
+  "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+  "orders": [
+    "baseline",
+    "candidate",
+    "candidate",
+    "baseline"
+  ],
+  "cases": [
+    {
+      "operation": "write_applied",
+      "workload": "overwrite",
+      "pinned": false
+    },
+    {
+      "operation": "write_applied",
+      "workload": "overwrite",
+      "pinned": true
+    },
+    {
+      "operation": "write_applied",
+      "workload": "unique_insert",
+      "pinned": false
+    },
+    {
+      "operation": "write_applied",
+      "workload": "unique_insert",
+      "pinned": true
+    },
+    {
+      "operation": "snapshot",
+      "workload": "overwrite"
+    },
+    {
+      "operation": "snapshot",
+      "workload": "unique_insert"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "owned",
+      "queries": "get_hit",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "owned",
+      "queries": "get_hit",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "owned",
+      "queries": "get_miss",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "owned",
+      "queries": "get_miss",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "resident",
+      "queries": "get_hit",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "resident",
+      "queries": "get_hit",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "resident",
+      "queries": "get_miss",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "resident",
+      "queries": "get_miss",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "owned",
+      "queries": "get_hit",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "owned",
+      "queries": "get_hit",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "owned",
+      "queries": "get_miss",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "owned",
+      "queries": "get_miss",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "resident",
+      "queries": "get_hit",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "resident",
+      "queries": "get_hit",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "resident",
+      "queries": "get_miss",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "resident",
+      "queries": "get_miss",
+      "timer": "whole_pass"
+    }
+  ],
+  "write_passes": 12,
+  "write_excluded_passes": 1,
+  "read_epochs": 12,
+  "read_warm_passes": 12,
+  "read_warmup_passes": 8,
+  "query_count": 512,
+  "query_seed": 71,
+  "snapshot_passes": 12,
+  "snapshot_queries_per_pass": 512,
+  "snapshot_warmup_passes": 8,
+  "expected_processes": 90,
+  "expected_rows": 152,
+  "expected_comparison_cells": 38,
+  "cpu": 4,
+  "helper_cpus": "6-15,22-31",
+  "shared_host": true,
+  "minimum_free_bytes": 8589934592,
+  "process_timeout_seconds": 180,
+  "process_output_max_bytes": 67108864,
+  "timing_scopes": {
+    "write": "Fresh engine per pass, input WriteBatch construction and old-snapshot acquisition/drop outside measurement; write_applied consumes batch, clones stored data and publishes exact applied position inside call. Each of106groups is one window. Two inert sentinel CF rows are present.",
+    "read": "Fresh populated engine/snapshot per epoch. Statically select owned get or borrowed get_resident outside timed loops; only real ReadView dynamic dispatch remains. Time first512 probes, validate all outputs, perform8 same-view untimed passes, then12 warm passes with all outputs checked after each pass.",
+    "per_call": "One window per query, return/error check and black_box included. Store result in reserved output buffer after timer stops; validate/drop results after pass.",
+    "whole_pass": "One window per512-query pass includes loop and output-buffer stores; validate/drop outputs after timer stops. Mean/window divided by512 is a pass-derived estimate, and p99/window is not request p99.",
+    "snapshot": "Populated engine,8 excluded passes then12 measured passes of512acquisitions. Each window includes snapshot acquisition/boxing; destruction outside. Validate snapshot contents outside measured windows.",
+    "correctness": "Before timing validate all106live prefixes and old views in both write modes for both workloads; preserve inert Lock/Write CF rows. Each read epoch confirms snapshot isolation after a later write and exact applied-position/revision transition106->107."
+  },
+  "interpretation": {
+    "criterion": "Report all means/p99 and both-order directions, original/warm and whole-pass separately. This diagnostic has no production-promotion verdict.",
+    "limits": "The allocation companion adds request/live-byte evidence; counted timing is excluded. No compiler alignment sweep. The combined candidate stays failed; production promotion requires the separately declared end-to-end gates."
+  },
+  "status": "Execution specification; counting companion qualification precedes the fixed screen",
+  "qualification_audit": "qualification-audit.json",
+  "timing_binaries": {
+    "baseline": {
+      "path": "/mnt/data/kv9-work/isolated-outline-20260916-first/build-baseline/engine-interface",
+      "sha256": "d3ffbe08b5de8ebc20974c4f3ed5a5cb5ef61b0bfadf27cd5985556402f9a491",
+      "bytes": 1239784
+    },
+    "candidate": {
+      "path": "/mnt/data/kv9-work/isolated-outline-20260916-first/build-candidate/engine-interface",
+      "sha256": "230ae983384698aba481bb6da7867be118b30655e4b1c41eaf7100346242bf4a",
+      "bytes": 1240296
+    }
+  },
+  "timing_reuse": "Reuse these exact ordinary-release binaries if all recorded Rust/dependency sources and corpus/protocol remain unchanged; do not introduce counters, flags or a new dispatcher into timing.",
+  "allocation_companion": {
+    "status": "Must be implemented and qualified before measured execution",
+    "source": "Copy the current engine-interface harness into a separate counting-only build and reuse the existing resident-outlined-mutation allocation counter module verbatim. Preserve API calls, output lifetimes and window boundaries. No counter hooks in timing ELFs.",
+    "fields": [
+      "allocation_calls",
+      "allocated_bytes",
+      "reallocation_calls",
+      "reallocated_bytes",
+      "deallocation_calls",
+      "deallocated_bytes",
+      "maximum_window_extra_live_bytes"
+    ],
+    "validation": "Check all outputs and state/old-view positions; independently verify corpus/probes again. Expected owned hit: one value allocation/read; borrowed hits and misses: no value allocation; snapshot boxing counted separately. Compare both arms per case/phase. Counted timing is discarded.",
+    "runs": "One baseline/candidate counting pair per22cases, plus one correctness preparation per counting executable."
+  },
+  "expected_timing_processes": 90,
+  "expected_timing_rows": 152,
+  "expected_counting_processes": 46,
+  "expected_counting_rows": 76,
+  "expected_total_processes": 136,
+  "gates": {
+    "write_material": "All four declared original write cases must reduce pooled mean by at least10%, with better means in both orders. Report all p99/order results; write p99 regression above2% fails the screen.",
+    "read_and_snapshot": "No pooled mean orp99 regression above2% for the declared read/snapshot cells, retaining first-probe/warm and per-call/whole-pass scopes. Report each order; whole-pass p99 is not request p99.",
+    "allocations": "Equivalent deterministic per-window allocator requests and live-byte behavior; any mismatch requires explanation/qualification before acceptance.",
+    "interpretation": "These are component selection criteria for this changed candidate, not end-to-end promotion. The combined candidate stays failed. No threshold relaxation after measurement.",
+    "promotion": "Material matched database benefit, full local correctness, ordinary recovery, actual Chaos Mesh and matched three-copy Redis throughput/latency still required."
+  },
+  "execution_base": "d0337befbb1418104f2b698f705b262815e2c977"
+}

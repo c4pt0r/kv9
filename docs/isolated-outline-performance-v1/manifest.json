@@ -1,0 +1,53 @@
+{
+  "complete": true,
+  "members": 776,
+  "expanded_bytes": 73576821,
+  "compressed_bytes": 4480521,
+  "sha256": "0879754d8d85c2a2e4efe82a0994eadadb62eddeb143d741794c82f6dcd9934d",
+  "all_members_read_back": true,
+  "local_root": "/mnt/data/kv9-work/isolated-outline-performance-20260916-first",
+  "processes": 136,
+  "timing_rows": 152,
+  "allocation_rows": 76,
+  "correctness_and_allocation_accepted": true,
+  "component_gate_passed": false,
+  "production_promoted": false,
+  "excluded": [
+    "Executable binaries (retained locally and hashed)",
+    "Duplicate groups.bin",
+    "GitHub payloads, mutable progress/continuation and Python caches"
+  ],
+  "external": {
+    "corpus": "../outlined-mutation-path-v1/evidence.tar.gz:outlined/groups.bin",
+    "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+    "qualification": "../isolated-outline-v1/evidence.tar.gz",
+    "qualification_sha256": "f449e30cb7dd14299e358eba94679e40c418dfc71d332a511bdbe0f4278427a3",
+    "qualification_scope": "Original/candidate dependency and timing-harness sources, build identities, conditional proof and correctness evidence"
+  },
+  "binaries": {
+    "baseline": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/isolated-outline-20260916-first/build-baseline/engine-interface",
+        "sha256": "d3ffbe08b5de8ebc20974c4f3ed5a5cb5ef61b0bfadf27cd5985556402f9a491",
+        "bytes": 1239784
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/isolated-outline-performance-20260916-first/build-counting-baseline/counting",
+        "sha256": "2e2da9bcabfee5a7436e13974be456ab5852e2265c0897cba64e89e0b67ce637",
+        "bytes": 1327240
+      }
+    },
+    "candidate": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/isolated-outline-20260916-first/build-candidate/engine-interface",
+        "sha256": "230ae983384698aba481bb6da7867be118b30655e4b1c41eaf7100346242bf4a",
+        "bytes": 1240296
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/isolated-outline-performance-20260916-first/build-counting-candidate/counting",
+        "sha256": "5cdffbd12dc5e700e970a99059bea19e91aa6be757d6d008fb08768dbd25ce56",
+        "bytes": 1327712
+      }
+    }
+  }
+}

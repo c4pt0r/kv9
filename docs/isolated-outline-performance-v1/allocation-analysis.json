@@ -1,0 +1,998 @@
+{
+  "complete": true,
+  "accepted": true,
+  "rows": 76,
+  "cells": [
+    {
+      "case": 0,
+      "spec": {
+        "operation": "write_applied",
+        "workload": "overwrite",
+        "pinned": false
+      },
+      "phase": "apply_group",
+      "operation_window": "ns_per_group",
+      "identical_per_window": true,
+      "allocation_counts": [
+        3603456,
+        253443072,
+        0,
+        0,
+        6007032,
+        533293056
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 211,
+      "sum_window_live_delta_bytes": -279849984,
+      "windows": 1272
+    },
+    {
+      "case": 1,
+      "spec": {
+        "operation": "write_applied",
+        "workload": "overwrite",
+        "pinned": true
+      },
+      "phase": "apply_group",
+      "operation_window": "ns_per_group",
+      "identical_per_window": true,
+      "allocation_counts": [
+        4712976,
+        315576192,
+        0,
+        0,
+        2923704,
+        316432320
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 534441,
+      "sum_window_live_delta_bytes": -856128,
+      "windows": 1272
+    },
+    {
+      "case": 2,
+      "spec": {
+        "operation": "write_applied",
+        "workload": "unique_insert",
+        "pinned": false
+      },
+      "phase": "apply_group",
+      "operation_window": "ns_per_group",
+      "identical_per_window": true,
+      "allocation_counts": [
+        4804608,
+        330316800,
+        0,
+        0,
+        2403576,
+        289459200
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 739200,
+      "sum_window_live_delta_bytes": 40857600,
+      "windows": 1272
+    },
+    {
+      "case": 3,
+      "spec": {
+        "operation": "write_applied",
+        "workload": "unique_insert",
+        "pinned": true
+      },
+      "phase": "apply_group",
+      "operation_window": "ns_per_group",
+      "identical_per_window": true,
+      "allocation_counts": [
+        9847596,
+        612724128,
+        0,
+        0,
+        2403576,
+        289459200
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 1437416,
+      "sum_window_live_delta_bytes": 323264928,
+      "windows": 1272
+    },
+    {
+      "case": 4,
+      "spec": {
+        "operation": "snapshot",
+        "workload": "overwrite"
+      },
+      "phase": "steady_snapshot",
+      "operation_window": "ns_per_snapshot",
+      "identical_per_window": true,
+      "allocation_counts": [
+        6144,
+        638976,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 104,
+      "sum_window_live_delta_bytes": 638976,
+      "windows": 6144
+    },
+    {
+      "case": 5,
+      "spec": {
+        "operation": "snapshot",
+        "workload": "unique_insert"
+      },
+      "phase": "steady_snapshot",
+      "operation_window": "ns_per_snapshot",
+      "identical_per_window": true,
+      "allocation_counts": [
+        6144,
+        638976,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 104,
+      "sum_window_live_delta_bytes": 638976,
+      "windows": 6144
+    },
+    {
+      "case": 6,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        6144,
+        786432,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 128,
+      "sum_window_live_delta_bytes": 786432,
+      "windows": 6144
+    },
+    {
+      "case": 6,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        73728,
+        9437184,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 128,
+      "sum_window_live_delta_bytes": 9437184,
+      "windows": 73728
+    },
+    {
+      "case": 7,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        6144,
+        786432,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 65536,
+      "sum_window_live_delta_bytes": 786432,
+      "windows": 12
+    },
+    {
+      "case": 7,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        73728,
+        9437184,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 65536,
+      "sum_window_live_delta_bytes": 9437184,
+      "windows": 144
+    },
+    {
+      "case": 8,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 6144
+    },
+    {
+      "case": 8,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 73728
+    },
+    {
+      "case": 9,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 12
+    },
+    {
+      "case": 9,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 144
+    },
+    {
+      "case": 10,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 6144
+    },
+    {
+      "case": 10,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 73728
+    },
+    {
+      "case": 11,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 12
+    },
+    {
+      "case": 11,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 144
+    },
+    {
+      "case": 12,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 6144
+    },
+    {
+      "case": 12,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 73728
+    },
+    {
+      "case": 13,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 12
+    },
+    {
+      "case": 13,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 144
+    },
+    {
+      "case": 14,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        6144,
+        786432,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 128,
+      "sum_window_live_delta_bytes": 786432,
+      "windows": 6144
+    },
+    {
+      "case": 14,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        73728,
+        9437184,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 128,
+      "sum_window_live_delta_bytes": 9437184,
+      "windows": 73728
+    },
+    {
+      "case": 15,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        6144,
+        786432,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 65536,
+      "sum_window_live_delta_bytes": 786432,
+      "windows": 12
+    },
+    {
+      "case": 15,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        73728,
+        9437184,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 65536,
+      "sum_window_live_delta_bytes": 9437184,
+      "windows": 144
+    },
+    {
+      "case": 16,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 6144
+    },
+    {
+      "case": 16,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 73728
+    },
+    {
+      "case": 17,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 12
+    },
+    {
+      "case": 17,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 144
+    },
+    {
+      "case": 18,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 6144
+    },
+    {
+      "case": 18,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 73728
+    },
+    {
+      "case": 19,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 12
+    },
+    {
+      "case": 19,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 144
+    },
+    {
+      "case": 20,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 6144
+    },
+    {
+      "case": 20,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_read",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 73728
+    },
+    {
+      "case": 21,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 12
+    },
+    {
+      "case": 21,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "operation_window": "ns_per_512_read_pass",
+      "identical_per_window": true,
+      "allocation_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "elapsed_time_recorded": false,
+      "maximum_window_extra_live_bytes": 0,
+      "sum_window_live_delta_bytes": 0,
+      "windows": 144
+    }
+  ],
+  "exact_per_window_equality": true,
+  "independent_read_and_snapshot_expectations": true,
+  "elapsed_time_recorded": false,
+  "input_acceptance": {
+    "complete": true,
+    "models": [
+      {
+        "dataset": "original24",
+        "workload": "overwrite",
+        "groups": 106,
+        "initial_keys": 4096,
+        "final_keys": 4096,
+        "final_state_sha256": "98a301258d1b77e1273fd1830456c51b9cff58f39b39e16bbff23f80f0da6894"
+      },
+      {
+        "dataset": "original24",
+        "workload": "unique_insert",
+        "groups": 106,
+        "initial_keys": 0,
+        "final_keys": 100096,
+        "final_state_sha256": "01b58bb87fea4b7b4d8bdcdb44bf6cf8ee6afecf618809d5110df57d9143347b"
+      }
+    ],
+    "prepared_sha256": {
+      "prepare-timing-baseline": "2dbd9af112bac12a8a0b1f1adb5d5b3c1e7758810a93c598b7892ade6a825d0c",
+      "prepare-timing-candidate": "2dbd9af112bac12a8a0b1f1adb5d5b3c1e7758810a93c598b7892ade6a825d0c",
+      "prepare-counting-baseline": "6d83aff8b05df0b3d5ee30b0fec1807346070fac9c9f7404d5e7d574c47ca292",
+      "prepare-counting-candidate": "6d83aff8b05df0b3d5ee30b0fec1807346070fac9c9f7404d5e7d574c47ca292"
+    },
+    "live_prefixes": 1696,
+    "old_views": 848,
+    "independent_reconstruction": true,
+    "query_identities": [
+      {
+        "workload": "overwrite",
+        "operation": "get_hit",
+        "sha256": "b39bcf10f06ee94cc3343f4f13019f08a1f2a15b65ae7c2563847761346d5569"
+      },
+      {
+        "workload": "overwrite",
+        "operation": "get_miss",
+        "sha256": "51d9fe9034a8ffbbdb05456328b5703a442a1007e3f213a0d1ae10f9c01e3bc8"
+      },
+      {
+        "workload": "unique_insert",
+        "operation": "get_hit",
+        "sha256": "0da2bdb0851196975c2e4c4e207a49dc60cfbc60fd00c1344131e8f0a7362c01"
+      },
+      {
+        "workload": "unique_insert",
+        "operation": "get_miss",
+        "sha256": "4b1bc40905b197d2c6236d1d86e76304e89af534ceb0237d5ff303911839771d"
+      }
+    ]
+  }
+}
