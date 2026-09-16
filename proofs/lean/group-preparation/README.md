@@ -34,7 +34,7 @@ The durable-step model treats a crash between publications as retaining the
 last synchronized state. A visible but not yet directory-synchronized record
 is provisional: concrete recovery resynchronizes it and validates its stores
 before admitting the corresponding model transition. No network/serving action
-exists in this increment. This is why an interrupted initial preparation can
+exists in the preparation model. This is why an interrupted initial preparation can
 initialize an empty log, while a StorageReady record never may.
 
 Explicit premises: the existing WAL recovery and fsync/rename/directory-sync
@@ -45,3 +45,13 @@ flow matching the table. Arbitrary filesystem replacement or a medium losing
 acknowledged fsync data is not modeled as an ordinary process crash. Local
 fault-cut tests validate ordering at 16 boundaries; they do not prove physical
 power-loss behavior. Actual Chaos Mesh acceptance remains separate.
+
+The subsequent [activation model](../group-activation/README.md) adds runtime
+ownership. For this preparation projection, Active retains StorageReady's
+identity and durable-store prerequisites; activation and ordinary execution
+are stuttering steps. Preparation failure is distinct from a later driver's
+fatal state: `GroupPreparation` is a durable preparation observation, never a
+health or serving receipt. Active recovery permits committed data/voting
+history under its separate validator and never reinitializes a store. Current
+source pins are refreshed for this inspected refinement, and all nine original
+theorems/controls are rerun. The historical evidence packet is unchanged.

@@ -113,6 +113,38 @@ impl DiskRaftStorage<OsFileSystem> {
 }
 
 impl<F: FileSystem> DiskRaftStorage<F> {
+    /// D01 fixed-voter data groups may recover voting/entry history, but no
+    /// configuration change or lease policy is authorized by creation alone.
+    pub fn validate_fixed_group(&self, voters: &[u64]) -> Result<()> {
+        use raft::Storage;
+        let writer = self.file.lock().expect("raft log file poisoned");
+        if writer.is_none() {
+            return Err(Error::Raft("data group has failed storage".into()));
+        }
+        let state = self
+            .mem
+            .initial_state()
+            .map_err(|e| Error::Raft(e.to_string()))?;
+        let expected = ConfState::from((voters.to_vec(), vec![]));
+        if state.conf_state != expected
+            || !self
+                .conf_history
+                .lock()
+                .expect("conf history poisoned")
+                .is_unstarted(&expected)
+            || self
+                .lease_epoch
+                .lock()
+                .expect("lease epoch poisoned")
+                .is_some()
+        {
+            return Err(Error::Raft(
+                "data group configuration is not authorized by its creation intent".into(),
+            ));
+        }
+        Ok(())
+    }
+
     /// Validate storage prepared for a group which has never been activated.
     /// A creation intent cannot adopt another log or reset a voting history.
     /// Active group recovery must use a separate lifecycle state and contract.
