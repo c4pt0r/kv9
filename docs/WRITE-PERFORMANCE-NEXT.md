@@ -31,9 +31,16 @@ rejecting controls and all 252 timing/count rows per executable. It also fails:
 original overwrite is another +4.145% / +4.241% slower than packed; every write
 case across three key distributions regresses versus packed in both orders.
 Seeded read probes now have representative comparison-depth coverage, but GET
-remains substantially slower than rpds. Stop this packed/prefix family. Next
-obtain bounded selected-index CPU attribution with complete caller coverage for
-allocation/copy, comparison and traversal before choosing a different kernel.
+remains substantially slower than rpds. Stop this packed/prefix family. The
+[new component CPU diagnosis](RESIDENT-SELECTED-CPU-PROFILE.md) now qualifies
+frame-pointer observation: 13,601/13,605 apply samples retain a named boundary;
+tree/ownership leaves account for 56.462–59.944%, comparisons 17.997–24.915%,
+and byte-copy leaves 0.993–1.838%. These are diagnostic-build sample fractions,
+not production CPU shares. Default DWARF coverage failed and remains retained.
+Next qualify the isolated monomorphic pointer-write-back hypothesis: preserve
+the existing normal/unwind guard and reference counts, prove callback/ownership
+equivalence, test panic paths and inspect ordinary release code generation
+before any fresh matched component or database timing.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 
