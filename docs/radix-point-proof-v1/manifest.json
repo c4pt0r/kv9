@@ -1,0 +1,17 @@
+{
+  "archive": "evidence.tar.gz",
+  "sha256": "54877ebc02ac08e1b63a98397dbec6ab0f5564867fc5b440381707dbac39918d",
+  "bytes": 500945,
+  "members": 584,
+  "expanded_bytes": 3152612,
+  "all_members_read_back": true,
+  "excluded": [
+    "Lean compiler outputs",
+    "Python bytecode"
+  ],
+  "complete_algorithm_gate": false,
+  "prior_rust_qualification": {
+    "manifest": "docs/persistent-radix-prototype-v1/manifest.json",
+    "archive_sha256": "03839a5c0a4bc7278c823e8d6599221f581c8d8a1c5cfe8f9883fcc000762a7a"
+  }
+}

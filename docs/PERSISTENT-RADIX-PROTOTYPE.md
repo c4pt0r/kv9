@@ -3,6 +3,10 @@
 Updated: 2026-09-16 UTC. Tracking: [#51](https://github.com/c4pt0r/kv9/issues/51),
 parent [#9](https://github.com/c4pt0r/kv9/issues/9).
 
+Subsequent proof checkpoint: [155 point-operation model theorems and 17
+rejecting controls](RADIX-POINT-PROOF.md) now pass for this exact Rust source.
+The complete index proof remains open; no timing or production promotion follows.
+
 The isolated safe Rust index now exists and passes its first implementation
 qualification. The common/engine suite passes **213 tests, with 25 pre-existing
 ignored tests**; this includes the 11 radix tests, rather than adding 11 to 213.

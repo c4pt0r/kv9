@@ -1,0 +1,719 @@
+{
+  "complete": true,
+  "accepted": true,
+  "started_ns": 1789553093482939637,
+  "controls": [
+    {
+      "name": "drop-leaf-value",
+      "rejected": true,
+      "reason": "Lean rejected proof in Tree.lean"
+    },
+    {
+      "name": "ignore-terminal",
+      "rejected": true,
+      "reason": "Lean rejected proof in Tree.lean"
+    },
+    {
+      "name": "wrong-edge-route",
+      "rejected": true,
+      "reason": "Lean rejected proof in Tree.lean"
+    },
+    {
+      "name": "omit-collapsed-edge",
+      "rejected": true,
+      "reason": "Lean rejected proof in Normalize.lean"
+    },
+    {
+      "name": "retain-deleted-leaf",
+      "rejected": true,
+      "reason": "Lean rejected proof in Delete.lean"
+    },
+    {
+      "name": "retain-deleted-terminal",
+      "rejected": true,
+      "reason": "Lean rejected proof in Delete.lean"
+    },
+    {
+      "name": "retain-old-leaf-value",
+      "rejected": true,
+      "reason": "Lean rejected proof in Insert.lean"
+    },
+    {
+      "name": "retain-old-terminal-value",
+      "rejected": true,
+      "reason": "Lean rejected proof in Insert.lean"
+    },
+    {
+      "name": "wrong-inserted-flag",
+      "rejected": true,
+      "reason": "Lean rejected proof in Insert.lean"
+    },
+    {
+      "name": "keep-consumed-split-edge",
+      "rejected": true,
+      "reason": "Lean rejected proof in SplitBranch.lean"
+    },
+    {
+      "name": "omit-common-byte",
+      "rejected": true,
+      "reason": "Lean rejected proof in Common.lean"
+    },
+    {
+      "name": "reverse-history",
+      "rejected": true,
+      "reason": "Lean rejected proof in History.lean"
+    },
+    {
+      "name": "proof-hole",
+      "rejected": true,
+      "reason": "Lean rejected proof in Tree.lean"
+    },
+    {
+      "name": "custom-axiom",
+      "rejected": true,
+      "reason": "untrusted axiom dependency"
+    },
+    {
+      "name": "source-collapse-byte",
+      "rejected": true,
+      "reason": "reviewed source hash mismatch"
+    },
+    {
+      "name": "source-cow-removal",
+      "rejected": true,
+      "reason": "reviewed source hash mismatch"
+    },
+    {
+      "name": "source-recursive-release",
+      "rejected": true,
+      "reason": "reviewed source hash mismatch"
+    }
+  ],
+  "sources": {
+    "proofs/lean/radix/Branches.lean": "179a22490a615c3b419f090726739af280c6371a25ca551ed9a146166d55d6fd",
+    "proofs/lean/radix/Tree.lean": "88870262e3868fe5b4a120a3e855e2d3e9d510684ff7d9c2773780086ad577e8",
+    "proofs/lean/radix/Normalize.lean": "08a4bace79ddaad6a39084b678d94551932c58d9ccecb2a61b1ff70e6faf7147",
+    "proofs/lean/radix/Delete.lean": "4e8a227e9e62634b453d6b77cfb5e38fafa542551b22e4dd2f8cb1244bcfe491",
+    "proofs/lean/radix/Common.lean": "024b7150a36b5db0ec513373de8544024a29832c5a77ebb8c844ae68537e4a7e",
+    "proofs/lean/radix/SplitLeaf.lean": "1463ff3fc231417bf624f3d29633af1df7532b44ce44e2e504def6b3c64e659b",
+    "proofs/lean/radix/SplitBranch.lean": "712b11816563c2830fc72e9638ad1aede3fa6036934671d15e5b93c5f713a326",
+    "proofs/lean/radix/Ordered.lean": "a13819f937d6f16796950da16e989effbf75b9315ab4528fc0cf6733c7b504b5",
+    "proofs/lean/radix/Insert.lean": "aa60ea460de2c9f0aeda00d2d3f8bbb2b11c280f429da791686193ec6e5c502c",
+    "proofs/lean/radix/History.lean": "73c9ceb05c87305f05ca793849444554ebc1b85069cc35c257e17549eba0692c",
+    "scripts/resident-radix/src/lib.rs": "00235871d6f168b3549da377793429dd4db281549425dbab38b1a66c37103fcc",
+    "scripts/resident-radix/src/tests.rs": "5573d0931c9890be425cef53ffdea4176903e0f9a2883632fb1cb2eb9a1333db",
+    "scripts/resident-radix/prove.py": "b0e4e25c02a4ff3811c4b9ac64ff9afdd825c810e3f8a1d0a1f24256e36db167"
+  },
+  "scope": "Source-bound reviewed model of full-key radix point operations: lookup versus an independent finite entry list, split/collapse validity, ordering and canonicality, insert/erase semantics, inserted flag and arbitrary finite mutation histories. Local parent-frame algebra and pure snapshot retention are also checked. This is not verified Rust extraction or complete index qualification: actual cursor/range/seek refinement, cardinality/usize bounds, explicit Rust iterative-loop simulation, Arc/heap reclamation and source differential evaluation remain open. Rust/compiler/Vec/Arc contracts are external assumptions, not proved by empty theorem axiom lists.",
+  "complete_algorithm_gate": false,
+  "lean_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+  "theorems": {
+    "Kv9.Radix.strip_some_iff": [
+      "propext"
+    ],
+    "Kv9.Radix.strip_append": [
+      "propext"
+    ],
+    "Kv9.Radix.strip_empty_suffix": [
+      "propext"
+    ],
+    "Kv9.Radix.strip_consumed_bound": [
+      "propext"
+    ],
+    "Kv9.Radix.strip_composed": [
+      "propext"
+    ],
+    "Kv9.Radix.under_nil": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.under_composed": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.under_empty": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.under_singleton": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.under_put": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.under_erase": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.route_empty": [
+      "Quot.sound"
+    ],
+    "Kv9.Radix.route_only_terminal": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.route_one_edge": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.terminal_put": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.terminal_erase": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.child_put": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.child_erase": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.new_child_put": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.terminal_put_under": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.terminal_erase_under": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.collapse_empty": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.collapse_terminal": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.collapse_branch": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.collapse_leaf": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_branch": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_old_terminal": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_new_terminal": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_different_edges": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.replace_edge_twice": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.replace_edge_self": [
+      "propext"
+    ],
+    "Kv9.Radix.plug_put": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.plug_erase": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.restore_put": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.restore_erase": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.prefix_refl": [
+      "propext"
+    ],
+    "Kv9.Radix.prefix_trans": [
+      "propext"
+    ],
+    "Kv9.Radix.prefix_cancel": [
+      "propext"
+    ],
+    "Kv9.Radix.strip_none_iff": [
+      "propext"
+    ],
+    "Kv9.Radix.different_edge_prefix": [
+      "propext"
+    ],
+    "Kv9.Radix.extension_not_terminal": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.terminal_not_edge_prefix": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.linear_append": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.linear_outside_prefix": [
+      "propext"
+    ],
+    "Kv9.Radix.valid_tree_prefix": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.valid_forest_prefix": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.forest_terminal_absent": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.forest_missing_route": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.valid_branch_prefix": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.tree_lookup_refines": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.forest_lookup_refines": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.root_lookup_refines": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.normalize_entries": [
+      "propext"
+    ],
+    "Kv9.Radix.normalize_valid": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.normalized_root_lookup": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.normalize_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.linear_none_iff": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.drop_absent": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.drop_append": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.drop_cons": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.delete_forest_missing": [
+      "propext"
+    ],
+    "Kv9.Radix.delete_tree_valid": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.delete_forest_valid": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.delete_tree_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.delete_forest_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.rebuilt_forest_entries": [
+      "propext"
+    ],
+    "Kv9.Radix.delete_tree_entries": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.delete_forest_entries": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.erase_root_valid": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.erase_root_entries": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.linear_drop_key": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.optional_lookup_refines": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.erase_root_lookup": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.common_left": [
+      "propext"
+    ],
+    "Kv9.Radix.common_right": [
+      "propext"
+    ],
+    "Kv9.Radix.prefix_drop": [
+      "propext"
+    ],
+    "Kv9.Radix.prefix_take": [
+      "propext"
+    ],
+    "Kv9.Radix.common_decompose_left": [
+      "propext"
+    ],
+    "Kv9.Radix.common_decompose_right": [
+      "propext"
+    ],
+    "Kv9.Radix.common_bounds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.common_matches_zip_count": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.common_separates": [
+      "propext"
+    ],
+    "Kv9.Radix.common_full_left": [
+      "propext"
+    ],
+    "Kv9.Radix.common_exhausted_both": [
+      "propext"
+    ],
+    "Kv9.Radix.full_key_from_suffix": [
+      "propext"
+    ],
+    "Kv9.Radix.common_prefix_append": [
+      "propext"
+    ],
+    "Kv9.Radix.proper_common_excludes_prefix": [
+      "propext"
+    ],
+    "Kv9.Radix.two_edges_valid": [
+      "propext"
+    ],
+    "Kv9.Radix.two_edges_canonical": [
+      "propext"
+    ],
+    "Kv9.Radix.two_edges_alternatives": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.leaf_split_cases_valid": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.leaf_split_cases_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_valid": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_cannot_exhaust_both": [
+      "propext"
+    ],
+    "Kv9.Radix.linear_two_old_first": [
+      "propext"
+    ],
+    "Kv9.Radix.linear_two_new_first": [
+      "propext"
+    ],
+    "Kv9.Radix.leaf_split_cases_lookup": [
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_entries_refine": [
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_lookup_refines": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.branch_split_cases_valid": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.branch_split_cases_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_branch_valid": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_branch_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_branch_fresh_absent": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.linear_append_fresh": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.branch_split_cases_lookup": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_branch_entries_refine": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_branch_lookup_refines": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.above_missing": [
+      "propext"
+    ],
+    "Kv9.Radix.above_trans": [],
+    "Kv9.Radix.two_edges_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.leaf_split_cases_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_leaf_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.branch_split_cases_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.split_branch_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.normalize_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.delete_forest_above": [
+      "propext"
+    ],
+    "Kv9.Radix.delete_tree_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.delete_forest_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.matching_key_decomposition": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.byte_reverse_lt": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_forest_missing": [
+      "propext"
+    ],
+    "Kv9.Radix.insert_forest_above": [
+      "propext"
+    ],
+    "Kv9.Radix.insert_tree_valid": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_forest_valid": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_tree_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_forest_ordered": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_forest_alternatives": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.alternatives_terminal": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_tree_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_forest_canonical": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.linear_put_left": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.linear_put_right": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.linear_replace_terminal": [
+      "propext"
+    ],
+    "Kv9.Radix.insert_tree_entries": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_forest_entries": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.put_root_valid": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.put_root_entries": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.put_root_lookup": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.matching_strip": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.tree_lookup_dropped_key": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_tree_flag": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.insert_forest_flag": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.put_root_flag": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.empty_good": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.put_root_good": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.erase_root_good": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.mutation_good": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.mutation_refines": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.history_good": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.history_refines": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.Radix.remembered_root": [],
+    "Kv9.Radix.mutation_preserves_saved_roots": [
+      "propext"
+    ],
+    "Kv9.Radix.history_preserves_saved_roots": [
+      "propext"
+    ]
+  },
+  "ended_ns": 1789553123303063165
+}

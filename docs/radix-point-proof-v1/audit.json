@@ -1,0 +1,73 @@
+{
+  "complete": true,
+  "theorems": 155,
+  "rejecting_controls": 17,
+  "all_positive_modules_match_reviewed_source": true,
+  "positive_compiler_commands": 11,
+  "semantic_controls": [
+    {
+      "name": "drop-leaf-value",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "ignore-terminal",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "wrong-edge-route",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "omit-collapsed-edge",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "retain-deleted-leaf",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "retain-deleted-terminal",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "retain-old-leaf-value",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "retain-old-terminal-value",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "wrong-inserted-flag",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "keep-consumed-split-edge",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "omit-common-byte",
+      "substantive_proof_failure": true
+    },
+    {
+      "name": "reverse-history",
+      "substantive_proof_failure": true
+    }
+  ],
+  "allowed_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "protected_drafts_unchanged": true,
+  "rust_index_and_production_crates_unchanged": true,
+  "source_mapping": "Reviewed and hash-bound; not verified Rust extraction.",
+  "complete_algorithm_gate": false,
+  "remaining": [
+    "Actual cursor seek/traversal/crossover and bytewise range/predecessor refinement",
+    "Map cardinality and machine-index/length arithmetic obligations",
+    "Explicit iterative path/frame simulation and full-key source correspondence",
+    "Arc copy-on-write ownership/reclamation argument and compiler/library premises",
+    "Differential execution of the executable Lean model against the exact Rust candidate"
+  ]
+}
