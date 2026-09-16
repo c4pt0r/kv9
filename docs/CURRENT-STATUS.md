@@ -1,33 +1,29 @@
-# Current development status — 2026-09-15
+# Current development status — 2026-09-16
 
-The current storage increment adds [automatic checkpoint ownership](CHECKPOINT-OWNERS.md):
-durable exact upload bytes before remote I/O, replicated Pending coverage,
-positive-settlement transfer to Version, and scheduling that excludes checkpoint
-bookkeeping. Local validation passes 731 library tests (four ignored), strict
-7-theorem / 43-obligation safety proof, four affected proof compositions, four
-compiled engine faults, and one actual default Chaos Mesh leader kill.
-Independent replay checks 286 Raw calls, exact automatic owners, the selected
-SST and all three full stopped-store Raft histories. Deterministic pre-upload
-crash injection, negative-attempt history/release and complete legacy/reference
-backfill remain next; C04 and S07 stay open.
+Horizontal scaling is now the active mainline. The current performance
+iteration ends at CRC/rpds, ThinLTO and Safe ReadIndex. Redis parity is not
+claimed and no longer blocks dynamic multi-Raft development. Radix remains
+experimental; its last published proof checkpoint contains 789 checked
+model theorems, with complete native refinement still open.
 
-Write throughput and latency remain the performance priority. **CRC remains
-selected**; the upper-bound receipt candidate has not passed its full matched
-performance comparison. Its exact historical client ELF is missing. One rebuild
-from matching source and Rust/Cargo 1.94 produced a different ELF and remains
-unqualified. No new QPS or latency result follows from the storage tests.
-See the [current write plan](WRITE-PERFORMANCE-NEXT.md) and
-[development path](DEVELOPMENT-PATH.md).
+The latest qualified c64 write baseline is **137,873.776 Put/s** (mean 0.464 ms,
+p99 0.745–0.754 ms) and **1,022,750.059 BatchPut(64) items/s** (mean 4.004 ms,
+p99 9.306–9.437 ms per batch). It uses three voters on one host with tmpfs WALs;
+it is not a physical-disk or cross-host scaling result. See the
+[qualified measurement](WAL-PREALLOCATION-PERFORMANCE.md).
 
-New retained output uses `/mnt/data/kv9-work`; active latency-sensitive fixtures
-and the reusable Cargo target remain on NVMe. The recent free-space observation
-is approximately 877 GB on root and 9.69 TB on the data volume, sufficient for
-the unchanged full performance envelope. Each run still checks fresh capacity.
-CI remains local; hosted workflows are dispatch-only.
+The [horizontal scaling plan](HORIZONTAL-SCALING-PLAN.md) defines the development
+sequence and measurable 3/6/9-node acceptance. The first [#22 transport increment](MULTI-RAFT-TRANSPORT.md) now passes
+856 local workspace tests/doctests (28 existing ignored), five rejecting defect
+controls, formatting and strict Clippy. Three independent three-voter groups
+replicate through shared loopback gRPC streams with separate inboxes and engines. Durable RegionManager lifecycle,
+public range routing, migration and recoverable splits remain incomplete.
+There are no horizontal-scaling benchmark results yet.
 
-The report below is the retained September 12 checkpoint, including its then
-selected inputs and pending work. Its historical experiments are not a current
-candidate promotion decision.
+Existing storage, snapshot, retention, proof, actual Chaos Mesh and availability
+gates remain mandatory. No industrial checkbox is closed by the priority change.
+Bulk output stays under `/mnt/data/kv9-work`; local CI remains the default and
+hosted workflows remain dispatch-only. The following report is historical.
 
 ## Retained September 12 report
 
