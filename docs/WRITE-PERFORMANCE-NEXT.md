@@ -13,11 +13,15 @@ passes all eight smokes, sixteen timed cohorts and independent acceptance:
 changes these by +0.545% / +1.474%, with unchanged loaded pooled p99 and batch
 throughput/mean/p99 reversing direction between orders. Keep it default-off;
 this does not establish a material general improvement or Redis parity.
-Next quantify Raw-command lowering, allocation/copy and fence evaluation
-separately from resident-index work using retained exact command/group inputs.
-Preserve mutation/fence order and snapshot/publication semantics; measure a
-changed kernel before another expensive runtime gate. Do not repeat completed
-screens or rejected clone-removal, coalescing and borrowed-upsert variants.
+The [exact Raw apply attribution](RAW-APPLY-ATTRIBUTION.md) now joins 1,564
+original Raft commands to all 106 retained engine groups. Decode/lower/fence
+means are 19.722 / 14.649 / 2.336 us per group. A separate direct-append prototype
+reduces lowering mean 10.896% and p99 in both orders, but saves only 1.548 us per
+group. Production remains unchanged. Next measure lowering together with real
+MemEngine insertion/overwrite and retained-snapshot workloads before runtime
+integration. Preserve mutation/fence order and snapshot/publication semantics;
+do not repeat completed screens or rejected clone-removal, coalescing and
+borrowed-upsert variants. These component results are not database QPS.
 
 The earlier [complete write-observer capture](WRITE-OBSERVER-CAPTURE.md) measures
 queue/group distributions and diagnostic overhead across all 16 planned cells.
