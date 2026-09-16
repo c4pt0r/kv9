@@ -1,8 +1,12 @@
 # Next resident-index experiment: packed persistent nodes
 
-Status: planned, not implemented or measured. Production still uses the pinned
-`rpds::RedBlackTreeMapSync`. The [composed lowering screen](RAW-LOWERING-COMPOSED.md)
-does not justify runtime integration of that smaller optimization.
+Status: the [first implementation and fixed screen](PACKED-INDEX-EXPERIMENT.md)
+are complete. Reject that variant: overwrite mean regresses 26.957% / 12.403%
+without/with snapshots, despite new-key gains. Production still uses the pinned
+`rpds::RedBlackTreeMapSync`. The original plan below remains as the initial
+contract. Next diagnose comparator/minimum-refresh costs and the 24-byte shared
+key prefix before any changed kernel; preserve the detected read-sampling bias
+and require seeded selection without replacement in a future read screen.
 
 ## Hypothesis and changed variable
 
