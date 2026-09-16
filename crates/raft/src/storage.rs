@@ -46,7 +46,7 @@ use crate::lease_policy::{LeaseEpoch, LeasePolicy};
 use crate::rawnode::PersistentRaftStorage;
 
 mod configuration;
-mod snapshot;
+pub(crate) mod snapshot;
 use configuration::ConfigurationHistory;
 pub use configuration::{CommittedConfiguration, ConfigurationLookup, ConfigurationUnavailable};
 pub use snapshot::MAX_PROTOCOL_SNAPSHOT_BYTES;

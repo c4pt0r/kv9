@@ -96,7 +96,7 @@ pub(super) fn validate_transition(
     Ok(())
 }
 
-fn encode(image: &Snapshot, hs: &HardState) -> Result<Vec<u8>> {
+pub(crate) fn encode(image: &Snapshot, hs: &HardState) -> Result<Vec<u8>> {
     validate(image, hs)?;
     let pb = image
         .write_to_bytes()
@@ -112,7 +112,7 @@ fn encode(image: &Snapshot, hs: &HardState) -> Result<Vec<u8>> {
     Ok(out)
 }
 
-pub(super) fn decode(bytes: &[u8]) -> Result<(Snapshot, HardState)> {
+pub(crate) fn decode(bytes: &[u8]) -> Result<(Snapshot, HardState)> {
     if bytes.len() < 16 || bytes.len() > MAX_PROTOCOL_SNAPSHOT_BYTES + 128 || &bytes[..8] != MAGIC {
         return Err(invalid("invalid snapshot record envelope"));
     }

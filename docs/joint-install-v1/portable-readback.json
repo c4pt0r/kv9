@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "members_verified": 7957,
+  "archive_sha256": "9b5b8848bf3ae9eb1650d3678607c2d12803a33fbb5bb82acc557a741dab5743",
+  "embedded_chaos_auditor_rerun": {
+    "complete": true,
+    "cells": 7,
+    "actual_faults": 6,
+    "matches_original_except_input_paths": true
+  }
+}

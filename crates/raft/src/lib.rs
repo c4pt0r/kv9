@@ -23,6 +23,7 @@ pub mod lease_policy;
 pub mod rawnode;
 #[cfg(feature = "read-stage-timing")]
 mod read_stage_timing;
+pub mod snapshot_install;
 pub mod state_machine;
 pub mod storage;
 #[cfg(any(test, feature = "testing"))]
