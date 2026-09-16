@@ -130,6 +130,11 @@ write-gain gate fails independently of this read limitation.
 
 ## Code generation and next hypothesis
 
+Follow-up status: the [completed mutation investigation](OUTLINED-MUTATION-PATH.md)
+disproves the named adapter below, then qualifies and measures an actual shared
+clone extraction. It also fails selection. The paragraph below records the
+hypothesis at this report's publication time; it is no longer untested.
+
 The actual timing executables confirm the intended effect: baseline retains
 an 8-byte `Arc::as_ptr` symbol and five references; candidate has neither.
 These are this harness's counts, distinct from the earlier MemEngine harness's

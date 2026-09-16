@@ -12,6 +12,15 @@ only to its recorded source, client, workload and duration. Historical numbers
 must not be relabeled as current measurements or full industrial qualification.
 
 The priority remains [writes against Redis with one primary and two replicas](WRITE-PERFORMANCE-NEXT.md).
+The [outlined mutation follow-up](OUTLINED-MUTATION-PATH.md) now completes
+qualification and 528 timing/count rows. The named adapter is rejected at
+codegen without timing. Real shared-clone extraction improves original
+overwrite 18.220% / 11.893%, but unique insertion only 7.722% / 1.922%; pinned
+unique-insert p99 worsens 5.665%. All write means improve in both orders, yet
+19 read-panel cells fail, including repeatable warm GET regressions. Hold it;
+inspect retained codegen/targets and qualify a bounded diagnostic before any
+changed candidate. Do not rerun this or previous unchanged full matrices.
+
 The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
 uses current `86aa6fc` default/feature servers and one qualified client. Default
 reaches **137,873.776 Put/s / 1,022,750.059 BatchPut(64) items/s** at c64.

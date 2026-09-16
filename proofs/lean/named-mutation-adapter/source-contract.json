@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "guard_model_sha256": "db85f5fd4e95bbb74e3dee5f0159cfd66c04ae3c3260d21c820ef8d67821741b",
+  "proof_sha256": "3a71d8fb6f57d82748002b36b6737c91c411bf1c67ef988e8a8c1a5b81bc068c",
+  "sources": {
+    "baseline-archery/src/shared_pointer/kind/rc/mod.rs": "51ce60423de4529a5f4523b024cb8b5199a599ab7b66ba911b7956594337e882",
+    "baseline-archery/src/shared_pointer/kind/arc/mod.rs": "ed800ff2964d474f56f155ff6e84cf65a4d93e7dbb13cea262e55fa248522e73",
+    "baseline-archery/src/shared_pointer/kind/arct/mod.rs": "6a56f178124786c7511594a85348c66e7e2ab4391a8f138be845434418b8c833",
+    "previous-archery/src/shared_pointer/kind/rc/mod.rs": "51ce60423de4529a5f4523b024cb8b5199a599ab7b66ba911b7956594337e882",
+    "previous-archery/src/shared_pointer/kind/arc/mod.rs": "ed800ff2964d474f56f155ff6e84cf65a4d93e7dbb13cea262e55fa248522e73",
+    "previous-archery/src/shared_pointer/kind/arct/mod.rs": "6a56f178124786c7511594a85348c66e7e2ab4391a8f138be845434418b8c833",
+    "candidate-archery/src/shared_pointer/kind/rc/mod.rs": "51ce60423de4529a5f4523b024cb8b5199a599ab7b66ba911b7956594337e882",
+    "candidate-archery/src/shared_pointer/kind/arc/mod.rs": "ed800ff2964d474f56f155ff6e84cf65a4d93e7dbb13cea262e55fa248522e73",
+    "candidate-archery/src/shared_pointer/kind/arct/mod.rs": "00211e2643347ba5280bfdbb4a54d5608b811cc84b8dc1a5e8ab403272785d07",
+    "baseline-archery/src/shared_pointer/kind/erased_ptr.rs": "be9b8fec1427ade3a52a653135e3e113e6c5e67d6b777d6b09915e142095b439",
+    "baseline-archery/src/shared_pointer/kind/erased_ptr/callback_tests.rs": "61dc8c2ae1ddbe37a18f8c1b73732b03bd080db855a1ecfbed3775efaeffcbef",
+    "previous-archery/src/shared_pointer/kind/erased_ptr.rs": "87876ce3636a9f6a9182243820f4a50d99c3f57d1dff66b8737c1fc2663c1905",
+    "previous-archery/src/shared_pointer/kind/erased_ptr/callback_tests.rs": "61dc8c2ae1ddbe37a18f8c1b73732b03bd080db855a1ecfbed3775efaeffcbef",
+    "candidate-archery/src/shared_pointer/kind/erased_ptr.rs": "87876ce3636a9f6a9182243820f4a50d99c3f57d1dff66b8737c1fc2663c1905",
+    "candidate-archery/src/shared_pointer/kind/erased_ptr/callback_tests.rs": "61dc8c2ae1ddbe37a18f8c1b73732b03bd080db855a1ecfbed3775efaeffcbef"
+  },
+  "premises": [
+    "Same prior guard model and explicit Rust/library/compiler premises.",
+    "Arc::make_mut has the same mutation, ownership and unwind behavior in both function bodies.",
+    "core::ptr::from_mut is a total, non-mutating, non-panicking conversion after successful make_mut; skipped on unwind.",
+    "Function naming and inline attributes do not alter Rust semantics under the compiler correctness premise.",
+    "The source mapping is reviewed, not mechanically extracted Rust semantics."
+  ]
+}

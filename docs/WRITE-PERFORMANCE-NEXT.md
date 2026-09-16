@@ -49,10 +49,18 @@ Every write mean improves in both orders and allocation/live-byte counts match.
 The declared gate still fails: not every required write reaches 10%, and three
 read cells exceed the 2% mean/p99 limit. Read-pass review locates the largest
 tail in one early pass; the driver's excluded warmup creates a different map.
-Keep all samples and the failed gate. Next qualify a named inline mutation
-adapter with unchanged Arc::make_mut/guard behavior, then declare separate
-first-touch and same-map warm read panels for that changed candidate. The
-proposal is untested; no runtime promotion or database-QPS gain is established.
+Keep all samples and the failed gate. The [mutation follow-up](OUTLINED-MUTATION-PATH.md)
+now disproves the named adapter at codegen: the same 421-byte body survives as
+a FnOnce shim, so it was not timed. A real shared-clone extraction passes 446
+dependency tests, 26 conditional lemmas, nine controls and four engine smokes.
+Its separate first-probe/same-map warm screen completes 264 timing and 264
+counting rows. Original overwrite improves 18.220% / 11.893%, but unique insert
+only 7.722% / 1.922%, and pinned unique-insert p99 regresses 5.665%. All write
+means improve in both orders. Material and read gates still fail: small-map
+warm GET hit is 14.504–15.353% slower across all key distributions in both
+orders, and 19 read-panel cells exceed the 2% bound. Hold the candidate. Next
+inspect retained GET codegen/targets and qualify a bounded causal diagnostic;
+do not rerun the unchanged matrix. No database-QPS gain is established.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 
