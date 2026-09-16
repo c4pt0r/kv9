@@ -1,0 +1,73 @@
+{
+  "complete": true,
+  "members": 444,
+  "expanded_bytes": 192563670,
+  "compressed_bytes": 10934172,
+  "sha256": "93931fa137c702f53b81f6a87af4a2ba42252a60de2eb6b0d23b4056c8514db5",
+  "all_members_read_back": true,
+  "local_root": "/mnt/data/kv9-work/entry-buffer-performance-20260916-first",
+  "processes": 52,
+  "timing_rows": 32,
+  "allocation_rows": 16,
+  "stage_one_gate_passed": false,
+  "stage_two": "not run; stopped by declared write gate",
+  "production_promoted": false,
+  "excluded_binaries": [
+    "build-counting-baseline/engine-interface",
+    "build-counting-candidate/engine-interface",
+    "build-timing-baseline/engine-interface",
+    "build-timing-candidate/engine-interface",
+    "key-clamp-codegen/engine-interface"
+  ],
+  "other_exclusions": [
+    "Duplicate groups.bin",
+    "Mutable progress/GitHub payloads and Python cache"
+  ],
+  "external": {
+    "corpus": "../outlined-mutation-path-v1/evidence.tar.gz:outlined/groups.bin",
+    "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+    "qualified_sources": "../entry-buffer-qualification-v1/evidence.tar.gz",
+    "qualification_sha256": "401e3194629ef3138736df1d2b08f12067a9cb2d523a3613fe4b6e92a50cb2fa"
+  },
+  "binaries": {
+    "baseline": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/entry-buffer-performance-20260916-first/build-timing-baseline/engine-interface",
+        "sha256": "19c047e58bce56a5c8fc07dc27998e433bcaa2caf1b962c0e6c90c34c9bfb3f7",
+        "bytes": 1243144
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/entry-buffer-performance-20260916-first/build-counting-baseline/engine-interface",
+        "sha256": "e8ad45724e61cc683573127a9cd3961d5fa5620a78bb53f38b73603fbeccc865",
+        "bytes": 1333176
+      }
+    },
+    "candidate": {
+      "timing": {
+        "path": "/mnt/data/kv9-work/entry-buffer-performance-20260916-first/build-timing-candidate/engine-interface",
+        "sha256": "134ed663a8f275fa4b578ce6ea72be631503b670d827c2b728c55e18bcf25ae4",
+        "bytes": 1244128
+      },
+      "counting": {
+        "path": "/mnt/data/kv9-work/entry-buffer-performance-20260916-first/build-counting-candidate/engine-interface",
+        "sha256": "baa23b3783fe291fb0338ee6a70d1ff2e724d5c45678df8905996d6eb90bd3bd",
+        "bytes": 1334560
+      }
+    }
+  },
+  "codegen_control": {
+    "complete": true,
+    "workloads_executed": 0,
+    "proof_and_model_qualified": false,
+    "production_promoted": false,
+    "change": "One key() expression only: safe min(key_len, buffer_len) before slicing; value accessor and batch preflight unchanged",
+    "binary": {
+      "path": "/mnt/data/kv9-work/entry-buffer-performance-20260916-first/key-clamp-codegen/engine-interface",
+      "sha256": "b3a6226529dc0fdee69246eedb7d1756241eef41361f615d6528ff69a4960f75",
+      "bytes": 1243096
+    },
+    "key_source_sha256": "ac910ae8ab7154821459f3832335204dbdf19a8963019344e8d192dc2c10a51a",
+    "unsigned_failure_branches_before_first_memcmp": [],
+    "limits": "Static engine codegen control only. No cause, speedup, semantic qualification or DB result established. Prove the valid-entry invariant and run independent models before timing."
+  }
+}

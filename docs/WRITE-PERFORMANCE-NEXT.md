@@ -1,10 +1,12 @@
 # Write performance against three-copy Redis
 
-The new [single key/value buffer qualification](ENTRY-BUFFER-QUALIFICATION.md)
-passes 202 baseline / 206 candidate tests, 23 conditional theorems, 13 rejecting
-controls and 198 allocation rows. Nonempty key/value insertion and overwrite
-save one request and 24 entry bytes, including long keys. Next run its declared
-write-first engine screen with preflight inside timing; no new QPS is claimed.
+The [single-buffer write screen](ENTRY-BUFFER-PERFORMANCE.md) now completes
+52 processes / 32 timing / 16 allocation rows. Original overwrite mean changes
+-1.469% / +0.143%, unique insert +2.480% / +0.430%; all four miss the material
+gate. Long pinned overwrite p99 regresses 2.690%. Read timing stops by plan.
+Allocation savings are exact, but do not establish speed. A safe key-accessor
+codegen control removes two comparison failure branches; prove/model-qualify
+it before a three-arm timing comparison. No new database QPS or promotion.
 
 Updated: 2026-09-16. The current priority is write throughput and latency,
 targeting Redis with one primary and two replicas. Read optimization is held at
@@ -86,8 +88,8 @@ the [write screen](INLINE-KEY-PERFORMANCE.md) completes 52 processes / 32 timing
 improve 1.685%–10.831%, but three cases miss the material gate; long unique
 means regress 5.077% / 4.783%. Hold inline40 and stop before the declared read
 stage. The single private key/value buffer is now qualified as recorded above,
-including key-only ordering and replacement/snapshot semantics. Next measure
-its declared engine write screen. No database-QPS change.
+including key-only ordering and replacement/snapshot semantics. Its
+write screen now fails as recorded above. No database-QPS change.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
 

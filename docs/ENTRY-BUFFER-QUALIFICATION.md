@@ -1,5 +1,9 @@
 # Single key/value buffer qualification
 
+Subsequent result: the [completed write screen](ENTRY-BUFFER-PERFORMANCE.md)
+fails the declared performance gate despite the verified allocation savings.
+The qualification evidence below remains valid; production is unchanged.
+
 Date: 2026-09-16 UTC. Source base: `e9ebdc42f2171fd5ab62f3fc2d2d010d88e55d22`.
 
 The new isolated engine representation passes source/model/proof/layout

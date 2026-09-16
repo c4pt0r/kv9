@@ -1,0 +1,53 @@
+{
+  "status": "Prospective: safe key-accessor codegen control exists; proof/model qualification and timing have not run",
+  "source_base": "e17d1b33fa4d76cb03a7457942f4a1bbba6beabb",
+  "evidence": "docs/entry-buffer-performance-v1/evidence.tar.gz",
+  "candidate_root": "/mnt/data/kv9-work/entry-buffer-performance-20260916-first/key-clamp-codegen/candidate",
+  "candidate_key_sha256": "ac910ae8ab7154821459f3832335204dbdf19a8963019344e8d192dc2c10a51a",
+  "change": "Only key() changes from bytes[..key_len] to bytes[..key_len.min(bytes.len())]. Value accessor, constructor, batch preflight, dependencies and engine integration stay identical to the failed single-buffer candidate. No unsafe code.",
+  "static_observation": "In actual ordinary-release engine insertion, two key-boundary failure branches become two conditional moves. This neither attributes timing cost nor proves a speedup.",
+  "qualification": [
+    "Prove key_len <= bytes.len() for every constructible/cloned private entry, and min(key_len, bytes.len()) = key_len under that invariant. Bind new source and reject changed/clamped-to-wrong-bound controls.",
+    "Reuse unchanged baseline and failed-control engine/common test and independent-model evidence only after exact source-hash verification. Run the existing suites and unchanged generated/payload models for the newly changed clamped candidate; verify source differences are exactly the one accessor. Fresh actual release preparation remains required for all three measured arms.",
+    "Use exact source/model bindings, original registry archives and constructor/map request observations to check allocation/lifetime equivalence with the failed control; no allocator behavior is assumed from syntax."
+  ],
+  "timing_after_qualification": {
+    "arms": [
+      "baseline",
+      "single_buffer_control",
+      "clamped_candidate"
+    ],
+    "orders": [
+      "baseline",
+      "single_buffer_control",
+      "clamped_candidate",
+      "clamped_candidate",
+      "single_buffer_control",
+      "baseline"
+    ],
+    "datasets": [
+      "original",
+      "wide128"
+    ],
+    "workloads": [
+      "overwrite",
+      "unique_insert"
+    ],
+    "pinned": [
+      false,
+      true
+    ],
+    "cases": 8,
+    "write_passes": 12,
+    "excluded_passes": 1,
+    "preparation_processes": 6,
+    "allocation_processes": 24,
+    "timing_processes": 48,
+    "scope": "Same actual write_applied group window including whole-batch preflight, input destruction and position/revision. Old-view acquisition/drop and batch construction stay outside. No time from counted builds.",
+    "causal_contrast": "Compare clamped candidate with the concurrently built failed single-buffer control in both order directions; allocation windows and final footprint must match exactly. Retain unfavorable or ambiguous outcomes.",
+    "selection_gate": "Against the concurrently built selected baseline: all original write means improve at least 10% pooled and in both orders; pooled p99 <= +2%; wide mean and p99 <= +2%. Keep individual orders, raw samples and p99 interpretation explicit. A failed write gate stops read/range timing.",
+    "read_stage": "Only if the unchanged write-selection gate passes, run all 60 read/snapshot/range/delete cases from the original staged plan against selected baseline. Predeclare executable loops and allocation accounting before running that stage."
+  },
+  "limits": "No capacity/alignment/unsafe sweep and no replay of the unchanged failed screen. Static branch count is not dynamic cost. Production still needs material matched DB benefit, full local correctness, ordinary recovery, actual Chaos Mesh and three-copy Redis throughput/latency.",
+  "output_policy": "Local-only CI; /mnt/data/kv9-work bulk output; reused repository target"
+}

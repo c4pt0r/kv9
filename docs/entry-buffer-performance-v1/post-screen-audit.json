@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "screen_source_hashes_preserved": true,
+  "terminal_workload_processes": 52,
+  "codegen_source_differences": [
+    "crates/engine/src/entry_buffer.rs"
+  ],
+  "codegen_change": "Exactly one safe min-bound accessor expression",
+  "codegen_first_party_fresh": true,
+  "registry_lock_pins_match": true,
+  "codegen_workloads_executed": 0,
+  "codegen_semantic_qualification": false,
+  "production_promoted": false
+}
