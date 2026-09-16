@@ -125,9 +125,11 @@ accepted evidence. Build old/new revisions with separate target directories.
 
 ## Next and remaining gates
 
-Finish D02 with an actual range directory and replica locations, surviving
-multi-endpoint discovery, bounded stale-route refresh, exact root/namespace
-binding and write-uncertainty preservation. Then implement D03 safe replica
+The subsequent [scoped-client increment](ROUTED-CLIENT.md) adds a bound range
+and replica lookup, surviving metadata endpoints, bounded stale-scope refresh,
+exact root/namespace binding and write-uncertainty preservation. The metadata
+mapping still represents initial full-keyspace groups; split/move publication
+and routed scan/delete-range remain open. Next implement D03 safe replica
 transfer and D04 durable manual/automatic split. D01 retirement, group checkpoint
 ownership and aggregate byte budgets also remain open.
 

@@ -1,0 +1,13 @@
+{
+  "complete": true,
+  "archive_sha256": "2098a838eb24688d128573d2e9e753124b686084b6ea07a95cc146585580eba7",
+  "members_checked": 3860,
+  "separate_extraction": "/mnt/data/kv9-work/routed-client-portable-readback-20260916",
+  "independent_reader_exit_code": 0,
+  "complete_chaos_history_and_cleanup": true,
+  "calls": [
+    30,
+    18
+  ],
+  "reader_sha256": "226d718da3a874ebfdf2f8d4e3fd3978760094f6b125462c49ec6eb1a09137da"
+}

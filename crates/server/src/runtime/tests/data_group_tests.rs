@@ -786,3 +786,167 @@ fn group_preparation_real_metadata_quorum_survives_leader_loss_and_store_restart
     drop(rts);
     fs::remove_dir_all(&base).unwrap();
 }
+
+#[test]
+fn routed_client_keeps_its_lifetime_across_each_endpoint_loss() {
+    use crate::client::routed::{RoutedConfig, RoutedOutcome, RoutedRawClient};
+    use crate::client::{Peer, RawOperation, Value};
+    let mut cluster = ActiveCluster::start();
+    let intent = cluster.create(93);
+    let metadata_leader = cluster_leader(&cluster.runtimes).unwrap();
+    let binding = crate::data_groups::DataGroupClient::connect(
+        &cluster.runtimes[metadata_leader].addr.to_string(),
+        "active-test",
+    )
+    .unwrap()
+    .create_keyspace(
+        cluster.root.digest(),
+        intent.task(),
+        "routed-client",
+        TenantId::DEFAULT,
+    )
+    .unwrap()
+    .range;
+    wait_for(&mut cluster.runtimes, 25, "routed group ready", |rts| {
+        rts.iter()
+            .all(|r| r.data_groups.raw_directory.get(binding.keyspace).is_some())
+            && data_leader(rts, binding.region).is_some()
+    });
+    let executor = tokio::runtime::Runtime::new().unwrap();
+    let config = RoutedConfig {
+        version: 1,
+        root_digest: *cluster.root.digest().as_bytes(),
+        tenant_id: binding.tenant.0,
+        keyspace_id: binding.keyspace.0,
+        seeds: cluster
+            .addrs
+            .iter()
+            .enumerate()
+            .map(|(i, address)| Peer {
+                node_id: i as u64 + 1,
+                address: *address,
+            })
+            .collect(),
+        max_in_flight: 4,
+        max_attempts: 16,
+        deadline_ms: 5000,
+        probe_timeout_ms: 300,
+        // The 16-attempt budget must span an election, including immediately
+        // refused TCP connects and stale follower hints during leader loss.
+        retry_backoff_ms: 150,
+        cache_capacity: 8,
+    };
+    let client = executor.block_on(async { RoutedRawClient::new(config, "active-test").unwrap() });
+    let first = executor.block_on(client.call(RawOperation::Put {
+        key: b"persist".to_vec(),
+        value: b"before".to_vec(),
+    }));
+    assert!(
+        matches!(first.outcome, RoutedOutcome::Success { .. }),
+        "{first:?}"
+    );
+    let batch = executor.block_on(client.call(RawOperation::BatchPut {
+        pairs: vec![
+            (b"batch-a".to_vec(), vec![1]),
+            (b"batch-b".to_vec(), vec![2]),
+        ],
+    }));
+    assert!(
+        matches!(batch.outcome, RoutedOutcome::Success { .. }),
+        "{batch:?}"
+    );
+    let batch = executor.block_on(client.call(RawOperation::BatchGet {
+        keys: vec![
+            b"batch-b".to_vec(),
+            b"batch-a".to_vec(),
+            b"batch-b".to_vec(),
+        ],
+    }));
+    assert!(
+        matches!(batch.outcome, RoutedOutcome::Success { value: Value::BatchGet { ref values } } if values == &vec![Some(vec![2]), Some(vec![1]), Some(vec![2])]),
+        "{batch:?}"
+    );
+    for victim in 1..=3 {
+        let position = cluster
+            .runtimes
+            .iter()
+            .position(|r| r.node.id == NodeId(victim))
+            .unwrap();
+        drop(cluster.runtimes.remove(position));
+        // No harness leader selection, client reconstruction or fixed seed retry.
+        let read = executor.block_on(client.call(RawOperation::Get {
+            key: b"persist".to_vec(),
+        }));
+        assert!(
+            matches!(read.outcome, RoutedOutcome::Success { value: Value::Get { value: Some(ref v) } } if v == b"before"),
+            "victim={victim}: {read:?}"
+        );
+        let write = executor.block_on(client.call(RawOperation::Put {
+            key: format!("after-{victim}").into_bytes(),
+            value: vec![victim as u8],
+        }));
+        assert!(
+            matches!(write.outcome, RoutedOutcome::Success { .. }),
+            "victim={victim}: {write:?}"
+        );
+        assert!(read.attempts.len() <= 16 && write.attempts.len() <= 16);
+        let listener = std::net::TcpListener::bind(cluster.addrs[victim as usize - 1]).unwrap();
+        cluster
+            .runtimes
+            .push(cluster.open(NodeId(victim), listener));
+        cluster.wait_serving();
+        wait_for(&mut cluster.runtimes, 25, "returned routed owner", |rts| {
+            rts.iter()
+                .all(|r| r.data_groups.raw_directory.get(binding.keyspace).is_some())
+        });
+    }
+    // A wrong scope must fail at the actual data endpoint, even if a caller
+    // bypasses directory discovery and supplies a valid-looking epoch.
+    let leader = data_leader(&cluster.runtimes, binding.region).unwrap();
+    executor.block_on(async {
+        let mut peer = crate::proto::kv9_client::Kv9Client::connect(format!(
+            "http://{}",
+            cluster.runtimes[leader].addr
+        ))
+        .await
+        .unwrap();
+        for mutate in 0..3 {
+            let mut bad = binding.clone();
+            match mutate {
+                0 => bad.root = RootDigest::from_bytes([71; 32]),
+                1 => bad.tenant = TenantId(7171),
+                _ => bad.creation = RootDigest::from_bytes([72; 32]),
+            }
+            let mut request = tonic::Request::new(crate::proto::RoutedRawRequest {
+                binding: bad.encode(),
+                operation: Some(crate::proto::routed_raw_request::Operation::Put(
+                    crate::proto::RoutedPairs {
+                        pairs: vec![crate::proto::KeyValue {
+                            key: b"forbidden".to_vec(),
+                            value: vec![9],
+                        }],
+                    },
+                )),
+            });
+            request
+                .metadata_mut()
+                .insert("authorization", "Bearer active-test".parse().unwrap());
+            let status = peer.routed_raw(request).await.unwrap_err();
+            assert_eq!(status.metadata().get("kv9-route-refused").unwrap(), "scope");
+        }
+    });
+    let read = executor.block_on(client.call(RawOperation::Get {
+        key: b"forbidden".to_vec(),
+    }));
+    assert!(
+        matches!(
+            read.outcome,
+            RoutedOutcome::Success {
+                value: Value::Get { value: None }
+            }
+        ),
+        "{read:?}"
+    );
+    drop(client);
+    drop(executor);
+}

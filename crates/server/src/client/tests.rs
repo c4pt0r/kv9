@@ -21,6 +21,9 @@ enum Action {
 
 #[derive(Default)]
 struct State {
+    route: Mutex<Option<proto::LookupRawRouteResponse>>,
+    lookup_delay_ms: AtomicUsize,
+    lookups: AtomicUsize,
     values: Mutex<BTreeMap<Vec<u8>, Vec<u8>>>,
     actions: Mutex<VecDeque<Action>>,
     writes: AtomicUsize,
@@ -88,6 +91,45 @@ macro_rules! service {
     ($( $name:ident : $request:ident => $response:ident ),* $(,)?) => {
         #[tonic::async_trait]
         impl proto::kv9_server::Kv9 for Service {
+            async fn lookup_raw_route(&self, request: Request<proto::LookupRawRouteRequest>) -> Result<Response<proto::LookupRawRouteResponse>, Status> {
+                assert_eq!(single(request.metadata(), "authorization"), Some("Bearer test-secret"));
+                self.0.lookups.fetch_add(1, Ordering::SeqCst);
+                tokio::time::sleep(Duration::from_millis(self.0.lookup_delay_ms.load(Ordering::SeqCst) as u64)).await;
+                Ok(Response::new(self.0.route.lock().unwrap().clone().ok_or_else(|| Status::unimplemented("no routing fixture"))?))
+            }
+            async fn routed_raw(&self, request: Request<proto::RoutedRawRequest>) -> Result<Response<proto::RoutedRawResponse>, Status> {
+                let expected = self.0.route.lock().unwrap().as_ref().unwrap().binding.clone();
+                if request.get_ref().binding != expected {
+                    let mut status = Status::failed_precondition("controlled stale scope");
+                    status.metadata_mut().insert("kv9-route-refused", "scope".parse().unwrap());
+                    return Err(status);
+                }
+                let action = self.0.inspect(&request);
+                let request = request.into_inner();
+                let digest = kv9_common::RootDigest::sha256(&request.binding).as_bytes().to_vec();
+                use proto::routed_raw_request::Operation;
+                use proto::routed_raw_response::Result as Reply;
+                let result = match request.operation.unwrap() {
+                    Operation::Put(mut pairs) => {
+                        assert_eq!(pairs.pairs.len(), 1, "single-write fixture");
+                        let pair = pairs.pairs.remove(0);
+                        Reply::Applied(self.0.write(pair.key, Some(pair.value), action).await?.into_inner())
+                    }
+                    Operation::DeleteKey(key) => Reply::Applied(self.0.write(key, None, action).await?.into_inner()),
+                    Operation::Get(keys) => {
+                        if let Some(Action::Refuse { delay, status }) = action {
+                            tokio::time::sleep(delay).await;
+                            return Err(status);
+                        }
+                        let values = self.0.values.lock().unwrap();
+                        Reply::Values(proto::RawBatchGetResponse { values: keys.keys.iter().map(|k| {
+                            let value = values.get(k).cloned();
+                            proto::OptionalValue { found: value.is_some(), value: value.unwrap_or_default() }
+                        }).collect() })
+                    }
+                };
+                Ok(Response::new(proto::RoutedRawResponse { binding_digest: digest, result: Some(result) }))
+            }
             async fn raw_get(&self, request: Request<proto::RawGetRequest>) -> Result<Response<proto::RawGetResponse>, Status> {
                 let action = self.0.inspect(&request);
                 if let Some(Action::Refuse { delay, status }) = action {
@@ -1102,3 +1144,5 @@ fn marker_decoder_fails_closed_and_keeps_read_failures_distinct() {
 fn unary_client(config: ClientConfig, token: &str) -> Result<PersistentRawClient, &'static str> {
     PersistentRawClient::new_with_transport(config, token, TransportKind::TonicUnary)
 }
+
+mod routed_tests;

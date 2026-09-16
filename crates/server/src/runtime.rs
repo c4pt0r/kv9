@@ -1119,6 +1119,65 @@ where
 }
 
 impl AdminApi for RuntimeBackend {
+    fn lookup_raw_route(
+        &self,
+        root: RootDigest,
+        tenant: TenantId,
+        keyspace: KeyspaceId,
+        key: &[u8],
+    ) -> Result<crate::api::RawRouteLookup> {
+        self.ensure_serving()?;
+        let status = self.driver.status();
+        let leader = status.role == Role::Leader;
+        if leader {
+            let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        }
+        let txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("route lookup root differs".into()));
+        }
+        let mut metadata_peers = Vec::new();
+        for node in &status.voters {
+            if let Some(endpoint) =
+                kv9_meta::endpoint::node_endpoint(&txn, NodeId(*node))?.filter(|e| e.active)
+            {
+                metadata_peers.push(endpoint);
+            }
+        }
+        if metadata_peers.len() > crate::client::MAX_PEERS {
+            return Err(Error::Config(
+                "metadata route directory exceeds client bound".into(),
+            ));
+        }
+        let mut response = crate::api::RawRouteLookup {
+            root,
+            metadata_peers,
+            metadata_leader: status.leader_id,
+            range: None,
+            replicas: Vec::new(),
+            data_leader: None,
+        };
+        if !leader {
+            return Ok(response);
+        }
+        let (range, members) = kv9_meta::data_groups::ranges::route_in(&txn, keyspace, key)?
+            .ok_or(Error::RegionNotFound)?;
+        if range.tenant != tenant {
+            return Err(Error::Config("route lookup tenant differs".into()));
+        }
+        for member in members {
+            let endpoint = kv9_meta::endpoint::node_endpoint(&txn, member.node)?
+                .filter(|e| e.active && e.incarnation == member.incarnation)
+                .ok_or_else(|| {
+                    Error::MetaNotReady("range replica endpoint is not active".into())
+                })?;
+            response.replicas.push(endpoint);
+        }
+        response.data_leader = self.raw_directory.get(keyspace).and_then(|g| g.leader());
+        response.range = Some(range);
+        Ok(response)
+    }
+
     fn create_data_keyspace(
         &self,
         _caller: &str,
@@ -2560,6 +2619,13 @@ const MAX_RESIDENT_BATCH_READ_KEYS: usize = 256;
 const MAX_RESIDENT_BATCH_READ_BYTES: usize = 1024 * 1024;
 
 impl RawApi for RuntimeBackend {
+    fn routed_target(&self, scope: &kv9_common::data_range::DataRange) -> Result<Arc<dyn RawApi>> {
+        if !self.endpoint_ready.load(Ordering::Acquire) {
+            return Err(Error::MetaNotReady("local endpoint is not ready".into()));
+        }
+        self.raw_directory.scoped(scope)
+    }
+
     fn prepare_raw_write(
         self: Arc<Self>,
         ctx: RequestContext,

@@ -88,6 +88,19 @@ fn read_in<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<CommittedRange>> {
     Ok(bindings)
 }
 
+/// Read-only routing observation from the caller's single snapshot. Unlike
+/// CommittedRange, this projection is not an activation or publication capability.
+pub fn route_in<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    keyspace: KeyspaceId,
+    key: &[u8],
+) -> Result<Option<(DataRange, Vec<super::InitialReplica>)>> {
+    Ok(read_in(txn)?
+        .into_iter()
+        .find(|b| b.range.keyspace == keyspace && b.range.contains(key))
+        .map(|b| (b.range, b.creation.intent().replicas().to_vec())))
+}
+
 pub fn committed_ranges<E: Engine>(store: &MetaStore<E>) -> Result<Vec<CommittedRange>> {
     read_in(&store.begin()?)
 }

@@ -39,9 +39,11 @@ creation/activation requests and reconciles them on each eligible node, includin
 after process loss. The [initial public routing increment](DATA-RANGE-ROUTING.md)
 now binds new Raw keyspaces to their own groups with ordered namespace/range
 fences and terminal sealing. It requires an offline V3 writer upgrade. The
-current mapping is one full-keyspace range per group; client discovery, bounded
-route refresh, retirement and complete resource/fault acceptance remain D01/D02
-work. No full stage acceptance or measured scaling gain follows from these checks.
+current mapping is one full-keyspace range per group. The [scoped client](ROUTED-CLIENT.md)
+adds surviving metadata discovery, bounded scope refresh and terminal unknown
+writes. Split/move publication, routed scans/delete-range, retirement and complete
+resource/fault acceptance remain open. No full stage acceptance or measured
+scaling gain follows from these checks.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |
