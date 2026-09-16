@@ -1,0 +1,32 @@
+{
+  "complete": true,
+  "members": 665,
+  "expanded_bytes": 52394240,
+  "compressed_bytes": 7347199,
+  "sha256": "f449e30cb7dd14299e358eba94679e40c418dfc71d332a511bdbe0f4278427a3",
+  "all_members_read_back": true,
+  "local_root": "/mnt/data/kv9-work/isolated-outline-20260916-first",
+  "excluded": [
+    "Executable binaries (retained locally and hashed in build/test records)",
+    "Duplicate groups.bin",
+    "GitHub payloads and mutable continuation"
+  ],
+  "external": {
+    "corpus": "../outlined-mutation-path-v1/evidence.tar.gz:outlined/groups.bin",
+    "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+    "prior_proof_work": "../outlined-mutation-path-v1/evidence.tar.gz:outlined/ source/qualification tree; required by the inherited dependency proof checker",
+    "registry_archives": "Original .crate archives matching Cargo.lock SHA-256 values in qualification-plan.json"
+  },
+  "binaries": {
+    "baseline": {
+      "path": "/mnt/data/kv9-work/isolated-outline-20260916-first/build-baseline/engine-interface",
+      "sha256": "d3ffbe08b5de8ebc20974c4f3ed5a5cb5ef61b0bfadf27cd5985556402f9a491",
+      "bytes": 1239784
+    },
+    "candidate": {
+      "path": "/mnt/data/kv9-work/isolated-outline-20260916-first/build-candidate/engine-interface",
+      "sha256": "230ae983384698aba481bb6da7867be118b30655e4b1c41eaf7100346242bf4a",
+      "bytes": 1240296
+    }
+  }
+}

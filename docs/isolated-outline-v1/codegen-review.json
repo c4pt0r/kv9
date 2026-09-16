@@ -1,0 +1,28 @@
+{
+  "complete": true,
+  "mutation_callback_removed": true,
+  "original_pointer_callback_remains": true,
+  "unique_path_has_only_original_pointer_guard_call": true,
+  "baseline_mutation_callback_bytes": 421,
+  "baseline_insert_bytes": 1169,
+  "candidate_insert_bytes": 1192,
+  "shared_helper_bytes": 397,
+  "count_load_address": "0x40798",
+  "count_compare_address": "0x4079c",
+  "shared_branch_target": "0x40b0a",
+  "shared_call_address": "0x40b0d",
+  "shared_call_got": "0x100b90",
+  "shared_helper_address": "0x43f00",
+  "original_pointer_callback_call": "0x407ae",
+  "interpretation": "Unique-owner branch no longer invokes the mutation callback; it still invokes the unchanged pointer guard. Shared branch calls the extracted helper. Static codegen meets the declared work-removal criterion; this is not a throughput claim.",
+  "timing_authorized": false,
+  "next_gate": "Complete dependency and engine correctness, then predeclare a separate component screen.",
+  "source_sha256": {
+    "/mnt/data/kv9-work/isolated-outline-20260916-first/insert-baseline.txt": "ad262b58034508670f7132390d4182e6ba9fab6a6f7ec746ddb7f1fe1cd0cf7e",
+    "/mnt/data/kv9-work/isolated-outline-20260916-first/insert-candidate.txt": "8fa2035bb40a6918ec52a878e9cea395842e1c3818137cb2320cddd1f2e8532e",
+    "/mnt/data/kv9-work/isolated-outline-20260916-first/build-baseline/disassembly.txt": "0ba02cd93d444348be2402c9ca93555a20ee56e1d1b47927cd4976980fa2d767",
+    "/mnt/data/kv9-work/isolated-outline-20260916-first/build-candidate/disassembly.txt": "abc0b131be58b60e92ac84b4bc7020213010db409ce07c5d7d86c1fa4a9b6398",
+    "/mnt/data/kv9-work/isolated-outline-20260916-first/build-candidate/relocations.txt": "c51de8d209ea1097d29f62370d3ab37ba37ccc3857b3b6c0841aa57811983772",
+    "/mnt/data/kv9-work/isolated-outline-20260916-first/build-candidate/symbols.txt": "902e8af9ed7213a84b167ec2090f20e6742c090a2396ba3cadd6967566dcb02f"
+  }
+}

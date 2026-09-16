@@ -1,0 +1,18 @@
+{
+  "complete": true,
+  "source_groups_checked": 7,
+  "tests_passed": 523,
+  "tests_ignored": 3,
+  "total_conditional_theorems": 29,
+  "total_rejecting_controls": 14,
+  "live_prefixes": 848,
+  "old_views": 424,
+  "probe_sets": 4,
+  "original_archery_and_rpds": true,
+  "only_triomphe_extraction": true,
+  "codegen_work_removed": true,
+  "promotion_authorized": false,
+  "performance_executed": false,
+  "all_preparation_children_terminal": true,
+  "limits": "Conditional source correspondence, not verified Rust extraction. No new MinIO, recovery, Chaos, end-to-end performance or Redis acceptance."
+}

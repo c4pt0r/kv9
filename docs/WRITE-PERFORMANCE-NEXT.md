@@ -69,9 +69,11 @@ now completes 90 processes / 152 rows: write mean improves 4.600%–13.903%,
 while warm owned GET hit regresses 2.599%–7.407%. Resident hit per-call means
 are nearly unchanged; owned misses show this is not solely value-copy cost.
 Snapshot, first-probe/warm and per-call/whole-pass scopes remain separate.
-Preserve every original failed gate. Next qualify shared-clone extraction alone
-with the original pointer callback, beginning with source/proof/codegen checks
-and no timing until engine correctness passes. No alignment sweep, unchanged
+Preserve every original failed gate. The [triomphe-only extraction qualification](ISOLATED-OUTLINE-QUALIFICATION.md)
+passes 523 tests, 29 conditional lemmas / 14 controls, both release builds and
+848 live states / 424 old views. Actual codegen removes the mutation callback
+without changing original archery. Its next bounded timing/allocation screen is
+predeclared but not implemented or executed. No alignment sweep, unchanged
 matrix or database-QPS claim follows.
 Do not repeat completed screens or rejected clone-removal, coalescing and
 borrowed-upsert variants. These component results are not database QPS.
