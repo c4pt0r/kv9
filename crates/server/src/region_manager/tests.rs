@@ -100,6 +100,71 @@ fn test_transport(runtime: &tokio::runtime::Runtime, f: &Fixture) -> Arc<GrpcTra
 }
 
 #[test]
+fn group_control_bounds_activation_and_quarantines_failures() {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    let f = Fixture::new();
+    let mut txn = f.store.begin().unwrap();
+    let mut regions = vec![f.creation.intent().region()];
+    kv9_meta::data_groups::activation::plan_activation(&mut txn, f.creation.intent()).unwrap();
+    for operation in [11, 12] {
+        let intent = kv9_meta::data_groups::plan_empty_group(
+            &mut txn,
+            [operation; 16],
+            &[NodeId(1), NodeId(2), NodeId(3)],
+        )
+        .unwrap();
+        kv9_meta::data_groups::activation::plan_activation(&mut txn, &intent).unwrap();
+        regions.push(intent.region());
+    }
+    let requests = kv9_meta::data_groups::activation::committed_activations(&f.store).unwrap();
+    let mut manager = f.manager();
+    let transport = test_transport(&runtime, &f);
+    manager.reconcile_activation(&requests, &transport, Duration::from_secs(60));
+    assert!(
+        manager.groups.is_empty(),
+        "uncommitted desire must not start any group"
+    );
+    txn.commit().unwrap();
+    let requests = kv9_meta::data_groups::activation::committed_activations(&f.store).unwrap();
+    // An orphan store must be quarantined, without starving later requests.
+    fs::create_dir_all(f.group_dir()).unwrap();
+    fs::write(f.group_dir().join("raft.log"), b"orphan").unwrap();
+    manager.reconcile_activation(&requests, &transport, Duration::from_secs(60));
+    assert_eq!(
+        manager.groups.len(),
+        1,
+        "one attempt per turn, including failure"
+    );
+    assert!(matches!(
+        manager.groups.get(&regions[0]),
+        Some(LocalGroup::Failed(_))
+    ));
+    assert!(manager.status(regions[1]).is_err());
+    manager.reconcile_activation(&requests, &transport, Duration::from_secs(60));
+    assert_eq!(manager.groups.len(), 2);
+    assert!(manager.status(regions[1]).is_ok());
+    assert!(manager.status(regions[2]).is_err());
+    manager.reconcile_activation(&requests, &transport, Duration::from_secs(60));
+    assert_eq!(manager.groups.len(), 3);
+    assert!(manager.status(regions[2]).is_ok());
+    for _ in 0..3 {
+        manager.reconcile_activation(&requests, &transport, Duration::from_secs(60));
+    }
+    assert_eq!(fs::read(f.group_dir().join("raft.log")).unwrap(), b"orphan");
+    let status: serde_json::Value = serde_json::from_str(&manager.status_json()).unwrap();
+    assert_eq!(status[0]["state"], "failed");
+    assert_eq!(status[1]["state"], "active");
+    // Even the right node number on a replacement disk has no authority.
+    let foreign_path = f.path.join("replacement");
+    let mut identity = f.identity;
+    identity.store_incarnation = StoreIncarnation::from_bytes([99; 16]);
+    let mut foreign = RegionManager::new(&foreign_path, identity);
+    foreign.reconcile_activation(&requests, &transport, Duration::from_secs(60));
+    assert!(foreign.groups.is_empty());
+    assert!(!foreign_path.exists());
+}
+
+#[test]
 fn group_activation_publication_cuts_never_start_an_unfenced_voter() {
     let runtime = tokio::runtime::Runtime::new().unwrap();
     for step in [

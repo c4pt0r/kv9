@@ -307,6 +307,61 @@ impl RegionManager {
         Ok(self.driver(region)?.status())
     }
 
+    /// At most one new local activation per reconciliation turn. Terminal
+    /// failures stay quarantined until a new manager performs disk recovery.
+    pub(crate) fn reconcile_activation(
+        &mut self,
+        requests: &[kv9_meta::data_groups::activation::CommittedActivation],
+        transport: &Arc<GrpcTransport>,
+        tick: Duration,
+    ) {
+        for request in requests {
+            let creation = request.creation();
+            let intent = creation.intent();
+            if intent.root() != self.identity.root_digest
+                || !intent.replicas().iter().any(|r| {
+                    r.node == self.identity.node_id
+                        && r.incarnation == self.identity.store_incarnation
+                })
+            {
+                continue;
+            }
+            let region = intent.region();
+            match self.groups.get(&region) {
+                Some(LocalGroup::Failed(_)) => continue,
+                Some(LocalGroup::Ready(p)) if p.driver.is_some() => continue,
+                _ => {}
+            }
+            if let Err(error) = self.activate(creation, transport, tick) {
+                self.groups
+                    .insert(region, LocalGroup::Failed(error.to_string()));
+            }
+            break;
+        }
+    }
+
+    pub(crate) fn status_json(&self) -> String {
+        let observations: Vec<_> = self.groups.iter().map(|(region, group)| {
+            match group {
+                LocalGroup::Failed(error) => serde_json::json!({
+                    "region": region.0, "state": "failed", "error": error,
+                }),
+                LocalGroup::Ready(p) => match p.driver.as_ref().map(|d| d.status()) {
+                    None => serde_json::json!({"region": region.0, "state": "prepared"}),
+                    Some(s) => serde_json::json!({
+                        "region": region.0, "state": if s.fatal.is_some() { "failed" } else { "active" },
+                        "role": format!("{:?}", s.role), "term": s.term,
+                        "leader": s.leader_id.map(|n| n.0), "committed": s.raft_committed,
+                        "engine_applied": s.applied_index,
+                        "driver_applied": s.driver_applied.map(|p| serde_json::json!({"term": p.term, "index": p.index})),
+                        "error": s.fatal,
+                    }),
+                },
+            }
+        }).collect();
+        serde_json::to_string(&observations).expect("serialize group observations")
+    }
+
     fn driver(&self, region: RegionId) -> Result<&NodeDriver<DiskRaftStorage, WalEngine>> {
         match self.groups.get(&region) {
             Some(LocalGroup::Ready(p)) => p

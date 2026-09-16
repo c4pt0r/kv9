@@ -11,6 +11,8 @@ use crate::codec::{memcmp_uint, ColumnValue, RowValue};
 use crate::schema::{ColumnId, TASKS_DESC};
 use crate::store::{MetaStore, MetaTxn, Row, SequenceKind, FIRST_DYNAMIC_ID};
 
+pub mod activation;
+
 /// Stable task kind and encoding. This uses the existing tasks table, not a
 /// new table/schema version. No other task may reuse this kind.
 const CREATE_EMPTY_GROUP: u64 = 100;
@@ -34,6 +36,9 @@ pub struct CreationIntent {
 }
 
 impl CreationIntent {
+    pub fn operation(&self) -> [u8; 16] {
+        self.operation
+    }
     pub fn root(&self) -> RootDigest {
         self.root
     }
@@ -264,7 +269,7 @@ mod tests {
     use kv9_engine::MemEngine;
     use std::sync::Arc;
 
-    fn fixture() -> MetaStore<MemEngine> {
+    pub(super) fn fixture() -> MetaStore<MemEngine> {
         let store = MetaStore::new(Arc::new(MemEngine::new()));
         let voters: Vec<_> = (1..=3)
             .map(|id| RootVoter {

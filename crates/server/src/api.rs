@@ -234,6 +234,15 @@ pub struct CreateKeyspaceResult {
     pub proposed: Option<AppliedPosition>,
 }
 
+/// An exact receipt for durable creation/activation desire, not group readiness.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CreateDataGroupResult {
+    pub intent: kv9_meta::data_groups::CreationIntent,
+    /// False denotes a NEW confirmation, not the original mutation receipt.
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
 // Defined in `kv9-common`, re-exported here so the existing public path keeps working.
 // It moved because it is a cross-layer apply receipt -- the drain worker needs it to decide
 // WAL truncation eligibility -- not a server data-transfer type. Fields and semantics are
@@ -285,6 +294,17 @@ pub struct RetentionUpdateResult {
 
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
 pub trait AdminApi {
+    fn create_data_group(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _voters: &[kv9_common::NodeId],
+    ) -> Result<CreateDataGroupResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::create_data_group",
+        ))
+    }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::apply_retention",

@@ -7,6 +7,7 @@
 pub mod admission;
 pub mod api;
 pub mod client;
+pub mod data_groups;
 pub mod endpoints;
 pub mod fence;
 pub mod grpc;

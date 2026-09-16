@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "scope": "Immutable committed activation desire and bounded reconciliation; abstract proof with explicit refinement, not verified Rust extraction or horizontal scaling acceptance",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "automatic_start_requires_exact_committed_pair",
+    "preparation_alone_cannot_run",
+    "staging_cannot_publish_desire",
+    "commit_preserves_existing_creation",
+    "committed_desire_survives_restart",
+    "desire_is_monotone",
+    "acknowledgment_is_not_readiness",
+    "one_attempt_per_turn",
+    "selected_has_exact_identity_and_is_not_failed"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups.rs": "919abfcad3eadf96c7f6e7e4753f4116a65482c4882c9e099d6319023d1784e4",
+    "crates/meta/src/data_groups/activation.rs": "cb13e683b0dc4d2508da9784c7e8da2396c7b753b4cfa91e73c79a7652e31f2d",
+    "crates/server/src/api.rs": "818807268a24459303b8200ff1246114dec781fe4a185a54c5967e52bfc91fd7",
+    "crates/server/src/data_groups.rs": "86c3bc74a15d99555d2a8e89910b1ca30b97ac88309326469ad5ee5a79a5a65d",
+    "crates/server/proto/kv9.proto": "bea58d46133f35d96dec6d0f74ff1ba1f7d090756809393cb7ac122f5d79686a",
+    "crates/server/src/grpc.rs": "688bbf773166620954b133191309f8c1b0bd1418cd77c1a8c604e911fd59b01e",
+    "crates/server/src/region_manager.rs": "1f7c1d6644f682395c4b1514428f64d23bc720f47acee370f951ac4baf0d6122",
+    "crates/server/src/region_manager/tests.rs": "92cc48a926399d6c2b61d6c5c33c61f71054ea4775d7846685c3d70a8fb3aac1",
+    "crates/server/src/runtime.rs": "81bce0a356dbd5c4a234d37a14bd3ee078a7dd6b4abd15d2523652e5d1a26432",
+    "src/data_group_cli.rs": "0bc47dfdd2a3f0641878ccae042ba6479d8550af7b539d4cceb1c18833cddb92",
+    "proofs/lean/group-control/Control.lean": "9bfa17429829a42b876e706e6b6a23f439dbcddc3e99a869d1f012393907aca7",
+    "scripts/prove-group-control.py": "b04ffb6c2bba0b01ab23c00a954b5ebdde2b6938cd72a2d63ccca888cacb7293",
+    "scripts/data-group-control-e2e.py": "9f7f35fd85684c108683fb8f170350039476b772f608b23a30a27790684a1351"
+  }
+}

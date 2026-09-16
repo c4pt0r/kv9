@@ -33,9 +33,12 @@ now connect metadata Raft to isolated group storage and restart discovery.
 The [data-group RPC fence](GROUP-WIRE-FENCING.md) now prevents legacy receivers
 from consuming group traffic, including after endpoint downgrade/replacement.
 The [fixed-voter activation increment](GROUP-ACTIVATION.md) now runs/restarts
-independent durable groups on two shared data workers per runtime. Online
-control/reconciliation, public routing, retirement and complete resource/fault
-acceptance remain D01/D02 work; no full stage acceptance follows yet.
+independent durable groups on two shared data workers per runtime. The
+[online control increment](GROUP-CONTROL.md) now submits authenticated durable
+creation/activation requests and reconciles them on each eligible node, including
+after process loss. Public range/epoch routing is next; retirement and complete
+resource/fault acceptance remain D01/D02 work. No full stage acceptance or
+measured scaling gain follows from these control-path checks.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

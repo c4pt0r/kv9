@@ -1458,6 +1458,47 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         Ok(Response::new(txn_status_response(status)))
     }
 
+    async fn create_data_group(
+        &self,
+        request: Request<proto::CreateDataGroupRequest>,
+    ) -> Result<Response<proto::CreateDataGroupResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16]
+            || root.as_bytes() == &[0; 32]
+            || ![3, 5, 7].contains(&request.voters.len())
+        {
+            return Err(Status::invalid_argument(
+                "nonzero identities and 3, 5 or 7 voters required",
+            ));
+        }
+        let voters: Vec<_> = request.voters.into_iter().map(NodeId).collect();
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.create_data_group(&caller, root, operation, &voters)
+            })
+            .await?;
+        Ok(Response::new(proto::CreateDataGroupResponse {
+            creation_intent: result.intent.encode(),
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+        }))
+    }
+
     async fn create_keyspace(
         &self,
         request: Request<proto::CreateKeyspaceRequest>,
