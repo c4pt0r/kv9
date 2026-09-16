@@ -2,14 +2,18 @@
 
 > Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
 > Keep selected ThinLTO and Safe ReadIndex; read and lease optimization remain held.
-> CRC remains the selected write runtime. The latest [matched screen](WRITE-RECEIPT-UPPER-BOUND-PERFORMANCE.md)
-> measures retained CRC `bd42e60` at c64 / 128-byte values at **135,562 Put calls/s**
-> and **1,030,729 BatchPut(64) items/s**, with p99 **0.778–0.786 ms** and
-> **7.799–7.864 ms** respectively. Upper-bound `e2e23cc` improves loaded Put
-> **3.169%** in the pooled comparison, with better mean/p99 in both orders, but
-> loaded batch loses **1.419%** and has worse pooled p99. Promotion remains held.
-> This new fixed-client comparison is separate from historical measurements and
-> does not measure the later checkpoint-owner integration on current main.
+> CRC remains the selected write runtime. The latest [same-source screen](WAL-PREALLOCATION-PERFORMANCE.md)
+> measures default `86aa6fc` at c64 / 128-byte values at **137,874 Put calls/s**
+> and **1,022,750 BatchPut(64) items/s**, with p99 **0.745–0.754 ms** and
+> **9.306–9.437 ms** respectively. WAL preallocation improves **0.545% / 1.474%**
+> pooled, with unchanged loaded pooled p99 and order-dependent batch direction.
+> Keep the feature default-off; do not repeat the unchanged screen. All eight
+> smokes, sixteen timed cohorts and independent checks pass: **7,200,959 timed
+> calls / 63,451,454 items**, 48 drains, 64 exited timed lifetimes and complete
+> retained-byte verification. This measures current checkpoint-owner integration;
+> earlier comparisons retain their own source and client attribution. Next
+> quantify Raw-command lowering and fence evaluation separately from index work
+> using retained exact command/group inputs before choosing another runtime change.
 > The [completed observer capture](WRITE-OBSERVER-CAPTURE.md) identifies repeated
 > receipt misses. The independent [upper-bound candidate](WRITE-RECEIPT-UPPER-BOUND.md)
 > now passes 14 source-bound theorem statements / 82 obligations, local
@@ -62,7 +66,8 @@
 > (666 OK / 62 unknown), twelve fresh drains and fourteen exited lifetimes.
 > [Actual candidate Chaos Mesh](WAL-PREALLOCATION-CHAOS.md) now passes all 21
 > windows, 9,241 complete operations, four final drains and 31 exited server
-> lifetimes. Next compare end-to-end throughput plus latency before selection.
+> lifetimes. The [completed end-to-end screen](WAL-PREALLOCATION-PERFORMANCE.md)
+> retains small point gains and inconsistent batch gains; the feature stays off.
 > Retain prior rejected buffer/index experiments and the pending
 > pre-upload crash acceptance, then continue industrial storage,
 > resource-bounded multi-Raft, ownership changes and automatic splits with the

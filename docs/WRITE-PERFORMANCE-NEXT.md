@@ -6,7 +6,20 @@ the selected ThinLTO/Safe ReadIndex baseline. The experimental lease work and
 its remaining clock/Chaos gates are retained; read parity is not claimed and is
 no longer a prerequisite for this write phase.
 
-The latest [complete write-observer capture](WRITE-OBSERVER-CAPTURE.md) measures
+The latest [same-source WAL preallocation comparison](WAL-PREALLOCATION-PERFORMANCE.md)
+passes all eight smokes, sixteen timed cohorts and independent acceptance:
+7,200,959 successful calls / 63,451,454 items. Current default `86aa6fc` reaches
+137,873.776 Put/s and 1,022,750.059 BatchPut(64) items/s at c64. The candidate
+changes these by +0.545% / +1.474%, with unchanged loaded pooled p99 and batch
+throughput/mean/p99 reversing direction between orders. Keep it default-off;
+this does not establish a material general improvement or Redis parity.
+Next quantify Raw-command lowering, allocation/copy and fence evaluation
+separately from resident-index work using retained exact command/group inputs.
+Preserve mutation/fence order and snapshot/publication semantics; measure a
+changed kernel before another expensive runtime gate. Do not repeat completed
+screens or rejected clone-removal, coalescing and borrowed-upsert variants.
+
+The earlier [complete write-observer capture](WRITE-OBSERVER-CAPTURE.md) measures
 queue/group distributions and diagnostic overhead across all 16 planned cells.
 Loaded Put repeatedly inspects pending receipts: 86.00–86.11% of lookups miss,
 averaging about 1,022 logical comparisons. The separately proved upper-bound
@@ -69,10 +82,12 @@ four complete histories / 728 operations (666 OK, 62 unknown), twelve fresh
 drains and fourteen exited lifetimes. The feature remains off by default.
 [Actual candidate Chaos Mesh](WAL-PREALLOCATION-CHAOS.md) now passes all 21
 windows, 9,241 complete operations, four final drains, 31 server lifetimes and
-25 exited containers, with independent audit/archive/cleanup. Next compare
-end-to-end write throughput and latency with the same qualified client. These microbenchmarks
-and correctness runs establish no database QPS or Redis parity. Keep
-CRC selected and avoid replaying the completed index/capture/full matrices.
+25 exited containers, with independent audit/archive/cleanup. The
+[same-source end-to-end comparison](WAL-PREALLOCATION-PERFORMANCE.md) above now
+completes runtime selection: keep the feature default-off for its small and
+order-dependent gains. Encoder microbenchmarks and correctness runs alone do
+not establish database QPS. Keep CRC selected and avoid replaying completed
+index/capture/full matrices.
 
 During the earlier full-screen capacity constraint, the C04
 [checkpoint publication increment](CHECKPOINT-PUBLICATION.md) strengthens local
