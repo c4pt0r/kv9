@@ -1,0 +1,3674 @@
+{
+  "complete": true,
+  "production_changed": false,
+  "new_database_qps": false,
+  "independent_input_state_queries_statistics": true,
+  "rows_per_mode": 264,
+  "comparison_cells": 66,
+  "cases": [
+    {
+      "case": 0,
+      "phase": "group",
+      "dataset": "original24",
+      "operation": "write",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 100965.88482704402,
+          "p99_ns": 276948
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 82569.5393081761,
+          "p99_ns": 228868
+        }
+      },
+      "mean_change_percent": -18.22035784699071,
+      "p99_change_percent": -17.360659762843568,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -19.35540236461343,
+          "p99_change_percent": -18.935045424266907,
+          "baseline_mean_ns": 101956.97720125786,
+          "candidate_mean_ns": 82222.79402515723,
+          "baseline_p99_ns": 282228,
+          "candidate_p99_ns": 228788
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -17.062808977256662,
+          "p99_change_percent": -17.3262731301719,
+          "baseline_mean_ns": 99974.7924528302,
+          "candidate_mean_ns": 82916.28459119497,
+          "baseline_p99_ns": 276857,
+          "candidate_p99_ns": 228888
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 300288,
+        "alloc_requested_bytes": 21120256,
+        "dealloc_calls": 300288,
+        "dealloc_layout_bytes": 21120256,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 1093632,
+        "peak_during_group_with_optional_old_view": 1093843,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 1,
+      "phase": "group",
+      "dataset": "original24",
+      "operation": "write",
+      "workload": "overwrite",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 116041.29048742139,
+          "p99_ns": 307264
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 102240.39937106919,
+          "p99_ns": 271718
+        }
+      },
+      "mean_change_percent": -11.8930865542625,
+      "p99_change_percent": -11.56855342636951,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -11.16240549982983,
+          "p99_change_percent": -12.954819603913636,
+          "baseline_mean_ns": 115425.75550314465,
+          "candidate_mean_ns": 102541.4646226415,
+          "baseline_p99_ns": 313366,
+          "candidate_p99_ns": 272770
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -12.616056791097785,
+          "p99_change_percent": -10.882912430305014,
+          "baseline_mean_ns": 116656.82547169812,
+          "candidate_mean_ns": 101939.33411949685,
+          "baseline_p99_ns": 304900,
+          "candidate_p99_ns": 271718
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 392748,
+        "alloc_requested_bytes": 26298016,
+        "dealloc_calls": 43344,
+        "dealloc_layout_bytes": 3048528,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 1093632,
+        "peak_during_group_with_optional_old_view": 1628073,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 2,
+      "phase": "group",
+      "dataset": "original24",
+      "operation": "write",
+      "workload": "initial_fill",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 101525.26690251572,
+          "p99_ns": 267119
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 84237.00314465408,
+          "p99_ns": 228056
+        }
+      },
+      "mean_change_percent": -17.02853317732401,
+      "p99_change_percent": -14.623819346433608,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -16.79866286561944,
+          "p99_change_percent": -15.437688820338503,
+          "baseline_mean_ns": 101393.4960691824,
+          "candidate_mean_ns": 84360.74449685535,
+          "baseline_p99_ns": 267119,
+          "candidate_p99_ns": 225882
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -17.257807559750937,
+          "p99_change_percent": -14.831792343754069,
+          "baseline_mean_ns": 101657.03773584905,
+          "candidate_mean_ns": 84113.26179245283,
+          "baseline_p99_ns": 268983,
+          "candidate_p99_ns": 229088
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 304384,
+        "alloc_requested_bytes": 21349632,
+        "dealloc_calls": 288000,
+        "dealloc_layout_bytes": 20256000,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 1093843,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 3,
+      "phase": "group",
+      "dataset": "original24",
+      "operation": "write",
+      "workload": "initial_fill",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 117830.18238993711,
+          "p99_ns": 307525
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 104569.61831761006,
+          "p99_ns": 271578
+        }
+      },
+      "mean_change_percent": -11.253962103227233,
+      "p99_change_percent": -11.689130964962203,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -12.905745883391095,
+          "p99_change_percent": -13.230143890740587,
+          "baseline_mean_ns": 118569.0,
+          "candidate_mean_ns": 103266.78616352202,
+          "baseline_p99_ns": 307525,
+          "candidate_p99_ns": 266839
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -9.581333627178301,
+          "p99_change_percent": -13.094979837680565,
+          "baseline_mean_ns": 117091.36477987422,
+          "candidate_mean_ns": 105872.45047169812,
+          "baseline_p99_ns": 313456,
+          "candidate_p99_ns": 272409
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 392921,
+        "alloc_requested_bytes": 26307704,
+        "dealloc_calls": 43344,
+        "dealloc_layout_bytes": 3048528,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 1627569,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 4,
+      "phase": "group",
+      "dataset": "original24",
+      "operation": "write",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 267171.795990566,
+          "p99_ns": 813000
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 246540.56643081762,
+          "p99_ns": 727019
+        }
+      },
+      "mean_change_percent": -7.7220836440673235,
+      "p99_change_percent": -10.575768757687577,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -8.880510460781188,
+          "p99_change_percent": -10.275030082379445,
+          "baseline_mean_ns": 269775.9905660377,
+          "candidate_mean_ns": 245818.50550314467,
+          "baseline_p99_ns": 810275,
+          "candidate_p99_ns": 727019
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -6.540851549488503,
+          "p99_change_percent": -10.549092001888983,
+          "baseline_mean_ns": 264567.60141509434,
+          "candidate_mean_ns": 247262.62735849057,
+          "baseline_p99_ns": 815255,
+          "candidate_p99_ns": 729253
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 400384,
+        "alloc_requested_bytes": 27526400,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 27526400,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 27526400,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 5,
+      "phase": "group",
+      "dataset": "original24",
+      "operation": "write",
+      "workload": "unique_insert",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 331005.7771226415,
+          "p99_ns": 942373
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 324644.9658018868,
+          "p99_ns": 995762
+        }
+      },
+      "mean_change_percent": -1.9216617232629019,
+      "p99_change_percent": 5.665378783135755,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -2.7985087863421687,
+          "p99_change_percent": 1.001952993332056,
+          "baseline_mean_ns": 332536.3215408805,
+          "candidate_mean_ns": 323230.2633647799,
+          "baseline_p99_ns": 993859,
+          "candidate_p99_ns": 1003817
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -1.0366680485732194,
+          "p99_change_percent": 9.223352620177149,
+          "baseline_mean_ns": 329475.23270440253,
+          "candidate_mean_ns": 326059.66823899373,
+          "baseline_p99_ns": 911675,
+          "candidate_p99_ns": 995762
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 820633,
+        "alloc_requested_bytes": 51060344,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 27526400,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 28081752,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 6,
+      "phase": "group",
+      "dataset": "short4",
+      "operation": "write",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 143229.45715408804,
+          "p99_ns": 393737
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 120831.58529874214,
+          "p99_ns": 335397
+        }
+      },
+      "mean_change_percent": -15.637755179962731,
+      "p99_change_percent": -14.816997132603749,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -14.823077753777959,
+          "p99_change_percent": -13.783778850391283,
+          "baseline_mean_ns": 141965.12342767295,
+          "candidate_mean_ns": 120921.52279874214,
+          "baseline_p99_ns": 383487,
+          "candidate_p99_ns": 330628
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -16.43817560396357,
+          "p99_change_percent": -15.05677056885636,
+          "baseline_mean_ns": 144493.79088050313,
+          "candidate_mean_ns": 120741.64779874214,
+          "baseline_p99_ns": 399767,
+          "candidate_p99_ns": 339575
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 300288,
+        "alloc_requested_bytes": 21120256,
+        "dealloc_calls": 300288,
+        "dealloc_layout_bytes": 21120256,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 1093632,
+        "peak_during_group_with_optional_old_view": 1093843,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 7,
+      "phase": "group",
+      "dataset": "short4",
+      "operation": "write",
+      "workload": "overwrite",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 185129.04992138364,
+          "p99_ns": 472824
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 172572.71029874214,
+          "p99_ns": 428731
+        }
+      },
+      "mean_change_percent": -6.782479372077821,
+      "p99_change_percent": -9.325457252592928,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -5.1615256736537996,
+          "p99_change_percent": -5.268576865180474,
+          "baseline_mean_ns": 183087.65566037735,
+          "candidate_mean_ns": 173637.5393081761,
+          "baseline_p99_ns": 460371,
+          "candidate_p99_ns": 436116
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -8.368074864330211,
+          "p99_change_percent": -12.366820523940813,
+          "baseline_mean_ns": 187170.44418238994,
+          "candidate_mean_ns": 171507.88128930816,
+          "baseline_p99_ns": 484215,
+          "candidate_p99_ns": 424333
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 477157,
+        "alloc_requested_bytes": 31024920,
+        "dealloc_calls": 43344,
+        "dealloc_layout_bytes": 3048528,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 1093632,
+        "peak_during_group_with_optional_old_view": 1672369,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 8,
+      "phase": "group",
+      "dataset": "short4",
+      "operation": "write",
+      "workload": "initial_fill",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 142390.91116352202,
+          "p99_ns": 389568
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 117746.69378930818,
+          "p99_ns": 312474
+        }
+      },
+      "mean_change_percent": -17.307437091902845,
+      "p99_change_percent": -19.789613109906355,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -17.927802755339517,
+          "p99_change_percent": -19.215773756711396,
+          "baseline_mean_ns": 143652.8671383648,
+          "candidate_mean_ns": 117899.06446540881,
+          "baseline_p99_ns": 394478,
+          "candidate_p99_ns": 318676
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -16.67597697723163,
+          "p99_change_percent": -16.71053621117545,
+          "baseline_mean_ns": 141128.95518867925,
+          "candidate_mean_ns": 117594.32311320755,
+          "baseline_p99_ns": 372316,
+          "candidate_p99_ns": 310100
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 304384,
+        "alloc_requested_bytes": 21349632,
+        "dealloc_calls": 288000,
+        "dealloc_layout_bytes": 20256000,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 1093843,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 9,
+      "phase": "group",
+      "dataset": "short4",
+      "operation": "write",
+      "workload": "initial_fill",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 183308.10770440253,
+          "p99_ns": 458637
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 172518.9587264151,
+          "p99_ns": 424434
+        }
+      },
+      "mean_change_percent": -5.885800204421788,
+      "p99_change_percent": -7.457531773494075,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -6.720757912256126,
+          "p99_change_percent": -8.883932172938513,
+          "baseline_mean_ns": 183581.5966981132,
+          "candidate_mean_ns": 171243.5220125786,
+          "baseline_p99_ns": 458637,
+          "candidate_p99_ns": 417892
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -5.048347321140135,
+          "p99_change_percent": -9.150109882161217,
+          "baseline_mean_ns": 183034.61871069184,
+          "candidate_mean_ns": 173794.39544025157,
+          "baseline_p99_ns": 470049,
+          "candidate_p99_ns": 427039
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 480201,
+        "alloc_requested_bytes": 31195384,
+        "dealloc_calls": 43344,
+        "dealloc_layout_bytes": 3048528,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 1675393,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 10,
+      "phase": "group",
+      "dataset": "short4",
+      "operation": "write",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 419958.75982704404,
+          "p99_ns": 1236813
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 396610.74449685536,
+          "p99_ns": 1197470
+        }
+      },
+      "mean_change_percent": -5.559597170875619,
+      "p99_change_percent": -3.1809982592356345,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -6.510785360773563,
+          "p99_change_percent": -4.670048758935197,
+          "baseline_mean_ns": 426350.1344339623,
+          "candidate_mean_ns": 398591.39229559747,
+          "baseline_p99_ns": 1267460,
+          "candidate_p99_ns": 1208269
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -4.57900917692845,
+          "p99_change_percent": -2.5692527531807174,
+          "baseline_mean_ns": 413567.3852201258,
+          "candidate_mean_ns": 394630.0966981132,
+          "baseline_p99_ns": 1219771,
+          "candidate_p99_ns": 1188432
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 400384,
+        "alloc_requested_bytes": 27526400,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 27526400,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 27526400,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 11,
+      "phase": "group",
+      "dataset": "short4",
+      "operation": "write",
+      "workload": "unique_insert",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 556839.1383647799,
+          "p99_ns": 1567141
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 548123.1198899371,
+          "p99_ns": 1563183
+        }
+      },
+      "mean_change_percent": -1.5652668561405902,
+      "p99_change_percent": -0.2525618307478439,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -1.3770720572620188,
+          "p99_change_percent": -1.438961415632356,
+          "baseline_mean_ns": 558250.4536163522,
+          "candidate_mean_ns": 550562.9426100629,
+          "baseline_p99_ns": 1586005,
+          "candidate_p99_ns": 1563183
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -1.754418042794037,
+          "p99_change_percent": -0.1854332188360841,
+          "baseline_mean_ns": 555427.8231132076,
+          "candidate_mean_ns": 545683.2971698113,
+          "baseline_p99_ns": 1567141,
+          "candidate_p99_ns": 1564235
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 957050,
+        "alloc_requested_bytes": 58699696,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 27526400,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 28180592,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 12,
+      "phase": "group",
+      "dataset": "dispersed0",
+      "operation": "write",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 141644.58844339623,
+          "p99_ns": 388136
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 120647.5786163522,
+          "p99_ns": 328064
+        }
+      },
+      "mean_change_percent": -14.82372892447975,
+      "p99_change_percent": -15.477049281695077,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -15.13450771117315,
+          "p99_change_percent": -16.49016986234768,
+          "baseline_mean_ns": 142414.18317610063,
+          "candidate_mean_ns": 120860.49764150943,
+          "baseline_p99_ns": 394908,
+          "candidate_p99_ns": 329787
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -14.509554592402818,
+          "p99_change_percent": -15.921223488674075,
+          "baseline_mean_ns": 140874.99371069184,
+          "candidate_mean_ns": 120434.65959119497,
+          "baseline_p99_ns": 388136,
+          "candidate_p99_ns": 326340
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 300288,
+        "alloc_requested_bytes": 21120256,
+        "dealloc_calls": 300288,
+        "dealloc_layout_bytes": 21120256,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 1093632,
+        "peak_during_group_with_optional_old_view": 1093843,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 13,
+      "phase": "group",
+      "dataset": "dispersed0",
+      "operation": "write",
+      "workload": "overwrite",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 182454.11163522012,
+          "p99_ns": 457045
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 171284.67374213837,
+          "p99_ns": 421177
+        }
+      },
+      "mean_change_percent": -6.121779220526835,
+      "p99_change_percent": -7.847804920740842,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -7.022470908422395,
+          "p99_change_percent": -8.673981774223549,
+          "baseline_mean_ns": 183422.62264150943,
+          "candidate_mean_ns": 170541.82232704404,
+          "baseline_p99_ns": 457045,
+          "candidate_p99_ns": 417401
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -5.211474320233411,
+          "p99_change_percent": -8.381165831633952,
+          "baseline_mean_ns": 181485.6006289308,
+          "candidate_mean_ns": 172027.5251572327,
+          "baseline_p99_ns": 460461,
+          "candidate_p99_ns": 421869
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 477694,
+        "alloc_requested_bytes": 31054992,
+        "dealloc_calls": 43344,
+        "dealloc_layout_bytes": 3048528,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 1093632,
+        "peak_during_group_with_optional_old_view": 1673601,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 14,
+      "phase": "group",
+      "dataset": "dispersed0",
+      "operation": "write",
+      "workload": "initial_fill",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 139715.22209119497,
+          "p99_ns": 377436
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 116932.33333333333,
+          "p99_ns": 313276
+        }
+      },
+      "mean_change_percent": -16.306661805963262,
+      "p99_change_percent": -16.99890842420967,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -17.84614103261919,
+          "p99_change_percent": -17.843857337849723,
+          "baseline_mean_ns": 140850.24921383648,
+          "candidate_mean_ns": 115713.91509433962,
+          "baseline_p99_ns": 378769,
+          "candidate_p99_ns": 311182
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -14.741964680351515,
+          "p99_change_percent": -14.714899166871865,
+          "baseline_mean_ns": 138580.19496855346,
+          "candidate_mean_ns": 118150.75157232705,
+          "baseline_p99_ns": 369571,
+          "candidate_p99_ns": 315189
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 304384,
+        "alloc_requested_bytes": 21349632,
+        "dealloc_calls": 288000,
+        "dealloc_layout_bytes": 20256000,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 1093843,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 15,
+      "phase": "group",
+      "dataset": "dispersed0",
+      "operation": "write",
+      "workload": "initial_fill",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 182341.25943396226,
+          "p99_ns": 463416
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 171548.5896226415,
+          "p99_ns": 420416
+        }
+      },
+      "mean_change_percent": -5.918940038488374,
+      "p99_change_percent": -9.278920020025206,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -5.130082315023776,
+          "p99_change_percent": -6.665928131876253,
+          "baseline_mean_ns": 180842.67610062895,
+          "candidate_mean_ns": 171565.29795597485,
+          "baseline_p99_ns": 460371,
+          "candidate_p99_ns": 429683
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -6.694936904165461,
+          "p99_change_percent": -10.063450381284401,
+          "baseline_mean_ns": 183839.8427672956,
+          "candidate_mean_ns": 171531.88128930816,
+          "baseline_p99_ns": 463827,
+          "candidate_p99_ns": 417150
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 480173,
+        "alloc_requested_bytes": 31193816,
+        "dealloc_calls": 43344,
+        "dealloc_layout_bytes": 3048528,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 1093632,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 1675897,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 16,
+      "phase": "group",
+      "dataset": "dispersed0",
+      "operation": "write",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 421645.05581761006,
+          "p99_ns": 1246140
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 400163.5365566038,
+          "p99_ns": 1185087
+        }
+      },
+      "mean_change_percent": -5.094692553515545,
+      "p99_change_percent": -4.899369252250951,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -4.996312390131785,
+          "p99_change_percent": -4.546519652687497,
+          "baseline_mean_ns": 421277.2893081761,
+          "candidate_mean_ns": 400228.95990566036,
+          "baseline_p99_ns": 1246140,
+          "candidate_p99_ns": 1189484
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -5.192901248510829,
+          "p99_change_percent": -5.1440675386185575,
+          "baseline_mean_ns": 422012.82232704404,
+          "candidate_mean_ns": 400098.11320754717,
+          "baseline_p99_ns": 1248234,
+          "candidate_p99_ns": 1184024
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 400384,
+        "alloc_requested_bytes": 27526400,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 27526400,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 27526400,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 17,
+      "phase": "group",
+      "dataset": "dispersed0",
+      "operation": "write",
+      "workload": "unique_insert",
+      "pinned": true,
+      "pooled": {
+        "baseline": {
+          "samples": 2544,
+          "mean_ns": 560645.0066823899,
+          "p99_ns": 1601906
+        },
+        "candidate": {
+          "samples": 2544,
+          "mean_ns": 545736.283018868,
+          "p99_ns": 1533458
+        }
+      },
+      "mean_change_percent": -2.6592092118583377,
+      "p99_change_percent": -4.2729098960862855,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -1.9553123181581422,
+          "p99_change_percent": -2.263532353018227,
+          "baseline_mean_ns": 556078.3459119496,
+          "candidate_mean_ns": 545205.2775157233,
+          "baseline_p99_ns": 1603158,
+          "candidate_p99_ns": 1566870
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -3.35173175320177,
+          "p99_change_percent": -4.2729098960862855,
+          "baseline_mean_ns": 565211.6674528302,
+          "candidate_mean_ns": 546267.2885220125,
+          "baseline_p99_ns": 1601906,
+          "candidate_p99_ns": 1533458
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 957106,
+        "alloc_requested_bytes": 58702832,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 106
+      },
+      "requested_live_bytes": {
+        "final_map": 27526400,
+        "initial_map": 0,
+        "peak_during_group_with_optional_old_view": 28175776,
+        "released_after_drop": true
+      }
+    },
+    {
+      "case": 18,
+      "phase": "first_touch",
+      "dataset": "original24",
+      "operation": "get_hit",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 127.04654947916667,
+          "p99_ns": 301
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 130.13541666666666,
+          "p99_ns": 281
+        }
+      },
+      "mean_change_percent": 2.4312877446596826,
+      "p99_change_percent": -6.644518272425248,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 2.034293290236544,
+          "p99_change_percent": -9.999999999999998,
+          "baseline_mean_ns": 126.69319661458333,
+          "candidate_mean_ns": 129.2705078125,
+          "baseline_p99_ns": 290,
+          "candidate_p99_ns": 261
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 2.8260800132865915,
+          "p99_change_percent": -5.937499999999996,
+          "baseline_mean_ns": 127.39990234375,
+          "candidate_mean_ns": 131.00032552083334,
+          "baseline_p99_ns": 320,
+          "candidate_p99_ns": 301
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 18,
+      "phase": "warm",
+      "dataset": "original24",
+      "operation": "get_hit",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 51.795864529079864,
+          "p99_ns": 101
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 59.40611436631944,
+          "p99_ns": 120
+        }
+      },
+      "mean_change_percent": 14.692775005168501,
+      "p99_change_percent": 18.811881188118807,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 14.751788610428985,
+          "p99_change_percent": 18.811881188118807,
+          "baseline_mean_ns": 52.050998263888886,
+          "candidate_mean_ns": 59.729451497395836,
+          "baseline_p99_ns": 101,
+          "candidate_p99_ns": 120
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 14.633177148917298,
+          "p99_change_percent": 18.811881188118807,
+          "baseline_mean_ns": 51.540730794270836,
+          "candidate_mean_ns": 59.08277723524306,
+          "baseline_p99_ns": 101,
+          "candidate_p99_ns": 120
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 19,
+      "phase": "first_touch",
+      "dataset": "original24",
+      "operation": "get_miss",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 139.29825846354166,
+          "p99_ns": 310
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 141.68693033854166,
+          "p99_ns": 330
+        }
+      },
+      "mean_change_percent": 1.7147894750063841,
+      "p99_change_percent": 6.451612903225801,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 2.012417316100157,
+          "p99_change_percent": -0.30211480362537513,
+          "baseline_mean_ns": 139.49039713541666,
+          "candidate_mean_ns": 142.29752604166666,
+          "baseline_p99_ns": 331,
+          "candidate_p99_ns": 330
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 1.4163394440882326,
+          "p99_change_percent": 10.689655172413804,
+          "baseline_mean_ns": 139.10611979166666,
+          "candidate_mean_ns": 141.07633463541666,
+          "baseline_p99_ns": 290,
+          "candidate_p99_ns": 321
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 19,
+      "phase": "warm",
+      "dataset": "original24",
+      "operation": "get_miss",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 55.765157063802086,
+          "p99_ns": 120
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 59.62097846137153,
+          "p99_ns": 130
+        }
+      },
+      "mean_change_percent": 6.914391710863321,
+      "p99_change_percent": 8.333333333333325,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 6.653855708670053,
+          "p99_change_percent": 17.117117117117118,
+          "baseline_mean_ns": 55.689290364583336,
+          "candidate_mean_ns": 59.394775390625,
+          "baseline_p99_ns": 111,
+          "candidate_p99_ns": 130
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 7.174219774513135,
+          "p99_change_percent": 8.333333333333325,
+          "baseline_mean_ns": 55.841023763020836,
+          "candidate_mean_ns": 59.84718153211806,
+          "baseline_p99_ns": 120,
+          "candidate_p99_ns": 130
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 20,
+      "phase": "first_touch",
+      "dataset": "original24",
+      "operation": "predecessor",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 219.99186197916666,
+          "p99_ns": 471
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 218.407958984375,
+          "p99_ns": 461
+        }
+      },
+      "mean_change_percent": -0.7199825396003279,
+      "p99_change_percent": -2.123142250530785,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 0.05701888265379207,
+          "p99_change_percent": 8.64745011086474,
+          "baseline_mean_ns": 218.08382161458334,
+          "candidate_mean_ns": 218.20817057291666,
+          "baseline_p99_ns": 451,
+          "candidate_p99_ns": 490
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -1.4836216299080274,
+          "p99_change_percent": -17.27447216890595,
+          "baseline_mean_ns": 221.89990234375,
+          "candidate_mean_ns": 218.60774739583334,
+          "baseline_p99_ns": 521,
+          "candidate_p99_ns": 431
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 116480,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 116480,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 20,
+      "phase": "warm",
+      "dataset": "original24",
+      "operation": "predecessor",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 163.7830810546875,
+          "p99_ns": 200
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 165.01422119140625,
+          "p99_ns": 201
+        }
+      },
+      "mean_change_percent": 0.7516894472803681,
+      "p99_change_percent": 0.49999999999998934,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 1.6081741825534568,
+          "p99_change_percent": 0.49999999999998934,
+          "baseline_mean_ns": 162.89881727430554,
+          "candidate_mean_ns": 165.51851399739584,
+          "baseline_p99_ns": 200,
+          "candidate_p99_ns": 201
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -0.09559664049387795,
+          "p99_change_percent": -0.497512437810943,
+          "baseline_mean_ns": 164.66734483506946,
+          "candidate_mean_ns": 164.50992838541666,
+          "baseline_p99_ns": 201,
+          "candidate_p99_ns": 200
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 116480,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 116480,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 21,
+      "phase": "first_touch",
+      "dataset": "original24",
+      "operation": "scan16",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 475.1455078125,
+          "p99_ns": 1022
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 470.1229654947917,
+          "p99_ns": 902
+        }
+      },
+      "mean_change_percent": -1.0570535204744713,
+      "p99_change_percent": -11.741682974559687,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -1.1344157984808145,
+          "p99_change_percent": 0.10857763300760048,
+          "baseline_mean_ns": 474.9599609375,
+          "candidate_mean_ns": 469.5719401041667,
+          "baseline_p99_ns": 921,
+          "candidate_p99_ns": 922
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -0.9797516396535588,
+          "p99_change_percent": -24.096385542168676,
+          "baseline_mean_ns": 475.3310546875,
+          "candidate_mean_ns": 470.6739908854167,
+          "baseline_p99_ns": 1162,
+          "candidate_p99_ns": 882
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18380,
+        "alloc_requested_bytes": 1480770,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 116736,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 21,
+      "phase": "warm",
+      "dataset": "original24",
+      "operation": "scan16",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 432.496086968316,
+          "p99_ns": 551
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 432.04657660590277,
+          "p99_ns": 551
+        }
+      },
+      "mean_change_percent": -0.10393397211155841,
+      "p99_change_percent": 0.0,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -1.487566714983457,
+          "p99_change_percent": -3.5650623885918,
+          "baseline_mean_ns": 436.90869140625,
+          "candidate_mean_ns": 430.4093831380208,
+          "baseline_p99_ns": 561,
+          "candidate_p99_ns": 541
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 1.308223225596028,
+          "p99_change_percent": 3.6968576709796697,
+          "baseline_mean_ns": 428.08348253038196,
+          "candidate_mean_ns": 433.68377007378473,
+          "baseline_p99_ns": 541,
+          "candidate_p99_ns": 561
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18380,
+        "alloc_requested_bytes": 1480770,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 116736,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 22,
+      "phase": "first_touch",
+      "dataset": "original24",
+      "operation": "get_hit",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 802.8361002604166,
+          "p99_ns": 2054
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 760.0590006510416,
+          "p99_ns": 1933
+        }
+      },
+      "mean_change_percent": -5.328248143736857,
+      "p99_change_percent": -5.8909444985394295,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 0.4927556373700348,
+          "p99_change_percent": 0.4513540621865486,
+          "baseline_mean_ns": 763.5696614583334,
+          "candidate_mean_ns": 767.3321940104166,
+          "baseline_p99_ns": 1994,
+          "candidate_p99_ns": 2003
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -10.606396208028102,
+          "p99_change_percent": -11.873226111636704,
+          "baseline_mean_ns": 842.1025390625,
+          "candidate_mean_ns": 752.7858072916666,
+          "baseline_p99_ns": 2114,
+          "candidate_p99_ns": 1863
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 22,
+      "phase": "warm",
+      "dataset": "original24",
+      "operation": "get_hit",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 137.90665011935764,
+          "p99_ns": 280
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 135.1693318684896,
+          "p99_ns": 271
+        }
+      },
+      "mean_change_percent": -1.984906636843764,
+      "p99_change_percent": -3.214285714285714,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -1.6288880499846892,
+          "p99_change_percent": 3.3210332103321027,
+          "baseline_mean_ns": 137.60728624131946,
+          "candidate_mean_ns": 135.36581759982639,
+          "baseline_p99_ns": 271,
+          "candidate_p99_ns": 280
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -2.339382901458975,
+          "p99_change_percent": -3.214285714285714,
+          "baseline_mean_ns": 138.20601399739584,
+          "candidate_mean_ns": 134.97284613715277,
+          "baseline_p99_ns": 280,
+          "candidate_p99_ns": 271
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 23,
+      "phase": "first_touch",
+      "dataset": "original24",
+      "operation": "get_miss",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 834.9195149739584,
+          "p99_ns": 1994
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 810.9332682291666,
+          "p99_ns": 1944
+        }
+      },
+      "mean_change_percent": -2.8728813154570765,
+      "p99_change_percent": -2.507522567703113,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -3.1816739113773918,
+          "p99_change_percent": -2.0171457387796243,
+          "baseline_mean_ns": 811.2509765625,
+          "candidate_mean_ns": 785.4396158854166,
+          "baseline_p99_ns": 1983,
+          "candidate_p99_ns": 1943
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -2.58111357654216,
+          "p99_change_percent": -3.9525691699604737,
+          "baseline_mean_ns": 858.5880533854166,
+          "candidate_mean_ns": 836.4269205729166,
+          "baseline_p99_ns": 2024,
+          "candidate_p99_ns": 1944
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 23,
+      "phase": "warm",
+      "dataset": "original24",
+      "operation": "get_miss",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 144.98910861545139,
+          "p99_ns": 290
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 143.88568115234375,
+          "p99_ns": 290
+        }
+      },
+      "mean_change_percent": -0.7610416214325566,
+      "p99_change_percent": 0.0,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -0.06767165622197924,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 144.34902615017361,
+          "candidate_mean_ns": 144.2513427734375,
+          "baseline_p99_ns": 290,
+          "candidate_p99_ns": 290
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -1.4483164630846201,
+          "p99_change_percent": -3.436426116838487,
+          "baseline_mean_ns": 145.62919108072916,
+          "candidate_mean_ns": 143.52001953125,
+          "baseline_p99_ns": 291,
+          "candidate_p99_ns": 281
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 24,
+      "phase": "first_touch",
+      "dataset": "original24",
+      "operation": "predecessor",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 1453.9388834635417,
+          "p99_ns": 3126
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 1362.5404459635417,
+          "p99_ns": 3096
+        }
+      },
+      "mean_change_percent": -6.286264060994961,
+      "p99_change_percent": -0.9596928982725572,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -3.2755476165440056,
+          "p99_change_percent": 5.319148936170204,
+          "baseline_mean_ns": 1499.87841796875,
+          "candidate_mean_ns": 1450.7491861979167,
+          "baseline_p99_ns": 3196,
+          "candidate_p99_ns": 3366
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -9.493444959904041,
+          "p99_change_percent": -6.280991735537189,
+          "baseline_mean_ns": 1407.9993489583333,
+          "candidate_mean_ns": 1274.3317057291667,
+          "baseline_p99_ns": 3025,
+          "candidate_p99_ns": 2835
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 153344,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 153344,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 24,
+      "phase": "warm",
+      "dataset": "original24",
+      "operation": "predecessor",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 338.85772705078125,
+          "p99_ns": 471
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 337.94041612413196,
+          "p99_ns": 480
+        }
+      },
+      "mean_change_percent": -0.2707068050751049,
+      "p99_change_percent": 1.9108280254777066,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -0.35336517745705454,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 339.48609754774304,
+          "candidate_mean_ns": 338.2864718967014,
+          "baseline_p99_ns": 481,
+          "candidate_p99_ns": 481
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -0.18774130333536476,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 338.22935655381946,
+          "candidate_mean_ns": 337.5943603515625,
+          "baseline_p99_ns": 471,
+          "candidate_p99_ns": 471
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 153344,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 153344,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 25,
+      "phase": "first_touch",
+      "dataset": "original24",
+      "operation": "scan16",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 1872.4905598958333,
+          "p99_ns": 3636
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 1801.3745930989583,
+          "p99_ns": 3847
+        }
+      },
+      "mean_change_percent": -3.7979345968415013,
+      "p99_change_percent": 5.803080308030806,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -7.69811997195694,
+          "p99_change_percent": 9.790590155017686,
+          "baseline_mean_ns": 1928.5349934895833,
+          "candidate_mean_ns": 1780.0740559895833,
+          "baseline_p99_ns": 3677,
+          "candidate_p99_ns": 4037
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 0.34292257920860436,
+          "p99_change_percent": 2.8402699662542163,
+          "baseline_mean_ns": 1816.4461263020833,
+          "candidate_mean_ns": 1822.6751302083333,
+          "baseline_p99_ns": 3556,
+          "candidate_p99_ns": 3657
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18406,
+        "alloc_requested_bytes": 1585081,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 153600,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 25,
+      "phase": "warm",
+      "dataset": "original24",
+      "operation": "scan16",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 621.0540703667534,
+          "p99_ns": 832
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 610.1144070095486,
+          "p99_ns": 821
+        }
+      },
+      "mean_change_percent": -1.7614671377557456,
+      "p99_change_percent": -1.3221153846153855,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -2.067855296046761,
+          "p99_change_percent": -9.400705052878966,
+          "baseline_mean_ns": 620.9007161458334,
+          "candidate_mean_ns": 608.0613878038195,
+          "baseline_p99_ns": 851,
+          "candidate_p99_ns": 771
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -1.45523025234221,
+          "p99_change_percent": 3.649635036496357,
+          "baseline_mean_ns": 621.2074245876736,
+          "candidate_mean_ns": 612.1674262152778,
+          "baseline_p99_ns": 822,
+          "candidate_p99_ns": 852
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18406,
+        "alloc_requested_bytes": 1585081,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 153600,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 26,
+      "phase": "first_touch",
+      "dataset": "short4",
+      "operation": "get_hit",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 127.119873046875,
+          "p99_ns": 281
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 131.03401692708334,
+          "p99_ns": 281
+        }
+      },
+      "mean_change_percent": 3.0790967504860767,
+      "p99_change_percent": 0.0,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 5.114369182477896,
+          "p99_change_percent": 7.407407407407418,
+          "baseline_mean_ns": 125.689453125,
+          "candidate_mean_ns": 132.11767578125,
+          "baseline_p99_ns": 270,
+          "candidate_p99_ns": 290
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 1.0891185635080625,
+          "p99_change_percent": -9.967845659163988,
+          "baseline_mean_ns": 128.55029296875,
+          "candidate_mean_ns": 129.95035807291666,
+          "baseline_p99_ns": 311,
+          "candidate_p99_ns": 280
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 26,
+      "phase": "warm",
+      "dataset": "short4",
+      "operation": "get_hit",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 51.84062364366319,
+          "p99_ns": 101
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 59.359714084201386,
+          "p99_ns": 120
+        }
+      },
+      "mean_change_percent": 14.504243799654404,
+      "p99_change_percent": 18.811881188118807,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 16.119691322710384,
+          "p99_change_percent": 18.811881188118807,
+          "baseline_mean_ns": 51.58940972222222,
+          "candidate_mean_ns": 59.90546332465278,
+          "baseline_p99_ns": 101,
+          "candidate_p99_ns": 120
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 12.90437733213874,
+          "p99_change_percent": 18.811881188118807,
+          "baseline_mean_ns": 52.091837565104164,
+          "candidate_mean_ns": 58.81396484375,
+          "baseline_p99_ns": 101,
+          "candidate_p99_ns": 120
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 27,
+      "phase": "first_touch",
+      "dataset": "short4",
+      "operation": "get_miss",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 141.32080078125,
+          "p99_ns": 341
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 141.75301106770834,
+          "p99_ns": 331
+        }
+      },
+      "mean_change_percent": 0.30583628458726864,
+      "p99_change_percent": -2.9325513196480912,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -0.23593879945771334,
+          "p99_change_percent": -8.797653958944284,
+          "baseline_mean_ns": 142.8662109375,
+          "candidate_mean_ns": 142.52913411458334,
+          "baseline_p99_ns": 341,
+          "candidate_p99_ns": 311
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 0.8595915135424681,
+          "p99_change_percent": 2.9325513196480912,
+          "baseline_mean_ns": 139.775390625,
+          "candidate_mean_ns": 140.97688802083334,
+          "baseline_p99_ns": 341,
+          "candidate_p99_ns": 351
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 27,
+      "phase": "warm",
+      "dataset": "short4",
+      "operation": "get_miss",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 56.20124647352431,
+          "p99_ns": 120
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 58.086093478732636,
+          "p99_ns": 130
+        }
+      },
+      "mean_change_percent": 3.35374591041544,
+      "p99_change_percent": 8.333333333333325,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 3.8368184029091257,
+          "p99_change_percent": 8.333333333333325,
+          "baseline_mean_ns": 56.690633138020836,
+          "candidate_mean_ns": 58.865749782986114,
+          "baseline_p99_ns": 120,
+          "candidate_p99_ns": 130
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 2.862186562999991,
+          "p99_change_percent": 9.009009009009006,
+          "baseline_mean_ns": 55.71185980902778,
+          "candidate_mean_ns": 57.306437174479164,
+          "baseline_p99_ns": 111,
+          "candidate_p99_ns": 121
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 28,
+      "phase": "first_touch",
+      "dataset": "short4",
+      "operation": "predecessor",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 218.269775390625,
+          "p99_ns": 490
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 224.622802734375,
+          "p99_ns": 642
+        }
+      },
+      "mean_change_percent": 2.9106308156410243,
+      "p99_change_percent": 31.0204081632653,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 3.39987113881266,
+          "p99_change_percent": 21.23142250530785,
+          "baseline_mean_ns": 214.46891276041666,
+          "candidate_mean_ns": 221.76057942708334,
+          "baseline_p99_ns": 471,
+          "candidate_p99_ns": 571
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 2.4381377336005094,
+          "p99_change_percent": 48.92367906066537,
+          "baseline_mean_ns": 222.07063802083334,
+          "candidate_mean_ns": 227.48502604166666,
+          "baseline_p99_ns": 511,
+          "candidate_p99_ns": 761
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 116480,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 116480,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 28,
+      "phase": "warm",
+      "dataset": "short4",
+      "operation": "predecessor",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 164.22517903645834,
+          "p99_ns": 200
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 164.1999715169271,
+          "p99_ns": 200
+        }
+      },
+      "mean_change_percent": -0.015349363404049132,
+      "p99_change_percent": 0.0,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -0.5521725676768341,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 164.98659939236111,
+          "candidate_mean_ns": 164.07558865017361,
+          "baseline_p99_ns": 200,
+          "candidate_p99_ns": 200
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 0.5264749263515833,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 163.46375868055554,
+          "candidate_mean_ns": 164.32435438368054,
+          "baseline_p99_ns": 200,
+          "candidate_p99_ns": 200
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 116480,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 116480,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 29,
+      "phase": "first_touch",
+      "dataset": "short4",
+      "operation": "scan16",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 464.7665201822917,
+          "p99_ns": 891
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 463.580078125,
+          "p99_ns": 912
+        }
+      },
+      "mean_change_percent": -0.25527700593113156,
+      "p99_change_percent": 2.3569023569023573,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 0.450237438214951,
+          "p99_change_percent": 3.363228699551568,
+          "baseline_mean_ns": 466.3699544270833,
+          "candidate_mean_ns": 468.4697265625,
+          "baseline_p99_ns": 892,
+          "candidate_p99_ns": 922
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -0.9656763213214181,
+          "p99_change_percent": 3.401360544217691,
+          "baseline_mean_ns": 463.1630859375,
+          "candidate_mean_ns": 458.6904296875,
+          "baseline_p99_ns": 882,
+          "candidate_p99_ns": 912
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18380,
+        "alloc_requested_bytes": 1480770,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 116736,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 29,
+      "phase": "warm",
+      "dataset": "short4",
+      "operation": "scan16",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 426.02508544921875,
+          "p99_ns": 541
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 421.923102484809,
+          "p99_ns": 531
+        }
+      },
+      "mean_change_percent": -0.9628501007363011,
+      "p99_change_percent": -1.8484288354898348,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -0.31451679418601497,
+          "p99_change_percent": -1.814882032667875,
+          "baseline_mean_ns": 428.0534261067708,
+          "candidate_mean_ns": 426.7071261935764,
+          "baseline_p99_ns": 551,
+          "candidate_p99_ns": 541
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -1.61738647757651,
+          "p99_change_percent": -3.6968576709796697,
+          "baseline_mean_ns": 423.9967447916667,
+          "candidate_mean_ns": 417.1390787760417,
+          "baseline_p99_ns": 541,
+          "candidate_p99_ns": 521
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18380,
+        "alloc_requested_bytes": 1480770,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 116736,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 30,
+      "phase": "first_touch",
+      "dataset": "short4",
+      "operation": "get_hit",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 839.0420735677084,
+          "p99_ns": 1994
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 814.8505045572916,
+          "p99_ns": 2044
+        }
+      },
+      "mean_change_percent": -2.8832367020108163,
+      "p99_change_percent": 2.507522567703102,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -1.273299514527948,
+          "p99_change_percent": 4.012036108324968,
+          "baseline_mean_ns": 817.9055989583334,
+          "candidate_mean_ns": 807.4912109375,
+          "baseline_p99_ns": 1994,
+          "candidate_p99_ns": 2074
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -4.414054510015919,
+          "p99_change_percent": 0.4536290322580738,
+          "baseline_mean_ns": 860.1785481770834,
+          "candidate_mean_ns": 822.2097981770834,
+          "baseline_p99_ns": 1984,
+          "candidate_p99_ns": 1993
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 30,
+      "phase": "warm",
+      "dataset": "short4",
+      "operation": "get_hit",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 136.72916666666666,
+          "p99_ns": 280
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 136.7665812174479,
+          "p99_ns": 280
+        }
+      },
+      "mean_change_percent": 0.027363986553408104,
+      "p99_change_percent": 0.0,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 0.07297122041596271,
+          "p99_change_percent": -0.3558718861209953,
+          "baseline_mean_ns": 137.02545844184027,
+          "candidate_mean_ns": 137.12544759114584,
+          "baseline_p99_ns": 281,
+          "candidate_p99_ns": 280
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -0.01844133810348092,
+          "p99_change_percent": 3.3210332103321027,
+          "baseline_mean_ns": 136.43287489149304,
+          "candidate_mean_ns": 136.40771484375,
+          "baseline_p99_ns": 271,
+          "candidate_p99_ns": 280
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 31,
+      "phase": "first_touch",
+      "dataset": "short4",
+      "operation": "get_miss",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 930.707275390625,
+          "p99_ns": 2064
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 912.8758951822916,
+          "p99_ns": 2114
+        }
+      },
+      "mean_change_percent": -1.915895650525501,
+      "p99_change_percent": 2.422480620155043,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -12.240452287306702,
+          "p99_change_percent": -8.276533592989288,
+          "baseline_mean_ns": 954.7247721354166,
+          "candidate_mean_ns": 837.8621419270834,
+          "baseline_p99_ns": 2054,
+          "candidate_p99_ns": 1884
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 8.95563970214166,
+          "p99_change_percent": 8.236434108527124,
+          "baseline_mean_ns": 906.6897786458334,
+          "candidate_mean_ns": 987.8896484375,
+          "baseline_p99_ns": 2064,
+          "candidate_p99_ns": 2234
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 31,
+      "phase": "warm",
+      "dataset": "short4",
+      "operation": "get_miss",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 147.65243191189236,
+          "p99_ns": 301
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 144.15375434027777,
+          "p99_ns": 290
+        }
+      },
+      "mean_change_percent": -2.3695360288426115,
+      "p99_change_percent": -3.6544850498338888,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -2.478936619760297,
+          "p99_change_percent": -3.6544850498338888,
+          "baseline_mean_ns": 147.87075466579861,
+          "candidate_mean_ns": 144.20513237847223,
+          "baseline_p99_ns": 301,
+          "candidate_p99_ns": 290
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -2.259811433684311,
+          "p99_change_percent": -3.0000000000000027,
+          "baseline_mean_ns": 147.43410915798611,
+          "candidate_mean_ns": 144.10237630208334,
+          "baseline_p99_ns": 300,
+          "candidate_p99_ns": 291
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 32,
+      "phase": "first_touch",
+      "dataset": "short4",
+      "operation": "predecessor",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 1514.3685709635417,
+          "p99_ns": 3016
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 1482.3782552083333,
+          "p99_ns": 3316
+        }
+      },
+      "mean_change_percent": -2.1124524351990526,
+      "p99_change_percent": 9.946949602122013,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -9.413349881642496,
+          "p99_change_percent": 0.6384408602150504,
+          "baseline_mean_ns": 1494.7293294270833,
+          "candidate_mean_ns": 1354.0252278645833,
+          "baseline_p99_ns": 2976,
+          "candidate_p99_ns": 2995
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 5.001504518223121,
+          "p99_change_percent": 15.349593495934965,
+          "baseline_mean_ns": 1534.0078125,
+          "candidate_mean_ns": 1610.7312825520833,
+          "baseline_p99_ns": 3075,
+          "candidate_p99_ns": 3547
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 153344,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 153344,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 32,
+      "phase": "warm",
+      "dataset": "short4",
+      "operation": "predecessor",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 343.83551025390625,
+          "p99_ns": 521
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 341.4076877170139,
+          "p99_ns": 501
+        }
+      },
+      "mean_change_percent": -0.7060999997061113,
+      "p99_change_percent": -3.8387715930902067,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -2.067921509822246,
+          "p99_change_percent": -12.939001848428832,
+          "baseline_mean_ns": 345.77472601996527,
+          "candidate_mean_ns": 338.62437608506946,
+          "baseline_p99_ns": 541,
+          "candidate_p99_ns": 471
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 0.671169854165421,
+          "p99_change_percent": 6.10997963340123,
+          "baseline_mean_ns": 341.89629448784723,
+          "candidate_mean_ns": 344.1909993489583,
+          "baseline_p99_ns": 491,
+          "candidate_p99_ns": 521
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 153344,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 153344,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 33,
+      "phase": "first_touch",
+      "dataset": "short4",
+      "operation": "scan16",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 1765.2470703125,
+          "p99_ns": 3597
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 1962.1984049479167,
+          "p99_ns": 3847
+        }
+      },
+      "mean_change_percent": 11.157154029466865,
+      "p99_change_percent": 6.950236308034463,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 12.566519533426712,
+          "p99_change_percent": -0.8203445447087732,
+          "baseline_mean_ns": 1661.3815104166667,
+          "candidate_mean_ns": 1870.1593424479167,
+          "baseline_p99_ns": 3657,
+          "candidate_p99_ns": 3627
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 9.904423855878019,
+          "p99_change_percent": 12.324849871318278,
+          "baseline_mean_ns": 1869.1126302083333,
+          "candidate_mean_ns": 2054.2374674479165,
+          "baseline_p99_ns": 3497,
+          "candidate_p99_ns": 3928
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18406,
+        "alloc_requested_bytes": 1585081,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 153600,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 33,
+      "phase": "warm",
+      "dataset": "short4",
+      "operation": "scan16",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 616.1008978949653,
+          "p99_ns": 791
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 623.3913235134548,
+          "p99_ns": 801
+        }
+      },
+      "mean_change_percent": 1.1833168306358166,
+      "p99_change_percent": 1.2642225031605614,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 0.7631611510034109,
+          "p99_change_percent": 3.8412291933418663,
+          "baseline_mean_ns": 620.193115234375,
+          "candidate_mean_ns": 624.9261881510416,
+          "baseline_p99_ns": 781,
+          "candidate_p99_ns": 811
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 1.6090912814133773,
+          "p99_change_percent": -1.1235955056179803,
+          "baseline_mean_ns": 612.0086805555555,
+          "candidate_mean_ns": 621.856458875868,
+          "baseline_p99_ns": 801,
+          "candidate_p99_ns": 792
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18406,
+        "alloc_requested_bytes": 1585081,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 153600,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 34,
+      "phase": "first_touch",
+      "dataset": "dispersed0",
+      "operation": "get_hit",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 127.41853841145833,
+          "p99_ns": 321
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 131.09798177083334,
+          "p99_ns": 330
+        }
+      },
+      "mean_change_percent": 2.887682911173717,
+      "p99_change_percent": 2.8037383177569986,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 1.274057363355685,
+          "p99_change_percent": -5.8651026392961825,
+          "baseline_mean_ns": 129.57649739583334,
+          "candidate_mean_ns": 131.22737630208334,
+          "baseline_p99_ns": 341,
+          "candidate_p99_ns": 321
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 4.556906760776047,
+          "p99_change_percent": 16.8384879725086,
+          "baseline_mean_ns": 125.26057942708333,
+          "candidate_mean_ns": 130.96858723958334,
+          "baseline_p99_ns": 291,
+          "candidate_p99_ns": 340
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 34,
+      "phase": "warm",
+      "dataset": "dispersed0",
+      "operation": "get_hit",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 51.714375813802086,
+          "p99_ns": 110
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 59.65399169921875,
+          "p99_ns": 120
+        }
+      },
+      "mean_change_percent": 15.352821648671355,
+      "p99_change_percent": 9.090909090909083,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 14.821841954255333,
+          "p99_change_percent": 9.090909090909083,
+          "baseline_mean_ns": 51.835001627604164,
+          "candidate_mean_ns": 59.517903645833336,
+          "baseline_p99_ns": 110,
+          "candidate_p99_ns": 120
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 15.8862841964466,
+          "p99_change_percent": 9.090909090909083,
+          "baseline_mean_ns": 51.59375,
+          "candidate_mean_ns": 59.790079752604164,
+          "baseline_p99_ns": 110,
+          "candidate_p99_ns": 120
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 35,
+      "phase": "first_touch",
+      "dataset": "dispersed0",
+      "operation": "get_miss",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 139.83146158854166,
+          "p99_ns": 331
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 144.86246744791666,
+          "p99_ns": 371
+        }
+      },
+      "mean_change_percent": 3.5979069389826535,
+      "p99_change_percent": 12.084592145015115,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 4.840932629810535,
+          "p99_change_percent": 12.461059190031154,
+          "baseline_mean_ns": 139.70491536458334,
+          "candidate_mean_ns": 146.46793619791666,
+          "baseline_p99_ns": 321,
+          "candidate_p99_ns": 361
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 2.35712906819614,
+          "p99_change_percent": 9.117647058823518,
+          "baseline_mean_ns": 139.9580078125,
+          "candidate_mean_ns": 143.25699869791666,
+          "baseline_p99_ns": 340,
+          "candidate_p99_ns": 371
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 35,
+      "phase": "warm",
+      "dataset": "dispersed0",
+      "operation": "get_miss",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 55.557230631510414,
+          "p99_ns": 111
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 60.135959201388886,
+          "p99_ns": 130
+        }
+      },
+      "mean_change_percent": 8.241462934406151,
+      "p99_change_percent": 17.117117117117118,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 8.895895328284919,
+          "p99_change_percent": 16.666666666666675,
+          "baseline_mean_ns": 55.58881293402778,
+          "candidate_mean_ns": 60.533935546875,
+          "baseline_p99_ns": 120,
+          "candidate_p99_ns": 140
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 7.586286074412607,
+          "p99_change_percent": 9.009009009009006,
+          "baseline_mean_ns": 55.52564832899306,
+          "candidate_mean_ns": 59.73798285590278,
+          "baseline_p99_ns": 111,
+          "candidate_p99_ns": 121
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 36,
+      "phase": "first_touch",
+      "dataset": "dispersed0",
+      "operation": "predecessor",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 228.24275716145834,
+          "p99_ns": 721
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 222.00504557291666,
+          "p99_ns": 500
+        }
+      },
+      "mean_change_percent": -2.732928600283746,
+      "p99_change_percent": -30.651872399445214,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 2.564841995036904,
+          "p99_change_percent": -10.664335664335667,
+          "baseline_mean_ns": 217.29378255208334,
+          "candidate_mean_ns": 222.86702473958334,
+          "baseline_p99_ns": 572,
+          "candidate_p99_ns": 511
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -7.545689489750229,
+          "p99_change_percent": -41.41291108404385,
+          "baseline_mean_ns": 239.19173177083334,
+          "candidate_mean_ns": 221.14306640625,
+          "baseline_p99_ns": 821,
+          "candidate_p99_ns": 481
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 116480,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 116480,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 36,
+      "phase": "warm",
+      "dataset": "dispersed0",
+      "operation": "predecessor",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 164.47777642144098,
+          "p99_ns": 200
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 165.15824381510416,
+          "p99_ns": 201
+        }
+      },
+      "mean_change_percent": 0.4137138818800734,
+      "p99_change_percent": 0.49999999999998934,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 1.088520145172378,
+          "p99_change_percent": 0.49999999999998934,
+          "baseline_mean_ns": 164.11433919270834,
+          "candidate_mean_ns": 165.9007568359375,
+          "baseline_p99_ns": 200,
+          "candidate_p99_ns": 201
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -0.25811679402321097,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 164.84121365017361,
+          "candidate_mean_ns": 164.41573079427084,
+          "baseline_p99_ns": 200,
+          "candidate_p99_ns": 200
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 116480,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 116480,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 37,
+      "phase": "first_touch",
+      "dataset": "dispersed0",
+      "operation": "scan16",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 473.013916015625,
+          "p99_ns": 931
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 465.7066243489583,
+          "p99_ns": 862
+        }
+      },
+      "mean_change_percent": -1.5448365088745697,
+      "p99_change_percent": -7.411385606874332,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -2.041071132726735,
+          "p99_change_percent": -9.558823529411764,
+          "baseline_mean_ns": 474.5086263020833,
+          "candidate_mean_ns": 464.8235677083333,
+          "baseline_p99_ns": 952,
+          "candidate_p99_ns": 861
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -1.0454557692852084,
+          "p99_change_percent": -5.482456140350878,
+          "baseline_mean_ns": 471.5192057291667,
+          "candidate_mean_ns": 466.5896809895833,
+          "baseline_p99_ns": 912,
+          "candidate_p99_ns": 862
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18380,
+        "alloc_requested_bytes": 1480770,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 116736,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 37,
+      "phase": "warm",
+      "dataset": "dispersed0",
+      "operation": "scan16",
+      "workload": "overwrite",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 425.419426812066,
+          "p99_ns": 541
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 422.52020263671875,
+          "p99_ns": 541
+        }
+      },
+      "mean_change_percent": -0.6814978331085908,
+      "p99_change_percent": 0.0,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -0.7796921410317736,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 425.5464816623264,
+          "candidate_mean_ns": 422.22852918836804,
+          "baseline_p99_ns": 551,
+          "candidate_p99_ns": 551
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -0.5832448546617353,
+          "p99_change_percent": -1.8484288354898348,
+          "baseline_mean_ns": 425.29237196180554,
+          "candidate_mean_ns": 422.81187608506946,
+          "baseline_p99_ns": 541,
+          "candidate_p99_ns": 531
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18380,
+        "alloc_requested_bytes": 1480770,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 116736,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 38,
+      "phase": "first_touch",
+      "dataset": "dispersed0",
+      "operation": "get_hit",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 760.785888671875,
+          "p99_ns": 1924
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 739.8685709635416,
+          "p99_ns": 1843
+        }
+      },
+      "mean_change_percent": -2.7494355533919435,
+      "p99_change_percent": -4.209979209979209,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -6.332403651115614,
+          "p99_change_percent": -7.128309572301427,
+          "baseline_mean_ns": 772.8802083333334,
+          "candidate_mean_ns": 723.9383138020834,
+          "baseline_p99_ns": 1964,
+          "candidate_p99_ns": 1824
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 0.949290657029489,
+          "p99_change_percent": -0.05336179295624133,
+          "baseline_mean_ns": 748.6915690104166,
+          "candidate_mean_ns": 755.798828125,
+          "baseline_p99_ns": 1874,
+          "candidate_p99_ns": 1873
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 38,
+      "phase": "warm",
+      "dataset": "dispersed0",
+      "operation": "get_hit",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 140.1707560221354,
+          "p99_ns": 280
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 137.073974609375,
+          "p99_ns": 281
+        }
+      },
+      "mean_change_percent": -2.2092920810610206,
+      "p99_change_percent": 0.3571428571428559,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -0.8437224395189569,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 138.42723253038196,
+          "candidate_mean_ns": 137.25929090711804,
+          "baseline_p99_ns": 280,
+          "candidate_p99_ns": 280
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -3.5413076256114784,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 141.91427951388889,
+          "candidate_mean_ns": 136.88865831163196,
+          "baseline_p99_ns": 281,
+          "candidate_p99_ns": 281
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 39,
+      "phase": "first_touch",
+      "dataset": "dispersed0",
+      "operation": "get_miss",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 936.1720377604166,
+          "p99_ns": 2234
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 900.8809407552084,
+          "p99_ns": 2053
+        }
+      },
+      "mean_change_percent": -3.769723467668862,
+      "p99_change_percent": -8.102059086839752,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 1.6351965067673113,
+          "p99_change_percent": -2.4703557312252933,
+          "baseline_mean_ns": 851.1993815104166,
+          "candidate_mean_ns": 865.1181640625,
+          "baseline_p99_ns": 2024,
+          "candidate_p99_ns": 1974
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -8.27512271846932,
+          "p99_change_percent": -12.479201331114808,
+          "baseline_mean_ns": 1021.1446940104166,
+          "candidate_mean_ns": 936.6437174479166,
+          "baseline_p99_ns": 2404,
+          "candidate_p99_ns": 2104
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 39,
+      "phase": "warm",
+      "dataset": "dispersed0",
+      "operation": "get_miss",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 145.60217963324652,
+          "p99_ns": 291
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 143.72424994574652,
+          "p99_ns": 291
+        }
+      },
+      "mean_change_percent": -1.2897675654514718,
+      "p99_change_percent": 0.0,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -1.1104878212691016,
+          "p99_change_percent": -0.3436426116838476,
+          "baseline_mean_ns": 145.31467013888889,
+          "candidate_mean_ns": 143.70096842447916,
+          "baseline_p99_ns": 291,
+          "candidate_p99_ns": 290
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -1.4683406849380631,
+          "p99_change_percent": 3.092783505154628,
+          "baseline_mean_ns": 145.88968912760416,
+          "candidate_mean_ns": 143.74753146701389,
+          "baseline_p99_ns": 291,
+          "candidate_p99_ns": 300
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 0,
+        "alloc_requested_bytes": 0,
+        "dealloc_calls": 0,
+        "dealloc_layout_bytes": 0,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 40,
+      "phase": "first_touch",
+      "dataset": "dispersed0",
+      "operation": "predecessor",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 1599.9708658854167,
+          "p99_ns": 3276
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 1420.6455078125,
+          "p99_ns": 2956
+        }
+      },
+      "mean_change_percent": -11.208038964739453,
+      "p99_change_percent": -9.768009768009767,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -18.743197836412495,
+          "p99_change_percent": -13.79804934021801,
+          "baseline_mean_ns": 1718.9091796875,
+          "candidate_mean_ns": 1396.7306315104167,
+          "baseline_p99_ns": 3486,
+          "candidate_p99_ns": 3005
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": -2.462617578354065,
+          "p99_change_percent": -1.6582064297800292,
+          "baseline_mean_ns": 1481.0325520833333,
+          "candidate_mean_ns": 1444.5603841145833,
+          "baseline_p99_ns": 2955,
+          "candidate_p99_ns": 2906
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 153344,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 153344,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 40,
+      "phase": "warm",
+      "dataset": "dispersed0",
+      "operation": "predecessor",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 343.87360297309027,
+          "p99_ns": 531
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 346.61654324001734,
+          "p99_ns": 551
+        }
+      },
+      "mean_change_percent": 0.7976594432407502,
+      "p99_change_percent": 3.766478342749524,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": 0.558094587059621,
+          "p99_change_percent": 0.0,
+          "baseline_mean_ns": 346.1936848958333,
+          "candidate_mean_ns": 348.1257731119792,
+          "baseline_p99_ns": 551,
+          "candidate_p99_ns": 551
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 1.0404788996991376,
+          "p99_change_percent": 7.984031936127733,
+          "baseline_mean_ns": 341.55352105034723,
+          "candidate_mean_ns": 345.10731336805554,
+          "baseline_p99_ns": 501,
+          "candidate_p99_ns": 541
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 1024,
+        "alloc_requested_bytes": 153344,
+        "dealloc_calls": 1024,
+        "dealloc_layout_bytes": 153344,
+        "realloc_calls": 0,
+        "realloc_requested_bytes": 0,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 41,
+      "phase": "first_touch",
+      "dataset": "dispersed0",
+      "operation": "scan16",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 12288,
+          "mean_ns": 1966.6414388020833,
+          "p99_ns": 3797
+        },
+        "candidate": {
+          "samples": 12288,
+          "mean_ns": 1930.9549967447917,
+          "p99_ns": 3717
+        }
+      },
+      "mean_change_percent": -1.8145881274132414,
+      "p99_change_percent": -2.10692652093758,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -5.4429578413180195,
+          "p99_change_percent": -11.262085184217408,
+          "baseline_mean_ns": 2011.0651041666667,
+          "candidate_mean_ns": 1901.6036783854167,
+          "baseline_p99_ns": 3827,
+          "candidate_p99_ns": 3396
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 1.9814894125421034,
+          "p99_change_percent": 5.934718100890213,
+          "baseline_mean_ns": 1922.2177734375,
+          "candidate_mean_ns": 1960.3063151041667,
+          "baseline_p99_ns": 3707,
+          "candidate_p99_ns": 3927
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18406,
+        "alloc_requested_bytes": 1585081,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 153600,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    },
+    {
+      "case": 41,
+      "phase": "warm",
+      "dataset": "dispersed0",
+      "operation": "scan16",
+      "workload": "unique_insert",
+      "pinned": false,
+      "pooled": {
+        "baseline": {
+          "samples": 147456,
+          "mean_ns": 625.3016696506077,
+          "p99_ns": 882
+        },
+        "candidate": {
+          "samples": 147456,
+          "mean_ns": 626.1693996853298,
+          "p99_ns": 881
+        }
+      },
+      "mean_change_percent": 0.13876982532399218,
+      "p99_change_percent": -0.11337868480725266,
+      "orders": [
+        {
+          "baseline_order": 0,
+          "candidate_order": 1,
+          "mean_change_percent": -2.4752645109250127,
+          "p99_change_percent": -5.320304017372424,
+          "baseline_mean_ns": 635.2380777994791,
+          "candidate_mean_ns": 619.5142550998264,
+          "baseline_p99_ns": 921,
+          "candidate_p99_ns": 872
+        },
+        {
+          "baseline_order": 3,
+          "candidate_order": 2,
+          "mean_change_percent": 2.8372226808009327,
+          "p99_change_percent": 6.016847172081818,
+          "baseline_mean_ns": 615.3652615017361,
+          "candidate_mean_ns": 632.8245442708334,
+          "baseline_p99_ns": 831,
+          "candidate_p99_ns": 881
+        }
+      ],
+      "allocation_counts_per_pass": {
+        "alloc_calls": 18406,
+        "alloc_requested_bytes": 1585081,
+        "dealloc_calls": 1536,
+        "dealloc_layout_bytes": 153600,
+        "realloc_calls": 1022,
+        "realloc_requested_bytes": 588672,
+        "windows": 512
+      },
+      "requested_live_bytes": null
+    }
+  ],
+  "prefix_states": 3816,
+  "old_views": 1908,
+  "terminal_processes": 338,
+  "allocation_and_live_bytes_identical": true,
+  "predeclared_gate": {
+    "original_material_write_gain": false,
+    "all_write_order_means_better": true,
+    "reads_within_two_percent": false,
+    "advance": false
+  }
+}

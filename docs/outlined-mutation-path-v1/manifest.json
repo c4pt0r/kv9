@@ -1,0 +1,286 @@
+{
+  "complete": true,
+  "archive_sha256": "7b17d2f6bfc8a8a487f71b9b5020cbde0b888cdfc94a16b02078e229348a1c7c",
+  "archive_bytes": 35078306,
+  "members": 2805,
+  "expanded_bytes": 167124238,
+  "all_members_readback_verified": true,
+  "excluded": [
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/bench-build-baseline/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/bench-build-baseline/counting",
+      "bytes": 1289656,
+      "sha256": "88ec6bf24e0d9b1fa58e824bdcacb1896df967d2500517fe8adf934bf26f450c"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/bench-build-baseline/timing",
+      "bytes": 1206784,
+      "sha256": "4d9d79a04d6f8530ad9ca46e3395c638c927bd8e821dc764443ce82c9a6f7144"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/bench-build-candidate/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/bench-build-candidate/counting",
+      "bytes": 1289136,
+      "sha256": "aad7afd499f0f490cb7cdd2c7aa637c2904bb75f433c0e357ac0707e24447239"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/bench-build-candidate/timing",
+      "bytes": 1206232,
+      "sha256": "26901a461b7bc57e2a81fb8c912706f11364d728d073f9918e478d973eab2fdd"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/build-baseline/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/build-codegen-candidate/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/build-codegen-candidate/resident-selected-profile",
+      "bytes": 1096904,
+      "sha256": "5f70da2eeb3052d8af2789d85daef21a5a5739ef3302ff690d3bcbef2bad3306"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/groups.bin",
+      "bytes": 16519240,
+      "sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/proof/control-custom-axiom/Mutation.olean",
+      "bytes": 52000,
+      "sha256": "78c1ac60a41b266b1079cf037972bbfa7b6f0f87e941ef4065f2b77d419102f5"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/proof/dependency/WriteBack.olean",
+      "bytes": 238232,
+      "sha256": "847f82ae08f64de4c8f920b157d2dc79c238abacc12583a4635e8f6389a7774e"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/proof/positive/Mutation.olean",
+      "bytes": 51296,
+      "sha256": "6654a66a8c9169205f0c36a6c522dbe7e25727c2005fa0c0bbaa69e079f83b33"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/smoke-candidate-overwrite-pinned/go",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/smoke-candidate-overwrite-unpinned/go",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/smoke-candidate-unique_insert-pinned/go",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/smoke-candidate-unique_insert-unpinned/go",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/tests-candidate-archery/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/tests-candidate-archery/tests",
+      "bytes": 10686200,
+      "sha256": "263c2b23fda58baa42148bd670c99fafe31a55076908bb0c7fa18e4f0d865fac"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/tests-candidate-rpds/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/named-mutation-adapter-20260916-first/tests-candidate-rpds/tests",
+      "bytes": 35038496,
+      "sha256": "00291c4e9c0a7a77084f61537eb8eb1e7a4d44684ad441cfd92cc4c787b4d3c5"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/bench-build-baseline/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/bench-build-baseline/counting",
+      "bytes": 1289744,
+      "sha256": "9c8dcdc2541f4ba55c422c267b77ce876b9a5ee82ef77efd7e3e7bf7e025107a"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/bench-build-baseline/timing",
+      "bytes": 1206896,
+      "sha256": "f82b7e1af1fbd5e14b72966d3970610c23b4c51d61eacbc806ff1511a48351ba"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/bench-build-candidate/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/bench-build-candidate/counting",
+      "bytes": 1289376,
+      "sha256": "d7f9a69293ad951011be5472688c4beb7c7940fed8858af62b81b850bc552bac"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/bench-build-candidate/timing",
+      "bytes": 1206520,
+      "sha256": "9e83671586e8d77d030ca0b51ccc7dfcfc888df4ba6481d03c04b157af6a9182"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/build-codegen-candidate/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/build-codegen-candidate/resident-selected-profile",
+      "bytes": 1097568,
+      "sha256": "c9a3b9a837950d6e95c90177cecde4683f204e7dd8c1ed070aa48cbcc287ab7e"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/build-qualified-candidate/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/build-qualified-candidate/resident-selected-profile",
+      "bytes": 1097568,
+      "sha256": "c9a3b9a837950d6e95c90177cecde4683f204e7dd8c1ed070aa48cbcc287ab7e"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/candidate-triomphe/.editorconfig",
+      "bytes": 234,
+      "sha256": "c271df5925da3d5d6ccfe94d6c6e7f3be75a3d64ba782e9bf47d6e3a20774ada"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/candidate-triomphe/.gitattributes",
+      "bytes": 14,
+      "sha256": "51812aaf7ef88de057952177d9176e587321322618eaf909167ff50a414b07a5"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/candidate-triomphe/.github/workflows/rustfmt.yml",
+      "bytes": 170,
+      "sha256": "5ef6438aa9ae8ccbad8b77f9370d78e00ab92c260c583d2b8e233f4c00d31e74"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/candidate-triomphe/.github/workflows/tests.yml",
+      "bytes": 2618,
+      "sha256": "28abdd9550f421a1ee9eaa8b71e91a9360f94727cdcfdf1026f6633a1291d1e3"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/candidate-triomphe/.gitignore",
+      "bytes": 30,
+      "sha256": "6b937008e0a58a438c32574627db6961a4d2aff4bf5c703d4e45cb56ef3b168a"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/continuation.json",
+      "bytes": 514,
+      "sha256": "97f43a0b52c5200e2c30b648025fef3d663258ab7d63aa97aa54188bfd8ceea5"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/issue9-before.json",
+      "bytes": 65416,
+      "sha256": "efccf9bb5d87a67df44e35880bbdc2f406221fa704631680f903c4061452ddaf"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/packet-result.json",
+      "bytes": 12526,
+      "sha256": "16a975d990c131d31021936787bd96504f5899104876e566e2d0f405ce723177"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/proof/control-custom-axiom/Outline.olean",
+      "bytes": 80120,
+      "sha256": "79ea28b952db4247e3d93b4e8c40553a91b60c5116d3d4f700edc22be393f96f"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/proof/dependency/WriteBack.olean",
+      "bytes": 238232,
+      "sha256": "847f82ae08f64de4c8f920b157d2dc79c238abacc12583a4635e8f6389a7774e"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/proof/positive/Outline.olean",
+      "bytes": 82152,
+      "sha256": "cf9c5c2f33573b4b96ffbc7cb8d6ab5ff3d03d44dbecefe0e6c65d7e81991279"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/run-progress.json",
+      "bytes": 367392,
+      "sha256": "01394474de4d382455d6096a522a089d28ea7870582d4e41b23adc6a97ede0fd"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/smoke-candidate-overwrite-pinned/go",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/smoke-candidate-overwrite-unpinned/go",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/smoke-candidate-unique_insert-pinned/go",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/smoke-candidate-unique_insert-unpinned/go",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/tests-candidate-archery/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/tests-candidate-archery/tests",
+      "bytes": 10713184,
+      "sha256": "ed38e6aabbe651f0b23ef994086a01a42e49f973e37e5a316a8d24e66aa75936"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/tests-candidate-rpds/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/tests-candidate-rpds/tests",
+      "bytes": 35069104,
+      "sha256": "2bf5f37441fa1ca9cc25bcc566446749b596bef95ee138fbaa16b77ae8d4c492"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/tests-triomphe-runtime/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/tests-triomphe-runtime/tests",
+      "bytes": 8692760,
+      "sha256": "31f722ebfb86cc28a1b256baf32f7ce4a40fabefc7227c0fda6f5fce855fc0e6"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/tests-triomphe-stable/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first/tests-triomphe-stable/tests",
+      "bytes": 9290376,
+      "sha256": "e1d5c6bfca77934cde573628f3234a08af1635006c1ba1d3f17e43b814703293"
+    }
+  ],
+  "scope": "Includes both qualified and failed-attempt records. Executables and compiled Lean artifacts remain in the original /mnt/data roots, pinned by retained identities. GitHub body snapshots and changing continuation/progress records are excluded. The named groups.bin is byte-identical to outlined/groups.bin and is included only once; restore that copy when reproducing."
+}

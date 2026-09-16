@@ -1,0 +1,24 @@
+{
+  "complete": true,
+  "dependency_tests": [
+    54,
+    58,
+    58,
+    276
+  ],
+  "guard_theorems": 18,
+  "extraction_theorems": 8,
+  "rejected_controls": 9,
+  "engine_smokes": 4,
+  "prefix_states": 424,
+  "old_views": 212,
+  "mutations_after_validation": 400384,
+  "production_changed": false,
+  "evidence": {
+    "tests-summary-corrected.json": "1e7e333769bbb85c571addf69327b885fa1275e62b76a48df9e312ed83813228",
+    "proof/result.json": "33fc8dadfed9e11e812f9ceb1f88aff3a4f64c8a20eaff72fed84bbe1a45ac44",
+    "qualified-codegen-build-summary.json": "eb8302c34b0a98693a2b7cfde73a5a5ba5b272acf1c1cd785e10bcd79a14f953",
+    "release-smokes-summary.json": "4654ae4491e703f804f62ad97649cb56451ab6f4f4e553142c4ece5d80c6157b",
+    "insert-disassembly.txt": "2ce0cc293e64e285cad448c754158bf4853d4ab542a395df95c4c80f7f051c0a"
+  }
+}

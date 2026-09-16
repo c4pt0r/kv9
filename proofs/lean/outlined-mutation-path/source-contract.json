@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "guard_model_sha256": "db85f5fd4e95bbb74e3dee5f0159cfd66c04ae3c3260d21c820ef8d67821741b",
+  "proof_sha256": "076747e8d5a14a3fc8c2d6d0d35b97044d11043c4dfa4003f76e88ca50100de2",
+  "sources": {
+    "baseline-triomphe/src/arc.rs": "b0d62f8dc704fe63cc7e67cc4954926d0209006db63366e0065613b056e2ca32",
+    "candidate-triomphe/src/arc.rs": "c729fe97fff2d063d3166b90e8d186a0765bbaf1c10427fbb6b17f3a4a36353d",
+    "candidate-archery/src/shared_pointer/kind/arct/mod.rs": "6a56f178124786c7511594a85348c66e7e2ab4391a8f138be845434418b8c833",
+    "candidate-archery/src/shared_pointer/kind/erased_ptr.rs": "87876ce3636a9f6a9182243820f4a50d99c3f57d1dff66b8737c1fc2663c1905",
+    "candidate-archery/src/shared_pointer/kind/erased_ptr/callback_tests.rs": "61dc8c2ae1ddbe37a18f8c1b73732b03bd080db855a1ecfbed3775efaeffcbef"
+  },
+  "premises": [
+    "Original Arc uniqueness, mutable-access, clone and reference-count contracts.",
+    "Same single Acquire uniqueness observation and exact clone/allocation/replacement statement; no extra reference operation.",
+    "Correct Rust/compiler/provenance/ordinary-unwind semantics; pure mutable-reference exposure after successful replacement.",
+    "This proof covers data, owner/heap, return and unwind behavior. Stack/backtrace/code-layout identities are not its observables.",
+    "The source mapping is reviewed, not a verified extraction of Rust semantics."
+  ]
+}

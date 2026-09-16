@@ -1,0 +1,20 @@
+{
+  "complete": true,
+  "target_call_removed": true,
+  "timing_authorized": true,
+  "qualified_binary_sha256": "c9a3b9a837950d6e95c90177cecde4683f204e7dd8c1ed070aa48cbcc287ab7e",
+  "insert_symbol_bytes": 1161,
+  "shared_clone_helper_bytes": 397,
+  "finding": "The unique-owner branch loads and compares the reference count directly and falls through without the mutation callback. The shared branch at 0x3ac42 calls through GOT 0xe12a8, whose relocation resolves to the clone helper at 0x3ddd0. This permits component timing only.",
+  "unique_branch": "3a8d7:\t48 8b 40 f8          \tmov    -0x8(%rax),%rax\n   3a8db:\t48 83 f8 01          \tcmp    $0x1,%rax\n   3a8df:\t0f 85 5d 03 00 00    \tjne    3ac42 <rpds::map::red_black_tree_map::Node<K,V,P>::insert::ins+0x3a2>\n   3a8e5:\t48 8b 44 24 08       \tmov    0x8(%rsp),%rax\n   3a8ea:\t4c 8b 6c 24 10       \tmov    0x10(%rsp),%r13\n   3a8ef:\t4d 8d 75 08          \tlea    0x8(%r13),%r14\n   3a8f3:\t4c 89 30             \tmov    %r14,(%rax)\n   ",
+  "assembly_sha256": "2ce0cc293e64e285cad448c754158bf4853d4ab542a395df95c4c80f7f051c0a",
+  "relocations_sha256": "ffa52805f7d6df3bc69789db0d3447d5338a214f60b96333d7fd97238f4206a3",
+  "timing_executable": {
+    "sha256": "9e83671586e8d77d030ca0b51ccc7dfcfc888df4ba6481d03c04b157af6a9182",
+    "insert_bytes": 1149,
+    "clone_helper_bytes": 384,
+    "unique_branch": "5cc87:\t48 8b 40 f8          \tmov    -0x8(%rax),%rax\n   5cc8b:\t48 83 f8 01          \tcmp    $0x1,%rax\n   5cc8f:\t0f 85 52 03 00 00    \tjne    5cfe7 <rpds::map::red_black_tree_map::Node<K,V,P>::insert::ins+0x397>\n   5cc95:\t48 8b 44 24 08       \tmov    0x8(%rsp),%rax\n   5cc9a:\t4c 8b 6c 24 10       \tmov    0x10(%rsp),%r13\n   5cc9f:\t4d 8d 75 08          \tlea    0x8(%r13),%r14\n   5cca3:\t4c 89 30             \tmov    %r14,(%rax)\n   ",
+    "assembly_sha256": "52439e036db470532a1125773c9b7ebf7b8a948a9402451fc78665c2815bafa7",
+    "shared_call_target": "0x61ff0"
+  }
+}
