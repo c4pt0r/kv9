@@ -1,0 +1,18 @@
+{
+  "status": "Prospective source/proof/codegen qualification only; not built or timed",
+  "question": "Does the qualified shared-owner clone extraction remove unique-path work when archery retains its original pointer callback?",
+  "changed_variable": "Patch only triomphe clone_shared_for_mutation/make_mut, starting from production archery/rpds. The prior combined candidate patched archery as_ptr too. No compiler-alignment change, engine rewrite or runtime promotion.",
+  "prior_work_checked": [
+    "docs/PERFORMANCE-EXPERIMENT-INDEX.md",
+    "git log --all --oneline --regexp-ignore-case --grep=outline|mutation path|shared clone|triomphe|owned buffer -25"
+  ],
+  "qualification": [
+    "Bind exact baseline/candidate sources and registry checksums; prove original archery is unchanged and only the qualified triomphe extraction differs.",
+    "Review conditional extraction proof correspondence, same one uniqueness observation, clone/assignment order, no added unsafe expression or reference-count operation. Retain explicit Rust/compiler premises.",
+    "Inspect ordinary-release MemEngine insertion path before timing. Stop if the unique-owner branch still contains equivalent out-of-line mutation work; do not run another named-adapter-style no-op.",
+    "Validate dependency behavior, ordered engine states, exact applied positions, all CFs and old snapshots before declaring any performance grid.",
+    "Only if qualified, predeclare one bounded paired component screen with separate allocation counting, owned/resident read scopes and original material/read requirements; no repeat of existing combined-candidate grids."
+  ],
+  "held": "Combined outlined candidate and original failed gate remain held. Already rejected owned-buffer removal, coalescing, borrowed upsert and packed-prefix variants are not repeated.",
+  "promotion": "Requires material matched database benefit, full local correctness, ordinary recovery, actual Chaos Mesh and matched three-copy Redis throughput/latency. None of those gates are supplied by this engine-only diagnostic."
+}

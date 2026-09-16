@@ -1,0 +1,32 @@
+{
+  "complete": true,
+  "archive_sha256": "52115914bcf5fe9584eb63505493c81d603dd6da4abbd16ed99a95cbf6926fd3",
+  "members": 648,
+  "expanded_bytes": 56317582,
+  "compressed_bytes": 8358504,
+  "member_readback": true,
+  "excluded": [
+    "groups.bin (referenced from prior packet)",
+    "copied timing ELFs (retained locally with exact hashes)",
+    "GitHub payloads and mutable continuation/progress",
+    "abandoned draft planning"
+  ],
+  "external": {
+    "corpus": "../outlined-mutation-path-v1/evidence.tar.gz:outlined/groups.bin",
+    "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+    "qualification": "../outlined-mutation-path-v1/evidence.tar.gz:outlined/ dependency, proof and qualification trees"
+  },
+  "local_root": "/mnt/data/kv9-work/engine-interface-screen-20260916-first",
+  "binaries": {
+    "baseline": {
+      "path": "/mnt/data/kv9-work/engine-interface-screen-20260916-first/build-baseline-v1/timing",
+      "sha256": "73330cbb3590a3c3542aef8cbf47ab80e400aae8341eccfa394bb694ed8c7e67",
+      "bytes": 1239784
+    },
+    "candidate": {
+      "path": "/mnt/data/kv9-work/engine-interface-screen-20260916-first/build-candidate-v1/timing",
+      "sha256": "20a64d05e86f19b42b5a0b422ab796d2eb3f9ca7df04b7853fa1129ccd474cee",
+      "bytes": 1238936
+    }
+  }
+}

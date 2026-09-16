@@ -1,0 +1,1723 @@
+{
+  "complete": true,
+  "diagnostic_only": true,
+  "production_promoted": false,
+  "rows": 152,
+  "processes": 90,
+  "comparisons": [
+    {
+      "case": 0,
+      "spec": {
+        "operation": "write_applied",
+        "workload": "overwrite",
+        "pinned": false
+      },
+      "phase": "apply_group",
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 281691677,
+        "mean_ns": 110727.86045597485,
+        "p50_ns": 98734,
+        "p95_ns": 252291,
+        "p99_ns": 305300
+      },
+      "candidate": {
+        "windows": 2544,
+        "sum_ns": 242529190,
+        "mean_ns": 95333.80110062893,
+        "p50_ns": 84518,
+        "p95_ns": 215993,
+        "p99_ns": 261078
+      },
+      "percent_change": {
+        "mean_ns": -13.902607069217742,
+        "p99_ns": -14.484769079593839
+      },
+      "by_order": [
+        {
+          "mean_ns": -12.200034747328726,
+          "p99_ns": -14.725537460560101
+        },
+        {
+          "mean_ns": -15.562976708493515,
+          "p99_ns": -12.857189649525058
+        }
+      ]
+    },
+    {
+      "case": 1,
+      "spec": {
+        "operation": "write_applied",
+        "workload": "overwrite",
+        "pinned": true
+      },
+      "phase": "apply_group",
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 311324089,
+        "mean_ns": 122375.82114779874,
+        "p50_ns": 110276,
+        "p95_ns": 275785,
+        "p99_ns": 327772
+      },
+      "candidate": {
+        "windows": 2544,
+        "sum_ns": 287105634,
+        "mean_ns": 112855.98820754717,
+        "p50_ns": 101981,
+        "p95_ns": 249476,
+        "p99_ns": 303126
+      },
+      "percent_change": {
+        "mean_ns": -7.779177987091124,
+        "p99_ns": -7.519251186800579
+      },
+      "by_order": [
+        {
+          "mean_ns": -8.423406449045324,
+          "p99_ns": -9.001113595828091
+        },
+        {
+          "mean_ns": -7.1298845342892765,
+          "p99_ns": -5.341990428364818
+        }
+      ]
+    },
+    {
+      "case": 2,
+      "spec": {
+        "operation": "write_applied",
+        "workload": "unique_insert",
+        "pinned": false
+      },
+      "phase": "apply_group",
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 640617378,
+        "mean_ns": 251815.0070754717,
+        "p50_ns": 233155,
+        "p95_ns": 619958,
+        "p99_ns": 746815
+      },
+      "candidate": {
+        "windows": 2544,
+        "sum_ns": 579325084,
+        "mean_ns": 227722.12421383648,
+        "p50_ns": 207779,
+        "p95_ns": 558684,
+        "p99_ns": 697192
+      },
+      "percent_change": {
+        "mean_ns": -9.5676914340591,
+        "p99_ns": -6.644617475546156
+      },
+      "by_order": [
+        {
+          "mean_ns": -10.368603621556838,
+          "p99_ns": -7.983422189360622
+        },
+        {
+          "mean_ns": -8.750784148316114,
+          "p99_ns": -3.8109087296878896
+        }
+      ]
+    },
+    {
+      "case": 3,
+      "spec": {
+        "operation": "write_applied",
+        "workload": "unique_insert",
+        "pinned": true
+      },
+      "phase": "apply_group",
+      "unit": "ns_per_group",
+      "baseline": {
+        "windows": 2544,
+        "sum_ns": 879043846,
+        "mean_ns": 345536.1029874214,
+        "p50_ns": 322763,
+        "p95_ns": 849948,
+        "p99_ns": 1071842
+      },
+      "candidate": {
+        "windows": 2544,
+        "sum_ns": 838607149,
+        "mean_ns": 329641.1749213837,
+        "p50_ns": 306452,
+        "p95_ns": 813429,
+        "p99_ns": 1013984
+      },
+      "percent_change": {
+        "mean_ns": -4.600077366334232,
+        "p99_ns": -5.3979970928551
+      },
+      "by_order": [
+        {
+          "mean_ns": -4.9666002119003405,
+          "p99_ns": -6.1402290806966136
+        },
+        {
+          "mean_ns": -4.236979927927054,
+          "p99_ns": -2.5922650993223995
+        }
+      ]
+    },
+    {
+      "case": 4,
+      "spec": {
+        "operation": "snapshot",
+        "workload": "overwrite"
+      },
+      "phase": "steady_snapshot",
+      "unit": "ns_per_snapshot",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 438136,
+        "mean_ns": 35.655598958333336,
+        "p50_ns": 40,
+        "p95_ns": 40,
+        "p99_ns": 41
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 436036,
+        "mean_ns": 35.484700520833336,
+        "p50_ns": 40,
+        "p95_ns": 40,
+        "p99_ns": 41
+      },
+      "percent_change": {
+        "mean_ns": -0.4793032300472899,
+        "p99_ns": 0.0
+      },
+      "by_order": [
+        {
+          "mean_ns": -0.15474560829217276,
+          "p99_ns": 0.0
+        },
+        {
+          "mean_ns": -0.8019552780217931,
+          "p99_ns": 0.0
+        }
+      ]
+    },
+    {
+      "case": 5,
+      "spec": {
+        "operation": "snapshot",
+        "workload": "unique_insert"
+      },
+      "phase": "steady_snapshot",
+      "unit": "ns_per_snapshot",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 438827,
+        "mean_ns": 35.711832682291664,
+        "p50_ns": 40,
+        "p95_ns": 40,
+        "p99_ns": 41
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 439123,
+        "mean_ns": 35.735921223958336,
+        "p50_ns": 40,
+        "p95_ns": 40,
+        "p99_ns": 41
+      },
+      "percent_change": {
+        "mean_ns": 0.06745254963802516,
+        "p99_ns": 0.0
+      },
+      "by_order": [
+        {
+          "mean_ns": -0.6894428776431205,
+          "p99_ns": 0.0
+        },
+        {
+          "mean_ns": 0.8346946641948794,
+          "p99_ns": 0.0
+        }
+      ]
+    },
+    {
+      "case": 6,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 1908448,
+        "mean_ns": 155.30989583333334,
+        "p50_ns": 150,
+        "p95_ns": 221,
+        "p99_ns": 300
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 1959752,
+        "mean_ns": 159.48502604166666,
+        "p50_ns": 160,
+        "p95_ns": 230,
+        "p99_ns": 291
+      },
+      "percent_change": {
+        "mean_ns": 2.6882576837304217,
+        "p99_ns": -3.0000000000000027
+      },
+      "by_order": [
+        {
+          "mean_ns": 2.236809302723408,
+          "p99_ns": -0.33222591362126463
+        },
+        {
+          "mean_ns": 3.143948846078115,
+          "p99_ns": -0.3436426116838476
+        }
+      ]
+    },
+    {
+      "case": 6,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 147456,
+        "sum_ns": 10595223,
+        "mean_ns": 71.85345458984375,
+        "p50_ns": 70,
+        "p95_ns": 120,
+        "p99_ns": 151
+      },
+      "candidate": {
+        "windows": 147456,
+        "sum_ns": 11379982,
+        "mean_ns": 77.17544216579861,
+        "p50_ns": 70,
+        "p95_ns": 130,
+        "p99_ns": 161
+      },
+      "percent_change": {
+        "mean_ns": 7.4067247098055455,
+        "p99_ns": 6.62251655629138
+      },
+      "by_order": [
+        {
+          "mean_ns": 7.6112793258076294,
+          "p99_ns": 6.62251655629138
+        },
+        {
+          "mean_ns": 7.203604793223817,
+          "p99_ns": 6.62251655629138
+        }
+      ]
+    },
+    {
+      "case": 7,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 24,
+        "sum_ns": 1680255,
+        "mean_ns": 70010.625,
+        "p50_ns": 69250,
+        "p95_ns": 73437,
+        "p99_ns": 74028
+      },
+      "candidate": {
+        "windows": 24,
+        "sum_ns": 1731327,
+        "mean_ns": 72138.625,
+        "p50_ns": 71774,
+        "p95_ns": 73758,
+        "p99_ns": 74138
+      },
+      "percent_change": {
+        "mean_ns": 3.0395386414562076,
+        "p99_ns": 0.14859242448803656
+      },
+      "by_order": [
+        {
+          "mean_ns": 3.7569664178034534,
+          "p99_ns": 0.14859242448803656
+        },
+        {
+          "mean_ns": 2.3276494783508683,
+          "p99_ns": 0.2723422797772157
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 136.739501953125,
+        "candidate": 140.895751953125
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 7,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 288,
+        "sum_ns": 7315940,
+        "mean_ns": 25402.569444444445,
+        "p50_ns": 21921,
+        "p95_ns": 47328,
+        "p99_ns": 49753
+      },
+      "candidate": {
+        "windows": 288,
+        "sum_ns": 7703219,
+        "mean_ns": 26747.288194444445,
+        "p50_ns": 23103,
+        "p95_ns": 50354,
+        "p99_ns": 51536
+      },
+      "percent_change": {
+        "mean_ns": 5.293632807267423,
+        "p99_ns": 3.5837034952666214
+      },
+      "by_order": [
+        {
+          "mean_ns": 6.961185835849593,
+          "p99_ns": 5.888637764536675
+        },
+        {
+          "mean_ns": 3.6396728506319143,
+          "p99_ns": 2.988211276344499
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 49.61439344618056,
+        "candidate": 52.24079725477431
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 8,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 1836447,
+        "mean_ns": 149.450439453125,
+        "p50_ns": 150,
+        "p95_ns": 201,
+        "p99_ns": 231
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 1903672,
+        "mean_ns": 154.92122395833334,
+        "p50_ns": 150,
+        "p95_ns": 211,
+        "p99_ns": 241
+      },
+      "percent_change": {
+        "mean_ns": 3.660601149937892,
+        "p99_ns": 4.329004329004338
+      },
+      "by_order": [
+        {
+          "mean_ns": 3.707247952382664,
+          "p99_ns": 8.225108225108224
+        },
+        {
+          "mean_ns": 3.6136017298413092,
+          "p99_ns": 0.4166666666666652
+        }
+      ]
+    },
+    {
+      "case": 8,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 147456,
+        "sum_ns": 9729128,
+        "mean_ns": 65.97987196180556,
+        "p50_ns": 60,
+        "p95_ns": 110,
+        "p99_ns": 140
+      },
+      "candidate": {
+        "windows": 147456,
+        "sum_ns": 10442236,
+        "mean_ns": 70.81594509548611,
+        "p50_ns": 70,
+        "p95_ns": 111,
+        "p99_ns": 141
+      },
+      "percent_change": {
+        "mean_ns": 7.329618851761444,
+        "p99_ns": 0.7142857142857117
+      },
+      "by_order": [
+        {
+          "mean_ns": 6.590219295631616,
+          "p99_ns": 0.7142857142857117
+        },
+        {
+          "mean_ns": 8.084868020408976,
+          "p99_ns": 7.6335877862595325
+        }
+      ]
+    },
+    {
+      "case": 9,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 24,
+        "sum_ns": 1634382,
+        "mean_ns": 68099.25,
+        "p50_ns": 67295,
+        "p95_ns": 72566,
+        "p99_ns": 78006
+      },
+      "candidate": {
+        "windows": 24,
+        "sum_ns": 1696428,
+        "mean_ns": 70684.5,
+        "p50_ns": 70342,
+        "p95_ns": 72235,
+        "p99_ns": 73637
+      },
+      "percent_change": {
+        "mean_ns": 3.796297316049735,
+        "p99_ns": -5.600851216573089
+      },
+      "by_order": [
+        {
+          "mean_ns": 2.4438918503717932,
+          "p99_ns": -7.822475194215828
+        },
+        {
+          "mean_ns": 5.167349272298027,
+          "p99_ns": 1.4758978033790005
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 133.00634765625,
+        "candidate": 138.0556640625
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 9,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 288,
+        "sum_ns": 6850365,
+        "mean_ns": 23785.989583333332,
+        "p50_ns": 20398,
+        "p95_ns": 46006,
+        "p99_ns": 46998
+      },
+      "candidate": {
+        "windows": 288,
+        "sum_ns": 6867657,
+        "mean_ns": 23846.03125,
+        "p50_ns": 20328,
+        "p95_ns": 48120,
+        "p99_ns": 49021
+      },
+      "percent_change": {
+        "mean_ns": 0.25242450584750387,
+        "p99_ns": 4.304438486744111
+      },
+      "by_order": [
+        {
+          "mean_ns": -2.284553397910405,
+          "p99_ns": 5.908914142505295
+        },
+        {
+          "mean_ns": 2.773815341511887,
+          "p99_ns": 4.219328482063056
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 46.457010904947914,
+        "candidate": 46.57427978515625
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 10,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 1675397,
+        "mean_ns": 136.34415690104166,
+        "p50_ns": 131,
+        "p95_ns": 200,
+        "p99_ns": 230
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 1696841,
+        "mean_ns": 138.08927408854166,
+        "p50_ns": 140,
+        "p95_ns": 200,
+        "p99_ns": 231
+      },
+      "percent_change": {
+        "mean_ns": 1.2799354421668463,
+        "p99_ns": 0.43478260869564966
+      },
+      "by_order": [
+        {
+          "mean_ns": 1.829170487164311,
+          "p99_ns": 0.43478260869564966
+        },
+        {
+          "mean_ns": 0.733698337244082,
+          "p99_ns": 0.0
+        }
+      ]
+    },
+    {
+      "case": 10,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 147456,
+        "sum_ns": 10047696,
+        "mean_ns": 68.14029947916667,
+        "p50_ns": 60,
+        "p95_ns": 111,
+        "p99_ns": 140
+      },
+      "candidate": {
+        "windows": 147456,
+        "sum_ns": 10084147,
+        "mean_ns": 68.38749864366319,
+        "p50_ns": 60,
+        "p95_ns": 111,
+        "p99_ns": 141
+      },
+      "percent_change": {
+        "mean_ns": 0.36277968600959554,
+        "p99_ns": 0.7142857142857117
+      },
+      "by_order": [
+        {
+          "mean_ns": -0.9004312591820218,
+          "p99_ns": 7.14285714285714
+        },
+        {
+          "mean_ns": 1.6357291964103737,
+          "p99_ns": 0.7142857142857117
+        }
+      ]
+    },
+    {
+      "case": 11,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 24,
+        "sum_ns": 1503578,
+        "mean_ns": 62649.083333333336,
+        "p50_ns": 62186,
+        "p95_ns": 66374,
+        "p99_ns": 66735
+      },
+      "candidate": {
+        "windows": 24,
+        "sum_ns": 1519048,
+        "mean_ns": 63293.666666666664,
+        "p50_ns": 62697,
+        "p95_ns": 66455,
+        "p99_ns": 68208
+      },
+      "percent_change": {
+        "mean_ns": 1.0288791136874753,
+        "p99_ns": 2.2072375814789824
+      },
+      "by_order": [
+        {
+          "mean_ns": 1.2753865108700024,
+          "p99_ns": 2.7631301413203913
+        },
+        {
+          "mean_ns": 0.7803693632570718,
+          "p99_ns": -0.4195699408106712
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 122.36149088541667,
+        "candidate": 123.62044270833333
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 11,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 288,
+        "sum_ns": 6369673,
+        "mean_ns": 22116.92013888889,
+        "p50_ns": 18355,
+        "p95_ns": 47829,
+        "p99_ns": 49171
+      },
+      "candidate": {
+        "windows": 288,
+        "sum_ns": 6130610,
+        "mean_ns": 21286.840277777777,
+        "p50_ns": 17362,
+        "p95_ns": 48701,
+        "p99_ns": 50124
+      },
+      "percent_change": {
+        "mean_ns": -3.7531439996998373,
+        "p99_ns": 1.938134266132474
+      },
+      "by_order": [
+        {
+          "mean_ns": -3.5246767301347903,
+          "p99_ns": 3.2212771152985153
+        },
+        {
+          "mean_ns": -3.9809966743239444,
+          "p99_ns": -2.2106196433848924
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 43.197109646267364,
+        "candidate": 41.57585991753472
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 12,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 1857425,
+        "mean_ns": 151.15763346354166,
+        "p50_ns": 150,
+        "p95_ns": 210,
+        "p99_ns": 241
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 1846847,
+        "mean_ns": 150.29679361979166,
+        "p50_ns": 150,
+        "p95_ns": 210,
+        "p99_ns": 240
+      },
+      "percent_change": {
+        "mean_ns": -0.5694980954816464,
+        "p99_ns": -0.4149377593360981
+      },
+      "by_order": [
+        {
+          "mean_ns": -1.2969284008445991,
+          "p99_ns": -7.968127490039844
+        },
+        {
+          "mean_ns": 0.16390713082512498,
+          "p99_ns": 0.0
+        }
+      ]
+    },
+    {
+      "case": 12,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 147456,
+        "sum_ns": 10022341,
+        "mean_ns": 67.96834988064236,
+        "p50_ns": 60,
+        "p95_ns": 120,
+        "p99_ns": 151
+      },
+      "candidate": {
+        "windows": 147456,
+        "sum_ns": 9785408,
+        "mean_ns": 66.36154513888889,
+        "p50_ns": 60,
+        "p95_ns": 120,
+        "p99_ns": 151
+      },
+      "percent_change": {
+        "mean_ns": -2.3640484792924243,
+        "p99_ns": 0.0
+      },
+      "by_order": [
+        {
+          "mean_ns": -2.621296880890356,
+          "p99_ns": 0.0
+        },
+        {
+          "mean_ns": -2.1062890441009396,
+          "p99_ns": 0.0
+        }
+      ]
+    },
+    {
+      "case": 13,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 24,
+        "sum_ns": 1645310,
+        "mean_ns": 68554.58333333333,
+        "p50_ns": 68097,
+        "p95_ns": 71915,
+        "p99_ns": 71994
+      },
+      "candidate": {
+        "windows": 24,
+        "sum_ns": 1631697,
+        "mean_ns": 67987.375,
+        "p50_ns": 67416,
+        "p95_ns": 71073,
+        "p99_ns": 72886
+      },
+      "percent_change": {
+        "mean_ns": -0.8273820738948778,
+        "p99_ns": 1.238992138233752
+      },
+      "by_order": [
+        {
+          "mean_ns": 0.4249350623962922,
+          "p99_ns": 1.350205103246882
+        },
+        {
+          "mean_ns": -2.0670462681657176,
+          "p99_ns": -1.9612745506569995
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 133.89567057291666,
+        "candidate": 132.787841796875
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 13,
+      "spec": {
+        "operation": "read",
+        "workload": "overwrite",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 288,
+        "sum_ns": 6816149,
+        "mean_ns": 23667.184027777777,
+        "p50_ns": 19456,
+        "p95_ns": 53991,
+        "p99_ns": 55524
+      },
+      "candidate": {
+        "windows": 288,
+        "sum_ns": 6600405,
+        "mean_ns": 22918.072916666668,
+        "p50_ns": 18444,
+        "p95_ns": 53881,
+        "p99_ns": 55323
+      },
+      "percent_change": {
+        "mean_ns": -3.165189023890169,
+        "p99_ns": -0.3620056191916965
+      },
+      "by_order": [
+        {
+          "mean_ns": -2.9941930411334527,
+          "p99_ns": 0.576327353937045
+        },
+        {
+          "mean_ns": -3.3370069675517255,
+          "p99_ns": 0.511667854467035
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 46.22496880425347,
+        "candidate": 44.761861165364586
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 14,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 5025795,
+        "mean_ns": 409.000244140625,
+        "p50_ns": 391,
+        "p95_ns": 621,
+        "p99_ns": 821
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 5013485,
+        "mean_ns": 407.9984537760417,
+        "p50_ns": 391,
+        "p95_ns": 621,
+        "p99_ns": 782
+      },
+      "percent_change": {
+        "mean_ns": -0.24493637325039286,
+        "p99_ns": -4.750304506699143
+      },
+      "by_order": [
+        {
+          "mean_ns": -0.17433025770542399,
+          "p99_ns": -0.12787723785165905
+        },
+        {
+          "mean_ns": -0.3154864003920732,
+          "p99_ns": -8.21596244131455
+        }
+      ]
+    },
+    {
+      "case": 14,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 147456,
+        "sum_ns": 24296048,
+        "mean_ns": 164.76812065972223,
+        "p50_ns": 151,
+        "p95_ns": 260,
+        "p99_ns": 321
+      },
+      "candidate": {
+        "windows": 147456,
+        "sum_ns": 24927617,
+        "mean_ns": 169.0512220594618,
+        "p50_ns": 160,
+        "p95_ns": 270,
+        "p99_ns": 340
+      },
+      "percent_change": {
+        "mean_ns": 2.5994721446055635,
+        "p99_ns": 5.919003115264787
+      },
+      "by_order": [
+        {
+          "mean_ns": 2.7292826235549184,
+          "p99_ns": 5.919003115264787
+        },
+        {
+          "mean_ns": 2.4701141854849507,
+          "p99_ns": 3.4375000000000044
+        }
+      ]
+    },
+    {
+      "case": 15,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 24,
+        "sum_ns": 4097019,
+        "mean_ns": 170709.125,
+        "p50_ns": 170238,
+        "p95_ns": 179655,
+        "p99_ns": 185958
+      },
+      "candidate": {
+        "windows": 24,
+        "sum_ns": 4213859,
+        "mean_ns": 175577.45833333334,
+        "p50_ns": 172813,
+        "p95_ns": 192018,
+        "p99_ns": 205013
+      },
+      "percent_change": {
+        "mean_ns": 2.851829586340715,
+        "p99_ns": 10.246937480506357
+      },
+      "by_order": [
+        {
+          "mean_ns": 5.3753822236281,
+          "p99_ns": 16.2211803921791
+        },
+        {
+          "mean_ns": 0.35146387400362133,
+          "p99_ns": -2.6027382527237353
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 333.416259765625,
+        "candidate": 342.9247233072917
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 15,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 288,
+        "sum_ns": 19697934,
+        "mean_ns": 68395.60416666667,
+        "p50_ns": 61906,
+        "p95_ns": 101389,
+        "p99_ns": 104395
+      },
+      "candidate": {
+        "windows": 288,
+        "sum_ns": 20648024,
+        "mean_ns": 71694.52777777778,
+        "p50_ns": 62236,
+        "p95_ns": 107491,
+        "p99_ns": 109665
+      },
+      "percent_change": {
+        "mean_ns": 4.823297712338759,
+        "p99_ns": 5.048134489199674
+      },
+      "by_order": [
+        {
+          "mean_ns": 7.069869182400379,
+          "p99_ns": 0.3781988166333905
+        },
+        {
+          "mean_ns": 2.5578443009004026,
+          "p99_ns": 6.894299750467869
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 133.58516438802084,
+        "candidate": 140.02837456597223
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 16,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 4373400,
+        "mean_ns": 355.908203125,
+        "p50_ns": 331,
+        "p95_ns": 581,
+        "p99_ns": 852
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 4271172,
+        "mean_ns": 347.5888671875,
+        "p50_ns": 330,
+        "p95_ns": 531,
+        "p99_ns": 741
+      },
+      "percent_change": {
+        "mean_ns": -2.3374948552613573,
+        "p99_ns": -13.028169014084511
+      },
+      "by_order": [
+        {
+          "mean_ns": -0.2188560684523555,
+          "p99_ns": -6.485084306095978
+        },
+        {
+          "mean_ns": -4.404768304786966,
+          "p99_ns": -15.460526315789469
+        }
+      ]
+    },
+    {
+      "case": 16,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 147456,
+        "sum_ns": 23433906,
+        "mean_ns": 158.92134602864584,
+        "p50_ns": 150,
+        "p95_ns": 250,
+        "p99_ns": 300
+      },
+      "candidate": {
+        "windows": 147456,
+        "sum_ns": 24102670,
+        "mean_ns": 163.45669216579861,
+        "p50_ns": 151,
+        "p95_ns": 260,
+        "p99_ns": 311
+      },
+      "percent_change": {
+        "mean_ns": 2.853830684479153,
+        "p99_ns": 3.6666666666666625
+      },
+      "by_order": [
+        {
+          "mean_ns": 1.3696630656210518,
+          "p99_ns": 3.322259136212624
+        },
+        {
+          "mean_ns": 4.3709358481546,
+          "p99_ns": 3.6666666666666625
+        }
+      ]
+    },
+    {
+      "case": 17,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 24,
+        "sum_ns": 4013135,
+        "mean_ns": 167213.95833333334,
+        "p50_ns": 155881,
+        "p95_ns": 229749,
+        "p99_ns": 298578
+      },
+      "candidate": {
+        "windows": 24,
+        "sum_ns": 3912381,
+        "mean_ns": 163015.875,
+        "p50_ns": 158486,
+        "p95_ns": 185266,
+        "p99_ns": 232194
+      },
+      "percent_change": {
+        "mean_ns": -2.5106057982101304,
+        "p99_ns": -22.233386250828925
+      },
+      "by_order": [
+        {
+          "mean_ns": -11.370491680196714,
+          "p99_ns": -41.822907247017525
+        },
+        {
+          "mean_ns": 7.5213793286665,
+          "p99_ns": 33.07314053849593
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 326.5897623697917,
+        "candidate": 318.390380859375
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 17,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "owned",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 288,
+        "sum_ns": 18761723,
+        "mean_ns": 65144.87152777778,
+        "p50_ns": 58770,
+        "p95_ns": 100809,
+        "p99_ns": 105377
+      },
+      "candidate": {
+        "windows": 288,
+        "sum_ns": 19215809,
+        "mean_ns": 66721.55902777778,
+        "p50_ns": 59451,
+        "p95_ns": 106268,
+        "p99_ns": 109595
+      },
+      "percent_change": {
+        "mean_ns": 2.4202787771677503,
+        "p99_ns": 4.002771003160088
+      },
+      "by_order": [
+        {
+          "mean_ns": 2.3590287108288033,
+          "p99_ns": 3.412972503727185
+        },
+        {
+          "mean_ns": 2.482192692860119,
+          "p99_ns": 6.558560668149704
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 127.23607720269098,
+        "candidate": 130.31554497612848
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 18,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 3911131,
+        "mean_ns": 318.2886555989583,
+        "p50_ns": 300,
+        "p95_ns": 521,
+        "p99_ns": 742
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 3797790,
+        "mean_ns": 309.06494140625,
+        "p50_ns": 300,
+        "p95_ns": 471,
+        "p99_ns": 632
+      },
+      "percent_change": {
+        "mean_ns": -2.897908558930906,
+        "p99_ns": -14.82479784366577
+      },
+      "by_order": [
+        {
+          "mean_ns": -4.594430263948645,
+          "p99_ns": -21.590909090909093
+        },
+        {
+          "mean_ns": -1.1493190585718738,
+          "p99_ns": -7.369942196531786
+        }
+      ]
+    },
+    {
+      "case": 18,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 147456,
+        "sum_ns": 20836984,
+        "mean_ns": 141.30984157986111,
+        "p50_ns": 130,
+        "p95_ns": 231,
+        "p99_ns": 300
+      },
+      "candidate": {
+        "windows": 147456,
+        "sum_ns": 20918388,
+        "mean_ns": 141.86189778645834,
+        "p50_ns": 130,
+        "p95_ns": 240,
+        "p99_ns": 301
+      },
+      "percent_change": {
+        "mean_ns": 0.39067074198455565,
+        "p99_ns": 0.33333333333334103
+      },
+      "by_order": [
+        {
+          "mean_ns": 1.2548719956992027,
+          "p99_ns": 0.33333333333334103
+        },
+        {
+          "mean_ns": -0.4634139173223306,
+          "p99_ns": 0.33333333333334103
+        }
+      ]
+    },
+    {
+      "case": 19,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 24,
+        "sum_ns": 3505438,
+        "mean_ns": 146059.91666666666,
+        "p50_ns": 144079,
+        "p95_ns": 162684,
+        "p99_ns": 173995
+      },
+      "candidate": {
+        "windows": 24,
+        "sum_ns": 3515441,
+        "mean_ns": 146476.70833333334,
+        "p50_ns": 145411,
+        "p95_ns": 155350,
+        "p99_ns": 155521
+      },
+      "percent_change": {
+        "mean_ns": 0.28535663731608096,
+        "p99_ns": -10.61754648122073
+      },
+      "by_order": [
+        {
+          "mean_ns": -2.459943867278591,
+          "p99_ns": -11.861260381045435
+        },
+        {
+          "mean_ns": 3.125759993313504,
+          "p99_ns": 6.358780766363714
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 285.2732747395833,
+        "candidate": 286.0873209635417
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 19,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_hit",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 288,
+        "sum_ns": 16131688,
+        "mean_ns": 56012.805555555555,
+        "p50_ns": 49132,
+        "p95_ns": 100989,
+        "p99_ns": 105246
+      },
+      "candidate": {
+        "windows": 288,
+        "sum_ns": 16260567,
+        "mean_ns": 56460.302083333336,
+        "p50_ns": 49442,
+        "p95_ns": 104195,
+        "p99_ns": 106268
+      },
+      "percent_change": {
+        "mean_ns": 0.7989182533160832,
+        "p99_ns": 0.9710582825000369
+      },
+      "by_order": [
+        {
+          "mean_ns": 0.851513712828389,
+          "p99_ns": 2.731704446253591
+        },
+        {
+          "mean_ns": 0.7468800250197472,
+          "p99_ns": 0.9710582825000369
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 109.40001085069444,
+        "candidate": 110.27402750651042
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 20,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 12288,
+        "sum_ns": 4286692,
+        "mean_ns": 348.8518880208333,
+        "p50_ns": 321,
+        "p95_ns": 551,
+        "p99_ns": 831
+      },
+      "candidate": {
+        "windows": 12288,
+        "sum_ns": 4175633,
+        "mean_ns": 339.8138834635417,
+        "p50_ns": 321,
+        "p95_ns": 521,
+        "p99_ns": 712
+      },
+      "percent_change": {
+        "mean_ns": -2.5907856221067282,
+        "p99_ns": -14.32009626955475
+      },
+      "by_order": [
+        {
+          "mean_ns": -2.1735499725622165,
+          "p99_ns": -5.758426966292129
+        },
+        {
+          "mean_ns": -2.9898559680736403,
+          "p99_ns": -19.226638023630503
+        }
+      ]
+    },
+    {
+      "case": 20,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "per_call"
+      },
+      "phase": "warm",
+      "unit": "ns_per_read",
+      "baseline": {
+        "windows": 147456,
+        "sum_ns": 22712884,
+        "mean_ns": 154.03160264756946,
+        "p50_ns": 140,
+        "p95_ns": 251,
+        "p99_ns": 311
+      },
+      "candidate": {
+        "windows": 147456,
+        "sum_ns": 22638063,
+        "mean_ns": 153.5241902669271,
+        "p50_ns": 140,
+        "p95_ns": 251,
+        "p99_ns": 320
+      },
+      "percent_change": {
+        "mean_ns": -0.3294209577260232,
+        "p99_ns": 2.893890675241151
+      },
+      "by_order": [
+        {
+          "mean_ns": 0.24128769050626442,
+          "p99_ns": 2.893890675241151
+        },
+        {
+          "mean_ns": -0.892323207906931,
+          "p99_ns": 2.893890675241151
+        }
+      ]
+    },
+    {
+      "case": 21,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "first_probe",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 24,
+        "sum_ns": 3762267,
+        "mean_ns": 156761.125,
+        "p50_ns": 153977,
+        "p95_ns": 171971,
+        "p99_ns": 181369
+      },
+      "candidate": {
+        "windows": 24,
+        "sum_ns": 3820957,
+        "mean_ns": 159206.54166666666,
+        "p50_ns": 155029,
+        "p95_ns": 175468,
+        "p99_ns": 191989
+      },
+      "percent_change": {
+        "mean_ns": 1.5599637133674848,
+        "p99_ns": 5.855465928576553
+      },
+      "by_order": [
+        {
+          "mean_ns": 0.7288877088988288,
+          "p99_ns": -6.799949274683104
+        },
+        {
+          "mean_ns": 2.3796802454808974,
+          "p99_ns": 11.640334707596045
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 306.174072265625,
+        "candidate": 310.9502766927083
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    },
+    {
+      "case": 21,
+      "spec": {
+        "operation": "read",
+        "workload": "unique_insert",
+        "api": "resident",
+        "queries": "get_miss",
+        "timer": "whole_pass"
+      },
+      "phase": "warm",
+      "unit": "ns_per_512_read_pass",
+      "baseline": {
+        "windows": 288,
+        "sum_ns": 17609732,
+        "mean_ns": 61144.90277777778,
+        "p50_ns": 54081,
+        "p95_ns": 108883,
+        "p99_ns": 112029
+      },
+      "candidate": {
+        "windows": 288,
+        "sum_ns": 17829970,
+        "mean_ns": 61909.618055555555,
+        "p50_ns": 54532,
+        "p95_ns": 111899,
+        "p99_ns": 113432
+      },
+      "percent_change": {
+        "mean_ns": 1.2506607142005244,
+        "p99_ns": 1.2523543011184524
+      },
+      "by_order": [
+        {
+          "mean_ns": 0.7842300970310578,
+          "p99_ns": 3.1619151548219815
+        },
+        {
+          "mean_ns": 1.7192523754296696,
+          "p99_ns": 0.6087709432379018
+        }
+      ],
+      "pass_derived_mean_ns_per_read": {
+        "baseline": 119.42363823784723,
+        "candidate": 120.91722276475694
+      },
+      "p99_scope": "512-query pass; not individual request latency"
+    }
+  ],
+  "input_acceptance": {
+    "complete": true,
+    "independent_reconstruction": true,
+    "models": [
+      {
+        "dataset": "original24",
+        "workload": "overwrite",
+        "groups": 106,
+        "initial_keys": 4096,
+        "final_keys": 4096,
+        "final_state_sha256": "98a301258d1b77e1273fd1830456c51b9cff58f39b39e16bbff23f80f0da6894"
+      },
+      {
+        "dataset": "original24",
+        "workload": "unique_insert",
+        "groups": 106,
+        "initial_keys": 0,
+        "final_keys": 100096,
+        "final_state_sha256": "01b58bb87fea4b7b4d8bdcdb44bf6cf8ee6afecf618809d5110df57d9143347b"
+      }
+    ],
+    "prepared_sha256": {
+      "baseline": "144d65eecdd6cb99a3d54e5d81fc4c5801748053258ccabd06cbcdf852ceb893",
+      "candidate": "144d65eecdd6cb99a3d54e5d81fc4c5801748053258ccabd06cbcdf852ceb893"
+    },
+    "live_prefixes": 848,
+    "old_views": 424,
+    "query_identities": [
+      {
+        "workload": "overwrite",
+        "operation": "get_hit",
+        "sha256": "b39bcf10f06ee94cc3343f4f13019f08a1f2a15b65ae7c2563847761346d5569"
+      },
+      {
+        "workload": "overwrite",
+        "operation": "get_miss",
+        "sha256": "51d9fe9034a8ffbbdb05456328b5703a442a1007e3f213a0d1ae10f9c01e3bc8"
+      },
+      {
+        "workload": "unique_insert",
+        "operation": "get_hit",
+        "sha256": "0da2bdb0851196975c2e4c4e207a49dc60cfbc60fd00c1344131e8f0a7362c01"
+      },
+      {
+        "workload": "unique_insert",
+        "operation": "get_miss",
+        "sha256": "4b1bc40905b197d2c6236d1d86e76304e89af534ceb0237d5ff303911839771d"
+      }
+    ]
+  },
+  "original_component_gate": "failed; unchanged by this diagnostic",
+  "limits": "Shared host, two orders, engine component only; no WAL, Raft, RPC, database QPS or new Redis comparison."
+}

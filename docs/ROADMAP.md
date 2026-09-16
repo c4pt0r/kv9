@@ -9,8 +9,14 @@
 > orders; the declared component gate fails. The [bounded layout diagnosis](READ-LAYOUT-DIAGNOSIS.md)
 > reproduces the gap; fixed function alignment does not fix it. Four independently
 > checked first-map snapshots show matching structure and relative layouts within
-> each configuration. Next measure the unchanged engine read/write interfaces in
-> a bounded diagnostic; keep the candidate isolated and original failed gate.
+> each configuration. The [completed engine-interface screen](ENGINE-INTERFACE-SCREEN.md)
+> passes 90 processes / 152 rows and independent checks: write mean improves
+> 4.600%–13.903%, but warm owned GET hit regresses 2.599%–7.407%; resident reads
+> do not share the same uniform regression. Keep the candidate isolated and the
+> original failed gate. Next qualify shared-clone extraction alone with the
+> original pointer callback: source/proof and actual release codegen first,
+> engine correctness before any timing. Previously rejected owned-buffer removal
+> stays held. Do not repeat unchanged matrices.
 > Database QPS below is unchanged; no industrial checkbox or runtime promotion follows.
 > CRC remains the selected write runtime. The latest [same-source screen](WAL-PREALLOCATION-PERFORMANCE.md)
 > measures default `86aa6fc` at c64 / 128-byte values at **137,874 Put calls/s**

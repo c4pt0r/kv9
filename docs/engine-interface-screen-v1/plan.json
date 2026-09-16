@@ -1,0 +1,185 @@
+{
+  "source_base": "a18545d8cf969291fbfe174f7a5123c008b5afa6",
+  "scope": "Diagnostic through unchanged production engine interfaces; no server, WAL, Raft or database-QPS measurement. Original failed component gate is not changed.",
+  "qualified_dependency_root": "/mnt/data/kv9-work/outlined-mutation-path-20260916-first",
+  "corpus_sha256": "d978ba9e49131f6277f975ecd333c33854845cc03bd14ee57a22fff915a08350",
+  "orders": [
+    "baseline",
+    "candidate",
+    "candidate",
+    "baseline"
+  ],
+  "cases": [
+    {
+      "operation": "write_applied",
+      "workload": "overwrite",
+      "pinned": false
+    },
+    {
+      "operation": "write_applied",
+      "workload": "overwrite",
+      "pinned": true
+    },
+    {
+      "operation": "write_applied",
+      "workload": "unique_insert",
+      "pinned": false
+    },
+    {
+      "operation": "write_applied",
+      "workload": "unique_insert",
+      "pinned": true
+    },
+    {
+      "operation": "snapshot",
+      "workload": "overwrite"
+    },
+    {
+      "operation": "snapshot",
+      "workload": "unique_insert"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "owned",
+      "queries": "get_hit",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "owned",
+      "queries": "get_hit",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "owned",
+      "queries": "get_miss",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "owned",
+      "queries": "get_miss",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "resident",
+      "queries": "get_hit",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "resident",
+      "queries": "get_hit",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "resident",
+      "queries": "get_miss",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "overwrite",
+      "api": "resident",
+      "queries": "get_miss",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "owned",
+      "queries": "get_hit",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "owned",
+      "queries": "get_hit",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "owned",
+      "queries": "get_miss",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "owned",
+      "queries": "get_miss",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "resident",
+      "queries": "get_hit",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "resident",
+      "queries": "get_hit",
+      "timer": "whole_pass"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "resident",
+      "queries": "get_miss",
+      "timer": "per_call"
+    },
+    {
+      "operation": "read",
+      "workload": "unique_insert",
+      "api": "resident",
+      "queries": "get_miss",
+      "timer": "whole_pass"
+    }
+  ],
+  "write_passes": 12,
+  "write_excluded_passes": 1,
+  "read_epochs": 12,
+  "read_warm_passes": 12,
+  "read_warmup_passes": 8,
+  "query_count": 512,
+  "query_seed": 71,
+  "snapshot_passes": 12,
+  "snapshot_queries_per_pass": 512,
+  "snapshot_warmup_passes": 8,
+  "expected_processes": 90,
+  "expected_rows": 152,
+  "expected_comparison_cells": 38,
+  "cpu": 4,
+  "helper_cpus": "6-15,22-31",
+  "shared_host": true,
+  "minimum_free_bytes": 8589934592,
+  "process_timeout_seconds": 180,
+  "process_output_max_bytes": 67108864,
+  "timing_scopes": {
+    "write": "Fresh engine per pass, input WriteBatch construction and old-snapshot acquisition/drop outside measurement; write_applied consumes batch, clones stored data and publishes exact applied position inside call. Each of106groups is one window. Two inert sentinel CF rows are present.",
+    "read": "Fresh populated engine/snapshot per epoch. Statically select owned get or borrowed get_resident outside timed loops; only real ReadView dynamic dispatch remains. Time first512 probes, validate all outputs, perform8 same-view untimed passes, then12 warm passes with all outputs checked after each pass.",
+    "per_call": "One window per query, return/error check and black_box included. Store result in reserved output buffer after timer stops; validate/drop results after pass.",
+    "whole_pass": "One window per512-query pass includes loop and output-buffer stores; validate/drop outputs after timer stops. Mean/window divided by512 is a pass-derived estimate, and p99/window is not request p99.",
+    "snapshot": "Populated engine,8 excluded passes then12 measured passes of512acquisitions. Each window includes snapshot acquisition/boxing; destruction outside. Validate snapshot contents outside measured windows.",
+    "correctness": "Before timing validate all106live prefixes and old views in both write modes for both workloads; preserve inert Lock/Write CF rows. Each read epoch confirms snapshot isolation after a later write and exact applied-position/revision transition106->107."
+  },
+  "interpretation": {
+    "criterion": "Report all means/p99 and both-order directions, original/warm and whole-pass separately. This diagnostic has no production-promotion verdict.",
+    "limits": "No reinterpretation of old10%material/2%read gate. No allocation-count evidence or compiler alignment sweep. Full local correctness/recovery/actual Chaos and matched database/three-copy Redis remain promotion prerequisites."
+  }
+}

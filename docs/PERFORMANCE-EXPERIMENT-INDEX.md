@@ -21,9 +21,14 @@ unique-insert p99 worsens 5.665%. All write means improve in both orders, yet
 The [completed layout control](READ-LAYOUT-DIAGNOSIS.md) uses 26 processes/40 rows:
 ordinary warm GET hit regresses 15.943%, fixed function alignment still 12.364%.
 Four first-map captures validate 16,384 nodes and matching within-configuration
-relative layouts/comparator targets. Stop alignment sweeps; next use a bounded
-MemEngine/ReadView diagnostic with separate snapshot/owned/borrowed and timing
-scopes. Keep the old failed gate and do not replay unchanged full matrices.
+relative layouts/comparator targets. Stop alignment sweeps. The completed
+[engine-interface diagnostic](ENGINE-INTERFACE-SCREEN.md) retains 90 processes /
+152 rows: actual apply mean improves 4.600%–13.903%, but warm owned GET hit
+regresses 2.599%–7.407%. Resident hit per-call means are nearly unchanged.
+Keep snapshot/ownership/timer scopes separate and the old gate failed. Next
+qualify shared-clone extraction alone with original archery; source/proof/codegen
+and engine correctness precede any timing. Do not replay unchanged matrices or
+the previously rejected owned-mutation-buffer removal.
 
 The latest [same-source preallocation screen](WAL-PREALLOCATION-PERFORMANCE.md)
 uses current `86aa6fc` default/feature servers and one qualified client. Default
