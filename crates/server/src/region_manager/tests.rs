@@ -72,7 +72,7 @@ impl Fixture {
         }
     }
     fn manager(&self) -> RegionManager {
-        RegionManager::new(&self.path, self.identity)
+        RegionManager::new(&self.path, self.identity, 2)
     }
     fn group_dir(&self) -> PathBuf {
         self.path
@@ -158,7 +158,7 @@ fn group_control_bounds_activation_and_quarantines_failures() {
     let foreign_path = f.path.join("replacement");
     let mut identity = f.identity;
     identity.store_incarnation = StoreIncarnation::from_bytes([99; 16]);
-    let mut foreign = RegionManager::new(&foreign_path, identity);
+    let mut foreign = RegionManager::new(&foreign_path, identity, 2);
     foreign.reconcile_activation(&requests, &transport, Duration::from_secs(60));
     assert!(foreign.groups.is_empty());
     assert!(!foreign_path.exists());
@@ -414,7 +414,7 @@ fn group_preparation_refuses_identity_conflicts_and_duplicate_disk_owner() {
         ..f.identity
     };
     assert!(
-        RegionManager::new(&f.path, identity)
+        RegionManager::new(&f.path, identity, 2)
             .prepare(&f.creation)
             .is_err(),
         "replacement disk must refuse before preparing any local files"
@@ -432,7 +432,7 @@ fn group_preparation_refuses_identity_conflicts_and_duplicate_disk_owner() {
         "second owner must not open the same group logs"
     );
     assert!(
-        RegionManager::new(&f.path, identity)
+        RegionManager::new(&f.path, identity, 2)
             .prepare(&f.creation)
             .is_err(),
         "replacement disk must not reuse the old voter identity"

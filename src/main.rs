@@ -43,6 +43,7 @@ struct Cli {
     data_dir: Option<String>,
     join: Vec<SeedPeer>,
     cluster_id: Option<ClusterId>,
+    data_workers: Option<usize>,
 }
 
 fn print_usage() {
@@ -54,7 +55,7 @@ fn print_usage() {
            KV9_BOOTSTRAP_TOKEN=<token> kv9 root-create --output <file> --voters <id@ip:port,...> --store-incarnations <id=hex,...>\n\
            KV9_BOOTSTRAP_TOKEN=<token> kv9 init --root <file> --node-id <id> --data-dir <path>\n\
            KV9_JOIN_TICKET=<ticket> kv9 join --root <file> --node-id <id> --addr <ip:port> --data-dir <path>\n\
-           KV9_CLUSTER_TOKEN=<token> KV9_CLIENT_TOKENS=<principal=token,...> kv9 start --node-id <id> --addr <ip:port> --data-dir <path>\n\
+           KV9_CLUSTER_TOKEN=<token> KV9_CLIENT_TOKENS=<principal=token,...> kv9 start --node-id <id> --addr <ip:port> --data-dir <path> [--data-workers <1..=32>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client create-keyspace --addr <ip:port> --name <name> --api-type <txn|raw> [--tenant-id <id>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client create-data-group --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --voters <id,id,id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client create-data-keyspace --addr <leader-ip:port> --root-digest <hex> --creation-task <id> --name <name> [--tenant-id <id>]\n\
@@ -109,6 +110,15 @@ fn parse_cli(args: impl Iterator<Item = String>) -> std::result::Result<Cli, Str
                 cli.advertise_addr = Some(args.next().ok_or("--advertise-addr needs a value")?)
             }
             "--data-dir" => cli.data_dir = Some(args.next().ok_or("--data-dir needs a value")?),
+            "--data-workers" => {
+                let value = args.next().ok_or("--data-workers needs a value")?;
+                let workers = value
+                    .parse::<usize>()
+                    .ok()
+                    .filter(|w| (1..=32).contains(w))
+                    .ok_or("--data-workers must be within 1..=32".to_string())?;
+                cli.data_workers = Some(workers);
+            }
             "--join" => {
                 let v = args.next().ok_or("--join needs a value")?;
                 cli.join = v
@@ -207,6 +217,9 @@ fn config_from_cli(cli: Cli) -> Config {
     }
     if let Some(d) = cli.data_dir {
         cfg.data_dir = d;
+    }
+    if let Some(w) = cli.data_workers {
+        cfg.data_workers = w;
     }
     cfg.join = cli.join;
     cfg

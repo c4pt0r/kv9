@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "members_verified": 6075,
+  "archive_sha256": "56d9f131fa8cc1c3c8e7713c4fb16fd501bff063b6f146461e3f273b79f7dcf6",
+  "workload_run_reports": 599,
+  "headline_reverified": {
+    "S8": 2.32,
+    "g8_rate": 292167
+  }
+}

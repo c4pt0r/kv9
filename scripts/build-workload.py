@@ -16,11 +16,12 @@ MAX_BINARY = 512 * 1024 * 1024
 # evidence have their own finite budget; runtime/source files keep these limits.
 MAX_SOURCE_FILE = 2 * 1024 * 1024
 MAX_SOURCE_TOTAL = 64 * 1024 * 1024
-MAX_DOCUMENTATION_FILE = 32 * 1024 * 1024
-# The published corpus is approximately 167 MB as of 2026-09-15. This prospective
-# 256 MiB allowance includes its split archives and JSON inventories, with bounded
-# growth; it does not exempt them from hashing or extend ordinary source limits.
-MAX_DOCUMENTATION_TOTAL = 256 * 1024 * 1024
+MAX_DOCUMENTATION_FILE = 64 * 1024 * 1024
+# The published corpus is approximately 403 MiB as of 2026-09-16 (checkpoint,
+# retention, snapshot, joint-install and migration-authority packets). This
+# prospective 1 GiB allowance includes split archives and JSON inventories, with
+# bounded growth; it does not exempt them from hashing or ordinary source limits.
+MAX_DOCUMENTATION_TOTAL = 1024 * 1024 * 1024
 DOCUMENTATION_SUFFIXES = frozenset({'.md', '.json', '.jsonl', '.csv', '.tsv',
                                   '.txt', '.log', '.stdout', '.stderr'})
 HASH_CHUNK = 64 * 1024

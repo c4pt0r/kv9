@@ -43,6 +43,9 @@ pub struct Config {
     pub wal_streams: usize,
     /// Replication factor for new regions (DESIGN §3.3, default 3).
     pub replication_factor: usize,
+    /// Shared Ready/tick worker threads driving data-group Raft (default 2).
+    /// Bounded; the metadata group keeps its dedicated owner regardless.
+    pub data_workers: usize,
 }
 
 impl Default for Config {
@@ -54,6 +57,7 @@ impl Default for Config {
             join: Vec::new(),
             wal_streams: 1,
             replication_factor: 3,
+            data_workers: 2,
         }
     }
 }
@@ -81,6 +85,11 @@ impl Config {
                 "replication_factor must be >= 1".into(),
             ));
         }
+        if self.data_workers == 0 || self.data_workers > 32 {
+            return Err(crate::error::Error::Config(
+                "data_workers must be within 1..=32".into(),
+            ));
+        }
         let mut ids = HashSet::new();
         let mut addrs = HashSet::new();
         for seed in &self.join {
@@ -103,5 +112,25 @@ impl Config {
             }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Config;
+
+    #[test]
+    fn data_worker_bounds_are_enforced() {
+        let mut config = Config::default();
+        assert_eq!(config.data_workers, 2);
+        assert!(config.validate().is_ok());
+        for invalid in [0, 33, usize::MAX] {
+            config.data_workers = invalid;
+            assert!(config.validate().is_err(), "accepted {invalid}");
+        }
+        for valid in [1, 2, 32] {
+            config.data_workers = valid;
+            assert!(config.validate().is_ok(), "refused {valid}");
+        }
     }
 }

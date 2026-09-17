@@ -41,7 +41,12 @@ now binds new Raw keyspaces to their own groups with ordered namespace/range
 fences and terminal sealing. It requires an offline V3 writer upgrade. The
 current mapping is one full-keyspace range per group. The [scoped client](ROUTED-CLIENT.md)
 adds surviving metadata discovery, bounded scope refresh and terminal unknown
-writes. Split/move publication, routed scans/delete-range, retirement and complete
+writes. The [multi-group throughput baseline](MULTI-GROUP-THROUGHPUT.md) now
+shows the runtime converting added groups into added throughput on one host
+(equal-load S(8)=2.32 on tmpfs), makes the shared data-worker pool
+configurable with its default kept by evidence, and records the measured
+admission, pipeline-depth, worker-count, fleet-startup and disk-fsync bounds;
+it is a development diagnostic, not multi-host scaling. Split/move publication, routed scans/delete-range, retirement and complete
 resource/fault acceptance remain open. No full stage acceptance or measured
 scaling gain follows from these checks.
 The [protocol snapshot storage prerequisite](PROTOCOL-SNAPSHOT.md) now persists
