@@ -1785,6 +1785,85 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn record_source_truncation(
+        &self,
+        request: Request<proto::RecordSourceTruncationRequest>,
+    ) -> Result<Response<proto::RecordSourceTruncationResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16]
+            || root.as_bytes() == &[0; 32]
+            || request.floor_term == 0
+            || request.floor_index == 0
+        {
+            return Err(Status::invalid_argument(
+                "nonzero root, operation and exact floor required",
+            ));
+        }
+        let floor = kv9_common::AppliedPosition {
+            term: request.floor_term,
+            index: request.floor_index,
+        };
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.record_source_truncation(&caller, root, operation, floor)
+            })
+            .await?;
+        Ok(Response::new(proto::RecordSourceTruncationResponse {
+            task: result.decision.task(),
+            changed: result.changed,
+        }))
+    }
+
+    async fn truncate_source_log(
+        &self,
+        request: Request<proto::TruncateSourceLogRequest>,
+    ) -> Result<Response<proto::TruncateSourceLogResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16] || root.as_bytes() == &[0; 32] {
+            return Err(Status::invalid_argument(
+                "nonzero root and operation required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.truncate_source_log(&caller, root, operation)
+            })
+            .await?;
+        Ok(Response::new(proto::TruncateSourceLogResponse {
+            floor_term: result.floor.term,
+            floor_index: result.floor.index,
+            first_index: result.first_index,
+        }))
+    }
+
     async fn bind_migration_image(
         &self,
         request: Request<proto::BindMigrationImageRequest>,

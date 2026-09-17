@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "archive_sha256": "e53309c5c2ef1bbf1b1dc833c9dbf5547f79a7022a05479bc307204a4bf90449",
+  "members_verified": 1169,
+  "decoded_bytes": 5868605,
+  "receipts_verified": [
+    "e2e-fourth/result.json",
+    "3 retained failed e2e launches",
+    "local-validation.json",
+    "source-truncation-proof/result.json",
+    "retention-ledger-recheck.log",
+    "12 sibling model logs",
+    "minio-focused.log"
+  ],
+  "no_elf_no_credentials": true
+}

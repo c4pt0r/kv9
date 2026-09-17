@@ -77,8 +77,13 @@ network snapshots still fenced. The [destination-evidence increment](DESTINATION
 now commits the destination's install evidence as an immutable catalog row
 cross-checked against the published image pin, and makes that committed row
 the one key unlocking the source pin's quiesce and release through the
-retention ledger; the destination pin never drops. Next are catchup after
-source truncation, promotion, removal and split publication.
+retention ledger; the destination pin never drops. The [source-truncation
+increment](SOURCE-TRUNCATION.md) now compacts the source leader's log
+prefix under a committed decision bounded by the evidence cut, with every
+tracked peer matched past the floor, a tail-preserving durable compaction
+record, and restart accepted only under the same committed authority.
+Next are stranded-learner recovery after truncation, promotion, removal
+and split publication.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

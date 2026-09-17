@@ -1525,6 +1525,103 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn record_source_truncation(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        floor: AppliedPosition,
+    ) -> Result<crate::api::RecordSourceTruncationResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        let certified = kv9_meta::root::certified_root(&txn)?
+            .ok_or_else(|| Error::MetaNotReady("truncation requires a certified root".into()))?;
+        if certified.digest() != root {
+            return Err(Error::Config("truncation request root differs".into()));
+        }
+        let (decision, changed) =
+            kv9_meta::data_groups::truncation::plan_truncation(&mut txn, operation, floor)?;
+        // The decision consumes the settled transfer: the SOURCE pin must be
+        // Released before any log below the floor is authorized away.
+        let evidence = kv9_meta::data_groups::evidence::committed_install_evidence(
+            &self.node.meta_raft.store,
+        )?
+        .into_iter()
+        .find(|e| e.operation() == operation)
+        .ok_or_else(|| Error::Config("truncation requires committed evidence".into()))?;
+        let (source_owner, _) = crate::migration_retention::migration_owner_ids(
+            root,
+            operation,
+            &evidence.destination().incarnation,
+        )?;
+        let view = self.node.meta_raft.store.begin()?.into_view();
+        let owner = kv9_meta::retention::retention_owner(view.as_ref(), &certified, source_owner)?
+            .ok_or_else(|| {
+                Error::Config("truncation requires the operation's image owners".into())
+            })?;
+        if owner.phase != kv9_common::retention::PinPhase::Released {
+            return Err(Error::Config(
+                "the source image pin is not released; settle the transfer first".into(),
+            ));
+        }
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::RecordSourceTruncationResult {
+            decision,
+            changed,
+            applied,
+        })
+    }
+
+    fn truncate_source_log(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::TruncateSourceLogResult> {
+        self.ensure_serving()?;
+        {
+            let txn = self.node.meta_raft.store.begin()?;
+            let certified = kv9_meta::root::certified_root(&txn)?.ok_or_else(|| {
+                Error::MetaNotReady("truncation requires a certified root".into())
+            })?;
+            if certified.digest() != root {
+                return Err(Error::Config("truncation request root differs".into()));
+            }
+        }
+        // Committed authority from LOCAL applied state; absence refuses in
+        // the safe direction (a client may retry after commitment applies).
+        let decision =
+            kv9_meta::data_groups::truncation::committed_truncations(&self.node.meta_raft.store)?
+                .into_iter()
+                .find(|d| d.operation() == operation)
+                .ok_or_else(|| {
+                    Error::Config("truncation decision is not committed locally".into())
+                })?;
+        let group = self
+            .raw_directory
+            .by_region(decision.region())
+            .ok_or_else(|| Error::MetaNotReady("truncation group is not active locally".into()))?;
+        let (driver, _, _) = group.capture_parts();
+        let status = driver.status();
+        if status.fatal.is_some() {
+            return Err(Error::Raft("group driver is fatally stopped".into()));
+        }
+        let first_index = driver
+            .peer()
+            .truncate_retained_log(decision.floor(), &decision.encode())?;
+        Ok(crate::api::TruncateSourceLogResult {
+            floor: decision.floor(),
+            first_index,
+        })
+    }
+
     fn emit_install_evidence(
         &self,
         _caller: &str,
@@ -4369,7 +4466,12 @@ impl NodeRuntime {
         self.endpoint_ready
             .store(serving && ready, Ordering::Release);
         if serving && ready && self.discovery.raft_receive_allowed() {
-            self.data_groups.resume_active(&self.transport, TICK);
+            let truncations = kv9_meta::data_groups::truncation::committed_truncations(
+                &self.node.meta_raft.store,
+            )
+            .unwrap_or_default();
+            self.data_groups
+                .resume_active(&self.transport, TICK, &truncations);
             if Instant::now() >= self.next_group_reconcile {
                 self.next_group_reconcile = Instant::now() + Duration::from_millis(100);
                 self.group_control_error =

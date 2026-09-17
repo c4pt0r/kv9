@@ -56,6 +56,8 @@ service Kv9 {
   rpc CaptureMigrationImage(CaptureMigrationImageRequest) returns (CaptureMigrationImageResponse);
   rpc EmitInstallEvidence(EmitInstallEvidenceRequest) returns (EmitInstallEvidenceResponse);
   rpc RecordInstallEvidence(RecordInstallEvidenceRequest) returns (RecordInstallEvidenceResponse);
+  rpc RecordSourceTruncation(RecordSourceTruncationRequest) returns (RecordSourceTruncationResponse);
+  rpc TruncateSourceLog(TruncateSourceLogRequest) returns (TruncateSourceLogResponse);
 }
 
 message Empty {}
@@ -184,6 +186,31 @@ message RecordInstallEvidenceResponse {
   uint64 task = 1;
   // False confirms the identical committed row; a NEW confirmation commit.
   bool changed = 2;
+}
+
+// Commit one source-truncation decision at the metadata leader. Its floor
+// is bounded by the committed evidence cut; nothing is compacted here.
+message RecordSourceTruncationRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+  uint64 floor_term = 3;
+  uint64 floor_index = 4;
+}
+message RecordSourceTruncationResponse {
+  uint64 task = 1;
+  bool changed = 2;
+}
+
+// Compact the SOURCE GROUP LEADER's own retained log below the committed
+// floor. Leader-only; every tracked peer must have matched the floor.
+message TruncateSourceLogRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+}
+message TruncateSourceLogResponse {
+  uint64 floor_term = 1;
+  uint64 floor_index = 2;
+  uint64 first_index = 3; // The retained log's first index afterwards.
 }
 
 message BindMigrationImageResponse {

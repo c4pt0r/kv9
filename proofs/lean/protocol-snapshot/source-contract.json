@@ -15,10 +15,10 @@
     "snapshot_reply_is_exact"
   ],
   "source_sha256": {
-    "crates/raft/src/storage.rs": "f8710c41ba4dfb4968cfc1ae2e8ee8ab2a6064d6507819e35372e8860c06fe9a",
+    "crates/raft/src/storage.rs": "cccda23ba027239bc3076eecd12f3c536b2b5308426a0425aa3928a2a5777e7b",
     "crates/raft/src/storage/snapshot.rs": "abf9eff13c2599cd25f65fcaef6a034548c3215220352c62515e5bf0207e3ce6",
     "crates/raft/src/storage/snapshot/tests.rs": "418d17f65a5d3ce035a5e824f75b9a0a5b9664bcafa5c7476e59faedd6f9a732",
-    "crates/raft/src/rawnode.rs": "9b0ba8af931a3972a11e3882cfde0b3c360f0a22ae34d574308385255d237c90",
+    "crates/raft/src/rawnode.rs": "94f4a06be6c4f7386690b0e4c2315d4c932df2e333986d75a4717e568d2a8474",
     "proofs/lean/protocol-snapshot/Snapshot.lean": "be852412d0111a721c889555489780f4b1bdeb67d3b904c4e6cac27388cee2c8",
     "scripts/prove-protocol-snapshot.py": "d0bf9b6c48ecad1ec9cd5a2082a49ca75d9dcfd64e2174a4c20251c5e102ef1e",
     "proofs/lean/protocol-snapshot/README.md": "938a7faa3d3adf1e145f46404d979bd18e0b69547afddc8e1b5b795228700547"

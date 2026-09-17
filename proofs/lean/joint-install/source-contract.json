@@ -22,7 +22,7 @@
     "crates/raft/examples/joint-install-probe.rs": "0cf89987b8c2b92dd9d49a1b131187a446d269e67680f23e93d3bc0fe04b018b",
     "crates/common/src/store_lifecycle.rs": "a01462d0c6ac63e2fc3f6d5edc24d1dac3e494785efddd969ebcacfda7653d12",
     "crates/raft/src/storage/snapshot.rs": "abf9eff13c2599cd25f65fcaef6a034548c3215220352c62515e5bf0207e3ce6",
-    "crates/raft/src/rawnode.rs": "9b0ba8af931a3972a11e3882cfde0b3c360f0a22ae34d574308385255d237c90",
+    "crates/raft/src/rawnode.rs": "94f4a06be6c4f7386690b0e4c2315d4c932df2e333986d75a4717e568d2a8474",
     "crates/engine/src/persist.rs": "49b7c0af87c6606a0a64f188164708fcc8134170c12d3750a3db313d5b274f47",
     "crates/engine/src/checkpoint.rs": "c56c6b0419962d20e6cf98cfc609316b57c2627395d4f8cfea4eccdb8e34793e",
     "proofs/lean/joint-install/Installation.lean": "e9b5196e5d362b0633e339cc0b87e454e09e4790efe9196b910d3404f1d3e249",

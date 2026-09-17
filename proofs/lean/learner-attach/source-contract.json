@@ -13,16 +13,16 @@
     "an_intent_alone_attaches_nothing"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "586be3907407b0145a8bb448e2633ee74042b4ea532de969dc51ec42ec1dcca3",
+    "crates/server/src/runtime.rs": "e3c0d2f1eeae79d78a93bb0d94a540a1ae5003b6523124ff397ce0099ff1009f",
     "crates/server/src/runtime/tests/data_group_tests.rs": "fe79781ed514c2d565e5d04e5106f003b6ad117df5fa2d3e69aff2a38082b10d",
-    "crates/server/src/api.rs": "3c68cd0aa974e73ef6c218f9b50e8fe07391ae5aa9b4a4a1d961d5cd16c26bcd",
-    "crates/server/src/grpc.rs": "64802e2b2ec5ac4ab4b26b40bca48673b2921e51af31c9e90b1ea520169707be",
-    "crates/server/src/data_groups.rs": "2b21914e2b90738c8ae20f162a999c91bb7654f42b22ce9d751985af030c81d3",
-    "crates/server/proto/kv9.proto": "f0991cfad5e5a2d04f0e3186e0a603454aede5f2736520a8a7851fe806bb7495",
+    "crates/server/src/api.rs": "455d927a14bbff2c397b77c6dd07ed6dd4b1a2b3209a66a62aca5fb621085428",
+    "crates/server/src/grpc.rs": "4000e9d3ed4279eab56904061a43a66353e15f1b06894294a24f5276b2db22c6",
+    "crates/server/src/data_groups.rs": "dcc8974324beab5c64890f3566af0e0db7bbcecc5f935925e29bceba193b40aa",
+    "crates/server/proto/kv9.proto": "44f7a8492e9bfc7a0118d2423514a50c6ac6c10ab07d31e875b2c57a8a83b2d1",
     "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
     "crates/raft/src/driver.rs": "57e037daf0a8fb3f98cd3f6c567a6a0194807ec4fcbf2bbb6c5099afbc54972c",
-    "src/data_group_cli.rs": "1ba63900f6f3656e45d931761c9cfea5e853927ff2fe70bc59b222ae1f97000e",
-    "src/main.rs": "4e78f7855b59f1c86cdc655258ce0a05e70b33d5ace35afcf21431a51002e90f",
+    "src/data_group_cli.rs": "dbe644a0e1a1414883a8a87a94306b6c185525400ed68a3c2c0d8b9d7ff7f2a5",
+    "src/main.rs": "aa97652e871bac746db594bdac79fa875c789f83f43ced56c8713bf28e0895fd",
     "scripts/learner-attach-e2e.py": "eb2bc0387a9f34b9efe115f8a010d60ebe833e16df0468e03ab27f966e933fdb",
     "proofs/lean/learner-attach/Attach.lean": "c3b9195c163e1ac0bf4359a29756df1e1137e5486e67f293693e40a06dba0dcf",
     "proofs/lean/learner-attach/README.md": "d190670d1962007bf4f4d172316c509049338a6ad97fff0d9bca414d07953796"
