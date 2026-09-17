@@ -249,6 +249,21 @@ pub struct CreateDataGroupResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MigrateDataGroupResult {
+    pub intent: kv9_meta::data_groups::migration::MigrationIntent,
+    /// False denotes a NEW confirmation, not the original mutation receipt.
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BindMigrationImageResult {
+    /// Tracking-only published ledger owners; no transfer or release follows.
+    pub source_owner: kv9_common::retention::OwnerId,
+    pub destination_owner: kv9_common::retention::OwnerId,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CreateDataKeyspaceResult {
     pub range: kv9_common::data_range::DataRange,
     pub changed: bool,
@@ -339,6 +354,29 @@ pub trait AdminApi {
     ) -> Result<CreateDataGroupResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::create_data_group",
+        ))
+    }
+    fn migrate_data_group(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _creation_task: u64,
+        _destination: kv9_common::NodeId,
+    ) -> Result<MigrateDataGroupResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::migrate_data_group",
+        ))
+    }
+    fn bind_migration_image(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _manifest: &[u8],
+    ) -> Result<BindMigrationImageResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::bind_migration_image",
         ))
     }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {

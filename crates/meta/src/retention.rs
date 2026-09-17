@@ -800,6 +800,18 @@ pub fn plan_retention(
                     "quiescence lacks a published successor for the complete subject",
                 ));
             }
+            // Migration pins have no transfer-settlement seam yet: a published
+            // destination owner is a description of intent, not durable
+            // destination-install evidence, and cannot quiesce its source.
+            if matches!(
+                source.binding.descriptor.kind,
+                OwnerKind::Snapshot | OwnerKind::Migration
+            ) || target.binding.descriptor.kind == OwnerKind::Migration
+            {
+                return Err(conflict(
+                    "migration pins cannot quiesce without committed install evidence",
+                ));
+            }
             p.transition(*from, PinPhase::Quiesced)?;
         }
         LedgerRequest::Release(token) => p.transition(*token, PinPhase::Released)?,
@@ -895,7 +907,9 @@ mod tests {
             descriptor: OwnerDescriptor {
                 root: root.digest(),
                 id: OwnerId::new([n; 16]).unwrap(),
-                kind: OwnerKind::Snapshot,
+                // Pending has a real settlement seam (the checkpoint worker);
+                // Snapshot/Migration transfers are separately fenced below.
+                kind: OwnerKind::Pending,
                 region: 1,
                 conf_ver: 1,
                 version: 1,
@@ -1237,6 +1251,56 @@ mod tests {
             }
         )
         .is_err());
+    }
+
+    #[test]
+    fn migration_pins_cannot_quiesce_or_release_without_install_evidence() {
+        let (engine, root) = fixture();
+        initialized(&engine, &root);
+        for (n, source_kind, target_kind) in [
+            (1, OwnerKind::Snapshot, OwnerKind::Snapshot),
+            (5, OwnerKind::Migration, OwnerKind::Migration),
+            (9, OwnerKind::Pending, OwnerKind::Migration),
+        ] {
+            let mut a = binding(&root, n);
+            a.descriptor.kind = source_kind;
+            let mut b = binding(&root, n + 1);
+            b.descriptor.kind = target_kind;
+            apply(&engine, &root, LedgerRequest::Acquire(a.clone()));
+            apply(&engine, &root, LedgerRequest::Publish(a.token()));
+            apply(
+                &engine,
+                &root,
+                LedgerRequest::Share {
+                    from: a.token(),
+                    to: b.clone(),
+                },
+            );
+            apply(&engine, &root, LedgerRequest::Publish(b.token()));
+            // A published migration successor is a description of intent, not
+            // durable install evidence: quiesce and release must both refuse.
+            assert!(
+                plan(
+                    &engine,
+                    &root,
+                    &LedgerRequest::QuiesceAfterTransfer {
+                        from: a.token(),
+                        to: b.token()
+                    }
+                )
+                .is_err(),
+                "{source_kind:?}->{target_kind:?} quiesced without settlement"
+            );
+            assert!(plan(&engine, &root, &LedgerRequest::Release(a.token())).is_err());
+            assert_eq!(
+                owner(&engine, &root, a.descriptor.id).phase,
+                PinPhase::Published
+            );
+            assert_eq!(
+                owner(&engine, &root, b.descriptor.id).phase,
+                PinPhase::Published
+            );
+        }
     }
 
     #[test]

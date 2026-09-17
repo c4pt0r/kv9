@@ -1566,6 +1566,84 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn migrate_data_group(
+        &self,
+        request: Request<proto::MigrateDataGroupRequest>,
+    ) -> Result<Response<proto::MigrateDataGroupResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16] || root.as_bytes() == &[0; 32] || request.destination_node == 0 {
+            return Err(Status::invalid_argument(
+                "nonzero root, operation and destination required",
+            ));
+        }
+        let (creation_task, destination) =
+            (request.creation_task, NodeId(request.destination_node));
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.migrate_data_group(&caller, root, operation, creation_task, destination)
+            })
+            .await?;
+        Ok(Response::new(proto::MigrateDataGroupResponse {
+            migration_intent: result.intent.encode(),
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+        }))
+    }
+
+    async fn bind_migration_image(
+        &self,
+        request: Request<proto::BindMigrationImageRequest>,
+    ) -> Result<Response<proto::BindMigrationImageResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16]
+            || root.as_bytes() == &[0; 32]
+            || request.manifest.is_empty()
+            || request.manifest.len() > kv9_raft::storage::MAX_PROTOCOL_SNAPSHOT_BYTES
+        {
+            return Err(Status::invalid_argument(
+                "nonzero identities and a bounded manifest required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.bind_migration_image(&caller, root, operation, &request.manifest)
+            })
+            .await?;
+        Ok(Response::new(proto::BindMigrationImageResponse {
+            source_owner: result.source_owner.as_bytes().to_vec(),
+            destination_owner: result.destination_owner.as_bytes().to_vec(),
+        }))
+    }
+
     async fn create_keyspace(
         &self,
         request: Request<proto::CreateKeyspaceRequest>,

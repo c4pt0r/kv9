@@ -12,6 +12,38 @@ use kv9_meta::retention::{
 
 use crate::api::AdminApi;
 
+/// The exact sorted SST closure of one canonical manifest, as ledger
+/// resources. Derivation is deterministic; it grants nothing by itself.
+pub(crate) fn manifest_resources(
+    root: RootDigest,
+    manifest: &CheckpointManifest,
+) -> Result<Vec<ResourceIdentity>> {
+    let mut resources = Vec::with_capacity(manifest.files.len());
+    for file in &manifest.files {
+        let mut content = [0; 32];
+        for (n, pair) in file.sha256.as_bytes().chunks_exact(2).enumerate() {
+            // Canonical lowercase hexadecimal was validated by the codec.
+            let nibble = |c: u8| {
+                if c.is_ascii_digit() {
+                    c - b'0'
+                } else {
+                    c - b'a' + 10
+                }
+            };
+            content[n] = nibble(pair[0]) * 16 + nibble(pair[1]);
+        }
+        let instance = RootDigest::sha256(file.key.as_bytes()).as_bytes()[..16]
+            .try_into()
+            .unwrap();
+        resources.push(
+            ResourceIdentity::new(root, ResourceKind::Sst, instance, content)
+                .map_err(|e| Error::Engine(e.to_string()))?,
+        );
+    }
+    resources.sort_by_key(|r| *r.instance());
+    Ok(resources)
+}
+
 pub(crate) struct CheckpointOwners {
     root: RootDigest,
     pending: OwnerBinding,
@@ -38,29 +70,7 @@ impl CheckpointOwners {
         let root = root.digest();
         let operation: [u8; 32] = manifest.change_id(generation)?.try_into().unwrap();
         let subject = *RootDigest::sha256(&manifest.encode()?).as_bytes();
-        let mut resources = Vec::with_capacity(manifest.files.len());
-        for file in &manifest.files {
-            let mut content = [0; 32];
-            for (n, pair) in file.sha256.as_bytes().chunks_exact(2).enumerate() {
-                // Canonical lowercase hexadecimal was validated by the codec.
-                let nibble = |c: u8| {
-                    if c.is_ascii_digit() {
-                        c - b'0'
-                    } else {
-                        c - b'a' + 10
-                    }
-                };
-                content[n] = nibble(pair[0]) * 16 + nibble(pair[1]);
-            }
-            let instance = RootDigest::sha256(file.key.as_bytes()).as_bytes()[..16]
-                .try_into()
-                .unwrap();
-            resources.push(
-                ResourceIdentity::new(root, ResourceKind::Sst, instance, content)
-                    .map_err(|e| Error::Engine(e.to_string()))?,
-            );
-        }
-        resources.sort_by_key(|r| *r.instance());
+        let resources = manifest_resources(root, &manifest)?;
         let binding = |kind: OwnerKind, label: &[u8]| -> Result<OwnerBinding> {
             let mut identity = label.to_vec();
             identity.extend(root.as_bytes());

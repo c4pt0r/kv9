@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "members_verified": 743,
+  "archive_sha256": "4004e9420de2b97b0d57803495ae24797f500fa89ac737cf3126ea414a570f53",
+  "embedded_receipts_reverified": {
+    "local_validation_files": 16,
+    "e2e_verdict": "accepted",
+    "e2e_checks": 7,
+    "migration_authority_theorems": 14
+  }
+}

@@ -950,3 +950,217 @@ fn routed_client_keeps_its_lifetime_across_each_endpoint_loss() {
     drop(client);
     drop(executor);
 }
+
+#[test]
+fn migration_intents_bind_committed_image_owners_only() {
+    use crate::data_groups::DataGroupClient;
+    use kv9_common::retention::PinPhase;
+    use kv9_engine::checkpoint::{CheckpointManifest, FlushScope, SstReference};
+    use kv9_meta::retention::OwnerKind;
+
+    let mut cluster = ActiveCluster::start();
+    let root = cluster.root.digest();
+    let leader = cluster_leader(&cluster.runtimes).unwrap();
+    let mut admin =
+        DataGroupClient::connect(&cluster.runtimes[leader].addr.to_string(), "active-test")
+            .unwrap();
+    let creation = admin
+        .create(root, [91; 16], &[NodeId(1), NodeId(2), NodeId(3)])
+        .unwrap()
+        .intent;
+
+    // A migration destination must be a genuinely admitted, registered store
+    // outside the initial replica set: run the production join flow for node 4.
+    let listener = bound_listener_for_e2e();
+    let addr4 = listener.local_addr().unwrap();
+    let admitted = backend_view(&cluster.runtimes[leader], &cluster.root)
+        .admit_node("active-test", NodeId(4), &addr4.to_string(), 600)
+        .unwrap();
+    let ticket = admitted.join_ticket.unwrap();
+    let incarnation4 = prepare_test_store(&cluster.base.join("n4"), NodeId(4));
+    let identity4 = StoreIdentity::for_joiner(&cluster.root, NodeId(4), incarnation4).unwrap();
+    let node4 = NodeRuntime::start_core(
+        NodeId(4),
+        Config {
+            advertise_addr: None,
+            addr: addr4.to_string(),
+            data_dir: cluster.base.join("n4").to_string_lossy().into_owned(),
+            join: vec![],
+            wal_streams: 1,
+            replication_factor: 3,
+        },
+        RuntimeAuth {
+            cluster_token: "active-groups-cluster".into(),
+            client_tokens: vec![("active-test".into(), "active-groups-client".into())],
+        },
+        cluster.root.clone(),
+        identity4,
+        Some(&ticket),
+        StartOverrides {
+            listener: Some(listener),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    cluster.runtimes.push(node4);
+    wait_for(
+        &mut cluster.runtimes,
+        45,
+        "joiner endpoint active before migration",
+        |rts| {
+            rts[..3].iter().all(|rt| {
+                let txn = rt.node.meta_raft.store.begin().unwrap();
+                kv9_meta::endpoint::node_endpoint(&txn, NodeId(4))
+                    .unwrap()
+                    .is_some_and(|e| e.active && e.incarnation == incarnation4)
+            })
+        },
+    );
+
+    // Intent refusals: unknown creation, initial-replica destination.
+    let leader = cluster_leader(&cluster.runtimes).unwrap();
+    let mut admin =
+        DataGroupClient::connect(&cluster.runtimes[leader].addr.to_string(), "active-test")
+            .unwrap();
+    assert!(admin
+        .migrate(root, [7; 16], creation.task() + 999, NodeId(4))
+        .is_err());
+    assert!(admin
+        .migrate(root, [7; 16], creation.task(), NodeId(1))
+        .is_err());
+    let first = admin
+        .migrate(root, [7; 16], creation.task(), NodeId(4))
+        .unwrap();
+    assert!(first.changed);
+    assert_eq!(first.intent.region(), creation.region());
+    assert_eq!(first.intent.destination().incarnation, incarnation4);
+    let retry = admin
+        .migrate(root, [7; 16], creation.task(), NodeId(4))
+        .unwrap();
+    assert!(!retry.changed, "an exact retry is a confirmation receipt");
+    assert_eq!(retry.intent, first.intent);
+    assert!(retry.applied.index > first.applied.index);
+    assert!(
+        admin
+            .migrate(root, [8; 16], creation.task(), NodeId(4))
+            .is_err(),
+        "one live migration per group"
+    );
+
+    // Image binding requires the committed range; build the exact manifest.
+    let sst = |content: &[u8], smallest: &[u8], largest: &[u8]| {
+        let sha = RootDigest::sha256(content).to_string();
+        SstReference {
+            key: format!(
+                "clusters/{}/regions/{}/sst/{sha}",
+                cluster.root.cluster_id,
+                creation.region().0
+            ),
+            sha256: sha,
+            cf: 0,
+            smallest: smallest.to_vec(),
+            largest: largest.to_vec(),
+            size: 1024,
+            count: 3,
+        }
+    };
+    let manifest = |index: u64, conf_ver: u64, version: u64| {
+        CheckpointManifest {
+            scope: FlushScope {
+                cluster: cluster.root.cluster_id.to_string(),
+                region: creation.region().0,
+                conf_ver,
+                version,
+            },
+            term: 3,
+            index,
+            files: vec![sst(b"migration-sst", b"a", b"m")],
+        }
+        .encode()
+        .unwrap()
+    };
+    assert!(
+        admin
+            .bind_image(root, [7; 16], &manifest(10, 1, 1))
+            .is_err(),
+        "binding before the committed range must refuse"
+    );
+    let keyspace = admin
+        .create_keyspace(root, creation.task(), "migrate-src", TenantId::DEFAULT)
+        .unwrap();
+    let image = manifest(10, keyspace.range.conf_ver, keyspace.range.version);
+    assert!(
+        admin.bind_image(root, [9; 16], &image).is_err(),
+        "an uncommitted operation cannot bind owners"
+    );
+    let bound = admin.bind_image(root, [7; 16], &image).unwrap();
+    let owner = |id| {
+        let leader = cluster_leader(&cluster.runtimes).unwrap();
+        let txn = cluster.runtimes[leader]
+            .node
+            .meta_raft
+            .store
+            .begin()
+            .unwrap();
+        kv9_meta::retention::retention_owner(txn.into_view().as_ref(), &cluster.root, id)
+            .unwrap()
+            .expect("bound owner must be committed")
+    };
+    let source = owner(bound.source_owner);
+    let destination = owner(bound.destination_owner);
+    assert_eq!(source.phase, PinPhase::Published);
+    assert_eq!(destination.phase, PinPhase::Published);
+    assert_eq!(source.binding.descriptor.kind, OwnerKind::Snapshot);
+    assert_eq!(destination.binding.descriptor.kind, OwnerKind::Migration);
+    assert_eq!(
+        source.binding.descriptor.subject,
+        *RootDigest::sha256(&image).as_bytes()
+    );
+    assert_eq!(
+        source.binding.descriptor.subject,
+        destination.binding.descriptor.subject
+    );
+    assert_eq!(source.binding.resources, destination.binding.resources);
+    assert_eq!(source.binding.resources.len(), 1);
+
+    // Rebinding the same image is idempotent; a different image, a foreign
+    // scope or release-without-settlement must refuse.
+    let again = admin.bind_image(root, [7; 16], &image).unwrap();
+    assert_eq!(again, bound);
+    assert!(
+        admin
+            .bind_image(
+                root,
+                [7; 16],
+                &manifest(11, keyspace.range.conf_ver, keyspace.range.version)
+            )
+            .is_err(),
+        "the same operation can never name a second image"
+    );
+    assert!(
+        admin
+            .bind_image(root, [7; 16], &manifest(10, 7, 7))
+            .is_err(),
+        "a manifest scope differing from the committed range must refuse"
+    );
+    for request in [
+        kv9_meta::retention::LedgerRequest::QuiesceAfterTransfer {
+            from: source.binding.token(),
+            to: destination.binding.token(),
+        },
+        kv9_meta::retention::LedgerRequest::Release(source.binding.token()),
+    ] {
+        let encoded = kv9_meta::retention::encode_request(root, &request).unwrap();
+        assert!(
+            backend_view(
+                &cluster.runtimes[cluster_leader(&cluster.runtimes).unwrap()],
+                &cluster.root
+            )
+            .apply_retention("active-test", encoded)
+            .is_err(),
+            "no admin path quiesces or releases a migration pin in this increment"
+        );
+    }
+    assert_eq!(owner(bound.source_owner).phase, PinPhase::Published);
+    assert_eq!(owner(bound.destination_owner).phase, PinPhase::Published);
+}

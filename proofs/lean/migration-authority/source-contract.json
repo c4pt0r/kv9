@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "model": "Kv9.MigrationAuthority",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "owners_require_committed_intent",
+    "destination_requires_published_source",
+    "destination_binds_the_exact_image",
+    "no_quiesce_or_release_is_reachable",
+    "no_voting_or_serving_capability",
+    "intent_is_monotone",
+    "subject_is_monotone",
+    "published_source_is_monotone",
+    "published_destination_is_monotone",
+    "a_description_alone_binds_nothing",
+    "confirmation_is_not_a_new_mutation"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups.rs": "b6a8a1a13249fa80574c09ba9394516af1ba456c615a5a895b9b121c372f6688",
+    "crates/meta/src/data_groups/migration.rs": "3c3dc01304ffba1115db33dacfb768b960a901e6ebd8bd762f9da509c840413d",
+    "crates/meta/src/data_groups/activation.rs": "42bc11fd8959117ac4cb6b1e2d6ec5967b0df32601e39fced9c84f84cf97a9b4",
+    "crates/meta/src/data_groups/ranges.rs": "d32aa34b4bb469772f14c0bc0cd4414bc6e48afc916ee33a9cc849bf312e67a3",
+    "crates/meta/src/retention.rs": "5a9cf5f6626de8c25e4c5b16539b14610aaf2ba2fb3ab6383d5d979e1540a56d",
+    "crates/common/src/retention.rs": "7260025252aae933c9c21f1109122300d3ba6179ad849c5efd4bec1999a108fa",
+    "crates/server/src/migration_retention.rs": "1e5ca22f2b0ab008c02ee425d527b0e61303e1b707f8797fe930ffe15977e37c",
+    "crates/server/src/checkpoint_retention.rs": "a5e46fd8bb0bbe3c6198d1e13ba0dcdf1fc42447ba670bd760ea02ad9b216390",
+    "crates/server/src/runtime/tests/data_group_tests.rs": "b6998079f663d9dda2e7e07ceb686340c4d404ca6a326f23a9c32780f9688f68",
+    "proofs/lean/migration-authority/Authority.lean": "18a8c85abbe8bf0d47995b09cad6891ea708e599412a4794f0c92205821bfbd9",
+    "proofs/lean/migration-authority/README.md": "e8f3bb5ca08dc26075c17c33aac94a2fbb64c15134738e0dd67127d23060b568"
+  }
+}

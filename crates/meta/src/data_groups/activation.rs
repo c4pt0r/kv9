@@ -27,7 +27,7 @@ fn rows<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<Row>> {
     Ok(rows)
 }
 
-fn decode<E: Engine>(
+pub(super) fn decode<E: Engine>(
     txn: &MetaTxn<'_, E>,
     rows: &[Row],
     root: RootDigest,
