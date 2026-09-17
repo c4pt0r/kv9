@@ -40,11 +40,11 @@
     "crates/meta/src/root.rs": "3d623190e1913f0fc27284b5a47b880d192708394fc716b4fceda6ef48004452",
     "crates/meta/src/checkpoint.rs": "79697c1e933f83cc417fd30c12861fdffad9c16ee30fcae75668c652c473d4c4",
     "crates/meta/src/store.rs": "ec6100e2caab7e028aaf89f18e7095fa161a542b33f30ed4dadf412519e3bc1b",
-    "crates/server/src/runtime.rs": "76b7070ff4dd874c94d12f36d0ae642c423ffc94eafba1b5e1d63fd79b2431f8",
+    "crates/server/src/runtime.rs": "0df1bb3e64dd648b6d49f36e1aa7f85568a3402b85375ee970b597159bab0b86",
     "crates/server/src/retention.rs": "3895b12ab28af59333133c088166f798013c9911bd2aa1169ef1012c9b780a5e",
-    "crates/server/src/grpc.rs": "4120d1646c3f96a64331a62e95f1d821f4b2970d669460d8f2d7415063de3502",
-    "crates/server/proto/kv9.proto": "c11d69f8109631cbd3d6d81dc8a5b2016bf5a68068276fb8eb754401883ebb89",
-    "crates/server/src/api.rs": "11b87ec906407c05ce54f0db38ebfbf1dc3028e703d4d7fdae8772a5231dcd13",
+    "crates/server/src/grpc.rs": "013417c739429edf259bdf954596ff62950ca6554fe1e925f3630d2116be7bf1",
+    "crates/server/proto/kv9.proto": "d81a365eb42fcb911cad7487299ba18c1cc421446b617575c4ed0d91eaf3d340",
+    "crates/server/src/api.rs": "9d8172e56ffa0115f47983757099cae1bba75459e7e3e4558fad499c78728092",
     "crates/server/src/runtime/tests/retention_tests.rs": "11a449472d51f039d277ddb8a507f04c4323b54c8c1fbbf54c0a1ecbf1388b03"
   }
 }

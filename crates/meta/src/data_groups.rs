@@ -16,6 +16,7 @@ pub mod evidence;
 pub mod migration;
 pub mod ranges;
 pub mod removal;
+pub mod split;
 pub mod truncation;
 
 /// Stable task kind and encoding. This uses the existing tasks table, not a

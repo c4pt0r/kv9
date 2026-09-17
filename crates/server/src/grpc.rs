@@ -1983,6 +1983,56 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn record_split_intent(
+        &self,
+        request: Request<proto::RecordSplitIntentRequest>,
+    ) -> Result<Response<proto::RecordSplitIntentResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16]
+            || root.as_bytes() == &[0; 32]
+            || request.parent_region == 0
+            || request.split_key.is_empty()
+            || request.split_key.len() > kv9_meta::data_groups::split::MAX_SPLIT_KEY_BYTES
+            || request.child_low_task == 0
+            || request.child_high_task == 0
+        {
+            return Err(Status::invalid_argument(
+                "nonzero root, operation, parent, children and a bounded split key required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.record_split_intent(
+                    &caller,
+                    root,
+                    operation,
+                    kv9_common::RegionId(request.parent_region),
+                    &request.split_key,
+                    request.child_low_task,
+                    request.child_high_task,
+                )
+            })
+            .await?;
+        Ok(Response::new(proto::RecordSplitIntentResponse {
+            task: result.intent.task(),
+            changed: result.changed,
+        }))
+    }
+
     async fn bind_migration_image(
         &self,
         request: Request<proto::BindMigrationImageRequest>,

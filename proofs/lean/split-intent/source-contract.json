@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "model": "Kv9.SplitIntent",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "an_intent_requires_the_bound_parent_and_ready_children",
+    "nothing_seals_here",
+    "nothing_republishes_or_reroutes_here",
+    "no_serving_capability",
+    "an_intent_is_permanent",
+    "one_intent_per_parent",
+    "readiness_alone_records_nothing",
+    "the_committed_chain_reaches_the_intent"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups.rs": "2bd44fb8d01301b0e2e8b9a015ff704a0ff5d3d727c32b58fcd7c8674186fa8a",
+    "crates/meta/src/data_groups/split.rs": "8599e6b58f6a9cfc2539c6cffc0841f090f6dc146f6a638e3dc5b027651184f0",
+    "crates/meta/src/data_groups/ranges.rs": "16b1112b86b6a430aae08df9c90430420c07469451cc33c79401aa90e3f894ac",
+    "crates/server/src/runtime.rs": "0df1bb3e64dd648b6d49f36e1aa7f85568a3402b85375ee970b597159bab0b86",
+    "crates/server/src/api.rs": "9d8172e56ffa0115f47983757099cae1bba75459e7e3e4558fad499c78728092",
+    "crates/server/src/grpc.rs": "013417c739429edf259bdf954596ff62950ca6554fe1e925f3630d2116be7bf1",
+    "crates/server/src/data_groups.rs": "f02d7023ab7f878348c8e64f556ea64a9901a0be110d59511ab3d284a7c2959a",
+    "crates/server/proto/kv9.proto": "d81a365eb42fcb911cad7487299ba18c1cc421446b617575c4ed0d91eaf3d340",
+    "src/data_group_cli.rs": "f00e4a1a591119fabf29d8885370f461f645b141cddc9976c69686fed9452966",
+    "src/main.rs": "e707105d02b5e184449249719330f1c998c5c04ae42b049cfdef6c6b4fddece9",
+    "scripts/split-intent-e2e.py": "98d7cda8b7ec3be1cf0bff213d340ca86526b4973bc9b0065c532f6c96f56782",
+    "proofs/lean/split-intent/Split.lean": "ce0c610452d089b7062d5535cdf0485b8f29948eaf0cabb217848ec84d91b4b5",
+    "proofs/lean/split-intent/README.md": "9c7a2e3ed698d078486c7cf2539dc1ce48f05fc67bd7bbca3080c1f1597092f2"
+  }
+}

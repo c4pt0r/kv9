@@ -14,6 +14,7 @@ pub const DATA_KEYSPACE_CONFIG: &[u8] = b"KV9DATA01";
 pub struct CommittedRange {
     creation: CommittedCreation,
     range: DataRange,
+    bind_task: u64,
 }
 impl CommittedRange {
     pub fn creation(&self) -> &CommittedCreation {
@@ -21,6 +22,10 @@ impl CommittedRange {
     }
     pub fn range(&self) -> &DataRange {
         &self.range
+    }
+    /// The kind-102 row that committed this binding.
+    pub fn bind_task(&self) -> u64 {
+        self.bind_task
     }
 }
 
@@ -83,6 +88,7 @@ fn read_in<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<CommittedRange>> {
         bindings.push(CommittedRange {
             creation: CommittedCreation(creation),
             range,
+            bind_task: *task,
         });
     }
     Ok(bindings)
@@ -103,6 +109,13 @@ pub fn route_in<E: Engine>(
 
 pub fn committed_ranges<E: Engine>(store: &MetaStore<E>) -> Result<Vec<CommittedRange>> {
     read_in(&store.begin()?)
+}
+
+/// Sibling planners (the split module) reuse the exact committed reader.
+pub(crate) fn committed_ranges_in_txn<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+) -> Result<Vec<CommittedRange>> {
+    read_in(txn)
 }
 
 /// Caller holds the metadata planner lock through same-term committed apply.
