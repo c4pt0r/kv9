@@ -36,6 +36,13 @@ impl RawDirectory {
     pub(crate) fn clear(&self) {
         self.0.lock().expect("raw directory poisoned").clear();
     }
+    pub(crate) fn by_region(&self, region: RegionId) -> Option<Arc<RawGroup>> {
+        self.0
+            .lock()
+            .expect("raw directory poisoned")
+            .get(&region)
+            .cloned()
+    }
 }
 
 pub(crate) struct RawGroup {
@@ -56,6 +63,18 @@ impl RawGroup {
             engine,
             driver,
         })
+    }
+    /// Read-only handles for driver-owned source capture. This grants no
+    /// write, serving or installation capability beyond what each part
+    /// already enforces itself.
+    pub(crate) fn capture_parts(
+        &self,
+    ) -> (
+        &Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
+        &Arc<WalEngine>,
+        &DataRange,
+    ) {
+        (&self.driver, &self.engine, &self.binding)
     }
     pub(crate) fn leader(&self) -> Option<NodeId> {
         self.driver.status().leader_id

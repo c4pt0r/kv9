@@ -51,6 +51,8 @@ service Kv9 {
   // pin-release capability. Old servers must refuse these distinct methods.
   rpc MigrateDataGroup(MigrateDataGroupRequest) returns (MigrateDataGroupResponse);
   rpc BindMigrationImage(BindMigrationImageRequest) returns (BindMigrationImageResponse);
+  rpc PlanMigrationImage(PlanMigrationImageRequest) returns (PlanMigrationImageResponse);
+  rpc CaptureMigrationImage(CaptureMigrationImageRequest) returns (CaptureMigrationImageResponse);
 }
 
 message Empty {}
@@ -109,6 +111,38 @@ message BindMigrationImageRequest {
   bytes operation_id = 2; // The committed migration operation.
   bytes manifest = 3; // Canonical checkpoint manifest description.
 }
+// Plan (only) the group leader's current durable cut manifest so the caller
+// can bind image owners through the metadata leader before capturing.
+message PlanMigrationImageRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+}
+message PlanMigrationImageResponse {
+  bytes manifest = 1; // Canonical checkpoint manifest; a description only.
+  uint64 cut_term = 2;
+  uint64 cut_index = 3;
+}
+
+// Capture one committed migration's source image at the group leader's
+// exact durable applied cut. Pins the closure before uploading; the record
+// grants no serving, voting, install or release capability.
+message CaptureMigrationImageRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2; // The committed migration operation.
+}
+message CaptureMigrationImageResponse {
+  bytes record = 1; // Canonical KV9RSN01 snapshot record for the installer.
+  bytes image_digest = 2;
+  uint64 cut_term = 3;
+  uint64 cut_index = 4;
+  // 0 when the attached configuration is the group's initial one.
+  uint64 configuration_applied_index = 5;
+  uint64 objects = 6;
+  uint64 object_bytes = 7;
+  bytes source_owner = 8;
+  bytes destination_owner = 9;
+}
+
 message BindMigrationImageResponse {
   bytes source_owner = 1; // 16-byte ledger owner IDs, both Published.
   bytes destination_owner = 2;

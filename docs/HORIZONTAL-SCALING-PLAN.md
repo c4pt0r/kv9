@@ -59,9 +59,15 @@ The [committed migration authority increment](MIGRATION-AUTHORITY.md) now
 replicates at most one migration intent per group, bound to the destination's
 exact store incarnation, and pins one described image's complete SST closure
 under exact source/destination retention owners; quiescing or releasing those
-pins is fenced until committed destination-install evidence exists. Next are
-unified-cut source capture, destination-install evidence with a committed
-release decision, runtime installation and learner/membership transitions.
+pins is fenced until committed destination-install evidence exists. The
+[unified-cut source capture increment](SOURCE-CAPTURE.md) now captures a live
+group's image at its exact durable cut with the configuration committed
+at-or-before that cut, pins before uploading across split group/metadata
+leadership, and closes the component loop: a captured image installs through
+the unchanged joint installer at a learner destination with full value
+readback. Next are learner attach with runtime installation through
+RegionManager, destination-install evidence with a committed release
+decision, then catchup, promotion, removal and split publication.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

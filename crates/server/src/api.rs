@@ -257,6 +257,28 @@ pub struct MigrateDataGroupResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PlanMigrationImageResult {
+    /// Canonical checkpoint manifest for the group's current durable cut.
+    /// A description for owner binding; no object exists for it yet.
+    pub manifest: Vec<u8>,
+    pub cut: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CaptureMigrationImageResult {
+    /// Canonical bounded snapshot record (KV9RSN01) the installer consumes.
+    pub record: Vec<u8>,
+    pub image_digest: kv9_common::RootDigest,
+    pub cut: AppliedPosition,
+    /// Commit position of the attached configuration; None for the initial one.
+    pub configuration_applied_at: Option<AppliedPosition>,
+    pub objects: u64,
+    pub object_bytes: u64,
+    pub source_owner: kv9_common::retention::OwnerId,
+    pub destination_owner: kv9_common::retention::OwnerId,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -366,6 +388,26 @@ pub trait AdminApi {
     ) -> Result<MigrateDataGroupResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::migrate_data_group",
+        ))
+    }
+    fn plan_migration_image(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<PlanMigrationImageResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::plan_migration_image",
+        ))
+    }
+    fn capture_migration_image(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<CaptureMigrationImageResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::capture_migration_image",
         ))
     }
     fn bind_migration_image(

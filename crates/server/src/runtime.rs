@@ -788,6 +788,9 @@ struct RuntimeBackend {
     /// catalog nodes row). Never bind addresses, request origins, or
     /// client-supplied values.
     initial_voters: Vec<(NodeId, std::net::SocketAddr)>,
+    /// Present only when this node is configured for remote object storage.
+    /// Capture refuses without it; nothing else consumes it here.
+    uploader: Option<Arc<kv9_engine::checkpoint::RemoteUploader>>,
 }
 
 impl RuntimeBackend {
@@ -1269,6 +1272,127 @@ impl AdminApi for RuntimeBackend {
             intent,
             changed,
             applied,
+        })
+    }
+
+    fn plan_migration_image(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::PlanMigrationImageResult> {
+        self.ensure_serving()?;
+        let certified = {
+            let txn = self.node.meta_raft.store.begin()?;
+            kv9_meta::root::certified_root(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("capture requires a certified root".into()))?
+        };
+        if certified.digest() != root {
+            return Err(Error::Config("capture request root differs".into()));
+        }
+        let store = &self.node.meta_raft.store;
+        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
+            .into_iter()
+            .find(|m| m.intent().operation() == operation)
+            .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
+        let region = migration.intent().region();
+        let group = self
+            .raw_directory
+            .by_region(region)
+            .ok_or_else(|| Error::MetaNotReady("migration group is not active locally".into()))?;
+        let (driver, engine, _) = group.capture_parts();
+        let planned = kv9_raft::snapshot_install::capture::plan_capture(
+            driver,
+            engine,
+            certified.cluster_id,
+        )?;
+        Ok(crate::api::PlanMigrationImageResult {
+            manifest: planned.manifest().encode()?,
+            cut: planned.cut(),
+        })
+    }
+
+    fn capture_migration_image(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::CaptureMigrationImageResult> {
+        self.ensure_serving()?;
+        let uploader = self
+            .uploader
+            .clone()
+            .ok_or_else(|| Error::Config("capture requires configured object storage".into()))?;
+        // Committed authority first, from LOCAL applied state: immutable
+        // intent/activation/range rows need no metadata leadership, exactly
+        // like group reconciliation. The capture itself is then gated by the
+        // GROUP driver's own leadership inside plan_capture. The live
+        // group's binding must equal the committed one exactly.
+        let certified = {
+            let txn = self.node.meta_raft.store.begin()?;
+            kv9_meta::root::certified_root(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("capture requires a certified root".into()))?
+        };
+        if certified.digest() != root {
+            return Err(Error::Config("capture request root differs".into()));
+        }
+        let store = &self.node.meta_raft.store;
+        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
+            .into_iter()
+            .find(|m| m.intent().operation() == operation)
+            .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
+        let region = migration.intent().region();
+        let committed_range = kv9_meta::data_groups::ranges::committed_ranges(store)?
+            .into_iter()
+            .find(|r| r.creation().intent().region() == region)
+            .ok_or_else(|| Error::Config("migration group has no committed range".into()))?;
+        let group = self
+            .raw_directory
+            .by_region(region)
+            .ok_or_else(|| Error::MetaNotReady("migration group is not active locally".into()))?;
+        let (driver, engine, binding) = group.capture_parts();
+        if binding != committed_range.range() {
+            return Err(Error::Config(
+                "live group binding differs from the committed range".into(),
+            ));
+        }
+        let planned = kv9_raft::snapshot_install::capture::plan_capture(
+            driver,
+            engine,
+            certified.cluster_id,
+        )?;
+        if planned.range() != committed_range.range() {
+            return Err(Error::Config(
+                "captured ownership differs from the committed range".into(),
+            ));
+        }
+        // Pin before upload, decoupled from metadata leadership: the caller
+        // binds owners through the metadata leader (bind_migration_image on
+        // the plan_migration_image manifest); this group-leader node then
+        // verifies from LOCAL applied ledger state that both owners are
+        // Published for exactly this manifest before any PUT. A cut that
+        // moved since binding yields a different subject and refuses: one
+        // image per operation, by construction.
+        let owners = crate::migration_retention::MigrationOwners::new(
+            &certified,
+            &migration,
+            committed_range.range(),
+            planned.manifest(),
+        )?;
+        {
+            let txn = self.node.meta_raft.store.begin()?;
+            owners.verify_published_locally(txn.into_view().as_ref(), &certified)?;
+        }
+        let captured = planned.upload(&uploader)?;
+        Ok(crate::api::CaptureMigrationImageResult {
+            record: captured.record,
+            image_digest: captured.image_digest,
+            cut: captured.cut,
+            configuration_applied_at: captured.configuration_applied_at,
+            objects: captured.objects as u64,
+            object_bytes: captured.object_bytes,
+            source_owner: owners.source_id(),
+            destination_owner: owners.destination_id(),
         })
     }
 
@@ -3602,6 +3726,7 @@ impl NodeRuntime {
             transport: transport.clone(),
             endpoint_ready: endpoint_ready.clone(),
             initial_voters: seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
+            uploader: remote.as_ref().map(|r| r.uploader.clone()),
         });
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
         let public_api = Kv9Grpc::with_limits(backend.clone(), public_limits)?;
@@ -3843,6 +3968,7 @@ impl NodeRuntime {
             transport: self.transport.clone(),
             endpoint_ready: self.endpoint_ready.clone(),
             initial_voters: self.seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
+            uploader: None,
         };
         backend.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
@@ -6147,6 +6273,7 @@ mod tests {
                 transport,
                 endpoint_ready: Arc::new(AtomicBool::new(false)),
                 initial_voters: Vec::new(),
+                uploader: None,
             },
             runtime,
             dir,
@@ -7445,6 +7572,7 @@ mod tests {
                 .iter()
                 .map(|voter| (voter.node_id, voter.addr))
                 .collect(),
+            uploader: None,
         }
     }
 
@@ -9714,6 +9842,7 @@ mod tests {
                 kv9_common::RootDigest::from_bytes([0; 32]),
             ),
             initial_voters: Vec::new(),
+            uploader: None,
         };
 
         // Peers silent from here; only d1 pumps (real-time thread).
@@ -10095,6 +10224,7 @@ mod fence_firing_tests {
             // production rather than failing. (Integration with the registration-follow-hint
             // work, which added this field.)
             initial_voters: runtime.seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
+            uploader: None,
         }
     }
 

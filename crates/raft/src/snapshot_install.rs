@@ -544,5 +544,7 @@ fn validate_view(
     Ok(records)
 }
 
+pub mod capture;
+
 #[cfg(test)]
 mod tests;
