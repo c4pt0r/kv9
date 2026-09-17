@@ -1,6 +1,6 @@
 # Horizontal scaling: implementation and benchmark acceptance
 
-Updated 2026-09-16. Parent [#9](https://github.com/c4pt0r/kv9/issues/9).
+Updated 2026-09-17. Parent [#9](https://github.com/c4pt0r/kv9/issues/9).
 
 ## Priority and performance closeout
 
@@ -69,9 +69,13 @@ readback. The [learner-attach increment](LEARNER-ATTACH.md) now commits the
 destination as a learner through the group's own log with an advanced cut,
 and completes offline installation at the destination's real store via a new
 `install-migration-image` command, with the installed generation isolated on
-restart. Next are runtime installation through RegionManager,
-destination-install evidence with a committed release decision, then
-catchup, promotion, removal and split publication.
+restart. The [runtime-adoption increment](RUNTIME-ADOPTION.md) now turns a
+selected installed generation into the destination's live replica through a
+one-way adoption receipt: the driver restores the exact installed cut, and
+the learner catches the source leader's retained tail via MsgAppend with
+network snapshots still fenced. Next are committed destination-install
+evidence with a committed release decision, then catchup after source
+truncation, promotion, removal and split publication.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |
