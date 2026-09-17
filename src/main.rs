@@ -65,6 +65,8 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client attach-migration-learner --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client plan-migration-image --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex> --manifest-file <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client capture-migration-image --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex> --record-file <path>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client emit-install-evidence --addr <destination-ip:port> --root-digest <hex> --region <id> --receipt-file <path>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client record-install-evidence --addr <leader-ip:port> --root-digest <hex> --receipt-file <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client get-node-endpoint --addr <leader-ip:port> --node-id <id>\n\
@@ -881,6 +883,8 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         "capture-migration-image" => data_group_cli::run_capture_image(args),
         "plan-migration-image" => data_group_cli::run_plan_image(args),
         "attach-migration-learner" => data_group_cli::run_attach_learner(args),
+        "emit-install-evidence" => data_group_cli::run_emit_evidence(args),
+        "record-install-evidence" => data_group_cli::run_record_evidence(args),
         "admit-node" => run_admit_node(args),
         "promote-node" => run_promote_node(args),
         "get-node-endpoint" => endpoint_cli::run(args, false),

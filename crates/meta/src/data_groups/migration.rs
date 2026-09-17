@@ -247,6 +247,20 @@ pub fn plan_migration<E: Engine>(
     Ok((intent, true))
 }
 
+/// Decode the committed migration intents visible in an already-scanned row
+/// set, with creation/activation cross-validation. Shared with the evidence
+/// planner so both readers apply identical committed-authority rules.
+pub(crate) fn committed_migrations_in_txn<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    rows: &[Row],
+    root: RootDigest,
+) -> Result<Vec<MigrationIntent>> {
+    Ok(decode(txn, rows, root)?
+        .into_iter()
+        .map(|(intent, _)| intent)
+        .collect())
+}
+
 /// Read every committed migration from one fresh applied snapshot, with the
 /// exact creation and activation rows re-validated. Immutable intents do not
 /// expire or cancel; followers can reconcile without a control-plane leader.

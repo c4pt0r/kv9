@@ -102,11 +102,22 @@ enum LocalGroup {
 
 /// The enclosing NodeRuntime owns the exclusive parent store lock. Each child
 /// also has its own lock; a second preparation cannot open its logs concurrently.
+/// The destination's durable adoption facts, replayed as the canonical
+/// KV9EVD01 evidence receipt. Emitting this grants no quiesce or release
+/// capability; only the committed catalog row does.
+#[derive(Clone)]
+pub(crate) struct AdoptionReceipt {
+    pub(crate) receipt: Vec<u8>,
+    pub(crate) image_digest: kv9_common::RootDigest,
+    pub(crate) cut: kv9_common::AppliedPosition,
+}
+
 pub(crate) struct RegionManager {
     pub(crate) raw_directory: Arc<crate::runtime::range_api::RawDirectory>,
     directory: PathBuf,
     identity: StoreIdentity,
     groups: BTreeMap<RegionId, LocalGroup>,
+    pub(crate) adoption_receipts: Arc<std::sync::Mutex<BTreeMap<RegionId, AdoptionReceipt>>>,
     pool: Option<DriverPool<DiskRaftStorage, WalEngine>>,
     /// Bounded shared Ready/tick worker count, fixed at construction from the
     /// validated node configuration. The metadata owner is separate.
@@ -210,6 +221,7 @@ impl RegionManager {
             directory: directory.join("data-groups"),
             identity,
             groups: BTreeMap::new(),
+            adoption_receipts: Arc::default(),
             pool: None,
             data_workers: data_workers.clamp(1, 32),
         }
@@ -344,6 +356,13 @@ impl RegionManager {
                 "adopted range does not describe the committed creation",
             ));
         }
+        let receipt = kv9_meta::data_groups::evidence::InstallEvidence::receipt(
+            migration.intent(),
+            adopted.generation,
+            adopted.image_digest,
+            adopted.subject,
+            adopted.cut,
+        )?;
         let storage = DiskRaftStorage::recover(&adopted.raft_directory)?;
         let (engine, _) =
             WalEngine::open_with_uploader(adopted.engine_wal.clone(), Some(uploader))?;
@@ -392,6 +411,17 @@ impl RegionManager {
                 _lock: adopted.group_lock,
             })),
         );
+        self.adoption_receipts
+            .lock()
+            .expect("receipts poisoned")
+            .insert(
+                region,
+                AdoptionReceipt {
+                    receipt,
+                    image_digest: adopted.image_digest,
+                    cut: adopted.cut,
+                },
+            );
         Ok(())
     }
 

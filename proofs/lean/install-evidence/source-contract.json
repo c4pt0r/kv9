@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "model": "Kv9.InstallEvidence",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "quiesce_and_release_require_committed_evidence",
+    "evidence_requires_adoption_under_the_pins",
+    "adoption_requires_the_committed_migration_and_pins",
+    "a_pinned_operation_names_a_committed_migration",
+    "no_divergent_subject_ever_commits",
+    "the_destination_pin_never_drops",
+    "the_source_phase_never_regresses",
+    "evidence_is_permanent",
+    "an_adopted_replica_alone_releases_nothing",
+    "the_committed_chain_reaches_release"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups.rs": "cdcd04ce6334fd884f74334951490b84468de39f2a3d005b2e0f09abe34aad52",
+    "crates/meta/src/data_groups/evidence.rs": "244d742d924edbac5311d88e81ffd55a23685861df40aa42ee3dcb5fc855b443",
+    "crates/meta/src/data_groups/migration.rs": "2d9130004e3dd4e0088586b952015b95bde03a500329251635f3c7b5769fd22d",
+    "crates/meta/src/retention.rs": "d561a4f58bd24f1f99416a9563d1b59aab4a394d1a13b36e1fcf1a7edc29c97a",
+    "crates/server/src/migration_retention.rs": "d0ce2593475092c6a09fa6e8b65420f66a7fd5ab42e75fc9a1d2824b380b34d1",
+    "crates/server/src/runtime.rs": "586be3907407b0145a8bb448e2633ee74042b4ea532de969dc51ec42ec1dcca3",
+    "crates/server/src/region_manager.rs": "7c7d2d982cda1cff8d76c36ae1c18d669022b56fdfe59017bde3f71321504267",
+    "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
+    "crates/server/src/api.rs": "3c68cd0aa974e73ef6c218f9b50e8fe07391ae5aa9b4a4a1d961d5cd16c26bcd",
+    "crates/server/src/grpc.rs": "64802e2b2ec5ac4ab4b26b40bca48673b2921e51af31c9e90b1ea520169707be",
+    "crates/server/src/data_groups.rs": "2b21914e2b90738c8ae20f162a999c91bb7654f42b22ce9d751985af030c81d3",
+    "crates/server/proto/kv9.proto": "f0991cfad5e5a2d04f0e3186e0a603454aede5f2736520a8a7851fe806bb7495",
+    "src/data_group_cli.rs": "1ba63900f6f3656e45d931761c9cfea5e853927ff2fe70bc59b222ae1f97000e",
+    "src/main.rs": "4e78f7855b59f1c86cdc655258ce0a05e70b33d5ace35afcf21431a51002e90f",
+    "scripts/destination-evidence-e2e.py": "63a3b7c164e69960f5262e47755d75f9e3111792d0bf858ab42071319ac65e65",
+    "proofs/lean/install-evidence/Evidence.lean": "e8ff1aea66fd86865ae03d7811e136f666779f611d6739a4a3510ae8fb0df2a6",
+    "proofs/lean/install-evidence/README.md": "6a6af82ce53a16c12e4240c3f2b966100758fc9e0285cd93893e84db455eab08"
+  }
+}

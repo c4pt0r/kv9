@@ -778,6 +778,14 @@ impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::ReplicatedEngin
 /// exact `(term,index)` that the production apply loop committed.
 struct RuntimeBackend {
     raw_directory: Arc<range_api::RawDirectory>,
+    adoption_receipts: Arc<
+        std::sync::Mutex<
+            std::collections::BTreeMap<
+                kv9_common::RegionId,
+                crate::region_manager::AdoptionReceipt,
+            >,
+        >,
+    >,
     node: Arc<Node<WalEngine>>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
     transport: Arc<GrpcTransport>,
@@ -1514,6 +1522,88 @@ impl AdminApi for RuntimeBackend {
         Ok(crate::api::BindMigrationImageResult {
             source_owner: owners.source_id(),
             destination_owner: owners.destination_id(),
+        })
+    }
+
+    fn emit_install_evidence(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        region: RegionId,
+    ) -> Result<crate::api::EmitInstallEvidenceResult> {
+        self.ensure_serving()?;
+        let receipt = self
+            .adoption_receipts
+            .lock()
+            .expect("receipts poisoned")
+            .get(&region)
+            .cloned()
+            .ok_or_else(|| {
+                Error::Config("this node holds no adopted generation for the region".into())
+            })?;
+        let evidence =
+            kv9_meta::data_groups::evidence::InstallEvidence::decode_receipt(&receipt.receipt)?;
+        if evidence.root() != root {
+            return Err(Error::Config("evidence receipt root differs".into()));
+        }
+        Ok(crate::api::EmitInstallEvidenceResult {
+            receipt: receipt.receipt,
+            image_digest: receipt.image_digest,
+            cut: receipt.cut,
+        })
+    }
+
+    fn record_install_evidence(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        receipt: &[u8],
+    ) -> Result<crate::api::RecordInstallEvidenceResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("evidence request root differs".into()));
+        }
+        let (evidence, changed) =
+            kv9_meta::data_groups::evidence::plan_install_evidence(&mut txn, receipt)?;
+        // The receipt's subject is destination-asserted; the committed row is
+        // immutable and one operation never names a second image. Refuse any
+        // receipt whose subject differs from the PUBLISHED source pin, so a
+        // wrong claim cannot permanently bind the operation.
+        let certified = kv9_meta::root::certified_root(&txn)?
+            .ok_or_else(|| Error::MetaNotReady("evidence requires a certified root".into()))?;
+        let (source_owner, _) = crate::migration_retention::migration_owner_ids(
+            root,
+            evidence.operation(),
+            &evidence.destination().incarnation,
+        )?;
+        let view = self.node.meta_raft.store.begin()?.into_view();
+        let owner = kv9_meta::retention::retention_owner(view.as_ref(), &certified, source_owner)?
+            .ok_or_else(|| {
+                Error::Config("evidence requires the operation's published image owners".into())
+            })?;
+        if owner.binding.descriptor.subject != evidence.subject() {
+            return Err(Error::Config(
+                "evidence subject differs from the pinned image".into(),
+            ));
+        }
+        if owner.phase != kv9_common::retention::PinPhase::Published {
+            return Err(Error::Config(
+                "the source image pin is not published".into(),
+            ));
+        }
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::RecordInstallEvidenceResult {
+            evidence,
+            changed,
+            applied,
         })
     }
 
@@ -3795,6 +3885,7 @@ impl NodeRuntime {
 
         let backend = Arc::new(RuntimeBackend {
             raw_directory: Arc::default(),
+            adoption_receipts: Arc::default(),
             node: node.clone(),
             driver: driver.clone(),
             transport: transport.clone(),
@@ -3955,6 +4046,7 @@ impl NodeRuntime {
         let mut data_groups =
             crate::region_manager::RegionManager::new(&data_dir, store_identity, data_workers);
         data_groups.raw_directory = backend.raw_directory.clone();
+        data_groups.adoption_receipts = backend.adoption_receipts.clone();
         data_groups.recover(&node.meta_raft.store)?;
 
         // No fallible startup work may follow owner creation. In particular,
@@ -4038,6 +4130,7 @@ impl NodeRuntime {
     ) -> Result<kv9_meta::data_groups::CreationIntent> {
         let backend = RuntimeBackend {
             raw_directory: Arc::default(),
+            adoption_receipts: Arc::default(),
             node: self.node.clone(),
             driver: self.driver.clone(),
             transport: self.transport.clone(),
@@ -6382,6 +6475,7 @@ mod tests {
         (
             RuntimeBackend {
                 raw_directory: Arc::default(),
+                adoption_receipts: Arc::default(),
                 node,
                 driver,
                 transport,
@@ -7677,6 +7771,7 @@ mod tests {
     fn backend_view(rt: &NodeRuntime, root: &RootDescriptor) -> RuntimeBackend {
         RuntimeBackend {
             raw_directory: rt.data_groups.raw_directory.clone(),
+            adoption_receipts: rt.data_groups.adoption_receipts.clone(),
             node: rt.node.clone(),
             driver: rt.driver.clone(),
             transport: rt.transport.clone(),
@@ -9946,6 +10041,7 @@ mod tests {
         let tokio_rt = tokio::runtime::Runtime::new().unwrap();
         let backend = RuntimeBackend {
             raw_directory: Arc::default(),
+            adoption_receipts: Arc::default(),
             node,
             driver: d1.clone(),
             endpoint_ready: Arc::new(AtomicBool::new(false)),
@@ -10329,6 +10425,7 @@ mod fence_firing_tests {
     fn backend_of(runtime: &NodeRuntime) -> RuntimeBackend {
         RuntimeBackend {
             raw_directory: Arc::default(),
+            adoption_receipts: Arc::default(),
             node: runtime.node.clone(),
             driver: runtime.driver.clone(),
             transport: runtime.transport.clone(),

@@ -573,6 +573,9 @@ pub struct AdoptedGeneration {
     pub cut: AppliedPosition,
     pub configuration: raft::prelude::ConfState,
     pub image_digest: RootDigest,
+    /// sha256 of the canonical manifest bytes — the retention owner subject
+    /// this image was pinned under, for destination-install evidence.
+    pub subject: [u8; 32],
     pub raft_directory: PathBuf,
     pub engine_wal: PathBuf,
     pub group_lock: File,
@@ -620,7 +623,7 @@ pub fn adopt_for_runtime(
     marker.extend_from_slice(digest.as_bytes());
     let marker = checksum(marker);
     let generation_dir = directory.join(format!("install-{generation}"));
-    let (cut, configuration) = if adopted_before {
+    let (cut, configuration, subject) = if adopted_before {
         if read(&marker_path, 120)? != marker {
             return Err(invalid(
                 "adoption marker differs from the selected generation",
@@ -632,6 +635,7 @@ pub fn adopt_for_runtime(
             return Err(invalid("adopted image digest mismatch"));
         }
         let (image, _) = snapshot::decode(&bytes)?;
+        let (_, manifest) = parse_image(&image)?;
         let metadata = image.get_metadata();
         (
             AppliedPosition {
@@ -639,9 +643,11 @@ pub fn adopt_for_runtime(
                 index: metadata.index,
             },
             metadata.get_conf_state().clone(),
+            *RootDigest::sha256(&manifest.encode()?).as_bytes(),
         )
     } else {
         let (observation, image, _) = installer.verify_generation(generation, digest, uploader)?;
+        let (_, manifest) = parse_image(&image)?;
         let temporary = directory.join(".runtime-adopted.tmp");
         let mut file = File::create(&temporary).map_err(io)?;
         file.write_all(&marker).map_err(io)?;
@@ -651,6 +657,7 @@ pub fn adopt_for_runtime(
         (
             observation.position,
             image.get_metadata().get_conf_state().clone(),
+            *RootDigest::sha256(&manifest.encode()?).as_bytes(),
         )
     };
     Ok(AdoptedGeneration {
@@ -659,6 +666,7 @@ pub fn adopt_for_runtime(
         cut,
         configuration,
         image_digest: digest,
+        subject,
         raft_directory: generation_dir.join("raft"),
         engine_wal: generation_dir.join("data.wal"),
         group_lock: installer._lock,

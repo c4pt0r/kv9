@@ -288,6 +288,22 @@ pub struct CaptureMigrationImageResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EmitInstallEvidenceResult {
+    /// Canonical KV9EVD01 receipt replaying durable adoption facts.
+    pub receipt: Vec<u8>,
+    pub image_digest: kv9_common::RootDigest,
+    pub cut: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecordInstallEvidenceResult {
+    pub evidence: kv9_meta::data_groups::evidence::InstallEvidence,
+    /// False confirms the identical committed row; the receipt is a NEW commit.
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -438,6 +454,26 @@ pub trait AdminApi {
     ) -> Result<BindMigrationImageResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::bind_migration_image",
+        ))
+    }
+    fn emit_install_evidence(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _region: kv9_common::RegionId,
+    ) -> Result<EmitInstallEvidenceResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::emit_install_evidence",
+        ))
+    }
+    fn record_install_evidence(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _receipt: &[u8],
+    ) -> Result<RecordInstallEvidenceResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::record_install_evidence",
         ))
     }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {

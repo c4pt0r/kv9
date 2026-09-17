@@ -25,6 +25,37 @@ fn invalid(message: &str) -> Error {
     Error::Config(format!("migration retention: {message}"))
 }
 
+/// Derive the two ledger owner IDs one committed migration operation pins,
+/// without constructing full bindings. Shared with the evidence commit path,
+/// which must cross-check a receipt's subject against the PUBLISHED source
+/// pin before committing the immutable evidence row.
+pub(crate) fn migration_owner_ids(
+    root: RootDigest,
+    operation: [u8; 16],
+    destination_incarnation: &kv9_common::StoreIncarnation,
+) -> Result<(OwnerId, OwnerId)> {
+    let operation = kv9_meta::data_groups::evidence::migration_operation_digest(root, operation);
+    let derive = |label: &[u8], salt: &[u8]| -> Result<OwnerId> {
+        let mut identity = label.to_vec();
+        identity.extend(root.as_bytes());
+        identity.extend(operation);
+        identity.extend(salt);
+        OwnerId::new(
+            RootDigest::sha256(&identity).as_bytes()[..16]
+                .try_into()
+                .unwrap(),
+        )
+        .map_err(|e| Error::Engine(e.to_string()))
+    };
+    Ok((
+        derive(b"kv9-migration-source-v1", &[])?,
+        derive(
+            b"kv9-migration-destination-v1",
+            destination_incarnation.as_bytes(),
+        )?,
+    ))
+}
+
 pub(crate) struct MigrationOwners {
     root: RootDigest,
     source: OwnerBinding,
@@ -92,10 +123,8 @@ impl MigrationOwners {
             return Err(invalid("manifest scope differs from the committed range"));
         }
         let root = root.digest();
-        let mut operation = b"kv9-migration-operation-v1".to_vec();
-        operation.extend(root.as_bytes());
-        operation.extend(intent.operation());
-        let operation = *RootDigest::sha256(&operation).as_bytes();
+        let operation =
+            kv9_meta::data_groups::evidence::migration_operation_digest(root, intent.operation());
         let subject = *RootDigest::sha256(&manifest.encode()?).as_bytes();
         let resources = manifest_resources(root, &manifest)?;
         let binding = |kind: OwnerKind, label: &[u8], salt: &[u8]| -> Result<OwnerBinding> {

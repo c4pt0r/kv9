@@ -73,9 +73,12 @@ restart. The [runtime-adoption increment](RUNTIME-ADOPTION.md) now turns a
 selected installed generation into the destination's live replica through a
 one-way adoption receipt: the driver restores the exact installed cut, and
 the learner catches the source leader's retained tail via MsgAppend with
-network snapshots still fenced. Next are committed destination-install
-evidence with a committed release decision, then catchup after source
-truncation, promotion, removal and split publication.
+network snapshots still fenced. The [destination-evidence increment](DESTINATION-EVIDENCE.md)
+now commits the destination's install evidence as an immutable catalog row
+cross-checked against the published image pin, and makes that committed row
+the one key unlocking the source pin's quiesce and release through the
+retention ledger; the destination pin never drops. Next are catchup after
+source truncation, promotion, removal and split publication.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |
