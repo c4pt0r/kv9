@@ -146,6 +146,26 @@ fn io(error: std::io::Error) -> Error {
     Error::Engine(format!("data group storage: {error}"))
 }
 
+/// An engine position matches the retained Raft history, or sits at/below a
+/// durable compacted base — where the history is legitimately unavailable
+/// and the REC_COMPACTION record (gated on a committed truncation decision
+/// at startup) vouches for the whole prefix. The base position itself must
+/// match terms exactly.
+fn position_in_history(
+    storage: &DiskRaftStorage,
+    at: kv9_common::AppliedPosition,
+) -> Result<bool> {
+    if let Some(base) = storage.compacted_base()? {
+        if at.index < base.index {
+            return Ok(true);
+        }
+        if at.index == base.index {
+            return Ok(at.term == base.term);
+        }
+    }
+    Ok(storage.committed_term(at.index)? == at.term)
+}
+
 fn read_record(path: &Path) -> Result<Option<Record>> {
     let mut file = match File::open(path) {
         Ok(file) => file,
@@ -238,9 +258,13 @@ impl RegionManager {
         tick: Duration,
     ) -> Result<()> {
         self.prepare(creation)?;
-        self.start_group(creation.intent().region(), transport, tick, &mut |_, _| {
-            Ok(())
-        })
+        self.start_group(
+            creation.intent().region(),
+            transport,
+            tick,
+            &[],
+            &mut |_, _| Ok(()),
+        )
     }
 
     fn start_group(
@@ -248,6 +272,7 @@ impl RegionManager {
         region: RegionId,
         transport: &Arc<GrpcTransport>,
         tick: Duration,
+        truncations: &[kv9_meta::data_groups::truncation::TruncationDecision],
         observe: &mut impl FnMut(PrepareStep, bool) -> Result<()>,
     ) -> Result<()> {
         match self.groups.get(&region) {
@@ -287,17 +312,44 @@ impl RegionManager {
             prepared.phase = Phase::Active;
         }
         // No peer, inbox or worker can vote/send before durable Active.
-        let peer = Arc::new(RaftPeer::with_storage(
-            self.identity.node_id,
-            region,
-            prepared
-                .storage
-                .take()
-                .ok_or_else(|| invalid("group storage already has a voter owner"))?,
-        )?);
+        let storage = prepared
+            .storage
+            .take()
+            .ok_or_else(|| invalid("group storage already has a voter owner"))?;
+        // A compacted prefix is legitimate ONLY under a committed truncation
+        // decision whose floor equals the durable base exactly; the engine
+        // recovered at or past that floor. Anything else keeps the refusal.
+        let installed_base = match storage.compacted_base()? {
+            None => None,
+            Some(base) => {
+                if !truncations
+                    .iter()
+                    .any(|d| d.region() == region && d.floor() == base)
+                {
+                    return Err(invalid(
+                        "compacted group log lacks a committed truncation decision",
+                    ));
+                }
+                Some(base)
+            }
+        };
+        let peer = Arc::new(match installed_base {
+            None => RaftPeer::with_storage(self.identity.node_id, region, storage)?,
+            Some(base) => {
+                RaftPeer::with_installed_storage(self.identity.node_id, region, storage, base)?
+            }
+        });
         let mut state = MemStateMachine::with_engine(prepared.engine.clone())?;
         state.set_data_group(prepared.intent.root(), region, prepared.intent.digest())?;
-        let driver = NodeDriver::new(peer, transport.register_group(region)?, state)?;
+        let driver = match installed_base {
+            None => NodeDriver::new(peer, transport.register_group(region)?, state)?,
+            Some(base) => NodeDriver::with_installed_base(
+                peer,
+                transport.register_group(region)?,
+                state,
+                base,
+            )?,
+        };
         self.pool.as_ref().unwrap().register(driver.clone())?;
         prepared.driver = Some(driver);
         self.groups.insert(region, LocalGroup::Ready(prepared));
@@ -306,7 +358,12 @@ impl RegionManager {
 
     /// Resume only already durable Active groups, after the enclosing runtime
     /// has recovered membership/endpoint authority. A bad group stays isolated.
-    pub(crate) fn resume_active(&mut self, transport: &Arc<GrpcTransport>, tick: Duration) {
+    pub(crate) fn resume_active(
+        &mut self,
+        transport: &Arc<GrpcTransport>,
+        tick: Duration,
+        truncations: &[kv9_meta::data_groups::truncation::TruncationDecision],
+    ) {
         let regions: Vec<_> = self
             .groups
             .iter()
@@ -316,7 +373,9 @@ impl RegionManager {
             })
             .collect();
         for region in regions {
-            if let Err(error) = self.start_group(region, transport, tick, &mut |_, _| Ok(())) {
+            if let Err(error) =
+                self.start_group(region, transport, tick, truncations, &mut |_, _| Ok(()))
+            {
                 self.groups
                     .insert(region, LocalGroup::Failed(error.to_string()));
             }
@@ -708,7 +767,7 @@ impl RegionManager {
                 |batch, at| {
                     if record.phase == Phase::Active {
                         match at {
-                            Some(at) if storage.committed_term(at.index)? == at.term => Ok(()),
+                            Some(at) if position_in_history(&storage, at)? => Ok(()),
                             None if batch.is_empty() => Ok(()),
                             _ => Err(invalid(
                                 "active group engine lacks matching committed Raft history",
@@ -726,8 +785,7 @@ impl RegionManager {
             match engine.applied_position()? {
                 DurableAppliedPosition::AppliedNothing => {}
                 DurableAppliedPosition::AppliedThrough(at)
-                    if record.phase == Phase::Active
-                        && storage.committed_term(at.index)? == at.term => {}
+                    if record.phase == Phase::Active && position_in_history(&storage, at)? => {}
                 _ => return Err(invalid("group engine has an unauthorized applied position")),
             }
             engine.enable_segmentation()?;

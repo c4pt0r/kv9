@@ -166,6 +166,14 @@ impl InstallEvidence {
     }
 }
 
+/// Sibling readers (the truncation planner) reuse the exact row rules.
+pub(crate) fn from_row_for_siblings(
+    row: &Row,
+    root: RootDigest,
+) -> Result<Option<InstallEvidence>> {
+    from_evidence_row(row, root)
+}
+
 fn from_evidence_row(row: &Row, root: RootDigest) -> Result<Option<InstallEvidence>> {
     if row.value.get(ColumnId(2)) != Some(&ColumnValue::Uint(INSTALL_EVIDENCE)) {
         return Ok(None);

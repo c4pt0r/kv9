@@ -304,6 +304,20 @@ pub struct RecordInstallEvidenceResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecordSourceTruncationResult {
+    pub decision: kv9_meta::data_groups::truncation::TruncationDecision,
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TruncateSourceLogResult {
+    pub floor: AppliedPosition,
+    /// The retained log's first index after compaction.
+    pub first_index: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -474,6 +488,27 @@ pub trait AdminApi {
     ) -> Result<RecordInstallEvidenceResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::record_install_evidence",
+        ))
+    }
+    fn record_source_truncation(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _floor: AppliedPosition,
+    ) -> Result<RecordSourceTruncationResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::record_source_truncation",
+        ))
+    }
+    fn truncate_source_log(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<TruncateSourceLogResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::truncate_source_log",
         ))
     }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {

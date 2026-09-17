@@ -272,6 +272,79 @@ impl DataGroupClient {
         })
     }
 
+    /// Commit one source-truncation decision at the metadata leader.
+    pub fn record_source_truncation(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+        floor: AppliedPosition,
+    ) -> Result<(u64, bool), DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] || floor.index == 0 {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root, operation and floor required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::RecordSourceTruncationRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+            floor_term: floor.term,
+            floor_index: floor.index,
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.record_source_truncation(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.task == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "truncation commit lacks a task receipt".into(),
+            ));
+        }
+        Ok((response.task, response.changed))
+    }
+
+    /// Compact the source group leader's retained log below the committed floor.
+    pub fn truncate_source_log(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::TruncateSourceLogResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::TruncateSourceLogRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.truncate_source_log(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.first_index == 0 || response.floor_index == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "truncation lacks an exact floor receipt".into(),
+            ));
+        }
+        Ok(crate::api::TruncateSourceLogResult {
+            floor: AppliedPosition {
+                term: response.floor_term,
+                index: response.floor_index,
+            },
+            first_index: response.first_index,
+        })
+    }
+
     /// Replay the destination's durable adoption receipt for one region.
     pub fn emit_install_evidence(
         &mut self,

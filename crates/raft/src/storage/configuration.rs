@@ -19,6 +19,13 @@ impl ConfigurationHistory {
     pub(super) fn is_unstarted(&self, expected: &ConfState) -> bool {
         !self.ambiguous && self.applied.is_empty() && self.initial.as_ref() == Some(expected)
     }
+    /// An unambiguous history that BEGAN at exactly `expected` and evolved
+    /// only through indexed committed configuration records. This authorizes
+    /// recovered membership beyond the creation intent — the group's own
+    /// committed log is the authority, never the creation row alone.
+    pub(super) fn evolved_from(&self, expected: &ConfState) -> bool {
+        !self.ambiguous && self.initial.as_ref() == Some(expected) && !self.applied.is_empty()
+    }
     pub(super) fn initial(&mut self, state: &ConfState) {
         // A later unindexed record cannot establish when its membership began.
         if self.initial.is_some() || !self.applied.is_empty() {

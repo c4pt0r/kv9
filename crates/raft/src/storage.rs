@@ -65,6 +65,10 @@ const REC_LEASE_EPOCH: u8 = 5;
 /// Snapshot plus its HardState is one indivisible replay record. Older readers
 /// reject this kind. It is not an engine installation or admission certificate.
 const REC_SNAPSHOT: u8 = 6;
+/// Prefix compaction below one committed truncation floor: the retained TAIL
+/// survives; only entries at or below the floor become unavailable. Replay
+/// re-performs the same in-memory transformation at the same file position.
+const REC_COMPACTION: u8 = 7;
 
 /// Max record body; anything larger is corrupt (same spirit as the frame cap).
 const MAX_RECORD_LEN: u32 = 64 * 1024 * 1024;
@@ -132,12 +136,27 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             .initial_state()
             .map_err(|e| Error::Raft(e.to_string()))?;
         let expected = ConfState::from((voters.to_vec(), vec![]));
-        if state.conf_state != expected
-            || !self
-                .conf_history
-                .lock()
-                .expect("conf history poisoned")
-                .is_unstarted(&expected)
+        let history = self.conf_history.lock().expect("conf history poisoned");
+        // Either the pristine creation configuration, or a membership the
+        // group's OWN committed log evolved from it (indexed configuration
+        // records, e.g. an attached migration learner). Voter-set changes
+        // are not yet authorized by any committed authority: the recovered
+        // voters must still be exactly the creation voters, with no joint
+        // transition in flight.
+        let authorized = if history.is_unstarted(&expected) {
+            state.conf_state == expected
+        } else if history.evolved_from(&expected) {
+            let mut recovered = state.conf_state.voters.clone();
+            recovered.sort_unstable();
+            let mut creation = voters.to_vec();
+            creation.sort_unstable();
+            recovered == creation
+                && state.conf_state.voters_outgoing.is_empty()
+                && state.conf_state.learners_next.is_empty()
+        } else {
+            false
+        };
+        if !authorized
             || self
                 .lease_epoch
                 .lock()
@@ -294,6 +313,23 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                         .append(&[e])
                         .map_err(|err| Error::Raft(format!("replay append: {err}")))?;
                 }
+                REC_COMPACTION => {
+                    if payload.len() < 48 {
+                        return Err(Error::Raft(
+                            "checksum-valid compaction record shorter than its floor".into(),
+                        ));
+                    }
+                    let floor = kv9_common::AppliedPosition {
+                        term: u64::from_be_bytes(payload[..8].try_into().expect("8 bytes")),
+                        index: u64::from_be_bytes(payload[8..16].try_into().expect("8 bytes")),
+                    };
+                    let cs = ConfState::parse_from_bytes(&payload[48..]).map_err(|e| {
+                        Error::Raft(format!(
+                            "checksum-valid compaction ConfState undecodable: {e}"
+                        ))
+                    })?;
+                    Self::compact_memory(&mem, floor, &cs)?;
+                }
                 other => {
                     return Err(Error::Raft(format!(
                         "unknown raft-log record kind {other} (newer format?) — refusing to guess"
@@ -383,6 +419,123 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         self.mem
             .term(index)
             .map_err(|e| Error::Raft(format!("applied position missing from Raft history: {e}")))
+    }
+
+    /// The durable compacted/installed base, when the retained log no longer
+    /// starts at 1. Reading it grants no startup authorization by itself.
+    pub fn compacted_base(&self) -> Result<Option<kv9_common::AppliedPosition>> {
+        use raft::Storage as _;
+        let first = self.first_index().map_err(|e| Error::Raft(e.to_string()))?;
+        if first == 1 {
+            return Ok(None);
+        }
+        Ok(Some(kv9_common::AppliedPosition {
+            term: self
+                .term(first - 1)
+                .map_err(|e| Error::Raft(e.to_string()))?,
+            index: first - 1,
+        }))
+    }
+
+    /// Apply one prefix compaction to the in-memory mirror, KEEPING the tail
+    /// above the floor. `apply_snapshot` alone would discard that tail and
+    /// lower the durable HardState; this routine restores both.
+    fn compact_memory(
+        mem: &MemStorage,
+        floor: kv9_common::AppliedPosition,
+        conf: &ConfState,
+    ) -> Result<()> {
+        use raft::Storage as _;
+        let raft_err = |e: raft::Error| Error::Raft(e.to_string());
+        let first = mem.first_index().map_err(raft_err)?;
+        if first > floor.index {
+            return Ok(());
+        }
+        let last = mem.last_index().map_err(raft_err)?;
+        if floor.index > last || mem.term(floor.index).map_err(raft_err)? != floor.term {
+            return Err(Error::Raft(
+                "compaction floor is not in the retained log".into(),
+            ));
+        }
+        let tail = if floor.index < last {
+            mem.entries(
+                floor.index + 1,
+                last + 1,
+                None,
+                raft::GetEntriesContext::empty(false),
+            )
+            .map_err(raft_err)?
+        } else {
+            Vec::new()
+        };
+        let state = mem.initial_state().map_err(raft_err)?;
+        let mut image = raft::prelude::Snapshot::default();
+        image.mut_metadata().index = floor.index;
+        image.mut_metadata().term = floor.term;
+        image.mut_metadata().set_conf_state(conf.clone());
+        let mut memory = mem.wl();
+        memory.apply_snapshot(image).map_err(raft_err)?;
+        if !tail.is_empty() {
+            memory.append(&tail).map_err(raft_err)?;
+        }
+        // apply_snapshot rewrote commit/conf to the floor; the durable truth
+        // (the full HardState and the LIVE membership) is restored exactly.
+        memory.set_hardstate(state.hard_state);
+        memory.set_conf_state(state.conf_state);
+        Ok(())
+    }
+
+    /// Compact this replica's own retained log prefix below one exact floor,
+    /// durably and in memory, KEEPING the tail. The caller owns committed
+    /// authorization (a truncation decision) and progress checks; this seam
+    /// re-checks only local shape: the floor must be applied, committed and
+    /// term-exact. It reclaims no disk space, changes no HardState, serves
+    /// no snapshot, and grants no serving or release capability.
+    pub fn compact_retained_prefix(
+        &self,
+        floor: kv9_common::AppliedPosition,
+        conf_at_floor: &ConfState,
+        decision: &[u8],
+    ) -> Result<u64> {
+        use raft::Storage as _;
+        let raft_err = |e: raft::Error| Error::Raft(e.to_string());
+        if floor.index == 0 || floor.term == 0 || decision.is_empty() {
+            return Err(Error::Raft("compaction requires an exact floor".into()));
+        }
+        let first = self.mem.first_index().map_err(raft_err)?;
+        if first > floor.index {
+            return Ok(first); // already compacted at or past the floor
+        }
+        if self
+            .mem
+            .initial_state()
+            .map_err(raft_err)?
+            .hard_state
+            .commit
+            < floor.index
+        {
+            return Err(Error::Raft(
+                "compaction floor exceeds the durable commit".into(),
+            ));
+        }
+        if self.mem.term(floor.index).map_err(raft_err)? != floor.term {
+            return Err(Error::Raft(
+                "compaction floor term differs from the retained log".into(),
+            ));
+        }
+        let conf = conf_at_floor
+            .write_to_bytes()
+            .map_err(|e| Error::Raft(format!("confstate encode: {e}")))?;
+        let mut payload = Vec::with_capacity(48 + conf.len());
+        payload.extend_from_slice(&floor.term.to_be_bytes());
+        payload.extend_from_slice(&floor.index.to_be_bytes());
+        payload.extend_from_slice(kv9_common::RootDigest::sha256(decision).as_bytes());
+        payload.extend_from_slice(&conf);
+        self.with_writer(|file| {
+            Self::write_record(&self.io_metrics, file, REC_COMPACTION, &payload)?;
+            Self::compact_memory(&self.mem, floor, conf_at_floor)
+        })?;
+        self.mem.first_index().map_err(raft_err)
     }
 
     pub fn has_committed_checkpoint(&self, bytes: &[u8]) -> Result<bool> {

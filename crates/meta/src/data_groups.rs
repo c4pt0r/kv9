@@ -15,6 +15,7 @@ pub mod activation;
 pub mod evidence;
 pub mod migration;
 pub mod ranges;
+pub mod truncation;
 
 /// Stable task kind and encoding. This uses the existing tasks table, not a
 /// new table/schema version. No other task may reuse this kind.

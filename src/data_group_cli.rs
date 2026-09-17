@@ -200,6 +200,141 @@ admission_refused={reason}"
     }
 }
 
+pub(super) fn run_record_truncation(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(
+            flag.as_str(),
+            "--addr" | "--root-digest" | "--operation-id" | "--floor-term" | "--floor-index"
+        ) {
+            return super::command_error(&format!("unknown truncation flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate truncation flag {flag}"));
+        }
+    }
+    match execute_record_truncation(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_record_truncation(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let floor = kv9_common::AppliedPosition {
+        term: required("--floor-term")?
+            .parse()
+            .map_err(|_| "--floor-term must be a number")?,
+        index: required("--floor-index")?
+            .parse()
+            .map_err(|_| "--floor-index must be a number")?,
+    };
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.record_source_truncation(root, operation, floor))
+    {
+        Ok((task, changed)) => {
+            println!(
+                "truncation_outcome={}
+truncation_task={task}
+capability=committed_row_only",
+                if changed { "recorded" } else { "confirmed" }
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "truncation_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("truncation_outcome=unconfirmed");
+            eprintln!("truncation unconfirmed; the identical decision may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
+pub(super) fn run_truncate_log(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(flag.as_str(), "--addr" | "--root-digest" | "--operation-id") {
+            return super::command_error(&format!("unknown truncation flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate truncation flag {flag}"));
+        }
+    }
+    match execute_truncate_log(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_truncate_log(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.truncate_source_log(root, operation))
+    {
+        Ok(r) => {
+            println!(
+                "truncate_outcome=compacted
+floor_term={}
+floor_index={}
+first_index={}
+capability=local_log_prefix_only",
+                r.floor.term, r.floor.index, r.first_index
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "truncate_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("truncate_outcome=unconfirmed");
+            eprintln!("truncation is idempotent at the same floor and may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
 pub(super) fn run_plan_image(mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut values = HashMap::new();
     while let Some(flag) = args.next() {
