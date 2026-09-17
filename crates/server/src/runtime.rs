@@ -1130,6 +1130,70 @@ where
     }
 }
 
+impl RuntimeBackend {
+    /// sha256 over the ordered (key, value) stream of one engine view range,
+    /// skipping the range-ownership row. Shared by population and the
+    /// pre-publication verification.
+    fn half_digest(
+        view: &dyn kv9_engine::ReadView,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<(u64, RootDigest)> {
+        use sha2::Digest as _;
+        let mut hash = sha2::Sha256::new();
+        let mut rows = 0u64;
+        let mut cursor = start.to_vec();
+        loop {
+            let batch = view.scan(kv9_engine::ColumnFamily::Default, &cursor, end, 256)?;
+            if batch.is_empty() {
+                break;
+            }
+            for (key, value) in &batch {
+                if key.as_slice() == kv9_common::data_range::RANGE_KEY {
+                    continue;
+                }
+                rows += 1;
+                hash.update((key.len() as u64).to_be_bytes());
+                hash.update(key);
+                hash.update((value.len() as u64).to_be_bytes());
+                hash.update(value);
+            }
+            cursor = batch.last().expect("nonempty batch").0.clone();
+            cursor.push(0);
+        }
+        Ok((rows, RootDigest::from_bytes(hash.finalize().into())))
+    }
+
+    /// The split halves' engine-key bounds for one sealed parent range.
+    fn split_bounds(
+        parent: &kv9_common::data_range::DataRange,
+        split_key: &[u8],
+    ) -> Result<(Vec<u8>, Vec<u8>, Vec<u8>)> {
+        let low_bound = kv9_common::codec::encode_key(
+            kv9_common::codec::KeyMode::Raw,
+            parent.keyspace,
+            split_key,
+        )
+        .map_err(|e| Error::Config(e.to_string()))?;
+        let prefix =
+            kv9_common::codec::encode_key(kv9_common::codec::KeyMode::Raw, parent.keyspace, b"")
+                .map_err(|e| Error::Config(e.to_string()))?;
+        let prefix_end = kv9_common::codec::encode_key(
+            kv9_common::codec::KeyMode::Raw,
+            kv9_common::KeyspaceId(
+                parent
+                    .keyspace
+                    .0
+                    .checked_add(1)
+                    .ok_or_else(|| Error::Config("keyspace id exhausted".into()))?,
+            ),
+            b"",
+        )
+        .map_err(|e| Error::Config(e.to_string()))?;
+        Ok((prefix, low_bound, prefix_end))
+    }
+}
+
 impl AdminApi for RuntimeBackend {
     fn lookup_raw_route(
         &self,
@@ -1185,7 +1249,10 @@ impl AdminApi for RuntimeBackend {
                 })?;
             response.replicas.push(endpoint);
         }
-        response.data_leader = self.raw_directory.get(keyspace).and_then(|g| g.leader());
+        response.data_leader = self
+            .raw_directory
+            .any_unsealed(keyspace)
+            .and_then(|g| g.leader());
         response.range = Some(range);
         Ok(response)
     }
@@ -2006,6 +2073,92 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn publish_split(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::PublishSplitResult> {
+        self.ensure_serving()?;
+        let store = &self.node.meta_raft.store;
+        let intent = kv9_meta::data_groups::split::committed_splits(store)?
+            .into_iter()
+            .find(|i| i.operation() == operation)
+            .ok_or_else(|| Error::Config("split intent is not committed locally".into()))?;
+        let low_region = kv9_meta::data_groups::committed_creation(store, intent.child_low())?
+            .ok_or_else(|| Error::Config("split child creation is not committed".into()))?
+            .intent()
+            .region();
+        let high_region = kv9_meta::data_groups::committed_creation(store, intent.child_high())?
+            .ok_or_else(|| Error::Config("split child creation is not committed".into()))?
+            .intent()
+            .region();
+        // LOCAL pre-publication verification: this metadata voter hosts the
+        // parent and both children (same replica set), so the sealed fence
+        // and both digest-exact populations are re-checked here, from
+        // durable local state, before any directory row moves.
+        let handles = {
+            let map = self.group_handles.lock().expect("group handles poisoned");
+            (
+                map.get(&intent.parent_region()).cloned(),
+                map.get(&low_region).cloned(),
+                map.get(&high_region).cloned(),
+            )
+        };
+        let (Some((parent_engine, _)), Some((low_engine, _)), Some((high_engine, _))) = handles
+        else {
+            return Err(Error::MetaNotReady(
+                "publication requires the parent and both children locally".into(),
+            ));
+        };
+        let parent_range = parent_engine
+            .get(
+                kv9_engine::ColumnFamily::Default,
+                kv9_common::data_range::RANGE_KEY,
+            )?
+            .map(|b| kv9_common::data_range::DataRange::decode(&b))
+            .transpose()?
+            .ok_or_else(|| Error::MetaNotReady("parent range row has not applied".into()))?;
+        if !parent_range.sealed {
+            return Err(Error::Config(
+                "publication requires the sealed parent fence".into(),
+            ));
+        }
+        let (prefix, low_bound, prefix_end) =
+            Self::split_bounds(&parent_range, intent.split_key())?;
+        let parent_view = parent_engine.snapshot()?;
+        let (_, low_expected) = Self::half_digest(parent_view.as_ref(), &prefix, &low_bound)?;
+        let (_, high_expected) = Self::half_digest(parent_view.as_ref(), &low_bound, &prefix_end)?;
+        let (_, low_actual) =
+            Self::half_digest(low_engine.snapshot()?.as_ref(), &prefix, &low_bound)?;
+        let (_, high_actual) =
+            Self::half_digest(high_engine.snapshot()?.as_ref(), &low_bound, &prefix_end)?;
+        if low_actual != low_expected || high_actual != high_expected {
+            return Err(Error::Config(
+                "publication requires both children populated exactly".into(),
+            ));
+        }
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("publication request root differs".into()));
+        }
+        let (publication, changed) =
+            kv9_meta::data_groups::split::publish_split(&mut txn, operation)?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::PublishSplitResult {
+            publication,
+            changed,
+            applied,
+        })
+    }
+
     fn record_source_truncation(
         &self,
         _caller: &str,
@@ -2342,7 +2495,7 @@ impl AdminApi for RuntimeBackend {
         self.ensure_serving()?;
         let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
         let mut location = self.node.get_region(caller, keyspace, key)?;
-        if let Some(group) = self.raw_directory.get(keyspace) {
+        if let Some(group) = self.raw_directory.get_for(keyspace, key) {
             location.leader = group.leader();
         }
         Ok(location)
@@ -3580,7 +3733,14 @@ impl RawApi for RuntimeBackend {
     ) -> crate::api::RawWritePreparation {
         Box::new(move || {
             self.ensure_serving()?;
-            if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+            let anchor = match &operation {
+                crate::api::RawWrite::Put { key, .. } => key.clone(),
+                crate::api::RawWrite::Delete { key } => key.clone(),
+                crate::api::RawWrite::BatchPut(pairs) => {
+                    pairs.first().map(|(k, _)| k.clone()).unwrap_or_default()
+                }
+            };
+            if let Some(group) = self.raw_directory.get_for(ctx.keyspace, &anchor) {
                 return group.prepare_raw_write(ctx, operation)();
             }
             let (fence, batch) = match operation {
@@ -3656,7 +3816,7 @@ impl RawApi for RuntimeBackend {
         ctx: RequestContext,
         key: UserKey,
     ) -> crate::api::RawReadPreparation<Option<Value>> {
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = self.raw_directory.get_for(ctx.keyspace, &key) {
             if !self.endpoint_ready.load(Ordering::Acquire) {
                 return Box::pin(async {
                     Err(Error::MetaNotReady("local endpoint is not ready".into()))
@@ -3694,7 +3854,7 @@ impl RawApi for RuntimeBackend {
 
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
         self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = self.raw_directory.get_for(ctx.keyspace, key) {
             return group.raw_get(ctx, key);
         }
         let view = self.established_read(ctx, KeySpan::Point(key))?;
@@ -3707,7 +3867,10 @@ impl RawApi for RuntimeBackend {
         ctx: RequestContext,
         keys: Vec<UserKey>,
     ) -> crate::api::RawReadPreparation<Vec<Option<Value>>> {
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = keys
+            .first()
+            .and_then(|anchor| self.raw_directory.get_for(ctx.keyspace, anchor))
+        {
             if !self.endpoint_ready.load(Ordering::Acquire) {
                 return Box::pin(async {
                     Err(Error::MetaNotReady("local endpoint is not ready".into()))
@@ -3751,7 +3914,10 @@ impl RawApi for RuntimeBackend {
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
         self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = keys
+            .first()
+            .and_then(|anchor| self.raw_directory.get_for(ctx.keyspace, anchor))
+        {
             return group.raw_batch_get(ctx, keys);
         }
         let view = self.established_read(ctx, KeySpan::BatchKeys(keys))?;
@@ -3761,7 +3927,7 @@ impl RawApi for RuntimeBackend {
 
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = self.raw_directory.get_for(ctx.keyspace, &key) {
             return group.raw_put(ctx, key, value);
         }
         let fence = self.validated_context(ctx, KeySpan::Point(&key))?;
@@ -3775,7 +3941,10 @@ impl RawApi for RuntimeBackend {
         pairs: &[(UserKey, Value)],
     ) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = pairs
+            .first()
+            .and_then(|(anchor, _)| self.raw_directory.get_for(ctx.keyspace, anchor))
+        {
             return group.raw_batch_put(ctx, pairs);
         }
         let fence = self.validated_context(ctx, KeySpan::BatchPairs(pairs))?;
@@ -3786,7 +3955,7 @@ impl RawApi for RuntimeBackend {
 
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = self.raw_directory.get_for(ctx.keyspace, key) {
             return group.raw_delete(ctx, key);
         }
         let fence = self.validated_context(ctx, KeySpan::Point(key))?;
@@ -3802,7 +3971,7 @@ impl RawApi for RuntimeBackend {
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>> {
         self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = self.raw_directory.get_for(ctx.keyspace, start) {
             return group.raw_scan(ctx, start, end, limit);
         }
         let view = self.established_read(ctx, KeySpan::Range { start, end })?;
@@ -3817,7 +3986,7 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
     ) -> Result<DeleteRangeReceipt> {
         self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get(ctx.keyspace) {
+        if let Some(group) = self.raw_directory.get_for(ctx.keyspace, start) {
             return group.raw_delete_range(ctx, start, end);
         }
         // ONE barrier for the whole request, exchanged for ONE stable snapshot that every

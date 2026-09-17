@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "archive_sha256": "41964ec7a420d1305f07932547aa03fd6617f82104eb2767b194872baac72e3a",
+  "members_verified": 12824,
+  "decoded_bytes": 11393097,
+  "receipts_verified": [
+    "e2e-fifth/result.json (final source)",
+    "e2e-fourth/result.json (also accepted)",
+    "3 retained failed launches (3 real serving defects fixed)",
+    "local-validation.json",
+    "split-publication-proof/result.json",
+    "retention-ledger-recheck.log",
+    "20 sibling model logs",
+    "minio-focused.log"
+  ],
+  "no_elf_no_credentials": true
+}

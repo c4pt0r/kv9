@@ -10,11 +10,24 @@ use kv9_engine::ColumnFamily;
 #[derive(Default)]
 pub(crate) struct RawDirectory(Mutex<BTreeMap<RegionId, Arc<RawGroup>>>);
 impl RawDirectory {
-    pub(crate) fn get(&self, keyspace: KeyspaceId) -> Option<Arc<RawGroup>> {
+    /// Key-aware resolution for a possibly split keyspace: the ONE unsealed
+    /// group whose range contains `key`. Sealed parents never resolve; the
+    /// per-request `authorize` still re-checks containment and the epoch.
+    pub(crate) fn get_for(&self, keyspace: KeyspaceId, key: &[u8]) -> Option<Arc<RawGroup>> {
         let groups = self.0.lock().expect("raw directory poisoned");
-        let mut matches = groups.values().filter(|g| g.binding.keyspace == keyspace);
+        let mut matches = groups.values().filter(|g| {
+            g.binding.keyspace == keyspace && !g.binding.sealed && g.binding.contains(key)
+        });
         let only = matches.next()?.clone();
         matches.next().is_none().then_some(only)
+    }
+    /// Any unsealed group of the keyspace, for keyless leader hints.
+    pub(crate) fn any_unsealed(&self, keyspace: KeyspaceId) -> Option<Arc<RawGroup>> {
+        let groups = self.0.lock().expect("raw directory poisoned");
+        groups
+            .values()
+            .find(|g| g.binding.keyspace == keyspace && !g.binding.sealed)
+            .cloned()
     }
     pub(crate) fn scoped(&self, scope: &DataRange) -> Result<Arc<dyn RawApi>> {
         let groups = self.0.lock().expect("raw directory poisoned");
@@ -33,11 +46,14 @@ impl RawDirectory {
             .remove(&region);
     }
     pub(crate) fn insert(&self, group: Arc<RawGroup>) {
+        // REPLACE: reconciliation refreshes the binding when the committed
+        // directory advances (a parent sealing, a version bump). Serving
+        // authorization re-reads the engine row per request either way; a
+        // stale cached binding must never keep resolving a sealed range.
         self.0
             .lock()
             .expect("raw directory poisoned")
-            .entry(group.binding.region)
-            .or_insert(group);
+            .insert(group.binding.region, group);
     }
     pub(crate) fn clear(&self) {
         self.0.lock().expect("raw directory poisoned").clear();

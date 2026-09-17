@@ -9,6 +9,7 @@
 //! an exact resubmission is a confirmation; any divergence refuses.
 
 use super::*;
+use kv9_common::data_range::DataRange;
 
 const SPLIT_RANGE: u64 = 107;
 const SPL_MAGIC: &[u8; 8] = b"KV9SPL01";
@@ -142,8 +143,41 @@ fn validate_against<E: Engine>(
     if parent.bind_task() != intent.parent_bind_task {
         return Err(invalid("split names a different parent binding row"));
     }
+    // A sealed parent is legal ONLY as this intent's own published shape:
+    // both children bound with the exact partition the intent describes.
     if parent.range().sealed {
-        return Err(invalid("split parent range is already sealed"));
+        let bindings = super::ranges::committed_ranges_in_txn(txn)?;
+        let published = [
+            (
+                intent.child_low,
+                parent.range().start.clone(),
+                intent.split_key.clone(),
+            ),
+            (
+                intent.child_high,
+                intent.split_key.clone(),
+                parent.range().end.clone(),
+            ),
+        ]
+        .into_iter()
+        .all(|(task, start, end)| {
+            txn.get(&TASKS_DESC, &[memcmp_uint(task)])
+                .ok()
+                .flatten()
+                .and_then(|row| from_row(&row, root).ok().flatten())
+                .is_some_and(|creation| {
+                    bindings.iter().any(|b| {
+                        b.range().region == creation.region()
+                            && !b.range().sealed
+                            && b.range().start == start
+                            && b.range().end == end
+                    })
+                })
+        });
+        if !published {
+            return Err(invalid("split parent range is already sealed"));
+        }
+        return Ok(());
     }
     let range = parent.range();
     let inside = (range.start.is_empty() || intent.split_key.as_slice() > range.start.as_slice())
@@ -402,6 +436,62 @@ mod tests {
     }
 
     #[test]
+    fn publication_is_atomic_idempotent_and_flips_routing_to_the_children() {
+        let store = super::super::tests::fixture();
+        let (parent_region, low, high) = bound_parent(&store);
+        let mut txn = store.begin().unwrap();
+        assert!(
+            publish_split(&mut txn, [9; 16]).is_err(),
+            "publication requires the committed intent"
+        );
+        plan_split(
+            &mut txn,
+            [9; 16],
+            parent_region,
+            b"m",
+            low.task(),
+            high.task(),
+        )
+        .unwrap();
+        txn.commit().unwrap();
+        let keyspace = super::super::ranges::committed_ranges(&store).unwrap()[0]
+            .range()
+            .keyspace;
+        let mut txn = store.begin().unwrap();
+        let (published, changed) = publish_split(&mut txn, [9; 16]).unwrap();
+        assert!(changed);
+        assert_eq!(published.parent_region, parent_region);
+        assert_eq!(published.sealed_version, 2);
+        // Nothing is visible before the commit; afterward the partition is
+        // complete in the same readback that would refuse a partial shape.
+        assert_eq!(
+            super::super::ranges::committed_ranges(&store)
+                .unwrap()
+                .len(),
+            1
+        );
+        txn.commit().unwrap();
+        let bindings = super::super::ranges::committed_ranges(&store).unwrap();
+        assert_eq!(bindings.len(), 3);
+        let txn = store.begin().unwrap();
+        let (hit, _) = super::super::ranges::route_in(&txn, keyspace, b"a")
+            .unwrap()
+            .unwrap();
+        assert_eq!(hit.region, low.region());
+        let (hit, _) = super::super::ranges::route_in(&txn, keyspace, b"z")
+            .unwrap()
+            .unwrap();
+        assert_eq!(hit.region, high.region());
+        drop(txn);
+        // Idempotent confirmation; a second publication cannot diverge.
+        let mut txn = store.begin().unwrap();
+        let (again, changed) = publish_split(&mut txn, [9; 16]).unwrap();
+        assert!(!changed);
+        assert_eq!(again.low_region, low.region());
+        assert_eq!(again.sealed_version, 2);
+    }
+
+    #[test]
     fn split_readback_refuses_row_and_authority_rebinding() {
         // Operation and split key are the row's own immutable identity;
         // cross-bound fields must refuse on any divergence.
@@ -461,4 +551,166 @@ mod tests {
             assert!(committed_splits(&store).is_err(), "accepted {defect}");
         }
     }
+}
+
+/// The atomic one-to-two publication receipt.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SplitPublication {
+    pub parent_region: RegionId,
+    pub sealed_version: u64,
+    pub low_region: RegionId,
+    pub high_region: RegionId,
+}
+
+/// Stage the ATOMIC one-to-two directory publication in the serialized,
+/// term-fenced catalog transaction: the parent binding row becomes its
+/// sealed version+1 successor and BOTH child bindings (with their region
+/// rows) appear in the same commit — the partition read model validates the
+/// result, so no partial shape can ever be read back. `false` means the
+/// exact publication already committed and this is a confirmation. The
+/// caller owns the runtime-side preconditions (the group fence, verified
+/// child population); nothing here checks a child's data.
+pub fn publish_split<E: Engine>(
+    txn: &mut MetaTxn<'_, E>,
+    operation: [u8; 16],
+) -> Result<(SplitPublication, bool)> {
+    let root = crate::root::certified_root(txn)?
+        .ok_or_else(|| invalid("publication requires a certified metadata root"))?;
+    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
+    if rows.len() > MAX_CREATION_TASKS + 1 {
+        return Err(invalid("bounded publication task scan exceeded"));
+    }
+    let mut intent = None;
+    for row in &rows {
+        if let Some(candidate) = from_split_row(row, root.digest())? {
+            if candidate.operation() == operation {
+                intent = Some(candidate);
+            }
+        }
+    }
+    let intent =
+        intent.ok_or_else(|| invalid("publication requires the committed split intent"))?;
+    let bindings = super::ranges::committed_ranges_in_txn(txn)?;
+    let parent = bindings
+        .iter()
+        .find(|b| b.range().region == intent.parent_region())
+        .ok_or_else(|| invalid("publication requires the parent's committed binding"))?;
+    let low_creation = {
+        let row = txn
+            .get(&TASKS_DESC, &[memcmp_uint(intent.child_low())])?
+            .ok_or_else(|| invalid("split child creation is missing"))?;
+        from_row(&row, root.digest())?.ok_or_else(|| invalid("split child creation row differs"))?
+    };
+    let high_creation = {
+        let row = txn
+            .get(&TASKS_DESC, &[memcmp_uint(intent.child_high())])?
+            .ok_or_else(|| invalid("split child creation is missing"))?;
+        from_row(&row, root.digest())?.ok_or_else(|| invalid("split child creation row differs"))?
+    };
+    let parent_range = parent.range().clone();
+    let child = |creation: &CreationIntent, start: Vec<u8>, end: Vec<u8>| DataRange {
+        root: root.digest(),
+        creation: creation.digest(),
+        region: creation.region(),
+        keyspace: parent_range.keyspace,
+        tenant: parent_range.tenant,
+        conf_ver: 1,
+        version: 1,
+        start,
+        end,
+        sealed: false,
+    };
+    let low_range = child(
+        &low_creation,
+        parent_range.start.clone(),
+        intent.split_key().to_vec(),
+    );
+    let high_range = child(
+        &high_creation,
+        intent.split_key().to_vec(),
+        parent_range.end.clone(),
+    );
+    let publication = SplitPublication {
+        parent_region: intent.parent_region(),
+        sealed_version: parent_range.version + 1,
+        low_region: low_creation.region(),
+        high_region: high_creation.region(),
+    };
+    // Idempotence: the exact published shape already committed.
+    if parent_range.sealed {
+        let low = bindings
+            .iter()
+            .find(|b| b.range().region == low_creation.region());
+        let high = bindings
+            .iter()
+            .find(|b| b.range().region == high_creation.region());
+        let confirmed = low.is_some_and(|b| *b.range() == low_range)
+            && high.is_some_and(|b| *b.range() == high_range);
+        if confirmed {
+            return Ok((
+                SplitPublication {
+                    sealed_version: parent_range.version,
+                    ..publication
+                },
+                false,
+            ));
+        }
+        return Err(invalid(
+            "a different publication already sealed this parent",
+        ));
+    }
+    if bindings.iter().any(|b| {
+        b.range().region == low_creation.region() || b.range().region == high_creation.region()
+    }) {
+        return Err(invalid("a split child is already bound"));
+    }
+    let mut sealed = parent_range.clone();
+    sealed.sealed = true;
+    sealed.version = publication.sealed_version;
+    if !sealed.may_follow(&parent_range) {
+        return Err(invalid("parent binding cannot seal forward"));
+    }
+    // ONE transaction: the sealed parent successor and both children.
+    let mut payload = parent.creation().intent().task().to_be_bytes().to_vec();
+    payload.extend_from_slice(&sealed.encode());
+    txn.update(
+        &TASKS_DESC,
+        &[memcmp_uint(parent.bind_task())],
+        vec![(ColumnId(3), ColumnValue::Bytes(payload))],
+    )?;
+    for (creation, range) in [(&low_creation, &low_range), (&high_creation, &high_range)] {
+        range.validate()?;
+        let task = txn.allocate_id(SequenceKind::Task)?;
+        let mut payload = creation.task().to_be_bytes().to_vec();
+        payload.extend_from_slice(&range.encode());
+        let mut row = RowValue::new();
+        for (c, v) in [
+            (1, ColumnValue::Uint(task)),
+            (2, ColumnValue::Uint(102)),
+            (3, ColumnValue::Bytes(payload)),
+            (4, ColumnValue::Uint(0)),
+            (5, ColumnValue::Uint(0)),
+        ] {
+            row.set(ColumnId(c), v);
+        }
+        txn.insert(&TASKS_DESC, &[memcmp_uint(task)], row)?;
+        let mut region_row = RowValue::new();
+        for (c, v) in [
+            (1, ColumnValue::Uint(range.region.0)),
+            (2, ColumnValue::Uint(u64::from(range.keyspace.0))),
+            (5, ColumnValue::Uint(1)),
+            (6, ColumnValue::Uint(1)),
+            (7, ColumnValue::Uint(0)),
+        ] {
+            region_row.set(ColumnId(c), v);
+        }
+        region_row.set(ColumnId(3), ColumnValue::Bytes(range.start.clone()));
+        region_row.set(ColumnId(4), ColumnValue::Bytes(range.end.clone()));
+        txn.insert(
+            &crate::schema::REGIONS_DESC,
+            &[memcmp_uint(range.region.0)],
+            region_row,
+        )?;
+    }
+    Ok((publication, true))
 }
