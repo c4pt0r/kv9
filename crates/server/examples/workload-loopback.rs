@@ -149,6 +149,7 @@ service! {
     record_split_intent: RecordSplitIntentRequest => RecordSplitIntentResponse,
     seal_split_parent: SealSplitParentRequest => SealSplitParentResponse,
     populate_split_child: PopulateSplitChildRequest => PopulateSplitChildResponse,
+    publish_split: PublishSplitRequest => PublishSplitResponse,
     plan_migration_image: PlanMigrationImageRequest => PlanMigrationImageResponse,
     attach_migration_learner: AttachMigrationLearnerRequest => AttachMigrationLearnerResponse,
 }

@@ -64,6 +64,7 @@ service Kv9 {
   rpc RecordSplitIntent(RecordSplitIntentRequest) returns (RecordSplitIntentResponse);
   rpc SealSplitParent(SealSplitParentRequest) returns (SealSplitParentResponse);
   rpc PopulateSplitChild(PopulateSplitChildRequest) returns (PopulateSplitChildResponse);
+  rpc PublishSplit(PublishSplitRequest) returns (PublishSplitResponse);
 }
 
 message Empty {}
@@ -308,6 +309,23 @@ message PopulateSplitChildResponse {
   uint64 rows_copied = 1;
   bytes parent_half_digest = 2; // sha256 over the ordered (key,value) stream
   bytes child_digest = 3;       // equal on success, recomputed after the copy
+}
+
+// The ATOMIC one-to-two publication: after re-verifying both populated
+// children against the sealed parent's halves LOCALLY, one catalog
+// transaction seals the parent binding and inserts both child bindings.
+// Routing flips to the children from the committed directory onward.
+message PublishSplitRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+}
+message PublishSplitResponse {
+  uint64 parent_region = 1;
+  uint64 sealed_version = 2;
+  uint64 low_region = 3;
+  uint64 high_region = 4;
+  // False confirms the identical committed publication.
+  bool changed = 5;
 }
 
 message BindMigrationImageResponse {

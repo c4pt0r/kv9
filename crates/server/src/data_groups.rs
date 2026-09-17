@@ -576,6 +576,47 @@ impl DataGroupClient {
         })
     }
 
+    /// The atomic one-to-two publication at the metadata leader.
+    pub fn publish_split(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::PublishSplitResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::PublishSplitRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(120));
+        let response = self
+            .runtime
+            .block_on(self.client.publish_split(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.parent_region == 0 || response.low_region == 0 || response.high_region == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "publication lacks its region receipt".into(),
+            ));
+        }
+        Ok(crate::api::PublishSplitResult {
+            publication: kv9_meta::data_groups::split::SplitPublication {
+                parent_region: kv9_common::RegionId(response.parent_region),
+                sealed_version: response.sealed_version,
+                low_region: kv9_common::RegionId(response.low_region),
+                high_region: kv9_common::RegionId(response.high_region),
+            },
+            changed: response.changed,
+            applied: AppliedPosition { term: 0, index: 0 },
+        })
+    }
+
     /// Replay the destination's durable adoption receipt for one region.
     pub fn emit_install_evidence(
         &mut self,

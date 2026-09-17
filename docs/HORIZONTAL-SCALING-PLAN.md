@@ -106,9 +106,15 @@ one-way, immediate, typed refusals for writes and reads, durable across
 restarts, with the catalog untouched. The [child-population
 increment](CHILD-POPULATION.md) copies each sealed half into its child
 through the child's own log in bounded committed batches, digest-verified
-against the parent and idempotent across reruns and restarts. Next is
-the atomic one-to-two publication with routed-client refresh; physical
-reclamation and stranded-learner recovery also remain open.
+against the parent and idempotent across reruns and restarts. The
+[split-publication increment](SPLIT-PUBLICATION.md) completes the manual
+split: one atomic catalog transaction seals the parent binding and
+publishes both children, locally re-verified first, and the children
+serve the exact pre-split data through public routing with key-aware
+directory resolution — surviving a full-cluster restart. Manual D04
+splits are now END TO END; automatic size/load triggers, the sealed
+parent's retirement, cross-range routed scans, physical reclamation and
+stranded-learner recovery remain open.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

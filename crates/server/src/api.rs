@@ -366,6 +366,13 @@ pub struct PopulateSplitChildResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PublishSplitResult {
+    pub publication: kv9_meta::data_groups::split::SplitPublication,
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -625,6 +632,14 @@ pub trait AdminApi {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::populate_split_child",
         ))
+    }
+    fn publish_split(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<PublishSplitResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::publish_split"))
     }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {
         Err(kv9_common::Error::NotImplemented(

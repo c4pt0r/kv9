@@ -775,6 +775,74 @@ admission_refused={reason}"
     }
 }
 
+pub(super) fn run_publish_split(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(flag.as_str(), "--addr" | "--root-digest" | "--operation-id") {
+            return super::command_error(&format!("unknown publish flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate publish flag {flag}"));
+        }
+    }
+    match execute_publish_split(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_publish_split(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.publish_split(root, operation))
+    {
+        Ok(r) => {
+            println!(
+                "publish_outcome={}
+parent_region={}
+sealed_version={}
+low_region={}
+high_region={}
+capability=atomic_directory_transaction",
+                if r.changed { "published" } else { "confirmed" },
+                r.publication.parent_region.0,
+                r.publication.sealed_version,
+                r.publication.low_region.0,
+                r.publication.high_region.0
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "publish_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("publish_outcome=unconfirmed");
+            eprintln!("publication is idempotent and may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
 pub(super) fn run_plan_image(mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut values = HashMap::new();
     while let Some(flag) = args.next() {
