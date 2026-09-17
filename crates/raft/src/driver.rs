@@ -864,6 +864,14 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .propose_conf_change_traced(single_change(node, ConfChangeType::AddNode))
     }
 
+    /// Propose removing `node` from the voter set. One change at a time, same
+    /// apply discipline as promotion. Authorization (a committed removal
+    /// decision, quorum floor, no self-removal) lives ABOVE this call.
+    pub fn remove_voter(&self, node: NodeId) -> Result<ProposedAt> {
+        self.peer
+            .propose_conf_change_traced(single_change(node, ConfChangeType::RemoveNode))
+    }
+
     /// Wait until the conf change proposed at `at` is applied HERE, verified by
     /// exact `(term, index)`; returns the post-change membership actually
     /// produced by `apply_conf_change` (never the proposal-time expectation).

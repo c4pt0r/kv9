@@ -85,8 +85,13 @@ record, and restart accepted only under the same committed authority.
 The [voter-promotion increment](VOTER-PROMOTION.md) now promotes the
 evidenced destination to a voter through the group's own log, with
 restarts accepted under committed configuration history and quorum
-demonstrated with an original voter down. Next are source replica
-removal, stranded-learner recovery after truncation and split publication.
+demonstrated with an original voter down. The [replica-removal
+increment](REPLICA-REMOVAL.md) now retires one exact committed source
+replica through the group's own log — never the destination, never below
+three voters — leaving the removed replica isolated, not deleted: the
+migration finally moves the group instead of only growing it. Next are
+local retirement/reclamation of removed storage, stranded-learner
+recovery after truncation and split publication.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

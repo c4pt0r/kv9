@@ -1900,6 +1900,89 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn record_source_removal(
+        &self,
+        request: Request<proto::RecordSourceRemovalRequest>,
+    ) -> Result<Response<proto::RecordSourceRemovalResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        let incarnation: [u8; 16] = request
+            .source_incarnation
+            .try_into()
+            .map_err(|_| Status::invalid_argument("source_incarnation must contain 16 bytes"))?;
+        if operation == [0; 16]
+            || root.as_bytes() == &[0; 32]
+            || request.source_node == 0
+            || incarnation == [0; 16]
+        {
+            return Err(Status::invalid_argument(
+                "nonzero root, operation and exact source replica required",
+            ));
+        }
+        let source = kv9_meta::data_groups::InitialReplica {
+            node: kv9_common::NodeId(request.source_node),
+            incarnation: kv9_common::StoreIncarnation::from_bytes(incarnation),
+        };
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.record_source_removal(&caller, root, operation, source)
+            })
+            .await?;
+        Ok(Response::new(proto::RecordSourceRemovalResponse {
+            task: result.decision.task(),
+            changed: result.changed,
+        }))
+    }
+
+    async fn remove_source_replica(
+        &self,
+        request: Request<proto::RemoveSourceReplicaRequest>,
+    ) -> Result<Response<proto::RemoveSourceReplicaResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16] || root.as_bytes() == &[0; 32] {
+            return Err(Status::invalid_argument(
+                "nonzero root and operation required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.remove_source_replica(&caller, root, operation)
+            })
+            .await?;
+        Ok(Response::new(proto::RemoveSourceReplicaResponse {
+            removed_node: result.removed.0,
+            changed: result.changed,
+            voters: result.voters,
+        }))
+    }
+
     async fn bind_migration_image(
         &self,
         request: Request<proto::BindMigrationImageRequest>,

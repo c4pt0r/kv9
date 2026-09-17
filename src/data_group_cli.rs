@@ -403,6 +403,154 @@ admission_refused={reason}"
     }
 }
 
+pub(super) fn run_record_removal(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(
+            flag.as_str(),
+            "--addr"
+                | "--root-digest"
+                | "--operation-id"
+                | "--source-node"
+                | "--source-incarnation"
+        ) {
+            return super::command_error(&format!("unknown removal flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate removal flag {flag}"));
+        }
+    }
+    match execute_record_removal(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_record_removal(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let source_node: u64 = required("--source-node")?
+        .parse()
+        .map_err(|_| "--source-node must be a number")?;
+    let incarnation: [u8; 16] =
+        super::decode_hex("--source-incarnation", required("--source-incarnation")?)?
+            .try_into()
+            .map_err(|_| "--source-incarnation must contain 16 bytes")?;
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token).and_then(|mut c| {
+        c.record_source_removal(
+            root,
+            operation,
+            kv9_common::NodeId(source_node),
+            incarnation,
+        )
+    }) {
+        Ok((task, changed)) => {
+            println!(
+                "removal_outcome={}
+removal_task={task}
+capability=committed_row_only",
+                if changed { "recorded" } else { "confirmed" }
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "removal_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("removal_outcome=unconfirmed");
+            eprintln!("removal unconfirmed; the identical decision may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
+pub(super) fn run_remove_replica(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(flag.as_str(), "--addr" | "--root-digest" | "--operation-id") {
+            return super::command_error(&format!("unknown removal flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate removal flag {flag}"));
+        }
+    }
+    match execute_remove_replica(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_remove_replica(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.remove_source_replica(root, operation))
+    {
+        Ok(r) => {
+            println!(
+                "remove_outcome={}
+removed_node={}
+voters={}
+capability=voter_configuration_only",
+                if r.changed { "removed" } else { "confirmed" },
+                r.removed.0,
+                r.voters
+                    .iter()
+                    .map(|v| v.to_string())
+                    .collect::<Vec<_>>()
+                    .join(",")
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "remove_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("remove_outcome=unconfirmed");
+            eprintln!("removal unconfirmed; retry reuses the same operation: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
 pub(super) fn run_plan_image(mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut values = HashMap::new();
     while let Some(flag) = args.next() {

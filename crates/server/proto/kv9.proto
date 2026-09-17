@@ -59,6 +59,8 @@ service Kv9 {
   rpc RecordSourceTruncation(RecordSourceTruncationRequest) returns (RecordSourceTruncationResponse);
   rpc TruncateSourceLog(TruncateSourceLogRequest) returns (TruncateSourceLogResponse);
   rpc PromoteMigrationVoter(PromoteMigrationVoterRequest) returns (PromoteMigrationVoterResponse);
+  rpc RecordSourceRemoval(RecordSourceRemovalRequest) returns (RecordSourceRemovalResponse);
+  rpc RemoveSourceReplica(RemoveSourceReplicaRequest) returns (RemoveSourceReplicaResponse);
 }
 
 message Empty {}
@@ -224,6 +226,34 @@ message PromoteMigrationVoterRequest {
 message PromoteMigrationVoterResponse {
   uint64 destination_node = 1;
   // False confirms an existing voter; the receipt is a NEW commit.
+  bool changed = 2;
+  repeated uint64 voters = 3; // Sorted post-apply voter set.
+}
+
+// Commit one source-replica removal decision at the metadata leader. It
+// names one exact initial replica (node + incarnation), never the
+// destination; nothing is removed here.
+message RecordSourceRemovalRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+  uint64 source_node = 3;
+  bytes source_incarnation = 4; // 16 bytes, the exact creation replica.
+}
+message RecordSourceRemovalResponse {
+  uint64 task = 1;
+  bool changed = 2;
+}
+
+// Remove the committed decision's replica from the group's voter set,
+// through the group's own log. Leader-only; the destination must already
+// be a voter; at least three voters must remain; no self-removal.
+message RemoveSourceReplicaRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+}
+message RemoveSourceReplicaResponse {
+  uint64 removed_node = 1;
+  // False confirms an already-removed replica; the receipt is a NEW commit.
   bool changed = 2;
   repeated uint64 voters = 3; // Sorted post-apply voter set.
 }
