@@ -1238,6 +1238,90 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn migrate_data_group(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        creation_task: u64,
+        destination: NodeId,
+    ) -> Result<crate::api::MigrateDataGroupResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("migration request root differs".into()));
+        }
+        let (intent, changed) = kv9_meta::data_groups::migration::plan_migration(
+            &mut txn,
+            operation,
+            creation_task,
+            destination,
+        )?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::MigrateDataGroupResult {
+            intent,
+            changed,
+            applied,
+        })
+    }
+
+    fn bind_migration_image(
+        &self,
+        caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        manifest: &[u8],
+    ) -> Result<crate::api::BindMigrationImageResult> {
+        self.ensure_serving()?;
+        if manifest.is_empty() || manifest.len() > kv9_raft::storage::MAX_PROTOCOL_SNAPSHOT_BYTES {
+            return Err(Error::Config(
+                "migration manifest exceeds byte bound".into(),
+            ));
+        }
+        let manifest = kv9_engine::checkpoint::CheckpointManifest::decode(manifest)?;
+        // One applied readback selects the committed authority; every ledger
+        // step below is its own committed catalog transaction and re-reads
+        // applied state, so this path holds no lock across commits.
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let certified = {
+            let txn = self.node.meta_raft.store.begin()?;
+            kv9_meta::root::certified_root(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("migration requires a certified root".into()))?
+        };
+        if certified.digest() != root {
+            return Err(Error::Config("migration request root differs".into()));
+        }
+        let store = &self.node.meta_raft.store;
+        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
+            .into_iter()
+            .find(|m| m.intent().operation() == operation)
+            .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
+        let range = kv9_meta::data_groups::ranges::committed_ranges(store)?
+            .into_iter()
+            .find(|r| r.creation().intent().region() == migration.intent().region())
+            .ok_or_else(|| Error::Config("migration group has no committed range".into()))?;
+        let owners = crate::migration_retention::MigrationOwners::new(
+            &certified,
+            &migration,
+            range.range(),
+            &manifest,
+        )?;
+        let api: &dyn crate::api::AdminApi = self;
+        let _ = caller;
+        owners.bind(api)?;
+        Ok(crate::api::BindMigrationImageResult {
+            source_owner: owners.source_id(),
+            destination_owner: owners.destination_id(),
+        })
+    }
+
     fn apply_retention(
         &self,
         _caller: &str,

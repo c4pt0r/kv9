@@ -41,7 +41,10 @@ impl Fixture {
             descriptor: OwnerDescriptor {
                 root: self.root.digest(),
                 id: OwnerId::new([n; 16]).unwrap(),
-                kind: OwnerKind::Snapshot,
+                // Pending has a real settlement seam (the checkpoint worker);
+                // Snapshot/Migration transfers are fenced until committed
+                // destination-install evidence exists.
+                kind: OwnerKind::Pending,
                 region: 1,
                 conf_ver: 1,
                 version: 1,

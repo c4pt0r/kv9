@@ -50,8 +50,13 @@ startup fenced. It does not enable remote install or reclaim logs. The next D03
 work now includes an [offline joint-generation installer](JOINT-SNAPSHOT-INSTALL.md):
 it verifies the destination-bound engine/protocol pair and atomically selects a
 durable generation. Existing peer startup and network snapshot guards remain.
-Next are committed source/migration authority and retention owners, unified-cut
-capture, runtime installation and learner/membership transitions.
+The [committed migration authority increment](MIGRATION-AUTHORITY.md) now
+replicates at most one migration intent per group, bound to the destination's
+exact store incarnation, and pins one described image's complete SST closure
+under exact source/destination retention owners; quiescing or releasing those
+pins is fenced until committed destination-install evidence exists. Next are
+unified-cut source capture, destination-install evidence with a committed
+release decision, runtime installation and learner/membership transitions.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

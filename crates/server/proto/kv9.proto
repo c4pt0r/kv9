@@ -47,6 +47,10 @@ service Kv9 {
   // Tracking-only retention administration. No object deletion or installation.
   rpc ApplyRetention(ApplyRetentionRequest) returns (ApplyRetentionResponse);
   rpc GetRetentionOwner(GetRetentionOwnerRequest) returns (GetRetentionOwnerResponse);
+  // Committed migration authority only: no transfer, peer, membership or
+  // pin-release capability. Old servers must refuse these distinct methods.
+  rpc MigrateDataGroup(MigrateDataGroupRequest) returns (MigrateDataGroupResponse);
+  rpc BindMigrationImage(BindMigrationImageRequest) returns (BindMigrationImageResponse);
 }
 
 message Empty {}
@@ -78,6 +82,36 @@ message CreateDataGroupResponse {
   // Applied desire is not quorum readiness or proof that any replica started.
   uint64 applied_term = 3;
   uint64 applied_index = 4;
+}
+
+// Commit one immutable replica-migration intent for an activated group. The
+// destination's current exact store incarnation is bound at planning time.
+message MigrateDataGroupRequest {
+  bytes root_digest = 1; // Exact 32-byte certified metadata root.
+  bytes operation_id = 2; // Nonzero 16-byte immutable retry identity.
+  uint64 creation_task = 3; // Committed creation row of the source group.
+  uint64 destination_node = 4; // Active registered store, not an initial replica.
+}
+message MigrateDataGroupResponse {
+  bytes migration_intent = 1; // Canonical KV9MIG01 observation.
+  bool changed = 2;
+  // When changed=false, this is a NEW confirmation, not an original receipt.
+  // A committed intent authorizes image-owner binding and nothing else.
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
+}
+
+// Bind source/destination retention owners to one described image. The
+// manifest is data, not authority; every binding is re-checked against the
+// committed intent and range. Owners are tracking-only pins.
+message BindMigrationImageRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2; // The committed migration operation.
+  bytes manifest = 3; // Canonical checkpoint manifest description.
+}
+message BindMigrationImageResponse {
+  bytes source_owner = 1; // 16-byte ledger owner IDs, both Published.
+  bytes destination_owner = 2;
 }
 
 message ApplyRetentionRequest {

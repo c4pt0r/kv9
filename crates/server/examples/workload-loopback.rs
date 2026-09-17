@@ -136,6 +136,8 @@ service! {
     change_node_endpoint: ChangeNodeEndpointRequest => ChangeNodeEndpointResponse,
     apply_retention: ApplyRetentionRequest => ApplyRetentionResponse,
     get_retention_owner: GetRetentionOwnerRequest => GetRetentionOwnerResponse,
+    migrate_data_group: MigrateDataGroupRequest => MigrateDataGroupResponse,
+    bind_migration_image: BindMigrationImageRequest => BindMigrationImageResponse,
 }
 
 fn publish(path: &Path, value: serde_json::Value) -> std::io::Result<()> {

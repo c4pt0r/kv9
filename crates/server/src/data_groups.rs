@@ -179,4 +179,98 @@ impl DataGroupClient {
             },
         })
     }
+
+    /// Commit one immutable migration intent. A confirmed receipt authorizes
+    /// image-owner binding only, never transfer, voting or pin release.
+    pub fn migrate(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+        creation_task: u64,
+        destination: NodeId,
+    ) -> Result<crate::api::MigrateDataGroupResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] || destination.0 == 0 {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root, operation and destination required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::MigrateDataGroupRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+            creation_task,
+            destination_node: destination.0,
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(30));
+        let response = self
+            .runtime
+            .block_on(self.client.migrate_data_group(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        let intent =
+            kv9_meta::data_groups::migration::MigrationIntent::decode(&response.migration_intent)
+                .map_err(|e| DataGroupRpcError::Unconfirmed(e.to_string()))?;
+        if intent.root() != root
+            || intent.operation() != operation
+            || intent.creation_task() != creation_task
+            || intent.destination().node != destination
+            || response.applied_term == 0
+            || response.applied_index == 0
+        {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "response differs from request or lacks an exact applied receipt".into(),
+            ));
+        }
+        Ok(crate::api::MigrateDataGroupResult {
+            intent,
+            changed: response.changed,
+            applied: AppliedPosition {
+                term: response.applied_term,
+                index: response.applied_index,
+            },
+        })
+    }
+
+    /// Bind both tracking-only image owners for a committed migration. The
+    /// returned IDs are observations; they carry no retention capability.
+    pub fn bind_image(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+        manifest: &[u8],
+    ) -> Result<crate::api::BindMigrationImageResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] || manifest.is_empty() {
+            return Err(DataGroupRpcError::Local(
+                "nonzero identities and a manifest required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::BindMigrationImageRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+            manifest: manifest.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(30));
+        let response = self
+            .runtime
+            .block_on(self.client.bind_migration_image(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        let owner = |bytes: Vec<u8>| {
+            kv9_common::retention::OwnerId::new(
+                bytes
+                    .try_into()
+                    .map_err(|_| DataGroupRpcError::Unconfirmed("invalid owner id".into()))?,
+            )
+            .map_err(|e| DataGroupRpcError::Unconfirmed(e.to_string()))
+        };
+        Ok(crate::api::BindMigrationImageResult {
+            source_owner: owner(response.source_owner)?,
+            destination_owner: owner(response.destination_owner)?,
+        })
+    }
 }
