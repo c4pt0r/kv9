@@ -63,6 +63,7 @@ service Kv9 {
   rpc RemoveSourceReplica(RemoveSourceReplicaRequest) returns (RemoveSourceReplicaResponse);
   rpc RecordSplitIntent(RecordSplitIntentRequest) returns (RecordSplitIntentResponse);
   rpc SealSplitParent(SealSplitParentRequest) returns (SealSplitParentResponse);
+  rpc PopulateSplitChild(PopulateSplitChildRequest) returns (PopulateSplitChildResponse);
 }
 
 message Empty {}
@@ -291,6 +292,22 @@ message SealSplitParentResponse {
   bool changed = 2;
   uint64 cut_term = 3;
   uint64 cut_index = 4;
+}
+
+// Copy the SEALED parent's half into one activated, unbound child group
+// through the child's OWN log, in bounded committed batches. Idempotent:
+// a rerun converges to the same rows. Verified: the response carries the
+// parent-half digest and the child digest recomputed after the copy.
+message PopulateSplitChildRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+  // False populates [start, split_key); true populates [split_key, end).
+  bool high = 3;
+}
+message PopulateSplitChildResponse {
+  uint64 rows_copied = 1;
+  bytes parent_half_digest = 2; // sha256 over the ordered (key,value) stream
+  bytes child_digest = 3;       // equal on success, recomputed after the copy
 }
 
 message BindMigrationImageResponse {

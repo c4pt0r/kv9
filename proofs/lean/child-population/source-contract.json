@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "model": "Kv9.ChildPopulation",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "population_requires_the_fence",
+    "every_committed_copy_is_exact",
+    "no_divergent_child_ever_commits",
+    "children_serve_nothing_here",
+    "a_copy_is_permanent",
+    "a_rerun_converges",
+    "a_fence_alone_copies_nothing",
+    "the_chain_reaches_both_exact_children"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime.rs": "b8086826bb27b219fd7364938b42751eeea88bb4f2d49694792e4294638e9cb8",
+    "crates/server/src/region_manager.rs": "b8efe75bdc58dadbed6953cc6db4936f003babbc51a1fce7942e7827898772c3",
+    "crates/server/src/api.rs": "6fec72e3dd4756f1278843ea67ade2869fdb2b2a15238b6fe4bd0af11a0bb3d0",
+    "crates/server/src/grpc.rs": "f61e80da2ff55b7e28c1a6632904ab07120f53890c83aeb842b12befc1204505",
+    "crates/server/src/data_groups.rs": "28f6250f97400086fe7386a6200c79e730bd06aefc32e64cc7346b4929a08be1",
+    "crates/server/proto/kv9.proto": "c1bd3bb68a5023cf0f2dbe40ae6c39bae5f3b55805d10e12833e7c224ddecc8b",
+    "crates/raft/src/command.rs": "2bd9eede9154f50130c56624234bb1c33417c635ffae4aa7d8f25b4590797a7e",
+    "src/data_group_cli.rs": "00a8ea08732b5c2f9ffccd1dd781a26fbbe08fa3434997da9b1c7ba912609817",
+    "src/main.rs": "2a9c5eb8a6075c9ab156f8d451898ae96db9b81231c736916825a0dc4d8ba3d0",
+    "scripts/child-population-e2e.py": "caea7c5426f4eee81bb85d36e68048ee0035f214d74f19dbd159911095e11a0a",
+    "proofs/lean/child-population/Population.lean": "cedf72bc7997827822258c6b9b034d78f4923cfe2e68b5f981845f35d22de81a",
+    "proofs/lean/child-population/README.md": "1fd629de1d87dd0c80b57122d08dcd702f759d2585e76a92cb6c3da4e14ea683"
+  }
+}

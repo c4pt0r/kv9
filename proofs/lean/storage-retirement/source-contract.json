@@ -15,8 +15,8 @@
     "the_committed_chain_reaches_retirement"
   ],
   "source_sha256": {
-    "crates/server/src/region_manager.rs": "c9a76ad37719aecc82b902165562262e5e49241d7477398a1b6cea99aa51ad6a",
-    "crates/server/src/runtime.rs": "5ff1ed317c72c9f6b4a825a0d100ae9dc2baa8f5529cb507972182cab16a1b18",
+    "crates/server/src/region_manager.rs": "b8efe75bdc58dadbed6953cc6db4936f003babbc51a1fce7942e7827898772c3",
+    "crates/server/src/runtime.rs": "b8086826bb27b219fd7364938b42751eeea88bb4f2d49694792e4294638e9cb8",
     "crates/server/src/runtime/range_api.rs": "f8523db188edc11b3617fb5bd6051d45ecea1ffb1ae3f0dccc0a4c1b119fd308",
     "crates/meta/src/data_groups/removal.rs": "6100bea8206695c2d9302a303e1174c2dce8e543d853463636fb49cb67d69485",
     "scripts/retirement-e2e.py": "0b0bbbbfeef44d3df8ee62776ec808add6cc934b422f2dc710257d9810960c45",

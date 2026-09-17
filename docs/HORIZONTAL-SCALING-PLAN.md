@@ -103,9 +103,12 @@ keyspace exactly once, sealed bindings never route — before any writer
 produces child rows. The [parent-seal increment](PARENT-SEAL.md) executes
 the committed intent's write fence through the parent group's own log:
 one-way, immediate, typed refusals for writes and reads, durable across
-restarts, with the catalog untouched. Next are child population and the
-atomic one-to-two publication; physical reclamation and stranded-learner
-recovery also remain open.
+restarts, with the catalog untouched. The [child-population
+increment](CHILD-POPULATION.md) copies each sealed half into its child
+through the child's own log in bounded committed batches, digest-verified
+against the parent and idempotent across reruns and restarts. Next is
+the atomic one-to-two publication with routed-client refresh; physical
+reclamation and stranded-learner recovery also remain open.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |
