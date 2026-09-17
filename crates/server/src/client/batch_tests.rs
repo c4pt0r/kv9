@@ -197,6 +197,7 @@ batch_service! {
     promote_migration_voter: PromoteMigrationVoterRequest => PromoteMigrationVoterResponse,
     record_source_removal: RecordSourceRemovalRequest => RecordSourceRemovalResponse,
     remove_source_replica: RemoveSourceReplicaRequest => RemoveSourceReplicaResponse,
+    record_split_intent: RecordSplitIntentRequest => RecordSplitIntentResponse,
     plan_migration_image: PlanMigrationImageRequest => PlanMigrationImageResponse,
     attach_migration_learner: AttachMigrationLearnerRequest => AttachMigrationLearnerResponse,
 }

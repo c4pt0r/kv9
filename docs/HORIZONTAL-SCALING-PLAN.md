@@ -93,8 +93,12 @@ migration finally moves the group instead of only growing it. The
 [storage-retirement increment](STORAGE-RETIREMENT.md) now fences the
 removed replica locally and durably — the committed decision retires it
 automatically, restarts open nothing, and the storage stays intact.
-Next are physical reclamation, stranded-learner recovery after
-truncation and split publication (D04).
+The [split-intent increment](SPLIT-INTENT.md) opens D04 with the
+committed authority seam: one immutable intent per parent binding the
+exact unsealed range row, a strict interior split key and two activated,
+unbound children on the parent's replica set — sealing, child population,
+atomic directory republication and rerouting are the next D04 increments.
+Physical reclamation and stranded-learner recovery also remain open.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

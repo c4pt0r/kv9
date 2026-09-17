@@ -1704,6 +1704,45 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    #[allow(clippy::too_many_arguments)]
+    fn record_split_intent(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        parent_region: RegionId,
+        split_key: &[u8],
+        child_low: u64,
+        child_high: u64,
+    ) -> Result<crate::api::RecordSplitIntentResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("split request root differs".into()));
+        }
+        let (intent, changed) = kv9_meta::data_groups::split::plan_split(
+            &mut txn,
+            operation,
+            parent_region,
+            split_key,
+            child_low,
+            child_high,
+        )?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::RecordSplitIntentResult {
+            intent,
+            changed,
+            applied,
+        })
+    }
+
     fn record_source_truncation(
         &self,
         _caller: &str,

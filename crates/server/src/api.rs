@@ -343,6 +343,13 @@ pub struct RemoveSourceReplicaResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecordSplitIntentResult {
+    pub intent: kv9_meta::data_groups::split::SplitIntent,
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -565,6 +572,21 @@ pub trait AdminApi {
     ) -> Result<RemoveSourceReplicaResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::remove_source_replica",
+        ))
+    }
+    #[allow(clippy::too_many_arguments)]
+    fn record_split_intent(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _parent_region: kv9_common::RegionId,
+        _split_key: &[u8],
+        _child_low: u64,
+        _child_high: u64,
+    ) -> Result<RecordSplitIntentResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::record_split_intent",
         ))
     }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {

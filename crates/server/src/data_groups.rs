@@ -453,6 +453,51 @@ impl DataGroupClient {
         })
     }
 
+    /// Commit one split intent at the metadata leader.
+    #[allow(clippy::too_many_arguments)]
+    pub fn record_split_intent(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+        parent_region: kv9_common::RegionId,
+        split_key: &[u8],
+        child_low: u64,
+        child_high: u64,
+    ) -> Result<(u64, bool), DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32]
+            || operation == [0; 16]
+            || parent_region.0 == 0
+            || split_key.is_empty()
+        {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root, operation, parent and split key required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::RecordSplitIntentRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+            parent_region: parent_region.0,
+            split_key: split_key.to_vec(),
+            child_low_task: child_low,
+            child_high_task: child_high,
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.record_split_intent(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.task == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "split commit lacks a task receipt".into(),
+            ));
+        }
+        Ok((response.task, response.changed))
+    }
+
     /// Replay the destination's durable adoption receipt for one region.
     pub fn emit_install_evidence(
         &mut self,

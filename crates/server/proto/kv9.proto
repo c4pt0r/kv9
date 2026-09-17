@@ -61,6 +61,7 @@ service Kv9 {
   rpc PromoteMigrationVoter(PromoteMigrationVoterRequest) returns (PromoteMigrationVoterResponse);
   rpc RecordSourceRemoval(RecordSourceRemovalRequest) returns (RecordSourceRemovalResponse);
   rpc RemoveSourceReplica(RemoveSourceReplicaRequest) returns (RemoveSourceReplicaResponse);
+  rpc RecordSplitIntent(RecordSplitIntentRequest) returns (RecordSplitIntentResponse);
 }
 
 message Empty {}
@@ -256,6 +257,23 @@ message RemoveSourceReplicaResponse {
   // False confirms an already-removed replica; the receipt is a NEW commit.
   bool changed = 2;
   repeated uint64 voters = 3; // Sorted post-apply voter set.
+}
+
+// Commit one split intent at the metadata leader: one bound unsealed
+// parent range, one exact key strictly inside it, and two activated,
+// unbound child groups on the parent's replica set. Nothing is sealed,
+// populated, republished or rerouted here.
+message RecordSplitIntentRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+  uint64 parent_region = 3;
+  bytes split_key = 4; // 1..1024 bytes, strictly inside the parent range.
+  uint64 child_low_task = 5;  // creation task owning [start, split_key)
+  uint64 child_high_task = 6; // creation task owning [split_key, end)
+}
+message RecordSplitIntentResponse {
+  uint64 task = 1;
+  bool changed = 2;
 }
 
 message BindMigrationImageResponse {
