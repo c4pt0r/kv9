@@ -396,6 +396,21 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         self.inner.lock().expect("raft peer poisoned")
     }
 
+    /// Durable committed configuration at-or-before one exact applied cut.
+    /// Read-only under the peer lock; every refusal is typed, never guessed.
+    /// The generic bound stays on the concrete durable storage: a volatile
+    /// test store has no defensible configuration history to offer.
+    pub fn configuration_at_committed(
+        &self,
+        cut: kv9_common::AppliedPosition,
+    ) -> Result<crate::storage::ConfigurationLookup>
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        let g = self.lock();
+        g.raw.store().borrow().configuration_at_committed(cut)
+    }
+
     /// Request a quorum-confirmed read index (task #28). Leader-only by
     /// design: the establishing read type owns leadership discovery, and a
     /// follower answering reads is exactly what the linearizable promise

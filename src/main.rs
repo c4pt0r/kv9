@@ -61,6 +61,8 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client create-data-keyspace --addr <leader-ip:port> --root-digest <hex> --creation-task <id> --name <name> [--tenant-id <id>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client migrate-data-group --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --creation-task <id> --destination-node <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client bind-migration-image --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --manifest-file <path>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client plan-migration-image --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex> --manifest-file <path>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client capture-migration-image --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex> --record-file <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client get-node-endpoint --addr <leader-ip:port> --node-id <id>\n\
@@ -810,6 +812,8 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         "create-data-keyspace" => data_group_cli::run(args, true),
         "migrate-data-group" => data_group_cli::run_migrate(args),
         "bind-migration-image" => data_group_cli::run_bind_image(args),
+        "capture-migration-image" => data_group_cli::run_capture_image(args),
+        "plan-migration-image" => data_group_cli::run_plan_image(args),
         "admit-node" => run_admit_node(args),
         "promote-node" => run_promote_node(args),
         "get-node-endpoint" => endpoint_cli::run(args, false),

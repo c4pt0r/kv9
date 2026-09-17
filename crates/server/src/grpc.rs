@@ -1605,6 +1605,84 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn plan_migration_image(
+        &self,
+        request: Request<proto::PlanMigrationImageRequest>,
+    ) -> Result<Response<proto::PlanMigrationImageResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16] || root.as_bytes() == &[0; 32] {
+            return Err(Status::invalid_argument(
+                "nonzero root and operation required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.plan_migration_image(&caller, root, operation)
+            })
+            .await?;
+        Ok(Response::new(proto::PlanMigrationImageResponse {
+            manifest: result.manifest,
+            cut_term: result.cut.term,
+            cut_index: result.cut.index,
+        }))
+    }
+
+    async fn capture_migration_image(
+        &self,
+        request: Request<proto::CaptureMigrationImageRequest>,
+    ) -> Result<Response<proto::CaptureMigrationImageResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16] || root.as_bytes() == &[0; 32] {
+            return Err(Status::invalid_argument(
+                "nonzero root and operation required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.capture_migration_image(&caller, root, operation)
+            })
+            .await?;
+        Ok(Response::new(proto::CaptureMigrationImageResponse {
+            record: result.record,
+            image_digest: result.image_digest.as_bytes().to_vec(),
+            cut_term: result.cut.term,
+            cut_index: result.cut.index,
+            configuration_applied_index: result.configuration_applied_at.map_or(0, |p| p.index),
+            objects: result.objects,
+            object_bytes: result.object_bytes,
+            source_owner: result.source_owner.as_bytes().to_vec(),
+            destination_owner: result.destination_owner.as_bytes().to_vec(),
+        }))
+    }
+
     async fn bind_migration_image(
         &self,
         request: Request<proto::BindMigrationImageRequest>,

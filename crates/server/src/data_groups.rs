@@ -233,6 +233,114 @@ impl DataGroupClient {
         })
     }
 
+    /// Plan the group leader's current cut manifest, for owner binding.
+    pub fn plan_image(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::PlanMigrationImageResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::PlanMigrationImageRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.plan_migration_image(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.manifest.is_empty() || response.cut_index == 0 || response.cut_term == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "plan lacks a manifest or exact cut".into(),
+            ));
+        }
+        Ok(crate::api::PlanMigrationImageResult {
+            manifest: response.manifest,
+            cut: kv9_common::AppliedPosition {
+                term: response.cut_term,
+                index: response.cut_index,
+            },
+        })
+    }
+
+    /// Capture one committed migration's source image at the group leader's
+    /// durable applied cut. The returned record is a description for the
+    /// offline installer; it carries no serving or install capability.
+    pub fn capture_image(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::CaptureMigrationImageResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::CaptureMigrationImageRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(120));
+        let response = self
+            .runtime
+            .block_on(self.client.capture_migration_image(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        let digest = |bytes: Vec<u8>| {
+            bytes
+                .try_into()
+                .map(RootDigest::from_bytes)
+                .map_err(|_| DataGroupRpcError::Unconfirmed("invalid digest".into()))
+        };
+        let owner = |bytes: Vec<u8>| {
+            kv9_common::retention::OwnerId::new(
+                bytes
+                    .try_into()
+                    .map_err(|_| DataGroupRpcError::Unconfirmed("invalid owner id".into()))?,
+            )
+            .map_err(|e| DataGroupRpcError::Unconfirmed(e.to_string()))
+        };
+        let image_digest = digest(response.image_digest)?;
+        if response.record.is_empty()
+            || RootDigest::sha256(&response.record) != image_digest
+            || response.cut_index == 0
+            || response.cut_term == 0
+        {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "capture record and digest disagree or lack an exact cut".into(),
+            ));
+        }
+        Ok(crate::api::CaptureMigrationImageResult {
+            record: response.record,
+            image_digest,
+            cut: kv9_common::AppliedPosition {
+                term: response.cut_term,
+                index: response.cut_index,
+            },
+            configuration_applied_at: (response.configuration_applied_index != 0).then_some(
+                kv9_common::AppliedPosition {
+                    term: 0,
+                    index: response.configuration_applied_index,
+                },
+            ),
+            objects: response.objects,
+            object_bytes: response.object_bytes,
+            source_owner: owner(response.source_owner)?,
+            destination_owner: owner(response.destination_owner)?,
+        })
+    }
+
     /// Bind both tracking-only image owners for a committed migration. The
     /// returned IDs are observations; they carry no retention capability.
     pub fn bind_image(

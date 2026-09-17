@@ -32,6 +32,32 @@ pub(crate) struct MigrationOwners {
 }
 
 impl MigrationOwners {
+    /// Verify, from one LOCAL applied ledger view, that both owners are
+    /// committed and Published for exactly this image. Local visibility
+    /// implies commitment; absence only means "not yet locally applied",
+    /// which refuses in the safe direction. No retention mutation happens.
+    pub(crate) fn verify_published_locally(
+        &self,
+        view: &dyn kv9_engine::ReadView,
+        root: &RootDescriptor,
+    ) -> Result<()> {
+        for binding in [&self.source, &self.destination] {
+            let owner = kv9_meta::retention::retention_owner(view, root, binding.descriptor.id)?
+                .ok_or_else(|| {
+                    invalid("image owners are not committed; bind the planned manifest first")
+                })?;
+            if owner.binding != *binding {
+                return Err(invalid(
+                    "committed owner binds a different image than this cut",
+                ));
+            }
+            if owner.phase != PinPhase::Published {
+                return Err(invalid("image owner is not published"));
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn source_id(&self) -> OwnerId {
         self.source.descriptor.id
     }

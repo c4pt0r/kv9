@@ -29,14 +29,14 @@
     "crates/server/src/point_stream/tests.rs": "a150599f24b2666895e412c9253b163ed8b1f09ed6af3ec64c479a658f882c1e",
     "crates/server/src/point_wire.rs": "b9b1a7b3264d843f7083c20926778fac93d9bf399b75924e7eb8b5b60bda2fa6",
     "crates/server/src/grpc/routed.rs": "a69b3734a54ca720b3b20ab40ccdfdf89e6c99038a99089db51b167db393933d",
-    "crates/server/src/grpc.rs": "df6c3c42b455e91bc69753728868f497aa67aa5e64bdca02a9ed848a736eebbe",
-    "crates/server/src/api.rs": "7e30bf14d687041953c95b49d781bf56b059e43ba4943e8d8add29058723a97d",
+    "crates/server/src/grpc.rs": "5a3cc5eb4a0ed9623132995d7bf18a9f618de954fc3e9b50ea928320af369c4c",
+    "crates/server/src/api.rs": "52ba96f1528fd0e509939e5646960cab92a411c72ec7fb3e2c94000dfaa6817b",
     "crates/server/src/endpoints.rs": "8b1386366ef260db0e530c915642c0d702dacc5896ed824ca3aeeb3f13412f60",
-    "crates/server/src/runtime.rs": "690985ddc3874d208d37088f229cfd0299f7cb737dfba760be0b64b06b00c10e",
-    "crates/server/src/runtime/range_api.rs": "8721677ced0e62a21e1a778b5e7dfc145c0618718bdd51ca93279add0f0c58a0",
+    "crates/server/src/runtime.rs": "cd32fe7e970f369b48d44228147c44d9d35e103589cefb65e02a8568975220a8",
+    "crates/server/src/runtime/range_api.rs": "0945dad68911456da7a30dcfce49148641e39cf781770f28f064d9c6ea300154",
     "crates/server/src/runtime/tests/data_group_tests.rs": "4d1c4070bd3b52d14c4caaf59172a2e36544bbb6138350d087da23f05f6a01e6",
     "crates/meta/src/data_groups/ranges.rs": "d32aa34b4bb469772f14c0bc0cd4414bc6e48afc916ee33a9cc849bf312e67a3",
-    "crates/server/proto/kv9.proto": "ebc3d442edb7275b7a40033f5eb11848092880bb42c095257aad89c840eb17c8",
+    "crates/server/proto/kv9.proto": "ec53fdd9d8f713e4950d72ba0c7c019f2cf0781f0d557d32f24be9a56cabe238",
     "crates/server/src/bin/kv9-routed-workload.rs": "b3b94848c8a0eac87ffc39a1bde3f8398efb468e8c9cdde633495922eb0801e6"
   }
 }

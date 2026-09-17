@@ -3,6 +3,155 @@ use kv9_server::data_groups::{DataGroupClient, DataGroupRpcError};
 use std::io::Read;
 use std::{collections::HashMap, fs::File, process::ExitCode};
 
+pub(super) fn run_plan_image(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(
+            flag.as_str(),
+            "--addr" | "--root-digest" | "--operation-id" | "--manifest-file"
+        ) {
+            return super::command_error(&format!("unknown plan flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate plan flag {flag}"));
+        }
+    }
+    match execute_plan_image(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_plan_image(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let manifest_path = required("--manifest-file")?.clone();
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.plan_image(root, operation))
+    {
+        Ok(r) => {
+            std::fs::write(&manifest_path, &r.manifest).map_err(|e| e.to_string())?;
+            println!(
+                "plan_outcome=planned
+cut_term={}
+cut_index={}
+manifest_file={manifest_path}
+capability=description_only",
+                r.cut.term, r.cut.index
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "plan_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("plan_outcome=unconfirmed");
+            eprintln!("plan unconfirmed; planning is read-only and may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
+pub(super) fn run_capture_image(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(
+            flag.as_str(),
+            "--addr" | "--root-digest" | "--operation-id" | "--record-file"
+        ) {
+            return super::command_error(&format!("unknown capture flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate capture flag {flag}"));
+        }
+    }
+    match execute_capture(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_capture(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let record_path = required("--record-file")?.clone();
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.capture_image(root, operation))
+    {
+        Ok(r) => {
+            std::fs::write(&record_path, &r.record).map_err(|e| e.to_string())?;
+            println!(
+                "capture_outcome=captured
+image_digest={}
+cut_term={}
+cut_index={}
+configuration_applied_index={}
+objects={}
+object_bytes={}
+source_owner={}
+destination_owner={}
+record_file={record_path}
+capability=description_only",
+                r.image_digest,
+                r.cut.term,
+                r.cut.index,
+                r.configuration_applied_at.map_or(0, |p| p.index),
+                r.objects,
+                r.object_bytes,
+                super::encode_hex(r.source_owner.as_bytes()),
+                super::encode_hex(r.destination_owner.as_bytes())
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "capture_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("capture_outcome=unconfirmed");
+            eprintln!("capture unconfirmed; the operation may retry safely: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
 pub(super) fn run_bind_image(mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut values = HashMap::new();
     while let Some(flag) = args.next() {

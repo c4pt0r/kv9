@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "members_verified": 688,
+  "archive_sha256": "fe8ca70c5c920f946132d94a567151bfa4fa1d9fa5290d4717f0aeb4a32e493e",
+  "embedded_receipts_reverified": {
+    "e2e_checks": 6,
+    "capture_theorems": 11,
+    "captured_record_magic_and_digest": "verified"
+  }
+}
