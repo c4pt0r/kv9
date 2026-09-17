@@ -26,7 +26,7 @@
     "crates/common/src/retention.rs": "7260025252aae933c9c21f1109122300d3ba6179ad849c5efd4bec1999a108fa",
     "crates/server/src/migration_retention.rs": "1e5ca22f2b0ab008c02ee425d527b0e61303e1b707f8797fe930ffe15977e37c",
     "crates/server/src/checkpoint_retention.rs": "a5e46fd8bb0bbe3c6198d1e13ba0dcdf1fc42447ba670bd760ea02ad9b216390",
-    "crates/server/src/runtime/tests/data_group_tests.rs": "b6998079f663d9dda2e7e07ceb686340c4d404ca6a326f23a9c32780f9688f68",
+    "crates/server/src/runtime/tests/data_group_tests.rs": "4d1c4070bd3b52d14c4caaf59172a2e36544bbb6138350d087da23f05f6a01e6",
     "proofs/lean/migration-authority/Authority.lean": "18a8c85abbe8bf0d47995b09cad6891ea708e599412a4794f0c92205821bfbd9",
     "proofs/lean/migration-authority/README.md": "e8f3bb5ca08dc26075c17c33aac94a2fbb64c15134738e0dd67127d23060b568"
   }

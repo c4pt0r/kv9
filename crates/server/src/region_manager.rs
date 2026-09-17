@@ -108,6 +108,9 @@ pub(crate) struct RegionManager {
     identity: StoreIdentity,
     groups: BTreeMap<RegionId, LocalGroup>,
     pool: Option<DriverPool<DiskRaftStorage, WalEngine>>,
+    /// Bounded shared Ready/tick worker count, fixed at construction from the
+    /// validated node configuration. The metadata owner is separate.
+    data_workers: usize,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -201,13 +204,14 @@ fn publish(
 }
 
 impl RegionManager {
-    pub(crate) fn new(directory: &Path, identity: StoreIdentity) -> Self {
+    pub(crate) fn new(directory: &Path, identity: StoreIdentity, data_workers: usize) -> Self {
         Self {
             raw_directory: Arc::default(),
             directory: directory.join("data-groups"),
             identity,
             groups: BTreeMap::new(),
             pool: None,
+            data_workers: data_workers.clamp(1, 32),
         }
     }
 
@@ -247,7 +251,7 @@ impl RegionManager {
         // Fixed data workers are separate from the metadata owner. Thread
         // allocation failure precedes publication or acquisition of a voter.
         if self.pool.is_none() {
-            self.pool = Some(DriverPool::new(2, tick)?);
+            self.pool = Some(DriverPool::new(self.data_workers, tick)?);
         }
         let LocalGroup::Ready(mut prepared) = self.groups.remove(&region).unwrap() else {
             unreachable!()

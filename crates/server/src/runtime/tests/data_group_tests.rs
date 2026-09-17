@@ -60,6 +60,7 @@ impl ActiveCluster {
                     .into_owned(),
                 join: vec![],
                 wal_streams: 1,
+                data_workers: 2,
                 replication_factor: 3,
             },
             RuntimeAuth {
@@ -669,6 +670,7 @@ fn group_preparation_real_metadata_quorum_survives_leader_loss_and_store_restart
         data_dir: base.join(format!("n{id}")).to_string_lossy().into_owned(),
         join: vec![],
         wal_streams: 1,
+        data_workers: 2,
         replication_factor: 3,
     };
     let mut rts: Vec<_> = listeners
@@ -987,6 +989,7 @@ fn migration_intents_bind_committed_image_owners_only() {
             data_dir: cluster.base.join("n4").to_string_lossy().into_owned(),
             join: vec![],
             wal_streams: 1,
+            data_workers: 2,
             replication_factor: 3,
         },
         RuntimeAuth {

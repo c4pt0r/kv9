@@ -3330,6 +3330,7 @@ impl NodeRuntime {
         overrides: StartOverrides,
     ) -> Result<Self> {
         let public_limits = crate::admission::PublicApiLimits::from_env()?;
+        let data_workers = config.data_workers;
         root.validate()?;
         store_identity.verify(&root, id)?;
         config.validate()?;
@@ -3752,7 +3753,8 @@ impl NodeRuntime {
             })
             .transpose()?;
 
-        let mut data_groups = crate::region_manager::RegionManager::new(&data_dir, store_identity);
+        let mut data_groups =
+            crate::region_manager::RegionManager::new(&data_dir, store_identity, data_workers);
         data_groups.raw_directory = backend.raw_directory.clone();
         data_groups.recover(&node.meta_raft.store)?;
 
@@ -7555,6 +7557,7 @@ mod tests {
             data_dir: base.join(format!("n{id}")).to_string_lossy().into_owned(),
             join: Vec::new(),
             wal_streams: 1,
+            data_workers: 2,
             replication_factor: 3,
         };
 
@@ -7846,6 +7849,7 @@ mod tests {
             data_dir: base.join("n4").to_string_lossy().into_owned(),
             join: Vec::new(),
             wal_streams: 1,
+            data_workers: 2,
             replication_factor: 3,
         };
         let auth = || RuntimeAuth {
@@ -8090,6 +8094,7 @@ mod tests {
                 data_dir: base.join("n4").to_string_lossy().into_owned(),
                 join: Vec::new(),
                 wal_streams: 1,
+                data_workers: 2,
                 replication_factor: 3,
             },
             RuntimeAuth {
@@ -8806,6 +8811,7 @@ mod tests {
             data_dir: directory.to_string_lossy().into_owned(),
             join: Vec::new(),
             wal_streams: 1,
+            data_workers: 2,
             replication_factor: 3,
         };
         let replacement = base.join("replacement");
@@ -8980,6 +8986,7 @@ mod tests {
                         data_dir: base.join(format!("n{id}")).to_string_lossy().into_owned(),
                         join: Vec::new(),
                         wal_streams: 1,
+                        data_workers: 2,
                         replication_factor: 3,
                     },
                     RuntimeAuth {
@@ -9062,6 +9069,7 @@ mod tests {
                                 .into_owned(),
                             join: Vec::new(),
                             wal_streams: 1,
+                            data_workers: 2,
                             replication_factor: 3,
                         },
                         RuntimeAuth {

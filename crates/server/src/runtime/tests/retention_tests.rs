@@ -125,6 +125,7 @@ impl Fixture {
                             .into_owned(),
                         join: Vec::new(),
                         wal_streams: 1,
+                        data_workers: 2,
                         replication_factor: 3,
                     },
                     RuntimeAuth {
