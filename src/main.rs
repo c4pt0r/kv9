@@ -74,6 +74,7 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client remove-source-replica --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client record-split-intent --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --parent-region <id> --split-key-hex <hex> --child-low-task <id> --child-high-task <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client seal-split-parent --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client populate-split-child --addr <child-leader-ip:port> --root-digest <hex> --operation-id <hex> --half <low|high>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client get-node-endpoint --addr <leader-ip:port> --node-id <id>\n\
@@ -899,6 +900,7 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         "remove-source-replica" => data_group_cli::run_remove_replica(args),
         "record-split-intent" => data_group_cli::run_record_split(args),
         "seal-split-parent" => data_group_cli::run_seal_split(args),
+        "populate-split-child" => data_group_cli::run_populate_child(args),
         "admit-node" => run_admit_node(args),
         "promote-node" => run_promote_node(args),
         "get-node-endpoint" => endpoint_cli::run(args, false),

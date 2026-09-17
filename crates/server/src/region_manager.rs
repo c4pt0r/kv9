@@ -121,8 +121,18 @@ pub(crate) struct AdoptionReceipt {
     pub(crate) cut: kv9_common::AppliedPosition,
 }
 
+/// Engine + driver handles for EVERY locally started group — bound or not.
+/// Shared with the RPC backend (like the raw directory), because unbound
+/// split children have no raw-directory entry yet.
+pub(crate) type GroupHandles = Arc<
+    std::sync::Mutex<
+        BTreeMap<RegionId, (Arc<WalEngine>, Arc<NodeDriver<DiskRaftStorage, WalEngine>>)>,
+    >,
+>;
+
 pub(crate) struct RegionManager {
     pub(crate) raw_directory: Arc<crate::runtime::range_api::RawDirectory>,
+    pub(crate) group_handles: GroupHandles,
     directory: PathBuf,
     identity: StoreIdentity,
     groups: BTreeMap<RegionId, LocalGroup>,
@@ -244,6 +254,7 @@ impl RegionManager {
     pub(crate) fn new(directory: &Path, identity: StoreIdentity, data_workers: usize) -> Self {
         Self {
             raw_directory: Arc::default(),
+            group_handles: Arc::default(),
             directory: directory.join("data-groups"),
             identity,
             groups: BTreeMap::new(),
@@ -357,6 +368,10 @@ impl RegionManager {
             )?,
         };
         self.pool.as_ref().unwrap().register(driver.clone())?;
+        self.group_handles
+            .lock()
+            .expect("group handles poisoned")
+            .insert(region, (prepared.engine.clone(), driver.clone()));
         prepared.driver = Some(driver);
         self.groups.insert(region, LocalGroup::Ready(prepared));
         Ok(())
@@ -453,6 +468,10 @@ impl RegionManager {
             .as_ref()
             .expect("pool created above")
             .register(driver.clone())?;
+        self.group_handles
+            .lock()
+            .expect("group handles poisoned")
+            .insert(region, (engine.clone(), driver.clone()));
         self.raw_directory
             .insert(crate::runtime::range_api::RawGroup::new(
                 adopted.range.clone(),
@@ -521,6 +540,10 @@ impl RegionManager {
             driver.stop();
         }
         self.raw_directory.remove(region);
+        self.group_handles
+            .lock()
+            .expect("group handles poisoned")
+            .remove(&region);
         let directory = self.directory.join(region.0.to_string());
         publish(
             &directory,

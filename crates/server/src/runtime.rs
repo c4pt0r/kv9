@@ -778,6 +778,7 @@ impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::ReplicatedEngin
 /// exact `(term,index)` that the production apply loop committed.
 struct RuntimeBackend {
     raw_directory: Arc<range_api::RawDirectory>,
+    group_handles: crate::region_manager::GroupHandles,
     adoption_receipts: Arc<
         std::sync::Mutex<
             std::collections::BTreeMap<
@@ -1833,6 +1834,175 @@ impl AdminApi for RuntimeBackend {
                 term: proposed.term,
                 index: proposed.index.0,
             },
+        })
+    }
+
+    fn populate_split_child(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        high: bool,
+    ) -> Result<crate::api::PopulateSplitChildResult> {
+        use sha2::Digest as _;
+        self.ensure_serving()?;
+        let store = &self.node.meta_raft.store;
+        {
+            let txn = store.begin()?;
+            let certified = kv9_meta::root::certified_root(&txn)?.ok_or_else(|| {
+                Error::MetaNotReady("population requires a certified root".into())
+            })?;
+            if certified.digest() != root {
+                return Err(Error::Config("population request root differs".into()));
+            }
+        }
+        let intent = kv9_meta::data_groups::split::committed_splits(store)?
+            .into_iter()
+            .find(|i| i.operation() == operation)
+            .ok_or_else(|| Error::Config("split intent is not committed locally".into()))?;
+        let child_task = if high {
+            intent.child_high()
+        } else {
+            intent.child_low()
+        };
+        let child_region = kv9_meta::data_groups::committed_creation(store, child_task)?
+            .ok_or_else(|| Error::Config("split child creation is not committed".into()))?
+            .intent()
+            .region();
+        let (parent_engine, child_engine, child_driver) = {
+            let handles = self.group_handles.lock().expect("group handles poisoned");
+            let (parent_engine, _) = handles
+                .get(&intent.parent_region())
+                .ok_or_else(|| Error::MetaNotReady("split parent is not active locally".into()))?
+                .clone();
+            let (child_engine, child_driver) = handles
+                .get(&child_region)
+                .ok_or_else(|| Error::MetaNotReady("split child is not active locally".into()))?
+                .clone();
+            (parent_engine, child_engine, child_driver)
+        };
+        // Population happens ONLY under the durable fence: the parent's own
+        // range row must be sealed, so the copied half cannot move again.
+        let parent_range = parent_engine
+            .get(
+                kv9_engine::ColumnFamily::Default,
+                kv9_common::data_range::RANGE_KEY,
+            )?
+            .map(|b| kv9_common::data_range::DataRange::decode(&b))
+            .transpose()?
+            .ok_or_else(|| Error::MetaNotReady("parent range row has not applied".into()))?;
+        if !parent_range.sealed {
+            return Err(Error::Config(
+                "population requires the sealed parent fence".into(),
+            ));
+        }
+        let status = child_driver.status();
+        if status.fatal.is_some() {
+            return Err(Error::Raft("child driver is fatally stopped".into()));
+        }
+        if status.role != kv9_raft::Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        // Half bounds in ENGINE key encoding. The split key is a user key;
+        // an empty upper bound means "to the end of this keyspace's prefix".
+        let keyspace = parent_range.keyspace;
+        let low_bound = kv9_common::codec::encode_key(
+            kv9_common::codec::KeyMode::Raw,
+            keyspace,
+            intent.split_key(),
+        )
+        .map_err(|e| Error::Config(e.to_string()))?;
+        let prefix = kv9_common::codec::encode_key(kv9_common::codec::KeyMode::Raw, keyspace, b"")
+            .map_err(|e| Error::Config(e.to_string()))?;
+        // The exclusive end of this keyspace: the NEXT keyspace's empty
+        // prefix, which the order-preserving encoding places strictly after
+        // every key of this one. Keyspace ids are u32 and allocation refuses
+        // the maximum, so the successor id always encodes.
+        let prefix_end = kv9_common::codec::encode_key(
+            kv9_common::codec::KeyMode::Raw,
+            kv9_common::KeyspaceId(
+                keyspace
+                    .0
+                    .checked_add(1)
+                    .ok_or_else(|| Error::Config("keyspace id exhausted".into()))?,
+            ),
+            b"",
+        )
+        .map_err(|e| Error::Config(e.to_string()))?;
+        let (start, end) = if high {
+            (low_bound.clone(), prefix_end.clone())
+        } else {
+            (prefix.clone(), low_bound.clone())
+        };
+        let view = parent_engine.snapshot()?;
+        let mut parent_hash = sha2::Sha256::new();
+        let mut cursor = start.clone();
+        let mut rows_copied: u64 = 0;
+        loop {
+            let batch = view.scan(kv9_engine::ColumnFamily::Default, &cursor, &end, 256)?;
+            if batch.is_empty() {
+                break;
+            }
+            let mut ops = Vec::with_capacity(batch.len());
+            for (key, value) in &batch {
+                if key.as_slice() == kv9_common::data_range::RANGE_KEY {
+                    continue;
+                }
+                parent_hash.update((key.len() as u64).to_be_bytes());
+                parent_hash.update(key);
+                parent_hash.update((value.len() as u64).to_be_bytes());
+                parent_hash.update(value);
+                ops.push(kv9_raft::KvOp::Put {
+                    cf: 0,
+                    key: key.clone(),
+                    value: value.clone(),
+                });
+            }
+            let last = batch.last().expect("nonempty batch").0.clone();
+            if !ops.is_empty() {
+                rows_copied += ops.len() as u64;
+                let proposed = child_driver.propose(&kv9_raft::Command::Write { ops })?;
+                child_driver
+                    .wait_applied(proposed, Duration::from_secs(10))
+                    .map_err(|e| Error::Raft(format!("population batch apply: {e:?}")))?;
+            }
+            cursor = last;
+            cursor.push(0); // strictly past the last copied key
+        }
+        let parent_half_digest = kv9_common::RootDigest::from_bytes(parent_hash.finalize().into());
+        // Recompute over the CHILD's durable state: what was actually copied.
+        let child_view = child_engine.snapshot()?;
+        let mut child_hash = sha2::Sha256::new();
+        let mut cursor = start;
+        loop {
+            let batch = child_view.scan(kv9_engine::ColumnFamily::Default, &cursor, &end, 256)?;
+            if batch.is_empty() {
+                break;
+            }
+            for (key, value) in &batch {
+                if key.as_slice() == kv9_common::data_range::RANGE_KEY {
+                    continue;
+                }
+                child_hash.update((key.len() as u64).to_be_bytes());
+                child_hash.update(key);
+                child_hash.update((value.len() as u64).to_be_bytes());
+                child_hash.update(value);
+            }
+            cursor = batch.last().expect("nonempty batch").0.clone();
+            cursor.push(0);
+        }
+        let child_digest = kv9_common::RootDigest::from_bytes(child_hash.finalize().into());
+        if child_digest != parent_half_digest {
+            return Err(Error::Raft(
+                "child contents differ from the sealed parent half".into(),
+            ));
+        }
+        Ok(crate::api::PopulateSplitChildResult {
+            rows_copied,
+            parent_half_digest,
+            child_digest,
         })
     }
 
@@ -4293,6 +4463,7 @@ impl NodeRuntime {
 
         let backend = Arc::new(RuntimeBackend {
             raw_directory: Arc::default(),
+            group_handles: Arc::default(),
             adoption_receipts: Arc::default(),
             node: node.clone(),
             driver: driver.clone(),
@@ -4454,6 +4625,7 @@ impl NodeRuntime {
         let mut data_groups =
             crate::region_manager::RegionManager::new(&data_dir, store_identity, data_workers);
         data_groups.raw_directory = backend.raw_directory.clone();
+        data_groups.group_handles = backend.group_handles.clone();
         data_groups.adoption_receipts = backend.adoption_receipts.clone();
         data_groups.recover(&node.meta_raft.store)?;
 
@@ -4538,6 +4710,7 @@ impl NodeRuntime {
     ) -> Result<kv9_meta::data_groups::CreationIntent> {
         let backend = RuntimeBackend {
             raw_directory: Arc::default(),
+            group_handles: Arc::default(),
             adoption_receipts: Arc::default(),
             node: self.node.clone(),
             driver: self.driver.clone(),
@@ -6911,6 +7084,7 @@ mod tests {
         (
             RuntimeBackend {
                 raw_directory: Arc::default(),
+                group_handles: Arc::default(),
                 adoption_receipts: Arc::default(),
                 node,
                 driver,
@@ -8207,6 +8381,7 @@ mod tests {
     fn backend_view(rt: &NodeRuntime, root: &RootDescriptor) -> RuntimeBackend {
         RuntimeBackend {
             raw_directory: rt.data_groups.raw_directory.clone(),
+            group_handles: rt.data_groups.group_handles.clone(),
             adoption_receipts: rt.data_groups.adoption_receipts.clone(),
             node: rt.node.clone(),
             driver: rt.driver.clone(),
@@ -10477,6 +10652,7 @@ mod tests {
         let tokio_rt = tokio::runtime::Runtime::new().unwrap();
         let backend = RuntimeBackend {
             raw_directory: Arc::default(),
+            group_handles: Arc::default(),
             adoption_receipts: Arc::default(),
             node,
             driver: d1.clone(),
@@ -10861,6 +11037,7 @@ mod fence_firing_tests {
     fn backend_of(runtime: &NodeRuntime) -> RuntimeBackend {
         RuntimeBackend {
             raw_directory: Arc::default(),
+            group_handles: Arc::default(),
             adoption_receipts: Arc::default(),
             node: runtime.node.clone(),
             driver: runtime.driver.clone(),

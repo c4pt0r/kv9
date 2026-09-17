@@ -704,6 +704,77 @@ admission_refused={reason}"
     }
 }
 
+pub(super) fn run_populate_child(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(
+            flag.as_str(),
+            "--addr" | "--root-digest" | "--operation-id" | "--half"
+        ) {
+            return super::command_error(&format!("unknown populate flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate populate flag {flag}"));
+        }
+    }
+    match execute_populate_child(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_populate_child(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let high = match required("--half")?.as_str() {
+        "low" => false,
+        "high" => true,
+        _ => return Err("--half must be low or high".into()),
+    };
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.populate_split_child(root, operation, high))
+    {
+        Ok(r) => {
+            println!(
+                "populate_outcome=copied
+rows_copied={}
+parent_half_digest={}
+child_digest={}
+capability=committed_child_rows_only",
+                r.rows_copied, r.parent_half_digest, r.child_digest
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "populate_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("populate_outcome=unconfirmed");
+            eprintln!("population is idempotent and may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
 pub(super) fn run_plan_image(mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut values = HashMap::new();
     while let Some(flag) = args.next() {

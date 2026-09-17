@@ -537,6 +537,45 @@ impl DataGroupClient {
         })
     }
 
+    /// Copy the sealed parent's half into one child through the child's log.
+    pub fn populate_split_child(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+        high: bool,
+    ) -> Result<crate::api::PopulateSplitChildResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::PopulateSplitChildRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+            high,
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(300));
+        let response = self
+            .runtime
+            .block_on(self.client.populate_split_child(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        let parent: [u8; 32] = response.parent_half_digest.try_into().map_err(|_| {
+            DataGroupRpcError::Unconfirmed("population lacks a parent digest".into())
+        })?;
+        let child: [u8; 32] = response.child_digest.try_into().map_err(|_| {
+            DataGroupRpcError::Unconfirmed("population lacks a child digest".into())
+        })?;
+        Ok(crate::api::PopulateSplitChildResult {
+            rows_copied: response.rows_copied,
+            parent_half_digest: RootDigest::from_bytes(parent),
+            child_digest: RootDigest::from_bytes(child),
+        })
+    }
+
     /// Replay the destination's durable adoption receipt for one region.
     pub fn emit_install_evidence(
         &mut self,
