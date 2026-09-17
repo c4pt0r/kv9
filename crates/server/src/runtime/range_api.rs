@@ -26,6 +26,12 @@ impl RawDirectory {
             })?;
         Ok(group.clone())
     }
+    pub(crate) fn remove(&self, region: kv9_common::RegionId) {
+        self.0
+            .lock()
+            .expect("raw directory poisoned")
+            .remove(&region);
+    }
     pub(crate) fn insert(&self, group: Arc<RawGroup>) {
         self.0
             .lock()
