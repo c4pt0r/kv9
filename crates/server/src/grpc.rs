@@ -1720,6 +1720,71 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn emit_install_evidence(
+        &self,
+        request: Request<proto::EmitInstallEvidenceRequest>,
+    ) -> Result<Response<proto::EmitInstallEvidenceResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        if request.region == 0 || root.as_bytes() == &[0; 32] {
+            return Err(Status::invalid_argument("nonzero root and region required"));
+        }
+        let region = kv9_common::RegionId(request.region);
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.emit_install_evidence(&caller, root, region)
+            })
+            .await?;
+        Ok(Response::new(proto::EmitInstallEvidenceResponse {
+            receipt: result.receipt,
+            image_digest: result.image_digest.as_bytes().to_vec(),
+            cut_term: result.cut.term,
+            cut_index: result.cut.index,
+        }))
+    }
+
+    async fn record_install_evidence(
+        &self,
+        request: Request<proto::RecordInstallEvidenceRequest>,
+    ) -> Result<Response<proto::RecordInstallEvidenceResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        if root.as_bytes() == &[0; 32]
+            || request.receipt.len() != kv9_meta::data_groups::evidence::MAX_EVIDENCE_BYTES
+        {
+            return Err(Status::invalid_argument(
+                "nonzero root and a canonical 200-byte receipt required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.record_install_evidence(&caller, root, &request.receipt)
+            })
+            .await?;
+        Ok(Response::new(proto::RecordInstallEvidenceResponse {
+            task: result.evidence.task(),
+            changed: result.changed,
+        }))
+    }
+
     async fn bind_migration_image(
         &self,
         request: Request<proto::BindMigrationImageRequest>,

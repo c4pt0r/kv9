@@ -190,6 +190,8 @@ batch_service! {
     migrate_data_group: MigrateDataGroupRequest => MigrateDataGroupResponse,
     bind_migration_image: BindMigrationImageRequest => BindMigrationImageResponse,
     capture_migration_image: CaptureMigrationImageRequest => CaptureMigrationImageResponse,
+    emit_install_evidence: EmitInstallEvidenceRequest => EmitInstallEvidenceResponse,
+    record_install_evidence: RecordInstallEvidenceRequest => RecordInstallEvidenceResponse,
     plan_migration_image: PlanMigrationImageRequest => PlanMigrationImageResponse,
     attach_migration_learner: AttachMigrationLearnerRequest => AttachMigrationLearnerResponse,
 }

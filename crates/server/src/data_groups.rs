@@ -272,6 +272,80 @@ impl DataGroupClient {
         })
     }
 
+    /// Replay the destination's durable adoption receipt for one region.
+    pub fn emit_install_evidence(
+        &mut self,
+        root: RootDigest,
+        region: kv9_common::RegionId,
+    ) -> Result<crate::api::EmitInstallEvidenceResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || region.0 == 0 {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and region required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::EmitInstallEvidenceRequest {
+            root_digest: root.as_bytes().to_vec(),
+            region: region.0,
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.emit_install_evidence(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        let image_digest: [u8; 32] = response.image_digest.try_into().map_err(|_| {
+            DataGroupRpcError::Unconfirmed("evidence receipt lacks an image digest".into())
+        })?;
+        if response.receipt.is_empty() || response.cut_index == 0 || response.cut_term == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "evidence receipt lacks a payload or exact cut".into(),
+            ));
+        }
+        Ok(crate::api::EmitInstallEvidenceResult {
+            receipt: response.receipt,
+            image_digest: RootDigest::from_bytes(image_digest),
+            cut: AppliedPosition {
+                term: response.cut_term,
+                index: response.cut_index,
+            },
+        })
+    }
+
+    /// Commit one destination-install evidence row at the metadata leader.
+    pub fn record_install_evidence(
+        &mut self,
+        root: RootDigest,
+        receipt: &[u8],
+    ) -> Result<(u64, bool), DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || receipt.is_empty() {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and a receipt required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::RecordInstallEvidenceRequest {
+            root_digest: root.as_bytes().to_vec(),
+            receipt: receipt.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.record_install_evidence(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.task == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "evidence commit lacks a task receipt".into(),
+            ));
+        }
+        Ok((response.task, response.changed))
+    }
+
     /// Plan the group leader's current cut manifest, for owner binding.
     pub fn plan_image(
         &mut self,

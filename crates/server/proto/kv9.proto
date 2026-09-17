@@ -54,6 +54,8 @@ service Kv9 {
   rpc AttachMigrationLearner(AttachMigrationLearnerRequest) returns (AttachMigrationLearnerResponse);
   rpc PlanMigrationImage(PlanMigrationImageRequest) returns (PlanMigrationImageResponse);
   rpc CaptureMigrationImage(CaptureMigrationImageRequest) returns (CaptureMigrationImageResponse);
+  rpc EmitInstallEvidence(EmitInstallEvidenceRequest) returns (EmitInstallEvidenceResponse);
+  rpc RecordInstallEvidence(RecordInstallEvidenceRequest) returns (RecordInstallEvidenceResponse);
 }
 
 message Empty {}
@@ -157,6 +159,31 @@ message CaptureMigrationImageResponse {
   uint64 object_bytes = 7;
   bytes source_owner = 8;
   bytes destination_owner = 9;
+}
+
+// Replay the destination's durable adoption facts as the canonical
+// KV9EVD01 receipt (task = 0). Read-only; grants no quiesce or release.
+message EmitInstallEvidenceRequest {
+  bytes root_digest = 1;
+  uint64 region = 2;
+}
+message EmitInstallEvidenceResponse {
+  bytes receipt = 1;
+  bytes image_digest = 2;
+  uint64 cut_term = 3;
+  uint64 cut_index = 4;
+}
+
+// Commit one destination-install evidence row through the metadata leader.
+// The committed migration is the authority the receipt must match exactly.
+message RecordInstallEvidenceRequest {
+  bytes root_digest = 1;
+  bytes receipt = 2; // Canonical KV9EVD01 receipt, exactly 200 bytes.
+}
+message RecordInstallEvidenceResponse {
+  uint64 task = 1;
+  // False confirms the identical committed row; a NEW confirmation commit.
+  bool changed = 2;
 }
 
 message BindMigrationImageResponse {

@@ -800,17 +800,31 @@ pub fn plan_retention(
                     "quiescence lacks a published successor for the complete subject",
                 ));
             }
-            // Migration pins have no transfer-settlement seam yet: a published
-            // destination owner is a description of intent, not durable
-            // destination-install evidence, and cannot quiesce its source.
+            // Migration pins quiesce ONLY against committed destination-install
+            // evidence: a published destination owner alone is a description of
+            // intent. The evidence row is read from the SAME applied view this
+            // plan runs against, so commitment is exactly local visibility and
+            // absence refuses in the safe direction. The evidence subject and
+            // derived operation digest must match BOTH owners — the pair that
+            // one committed migration operation produced.
             if matches!(
                 source.binding.descriptor.kind,
                 OwnerKind::Snapshot | OwnerKind::Migration
             ) || target.binding.descriptor.kind == OwnerKind::Migration
             {
-                return Err(conflict(
-                    "migration pins cannot quiesce without committed install evidence",
-                ));
+                let evidenced = source.binding.descriptor.operation
+                    == target.binding.descriptor.operation
+                    && crate::data_groups::evidence::evidence_matches_owner_pair(
+                        p.view,
+                        p.root,
+                        source.binding.descriptor.operation,
+                        source.binding.descriptor.subject,
+                    )?;
+                if !evidenced {
+                    return Err(conflict(
+                        "migration pins cannot quiesce without committed install evidence",
+                    ));
+                }
             }
             p.transition(*from, PinPhase::Quiesced)?;
         }
@@ -1301,6 +1315,140 @@ mod tests {
                 PinPhase::Published
             );
         }
+    }
+
+    /// One committed evidence row — read from the very view the plan runs
+    /// against — is what turns the migration quiesce refusal into an accepted
+    /// settlement. Mismatched subject or operation keeps refusing, the
+    /// released source follows only from the quiesced phase, and the
+    /// destination pin (the live replica's protection) never drops.
+    #[test]
+    fn migration_pins_quiesce_and_release_only_with_matching_committed_evidence() {
+        use crate::schema::TASKS_DESC;
+        let evidence_payload =
+            |root: &RootDescriptor, operation: [u8; 16], task: u64, subject: [u8; 32]| {
+                let mut b = b"KV9EVD01".to_vec();
+                b.extend_from_slice(root.digest().as_bytes());
+                b.extend_from_slice(&operation);
+                b.extend_from_slice(&task.to_be_bytes());
+                b.extend_from_slice(&700u64.to_be_bytes()); // migration task
+                b.extend_from_slice(&800u64.to_be_bytes()); // region
+                b.extend_from_slice(&4u64.to_be_bytes()); // destination node
+                b.extend_from_slice(&[40; 16]); // destination incarnation
+                b.extend_from_slice(&[41; 16]); // adopted generation
+                b.extend_from_slice(&[42; 32]); // image digest
+                b.extend_from_slice(&subject);
+                b.extend_from_slice(&3u64.to_be_bytes()); // cut term
+                b.extend_from_slice(&12u64.to_be_bytes()); // cut index
+                b
+            };
+        let write_evidence = |engine: &MemEngine, payload: Vec<u8>, task: u64| {
+            let mut row = RowValue::new();
+            row.set(ColumnId(1), ColumnValue::Uint(task));
+            row.set(ColumnId(2), ColumnValue::Uint(104));
+            row.set(ColumnId(3), ColumnValue::Bytes(payload));
+            row.set(ColumnId(4), ColumnValue::Uint(0));
+            row.set(ColumnId(5), ColumnValue::Uint(0));
+            let mut batch = WriteBatch::new();
+            batch.put(
+                ColumnFamily::Default,
+                encode_row_key(TASKS_DESC.id, &[memcmp_uint(task)]).unwrap(),
+                row.encode(),
+            );
+            engine.write(batch).unwrap();
+        };
+        let (engine, root) = fixture();
+        initialized(&engine, &root);
+        let operation = [7u8; 16];
+        let digest =
+            crate::data_groups::evidence::migration_operation_digest(root.digest(), operation);
+        let subject = [42u8; 32];
+        let prepared = |kind: OwnerKind, n: u8| {
+            let mut owner = binding(&root, n);
+            owner.descriptor.kind = kind;
+            owner.descriptor.operation = digest;
+            owner.descriptor.subject = subject;
+            owner.descriptor.subject_is_anchor = false;
+            owner
+        };
+        let a = prepared(OwnerKind::Snapshot, 1);
+        let b = prepared(OwnerKind::Migration, 2);
+        apply(&engine, &root, LedgerRequest::Acquire(a.clone()));
+        apply(&engine, &root, LedgerRequest::Publish(a.token()));
+        apply(
+            &engine,
+            &root,
+            LedgerRequest::Share {
+                from: a.token(),
+                to: b.clone(),
+            },
+        );
+        apply(&engine, &root, LedgerRequest::Publish(b.token()));
+        let quiesce = LedgerRequest::QuiesceAfterTransfer {
+            from: a.token(),
+            to: b.token(),
+        };
+        assert!(
+            plan(&engine, &root, &quiesce).is_err(),
+            "quiesced without any committed evidence"
+        );
+        // Evidence naming a different image subject is not settlement.
+        write_evidence(
+            &engine,
+            evidence_payload(&root, operation, 300, [43; 32]),
+            300,
+        );
+        assert!(
+            plan(&engine, &root, &quiesce).is_err(),
+            "quiesced on a different image's evidence"
+        );
+        // Evidence for a different operation is not settlement either.
+        write_evidence(&engine, evidence_payload(&root, [8; 16], 300, subject), 300);
+        assert!(
+            plan(&engine, &root, &quiesce).is_err(),
+            "quiesced on a different operation's evidence"
+        );
+        // The matching committed row settles the transfer: source quiesces,
+        // then releases; the destination pin stays published throughout.
+        write_evidence(
+            &engine,
+            evidence_payload(&root, operation, 300, subject),
+            300,
+        );
+        apply(&engine, &root, quiesce);
+        assert_eq!(
+            owner(&engine, &root, a.descriptor.id).phase,
+            PinPhase::Quiesced
+        );
+        assert_eq!(
+            owner(&engine, &root, b.descriptor.id).phase,
+            PinPhase::Published
+        );
+        apply(&engine, &root, LedgerRequest::Release(a.token()));
+        assert_eq!(
+            owner(&engine, &root, a.descriptor.id).phase,
+            PinPhase::Released
+        );
+        assert_eq!(
+            owner(&engine, &root, b.descriptor.id).phase,
+            PinPhase::Published
+        );
+        assert!(
+            plan(&engine, &root, &LedgerRequest::Release(b.token())).is_err(),
+            "the destination pin must never drop while the replica lives"
+        );
+        assert!(
+            plan(
+                &engine,
+                &root,
+                &LedgerRequest::QuiesceAfterTransfer {
+                    from: b.token(),
+                    to: a.token()
+                }
+            )
+            .is_err(),
+            "the destination cannot quiesce toward a released owner"
+        );
     }
 
     #[test]

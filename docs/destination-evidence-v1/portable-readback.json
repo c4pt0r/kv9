@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "archive_sha256": "5e9ea1f2091c90d61085a6b836baa289fc27d80322b6813c55a1f819a5b7e1c4",
+  "members_verified": 634,
+  "decoded_bytes": 4097126,
+  "receipts_verified": [
+    "e2e-first/result.json",
+    "local-validation.json",
+    "install-evidence-proof/result.json",
+    "retention-ledger-recheck.log",
+    "11 sibling model logs",
+    "minio-focused.log"
+  ],
+  "no_elf_no_credentials": true
+}

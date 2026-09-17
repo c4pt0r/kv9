@@ -69,6 +69,137 @@ admission_refused={reason}"
     }
 }
 
+pub(super) fn run_emit_evidence(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(
+            flag.as_str(),
+            "--addr" | "--root-digest" | "--region" | "--receipt-file"
+        ) {
+            return super::command_error(&format!("unknown evidence flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate evidence flag {flag}"));
+        }
+    }
+    match execute_emit_evidence(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_emit_evidence(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let region: u64 = required("--region")?
+        .parse()
+        .map_err(|_| "--region must be a number")?;
+    let receipt_path = required("--receipt-file")?.clone();
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.emit_install_evidence(root, kv9_common::RegionId(region)))
+    {
+        Ok(r) => {
+            std::fs::write(&receipt_path, &r.receipt).map_err(|e| e.to_string())?;
+            println!(
+                "evidence_outcome=emitted
+image_digest={}
+cut_term={}
+cut_index={}
+receipt_file={receipt_path}
+capability=description_only",
+                r.image_digest, r.cut.term, r.cut.index
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "evidence_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("evidence_outcome=unconfirmed");
+            eprintln!("emission is read-only and may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
+pub(super) fn run_record_evidence(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(flag.as_str(), "--addr" | "--root-digest" | "--receipt-file") {
+            return super::command_error(&format!("unknown evidence flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate evidence flag {flag}"));
+        }
+    }
+    match execute_record_evidence(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_record_evidence(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let mut receipt = Vec::new();
+    File::open(required("--receipt-file")?)
+        .and_then(|mut f| f.read_to_end(&mut receipt))
+        .map_err(|e| format!("--receipt-file: {e}"))?;
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.record_install_evidence(root, &receipt))
+    {
+        Ok((task, changed)) => {
+            println!(
+                "evidence_outcome={}
+evidence_task={task}
+capability=committed_row_only",
+                if changed { "recorded" } else { "confirmed" }
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "evidence_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("evidence_outcome=unconfirmed");
+            eprintln!("evidence unconfirmed; the identical receipt may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
 pub(super) fn run_plan_image(mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut values = HashMap::new();
     while let Some(flag) = args.next() {
