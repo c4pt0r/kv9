@@ -89,9 +89,12 @@ demonstrated with an original voter down. The [replica-removal
 increment](REPLICA-REMOVAL.md) now retires one exact committed source
 replica through the group's own log — never the destination, never below
 three voters — leaving the removed replica isolated, not deleted: the
-migration finally moves the group instead of only growing it. Next are
-local retirement/reclamation of removed storage, stranded-learner
-recovery after truncation and split publication.
+migration finally moves the group instead of only growing it. The
+[storage-retirement increment](STORAGE-RETIREMENT.md) now fences the
+removed replica locally and durably — the committed decision retires it
+automatically, restarts open nothing, and the storage stays intact.
+Next are physical reclamation, stranded-learner recovery after
+truncation and split publication (D04).
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

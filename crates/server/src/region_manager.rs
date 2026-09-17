@@ -33,6 +33,9 @@ enum Phase {
     IntentDurable = 0,
     StorageReady = 1,
     Active = 2,
+    /// The committed removal named this exact store; the local replica is
+    /// permanently fenced. Storage stays durable; nothing is deleted.
+    Retired = 3,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -65,6 +68,7 @@ impl Record {
             0 => Phase::IntentDurable,
             1 => Phase::StorageReady,
             2 => Phase::Active,
+            3 => Phase::Retired,
             _ => return Err(invalid("unknown local group phase")),
         };
         Ok(Self {
@@ -98,6 +102,11 @@ struct PreparedLocal {
 enum LocalGroup {
     Ready(Box<PreparedLocal>),
     Failed(String),
+    /// Permanently fenced by a committed removal; the lock keeps any other
+    /// opener out and the durable storage untouched.
+    Retired {
+        _lock: File,
+    },
 }
 
 /// The enclosing NodeRuntime owns the exclusive parent store lock. Each child
@@ -209,7 +218,7 @@ fn publish(
             PrepareStep::ReadyRename,
             PrepareStep::ReadyDirectorySync,
         ],
-        Phase::Active => [
+        Phase::Active | Phase::Retired => [
             PrepareStep::ActiveFileSync,
             PrepareStep::ActiveRename,
             PrepareStep::ActiveDirectorySync,
@@ -399,10 +408,10 @@ impl RegionManager {
         uploader: &kv9_engine::checkpoint::RemoteUploader,
     ) -> Result<()> {
         let region = migration.intent().region();
-        if let Some(LocalGroup::Ready(prepared)) = self.groups.get(&region) {
-            if prepared.driver.is_some() {
-                return Ok(());
-            }
+        match self.groups.get(&region) {
+            Some(LocalGroup::Ready(prepared)) if prepared.driver.is_some() => return Ok(()),
+            Some(LocalGroup::Retired { .. }) => return Ok(()),
+            _ => {}
         }
         let adopted =
             kv9_raft::snapshot_install::adopt_for_runtime(guard, self.identity, region, uploader)?;
@@ -481,6 +490,57 @@ impl RegionManager {
         Ok(())
     }
 
+    /// Permanently fence this store's replica of a group the committed
+    /// removal decision named — this exact node AND incarnation. The driver
+    /// stops, the group leaves the raw directory, and a durable Retired
+    /// record survives restarts. Storage is kept, never deleted; the group
+    /// lock stays held so no other opener can adopt the files. Idempotent.
+    pub(crate) fn retire_removed(
+        &mut self,
+        decision: &kv9_meta::data_groups::removal::RemovalDecision,
+    ) -> Result<()> {
+        let region = decision.region();
+        if decision.source().node != self.identity.node_id
+            || decision.source().incarnation != self.identity.store_incarnation
+        {
+            return Err(invalid("removal decision names a different store"));
+        }
+        let Some(entry) = self.groups.get(&region) else {
+            return Ok(()); // nothing local to fence
+        };
+        match entry {
+            LocalGroup::Retired { .. } => return Ok(()),
+            LocalGroup::Failed(_) => return Ok(()), // quarantined already
+            LocalGroup::Ready(_) => {}
+        }
+        let Some(LocalGroup::Ready(prepared)) = self.groups.remove(&region) else {
+            unreachable!()
+        };
+        let intent = prepared.intent.clone();
+        if let Some(driver) = prepared.driver.as_ref() {
+            driver.stop();
+        }
+        self.raw_directory.remove(region);
+        let directory = self.directory.join(region.0.to_string());
+        publish(
+            &directory,
+            &Record {
+                phase: Phase::Retired,
+                node: self.identity.node_id,
+                incarnation: self.identity.store_incarnation,
+                intent: intent.clone(),
+            },
+            &mut |_, _| Ok(()),
+        )?;
+        self.groups.insert(
+            region,
+            LocalGroup::Retired {
+                _lock: prepared._lock,
+            },
+        );
+        Ok(())
+    }
+
     /// At most one new local activation per reconciliation turn. Terminal
     /// failures stay quarantined until a new manager performs disk recovery.
     pub(crate) fn reconcile_activation(
@@ -503,6 +563,7 @@ impl RegionManager {
             let region = intent.region();
             match self.groups.get(&region) {
                 Some(LocalGroup::Failed(_)) => continue,
+                Some(LocalGroup::Retired { .. }) => continue,
                 Some(LocalGroup::Ready(p)) if p.driver.is_some() => continue,
                 _ => {}
             }
@@ -519,6 +580,9 @@ impl RegionManager {
             match group {
                 LocalGroup::Failed(error) => serde_json::json!({
                     "region": region.0, "state": "failed", "error": error,
+                }),
+                LocalGroup::Retired { .. } => serde_json::json!({
+                    "region": region.0, "state": "retired",
                 }),
                 LocalGroup::Ready(p) => match p.driver.as_ref().map(|d| d.status()) {
                     None => serde_json::json!({"region": region.0, "state": "prepared"}),
@@ -606,6 +670,7 @@ impl RegionManager {
                 .as_deref()
                 .ok_or_else(|| invalid("data group is not active")),
             Some(LocalGroup::Failed(cause)) => Err(invalid(cause)),
+            Some(LocalGroup::Retired { .. }) => Err(invalid("data group is retired")),
             None => Err(invalid("unknown data group")),
         }
     }
@@ -650,6 +715,7 @@ impl RegionManager {
                     Ok(prepared.observation.clone())
                 }
                 LocalGroup::Ready(_) => Err(invalid("group ID is already bound to another intent")),
+                LocalGroup::Retired { .. } => Err(invalid("data group is retired")),
                 LocalGroup::Failed(cause) => Err(invalid(&format!(
                     "group requires recovery after failure: {cause}"
                 ))),
@@ -848,6 +914,21 @@ impl RegionManager {
                     if record.intent.region() != id {
                         return Err(invalid("group directory and record identity differ"));
                     }
+                    if record.phase == Phase::Retired {
+                        // Permanently fenced: hold the lock, open nothing.
+                        let lock = OpenOptions::new()
+                            .read(true)
+                            .write(true)
+                            .create(true)
+                            .truncate(false)
+                            .open(entry.path().join("group-lock"))
+                            .map_err(io)?;
+                        lock.try_lock().map_err(|e| {
+                            invalid(&format!("retired group is already owned: {e}"))
+                        })?;
+                        self.groups.insert(id, LocalGroup::Retired { _lock: lock });
+                        return Ok(());
+                    }
                 }
                 let creation = creations
                     .iter()
@@ -871,6 +952,7 @@ impl RegionManager {
                     match group {
                         LocalGroup::Ready(p) => Ok(p.observation.clone()),
                         LocalGroup::Failed(cause) => Err(invalid(cause)),
+                        LocalGroup::Retired { .. } => Err(invalid("data group is retired")),
                     },
                 )
             })

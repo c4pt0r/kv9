@@ -4441,6 +4441,28 @@ impl NodeRuntime {
     /// Authority is the committed migration intent naming THIS store's exact
     /// node and incarnation plus the locally selected, verified generation;
     /// absence of either is simply not-yet, never an error surfaced upward.
+    /// A committed removal decision naming THIS exact store (node and
+    /// incarnation) permanently fences the local replica: at most one
+    /// retirement per turn, errors surface in the control status and retry.
+    fn reconcile_retirement(&mut self) {
+        let removals =
+            match kv9_meta::data_groups::removal::committed_removals(&self.node.meta_raft.store) {
+                Ok(removals) => removals,
+                Err(_) => return, // metadata not ready; not-yet, never fatal
+            };
+        for decision in removals {
+            if decision.source().node != self.store_identity.node_id
+                || decision.source().incarnation != self.store_identity.store_incarnation
+            {
+                continue;
+            }
+            if let Err(error) = self.data_groups.retire_removed(&decision) {
+                self.group_control_error = Some(error.to_string());
+            }
+            break;
+        }
+    }
+
     fn reconcile_adoption(&mut self) {
         let Some(uploader) = self.uploader.clone() else {
             return;
@@ -4661,6 +4683,7 @@ impl NodeRuntime {
                             self.data_groups
                                 .reconcile_activation(&requests, &self.transport, TICK);
                             self.reconcile_adoption();
+                            self.reconcile_retirement();
                             kv9_meta::data_groups::ranges::committed_ranges(
                                 &self.node.meta_raft.store,
                             )

@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "model": "Kv9.StorageRetirement",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "retirement_requires_the_committed_removal",
+    "a_retired_replica_never_runs",
+    "storage_is_never_deleted",
+    "no_serving_capability",
+    "retirement_is_permanent",
+    "restart_preserves_retirement",
+    "a_removal_alone_retires_nothing",
+    "the_committed_chain_reaches_retirement"
+  ],
+  "source_sha256": {
+    "crates/server/src/region_manager.rs": "c9a76ad37719aecc82b902165562262e5e49241d7477398a1b6cea99aa51ad6a",
+    "crates/server/src/runtime.rs": "76b7070ff4dd874c94d12f36d0ae642c423ffc94eafba1b5e1d63fd79b2431f8",
+    "crates/server/src/runtime/range_api.rs": "f8523db188edc11b3617fb5bd6051d45ecea1ffb1ae3f0dccc0a4c1b119fd308",
+    "crates/meta/src/data_groups/removal.rs": "6100bea8206695c2d9302a303e1174c2dce8e543d853463636fb49cb67d69485",
+    "scripts/retirement-e2e.py": "0b0bbbbfeef44d3df8ee62776ec808add6cc934b422f2dc710257d9810960c45",
+    "proofs/lean/storage-retirement/Retirement.lean": "a2e99d1baa4931c917eb61abf7b20595da124a251325248501fcf65665b4fbaa",
+    "proofs/lean/storage-retirement/README.md": "a5c7f9b850fcf2e724fbdd4163484032b06a6943f688a63f1b5aa2d3101f1ab3"
+  }
+}
