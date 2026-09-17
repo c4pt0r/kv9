@@ -51,6 +51,7 @@ service Kv9 {
   // pin-release capability. Old servers must refuse these distinct methods.
   rpc MigrateDataGroup(MigrateDataGroupRequest) returns (MigrateDataGroupResponse);
   rpc BindMigrationImage(BindMigrationImageRequest) returns (BindMigrationImageResponse);
+  rpc AttachMigrationLearner(AttachMigrationLearnerRequest) returns (AttachMigrationLearnerResponse);
   rpc PlanMigrationImage(PlanMigrationImageRequest) returns (PlanMigrationImageResponse);
   rpc CaptureMigrationImage(CaptureMigrationImageRequest) returns (CaptureMigrationImageResponse);
 }
@@ -111,6 +112,21 @@ message BindMigrationImageRequest {
   bytes operation_id = 2; // The committed migration operation.
   bytes manifest = 3; // Canonical checkpoint manifest description.
 }
+// Commit the migration destination as a LEARNER of the source group and
+// advance the engine cut past the configuration entry, so the next capture
+// names the learner. No promotion, replication, installation or serving.
+message AttachMigrationLearnerRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+}
+message AttachMigrationLearnerResponse {
+  uint64 destination_node = 1;
+  // False confirms an existing learner; the receipt is a NEW commit.
+  bool changed = 2;
+  uint64 cut_term = 3;
+  uint64 cut_index = 4;
+}
+
 // Plan (only) the group leader's current durable cut manifest so the caller
 // can bind image owners through the metadata leader before capturing.
 message PlanMigrationImageRequest {

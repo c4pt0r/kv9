@@ -17,13 +17,13 @@
   "source_sha256": {
     "crates/raft/src/snapshot_install/capture.rs": "39967e808d9690fcc619b7f9c1b414c92afa682666adcdf2cc01ccf37164a71b",
     "crates/raft/src/snapshot_install/capture/tests.rs": "32a53183a8fe6ee723505da44a400180c38f93ee3c56b854c44cac49211fd465",
-    "crates/raft/src/snapshot_install.rs": "a2150a40722fa359c6d71a3cbfb01ce8e9144250eb0c76c635938380c346baa6",
+    "crates/raft/src/snapshot_install.rs": "38d94d7d64d292bf0a188d31a11cc1b2ac80a2b73bdda00b1148339d8104b348",
     "crates/raft/src/storage/configuration.rs": "e319b1bb289dabcbd550f141f27f971994891ff2ebe86d202889c69c02d12253",
     "crates/raft/src/rawnode.rs": "c3bcd40a269fec1a91d4fb24a4dd2500984b56f6b70d6a1cccf0029404b43b21",
     "crates/server/src/migration_retention.rs": "6404d2142a6b644c17c5067dfb6ed9b6981f24e85e1425b2a0d2e3a66eb2c347",
-    "crates/server/src/runtime.rs": "cd32fe7e970f369b48d44228147c44d9d35e103589cefb65e02a8568975220a8",
+    "crates/server/src/runtime.rs": "bdc15ca80a2c64fc653c117ec9cd0f84f7b3d56901e08302face9982d22ce24b",
     "crates/server/src/runtime/range_api.rs": "0945dad68911456da7a30dcfce49148641e39cf781770f28f064d9c6ea300154",
-    "scripts/source-capture-e2e.py": "b2191eede2db2e0f0a826441c5f0d81645c9d28bd7061ad08a16fff1a80cf8f8",
+    "scripts/source-capture-e2e.py": "ea97a8b6d396bbd3bb3bdfc2220d589983e8c5e60de9ac71ca5440e0810f316a",
     "proofs/lean/source-capture/Capture.lean": "b0a22224800cca325e77617954965817ff8ca11e2952ba3ad7a995d4e22af7a9",
     "proofs/lean/source-capture/README.md": "c282b60bc813529171c6aed64543c7bf29a1a7053160eec995882f8bb9c8e33b"
   }

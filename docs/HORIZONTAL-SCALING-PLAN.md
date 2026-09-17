@@ -65,9 +65,13 @@ group's image at its exact durable cut with the configuration committed
 at-or-before that cut, pins before uploading across split group/metadata
 leadership, and closes the component loop: a captured image installs through
 the unchanged joint installer at a learner destination with full value
-readback. Next are learner attach with runtime installation through
-RegionManager, destination-install evidence with a committed release
-decision, then catchup, promotion, removal and split publication.
+readback. The [learner-attach increment](LEARNER-ATTACH.md) now commits the
+destination as a learner through the group's own log with an advanced cut,
+and completes offline installation at the destination's real store via a new
+`install-migration-image` command, with the installed generation isolated on
+restart. Next are runtime installation through RegionManager,
+destination-install evidence with a committed release decision, then
+catchup, promotion, removal and split publication.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

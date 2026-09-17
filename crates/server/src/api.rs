@@ -257,6 +257,15 @@ pub struct MigrateDataGroupResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AttachMigrationLearnerResult {
+    pub destination: kv9_common::NodeId,
+    /// False confirms an existing learner; the receipt stays a NEW commit.
+    pub changed: bool,
+    /// The advanced engine cut whose capture names the learner.
+    pub cut: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PlanMigrationImageResult {
     /// Canonical checkpoint manifest for the group's current durable cut.
     /// A description for owner binding; no object exists for it yet.
@@ -388,6 +397,16 @@ pub trait AdminApi {
     ) -> Result<MigrateDataGroupResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::migrate_data_group",
+        ))
+    }
+    fn attach_migration_learner(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<AttachMigrationLearnerResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::attach_migration_learner",
         ))
     }
     fn plan_migration_image(

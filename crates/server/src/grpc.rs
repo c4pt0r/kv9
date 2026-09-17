@@ -1605,6 +1605,43 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn attach_migration_learner(
+        &self,
+        request: Request<proto::AttachMigrationLearnerRequest>,
+    ) -> Result<Response<proto::AttachMigrationLearnerResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16] || root.as_bytes() == &[0; 32] {
+            return Err(Status::invalid_argument(
+                "nonzero root and operation required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.attach_migration_learner(&caller, root, operation)
+            })
+            .await?;
+        Ok(Response::new(proto::AttachMigrationLearnerResponse {
+            destination_node: result.destination.0,
+            changed: result.changed,
+            cut_term: result.cut.term,
+            cut_index: result.cut.index,
+        }))
+    }
+
     async fn plan_migration_image(
         &self,
         request: Request<proto::PlanMigrationImageRequest>,

@@ -140,6 +140,7 @@ service! {
     bind_migration_image: BindMigrationImageRequest => BindMigrationImageResponse,
     capture_migration_image: CaptureMigrationImageRequest => CaptureMigrationImageResponse,
     plan_migration_image: PlanMigrationImageRequest => PlanMigrationImageResponse,
+    attach_migration_learner: AttachMigrationLearnerRequest => AttachMigrationLearnerResponse,
 }
 
 fn publish(path: &Path, value: serde_json::Value) -> std::io::Result<()> {

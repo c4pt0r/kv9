@@ -55,12 +55,14 @@ fn print_usage() {
            KV9_BOOTSTRAP_TOKEN=<token> kv9 root-create --output <file> --voters <id@ip:port,...> --store-incarnations <id=hex,...>\n\
            KV9_BOOTSTRAP_TOKEN=<token> kv9 init --root <file> --node-id <id> --data-dir <path>\n\
            KV9_JOIN_TICKET=<ticket> kv9 join --root <file> --node-id <id> --addr <ip:port> --data-dir <path>\n\
+           KV9_OBJECT_STORE_*=... kv9 install-migration-image --data-dir <stopped-store> --record-file <path>\n\
            KV9_CLUSTER_TOKEN=<token> KV9_CLIENT_TOKENS=<principal=token,...> kv9 start --node-id <id> --addr <ip:port> --data-dir <path> [--data-workers <1..=32>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client create-keyspace --addr <ip:port> --name <name> --api-type <txn|raw> [--tenant-id <id>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client create-data-group --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --voters <id,id,id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client create-data-keyspace --addr <leader-ip:port> --root-digest <hex> --creation-task <id> --name <name> [--tenant-id <id>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client migrate-data-group --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --creation-task <id> --destination-node <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client bind-migration-image --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --manifest-file <path>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client attach-migration-learner --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client plan-migration-image --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex> --manifest-file <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client capture-migration-image --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex> --record-file <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
@@ -467,6 +469,67 @@ fn run_provision(args: impl Iterator<Item = String>, joining: bool) -> ExitCode 
     ExitCode::SUCCESS
 }
 
+/// Offline destination-side installation of one captured record. The store
+/// must be stopped and bound to the image root; every check is the joint
+/// installer's own. Prints a receipt; grants no serving or voting.
+fn run_install_migration_image(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut data_dir = None;
+    let mut record_file = None;
+    while let Some(flag) = args.next() {
+        let value = match args.next() {
+            Some(value) => value,
+            None => return command_error(&format!("{flag} needs a value")),
+        };
+        match flag.as_str() {
+            "--data-dir" => data_dir = Some(value),
+            "--record-file" => record_file = Some(value),
+            other => return command_error(&format!("unknown install flag {other}")),
+        }
+    }
+    let (Some(data_dir), Some(record_file)) = (data_dir, record_file) else {
+        return command_error("--data-dir and --record-file are required");
+    };
+    let directory = Path::new(&data_dir);
+    let result = (|| -> Result<_, Box<dyn std::error::Error>> {
+        let guard = kv9_common::store_lifecycle::StoreGuard::lock(directory)?;
+        let (root, identity) = load_root_bundle(directory)?;
+        identity.verify(&root, identity.node_id)?;
+        let record = fs::read(&record_file)?;
+        let uploader = kv9_engine::checkpoint::RemoteUploader::new(std::sync::Arc::new(
+            kv9_engine::minio::MinioObjectStore::connect(
+                kv9_engine::minio::MinioConfig::from_env()?,
+            )?,
+        ));
+        let installed = kv9_raft::snapshot_install::install_captured_record(
+            &guard, identity, &record, &uploader,
+        )?;
+        Ok(installed)
+    })();
+    match result {
+        Ok(installed) => {
+            println!(
+                "install_outcome=selected
+generation={}
+image_digest={}
+cut_term={}
+cut_index={}
+records={}
+object_bytes={}
+serving=false
+capability=offline_generation_only",
+                installed.generation,
+                installed.image_digest,
+                installed.position.term,
+                installed.position.index,
+                installed.records,
+                installed.object_bytes
+            );
+            ExitCode::SUCCESS
+        }
+        Err(error) => command_error(&error.to_string()),
+    }
+}
+
 fn command_error(error: &str) -> ExitCode {
     eprintln!("error: {error}");
     ExitCode::FAILURE
@@ -489,6 +552,9 @@ fn main() -> ExitCode {
         "store-prepare" => return run_store_prepare(arguments.into_iter().skip(1)),
         "root-create" => return run_root_create(arguments.into_iter().skip(1)),
         "init" => return run_provision(arguments.into_iter().skip(1), false),
+        "install-migration-image" => {
+            return run_install_migration_image(arguments.into_iter().skip(1))
+        }
         "join" => return run_provision(arguments.into_iter().skip(1), true),
         "start" => {}
         "-h" | "--help" => {
@@ -814,6 +880,7 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         "bind-migration-image" => data_group_cli::run_bind_image(args),
         "capture-migration-image" => data_group_cli::run_capture_image(args),
         "plan-migration-image" => data_group_cli::run_plan_image(args),
+        "attach-migration-learner" => data_group_cli::run_attach_learner(args),
         "admit-node" => run_admit_node(args),
         "promote-node" => run_promote_node(args),
         "get-node-endpoint" => endpoint_cli::run(args, false),

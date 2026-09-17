@@ -104,7 +104,25 @@ def main():
         return next((n for n in processes if status(n).get('role') == 'leader'
                      and status(n).get('endpoint_ready') == 'true'), None)
 
+    root_holder = [None]
+
     def data_groups(node):
+    def capture_with_retry(label, node, operation, path):
+        # Owners commit at the metadata leader; the group leader's local
+        # applied ledger may lag for a moment. Capture refuses in the safe
+        # direction and is idempotent, so bounded retry is honest.
+        def captured():
+            result = command(label, 'client', 'capture-migration-image', '--addr', addresses[node],
+                             '--root-digest', root_holder[0], '--operation-id', operation,
+                             '--record-file', path, success=None)
+            if result['exit_code'] == 0:
+                return result
+            text = open(output / f"{label}-probe-{len(commands)-1}.log").read()
+            if 'not published' in text or 'not committed' in text:
+                return None
+            raise RuntimeError(f'{label}: non-retryable capture failure; see {output}')
+        return wait(f'{label} owners locally applied', captured, 30)
+
         return {g['region']: g for g in json.loads(status(node).get('data_groups', '[]'))}
 
     try:
@@ -129,6 +147,7 @@ def main():
         owner_node = wait('metadata leader', leader)
         wait('all endpoints ready', lambda: all(status(n).get('endpoint_ready') == 'true' for n in processes))
         root = status(owner_node)['root_digest']
+        root_holder[0] = root
 
         created = command('create-group', 'client', 'create-data-group', '--addr', addresses[owner_node],
                           '--root-digest', root, '--operation-id', f'{1:032x}', '--voters', '1,2,3')
@@ -195,9 +214,7 @@ def main():
         require('not_leader=true' in open(output / 'capture-follower.log').read(),
                 'follower capture must return an explicit leader refusal')
 
-        captured = command('capture', 'client', 'capture-migration-image', '--addr', addresses[data_node],
-                           '--root-digest', root, '--operation-id', f'{7:032x}',
-                           '--record-file', output / 'image.record')
+        captured = capture_with_retry('capture', data_node, f'{7:032x}', output / 'image.record')
         record = (output / 'image.record').read_bytes()
         require(record[:8] == b'KV9RSN01', 'record magic differs')
         require(hashlib.sha256(record).hexdigest() == captured['image_digest'], 'record digest differs')
