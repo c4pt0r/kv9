@@ -327,6 +327,22 @@ pub struct PromoteMigrationVoterResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecordSourceRemovalResult {
+    pub decision: kv9_meta::data_groups::removal::RemovalDecision,
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoveSourceReplicaResult {
+    pub removed: kv9_common::NodeId,
+    /// False confirms an already-removed replica; the receipt stays a NEW commit.
+    pub changed: bool,
+    /// The sorted voter set after the applied configuration change.
+    pub voters: Vec<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -528,6 +544,27 @@ pub trait AdminApi {
     ) -> Result<PromoteMigrationVoterResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::promote_migration_voter",
+        ))
+    }
+    fn record_source_removal(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _source: kv9_meta::data_groups::InitialReplica,
+    ) -> Result<RecordSourceRemovalResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::record_source_removal",
+        ))
+    }
+    fn remove_source_replica(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<RemoveSourceReplicaResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::remove_source_replica",
         ))
     }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {

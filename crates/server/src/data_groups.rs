@@ -381,6 +381,78 @@ impl DataGroupClient {
         })
     }
 
+    /// Commit one source-replica removal decision at the metadata leader.
+    pub fn record_source_removal(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+        source_node: NodeId,
+        source_incarnation: [u8; 16],
+    ) -> Result<(u64, bool), DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] || source_node.0 == 0 {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root, operation and source replica required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::RecordSourceRemovalRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+            source_node: source_node.0,
+            source_incarnation: source_incarnation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.record_source_removal(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.task == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "removal commit lacks a task receipt".into(),
+            ));
+        }
+        Ok((response.task, response.changed))
+    }
+
+    /// Remove the committed decision's replica from the group's voter set.
+    pub fn remove_source_replica(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::RemoveSourceReplicaResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::RemoveSourceReplicaRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.remove_source_replica(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.removed_node == 0 || response.voters.is_empty() {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "removal lacks a replica or voter set".into(),
+            ));
+        }
+        Ok(crate::api::RemoveSourceReplicaResult {
+            removed: NodeId(response.removed_node),
+            changed: response.changed,
+            voters: response.voters,
+        })
+    }
+
     /// Replay the destination's durable adoption receipt for one region.
     pub fn emit_install_evidence(
         &mut self,

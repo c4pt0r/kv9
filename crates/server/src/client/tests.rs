@@ -197,6 +197,8 @@ service! {
     record_source_truncation: RecordSourceTruncationRequest => RecordSourceTruncationResponse,
     truncate_source_log: TruncateSourceLogRequest => TruncateSourceLogResponse,
     promote_migration_voter: PromoteMigrationVoterRequest => PromoteMigrationVoterResponse,
+    record_source_removal: RecordSourceRemovalRequest => RecordSourceRemovalResponse,
+    remove_source_replica: RemoveSourceReplicaRequest => RemoveSourceReplicaResponse,
     plan_migration_image: PlanMigrationImageRequest => PlanMigrationImageResponse,
     attach_migration_learner: AttachMigrationLearnerRequest => AttachMigrationLearnerResponse,
 }
