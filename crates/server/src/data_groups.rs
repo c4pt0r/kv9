@@ -233,6 +233,45 @@ impl DataGroupClient {
         })
     }
 
+    /// Commit the migration destination as a learner and advance the cut.
+    pub fn attach_learner(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::AttachMigrationLearnerResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::AttachMigrationLearnerRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.attach_migration_learner(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.destination_node == 0 || response.cut_index == 0 || response.cut_term == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "attach lacks a destination or exact cut".into(),
+            ));
+        }
+        Ok(crate::api::AttachMigrationLearnerResult {
+            destination: NodeId(response.destination_node),
+            changed: response.changed,
+            cut: AppliedPosition {
+                term: response.cut_term,
+                index: response.cut_index,
+            },
+        })
+    }
+
     /// Plan the group leader's current cut manifest, for owner binding.
     pub fn plan_image(
         &mut self,

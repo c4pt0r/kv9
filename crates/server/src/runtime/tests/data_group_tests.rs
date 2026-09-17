@@ -1166,4 +1166,56 @@ fn migration_intents_bind_committed_image_owners_only() {
     }
     assert_eq!(owner(bound.source_owner).phase, PinPhase::Published);
     assert_eq!(owner(bound.destination_owner).phase, PinPhase::Published);
+
+    // Attach: uncommitted operation refuses; the committed one turns the
+    // destination into a LEARNER (never a voter) idempotently; a voter
+    // destination is structurally impossible here because plan_migration
+    // already refuses initial replicas.
+    wait_for(
+        &mut cluster.runtimes,
+        30,
+        "migration group active, routed and led before attach",
+        |rts| {
+            data_leader(rts, creation.region()).is_some()
+                && rts[..3].iter().all(|rt| {
+                    rt.data_groups
+                        .raw_directory
+                        .by_region(creation.region())
+                        .is_some()
+                })
+        },
+    );
+    let attach_backend = || {
+        backend_view(
+            &cluster.runtimes[data_leader(&cluster.runtimes, creation.region()).unwrap()],
+            &cluster.root,
+        )
+    };
+    assert!(attach_backend()
+        .attach_migration_learner("active-test", root, [9; 16])
+        .is_err());
+    let attached = attach_backend()
+        .attach_migration_learner("active-test", root, [7; 16])
+        .unwrap();
+    assert!(attached.changed);
+    assert_eq!(attached.destination, NodeId(4));
+    let confirmed = attach_backend()
+        .attach_migration_learner("active-test", root, [7; 16])
+        .unwrap();
+    assert!(!confirmed.changed, "attach retry must confirm");
+    assert!(
+        confirmed.cut.index > attached.cut.index,
+        "each receipt advances a fresh cut"
+    );
+    let leader_status = cluster.runtimes
+        [data_leader(&cluster.runtimes, creation.region()).unwrap()]
+    .data_groups
+    .raw_directory
+    .by_region(creation.region())
+    .unwrap()
+    .capture_parts()
+    .0
+    .status();
+    assert!(leader_status.learners.contains(&4));
+    assert!(!leader_status.voters.contains(&4));
 }

@@ -17,7 +17,7 @@
     "recovery_preserves_same_term_vote"
   ],
   "source_sha256": {
-    "crates/raft/src/snapshot_install.rs": "a2150a40722fa359c6d71a3cbfb01ce8e9144250eb0c76c635938380c346baa6",
+    "crates/raft/src/snapshot_install.rs": "38d94d7d64d292bf0a188d31a11cc1b2ac80a2b73bdda00b1148339d8104b348",
     "crates/raft/src/snapshot_install/tests.rs": "2ba71fe1c6f03437f1837178771ba5d4dcec421d9907b7ad8100bba068ce5371",
     "crates/raft/examples/joint-install-probe.rs": "0cf89987b8c2b92dd9d49a1b131187a446d269e67680f23e93d3bc0fe04b018b",
     "crates/common/src/store_lifecycle.rs": "a01462d0c6ac63e2fc3f6d5edc24d1dac3e494785efddd969ebcacfda7653d12",

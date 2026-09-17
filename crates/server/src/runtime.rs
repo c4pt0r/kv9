@@ -1275,6 +1275,77 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn attach_migration_learner(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::AttachMigrationLearnerResult> {
+        self.ensure_serving()?;
+        let certified = {
+            let txn = self.node.meta_raft.store.begin()?;
+            kv9_meta::root::certified_root(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("attach requires a certified root".into()))?
+        };
+        if certified.digest() != root {
+            return Err(Error::Config("attach request root differs".into()));
+        }
+        let store = &self.node.meta_raft.store;
+        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
+            .into_iter()
+            .find(|m| m.intent().operation() == operation)
+            .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
+        let destination = migration.intent().destination().node;
+        let group = self
+            .raw_directory
+            .by_region(migration.intent().region())
+            .ok_or_else(|| Error::MetaNotReady("migration group is not active locally".into()))?;
+        let (driver, _, _) = group.capture_parts();
+        let status = driver.status();
+        if status.fatal.is_some() {
+            return Err(Error::Raft("group driver is fatally stopped".into()));
+        }
+        if status.role != kv9_raft::Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        if status.voters.contains(&destination.0) {
+            return Err(Error::Config(
+                "migration destination is already a voter of this group".into(),
+            ));
+        }
+        // Idempotent attach, then one Noop to move the engine cut past the
+        // configuration entry so the NEXT capture names the learner. The
+        // learner has no store yet: replication to it pauses on the existing
+        // snapshot fence until installation and startup land. No promotion.
+        let changed = if status.learners.contains(&destination.0) {
+            false
+        } else {
+            let proposed = driver.add_learner(destination)?;
+            driver.wait_conf_applied(proposed, Duration::from_secs(10))?;
+            true
+        };
+        let advanced = driver.propose(&Command::Noop)?;
+        driver
+            .wait_applied(advanced, Duration::from_secs(10))
+            .map_err(|e| Error::Raft(format!("cut advance after attach: {e:?}")))?;
+        let after = driver.status();
+        if !after.learners.contains(&destination.0) {
+            return Err(Error::Raft(
+                "configuration lost the learner after apply".into(),
+            ));
+        }
+        Ok(crate::api::AttachMigrationLearnerResult {
+            destination,
+            changed,
+            cut: AppliedPosition {
+                term: advanced.term,
+                index: advanced.index.0,
+            },
+        })
+    }
+
     fn plan_migration_image(
         &self,
         _caller: &str,
@@ -7562,7 +7633,7 @@ mod tests {
 
     fn backend_view(rt: &NodeRuntime, root: &RootDescriptor) -> RuntimeBackend {
         RuntimeBackend {
-            raw_directory: Arc::default(),
+            raw_directory: rt.data_groups.raw_directory.clone(),
             node: rt.node.clone(),
             driver: rt.driver.clone(),
             transport: rt.transport.clone(),

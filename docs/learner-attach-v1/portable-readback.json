@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "members_verified": 763,
+  "archive_sha256": "80cf5960945b33e454ce85b75420f9aae9409b24b9468066a10e0043fb4cbbb8",
+  "embedded_receipts_reverified": {
+    "e2e_checks": 5,
+    "attach_theorems": 9,
+    "offline_install_receipt": "selected, serving=false"
+  }
+}

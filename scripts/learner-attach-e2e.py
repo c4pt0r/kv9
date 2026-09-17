@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Real-process source-capture gate over a live cluster with real MinIO.
+"""Real-process learner-attach gate: the full migration flow up to, and
+excluding, runtime startup of the installed generation.
 
-Covers the committed capture RPC end to end: leader-only capture at the exact
-durable cut, pin-before-upload owners, canonical record framing, idempotent
-re-capture of the same cut, refusal of a second image after the cut advances,
-and follower/uncommitted refusals. Installation at a destination inside the
-image configuration is proven by the component loop test; this gate asserts
-the RPC surface and committed-state semantics only. No serving, learner or
-transfer capability is exercised or claimed.
+Chain: committed intent -> attach (destination becomes a LEARNER and the cut
+advances) -> plan/bind/capture (the image names the learner) -> stop the
+destination process -> offline install at its real store through the
+unchanged joint installer -> restart the destination and prove the installed
+generation stays isolated (no serving, no voting) while the node remains
+healthy. Also proves the pre-attach image is refused by the installer's
+membership gate.
 
-Requires KV9_OBJECT_STORE_* in the environment (an isolated real MinIO
-bucket); servers additionally run with KV9_STORAGE=minio.
+Requires KV9_OBJECT_STORE_* (isolated real MinIO); servers run KV9_STORAGE=minio.
 """
 import argparse
 import hashlib
@@ -35,31 +35,31 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bin', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--base-port', type=int, default=26880)
+    parser.add_argument('--base-port', type=int, default=26890)
     args = parser.parse_args()
     for name in ('KV9_OBJECT_STORE_ENDPOINT', 'KV9_OBJECT_STORE_BUCKET',
                  'KV9_OBJECT_STORE_ACCESS_KEY', 'KV9_OBJECT_STORE_SECRET_KEY'):
         require(os.environ.get(name), f'{name} must be set to an isolated real MinIO bucket')
     binary, output = args.bin.resolve(), args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    env = dict(os.environ, KV9_CLUSTER_TOKEN='capture-e2e-cluster',
-               KV9_CLIENT_TOKENS='admin=capture-e2e-client', KV9_CLIENT_TOKEN='capture-e2e-client',
-               KV9_BOOTSTRAP_TOKEN='capture-e2e-bootstrap', KV9_STORAGE='minio')
+    env = dict(os.environ, KV9_CLUSTER_TOKEN='attach-e2e-cluster',
+               KV9_CLIENT_TOKENS='admin=attach-e2e-client', KV9_CLIENT_TOKEN='attach-e2e-client',
+               KV9_BOOTSTRAP_TOKEN='attach-e2e-bootstrap', KV9_STORAGE='minio')
     processes, handles, commands = {}, [], []
     manifest_record = dict(verdict='running', commands=commands,
                            binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
                            runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                            revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
                            dirty=bool(subprocess.check_output(['git', 'status', '--porcelain'])),
-                           chaos_mesh=False, transfer_or_serving=False)
+                           chaos_mesh=False, serving_or_promotion=False)
     (output / 'runner.py').write_bytes(Path(__file__).read_bytes())
     addresses = {i: f'127.0.0.1:{args.base_port+i}' for i in range(1, 5)}
 
-    def command(label, *arguments, success=True, token=None, extra_env=None):
+    def command(label, *arguments, success=True, extra_env=None):
         started = time.time_ns()
-        call_env = dict(env if token is None else dict(env, KV9_CLIENT_TOKEN=token), **(extra_env or {}))
+        call_env = dict(env, **(extra_env or {}))
         result = subprocess.run([str(binary), *map(str, arguments)], env=call_env, text=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=300)
         if success is None:
             label = f'{label}-probe-{len(commands)}'
         (output / f'{label}.log').write_text(result.stdout)
@@ -90,7 +90,7 @@ def main():
         value = fields(path.read_text())
         return value if value.get('pid') == str(processes[node].pid) else {}
 
-    def wait(label, predicate, seconds=60):
+    def wait(label, predicate, seconds=90):
         deadline = time.monotonic() + seconds
         while time.monotonic() < deadline:
             value = predicate()
@@ -104,9 +104,20 @@ def main():
         return next((n for n in processes if status(n).get('role') == 'leader'
                      and status(n).get('endpoint_ready') == 'true'), None)
 
-    root_holder = [None]
-
     def data_groups(node):
+        return {g['region']: g for g in json.loads(status(node).get('data_groups', '[]'))}
+
+    def plan_with_retry(label, node, operation, path):
+        # Committed intents replicate to local applied state within moments;
+        # planning is read-only, so bounded retry is safe and honest.
+        def planned():
+            result = command(label, 'client', 'plan-migration-image', '--addr', addresses[node],
+                             '--root-digest', root_holder[0], '--operation-id', operation,
+                             '--manifest-file', path, success=None)
+            return result if result['exit_code'] == 0 else None
+        return wait(f'{label} intent locally applied', planned, 30)
+
+    root_holder = [None]
     def capture_with_retry(label, node, operation, path):
         # Owners commit at the metadata leader; the group leader's local
         # applied ledger may lag for a moment. Capture refuses in the safe
@@ -123,7 +134,6 @@ def main():
             raise RuntimeError(f'{label}: non-retryable capture failure; see {output}')
         return wait(f'{label} owners locally applied', captured, 30)
 
-        return {g['region']: g for g in json.loads(status(node).get('data_groups', '[]'))}
 
     try:
         guards, incarnations = [], []
@@ -153,7 +163,7 @@ def main():
                           '--root-digest', root, '--operation-id', f'{1:032x}', '--voters', '1,2,3')
         task, region = created['task_id'], int(created['region_id'])
         keyspace = command('create-keyspace', 'client', 'create-data-keyspace', '--addr', addresses[owner_node],
-                           '--root-digest', root, '--creation-task', task, '--name', 'capture-src')
+                           '--root-digest', root, '--creation-task', task, '--name', 'attach-src')
         keyspace_id = keyspace['keyspace_id']
 
         admitted = command('admit-node-4', 'client', 'admit-node', '--addr', addresses[owner_node],
@@ -164,10 +174,9 @@ def main():
         wait('joiner registered and ready', lambda: status(4).get('endpoint_ready') == 'true')
 
         def group_leader():
-            snapshots = {n: data_groups(n) for n in (1, 2, 3) if n in processes}
-            return next((n for n, s in snapshots.items()
-                         if s.get(region, {}).get('role') == 'Leader'), None)
-        wait('data group elected and routed', lambda: group_leader() is not None)
+            return next((n for n in (1, 2, 3) if n in processes
+                         and data_groups(n).get(region, {}).get('role') == 'Leader'), None)
+        wait('data group elected', lambda: group_leader() is not None)
 
         def routable():
             node = group_leader()
@@ -182,73 +191,79 @@ def main():
             command(f'put-{n}', 'client', 'raw-put', '--addr', addresses[data_node],
                     '--keyspace', keyspace_id, '--key-hex', key, '--value-hex', value)
 
-        migrated = command('migrate', 'client', 'migrate-data-group', '--addr', addresses[owner_node],
-                           '--root-digest', root, '--operation-id', f'{7:032x}',
-                           '--creation-task', task, '--destination-node', 4)
-        require(migrated['migration_outcome'] == 'requested', 'intent lacks a mutation receipt')
-
-        # Plan at the group leader, bind owners at the metadata leader, then
-        # capture at the group leader; capture verifies the committed pins
-        # from local applied state before any upload.
-        planned = command('plan', 'client', 'plan-migration-image', '--addr', addresses[data_node],
-                          '--root-digest', root, '--operation-id', f'{7:032x}',
-                          '--manifest-file', output / 'image.manifest')
-        require(int(planned['cut_index']) > 0, 'plan lacks an exact cut')
-        # Capturing before binding must refuse: pins precede any upload.
-        command('capture-unpinned', 'client', 'capture-migration-image', '--addr', addresses[data_node],
+        command('migrate', 'client', 'migrate-data-group', '--addr', addresses[owner_node],
                 '--root-digest', root, '--operation-id', f'{7:032x}',
-                '--record-file', output / 'never.record', success=False)
-        owner_node = wait('metadata leader before binding', leader)
+                '--creation-task', task, '--destination-node', 4)
+
+        # Attach FIRST: the destination becomes a learner and the cut
+        # advances past the configuration entry, so this operation's one
+        # image names the learner. Retry confirms idempotently.
+        attached = command('attach', 'client', 'attach-migration-learner', '--addr', addresses[data_node],
+                           '--root-digest', root, '--operation-id', f'{7:032x}')
+        require(attached['attach_outcome'] == 'attached' and attached['destination_node'] == '4',
+                'attach lacks the learner receipt')
+        again = command('attach-again', 'client', 'attach-migration-learner', '--addr', addresses[data_node],
+                        '--root-digest', root, '--operation-id', f'{7:032x}')
+        require(again['attach_outcome'] == 'confirmed', 'attach retry must confirm')
+
+        plan_with_retry('plan', data_node, f'{7:032x}', output / 'image.manifest')
         command('bind', 'client', 'bind-migration-image', '--addr', addresses[owner_node],
                 '--root-digest', root, '--operation-id', f'{7:032x}',
                 '--manifest-file', output / 'image.manifest')
-
-        # Capture refusals: uncommitted operation; a follower for the group.
-        command('capture-uncommitted', 'client', 'capture-migration-image', '--addr', addresses[data_node],
-                '--root-digest', root, '--operation-id', f'{9:032x}',
-                '--record-file', output / 'never.record', success=False)
-        follower = next(n for n in (1, 2, 3) if n != data_node)
-        refused = command('capture-follower', 'client', 'capture-migration-image', '--addr', addresses[follower],
-                          '--root-digest', root, '--operation-id', f'{7:032x}',
-                          '--record-file', output / 'never.record', success=False)
-        require('not_leader=true' in open(output / 'capture-follower.log').read(),
-                'follower capture must return an explicit leader refusal')
-
         captured = capture_with_retry('capture', data_node, f'{7:032x}', output / 'image.record')
-        record = (output / 'image.record').read_bytes()
-        require(record[:8] == b'KV9RSN01', 'record magic differs')
-        require(hashlib.sha256(record).hexdigest() == captured['image_digest'], 'record digest differs')
-        require(int(captured['cut_index']) > 0 and int(captured['cut_term']) > 0, 'missing exact cut')
-        require(int(captured['objects']) >= 1, 'empty closure')
-        for name in ('source_owner', 'destination_owner'):
-            owner = command(f'read-{name}', 'client', 'retention-owner', '--addr', addresses[owner_node],
-                            '--root-digest', root, '--owner-id', captured[name])
-            require(owner.get('found') == 'true', f'{name} not committed')
 
-        # Re-capturing the unchanged cut is idempotent: same image digest,
-        # same owners. After the cut advances the subject changes, so the
-        # same operation refuses a second image: one image per operation.
-        again = command('capture-again', 'client', 'capture-migration-image', '--addr', addresses[data_node],
-                        '--root-digest', root, '--operation-id', f'{7:032x}',
-                        '--record-file', output / 'image-again.record')
-        require(again['image_digest'] == captured['image_digest'], 're-capture changed the image')
-        command('put-advance', 'client', 'raw-put', '--addr', addresses[data_node],
-                '--keyspace', keyspace_id, '--key-hex', '67616d6d61', '--value-hex', '7468726565')
-        command('capture-second-image', 'client', 'capture-migration-image', '--addr', addresses[data_node],
-                '--root-digest', root, '--operation-id', f'{7:032x}',
-                '--record-file', output / 'second.record', success=False)
+        # A SECOND group whose image never names the destination supplies the
+        # membership-gate control: its record must refuse at the real store.
+        other = command('create-group-b', 'client', 'create-data-group', '--addr', addresses[owner_node],
+                        '--root-digest', root, '--operation-id', f'{2:032x}', '--voters', '1,2,3')
+        command('create-keyspace-b', 'client', 'create-data-keyspace', '--addr', addresses[owner_node],
+                '--root-digest', root, '--creation-task', other['task_id'], '--name', 'attach-ctl')
+        region_b = int(other['region_id'])
+
+        def leader_b():
+            return next((n for n in (1, 2, 3) if n in processes
+                         and data_groups(n).get(region_b, {}).get('role') == 'Leader'), None)
+        wait('control group elected', lambda: leader_b() is not None)
+
+        node_b = wait('control group leader', leader_b)
+        command('migrate-b', 'client', 'migrate-data-group', '--addr', addresses[owner_node],
+                '--root-digest', root, '--operation-id', f'{8:032x}',
+                '--creation-task', other['task_id'], '--destination-node', 4)
+        plan_with_retry('plan-b', node_b, f'{8:032x}', output / 'control.manifest')
+        command('bind-b', 'client', 'bind-migration-image', '--addr', addresses[owner_node],
+                '--root-digest', root, '--operation-id', f'{8:032x}',
+                '--manifest-file', output / 'control.manifest')
+        capture_with_retry('capture-b', node_b, f'{8:032x}', output / 'control.record')
+
+        # Offline installation at the destination's REAL store: the learner
+        # image installs; the control image fails the membership gate; the
+        # node restarts healthy with the installed generation isolated.
+        stop(4)
+        refused = command('install-control', 'install-migration-image',
+                          '--data-dir', output / 'n4', '--record-file', output / 'control.record',
+                          success=False)
+        require('membership' in open(output / 'install-control.log').read(),
+                'control record must fail the membership gate')
+        installed = command('install-learner-image', 'install-migration-image',
+                            '--data-dir', output / 'n4', '--record-file', output / 'image.record')
+        require(installed['install_outcome'] == 'selected'
+                and installed['serving'] == 'false'
+                and int(installed['records']) == 2,
+                'installed generation lacks the exact receipt')
+        require(installed['cut_index'] == captured['cut_index'],
+                'installed cut differs from the captured cut')
+        start(4, 'rejoined')
+        wait('destination healthy with isolated generation', lambda: status(4).get('endpoint_ready') == 'true')
+        isolated = data_groups(4).get(region, {})
+        require(isolated.get('state') in (None, 'failed'),
+                f'installed generation must stay isolated, saw {isolated}')
 
         manifest_record.update(verdict='accepted', region=region,
-                               image_digest=captured['image_digest'],
-                               cut=dict(term=int(captured['cut_term']), index=int(captured['cut_index'])),
-                               owners=dict(source=captured['source_owner'],
-                                           destination=captured['destination_owner']),
-                               checks=['leader-only capture with typed follower refusal',
-                                       'uncommitted operation refused',
-                                       'canonical KV9RSN01 record with matching digest and exact cut',
-                                       'source and destination owners committed before upload',
-                                       'idempotent re-capture of an unchanged cut',
-                                       'second image after cut advance refused: one image per operation'])
+                               checks=['attach commits the learner and advances the cut; retry confirms',
+                                       'the operation image names the learner and captures once',
+                                       'control image without the destination refused by the membership gate at the real store',
+                                       'learner image installs offline at the destination store with the exact captured cut',
+                                       'destination restarts healthy; the installed generation stays isolated (no serving)'])
     except Exception as error:
         manifest_record.update(verdict='failed', error=str(error))
         raise

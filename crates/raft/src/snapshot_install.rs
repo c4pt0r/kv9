@@ -546,5 +546,22 @@ fn validate_view(
 
 pub mod capture;
 
+/// Offline convenience for a destination operator: decode one canonical
+/// captured record, derive its exact range from the image itself, and run
+/// the unchanged installer at the destination store. This grants nothing
+/// beyond `JointInstaller`'s own validation — including the membership gate
+/// requiring the destination inside the image configuration.
+pub fn install_captured_record(
+    guard: &StoreGuard,
+    identity: StoreIdentity,
+    record: &[u8],
+    uploader: &RemoteUploader,
+) -> Result<InstalledImage> {
+    let (image, hs) = snapshot::decode(record)?;
+    let (range, _) = parse_image(&image)?;
+    let mut installer = JointInstaller::open(guard, identity, range)?;
+    installer.install(&image, &hs, uploader)
+}
+
 #[cfg(test)]
 mod tests;
