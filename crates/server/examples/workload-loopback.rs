@@ -147,6 +147,7 @@ service! {
     record_source_removal: RecordSourceRemovalRequest => RecordSourceRemovalResponse,
     remove_source_replica: RemoveSourceReplicaRequest => RemoveSourceReplicaResponse,
     record_split_intent: RecordSplitIntentRequest => RecordSplitIntentResponse,
+    seal_split_parent: SealSplitParentRequest => SealSplitParentResponse,
     plan_migration_image: PlanMigrationImageRequest => PlanMigrationImageResponse,
     attach_migration_learner: AttachMigrationLearnerRequest => AttachMigrationLearnerResponse,
 }
