@@ -22,7 +22,7 @@
   "source_sha256": {
     "crates/common/src/data_range.rs": "63fbcd17d2857691aa0e89cb603d47ca9d7349e674929c60a73b9729b4653c89",
     "crates/common/src/store_lifecycle.rs": "a01462d0c6ac63e2fc3f6d5edc24d1dac3e494785efddd969ebcacfda7653d12",
-    "crates/meta/src/data_groups/ranges.rs": "16b1112b86b6a430aae08df9c90430420c07469451cc33c79401aa90e3f894ac",
+    "crates/meta/src/data_groups/ranges.rs": "58c89feb4b0c53587915cf6655f97245ff20ba8a31fd4ec5a4bea6b52e8abaa1",
     "crates/meta/src/data_groups/activation.rs": "42bc11fd8959117ac4cb6b1e2d6ec5967b0df32601e39fced9c84f84cf97a9b4",
     "crates/raft/src/command.rs": "2bd9eede9154f50130c56624234bb1c33417c635ffae4aa7d8f25b4590797a7e",
     "crates/raft/src/state_machine.rs": "5c64641934f43f597af90eb145af0d3675d92b25af7f5b173931db3a7c133832",

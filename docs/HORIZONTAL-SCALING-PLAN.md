@@ -96,9 +96,13 @@ automatically, restarts open nothing, and the storage stays intact.
 The [split-intent increment](SPLIT-INTENT.md) opens D04 with the
 committed authority seam: one immutable intent per parent binding the
 exact unsealed range row, a strict interior split key and two activated,
-unbound children on the parent's replica set — sealing, child population,
-atomic directory republication and rerouting are the next D04 increments.
-Physical reclamation and stranded-learner recovery also remain open.
+unbound children on the parent's replica set. The [partition-directory
+increment](PARTITION-DIRECTORY.md) generalizes the range directory READ
+model to a validated partition — unsealed bindings must cover each
+keyspace exactly once, sealed bindings never route — before any writer
+produces child rows. Next are the atomic one-to-two publication, parent
+seal execution and child population; physical reclamation and
+stranded-learner recovery also remain open.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

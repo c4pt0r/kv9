@@ -35,7 +35,7 @@
     "crates/server/src/runtime.rs": "0df1bb3e64dd648b6d49f36e1aa7f85568a3402b85375ee970b597159bab0b86",
     "crates/server/src/runtime/range_api.rs": "f8523db188edc11b3617fb5bd6051d45ecea1ffb1ae3f0dccc0a4c1b119fd308",
     "crates/server/src/runtime/tests/data_group_tests.rs": "fe79781ed514c2d565e5d04e5106f003b6ad117df5fa2d3e69aff2a38082b10d",
-    "crates/meta/src/data_groups/ranges.rs": "16b1112b86b6a430aae08df9c90430420c07469451cc33c79401aa90e3f894ac",
+    "crates/meta/src/data_groups/ranges.rs": "58c89feb4b0c53587915cf6655f97245ff20ba8a31fd4ec5a4bea6b52e8abaa1",
     "crates/server/proto/kv9.proto": "d81a365eb42fcb911cad7487299ba18c1cc421446b617575c4ed0d91eaf3d340",
     "crates/server/src/bin/kv9-routed-workload.rs": "b3b94848c8a0eac87ffc39a1bde3f8398efb468e8c9cdde633495922eb0801e6"
   }
