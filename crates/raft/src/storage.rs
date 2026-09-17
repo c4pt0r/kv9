@@ -138,23 +138,14 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         let expected = ConfState::from((voters.to_vec(), vec![]));
         let history = self.conf_history.lock().expect("conf history poisoned");
         // Either the pristine creation configuration, or a membership the
-        // group's OWN committed log evolved from it (indexed configuration
-        // records, e.g. an attached migration learner). Voter-set changes
-        // are not yet authorized by any committed authority: the recovered
-        // voters must still be exactly the creation voters, with no joint
-        // transition in flight.
+        // group's OWN committed log evolved from it through indexed
+        // committed configuration records — an attached migration learner,
+        // a promoted voter. The unambiguous durable history IS the
+        // authority; anything else (ambiguous, foreign initial) refuses.
         let authorized = if history.is_unstarted(&expected) {
             state.conf_state == expected
-        } else if history.evolved_from(&expected) {
-            let mut recovered = state.conf_state.voters.clone();
-            recovered.sort_unstable();
-            let mut creation = voters.to_vec();
-            creation.sort_unstable();
-            recovered == creation
-                && state.conf_state.voters_outgoing.is_empty()
-                && state.conf_state.learners_next.is_empty()
         } else {
-            false
+            history.evolved_from(&expected)
         };
         if !authorized
             || self

@@ -194,6 +194,7 @@ batch_service! {
     record_install_evidence: RecordInstallEvidenceRequest => RecordInstallEvidenceResponse,
     record_source_truncation: RecordSourceTruncationRequest => RecordSourceTruncationResponse,
     truncate_source_log: TruncateSourceLogRequest => TruncateSourceLogResponse,
+    promote_migration_voter: PromoteMigrationVoterRequest => PromoteMigrationVoterResponse,
     plan_migration_image: PlanMigrationImageRequest => PlanMigrationImageResponse,
     attach_migration_learner: AttachMigrationLearnerRequest => AttachMigrationLearnerResponse,
 }

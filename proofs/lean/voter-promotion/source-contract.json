@@ -1,30 +1,32 @@
 {
   "schema": 1,
-  "model": "Kv9.LearnerAttach",
+  "model": "Kv9.VoterPromotion",
   "theorems": [
     "initial_safe",
     "step_safe",
     "run_safe",
-    "attach_requires_the_committed_intent",
-    "the_destination_is_never_a_voter",
+    "promotion_requires_the_committed_evidence",
+    "evidence_implies_membership",
+    "never_learner_and_voter",
     "no_serving_capability",
-    "the_learner_is_monotone",
-    "confirmation_re_advances_the_cut",
-    "an_intent_alone_attaches_nothing"
+    "a_voter_is_permanent",
+    "the_learner_never_returns_after_promotion",
+    "an_evidence_row_alone_promotes_nothing",
+    "the_committed_chain_reaches_the_voter"
   ],
   "source_sha256": {
     "crates/server/src/runtime.rs": "4bc49d888a0e5d34eb097775a512e43e24d7040748e12ec2fe50f593258c6a7d",
-    "crates/server/src/runtime/tests/data_group_tests.rs": "fe79781ed514c2d565e5d04e5106f003b6ad117df5fa2d3e69aff2a38082b10d",
     "crates/server/src/api.rs": "e28c812031706d464a8e3ba793efd16bfc0eece46a9b9279be77dee43588820c",
     "crates/server/src/grpc.rs": "0eb69780a3c6b4579e7f4c35e165af80798fde6125ccf881218578cf58a7c1d9",
     "crates/server/src/data_groups.rs": "c667c08d8add9bb2cee24440418122a01ff8b04a46a84a95e24e5f0c48511f26",
     "crates/server/proto/kv9.proto": "8cb801344563266d65d049ab9ac95669fe7a13290765dd7861b0c9ca92b6c8aa",
-    "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
     "crates/raft/src/driver.rs": "57e037daf0a8fb3f98cd3f6c567a6a0194807ec4fcbf2bbb6c5099afbc54972c",
+    "crates/raft/src/storage.rs": "417dd2604132c42e66d1e778dabded1d0a4f50720aaf3dc431c07cd93cc7aaea",
+    "crates/raft/src/storage/configuration.rs": "4d3744e32b360c9d478e9bc865143455d5124c97877cd71e976aabf008889ecf",
     "src/data_group_cli.rs": "d0d95faba3534f094a623c783732692c9c016e0ae2daa78fe055e3550f2a7868",
     "src/main.rs": "3b9beb467f73dca530d63222c70cef96478a727c7e55ced631543c1a339e9039",
-    "scripts/learner-attach-e2e.py": "eb2bc0387a9f34b9efe115f8a010d60ebe833e16df0468e03ab27f966e933fdb",
-    "proofs/lean/learner-attach/Attach.lean": "c3b9195c163e1ac0bf4359a29756df1e1137e5486e67f293693e40a06dba0dcf",
-    "proofs/lean/learner-attach/README.md": "d190670d1962007bf4f4d172316c509049338a6ad97fff0d9bca414d07953796"
+    "scripts/promotion-e2e.py": "776714e47deda5a726d9040c91f5950d0273dc92a294cf8dc044cfb112a52e45",
+    "proofs/lean/voter-promotion/Promotion.lean": "a9e87ee9da4487955c500b3f531e929d8044131ad8bbd6703a48c4e8c923735b",
+    "proofs/lean/voter-promotion/README.md": "6530cbbb157cf4b730597d70d3368ff7bf815d51887da3fd98cef0d431fff16a"
   }
 }
