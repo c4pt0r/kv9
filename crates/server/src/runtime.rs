@@ -3442,6 +3442,9 @@ pub struct NodeRuntime {
     next_advertised_endpoint_probe: Instant,
     #[cfg(test)]
     route_snapshot_gate: std::sync::Mutex<Option<RouteSnapshotGate>>,
+    /// Present only with configured remote object storage; adoption of
+    /// installed generations requires it and simply waits otherwise.
+    uploader: Option<Arc<kv9_engine::checkpoint::RemoteUploader>>,
     _store_guard: kv9_common::store_lifecycle::StoreGuard,
 }
 
@@ -4016,6 +4019,7 @@ impl NodeRuntime {
             next_advertised_endpoint_probe: Instant::now(),
             #[cfg(test)]
             route_snapshot_gate: std::sync::Mutex::new(None),
+            uploader: backend.uploader.clone(),
             _store_guard: store_guard,
         })
     }
@@ -4062,6 +4066,44 @@ impl NodeRuntime {
 
     pub fn data_group_preparations(&self) -> Vec<(RegionId, Result<crate::GroupPreparation>)> {
         self.data_groups.observations()
+    }
+
+    /// Adopt at most one locally installed migration generation per turn.
+    /// Authority is the committed migration intent naming THIS store's exact
+    /// node and incarnation plus the locally selected, verified generation;
+    /// absence of either is simply not-yet, never an error surfaced upward.
+    fn reconcile_adoption(&mut self) {
+        let Some(uploader) = self.uploader.clone() else {
+            return;
+        };
+        let Ok(migrations) =
+            kv9_meta::data_groups::migration::committed_migrations(&self.node.meta_raft.store)
+        else {
+            return;
+        };
+        for migration in migrations {
+            let destination = migration.intent().destination();
+            if destination.node != self.store_identity.node_id
+                || destination.incarnation != self.store_identity.store_incarnation
+            {
+                continue;
+            }
+            match self.data_groups.adopt_installed(
+                &self._store_guard,
+                &migration,
+                &self.transport,
+                TICK,
+                &uploader,
+            ) {
+                Ok(()) => {}
+                Err(error) => {
+                    // Not-yet-installed destinations refuse inside the
+                    // adoption path; retain the last message for status.
+                    self.group_control_error = Some(error.to_string());
+                }
+            }
+            break;
+        }
     }
 
     /// Activate a fixed-voter group from locally applied creation authority.
@@ -4244,6 +4286,7 @@ impl NodeRuntime {
                         Ok(requests) => {
                             self.data_groups
                                 .reconcile_activation(&requests, &self.transport, TICK);
+                            self.reconcile_adoption();
                             kv9_meta::data_groups::ranges::committed_ranges(
                                 &self.node.meta_raft.store,
                             )

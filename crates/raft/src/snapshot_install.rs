@@ -30,6 +30,7 @@ use crate::storage::{snapshot, DiskRaftStorage, MAX_PROTOCOL_SNAPSHOT_BYTES};
 const MAX_IMAGE: usize = MAX_PROTOCOL_SNAPSHOT_BYTES + 128;
 const MAX_GENERATIONS: usize = 8;
 const SELECTOR: &str = "installed-generation";
+const ADOPTED: &str = "runtime-adopted";
 const FILES: [&str; 3] = ["data.wal", "data.checkpoint", "raft/raft.log"];
 
 fn invalid(message: &str) -> Error {
@@ -165,6 +166,15 @@ pub struct JointInstaller<'a> {
 
 impl<'a> JointInstaller<'a> {
     pub fn open(store: &'a StoreGuard, identity: StoreIdentity, range: DataRange) -> Result<Self> {
+        Self::open_inner(store, identity, range, false)
+    }
+
+    fn open_inner(
+        store: &'a StoreGuard,
+        identity: StoreIdentity,
+        range: DataRange,
+        allow_adopted: bool,
+    ) -> Result<Self> {
         range.validate()?;
         let record = store.verify(&identity)?;
         if !matches!(record.phase, StorePhase::Bound(root) | StorePhase::Active(root) if root == range.root)
@@ -186,6 +196,13 @@ impl<'a> JointInstaller<'a> {
             .map_err(io)?;
         lock.try_lock()
             .map_err(|e| invalid(&format!("group owner lock: {e}")))?;
+        // Adoption is one-way: once a generation is runtime storage, this
+        // module never installs, replaces or re-verifies files for the group.
+        if !allow_adopted && directory.join(ADOPTED).try_exists().map_err(io)? {
+            return Err(invalid(
+                "group generation is runtime-adopted; installation is closed",
+            ));
+        }
         let mut record = b"KV9INS01".to_vec();
         record.extend_from_slice(identity.cluster_id.as_bytes());
         record.extend_from_slice(&identity.node_id.0.to_be_bytes());
@@ -542,6 +559,110 @@ fn validate_view(
         }
     }
     Ok(records)
+}
+
+/// The one-way receipt turning a SELECTED installed generation into the
+/// group's runtime storage. The returned paths are the live storage; the
+/// held lock is the same per-group lock RegionManager uses and must stay
+/// alive for the group's lifetime. No peer, serving or voting is started
+/// here; the validated constructors (`RaftPeer::with_installed_storage`,
+/// `NodeDriver::with_installed_base`) own that separately.
+pub struct AdoptedGeneration {
+    pub generation: StoreIncarnation,
+    pub range: DataRange,
+    pub cut: AppliedPosition,
+    pub configuration: raft::prelude::ConfState,
+    pub image_digest: RootDigest,
+    pub raft_directory: PathBuf,
+    pub engine_wal: PathBuf,
+    pub group_lock: File,
+}
+
+/// Adopt the selected generation for runtime use, or re-open a previously
+/// adopted one after restart.
+///
+/// First adoption verifies the complete pair and every remote object exactly
+/// like recovery, then durably publishes the `runtime-adopted` marker; from
+/// that point installation for this group is closed and the generation's
+/// files may legitimately diverge from their sealed hashes (the log appends,
+/// the WAL grows). Re-adoption therefore validates the marker against the
+/// selector and leaves file validation to the ordinary storage and engine
+/// recovery machinery. The group record and range come from the destination's
+/// own durable state, never from a caller-supplied description.
+pub fn adopt_for_runtime(
+    store: &StoreGuard,
+    identity: StoreIdentity,
+    region: kv9_common::RegionId,
+    uploader: &RemoteUploader,
+) -> Result<AdoptedGeneration> {
+    let directory = store
+        .directory()
+        .join("data-groups")
+        .join(region.0.to_string());
+    let record = read(&directory.join("group-record"), 256 * 1024)?;
+    let fields = checked(&record, b"KV9INS01")?;
+    if fields.len() < 40 {
+        return Err(invalid("group record is truncated"));
+    }
+    let range = DataRange::decode(&fields[40..])?;
+    if range.region != region {
+        return Err(invalid("group record names a different region"));
+    }
+    let installer = JointInstaller::open_inner(store, identity, range.clone(), true)?;
+    let marker_path = directory.join(ADOPTED);
+    let adopted_before = marker_path.try_exists().map_err(io)?;
+    let (generation, digest) = installer
+        .selected()?
+        .ok_or_else(|| invalid("no generation is selected for adoption"))?;
+    let mut marker = b"KV9ADP01".to_vec();
+    marker.extend_from_slice(installer.binding.as_bytes());
+    marker.extend_from_slice(generation.as_bytes());
+    marker.extend_from_slice(digest.as_bytes());
+    let marker = checksum(marker);
+    let generation_dir = directory.join(format!("install-{generation}"));
+    let (cut, configuration) = if adopted_before {
+        if read(&marker_path, 120)? != marker {
+            return Err(invalid(
+                "adoption marker differs from the selected generation",
+            ));
+        }
+        // Files may legitimately have grown; read the image record only.
+        let bytes = read(&generation_dir.join("image"), MAX_IMAGE)?;
+        if RootDigest::sha256(&bytes) != digest {
+            return Err(invalid("adopted image digest mismatch"));
+        }
+        let (image, _) = snapshot::decode(&bytes)?;
+        let metadata = image.get_metadata();
+        (
+            AppliedPosition {
+                term: metadata.term,
+                index: metadata.index,
+            },
+            metadata.get_conf_state().clone(),
+        )
+    } else {
+        let (observation, image, _) = installer.verify_generation(generation, digest, uploader)?;
+        let temporary = directory.join(".runtime-adopted.tmp");
+        let mut file = File::create(&temporary).map_err(io)?;
+        file.write_all(&marker).map_err(io)?;
+        file.sync_all().map_err(io)?;
+        fs::rename(temporary, &marker_path).map_err(io)?;
+        sync_dir(&directory)?;
+        (
+            observation.position,
+            image.get_metadata().get_conf_state().clone(),
+        )
+    };
+    Ok(AdoptedGeneration {
+        generation,
+        range,
+        cut,
+        configuration,
+        image_digest: digest,
+        raft_directory: generation_dir.join("raft"),
+        engine_wal: generation_dir.join("data.wal"),
+        group_lock: installer._lock,
+    })
 }
 
 pub mod capture;

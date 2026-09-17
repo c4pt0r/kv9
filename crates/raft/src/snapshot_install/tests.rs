@@ -482,3 +482,78 @@ fn real_minio_failed_attempts_are_retained_and_bounded() {
     assert!(error.to_string().contains("budget exhausted"));
     assert_eq!(fs::read_dir(&installer.directory).unwrap().count(), before);
 }
+
+#[test]
+#[ignore = "requires an isolated real MinIO bucket and environment credentials"]
+fn real_minio_adoption_is_one_way_exact_and_survives_legitimate_growth() {
+    let uploader = remote();
+    let fixture = Fixture::new();
+    let region = fixture.range.region;
+    // Nothing selected yet: adoption refuses (the record exists from open).
+    drop(fixture.open());
+    let error = adopt_for_runtime(&fixture.guard, fixture.identity, region, &uploader)
+        .err()
+        .expect("adoption must refuse");
+    assert!(error.to_string().contains("no generation is selected"));
+
+    let (image, hs) = fixture.image(&uploader, 10, 0);
+    let mut installer = fixture.open();
+    let installed = installer.install(&image, &hs, &uploader).unwrap();
+    drop(installer);
+    let adopted = adopt_for_runtime(&fixture.guard, fixture.identity, region, &uploader).unwrap();
+    assert_eq!(adopted.cut, installed.position);
+    assert_eq!(adopted.configuration.voters, vec![1, 2, 3]);
+    assert_eq!(adopted.configuration.learners, vec![4]);
+    assert!(adopted.raft_directory.is_dir() && adopted.engine_wal.exists());
+    let generation_dir = adopted.raft_directory.parent().unwrap().to_path_buf();
+    drop(adopted);
+
+    // One-way: from the marker on, installation for this group is closed.
+    let closed = JointInstaller::open(&fixture.guard, fixture.identity, fixture.range.clone());
+    assert!(closed
+        .err()
+        .expect("adopted generation reopened for installation")
+        .to_string()
+        .contains("runtime-adopted"));
+
+    // Re-adoption after legitimate growth: the log tail appends, so sealed
+    // file hashes no longer match — the marker and image record still must.
+    let log = fs::read_dir(generation_dir.join("raft"))
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap()
+        .path();
+    let mut file = fs::OpenOptions::new().append(true).open(&log).unwrap();
+    use std::io::Write as _;
+    file.write_all(b"appended-tail").unwrap();
+    drop(file);
+    let again = adopt_for_runtime(&fixture.guard, fixture.identity, region, &uploader).unwrap();
+    assert_eq!(again.cut, installed.position);
+    assert_eq!(again.generation.as_bytes(), {
+        let marker = fs::read(generation_dir.parent().unwrap().join("runtime-adopted")).unwrap();
+        assert_eq!(marker.len(), 120);
+        again.generation.as_bytes()
+    });
+    drop(again);
+
+    // The image record itself stays sealed: corruption refuses adoption.
+    let image_path = generation_dir.join("image");
+    let sealed = fs::read(&image_path).unwrap();
+    fs::write(&image_path, [sealed.clone(), b"x".to_vec()].concat()).unwrap();
+    let error = adopt_for_runtime(&fixture.guard, fixture.identity, region, &uploader)
+        .err()
+        .expect("adoption must refuse");
+    assert!(error.to_string().contains("digest mismatch"));
+    fs::write(&image_path, &sealed).unwrap();
+
+    // A marker for anything but the selected generation refuses.
+    let marker_path = generation_dir.parent().unwrap().join("runtime-adopted");
+    let mut marker = fs::read(&marker_path).unwrap();
+    marker[20] ^= 0x01;
+    fs::write(&marker_path, &marker).unwrap();
+    let error = adopt_for_runtime(&fixture.guard, fixture.identity, region, &uploader)
+        .err()
+        .expect("adoption must refuse");
+    assert!(error.to_string().contains("marker differs"));
+}

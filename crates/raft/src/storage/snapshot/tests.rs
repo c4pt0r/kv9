@@ -399,3 +399,42 @@ fn snapshot_and_fixed_lease_policies_cannot_be_combined_in_either_order() {
     assert!(store.begin_lease_incarnation(&policy).is_err());
     assert!(fs.events().is_empty());
 }
+
+/// Runtime adoption seam: the ONE constructor allowed past the
+/// coordinated-install refusal re-checks the exact durable base shape and
+/// admits nothing else — no zero cut, no foreign term, no shifted index.
+#[test]
+fn installed_base_constructor_admits_only_the_exact_verified_cut() {
+    let fs = ModelFs::default();
+    let store = prepared(&fs);
+    let (image, hs) = image();
+    store.install_protocol_snapshot(&image, &hs).unwrap();
+    drop(store);
+    assert!(
+        RaftPeer::with_storage(NodeId(4), RegionId(100), opened(&fs)).is_err(),
+        "snapshot-backed store bypassed the coordinated-install refusal"
+    );
+    for wrong in [
+        AppliedPosition { term: 0, index: 12 },
+        AppliedPosition { term: 5, index: 0 },
+        AppliedPosition { term: 4, index: 12 },
+        AppliedPosition { term: 5, index: 11 },
+        AppliedPosition { term: 5, index: 13 },
+    ] {
+        assert!(
+            RaftPeer::with_installed_storage(NodeId(4), RegionId(100), opened(&fs), wrong).is_err(),
+            "admitted a base the storage does not carry: {wrong:?}"
+        );
+    }
+    let peer = RaftPeer::with_installed_storage(
+        NodeId(4),
+        RegionId(100),
+        opened(&fs),
+        AppliedPosition { term: 5, index: 12 },
+    )
+    .unwrap();
+    // The peer starts as exactly what the image configuration says.
+    let (voters, learners) = peer.membership();
+    assert_eq!(voters, vec![1, 2, 4]);
+    assert_eq!(learners, vec![5]);
+}

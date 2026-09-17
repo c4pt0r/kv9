@@ -299,6 +299,40 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         transport: Arc<dyn RaftTransport>,
         sm: MemStateMachine<E>,
     ) -> Result<Arc<NodeDriver<S, E>>> {
+        Self::new_inner(peer, transport, sm, None)
+    }
+
+    /// Start over a VERIFIED installed generation: the driver's unified
+    /// applied position is RESTORED from the installation's exact cut — the
+    /// one legitimate source, per the invariant documented on
+    /// `driver_applied` below. The state machine must already recover the
+    /// same engine watermark; a mismatch refuses.
+    pub fn with_installed_base(
+        peer: Arc<RaftPeer<S>>,
+        transport: Arc<dyn RaftTransport>,
+        sm: MemStateMachine<E>,
+        base: kv9_common::AppliedPosition,
+    ) -> Result<Arc<NodeDriver<S, E>>> {
+        if base.index == 0 || base.term == 0 {
+            return Err(Error::Raft("installed base requires an exact cut".into()));
+        }
+        // The cut is the PROVEN floor. After adoption the engine legitimately
+        // advances past it (appended tail); replay re-proves those positions
+        // idempotently. An engine BEHIND the cut contradicts installation.
+        if sm.applied_index().0 < base.index {
+            return Err(Error::Raft(
+                "state machine watermark is behind the installed base".into(),
+            ));
+        }
+        Self::new_inner(peer, transport, sm, Some(base))
+    }
+
+    fn new_inner(
+        peer: Arc<RaftPeer<S>>,
+        transport: Arc<dyn RaftTransport>,
+        sm: MemStateMachine<E>,
+        installed_base: Option<kv9_common::AppliedPosition>,
+    ) -> Result<Arc<NodeDriver<S, E>>> {
         let drain = crate::DrainToken::mint(&peer)?;
         transport.bind_driver(
             crate::RaftGroup::region_id(&*peer),
@@ -336,12 +370,15 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             #[cfg(any(test, feature = "testing"))]
             apply_paused: std::sync::atomic::AtomicBool::new(false),
             // None = no position PROVEN yet this run — distinct from "position
-            // zero". Restart replays the log from 0 and re-proves; when
-            // snapshots land, this must be restored from the snapshot's
-            // unified position — never guessed from the command watermark,
-            // commit index, or conf index (missing that restore fail-closes:
-            // consumers keep waiting instead of trusting a fabricated 0).
-            driver_applied: Mutex::new(None),
+            // zero". Restart replays the log from 0 and re-proves. The ONE
+            // legitimate restoration is a verified installed generation's
+            // unified cut (with_installed_base) — never a guess from the
+            // command watermark, commit index, or conf index (missing that
+            // restore fail-closes: consumers keep waiting, not trusting 0).
+            driver_applied: Mutex::new(installed_base.map(|base| DriverAppliedPosition {
+                term: base.term,
+                index: base.index,
+            })),
             stop: AtomicBool::new(false),
             pump_started: AtomicBool::new(false),
             pump_gate: Mutex::new(()),
@@ -3923,5 +3960,87 @@ mod tests {
             Some(b"v".to_vec())
         );
         driver.stop();
+    }
+
+    /// Adoption seam: the driver's unified position is restored ONLY from a
+    /// verified installed cut, and the recovered engine watermark must not
+    /// sit behind that cut (behind contradicts installation; ahead is a
+    /// legitimately appended tail).
+    #[test]
+    fn installed_base_restores_the_driver_position_and_checks_the_engine_floor() {
+        use crate::state_machine::ApplyStore as _;
+        use crate::storage::DiskRaftStorage;
+        use kv9_common::AppliedPosition;
+        use raft::prelude::{ConfState, HardState, Snapshot};
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-installed-base-{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let mut image = Snapshot {
+            data: b"installed-image-anchor".to_vec().into(),
+            ..Default::default()
+        };
+        image.mut_metadata().index = 12;
+        image.mut_metadata().term = 5;
+        image
+            .mut_metadata()
+            .set_conf_state(ConfState::from((vec![1, 2, 3], vec![4])));
+        let hs = HardState {
+            term: 5,
+            commit: 12,
+            ..Default::default()
+        };
+        let (storage, _) = DiskRaftStorage::open(&dir.join("raft"), &[1, 2, 3]).unwrap();
+        storage.install_protocol_snapshot(&image, &hs).unwrap();
+        drop(storage);
+        let (storage, _) = DiskRaftStorage::open(&dir.join("raft"), &[1, 2, 3]).unwrap();
+        let base = AppliedPosition { term: 5, index: 12 };
+        let peer = Arc::new(
+            RaftPeer::with_installed_storage(NodeId(4), RegionId(7), storage, base).unwrap(),
+        );
+        let hub = InProcHub::new();
+        let transport = Arc::new(hub.endpoint(NodeId(4))) as Arc<dyn RaftTransport>;
+        assert!(
+            NodeDriver::with_installed_base(
+                peer.clone(),
+                transport.clone(),
+                MemStateMachine::new(),
+                AppliedPosition { term: 0, index: 0 },
+            )
+            .is_err(),
+            "a zero cut is not an installed base"
+        );
+        match NodeDriver::with_installed_base(
+            peer.clone(),
+            transport.clone(),
+            MemStateMachine::new(),
+            base,
+        ) {
+            Err(Error::Raft(msg)) => assert!(
+                msg.contains("behind the installed base"),
+                "refusal must name the floor violation, got: {msg}"
+            ),
+            Ok(_) => panic!("fresh engine behind the cut must refuse"),
+            Err(other) => panic!("refusal must be Error::Raft, got: {other:?}"),
+        }
+        let (engine, _) = kv9_engine::WalEngine::open(dir.join("data")).unwrap();
+        engine
+            .write_applied(WriteBatch::new(), AppliedPosition { term: 5, index: 12 })
+            .unwrap();
+        let sm = MemStateMachine::with_engine(Arc::new(engine)).unwrap();
+        let driver = NodeDriver::with_installed_base(peer, transport, sm, base).unwrap();
+        assert_eq!(
+            driver.driver_applied(),
+            Some(DriverAppliedPosition { term: 5, index: 12 }),
+            "the unified position must be restored from the installed cut"
+        );
+        driver.tick_and_step().unwrap();
+        assert_eq!(driver.status().applied_index, 12);
+        driver.stop();
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 }

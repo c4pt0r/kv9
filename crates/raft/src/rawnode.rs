@@ -299,6 +299,43 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         )
     }
 
+    /// Start from a VERIFIED installed generation: the one coordinated path
+    /// allowed past the compacted-base refusal below. The caller must have
+    /// completed the joint installer's whole-pair verification for exactly
+    /// this storage; this constructor re-checks the shape (the durable base
+    /// equals `base`, the log starts at `base.index + 1`, no lease policy)
+    /// and refuses anything else. It grants no serving or read capability.
+    pub fn with_installed_storage(
+        node: NodeId,
+        region: RegionId,
+        storage: S,
+        base: kv9_common::AppliedPosition,
+    ) -> Result<RaftPeer<S>> {
+        if storage.recovered_lease_epoch().is_some() {
+            return Err(Error::Raft(
+                "lease voter requires its durable policy and recovery quarantine".into(),
+            ));
+        }
+        if base.index == 0 || base.term == 0 {
+            return Err(Error::Raft("installed base requires an exact cut".into()));
+        }
+        let first = storage.first_index().map_err(raft_err)?;
+        let term_at_base = storage.term(base.index).map_err(raft_err)?;
+        if first != base.index + 1 || term_at_base != base.term {
+            return Err(Error::Raft(
+                "storage does not carry the verified installed base".into(),
+            ));
+        }
+        Self::build_with_base(
+            node,
+            region,
+            storage,
+            Some(base),
+            #[cfg(any(test, feature = "experimental-leader-lease"))]
+            None,
+        )
+    }
+
     /// Experimental vote binding only. This installs no lease read path.
     /// The supplied clock must satisfy the policy's rate/sampling assumptions.
     /// Policy changes and disabling this mode on the same store are refused.
@@ -322,15 +359,39 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             Arc<dyn LeaseClock>,
         )>,
     ) -> Result<RaftPeer<S>> {
-        // A protocol snapshot is insufficient to authorize serving. Until the
-        // engine installation journal is connected, no constructor may silently
-        // start from a compacted base (including the experimental lease path).
-        if storage.first_index().map_err(raft_err)? != 1 {
+        Self::build_with_base(
+            node,
+            region,
+            storage,
+            None,
+            #[cfg(any(test, feature = "experimental-leader-lease"))]
+            lease_setup,
+        )
+    }
+
+    fn build_with_base(
+        node: NodeId,
+        region: RegionId,
+        storage: S,
+        installed_base: Option<kv9_common::AppliedPosition>,
+        #[cfg(any(test, feature = "experimental-leader-lease"))] lease_setup: Option<(
+            LeasePolicy,
+            Arc<dyn LeaseClock>,
+        )>,
+    ) -> Result<RaftPeer<S>> {
+        // A protocol snapshot is insufficient to authorize serving. The ONLY
+        // path past this refusal is `with_installed_storage`, which requires
+        // the joint installer's whole-pair verification and re-checks the
+        // durable base shape (including the experimental lease path).
+        if installed_base.is_none() && storage.first_index().map_err(raft_err)? != 1 {
             return Err(Error::Raft(
                 "snapshot base requires coordinated engine installation".into(),
             ));
         }
         let cfg = Config {
+            // A verified installed base was applied by construction; raft
+            // must not report those positions as committed-but-unapplied.
+            applied: installed_base.map_or(0, |base| base.index),
             id: node.0,
             election_tick: 10,
             heartbeat_tick: 3,

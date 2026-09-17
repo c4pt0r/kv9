@@ -315,6 +315,86 @@ impl RegionManager {
         Ok(self.driver(region)?.status())
     }
 
+    /// Adopt a VERIFIED installed generation as this node's runtime replica
+    /// of the migration group, and start its driver from the installed base.
+    /// One-way: after the durable adoption marker, the joint installer is
+    /// closed for this group. The peer starts as whatever the image
+    /// configuration says this node is (a learner today); it votes and
+    /// serves nothing beyond what that configuration and the read barrier
+    /// already enforce. Idempotent across restarts via re-adoption.
+    pub(crate) fn adopt_installed(
+        &mut self,
+        guard: &kv9_common::store_lifecycle::StoreGuard,
+        migration: &kv9_meta::data_groups::migration::CommittedMigration,
+        transport: &Arc<GrpcTransport>,
+        tick: Duration,
+        uploader: &kv9_engine::checkpoint::RemoteUploader,
+    ) -> Result<()> {
+        let region = migration.intent().region();
+        if let Some(LocalGroup::Ready(prepared)) = self.groups.get(&region) {
+            if prepared.driver.is_some() {
+                return Ok(());
+            }
+        }
+        let adopted =
+            kv9_raft::snapshot_install::adopt_for_runtime(guard, self.identity, region, uploader)?;
+        let creation = migration.creation().intent();
+        if adopted.range.creation != creation.digest() || adopted.range.root != creation.root() {
+            return Err(invalid(
+                "adopted range does not describe the committed creation",
+            ));
+        }
+        let storage = DiskRaftStorage::recover(&adopted.raft_directory)?;
+        let (engine, _) =
+            WalEngine::open_with_uploader(adopted.engine_wal.clone(), Some(uploader))?;
+        let engine = Arc::new(engine);
+        let mut state = MemStateMachine::with_engine(engine.clone())?;
+        state.set_data_group(adopted.range.root, region, adopted.range.creation)?;
+        let peer = Arc::new(RaftPeer::with_installed_storage(
+            self.identity.node_id,
+            region,
+            storage,
+            adopted.cut,
+        )?);
+        let driver = NodeDriver::with_installed_base(
+            peer,
+            transport.register_group(region)?,
+            state,
+            adopted.cut,
+        )?;
+        if self.pool.is_none() {
+            self.pool = Some(DriverPool::new(self.data_workers, tick)?);
+        }
+        self.pool
+            .as_ref()
+            .expect("pool created above")
+            .register(driver.clone())?;
+        self.raw_directory
+            .insert(crate::runtime::range_api::RawGroup::new(
+                adopted.range.clone(),
+                engine.clone(),
+                driver.clone(),
+            ));
+        self.groups.insert(
+            region,
+            LocalGroup::Ready(Box::new(PreparedLocal {
+                range_proposal: None,
+                observation: GroupPreparation {
+                    task: creation.task(),
+                    region,
+                    intent_digest: creation.digest(),
+                },
+                phase: Phase::Active,
+                intent: creation.clone(),
+                storage: None,
+                engine,
+                driver: Some(driver),
+                _lock: adopted.group_lock,
+            })),
+        );
+        Ok(())
+    }
+
     /// At most one new local activation per reconciliation turn. Terminal
     /// failures stay quarantined until a new manager performs disk recovery.
     pub(crate) fn reconcile_activation(
