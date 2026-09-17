@@ -318,6 +318,15 @@ pub struct TruncateSourceLogResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PromoteMigrationVoterResult {
+    pub destination: kv9_common::NodeId,
+    /// False confirms an existing voter; the receipt stays a NEW commit.
+    pub changed: bool,
+    /// The sorted voter set after the applied configuration change.
+    pub voters: Vec<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -509,6 +518,16 @@ pub trait AdminApi {
     ) -> Result<TruncateSourceLogResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::truncate_source_log",
+        ))
+    }
+    fn promote_migration_voter(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<PromoteMigrationVoterResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::promote_migration_voter",
         ))
     }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {

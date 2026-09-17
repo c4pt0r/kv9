@@ -69,6 +69,7 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client record-install-evidence --addr <leader-ip:port> --root-digest <hex> --receipt-file <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client record-source-truncation --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --floor-term <n> --floor-index <n>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client truncate-source-log --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client promote-migration-voter --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client get-node-endpoint --addr <leader-ip:port> --node-id <id>\n\
@@ -889,6 +890,7 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         "record-install-evidence" => data_group_cli::run_record_evidence(args),
         "record-source-truncation" => data_group_cli::run_record_truncation(args),
         "truncate-source-log" => data_group_cli::run_truncate_log(args),
+        "promote-migration-voter" => data_group_cli::run_promote_voter(args),
         "admit-node" => run_admit_node(args),
         "promote-node" => run_promote_node(args),
         "get-node-endpoint" => endpoint_cli::run(args, false),

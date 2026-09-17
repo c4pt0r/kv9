@@ -345,6 +345,42 @@ impl DataGroupClient {
         })
     }
 
+    /// Promote the committed migration's destination to a voter.
+    pub fn promote_migration_voter(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::PromoteMigrationVoterResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::PromoteMigrationVoterRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.promote_migration_voter(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.destination_node == 0 || response.voters.is_empty() {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "promotion lacks a destination or voter set".into(),
+            ));
+        }
+        Ok(crate::api::PromoteMigrationVoterResult {
+            destination: NodeId(response.destination_node),
+            changed: response.changed,
+            voters: response.voters,
+        })
+    }
+
     /// Replay the destination's durable adoption receipt for one region.
     pub fn emit_install_evidence(
         &mut self,

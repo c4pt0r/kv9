@@ -1525,6 +1525,76 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn promote_migration_voter(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::PromoteMigrationVoterResult> {
+        self.ensure_serving()?;
+        {
+            let txn = self.node.meta_raft.store.begin()?;
+            let certified = kv9_meta::root::certified_root(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("promotion requires a certified root".into()))?;
+            if certified.digest() != root {
+                return Err(Error::Config("promotion request root differs".into()));
+            }
+        }
+        let store = &self.node.meta_raft.store;
+        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
+            .into_iter()
+            .find(|m| m.intent().operation() == operation)
+            .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
+        // The committed evidence row is the promotion authority: the
+        // destination durably adopted the exact pinned image and reconciled
+        // it into a live replica. Local absence refuses in the safe
+        // direction; a client may retry after commitment applies.
+        kv9_meta::data_groups::evidence::committed_install_evidence(store)?
+            .into_iter()
+            .find(|e| e.operation() == operation)
+            .ok_or_else(|| Error::Config("promotion requires committed install evidence".into()))?;
+        let destination = migration.intent().destination().node;
+        let group = self
+            .raw_directory
+            .by_region(migration.intent().region())
+            .ok_or_else(|| Error::MetaNotReady("migration group is not active locally".into()))?;
+        let (driver, _, _) = group.capture_parts();
+        let status = driver.status();
+        if status.fatal.is_some() {
+            return Err(Error::Raft("group driver is fatally stopped".into()));
+        }
+        if status.role != kv9_raft::Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let changed = if status.voters.contains(&destination.0) {
+            false
+        } else {
+            if !status.learners.contains(&destination.0) {
+                return Err(Error::Config(
+                    "promotion requires the attached learner in the group configuration".into(),
+                ));
+            }
+            let proposed = driver.promote_voter(destination)?;
+            driver.wait_conf_applied(proposed, Duration::from_secs(10))?;
+            true
+        };
+        let after = driver.status();
+        if !after.voters.contains(&destination.0) || after.learners.contains(&destination.0) {
+            return Err(Error::Raft(
+                "configuration lost the promoted voter after apply".into(),
+            ));
+        }
+        let mut voters = after.voters.clone();
+        voters.sort_unstable();
+        Ok(crate::api::PromoteMigrationVoterResult {
+            destination,
+            changed,
+            voters,
+        })
+    }
+
     fn record_source_truncation(
         &self,
         _caller: &str,

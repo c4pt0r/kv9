@@ -151,10 +151,7 @@ fn io(error: std::io::Error) -> Error {
 /// and the REC_COMPACTION record (gated on a committed truncation decision
 /// at startup) vouches for the whole prefix. The base position itself must
 /// match terms exactly.
-fn position_in_history(
-    storage: &DiskRaftStorage,
-    at: kv9_common::AppliedPosition,
-) -> Result<bool> {
+fn position_in_history(storage: &DiskRaftStorage, at: kv9_common::AppliedPosition) -> Result<bool> {
     if let Some(base) = storage.compacted_base()? {
         if at.index < base.index {
             return Ok(true);

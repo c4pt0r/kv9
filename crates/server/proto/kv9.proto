@@ -58,6 +58,7 @@ service Kv9 {
   rpc RecordInstallEvidence(RecordInstallEvidenceRequest) returns (RecordInstallEvidenceResponse);
   rpc RecordSourceTruncation(RecordSourceTruncationRequest) returns (RecordSourceTruncationResponse);
   rpc TruncateSourceLog(TruncateSourceLogRequest) returns (TruncateSourceLogResponse);
+  rpc PromoteMigrationVoter(PromoteMigrationVoterRequest) returns (PromoteMigrationVoterResponse);
 }
 
 message Empty {}
@@ -211,6 +212,20 @@ message TruncateSourceLogResponse {
   uint64 floor_term = 1;
   uint64 floor_index = 2;
   uint64 first_index = 3; // The retained log's first index afterwards.
+}
+
+// Promote the committed migration's destination from learner to VOTER of
+// the source group, through the group's own log. Requires the committed
+// install evidence: the destination durably adopted the image and runs it.
+message PromoteMigrationVoterRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+}
+message PromoteMigrationVoterResponse {
+  uint64 destination_node = 1;
+  // False confirms an existing voter; the receipt is a NEW commit.
+  bool changed = 2;
+  repeated uint64 voters = 3; // Sorted post-apply voter set.
 }
 
 message BindMigrationImageResponse {
