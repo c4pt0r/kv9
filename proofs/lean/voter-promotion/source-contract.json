@@ -15,16 +15,16 @@
     "the_committed_chain_reaches_the_voter"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "0df1bb3e64dd648b6d49f36e1aa7f85568a3402b85375ee970b597159bab0b86",
-    "crates/server/src/api.rs": "9d8172e56ffa0115f47983757099cae1bba75459e7e3e4558fad499c78728092",
-    "crates/server/src/grpc.rs": "013417c739429edf259bdf954596ff62950ca6554fe1e925f3630d2116be7bf1",
-    "crates/server/src/data_groups.rs": "f02d7023ab7f878348c8e64f556ea64a9901a0be110d59511ab3d284a7c2959a",
-    "crates/server/proto/kv9.proto": "d81a365eb42fcb911cad7487299ba18c1cc421446b617575c4ed0d91eaf3d340",
+    "crates/server/src/runtime.rs": "5ff1ed317c72c9f6b4a825a0d100ae9dc2baa8f5529cb507972182cab16a1b18",
+    "crates/server/src/api.rs": "6bf00debc9b386ad59ea80eb7ef506eae1a720300c48e6efa687efcf81d2d4b0",
+    "crates/server/src/grpc.rs": "4552d2a895b0803ce7c2bff319685d3e61013c905d595e0754ce75c026ca6e3e",
+    "crates/server/src/data_groups.rs": "bb1e83a1bebadc856fd1344be45af88f47a624456145f6601708630568962f9d",
+    "crates/server/proto/kv9.proto": "46c7f42e013fefeffbdb67257bcf064833d81d3276c4035bfc6847266d87a678",
     "crates/raft/src/driver.rs": "39dbf5bd9c14b3d575804e11ca4706fe97da8e09c951f83c5e572e1b4cdda3c3",
     "crates/raft/src/storage.rs": "417dd2604132c42e66d1e778dabded1d0a4f50720aaf3dc431c07cd93cc7aaea",
     "crates/raft/src/storage/configuration.rs": "4d3744e32b360c9d478e9bc865143455d5124c97877cd71e976aabf008889ecf",
-    "src/data_group_cli.rs": "f00e4a1a591119fabf29d8885370f461f645b141cddc9976c69686fed9452966",
-    "src/main.rs": "e707105d02b5e184449249719330f1c998c5c04ae42b049cfdef6c6b4fddece9",
+    "src/data_group_cli.rs": "8095e64d975e8b1ddbc7eee00bdec3aae636ad2cd144207e3bf8b05135c97b53",
+    "src/main.rs": "d0ecff0d974e14ac476484ae07d932c3e96645e5920d92529337e9866b34f00c",
     "scripts/promotion-e2e.py": "776714e47deda5a726d9040c91f5950d0273dc92a294cf8dc044cfb112a52e45",
     "proofs/lean/voter-promotion/Promotion.lean": "a9e87ee9da4487955c500b3f531e929d8044131ad8bbd6703a48c4e8c923735b",
     "proofs/lean/voter-promotion/README.md": "6530cbbb157cf4b730597d70d3368ff7bf815d51887da3fd98cef0d431fff16a"

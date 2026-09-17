@@ -350,6 +350,15 @@ pub struct RecordSplitIntentResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SealSplitParentResult {
+    pub sealed_version: u64,
+    /// False confirms an existing seal; the receipt stays a NEW commit.
+    pub changed: bool,
+    /// The applied position of the seal (or of its confirmation).
+    pub cut: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -587,6 +596,16 @@ pub trait AdminApi {
     ) -> Result<RecordSplitIntentResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::record_split_intent",
+        ))
+    }
+    fn seal_split_parent(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<SealSplitParentResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::seal_split_parent",
         ))
     }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {

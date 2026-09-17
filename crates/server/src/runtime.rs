@@ -1743,6 +1743,99 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn seal_split_parent(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::SealSplitParentResult> {
+        self.ensure_serving()?;
+        {
+            let txn = self.node.meta_raft.store.begin()?;
+            let certified = kv9_meta::root::certified_root(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("seal requires a certified root".into()))?;
+            if certified.digest() != root {
+                return Err(Error::Config("seal request root differs".into()));
+            }
+        }
+        // Committed split authority from LOCAL applied state; absence refuses
+        // in the safe direction and a client may retry after application.
+        let intent = kv9_meta::data_groups::split::committed_splits(&self.node.meta_raft.store)?
+            .into_iter()
+            .find(|i| i.operation() == operation)
+            .ok_or_else(|| Error::Config("split intent is not committed locally".into()))?;
+        let group = self
+            .raw_directory
+            .by_region(intent.parent_region())
+            .ok_or_else(|| Error::MetaNotReady("split parent is not active locally".into()))?;
+        let (driver, engine, _) = group.capture_parts();
+        let status = driver.status();
+        if status.fatal.is_some() {
+            return Err(Error::Raft("group driver is fatally stopped".into()));
+        }
+        if status.role != kv9_raft::Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let current = engine
+            .get(
+                kv9_engine::ColumnFamily::Default,
+                kv9_common::data_range::RANGE_KEY,
+            )?
+            .map(|b| kv9_common::data_range::DataRange::decode(&b))
+            .transpose()?
+            .ok_or_else(|| Error::MetaNotReady("parent range row has not applied".into()))?;
+        if current.sealed {
+            // Idempotent: the fence is already durable; confirm its shape.
+            let advanced = driver.propose(&kv9_raft::Command::Noop)?;
+            driver
+                .wait_applied(advanced, Duration::from_secs(10))
+                .map_err(|e| Error::Raft(format!("seal confirmation: {e:?}")))?;
+            return Ok(crate::api::SealSplitParentResult {
+                sealed_version: current.version,
+                changed: false,
+                cut: AppliedPosition {
+                    term: advanced.term,
+                    index: advanced.index.0,
+                },
+            });
+        }
+        let mut sealed = current.clone();
+        sealed.sealed = true;
+        sealed.version = current
+            .version
+            .checked_add(1)
+            .ok_or_else(|| Error::Config("range version exhausted".into()))?;
+        let proposed = driver.propose(&kv9_raft::Command::DataRange {
+            expected: Some(current.digest()),
+            next: sealed.clone(),
+        })?;
+        driver
+            .wait_applied(proposed, Duration::from_secs(10))
+            .map_err(|e| Error::Raft(format!("seal apply: {e:?}")))?;
+        let now = engine
+            .get(
+                kv9_engine::ColumnFamily::Default,
+                kv9_common::data_range::RANGE_KEY,
+            )?
+            .map(|b| kv9_common::data_range::DataRange::decode(&b))
+            .transpose()?;
+        if now.as_ref() != Some(&sealed) {
+            return Err(Error::Raft(
+                "sealed range row did not apply as proposed".into(),
+            ));
+        }
+        Ok(crate::api::SealSplitParentResult {
+            sealed_version: sealed.version,
+            changed: true,
+            cut: AppliedPosition {
+                term: proposed.term,
+                index: proposed.index.0,
+            },
+        })
+    }
+
     fn record_source_truncation(
         &self,
         _caller: &str,

@@ -62,6 +62,7 @@ service Kv9 {
   rpc RecordSourceRemoval(RecordSourceRemovalRequest) returns (RecordSourceRemovalResponse);
   rpc RemoveSourceReplica(RemoveSourceReplicaRequest) returns (RemoveSourceReplicaResponse);
   rpc RecordSplitIntent(RecordSplitIntentRequest) returns (RecordSplitIntentResponse);
+  rpc SealSplitParent(SealSplitParentRequest) returns (SealSplitParentResponse);
 }
 
 message Empty {}
@@ -274,6 +275,22 @@ message RecordSplitIntentRequest {
 message RecordSplitIntentResponse {
   uint64 task = 1;
   bool changed = 2;
+}
+
+// Seal the split parent's OWN range row through the group's log: writes
+// and reads at the parent refuse with a stale epoch from the applied seal
+// onward. The catalog directory stays unchanged until the atomic
+// publication; the group-side seal is the committed write fence.
+message SealSplitParentRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+}
+message SealSplitParentResponse {
+  uint64 sealed_version = 1;
+  // False confirms an existing seal; the receipt is a NEW commit.
+  bool changed = 2;
+  uint64 cut_term = 3;
+  uint64 cut_index = 4;
 }
 
 message BindMigrationImageResponse {

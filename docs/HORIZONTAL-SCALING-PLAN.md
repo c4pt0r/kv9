@@ -100,9 +100,12 @@ unbound children on the parent's replica set. The [partition-directory
 increment](PARTITION-DIRECTORY.md) generalizes the range directory READ
 model to a validated partition — unsealed bindings must cover each
 keyspace exactly once, sealed bindings never route — before any writer
-produces child rows. Next are the atomic one-to-two publication, parent
-seal execution and child population; physical reclamation and
-stranded-learner recovery also remain open.
+produces child rows. The [parent-seal increment](PARENT-SEAL.md) executes
+the committed intent's write fence through the parent group's own log:
+one-way, immediate, typed refusals for writes and reads, durable across
+restarts, with the catalog untouched. Next are child population and the
+atomic one-to-two publication; physical reclamation and stranded-learner
+recovery also remain open.
 
 | Step | Implementation | Required evidence before acceptance |
 | --- | --- | --- |

@@ -498,6 +498,45 @@ impl DataGroupClient {
         Ok((response.task, response.changed))
     }
 
+    /// Seal the split parent's own range row through the group's log.
+    pub fn seal_split_parent(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::SealSplitParentResult, DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::SealSplitParentRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.seal_split_parent(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        if response.sealed_version == 0 || response.cut_index == 0 {
+            return Err(DataGroupRpcError::Unconfirmed(
+                "seal lacks a version or exact cut".into(),
+            ));
+        }
+        Ok(crate::api::SealSplitParentResult {
+            sealed_version: response.sealed_version,
+            changed: response.changed,
+            cut: AppliedPosition {
+                term: response.cut_term,
+                index: response.cut_index,
+            },
+        })
+    }
+
     /// Replay the destination's durable adoption receipt for one region.
     pub fn emit_install_evidence(
         &mut self,
