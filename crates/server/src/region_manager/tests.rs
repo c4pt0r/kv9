@@ -539,3 +539,55 @@ fn group_preparation_corrupt_group_does_not_prevent_other_group_recovery() {
         "one failed group must not prevent an independent group recovering"
     );
 }
+
+#[test]
+fn reclamation_deletes_only_fenced_payload_and_resumes_across_crash_and_restart() {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    let f = Fixture::new();
+    let mut txn = f.store.begin().unwrap();
+    kv9_meta::data_groups::activation::plan_activation(&mut txn, f.creation.intent()).unwrap();
+    txn.commit().unwrap();
+    let requests = kv9_meta::data_groups::activation::committed_activations(&f.store).unwrap();
+    let mut manager = f.manager();
+    let transport = test_transport(&runtime, &f);
+    manager.reconcile_activation(&requests, &transport, Duration::from_secs(60));
+    let region = f.creation.intent().region();
+    assert!(
+        manager.reclaim_retired(region).is_err(),
+        "an active group must refuse reclamation"
+    );
+    manager.retire_published_parent(region).unwrap();
+    assert_eq!(manager.retired_regions(), vec![region]);
+    let dir = f.group_dir();
+    assert!(dir.join("data.wal").exists() && dir.join("raft").exists());
+    let freed = manager.reclaim_retired(region).unwrap();
+    assert!(freed > 0, "payload bytes must be counted");
+    assert!(!dir.join("data.wal").exists());
+    assert!(!dir.join("data.segments").exists());
+    assert!(!dir.join("raft").exists());
+    // The fence survives: record present, phase Reclaimed, lock present.
+    let record = read_record(&dir.join(RECORD)).unwrap().unwrap();
+    assert_eq!(record.phase, Phase::Reclaimed);
+    assert!(dir.join(LOCK).exists());
+    assert_eq!(manager.reclaim_retired(region).unwrap(), 0, "idempotent");
+    assert!(manager.retired_regions().is_empty());
+    assert!(manager.status_json().contains("\"reclaimed\""));
+    drop(manager);
+    // Crash mid-deletion: the durable Reclaimed record with leftover payload
+    // must finish the deletion at discovery — and never reopen the group.
+    fs::write(dir.join("data.wal"), b"leftover-after-crash").unwrap();
+    fs::create_dir_all(dir.join("raft")).unwrap();
+    fs::write(dir.join("raft").join("log"), b"leftover").unwrap();
+    let mut recovered = f.manager();
+    recovered.recover(&f.store).unwrap();
+    assert!(
+        !dir.join("data.wal").exists(),
+        "discovery resumes the deletion"
+    );
+    assert!(!dir.join("raft").exists());
+    assert!(recovered.status_json().contains("\"reclaimed\""));
+    assert!(
+        recovered.prepare(&f.creation).is_err(),
+        "a reclaimed group must never re-prepare"
+    );
+}
