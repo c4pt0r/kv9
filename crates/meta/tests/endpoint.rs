@@ -253,15 +253,22 @@ fn registration_address_changes_participate_in_endpoint_aba_fencing() {
 fn registration_endpoint_refuses_rebinding_and_generation_overflow() {
     let store = store();
     let change = request(0, 1, 2);
+    // A NEW incarnation is a TAKEOVER, not a refusal: the only caller holds
+    // a freshly consumed PENDING admission — the operator's re-provisioning
+    // authority for a lost store. The row rebinding is staged atomically
+    // with a generation bump and the previous address recorded.
     let mut txn = store.begin().unwrap();
-    assert!(refresh_registration_endpoint(
+    let taken = refresh_registration_endpoint(
         &mut txn,
         change.node,
         StoreIncarnation::from_bytes([9; 16]),
-        address(2)
+        address(2),
     )
-    .is_err());
-    assert!(txn.into_batch().mutations().is_empty());
+    .unwrap();
+    assert_eq!(taken.incarnation, StoreIncarnation::from_bytes([9; 16]));
+    assert_eq!(taken.generation, 1);
+    assert_eq!(taken.previous_address, Some(address(1)));
+    assert!(!txn.into_batch().mutations().is_empty());
     let mut txn = store.begin().unwrap();
     txn.update(
         &NODES_DESC,

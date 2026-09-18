@@ -692,6 +692,58 @@ impl DataGroupClient {
     }
 
     /// Plan the group leader's current cut manifest, for owner binding.
+    pub fn record_migration_abort(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<(u64, bool), DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::RecordMigrationAbortRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.record_migration_abort(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        Ok((response.task, response.changed))
+    }
+
+    pub fn detach_aborted_learner(
+        &mut self,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<(u64, bool, Vec<u64>), DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root and operation required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::DetachAbortedLearnerRequest {
+            root_digest: root.as_bytes().to_vec(),
+            operation_id: operation.to_vec(),
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.detach_aborted_learner(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        Ok((response.detached_node, response.changed, response.voters))
+    }
+
     pub fn plan_image(
         &mut self,
         root: RootDigest,

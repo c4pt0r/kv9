@@ -324,6 +324,23 @@ pub struct RecordInstallEvidenceResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecordMigrationAbortResult {
+    pub abort: kv9_meta::data_groups::abort::MigrationAbort,
+    /// False confirms the identical committed row; the abort is a NEW commit.
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DetachAbortedLearnerResult {
+    pub detached: kv9_common::NodeId,
+    /// False confirms an already-absent learner.
+    pub changed: bool,
+    /// The sorted voter set after the applied configuration change.
+    pub voters: Vec<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RecordSourceTruncationResult {
     pub decision: kv9_meta::data_groups::truncation::TruncationDecision,
     pub changed: bool,
@@ -565,6 +582,26 @@ pub trait AdminApi {
             "AdminApi::record_install_evidence",
         ))
     }
+    fn record_migration_abort(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<RecordMigrationAbortResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::record_migration_abort",
+        ))
+    }
+    fn detach_aborted_learner(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+    ) -> Result<DetachAbortedLearnerResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::detach_aborted_learner",
+        ))
+    }
     fn record_source_truncation(
         &self,
         _caller: &str,
@@ -701,6 +738,15 @@ pub trait AdminApi {
         _ttl_seconds: u64,
     ) -> Result<MembershipChangeResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::admit_node"))
+    }
+    fn revoke_admission(
+        &self,
+        _caller: &str,
+        _node: kv9_common::NodeId,
+    ) -> Result<MembershipChangeResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::revoke_admission",
+        ))
     }
     fn promote_node(
         &self,

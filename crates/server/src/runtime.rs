@@ -1417,6 +1417,16 @@ impl AdminApi for RuntimeBackend {
             .into_iter()
             .find(|m| m.intent().operation() == operation)
             .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
+        // A committed abort abandons the operation permanently; re-attaching
+        // its learner would resurrect the stranded configuration entry.
+        if kv9_meta::data_groups::abort::committed_aborts(store)?
+            .iter()
+            .any(|a| a.operation() == operation)
+        {
+            return Err(Error::Config(
+                "the operation is aborted; attach refuses permanently".into(),
+            ));
+        }
         let destination = migration.intent().destination().node;
         let group = self
             .raw_directory
@@ -2411,6 +2421,128 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn record_migration_abort(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::RecordMigrationAbortResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        let certified = kv9_meta::root::certified_root(&txn)?
+            .ok_or_else(|| Error::MetaNotReady("abort requires a certified root".into()))?;
+        if certified.digest() != root {
+            return Err(Error::Config("abort request root differs".into()));
+        }
+        // The abort subject is NEVER caller-supplied: it is read from the
+        // operation's PUBLISHED source pin, so the committed row names
+        // exactly the pinned image the ledger settlement will later match.
+        let migration =
+            kv9_meta::data_groups::migration::committed_migrations(&self.node.meta_raft.store)?
+                .into_iter()
+                .find(|m| m.intent().operation() == operation)
+                .ok_or_else(|| Error::Config("abort requires the committed migration".into()))?;
+        let (source_owner, _) = crate::migration_retention::migration_owner_ids(
+            root,
+            operation,
+            &migration.intent().destination().incarnation,
+        )?;
+        let view = self.node.meta_raft.store.begin()?.into_view();
+        let owner = kv9_meta::retention::retention_owner(view.as_ref(), &certified, source_owner)?
+            .ok_or_else(|| {
+                Error::Config("abort requires the operation's published image owners".into())
+            })?;
+        if owner.phase != kv9_common::retention::PinPhase::Published {
+            return Err(Error::Config(
+                "the source image pin is not published; nothing is stranded to abort".into(),
+            ));
+        }
+        let (abort, changed) = kv9_meta::data_groups::abort::plan_abort(
+            &mut txn,
+            operation,
+            owner.binding.descriptor.subject,
+        )?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::RecordMigrationAbortResult {
+            abort,
+            changed,
+            applied,
+        })
+    }
+
+    fn detach_aborted_learner(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+    ) -> Result<crate::api::DetachAbortedLearnerResult> {
+        self.ensure_serving()?;
+        {
+            let txn = self.node.meta_raft.store.begin()?;
+            let certified = kv9_meta::root::certified_root(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("detach requires a certified root".into()))?;
+            if certified.digest() != root {
+                return Err(Error::Config("detach request root differs".into()));
+            }
+        }
+        // Committed authority from LOCAL applied state; absence refuses in
+        // the safe direction and a client may retry after application.
+        let abort = kv9_meta::data_groups::abort::committed_aborts(&self.node.meta_raft.store)?
+            .into_iter()
+            .find(|a| a.operation() == operation)
+            .ok_or_else(|| Error::Config("detach requires the committed abort".into()))?;
+        let group = self
+            .raw_directory
+            .by_region(abort.region())
+            .ok_or_else(|| Error::MetaNotReady("detach group is not active locally".into()))?;
+        let (driver, _, _) = group.capture_parts();
+        let status = driver.status();
+        if status.fatal.is_some() {
+            return Err(Error::Raft("group driver is fatally stopped".into()));
+        }
+        if status.role != kv9_raft::Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let stranded = abort.destination().node;
+        // An aborted destination is evidence-less, and promotion requires
+        // evidence — it can only ever be a LEARNER. A voter here means the
+        // committed history diverged from this authority: refuse loudly.
+        if status.voters.contains(&stranded.0) {
+            return Err(Error::Config(
+                "the aborted destination is a voter; abort authority does not remove voters".into(),
+            ));
+        }
+        let changed = if !status.learners.contains(&stranded.0) {
+            false // idempotent: already detached
+        } else {
+            let proposed = driver.remove_voter(stranded)?;
+            driver.wait_conf_applied(proposed, Duration::from_secs(10))?;
+            true
+        };
+        let after = driver.status();
+        if after.learners.contains(&stranded.0) || after.voters.contains(&stranded.0) {
+            return Err(Error::Raft(
+                "configuration kept the aborted learner after apply".into(),
+            ));
+        }
+        let mut voters = after.voters.clone();
+        voters.sort_unstable();
+        Ok(crate::api::DetachAbortedLearnerResult {
+            detached: stranded,
+            changed,
+            voters,
+        })
+    }
+
     fn apply_retention(
         &self,
         _caller: &str,
@@ -2630,6 +2762,34 @@ impl AdminApi for RuntimeBackend {
             voters: status.voters,
             learners: status.learners,
             join_ticket: Some(ticket),
+        })
+    }
+
+    fn revoke_admission(&self, _caller: &str, node: NodeId) -> Result<MembershipChangeResult> {
+        self.ensure_serving()?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        // The operator's decommission/retry path: a revoked record may be
+        // replaced by a fresh admit_node — the re-provisioning recovery for
+        // a lost store incarnation. Nothing here changes raft membership.
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let planning_term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        kv9_meta::admission::revoke_admission(&mut txn, node)?;
+        let applied = self.commit_catalog(
+            &kv9_raft::Command::from_batch(&txn.into_batch()),
+            planning_term,
+        )?;
+        let status = self.driver.status();
+        Ok(MembershipChangeResult {
+            applied,
+            voters: status.voters,
+            learners: status.learners,
+            join_ticket: None,
         })
     }
 
@@ -2855,7 +3015,15 @@ impl RegistrationBackend for RuntimeBackend {
         };
         // A renewed ticket cannot authorize an empty disk to reuse an existing
         // replica's durable-log identity. This also precedes endpoint changes.
-        {
+        // The ONE exception is a fresh PENDING admission: the operator
+        // explicitly re-admitted this node id (revoke + admit — the lost-store
+        // recovery), and consuming it below validates the one-time ticket, so
+        // the new incarnation takes the identity over under that authority.
+        let fresh_pending = matches!(
+            &existing,
+            Some(admission) if admission.state == kv9_meta::admission::AdmissionState::Pending
+        );
+        if !fresh_pending {
             let txn = self
                 .node
                 .meta_raft
@@ -2994,7 +3162,35 @@ impl RegistrationBackend for RuntimeBackend {
             .register_catalog_peer(node, endpoint.address, endpoint.generation)
             .map_err(RegistrationError::Failed)?;
         let status = self.driver.status();
-        if !status.voters.contains(&node.0) && !status.learners.contains(&node.0) {
+        if status.voters.contains(&node.0) {
+            if fresh_pending {
+                // An empty disk can never take over a VOTER identity: the
+                // voter's log is quorum state. Remove it first (operator
+                // membership verbs), then admit.
+                return Err(RegistrationError::Failed(Error::Config(
+                    "a fresh incarnation cannot take over a metadata voter".into(),
+                )));
+            }
+        } else if status.learners.contains(&node.0) && fresh_pending {
+            // The stale learner entry belongs to the LOST incarnation; the
+            // leader still tracks its old progress, and heartbeating that
+            // progress at an empty log is fatal downstream. Remove and
+            // re-add so the new store starts from clean learner progress.
+            let proposed = self
+                .driver
+                .remove_voter(node)
+                .map_err(RegistrationError::Failed)?;
+            self.driver
+                .wait_conf_applied(proposed, Duration::from_secs(10))
+                .map_err(RegistrationError::Failed)?;
+            let proposed = self
+                .driver
+                .add_learner(node)
+                .map_err(RegistrationError::Failed)?;
+            self.driver
+                .wait_conf_applied(proposed, Duration::from_secs(10))
+                .map_err(RegistrationError::Failed)?;
+        } else if !status.learners.contains(&node.0) {
             let proposed = self
                 .driver
                 .add_learner(node)
@@ -5378,10 +5574,24 @@ impl NodeRuntime {
         else {
             return;
         };
+        let Ok(aborts) = kv9_meta::data_groups::abort::committed_aborts(&self.node.meta_raft.store)
+        else {
+            return;
+        };
         for migration in migrations {
             let destination = migration.intent().destination();
             if destination.node != self.store_identity.node_id
                 || destination.incarnation != self.store_identity.store_incarnation
+            {
+                continue;
+            }
+            // A committed abort abandons the operation permanently: an
+            // alive-but-slow destination must never adopt it afterward —
+            // evidence recording would refuse anyway, and the safe direction
+            // is to never start serving an abandoned image.
+            if aborts
+                .iter()
+                .any(|a| a.operation() == migration.intent().operation())
             {
                 continue;
             }
@@ -9729,7 +9939,7 @@ mod tests {
     }
 
     #[test]
-    fn registration_refusals_preserve_routes_and_renewed_tickets_cannot_rebind() {
+    fn registration_refusals_preserve_routes_and_takeover_requires_fresh_admission() {
         let (rts, root, _, base) = serving_trio("registration-binding");
         let leader = cluster_leader(&rts).unwrap();
         let backend = backend_view(&rts[leader], &root);
@@ -9803,62 +10013,59 @@ mod tests {
             .admit_node("acceptance", member, &changed_addr.to_string(), 600)
             .unwrap();
         let renewed_ticket = RootDigest::sha256(renewed.join_ticket.unwrap().as_bytes());
-        let replacement_result = backend.register(
-            member,
-            &changed_addr.to_string(),
-            root.cluster_id,
-            renewed_ticket.as_bytes(),
-            replacement,
-        );
-        assert_eq!(
-            rts[leader].transport.peer_address_for_tests(member),
-            Some(addr),
-            "renewed replacement changed the existing transport route"
-        );
-        let txn = backend.node.meta_raft.store.begin().unwrap();
-        assert_eq!(
-            kv9_meta::admission::admission(&txn, member)
-                .unwrap()
-                .unwrap()
-                .state,
-            kv9_meta::admission::AdmissionState::Pending,
-            "rejected replacement consumed the renewed ticket"
-        );
-        drop(txn);
-        // The endpoint writer also validates the immutable store binding.
-        // Check the public refusal separately from those side-effect guards.
-        assert!(
-            matches!(
-                replacement_result,
-                Err(RegistrationError::InvalidIncarnation)
-            ),
-            "renewed replacement did not receive a typed incarnation refusal: {replacement_result:?}"
-        );
-        // The original store can complete the same new admission, including
-        // its new canonical address. Rejecting every renewed ticket is wrong.
+        // A FRESH PENDING admission is the operator's takeover authority
+        // (revoke + admit — the lost-store recovery): the replacement
+        // incarnation now registers, consuming the one-time ticket, and the
+        // node identity rebinds atomically with the endpoint version bump.
         backend
             .register(
                 member,
                 &changed_addr.to_string(),
                 root.cluster_id,
                 renewed_ticket.as_bytes(),
-                original,
+                replacement,
             )
             .unwrap();
-        let endpoint = kv9_meta::endpoint::node_endpoint(
-            &backend.node.meta_raft.store.begin().unwrap(),
-            member,
-        )
-        .unwrap()
-        .unwrap();
+        let txn = backend.node.meta_raft.store.begin().unwrap();
+        assert_eq!(
+            kv9_meta::admission::admission(&txn, member)
+                .unwrap()
+                .unwrap()
+                .state,
+            kv9_meta::admission::AdmissionState::Consumed,
+            "the takeover must consume the renewed one-time ticket"
+        );
+        let endpoint = kv9_meta::endpoint::node_endpoint(&txn, member)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            endpoint.incarnation, replacement,
+            "the takeover must rebind the node to the replacement incarnation"
+        );
         assert_eq!(
             endpoint.generation, 1,
-            "renewed registration bypassed endpoint versioning"
+            "the takeover bypassed endpoint versioning"
         );
         assert_eq!(endpoint.previous_address, Some(addr));
+        drop(txn);
         assert_eq!(
             rts[leader].transport.peer_address_for_tests(member),
             Some(changed_addr)
+        );
+        // The protection now guards the NEW identity: the ORIGINAL (lost)
+        // incarnation refuses against the consumed admission and rebound row.
+        assert!(
+            matches!(
+                backend.register(
+                    member,
+                    &changed_addr.to_string(),
+                    root.cluster_id,
+                    renewed_ticket.as_bytes(),
+                    original,
+                ),
+                Err(RegistrationError::InvalidIncarnation)
+            ),
+            "the superseded incarnation must refuse after the takeover"
         );
         drop(backend);
         drop(rts);

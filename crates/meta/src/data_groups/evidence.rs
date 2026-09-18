@@ -233,6 +233,13 @@ pub fn plan_install_evidence<E: Engine>(
     matches_migration(&receipt, &migration)?;
     let mut existing = None;
     for row in &rows {
+        if super::abort::from_abort_row(row, root.digest())?
+            .is_some_and(|a| a.operation() == receipt.operation)
+        {
+            return Err(invalid(
+                "a committed abort forbids evidencing an abandoned operation",
+            ));
+        }
         if let Some(previous) = from_evidence_row(row, root.digest())? {
             if previous.operation == receipt.operation {
                 let expected = InstallEvidence {

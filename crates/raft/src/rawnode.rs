@@ -666,6 +666,19 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             g.step_errors = g.step_errors.saturating_add(1);
             return;
         }
+        // A heartbeat carries the sender's tracked commit floor for THIS
+        // peer. Progress tracked for a LOST store incarnation can exceed the
+        // re-provisioned (empty or checkpoint-seeded) peer's whole log, and
+        // raft-rs treats stepping that as a local panic, not a rejection.
+        // Drop it instead: raft is lossy-safe, the sender re-probes through
+        // the append path, which clamps commitment on its own.
+        if g.alive
+            && msg.get_msg_type() == raft::eraftpb::MessageType::MsgHeartbeat
+            && msg.get_commit() > g.raw.raft.raft_log.last_index()
+        {
+            g.step_errors = g.step_errors.saturating_add(1);
+            return;
+        }
         #[cfg(any(test, feature = "experimental-leader-lease"))]
         if g.alive && lease_wire::reserved(&msg) {
             // Even an uninstalled peer must not turn a lease request into an

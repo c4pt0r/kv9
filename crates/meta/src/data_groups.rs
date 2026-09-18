@@ -11,6 +11,7 @@ use crate::codec::{memcmp_uint, ColumnValue, RowValue};
 use crate::schema::{ColumnId, TASKS_DESC};
 use crate::store::{MetaStore, MetaTxn, Row, SequenceKind, FIRST_DYNAMIC_ID};
 
+pub mod abort;
 pub mod activation;
 pub mod evidence;
 pub mod migration;

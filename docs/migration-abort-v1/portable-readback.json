@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "archive_sha256": "bdb69b6f2a3d284b8c8407535cb308ed0b54532de20de9dd643637470b0089cf",
+  "members_verified": 1744,
+  "decoded_bytes": 8901927,
+  "receipts_verified": [
+    "e2e-eighth accepted (exact final source); e2e-sixth/seventh also accepted",
+    "five retained failures with their diagnosis lines re-verified in-packet (admission wall; incarnation wall; two stale-heartbeat panics; attach lag)",
+    "local-validation.json (serial 939/0, clippy 0)",
+    "migration-abort-proof (13 theorems, 5+2 controls)",
+    "retention PASS",
+    "26 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true
+}
