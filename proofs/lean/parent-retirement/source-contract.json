@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "model": "Kv9.ParentRetirement",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "retirement_requires_the_published_split",
+    "a_retired_parent_never_runs",
+    "storage_is_never_deleted",
+    "the_children_are_never_disturbed",
+    "retirement_is_permanent",
+    "restart_preserves_retirement",
+    "a_publication_alone_retires_nothing",
+    "the_published_chain_reaches_retirement"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime.rs": "af81f8723172077cb0348672841a1b4fa5df8daab3545ae61fe8573a819b50be",
+    "crates/server/src/region_manager.rs": "3bf1b08381da984e54f5a7f78b931921631fa114a397fda435d05f3c2b208c3e",
+    "crates/meta/src/data_groups/split.rs": "61ed267c990a1806da3d5d56d274c4620d48235e234a2cd60d4336d43a1b5f42",
+    "crates/meta/src/data_groups/ranges.rs": "58c89feb4b0c53587915cf6655f97245ff20ba8a31fd4ec5a4bea6b52e8abaa1",
+    "scripts/parent-retirement-e2e.py": "ce8b621f8f4cf526d9b68f539e303050c19a06027f52b4042e753339ff72f45e",
+    "proofs/lean/parent-retirement/ParentRetirement.lean": "83331f84f3592f5389b2391d2d9560b922ba343e6aa7017b82cb7e5022f53e2d",
+    "proofs/lean/parent-retirement/README.md": "187b9b191ae7c60857ef8032c896a4f7a73ca46b85600f36686ee724b43413e9"
+  }
+}

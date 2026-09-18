@@ -32,9 +32,9 @@
     "crates/server/src/grpc.rs": "14eadfcdc60bd1f6c6fcbc0c2d8c3196b424e4ab1b5796043cdb19c16e6eb855",
     "crates/server/src/api.rs": "633d9dd2c175c217dffe054ec1e79faa16e55e0a43859761aab53907836de5e8",
     "crates/server/src/endpoints.rs": "8b1386366ef260db0e530c915642c0d702dacc5896ed824ca3aeeb3f13412f60",
-    "crates/server/src/runtime.rs": "6f07b5dc14d75ae7ffb76823d890346121947de7926ad6ad56171c237863d03d",
+    "crates/server/src/runtime.rs": "af81f8723172077cb0348672841a1b4fa5df8daab3545ae61fe8573a819b50be",
     "crates/server/src/runtime/range_api.rs": "676f9ad1a0b4cd18807f5cee08c07b881bffa27891232973973556c730b24d15",
-    "crates/server/src/runtime/tests/data_group_tests.rs": "07c72892cad8fcdcc22bdd52ae077d5d681d8fd80279ff63502f16713e27d0cc",
+    "crates/server/src/runtime/tests/data_group_tests.rs": "f56a35835790816b448f4c1f55a6641573d9d6e60d749bf5b578e3c61fa72a00",
     "crates/meta/src/data_groups/ranges.rs": "58c89feb4b0c53587915cf6655f97245ff20ba8a31fd4ec5a4bea6b52e8abaa1",
     "crates/server/proto/kv9.proto": "b35017a515f7dba21e1ccebd74d9ce1ce89b6468454ae734ccfa2fabec00c6c7",
     "crates/server/src/bin/kv9-routed-workload.rs": "b3b94848c8a0eac87ffc39a1bde3f8398efb468e8c9cdde633495922eb0801e6"

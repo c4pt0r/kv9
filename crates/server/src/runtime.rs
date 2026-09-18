@@ -2093,6 +2093,33 @@ impl AdminApi for RuntimeBackend {
             .ok_or_else(|| Error::Config("split child creation is not committed".into()))?
             .intent()
             .region();
+        // An already-published directory confirms WITHOUT local verification:
+        // the atomic transaction happened, the read model validated it, and
+        // the retired parent may legitimately no longer be running here.
+        let already_published = kv9_meta::data_groups::ranges::committed_ranges(store)?
+            .iter()
+            .any(|b| b.range().region == intent.parent_region() && b.range().sealed);
+        if already_published {
+            let _guard = self.node.meta_raft.lock_catalog_txn();
+            let term = self.prepare_catalog()?;
+            let mut txn = self.node.meta_raft.store.begin()?;
+            if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+                return Err(Error::Config("publication request root differs".into()));
+            }
+            let (publication, changed) =
+                kv9_meta::data_groups::split::publish_split(&mut txn, operation)?;
+            let command = if changed {
+                Command::from_batch(&txn.into_batch())
+            } else {
+                Command::Noop
+            };
+            let applied = self.commit_catalog(&command, term)?;
+            return Ok(crate::api::PublishSplitResult {
+                publication,
+                changed,
+                applied,
+            });
+        }
         // LOCAL pre-publication verification: this metadata voter hosts the
         // parent and both children (same replica set), so the sealed fence
         // and both digest-exact populations are re-checked here, from
@@ -4937,6 +4964,36 @@ impl NodeRuntime {
         }
     }
 
+    /// A PUBLISHED split — the sealed parent binding with covering children
+    /// in the committed directory — retires the local parent replica on
+    /// every hosting node: at most one per turn, errors surface in the
+    /// control status and retry. The split intent names the parent; the
+    /// sealed committed binding is the proof of publication.
+    fn reconcile_split_retirement(&mut self) {
+        let store = &self.node.meta_raft.store;
+        let Ok(intents) = kv9_meta::data_groups::split::committed_splits(store) else {
+            return; // metadata not ready; not-yet, never fatal
+        };
+        let Ok(bindings) = kv9_meta::data_groups::ranges::committed_ranges(store) else {
+            return;
+        };
+        for intent in intents {
+            let published = bindings
+                .iter()
+                .any(|b| b.range().region == intent.parent_region() && b.range().sealed);
+            if !published {
+                continue;
+            }
+            if let Err(error) = self
+                .data_groups
+                .retire_published_parent(intent.parent_region())
+            {
+                self.group_control_error = Some(error.to_string());
+            }
+            break;
+        }
+    }
+
     fn reconcile_adoption(&mut self) {
         let Some(uploader) = self.uploader.clone() else {
             return;
@@ -5158,6 +5215,7 @@ impl NodeRuntime {
                                 .reconcile_activation(&requests, &self.transport, TICK);
                             self.reconcile_adoption();
                             self.reconcile_retirement();
+                            self.reconcile_split_retirement();
                             kv9_meta::data_groups::ranges::committed_ranges(
                                 &self.node.meta_raft.store,
                             )

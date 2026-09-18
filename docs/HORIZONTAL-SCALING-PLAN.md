@@ -112,8 +112,11 @@ split: one atomic catalog transaction seals the parent binding and
 publishes both children, locally re-verified first, and the children
 serve the exact pre-split data through public routing with key-aware
 directory resolution — surviving a full-cluster restart. Manual D04
-splits are now END TO END; automatic size/load triggers, the sealed
-parent's retirement, cross-range routed scans, physical reclamation and
+splits are now END TO END, and the [parent-retirement
+increment](PARENT-RETIREMENT.md) closes their local loose end: the
+published directory automatically retires the sealed parent on every
+hosting node, durably and with storage kept. Automatic size/load
+triggers, cross-range routed scans, physical reclamation and
 stranded-learner recovery remain open.
 
 | Step | Implementation | Required evidence before acceptance |
