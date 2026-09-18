@@ -72,6 +72,12 @@ pub(crate) struct RawGroup {
     engine: Arc<WalEngine>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
 }
+impl RawGroup {
+    pub(crate) fn range_binding(&self) -> &DataRange {
+        &self.binding
+    }
+}
+
 struct RangePermit(kv9_raft::RegionFence);
 
 impl RawGroup {

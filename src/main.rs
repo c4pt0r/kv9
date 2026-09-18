@@ -850,19 +850,23 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
             )
         }
         "raw-scan" => {
-            finish!(client.scan(start, end, limit), |rows: Vec<(
-                Vec<u8>,
-                Vec<u8>
-            )>| {
-                for (key, value) in &rows {
-                    println!(
-                        "key_hex={} value_hex={}",
-                        encode_hex(key),
-                        encode_hex(value)
-                    );
+            finish!(
+                client.scan(start, end, limit),
+                |page: kv9_server::RawScanPage| {
+                    let (rows, resume) = page;
+                    for (key, value) in &rows {
+                        println!(
+                            "key_hex={} value_hex={}",
+                            encode_hex(key),
+                            encode_hex(value)
+                        );
+                    }
+                    println!("count={}", rows.len());
+                    if !resume.is_empty() {
+                        println!("resume_from={}", encode_hex(&resume));
+                    }
                 }
-                println!("count={}", rows.len());
-            })
+            )
         }
         "raw-delete-range" => {
             finish!(
@@ -871,6 +875,9 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
                     println!("committed_chunks={}", r.committed_chunks);
                     println!("last_applied_term={}", r.last_applied_term);
                     println!("last_applied_index={}", r.last_applied_index);
+                    if !r.resume_from.is_empty() {
+                        println!("resume_from={}", encode_hex(&r.resume_from));
+                    }
                 }
             )
         }

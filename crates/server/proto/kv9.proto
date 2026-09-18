@@ -442,6 +442,9 @@ message RawDeleteRangeResponse {
   uint64 committed_chunks = 1;
   uint64 last_applied_term = 2;
   uint64 last_applied_index = 3;
+  // Nonempty when a cross-range walk paused at a foreign-leader chunk:
+  // continue from exactly here. Committed chunks stay committed.
+  bytes resume_from = 4;
 }
 
 message RegionEpoch {
@@ -468,6 +471,9 @@ message KeyValue {
 
 message ScanResponse {
   repeated KeyValue pairs = 1;
+  // Nonempty when a cross-range walk paused at a foreign-leader chunk:
+  // continue scanning from exactly here, even if this page is empty.
+  bytes resume_from = 2;
 }
 
 message RawGetRequest {
