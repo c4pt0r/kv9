@@ -4597,6 +4597,11 @@ pub struct NodeRuntime {
     /// KV9_AUTO_SPLIT_BYTES: local replica WAL bytes that trigger an
     /// automatic split of a bound, unsealed range. 0 disables (default).
     auto_split_bytes: u64,
+    /// KV9_AUTO_COMPACT_ENTRIES: retained raft-log length (last-first) that
+    /// triggers an automatic compaction floor for a bound group. 0 disables
+    /// (default). The floor is the local replica's applied position; a
+    /// too-aggressive floor simply fails the all-matched gate and retries.
+    auto_compact_entries: u64,
     /// KV9_RECLAIM_RETIRED=1: physically delete retired local group
     /// payloads once their committed authority re-verifies. Off by default.
     reclaim_retired: bool,
@@ -5193,6 +5198,10 @@ impl NodeRuntime {
                 .ok()
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(0),
+            auto_compact_entries: std::env::var("KV9_AUTO_COMPACT_ENTRIES")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(0),
             reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
@@ -5443,6 +5452,82 @@ impl NodeRuntime {
     /// verify. Parent-group leader: seal. Child-group leaders: populate.
     /// Disabled unless KV9_AUTO_SPLIT_BYTES > 0; best-effort per turn with
     /// errors surfaced in the control status.
+    /// Automatically propose a compaction floor for a bound group whose
+    /// retained raft log has grown past KV9_AUTO_COMPACT_ENTRIES (0 = off).
+    /// Metadata-leader-driven, observing the LOCAL replica (any replica's
+    /// applied position is a committed position). The floor is that applied
+    /// position; plan_compaction enforces strictly increasing floors and the
+    /// gated reconcile_compaction executes it — a too-aggressive floor just
+    /// fails the all-matched gate and retries, never strands a voter. One
+    /// automatic floor per group per turn.
+    fn reconcile_auto_compaction(&mut self) {
+        if self.auto_compact_entries == 0 || self.driver.status().role != kv9_raft::Role::Leader {
+            return;
+        }
+        let store = &self.node.meta_raft.store;
+        let Ok(Some(certified)) = store
+            .begin()
+            .and_then(|txn| kv9_meta::root::certified_root(&txn))
+        else {
+            return;
+        };
+        let root = certified.digest();
+        let bindings = match kv9_meta::data_groups::ranges::committed_ranges(store) {
+            Ok(bindings) => bindings,
+            Err(error) => {
+                self.group_control_error = Some(format!("auto-compact directory: {error}"));
+                return;
+            }
+        };
+        let floors = match kv9_meta::data_groups::compaction::committed_compaction_floors(store) {
+            Ok(floors) => floors,
+            Err(error) => {
+                self.group_control_error = Some(format!("auto-compact floors: {error}"));
+                return;
+            }
+        };
+        let backend = self.rpc_backend.clone();
+        for binding in &bindings {
+            let region = binding.range().region;
+            let handle = {
+                let handles = self.rpc_backend.group_handles.lock().expect("handles");
+                handles.get(&region).cloned()
+            };
+            let Some((_, driver)) = handle else { continue };
+            let status = driver.status();
+            if status.fatal.is_some() {
+                continue;
+            }
+            let retained = status.raft_committed.saturating_sub(status.log_first_index);
+            if retained < self.auto_compact_entries {
+                continue;
+            }
+            // The floor is this replica's applied position — a durable,
+            // committed (term, index). Only propose when applied has advanced
+            // a full threshold past the last committed floor, avoiding churn.
+            let last_floor = floors
+                .iter()
+                .find(|d| d.region() == region)
+                .map(|d| d.floor().index)
+                .unwrap_or(0);
+            if status.applied_index == 0
+                || status.applied_term == 0
+                || status.applied_index < last_floor.saturating_add(self.auto_compact_entries)
+            {
+                continue;
+            }
+            let floor = kv9_common::AppliedPosition {
+                term: status.applied_term,
+                index: status.applied_index,
+            };
+            if let Err(error) = backend.record_group_compaction("auto-compact", root, region, floor)
+            {
+                self.group_control_error = Some(format!("auto-compact: {error}"));
+            }
+            break; // one automatic floor per turn
+        }
+    }
+
     fn reconcile_auto_split(&mut self) {
         if self.auto_split_bytes == 0 {
             return;
@@ -5907,6 +5992,7 @@ impl NodeRuntime {
                         self.reconcile_split_retirement();
                         self.reconcile_reclamation();
                         self.reconcile_compaction();
+                        self.reconcile_auto_compaction();
                         self.reconcile_auto_split();
                         if let Err(error) = kv9_meta::data_groups::ranges::committed_ranges(
                             &self.node.meta_raft.store,
