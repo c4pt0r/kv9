@@ -203,9 +203,12 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
         "public data bindings applied",
         |rts| {
             bindings.iter().all(|r| {
-                rts.iter()
-                    .all(|rt| rt.data_groups.raw_directory.any_unsealed(r.keyspace).is_some())
-                    && data_leader(rts, r.region).is_some()
+                rts.iter().all(|rt| {
+                    rt.data_groups
+                        .raw_directory
+                        .any_unsealed(r.keyspace)
+                        .is_some()
+                }) && data_leader(rts, r.region).is_some()
             })
         },
     );
@@ -340,9 +343,12 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
         "public routes recovered",
         |rts| {
             bindings.iter().all(|r| {
-                rts.iter()
-                    .all(|rt| rt.data_groups.raw_directory.any_unsealed(r.keyspace).is_some())
-                    && data_leader(rts, r.region).is_some()
+                rts.iter().all(|rt| {
+                    rt.data_groups
+                        .raw_directory
+                        .any_unsealed(r.keyspace)
+                        .is_some()
+                }) && data_leader(rts, r.region).is_some()
             })
         },
     );
@@ -810,9 +816,12 @@ fn routed_client_keeps_its_lifetime_across_each_endpoint_loss() {
     .unwrap()
     .range;
     wait_for(&mut cluster.runtimes, 25, "routed group ready", |rts| {
-        rts.iter()
-            .all(|r| r.data_groups.raw_directory.any_unsealed(binding.keyspace).is_some())
-            && data_leader(rts, binding.region).is_some()
+        rts.iter().all(|r| {
+            r.data_groups
+                .raw_directory
+                .any_unsealed(binding.keyspace)
+                .is_some()
+        }) && data_leader(rts, binding.region).is_some()
     });
     let executor = tokio::runtime::Runtime::new().unwrap();
     let config = RoutedConfig {
@@ -898,8 +907,12 @@ fn routed_client_keeps_its_lifetime_across_each_endpoint_loss() {
             .push(cluster.open(NodeId(victim), listener));
         cluster.wait_serving();
         wait_for(&mut cluster.runtimes, 25, "returned routed owner", |rts| {
-            rts.iter()
-                .all(|r| r.data_groups.raw_directory.any_unsealed(binding.keyspace).is_some())
+            rts.iter().all(|r| {
+                r.data_groups
+                    .raw_directory
+                    .any_unsealed(binding.keyspace)
+                    .is_some()
+            })
         });
     }
     // A wrong scope must fail at the actual data endpoint, even if a caller
