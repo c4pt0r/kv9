@@ -1253,3 +1253,130 @@ fn execute(values: HashMap<String, String>) -> Result<ExitCode, String> {
         }
     }
 }
+
+pub(super) fn run_record_abort(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(flag.as_str(), "--addr" | "--root-digest" | "--operation-id") {
+            return super::command_error(&format!("unknown abort flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate abort flag {flag}"));
+        }
+    }
+    match execute_record_abort(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_record_abort(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.record_migration_abort(root, operation))
+    {
+        Ok((task, changed)) => {
+            println!(
+                "abort_outcome={}
+abort_task={task}
+capability=settlement_row_only",
+                if changed { "committed" } else { "confirmed" }
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "abort_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("abort_outcome=unconfirmed");
+            eprintln!("the abort is idempotent and may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
+
+pub(super) fn run_detach_learner(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(flag.as_str(), "--addr" | "--root-digest" | "--operation-id") {
+            return super::command_error(&format!("unknown detach flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate detach flag {flag}"));
+        }
+    }
+    match execute_detach_learner(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_detach_learner(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let operation: [u8; 16] = super::decode_hex("--operation-id", required("--operation-id")?)?
+        .try_into()
+        .map_err(|_| "--operation-id must contain 16 bytes")?;
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.detach_aborted_learner(root, operation))
+    {
+        Ok((node, changed, voters)) => {
+            println!(
+                "detach_outcome={}
+detached_node={node}
+voters={}",
+                if changed { "detached" } else { "confirmed" },
+                voters
+                    .iter()
+                    .map(|v| v.to_string())
+                    .collect::<Vec<_>>()
+                    .join(",")
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "detach_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("detach_outcome=unconfirmed");
+            eprintln!("the detach is idempotent and may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}

@@ -15,15 +15,15 @@
     "the_committed_chain_reaches_the_fence"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "7209e4e7c3e4749bbbcddf7958427ee2a910c52f5d76600012e102e292ad0265",
-    "crates/server/src/api.rs": "4a736aefaaf9502df83fe4afc0c5143a8edaaece3305e82c397c4a9231a9dfcc",
-    "crates/server/src/grpc.rs": "179941b0d54162acd676a958e394e80a6d33e1a1207cb477caca1d10c2a09bb7",
-    "crates/server/src/data_groups.rs": "21e8092aa90e2b0a011d83645207ebf87ee7406e3f02dce3a35d0a5af32ef8e3",
-    "crates/server/proto/kv9.proto": "da047abf527052479da196cea5c278e9fabb51cff882c2d1bc066a6d20127ae1",
+    "crates/server/src/runtime.rs": "f97b0e29d9120c30ab00500dd90e7e516bbe197cb4b642b4dda98bda221a819d",
+    "crates/server/src/api.rs": "2124ea5684ac16b67878f64f4019142f686eaa8fa6543946e822b288960ded46",
+    "crates/server/src/grpc.rs": "ff51e2ab3944d9e86287c9d84585097d2a5ace4bc2cec40201cb852efdf019d3",
+    "crates/server/src/data_groups.rs": "c07bd678eed0050997a4dfc8379d9915abeda6dcca79c0afdd541a3afbbfb8fd",
+    "crates/server/proto/kv9.proto": "27fc8fc991f901e3582f11dddccd581a00f54c651f6423004b2463b3d1f13e95",
     "crates/raft/src/state_machine/data_range.rs": "1b337b6a262ae9911393734042852d06224ac8e9e5d246dcabe0bd38b2af82f5",
     "crates/common/src/data_range.rs": "63fbcd17d2857691aa0e89cb603d47ca9d7349e674929c60a73b9729b4653c89",
-    "src/data_group_cli.rs": "db7e6562480646c4dd80191d844c621f1f7e13063dbd58483bfe38b4d06e92b8",
-    "src/main.rs": "6488a804acac953ca742d2459f545a31da3722bfa63cc4132e39d230f9620432",
+    "src/data_group_cli.rs": "b357c79c7d0043c85ece560c3956459b86641b11a0f680a6caaeb9d5479fdc22",
+    "src/main.rs": "0ed363ee8b6db470d7a4f7e1da6a0845288952b8e975cf3cde1a4958537a7d1b",
     "scripts/parent-seal-e2e.py": "8976eaa6625b22e2aed37f0a8bad4d8889f45b63b6b8d519764bcaa04ed85fa7",
     "proofs/lean/parent-seal/Seal.lean": "3f1b6d24706d1d113c2d39e4ab42c67578c44f0799953154d24b00855cd793cf",
     "proofs/lean/parent-seal/README.md": "8b85f2659a793a3144932d76360011287a78de2d1a83a515e8a881b96e64b7de"

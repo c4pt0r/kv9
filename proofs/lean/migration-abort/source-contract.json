@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/migration-abort/MigrationAbort.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "evidence_and_abort_never_coexist",
+    "release_requires_one_committed_settlement",
+    "detach_requires_the_committed_abort",
+    "remigration_requires_the_committed_abort",
+    "no_aborted_operation_ever_adopts",
+    "the_destination_pin_never_drops",
+    "an_abort_is_permanent",
+    "a_confirmation_changes_nothing",
+    "a_migration_alone_settles_nothing",
+    "the_stranded_chain_recovers"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups/abort.rs": "c3c67c8e4fed139d84525daabbc606498761999508eb388f74be39bf4db02874",
+    "crates/meta/src/data_groups/evidence.rs": "70a265f2d223085e129bee65a6406b50c3db1b36bc6c932a1e8a5329f0857684",
+    "crates/meta/src/data_groups/migration.rs": "cd87ad2b1a21d1a48f1560ca8f8d393078377f1f864419959a82aa9abf349b33",
+    "crates/meta/src/retention.rs": "9d0121dbe04faa6f6a634edb218fdc56697069e845c03b023691944e129961ce",
+    "crates/server/src/runtime.rs": "f97b0e29d9120c30ab00500dd90e7e516bbe197cb4b642b4dda98bda221a819d",
+    "scripts/migration-abort-e2e.py": "97f57b0602d793c3219350a3bb97fc417bdf395648696595006ff4f4505ba26f",
+    "proofs/lean/migration-abort/MigrationAbort.lean": "fabfb7a107e15e7e4b61a6581d4fe3e1bc6157bf343d0f6c385d731fbbd5c458",
+    "proofs/lean/migration-abort/README.md": "37fa8343c01f03855dcf2d8883e2ade4e30d504ecff2cd308888aa2879fa9ef8"
+  }
+}

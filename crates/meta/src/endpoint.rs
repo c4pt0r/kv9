@@ -218,12 +218,11 @@ pub fn refresh_registration_endpoint<E: Engine>(
 ) -> Result<NodeEndpoint> {
     let current = node_endpoint(txn, node)?
         .ok_or_else(|| Error::Config("registered endpoint is missing".into()))?;
-    if current.incarnation != incarnation {
-        return Err(Error::Config(
-            "registration cannot replace an endpoint's store incarnation".into(),
-        ));
-    }
-    if current.address == address {
+    // The caller holds a freshly consumed PENDING admission — the operator's
+    // explicit authority for this registration. A NEW store incarnation
+    // takes the node identity over here (the lost-store recovery); the ONLY
+    // path to this function is that admission consumption.
+    if current.incarnation == incarnation && current.address == address {
         return Ok(current);
     }
     let generation = current
@@ -235,6 +234,10 @@ pub fn refresh_registration_endpoint<E: Engine>(
         &[memcmp_uint(node.0)],
         vec![
             (ADDRESS, ColumnValue::Text(address.to_string())),
+            (
+                INCARNATION,
+                ColumnValue::Bytes(incarnation.as_bytes().to_vec()),
+            ),
             (ENDPOINT_GENERATION, ColumnValue::Uint(generation)),
             (
                 ENDPOINT_PREVIOUS_ADDRESS,
@@ -244,6 +247,7 @@ pub fn refresh_registration_endpoint<E: Engine>(
     )?;
     Ok(NodeEndpoint {
         address,
+        incarnation,
         generation,
         previous_address: Some(current.address),
         ..current

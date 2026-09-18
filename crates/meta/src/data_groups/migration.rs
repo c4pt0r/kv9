@@ -159,12 +159,36 @@ fn decode<E: Engine>(
         if !activations.contains(&creation) {
             return Err(invalid("migration requires the committed activation"));
         }
-        if intents.iter().any(|(prior, _)| {
-            prior.task == intent.task
-                || prior.region == intent.region
-                || prior.operation == intent.operation
-        }) {
+        if intents
+            .iter()
+            .any(|(prior, _)| prior.task == intent.task || prior.operation == intent.operation)
+        {
             return Err(invalid("duplicate migration identity"));
+        }
+        // Region reuse is legal EXACTLY when every other migration of this
+        // region is settled by a committed abort — the recovery path. Two
+        // live (or evidenced) migrations of one region stay a divergence.
+        if intents
+            .iter()
+            .any(|(prior, _)| prior.region == intent.region)
+        {
+            let mut region_ops: Vec<[u8; 16]> = intents
+                .iter()
+                .filter(|(prior, _)| prior.region == intent.region)
+                .map(|(prior, _)| prior.operation)
+                .collect();
+            region_ops.push(intent.operation);
+            let mut aborted = 0usize;
+            for row in rows {
+                if let Some(abort) = super::abort::from_abort_row(row, root)? {
+                    if region_ops.contains(&abort.operation()) {
+                        aborted += 1;
+                    }
+                }
+            }
+            if aborted + 1 < region_ops.len() {
+                return Err(invalid("duplicate migration identity"));
+            }
         }
         intents.push((intent, creation));
     }
@@ -222,7 +246,18 @@ pub fn plan_migration<E: Engine>(
             return Ok((previous, false));
         }
         if previous.region == creation.region() {
-            return Err(invalid("a committed migration already binds this group"));
+            // A committed ABORT settles the previous operation permanently:
+            // the region is re-migratable — that is the recovery. An
+            // unsettled or evidenced predecessor keeps refusing.
+            let aborted = rows.iter().any(|row| {
+                super::abort::from_abort_row(row, root.digest())
+                    .ok()
+                    .flatten()
+                    .is_some_and(|a| a.operation() == previous.operation)
+            });
+            if !aborted {
+                return Err(invalid("a committed migration already binds this group"));
+            }
         }
     }
     if rows.len() == MAX_CREATION_TASKS {

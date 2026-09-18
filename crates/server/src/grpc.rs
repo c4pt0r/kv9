@@ -383,6 +383,32 @@ pub fn admit_node_blocking(
     })
 }
 
+pub fn revoke_admission_blocking(
+    address: &str,
+    token: &str,
+    node: NodeId,
+) -> Result<proto::MembershipChangeResponse, Error> {
+    let runtime = tokio::runtime::Runtime::new()
+        .map_err(|error| Error::Config(format!("create client runtime: {error}")))?;
+    runtime.block_on(async move {
+        let mut client = proto::kv9_client::Kv9Client::connect(format!("http://{address}"))
+            .await
+            .map_err(|error| Error::Raft(format!("connect public gRPC {address}: {error}")))?;
+        let mut request = Request::new(proto::RevokeAdmissionRequest { node_id: node.0 });
+        request.metadata_mut().insert(
+            "authorization",
+            format!("Bearer {token}")
+                .parse()
+                .map_err(|_| Error::Config("client token is not valid metadata".into()))?,
+        );
+        client
+            .revoke_admission(request)
+            .await
+            .map(Response::into_inner)
+            .map_err(|status| membership_rpc_error("RevokeAdmission", status))
+    })
+}
+
 pub fn promote_node_blocking(
     address: &str,
     token: &str,
@@ -1798,6 +1824,77 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn record_migration_abort(
+        &self,
+        request: Request<proto::RecordMigrationAbortRequest>,
+    ) -> Result<Response<proto::RecordMigrationAbortResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(Status::invalid_argument(
+                "nonzero root and operation required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.record_migration_abort(&caller, root, operation)
+            })
+            .await?;
+        Ok(Response::new(proto::RecordMigrationAbortResponse {
+            task: result.abort.task(),
+            changed: result.changed,
+        }))
+    }
+
+    async fn detach_aborted_learner(
+        &self,
+        request: Request<proto::DetachAbortedLearnerRequest>,
+    ) -> Result<Response<proto::DetachAbortedLearnerResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if root.as_bytes() == &[0; 32] || operation == [0; 16] {
+            return Err(Status::invalid_argument(
+                "nonzero root and operation required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.detach_aborted_learner(&caller, root, operation)
+            })
+            .await?;
+        Ok(Response::new(proto::DetachAbortedLearnerResponse {
+            detached_node: result.detached.0,
+            changed: result.changed,
+            voters: result.voters,
+        }))
+    }
+
     async fn record_source_truncation(
         &self,
         request: Request<proto::RecordSourceTruncationRequest>,
@@ -2341,6 +2438,29 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             voters: result.voters,
             learners: result.learners,
             join_ticket: result.join_ticket.unwrap_or_default(),
+        }))
+    }
+
+    async fn revoke_admission(
+        &self,
+        request: Request<proto::RevokeAdmissionRequest>,
+    ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.revoke_admission(&caller, NodeId(request.node_id))
+            })
+            .await?;
+        Ok(Response::new(proto::MembershipChangeResponse {
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+            voters: result.voters,
+            learners: result.learners,
+            join_ticket: String::new(),
         }))
     }
 

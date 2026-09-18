@@ -41,6 +41,7 @@ service Kv9 {
   rpc SplitRegion(SplitRegionRequest) returns (Empty);
   rpc ClusterInfo(ClusterInfoRequest) returns (ClusterInfoResponse);
   rpc AdmitNode(AdmitNodeRequest) returns (MembershipChangeResponse);
+  rpc RevokeAdmission(RevokeAdmissionRequest) returns (MembershipChangeResponse);
   rpc PromoteNode(PromoteNodeRequest) returns (MembershipChangeResponse);
   rpc GetNodeEndpoint(GetNodeEndpointRequest) returns (GetNodeEndpointResponse);
   rpc ChangeNodeEndpoint(ChangeNodeEndpointRequest) returns (ChangeNodeEndpointResponse);
@@ -56,6 +57,8 @@ service Kv9 {
   rpc CaptureMigrationImage(CaptureMigrationImageRequest) returns (CaptureMigrationImageResponse);
   rpc EmitInstallEvidence(EmitInstallEvidenceRequest) returns (EmitInstallEvidenceResponse);
   rpc RecordInstallEvidence(RecordInstallEvidenceRequest) returns (RecordInstallEvidenceResponse);
+  rpc RecordMigrationAbort(RecordMigrationAbortRequest) returns (RecordMigrationAbortResponse);
+  rpc DetachAbortedLearner(DetachAbortedLearnerRequest) returns (DetachAbortedLearnerResponse);
   rpc RecordSourceTruncation(RecordSourceTruncationRequest) returns (RecordSourceTruncationResponse);
   rpc TruncateSourceLog(TruncateSourceLogRequest) returns (TruncateSourceLogResponse);
   rpc PromoteMigrationVoter(PromoteMigrationVoterRequest) returns (PromoteMigrationVoterResponse);
@@ -193,6 +196,34 @@ message RecordInstallEvidenceResponse {
   uint64 task = 1;
   // False confirms the identical committed row; a NEW confirmation commit.
   bool changed = 2;
+}
+
+// Commit one migration-abort decision at the metadata leader: the
+// stranded-destination recovery. Refused when committed install evidence
+// exists; the abort subject is read from the PUBLISHED source pin, never
+// supplied by the caller. Nothing is detached, released or deleted here.
+message RecordMigrationAbortRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2; // 16 bytes.
+}
+message RecordMigrationAbortResponse {
+  uint64 task = 1;
+  // False confirms the identical committed row; a NEW confirmation commit.
+  bool changed = 2;
+}
+
+// Remove the aborted operation's stranded LEARNER from the source group's
+// configuration, at the source leader, gated on the committed abort. A
+// voter destination refuses: abort authority never removes voters.
+message DetachAbortedLearnerRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2; // 16 bytes.
+}
+message DetachAbortedLearnerResponse {
+  uint64 detached_node = 1;
+  // False confirms an already-absent learner.
+  bool changed = 2;
+  repeated uint64 voters = 3;
 }
 
 // Commit one source-truncation decision at the metadata leader. Its floor
@@ -413,6 +444,11 @@ message AdmitNodeRequest {
 }
 
 message PromoteNodeRequest { uint64 node_id = 1; }
+
+// Revoke a node's admission record (decommission / lost-store retry): a
+// revoked record may be replaced by a fresh AdmitNode. Raft membership is
+// untouched.
+message RevokeAdmissionRequest { uint64 node_id = 1; }
 
 message MembershipChangeResponse {
   uint64 applied_term = 1;

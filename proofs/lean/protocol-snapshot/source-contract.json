@@ -18,7 +18,7 @@
     "crates/raft/src/storage.rs": "417dd2604132c42e66d1e778dabded1d0a4f50720aaf3dc431c07cd93cc7aaea",
     "crates/raft/src/storage/snapshot.rs": "abf9eff13c2599cd25f65fcaef6a034548c3215220352c62515e5bf0207e3ce6",
     "crates/raft/src/storage/snapshot/tests.rs": "418d17f65a5d3ce035a5e824f75b9a0a5b9664bcafa5c7476e59faedd6f9a732",
-    "crates/raft/src/rawnode.rs": "94f4a06be6c4f7386690b0e4c2315d4c932df2e333986d75a4717e568d2a8474",
+    "crates/raft/src/rawnode.rs": "333117c88ad3d39ae3a1f0d081128bd5b25aed42e044a5fb39f85f069cb83aea",
     "proofs/lean/protocol-snapshot/Snapshot.lean": "be852412d0111a721c889555489780f4b1bdeb67d3b904c4e6cac27388cee2c8",
     "scripts/prove-protocol-snapshot.py": "d0bf9b6c48ecad1ec9cd5a2082a49ca75d9dcfd64e2174a4c20251c5e102ef1e",
     "proofs/lean/protocol-snapshot/README.md": "938a7faa3d3adf1e145f46404d979bd18e0b69547afddc8e1b5b795228700547"
