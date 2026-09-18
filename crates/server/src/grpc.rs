@@ -1113,6 +1113,7 @@ pub fn admission_refusal(status: &Status) -> Option<&'static str> {
         "request_count" => Some("request_count"),
         "encoded_bytes" => Some("encoded_bytes"),
         "request_too_large" => Some("request_too_large"),
+        "metadata_floor" => Some("metadata_floor"),
         _ => None,
     }
 }

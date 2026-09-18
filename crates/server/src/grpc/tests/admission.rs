@@ -9,6 +9,7 @@ fn bounded(count: usize, bytes: usize) -> Kv9Grpc {
         PublicApiLimits {
             max_requests: count,
             max_encoded_bytes: bytes,
+            metadata_reserved_requests: 0,
         },
     )
     .unwrap()
@@ -480,6 +481,7 @@ async fn admission_cancelled_read_preparation_drops_future_without_starting_engi
         PublicApiLimits {
             max_requests: 1,
             max_encoded_bytes: bytes,
+            metadata_reserved_requests: 0,
         },
     )
     .unwrap();
@@ -644,6 +646,7 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
         PublicApiLimits {
             max_requests,
             max_encoded_bytes,
+            metadata_reserved_requests: 0,
         },
     )
     .unwrap();
@@ -830,6 +833,7 @@ fn completed_public_get_does_not_wait_for_the_blocking_pool() {
             PublicApiLimits {
                 max_requests: 1,
                 max_encoded_bytes: 4096,
+                metadata_reserved_requests: 0,
             },
         )
         .unwrap();

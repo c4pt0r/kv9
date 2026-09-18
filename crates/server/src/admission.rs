@@ -19,6 +19,13 @@ const CLASS_COUNT: usize = 5;
 pub struct PublicApiLimits {
     pub max_requests: usize,
     pub max_encoded_bytes: usize,
+    /// Request slots admissible ONLY by the metadata classes: a hot raw or
+    /// transaction client can exhaust the shared pool, but control traffic
+    /// (admissions, catalog verbs, recovery decisions) must never be
+    /// indefinitely starved behind it. Raft-internal traffic (heartbeats,
+    /// ReadIndex confirmation, replication) never passes public admission
+    /// at all, so this floor completes the progress reservation.
+    pub metadata_reserved_requests: usize,
 }
 
 impl Default for PublicApiLimits {
@@ -26,6 +33,7 @@ impl Default for PublicApiLimits {
         Self {
             max_requests: 64,
             max_encoded_bytes: 64 * 1024 * 1024,
+            metadata_reserved_requests: 8,
         }
     }
 }
@@ -35,6 +43,11 @@ impl PublicApiLimits {
         if self.max_requests == 0 || self.max_encoded_bytes == 0 {
             return Err(Error::Config(
                 "public API count and byte limits must be positive".into(),
+            ));
+        }
+        if self.metadata_reserved_requests >= self.max_requests {
+            return Err(Error::Config(
+                "the metadata floor must leave shared request capacity".into(),
             ));
         }
         Ok(self)
@@ -59,6 +72,10 @@ impl PublicApiLimits {
         Self {
             max_requests: value("KV9_PUBLIC_MAX_REQUESTS", defaults.max_requests)?,
             max_encoded_bytes: value("KV9_PUBLIC_MAX_ENCODED_BYTES", defaults.max_encoded_bytes)?,
+            metadata_reserved_requests: value(
+                "KV9_PUBLIC_METADATA_RESERVED",
+                defaults.metadata_reserved_requests,
+            )?,
         }
         .validate()
     }
@@ -117,6 +134,10 @@ pub(crate) enum Refusal {
     RequestCount,
     EncodedBytes,
     RequestTooLarge,
+    /// Shared capacity exhausted; the remaining slots are the metadata
+    /// floor and this class is not a metadata class. A typed pre-append
+    /// refusal: nothing was proposed, the caller may back off and retry.
+    MetadataFloor,
 }
 
 impl Refusal {
@@ -125,6 +146,7 @@ impl Refusal {
             Self::RequestCount => "request_count",
             Self::EncodedBytes => "encoded_bytes",
             Self::RequestTooLarge => "request_too_large",
+            Self::MetadataFloor => "metadata_floor",
         }
     }
 }
@@ -139,6 +161,10 @@ pub struct ClassCounters {
     pub refused_count: u64,
     pub refused_bytes: u64,
     pub request_too_large: u64,
+    /// Refused by the metadata floor: shared capacity was exhausted while
+    /// the reserved metadata slots stayed protected. Always 0 for the
+    /// metadata classes themselves.
+    pub refused_floor: u64,
 }
 
 #[derive(Debug, Default, Clone)]
@@ -208,10 +234,17 @@ impl PublicAdmission {
         bytes: usize,
     ) -> std::result::Result<Reservation, Refusal> {
         let mut state = self.state.lock().expect("public admission poisoned");
+        // The metadata classes admit up to the full limit; every other class
+        // stops short of the reserved floor, so control traffic always finds
+        // capacity that raw/transaction load cannot consume.
+        let metadata = matches!(class, WorkClass::MetadataRead | WorkClass::MetadataWrite);
+        let shared_limit = self.limits.max_requests - self.limits.metadata_reserved_requests;
         let refusal = if bytes > self.limits.max_encoded_bytes {
             Some(Refusal::RequestTooLarge)
         } else if state.in_flight == self.limits.max_requests {
             Some(Refusal::RequestCount)
+        } else if !metadata && state.in_flight >= shared_limit {
+            Some(Refusal::MetadataFloor)
         } else if bytes > self.limits.max_encoded_bytes - state.encoded_bytes {
             Some(Refusal::EncodedBytes)
         } else {
@@ -223,6 +256,7 @@ impl PublicAdmission {
                 Refusal::RequestCount => &mut counters.refused_count,
                 Refusal::EncodedBytes => &mut counters.refused_bytes,
                 Refusal::RequestTooLarge => &mut counters.request_too_large,
+                Refusal::MetadataFloor => &mut counters.refused_floor,
             };
             *counter = counter.saturating_add(1);
             return Err(reason);
@@ -313,9 +347,9 @@ impl AdmissionSnapshot {
         .expect("writing to String");
         for class in WorkClass::ALL {
             let c = self.classes[class as usize];
-            writeln!(text, "public_rpc_{}=admitted={},completed={},backend_errors={},released_before_execution={},backend_aborted={},refused_count={},refused_bytes={},request_too_large={}",
+            writeln!(text, "public_rpc_{}=admitted={},completed={},backend_errors={},released_before_execution={},backend_aborted={},refused_count={},refused_bytes={},request_too_large={},refused_floor={}",
                 class.label(), c.admitted, c.completed, c.backend_errors, c.released_before_execution,
-                c.backend_aborted, c.refused_count, c.refused_bytes, c.request_too_large)
+                c.backend_aborted, c.refused_count, c.refused_bytes, c.request_too_large, c.refused_floor)
                 .expect("writing to String");
         }
         text
@@ -414,10 +448,71 @@ mod tests {
     use super::*;
 
     #[test]
+    fn the_metadata_floor_survives_a_raw_flood_and_metadata_uses_the_full_limit() {
+        let budget = PublicAdmission::new(PublicApiLimits {
+            max_requests: 6,
+            max_encoded_bytes: 1024,
+            metadata_reserved_requests: 2,
+        })
+        .unwrap();
+        // Raw/transaction load fills exactly the SHARED capacity (4)...
+        let shared: Vec<_> = (0..4)
+            .map(|_| budget.reserve(WorkClass::RawWrite, 1).unwrap())
+            .collect();
+        // ...and the next non-metadata request refuses with the TYPED
+        // floor reason, before anything is proposed.
+        assert!(matches!(
+            budget.reserve(WorkClass::RawWrite, 1),
+            Err(Refusal::MetadataFloor)
+        ));
+        assert!(matches!(
+            budget.reserve(WorkClass::Transaction, 1),
+            Err(Refusal::MetadataFloor)
+        ));
+        assert!(matches!(
+            budget.reserve(WorkClass::RawRead, 1),
+            Err(Refusal::MetadataFloor)
+        ));
+        // Control traffic still admits, up to the FULL limit.
+        let meta_read = budget.reserve(WorkClass::MetadataRead, 1).unwrap();
+        let meta_write = budget.reserve(WorkClass::MetadataWrite, 1).unwrap();
+        assert!(matches!(
+            budget.reserve(WorkClass::MetadataWrite, 1),
+            Err(Refusal::RequestCount)
+        ));
+        let snapshot = budget.snapshot();
+        assert_eq!(snapshot.in_flight, 6);
+        assert_eq!(
+            snapshot.classes[WorkClass::RawWrite as usize].refused_floor,
+            1
+        );
+        assert_eq!(
+            snapshot.classes[WorkClass::MetadataRead as usize].refused_floor,
+            0
+        );
+        // Releasing shared capacity reopens the shared pool for raw work.
+        drop(shared);
+        drop(meta_read);
+        drop(meta_write);
+        budget.reserve(WorkClass::RawWrite, 1).unwrap();
+    }
+
+    #[test]
+    fn the_floor_must_leave_shared_capacity() {
+        assert!(PublicAdmission::new(PublicApiLimits {
+            max_requests: 4,
+            max_encoded_bytes: 1024,
+            metadata_reserved_requests: 4,
+        })
+        .is_err());
+    }
+
+    #[test]
     fn admission_checks_aggregate_bytes_count_and_oversized_requests() {
         let budget = PublicAdmission::new(PublicApiLimits {
             max_requests: 2,
             max_encoded_bytes: 10,
+            metadata_reserved_requests: 0,
         })
         .unwrap();
         let first = budget.reserve(WorkClass::RawRead, 6).unwrap();
@@ -471,6 +566,7 @@ mod tests {
         let budget = PublicAdmission::new(PublicApiLimits {
             max_requests: usize::MAX,
             max_encoded_bytes: usize::MAX,
+            metadata_reserved_requests: 0,
         })
         .unwrap();
         let held = budget.reserve(WorkClass::RawRead, usize::MAX).unwrap();
@@ -488,6 +584,7 @@ mod tests {
         let budget = PublicAdmission::new(PublicApiLimits {
             max_requests: 1,
             max_encoded_bytes: 1,
+            metadata_reserved_requests: 0,
         })
         .unwrap();
         budget.state.lock().unwrap().classes[0].admitted = u64::MAX;
@@ -545,7 +642,14 @@ mod tests {
         }
         let limits = PublicApiLimits::parse(|key| {
             Ok(Some(
-                if key.ends_with("REQUESTS") { "3" } else { "42" }.into(),
+                if key.ends_with("RESERVED") {
+                    "1"
+                } else if key.ends_with("REQUESTS") {
+                    "3"
+                } else {
+                    "42"
+                }
+                .into(),
             ))
         })
         .unwrap();
@@ -553,7 +657,8 @@ mod tests {
             limits,
             PublicApiLimits {
                 max_requests: 3,
-                max_encoded_bytes: 42
+                max_encoded_bytes: 42,
+                metadata_reserved_requests: 1,
             }
         );
     }

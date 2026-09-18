@@ -318,6 +318,7 @@ async fn held_write_interruption(use_deadline: bool, batch: bool) {
         PublicApiLimits {
             max_requests: 1,
             max_encoded_bytes: 4096,
+            metadata_reserved_requests: 0,
         },
     )
     .unwrap();
@@ -1001,6 +1002,7 @@ async fn completed_but_unconsumed_replies_keep_pending_work_bounded() {
         PublicApiLimits {
             max_requests: CHANNEL_LIMIT,
             max_encoded_bytes: 16_777_216,
+            metadata_reserved_requests: 0,
         },
     )
     .unwrap();

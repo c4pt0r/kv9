@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "archive_sha256": "bd87505576504e181ebf28436abcc8053369965a53faf7d395a4b44be7fad9e2",
+  "members_verified": 1208,
+  "decoded_bytes": 56847166,
+  "receipts_verified": [
+    "e2e-fifth accepted (exact final source; 20,867 typed floor refusals, 19/19 metadata probes); e2e-fourth also accepted",
+    "three retained failures (probe-gate refinement; unsaturated pool; the client label-whitelist gap)",
+    "local-validation.json (serial 947/0, clippy 0)",
+    "admission-floor-proof (14 theorems, 5+2 controls)",
+    "retention PASS",
+    "29 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true
+}
