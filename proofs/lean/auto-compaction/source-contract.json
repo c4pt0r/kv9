@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/auto-compaction/AutoCompaction.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "a_proposal_requires_a_grown_log",
+    "a_committed_floor_requires_a_proposal",
+    "the_floor_is_always_committed_backed",
+    "the_floor_never_regresses",
+    "an_unexecutable_floor_is_never_forced",
+    "an_unexecutable_floor_only_retries",
+    "a_commit_is_permanent",
+    "a_grown_log_alone_commits_nothing",
+    "the_trigger_chain_commits_a_backed_floor"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime.rs": "b673cc13c1b838123aef413a389341a033a148095e18c8811ef1591584401252",
+    "crates/meta/src/data_groups/compaction.rs": "e1b894bff9e65cb1c579b9202da9ba8c0c12eef92c48f3ac00e1daf2f1513f39",
+    "scripts/auto-compaction-e2e.py": "a709a8f79156b5b6a7f53102d1b92f342f590252b485ed329d9df0dcc70353d0",
+    "proofs/lean/auto-compaction/AutoCompaction.lean": "54108630bdc47d33ab1f5f098de1eced2025d92b9464ff4e4deb092b853ae7b0",
+    "proofs/lean/auto-compaction/README.md": "9cd7c73674da4cbd26675fda08f11e4d62d0d483e93ee7696f291a98d9bac0bc"
+  }
+}

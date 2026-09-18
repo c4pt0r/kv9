@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "archive_sha256": "549029c1ddf2edd1dbb9727a98a35ecdbfc4aeb6cfa5d7eb54b8dab3d939679a",
+  "members_verified": 1078,
+  "decoded_bytes": 7908324,
+  "receipts_verified": [
+    "e2e-second accepted (exact final source; 800 writes, two automatic floors, compacted restart); e2e-first also accepted",
+    "local-validation.json (serial 950/0, clippy 0)",
+    "auto-compaction-proof (12 theorems, 5+2 controls)",
+    "retention PASS",
+    "32 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true
+}
