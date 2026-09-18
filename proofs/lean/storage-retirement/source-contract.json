@@ -16,7 +16,7 @@
   ],
   "source_sha256": {
     "crates/server/src/region_manager.rs": "3bf1b08381da984e54f5a7f78b931921631fa114a397fda435d05f3c2b208c3e",
-    "crates/server/src/runtime.rs": "48e143f4f35a7e0c0fec53374022d5dd7d6b0009e8cb56b0a33e5613361013d6",
+    "crates/server/src/runtime.rs": "07c08c3ad01d0c24fd16f3850b33195305c9d22fe3434d7c5968655552743396",
     "crates/server/src/runtime/range_api.rs": "c76fe9317eb9ce99a1bd724eefb49fd565cb8562c5e6ede46a2ff07c2d88824f",
     "crates/meta/src/data_groups/removal.rs": "6100bea8206695c2d9302a303e1174c2dce8e543d853463636fb49cb67d69485",
     "scripts/retirement-e2e.py": "0b0bbbbfeef44d3df8ee62776ec808add6cc934b422f2dc710257d9810960c45",
