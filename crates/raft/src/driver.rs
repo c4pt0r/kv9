@@ -45,6 +45,9 @@ pub struct NodeStatus {
     /// Correct catch-up criteria: wait for a SPECIFIC write's (term, index)
     /// to apply, or assert applied_index made absolute progress.
     pub raft_committed: u64,
+    /// Raft-log first retained index; advances past a committed compaction
+    /// floor once this replica executes it.
+    pub log_first_index: u64,
     /// Highest log index applied to the state machine (empty/no-op entries
     /// are consumed by raft but never reach the state machine — see
     /// `raft_committed`'s warning before comparing the two).
@@ -1366,6 +1369,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             role,
             term: p.term,
             raft_committed: p.committed,
+            log_first_index: p.log_first_index,
             applied_index: self.sm.lock().expect("sm poisoned").applied_index().0,
             applied_term: applied.last().map_or(0, |e| e.term),
             fatal: self.fatal.lock().expect("fatal poisoned").clone(),

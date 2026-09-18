@@ -196,6 +196,7 @@ service! {
     emit_install_evidence: EmitInstallEvidenceRequest => EmitInstallEvidenceResponse,
     record_install_evidence: RecordInstallEvidenceRequest => RecordInstallEvidenceResponse,
     record_migration_abort: RecordMigrationAbortRequest => RecordMigrationAbortResponse,
+    record_group_compaction: RecordGroupCompactionRequest => RecordGroupCompactionResponse,
     detach_aborted_learner: DetachAbortedLearnerRequest => DetachAbortedLearnerResponse,
     record_source_truncation: RecordSourceTruncationRequest => RecordSourceTruncationResponse,
     truncate_source_log: TruncateSourceLogRequest => TruncateSourceLogResponse,

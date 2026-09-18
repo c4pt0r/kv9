@@ -17,8 +17,8 @@
   "source_sha256": {
     "crates/raft/src/storage.rs": "417dd2604132c42e66d1e778dabded1d0a4f50720aaf3dc431c07cd93cc7aaea",
     "crates/raft/src/storage/snapshot.rs": "abf9eff13c2599cd25f65fcaef6a034548c3215220352c62515e5bf0207e3ce6",
-    "crates/raft/src/storage/snapshot/tests.rs": "418d17f65a5d3ce035a5e824f75b9a0a5b9664bcafa5c7476e59faedd6f9a732",
-    "crates/raft/src/rawnode.rs": "333117c88ad3d39ae3a1f0d081128bd5b25aed42e044a5fb39f85f069cb83aea",
+    "crates/raft/src/storage/snapshot/tests.rs": "76a4b8f1a8e2683d4aa7c1a9f9ce41d5be4cfe139afa98895a44335552cc8ce6",
+    "crates/raft/src/rawnode.rs": "6bca5d9fed17e4fdb3436b624c326ed20a0f8d782d61fa0900062d756e919780",
     "proofs/lean/protocol-snapshot/Snapshot.lean": "be852412d0111a721c889555489780f4b1bdeb67d3b904c4e6cac27388cee2c8",
     "scripts/prove-protocol-snapshot.py": "d0bf9b6c48ecad1ec9cd5a2082a49ca75d9dcfd64e2174a4c20251c5e102ef1e",
     "proofs/lean/protocol-snapshot/README.md": "938a7faa3d3adf1e145f46404d979bd18e0b69547afddc8e1b5b795228700547"

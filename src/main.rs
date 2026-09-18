@@ -904,6 +904,7 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         "emit-install-evidence" => data_group_cli::run_emit_evidence(args),
         "record-install-evidence" => data_group_cli::run_record_evidence(args),
         "record-migration-abort" => data_group_cli::run_record_abort(args),
+        "record-group-compaction" => data_group_cli::run_record_compaction(args),
         "detach-aborted-learner" => data_group_cli::run_detach_learner(args),
         "record-source-truncation" => data_group_cli::run_record_truncation(args),
         "truncate-source-log" => data_group_cli::run_truncate_log(args),

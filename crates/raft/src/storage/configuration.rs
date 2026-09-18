@@ -137,10 +137,35 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                 "configuration cut term disagrees with committed history".into(),
             ));
         }
-        if self.mem.first_index().map_err(raft_error)? != 1 {
-            return Ok(ConfigurationLookup::Unavailable(
-                ConfigurationUnavailable::ProtocolHistoryCompacted,
-            ));
+        let first = self.mem.first_index().map_err(raft_error)?;
+        if first != 1 {
+            // The prefix below `first` is compacted: its configuration lives
+            // in the durable REC_COMPACTION base (restored into the mem
+            // snapshot's ConfState by compact_memory). A cut at or above the
+            // base whose retained tail contains no configuration entry
+            // inherits the base configuration — that is exactly what a fresh
+            // compaction floor above an earlier one needs. A cut BELOW the
+            // base is genuinely gone.
+            use raft::Storage as _;
+            if cut.index < first.saturating_sub(1) {
+                return Ok(ConfigurationLookup::Unavailable(
+                    ConfigurationUnavailable::ProtocolHistoryCompacted,
+                ));
+            }
+            let snapshot = self.mem.snapshot(0, 0).map_err(raft_error)?;
+            let base_state = snapshot.get_metadata().get_conf_state().clone();
+            for next in first..=cut.index {
+                if is_configuration(self.configuration_entry(next)?.get_entry_type()) {
+                    return Ok(ConfigurationLookup::Unavailable(
+                        ConfigurationUnavailable::ConfigurationNotApplied { index: next },
+                    ));
+                }
+            }
+            return Ok(ConfigurationLookup::Found(CommittedConfiguration {
+                cut,
+                applied_at: None,
+                state: base_state,
+            }));
         }
         let history = self.conf_history.lock().expect("conf history poisoned");
         if history.ambiguous {
@@ -411,14 +436,34 @@ mod tests {
             store.configuration_at_committed(cut(1)).unwrap(),
             ConfigurationLookup::Unavailable(ConfigurationUnavailable::InitialConfigurationMissing)
         );
+        // A compacted base whose snapshot carries a durable ConfState (as
+        // production compaction restores via compact_memory) lets a cut at
+        // or above the base INHERIT that configuration — the second
+        // compaction floor above an earlier one. A cut below the base is
+        // genuinely gone.
+        // Compact through the production seam at floor 6 (past every config
+        // change in this fixture): compact_memory restores the base
+        // ConfState into the mem snapshot, exactly as a live compaction
+        // does, and a later cut AT the base inherits it with no unapplied
+        // config in the retained tail.
         let fs = ModelFs::default();
         let store = prepared(&fs);
-        store.set_conf_state(&joint(), 2).unwrap();
-        store.set_conf_state(&stable(), 4).unwrap();
-        store.mem.wl().compact(3).unwrap();
-        assert_eq!(
-            store.configuration_at_committed(cut(6)).unwrap(),
-            ConfigurationLookup::Unavailable(ConfigurationUnavailable::ProtocolHistoryCompacted)
+        store
+            .compact_retained_prefix(cut(6), &stable(), b"decision")
+            .unwrap();
+        // The compacted base no longer blanket-refuses: a cut at the base
+        // resolves to a configuration (the durable base config restored by
+        // compact_memory), so a second compaction floor above an earlier one
+        // finds its config instead of ProtocolHistoryCompacted.
+        match store.configuration_at_committed(cut(6)).unwrap() {
+            ConfigurationLookup::Found(found) => assert_eq!(found.cut(), cut(6)),
+            other => panic!("compacted base config was not inherited: {other:?}"),
+        }
+        // A cut below the compacted base is genuinely gone — the committed
+        // history probe itself fails before the configuration lookup.
+        assert!(
+            store.configuration_at_committed(cut(2)).is_err(),
+            "a cut below the compacted base must not resolve a configuration"
         );
     }
     #[test]

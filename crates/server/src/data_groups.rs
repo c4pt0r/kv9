@@ -692,6 +692,35 @@ impl DataGroupClient {
     }
 
     /// Plan the group leader's current cut manifest, for owner binding.
+    pub fn record_group_compaction(
+        &mut self,
+        root: RootDigest,
+        region: kv9_common::RegionId,
+        floor: AppliedPosition,
+    ) -> Result<(u64, bool), DataGroupRpcError> {
+        if root.as_bytes() == &[0; 32] || region.0 == 0 || floor.term == 0 || floor.index == 0 {
+            return Err(DataGroupRpcError::Local(
+                "nonzero root, region and floor required".into(),
+            ));
+        }
+        let mut request = Request::new(proto::RecordGroupCompactionRequest {
+            root_digest: root.as_bytes().to_vec(),
+            region_id: region.0,
+            floor_term: floor.term,
+            floor_index: floor.index,
+        });
+        request
+            .metadata_mut()
+            .insert("authorization", self.authorization.clone());
+        request.set_timeout(Duration::from_secs(60));
+        let response = self
+            .runtime
+            .block_on(self.client.record_group_compaction(request))
+            .map_err(rpc_error)?
+            .into_inner();
+        Ok((response.task, response.changed))
+    }
+
     pub fn record_migration_abort(
         &mut self,
         root: RootDigest,

@@ -136,6 +136,8 @@ pub struct PeerSnapshot {
     pub raw_role: Role,
     pub term: u64,
     pub committed: u64,
+    /// Raft-log first retained index (advances past a compaction floor).
+    pub log_first_index: u64,
     pub step_errors: u64,
     pub promotable: bool,
     /// Highest conf-change index applied (0 = still on the seeded config).
@@ -953,6 +955,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             raw_role: role_of(g.raw.raft.state),
             term: g.raw.raft.term,
             committed: g.raw.raft.raft_log.committed,
+            log_first_index: g.raw.raft.raft_log.first_index(),
             step_errors: g.step_errors,
             promotable: g.raw.raft.promotable(),
             conf_applied: g.conf_applied,

@@ -60,6 +60,7 @@ service Kv9 {
   rpc RecordMigrationAbort(RecordMigrationAbortRequest) returns (RecordMigrationAbortResponse);
   rpc DetachAbortedLearner(DetachAbortedLearnerRequest) returns (DetachAbortedLearnerResponse);
   rpc RecordSourceTruncation(RecordSourceTruncationRequest) returns (RecordSourceTruncationResponse);
+  rpc RecordGroupCompaction(RecordGroupCompactionRequest) returns (RecordGroupCompactionResponse);
   rpc TruncateSourceLog(TruncateSourceLogRequest) returns (TruncateSourceLogResponse);
   rpc PromoteMigrationVoter(PromoteMigrationVoterRequest) returns (PromoteMigrationVoterResponse);
   rpc RecordSourceRemoval(RecordSourceRemovalRequest) returns (RecordSourceRemovalResponse);
@@ -224,6 +225,20 @@ message DetachAbortedLearnerResponse {
   // False confirms an already-absent learner.
   bool changed = 2;
   repeated uint64 voters = 3;
+}
+
+// Commit one healthy-group compaction floor at the metadata leader.
+// Floors per region strictly increase; nothing is compacted here — each
+// replica executes locally once its applied position reaches the floor.
+message RecordGroupCompactionRequest {
+  bytes root_digest = 1;
+  uint64 region_id = 2;
+  uint64 floor_term = 3;
+  uint64 floor_index = 4;
+}
+message RecordGroupCompactionResponse {
+  uint64 task = 1;
+  bool changed = 2;
 }
 
 // Commit one source-truncation decision at the metadata leader. Its floor

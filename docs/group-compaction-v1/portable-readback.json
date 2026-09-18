@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "archive_sha256": "eef90b5602597acad5b5e0dc16fb91c1f7b446e41f3061fcf5ee00555e600526",
+  "members_verified": 1473,
+  "decoded_bytes": 9925724,
+  "receipts_verified": [
+    "e2e-tenth accepted (exact final source; two-round compaction incl. the config-recovery fix + compacted restart); e2e-ninth also accepted",
+    "retained failures: e2e-first (append-only bytes metric) + e2e-eighth (stale binary + the config bug)",
+    "local-validation.json (serial 950/0, clippy 0)",
+    "group-compaction-proof (13 theorems, 5+2 controls)",
+    "retention PASS",
+    "31 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true
+}
