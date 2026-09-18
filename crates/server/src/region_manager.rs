@@ -758,6 +758,10 @@ impl RegionManager {
                             .driver
                             .as_ref()
                             .and_then(|d| d.peer().retained_log_bytes().ok());
+                        // On-disk raft.log size (append-only, never shrinks):
+                        // `log_file_bytes - retained_log_bytes` is the
+                        // compacted-away waste still occupying disk.
+                        let log_file_bytes = p.driver.as_ref().map(|d| d.peer().log_file_bytes());
                         serde_json::json!({
                             "region": region.0, "state": if s.fatal.is_some() { "failed" } else { "active" },
                             "role": format!("{:?}", s.role), "term": s.term,
@@ -766,6 +770,7 @@ impl RegionManager {
                             "engine_applied": s.applied_index,
                             "confirmed_floor": confirmed,
                             "retained_log_bytes": retained_bytes,
+                            "log_file_bytes": log_file_bytes,
                             "driver_applied": s.driver_applied.map(|p| serde_json::json!({"term": p.term, "index": p.index})),
                             "error": s.fatal,
                         })
