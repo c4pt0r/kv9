@@ -20,7 +20,7 @@
   ],
   "source_sha256": {
     "crates/server/src/runtime/range_api.rs": "25a159787d23ff85a5f912dda680ccbf9bac3f0e7764b4865a803f7dd9af9498",
-    "crates/raft/src/command.rs": "2bd9eede9154f50130c56624234bb1c33417c635ffae4aa7d8f25b4590797a7e",
+    "crates/raft/src/command.rs": "7f79bb93a887da63b3542f169daea397cfe48ced4f9425b4946da0d436a82009",
     "scripts/proposal-batching-e2e.py": "4f69a9caaaceed782122891c18d1e7ca017ce0ad7f6adb5f5b8b1833d2c9e5e0",
     "scripts/batching-bench.py": "ee6ff479b3e9ab1c00dd8a4a7c9b881607d93e8ad85ede770e6795850b2170ce",
     "proofs/lean/proposal-batching/ProposalBatching.lean": "4c88091a7a0ef8664dab49239702ec547de9f686395730a7c1e28f240c25029e",

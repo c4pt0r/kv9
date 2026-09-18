@@ -333,6 +333,7 @@ impl RegionManager {
             transport,
             tick,
             &[],
+            &[],
             &mut |_, _| Ok(()),
         )
     }
@@ -343,6 +344,7 @@ impl RegionManager {
         transport: &Arc<GrpcTransport>,
         tick: Duration,
         truncations: &[kv9_meta::data_groups::truncation::TruncationDecision],
+        compactions: &[kv9_meta::data_groups::compaction::GroupCompaction],
         observe: &mut impl FnMut(PrepareStep, bool) -> Result<()>,
     ) -> Result<()> {
         match self.groups.get(&region) {
@@ -386,16 +388,22 @@ impl RegionManager {
             .storage
             .take()
             .ok_or_else(|| invalid("group storage already has a voter owner"))?;
-        // A compacted prefix is legitimate ONLY under a committed truncation
-        // decision whose floor equals the durable base exactly; the engine
-        // recovered at or past that floor. Anything else keeps the refusal.
+        // A compacted prefix is legitimate ONLY under committed authority whose
+        // floor equals the durable base exactly: either a kind-105 migration
+        // truncation decision OR a kind-110 healthy-group compaction floor
+        // (follower-side compaction persists a compacted base on every voter,
+        // not just the leader, so recovery must accept the compaction floor
+        // that authorized it). Anything else keeps the refusal.
         let installed_base = match storage.compacted_base()? {
             None => None,
             Some(base) => {
-                if !truncations
+                let by_truncation = truncations
                     .iter()
-                    .any(|d| d.region() == region && d.floor() == base)
-                {
+                    .any(|d| d.region() == region && d.floor() == base);
+                let by_compaction = compactions
+                    .iter()
+                    .any(|c| c.region() == region && c.floor() == base);
+                if !by_truncation && !by_compaction {
                     return Err(invalid(
                         "compacted group log lacks a committed truncation decision",
                     ));
@@ -437,6 +445,7 @@ impl RegionManager {
         transport: &Arc<GrpcTransport>,
         tick: Duration,
         truncations: &[kv9_meta::data_groups::truncation::TruncationDecision],
+        compactions: &[kv9_meta::data_groups::compaction::GroupCompaction],
     ) {
         let regions: Vec<_> = self
             .groups
@@ -447,9 +456,14 @@ impl RegionManager {
             })
             .collect();
         for region in regions {
-            if let Err(error) =
-                self.start_group(region, transport, tick, truncations, &mut |_, _| Ok(()))
-            {
+            if let Err(error) = self.start_group(
+                region,
+                transport,
+                tick,
+                truncations,
+                compactions,
+                &mut |_, _| Ok(()),
+            ) {
                 self.groups
                     .insert(region, LocalGroup::Failed(error.to_string()));
             }
@@ -720,15 +734,33 @@ impl RegionManager {
                 }),
                 LocalGroup::Ready(p) => match p.driver.as_ref().map(|d| d.status()) {
                     None => serde_json::json!({"region": region.0, "state": "prepared"}),
-                    Some(s) => serde_json::json!({
-                        "region": region.0, "state": if s.fatal.is_some() { "failed" } else { "active" },
-                        "role": format!("{:?}", s.role), "term": s.term,
-                        "leader": s.leader_id.map(|n| n.0), "committed": s.raft_committed,
-                        "log_first_index": s.log_first_index,
-                        "engine_applied": s.applied_index,
-                        "driver_applied": s.driver_applied.map(|p| serde_json::json!({"term": p.term, "index": p.index})),
-                        "error": s.fatal,
-                    }),
+                    Some(s) => {
+                        // Observability for follower-side compaction: the
+                        // group-replicated confirmed floor this replica has
+                        // applied (None until the leader publishes it).
+                        let confirmed = p
+                            .engine
+                            .get(kv9_engine::ColumnFamily::Default, kv9_common::data_range::COMPACTION_CONFIRMED_KEY)
+                            .ok()
+                            .flatten()
+                            .filter(|b| b.len() == 16)
+                            .map(|b| {
+                                serde_json::json!({
+                                    "term": u64::from_be_bytes(b[0..8].try_into().unwrap()),
+                                    "index": u64::from_be_bytes(b[8..16].try_into().unwrap()),
+                                })
+                            });
+                        serde_json::json!({
+                            "region": region.0, "state": if s.fatal.is_some() { "failed" } else { "active" },
+                            "role": format!("{:?}", s.role), "term": s.term,
+                            "leader": s.leader_id.map(|n| n.0), "committed": s.raft_committed,
+                            "log_first_index": s.log_first_index,
+                            "engine_applied": s.applied_index,
+                            "confirmed_floor": confirmed,
+                            "driver_applied": s.driver_applied.map(|p| serde_json::json!({"term": p.term, "index": p.index})),
+                            "error": s.fatal,
+                        })
+                    }
                 },
             }
         }).collect();

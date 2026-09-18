@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/follower-compaction/FollowerCompaction.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "a_confirmation_requires_the_leaders_all_matched_truncation",
+    "a_follower_compacts_only_under_a_confirmation",
+    "no_voter_is_ever_stranded",
+    "only_the_local_prefix_is_ever_discarded",
+    "no_confirmation_without_all_matched",
+    "a_recovered_base_requires_committed_authority",
+    "no_base_is_adopted_without_authority",
+    "a_follower_needs_its_own_applied_floor",
+    "a_confirmation_is_permanent",
+    "a_confirmation_alone_compacts_no_follower",
+    "the_confirmed_chain_compacts_a_follower",
+    "a_truncation_lets_a_voter_adopt_its_base"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups/compaction.rs": "e1b894bff9e65cb1c579b9202da9ba8c0c12eef92c48f3ac00e1daf2f1513f39",
+    "crates/raft/src/command.rs": "7f79bb93a887da63b3542f169daea397cfe48ced4f9425b4946da0d436a82009",
+    "crates/raft/src/state_machine.rs": "3d02eacc89a280f0b3f799bcb32e1ba0c0025066f89e2b5cc62a378c84f64594",
+    "crates/raft/src/state_machine/data_range.rs": "18f59bcace69d768c12898b9303f3215a69d6725f57f3737d8a243678ebf079d",
+    "crates/raft/src/rawnode.rs": "662c98211aa83b222ecd5ad422345115a97241e85b26ef310a97af028be9146f",
+    "crates/common/src/data_range.rs": "9fba248684ecfa6fc811a8be98eb8e572c14f916e4337e61b1e83ac325894700",
+    "crates/server/src/runtime.rs": "5c81a27ea925b3c0d73ee227571e4471cf1454d7a50853eaaef8270d27ef9eae",
+    "crates/server/src/region_manager.rs": "59423127353ff6546b46ac63f900b9d50d87512a998917c23a9fb6709e8b700d",
+    "scripts/follower-compaction-e2e.py": "e3a8d1340bf577bda9863128d68b4c4c2f58e4c4b60ea0de9a79b3deb4ef7b15",
+    "proofs/lean/follower-compaction/FollowerCompaction.lean": "83b73b1538b2462a1e63c7ea26c61e2d19850671efcda3129f86c1937b346eef",
+    "proofs/lean/follower-compaction/README.md": "00a5ced54ef63702ae6499b17d99029b3404dc99a982dcf79bb30fd1ab3741b0"
+  }
+}

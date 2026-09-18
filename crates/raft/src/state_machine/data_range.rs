@@ -2,7 +2,7 @@ use super::*;
 use crate::{FenceAdjudicator, FencedInner, KvOp, RegionFence};
 use kv9_common::{
     codec::{decode_key, KeyMode},
-    data_range::{DataRange, RANGE_KEY},
+    data_range::{DataRange, COMPACTION_CONFIRMED_KEY, RANGE_KEY},
     Error, RegionId, RootDigest,
 };
 
@@ -140,6 +140,54 @@ impl<E: ApplyStore> MemStateMachine<E> {
         } else {
             ApplyResult::fence_rejected(self.applied, next.region)
         })
+    }
+
+    /// Apply a group leader's CONFIRMED compaction floor: record it in the
+    /// reserved [`COMPACTION_CONFIRMED_KEY`] so every voter can bound its own
+    /// log. Ordered-apply, deterministic on all replicas: the floor must name
+    /// THIS group (the log is per-group, but an identity check refuses a
+    /// cross-group entry the way `apply_data_range` does) and is applied
+    /// MONOTONICALLY — a floor at or below the recorded one is an idempotent
+    /// no-op, never a regression. Recording the floor grants no compaction by
+    /// itself; each replica separately gates on its own applied position.
+    pub(super) fn apply_compaction_confirmed(
+        &mut self,
+        at: AppliedPosition,
+        region: u64,
+        floor: AppliedPosition,
+    ) -> Result<ApplyResult> {
+        let Some((_, identity_region, _)) = self.data_identity else {
+            return Err(Error::Raft(
+                "compaction confirmation on a non-data-group state machine".into(),
+            ));
+        };
+        if identity_region.0 != region {
+            return Err(Error::Raft(
+                "compaction confirmation names a foreign group".into(),
+            ));
+        }
+        let current = self
+            .engine
+            .get(ColumnFamily::Default, COMPACTION_CONFIRMED_KEY)?
+            .filter(|b| b.len() == 16)
+            .map(|b| AppliedPosition {
+                term: u64::from_be_bytes(b[0..8].try_into().unwrap()),
+                index: u64::from_be_bytes(b[8..16].try_into().unwrap()),
+            });
+        let advances = current.is_none_or(|c| floor.index > c.index);
+        let mut batch = WriteBatch::new();
+        if advances {
+            let mut value = floor.term.to_be_bytes().to_vec();
+            value.extend_from_slice(&floor.index.to_be_bytes());
+            batch.put(
+                ColumnFamily::Default,
+                COMPACTION_CONFIRMED_KEY.to_vec(),
+                value,
+            );
+        }
+        self.engine.write_applied(batch, at)?;
+        self.applied = LogIndex(at.index);
+        Ok(ApplyResult::write_ok(self.applied))
     }
 }
 
@@ -348,5 +396,67 @@ mod tests {
             sealed
         );
         assert_eq!(sm.applied_index(), LogIndex(index));
+    }
+
+    #[test]
+    fn compaction_confirmed_is_monotonic_and_group_scoped() {
+        let r = binding();
+        let engine = Arc::new(MemEngine::new());
+        let mut sm = MemStateMachine::with_engine(engine.clone()).unwrap();
+        sm.set_data_group(r.root, r.region, r.creation).unwrap();
+
+        let read = |engine: &MemEngine| -> Option<AppliedPosition> {
+            Engine::get(engine, ColumnFamily::Default, COMPACTION_CONFIRMED_KEY)
+                .unwrap()
+                .map(|b| AppliedPosition {
+                    term: u64::from_be_bytes(b[0..8].try_into().unwrap()),
+                    index: u64::from_be_bytes(b[8..16].try_into().unwrap()),
+                })
+        };
+        // A floor for a FOREIGN region is an apply error (refuses, never
+        // silently records another group's floor).
+        assert!(sm
+            .apply_at(
+                AppliedPosition { term: 1, index: 1 },
+                &Command::CompactionConfirmed {
+                    region: r.region.0 + 1,
+                    floor: AppliedPosition { term: 1, index: 5 },
+                },
+            )
+            .is_err());
+        assert_eq!(read(&engine), None);
+
+        // First confirmation records the floor; a HIGHER floor advances it.
+        sm.apply_at(
+            AppliedPosition { term: 1, index: 2 },
+            &Command::CompactionConfirmed {
+                region: r.region.0,
+                floor: AppliedPosition { term: 3, index: 40 },
+            },
+        )
+        .unwrap();
+        assert_eq!(read(&engine), Some(AppliedPosition { term: 3, index: 40 }));
+        sm.apply_at(
+            AppliedPosition { term: 1, index: 3 },
+            &Command::CompactionConfirmed {
+                region: r.region.0,
+                floor: AppliedPosition { term: 4, index: 90 },
+            },
+        )
+        .unwrap();
+        assert_eq!(read(&engine), Some(AppliedPosition { term: 4, index: 90 }));
+
+        // A lower/equal floor is an idempotent no-op (NEVER a regression), but
+        // still advances the applied watermark like any entry.
+        sm.apply_at(
+            AppliedPosition { term: 1, index: 4 },
+            &Command::CompactionConfirmed {
+                region: r.region.0,
+                floor: AppliedPosition { term: 4, index: 50 },
+            },
+        )
+        .unwrap();
+        assert_eq!(read(&engine), Some(AppliedPosition { term: 4, index: 90 }));
+        assert_eq!(sm.applied_index(), LogIndex(4));
     }
 }

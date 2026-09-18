@@ -5408,7 +5408,7 @@ impl NodeRuntime {
                 return;
             }
         };
-        for decision in floors {
+        for decision in &floors {
             let handle = {
                 let handles = self.rpc_backend.group_handles.lock().expect("handles");
                 handles.get(&decision.region()).cloned()
@@ -5417,30 +5417,109 @@ impl NodeRuntime {
                 continue;
             };
             let status = driver.status();
-            if status.fatal.is_some()
-                || status.role != kv9_raft::Role::Leader
-                || status.applied_index < decision.floor().index
-            {
-                // v1 executes ONLY at the group leader, through the
-                // all-matched-gated seam: compacting a replica whose prefix
-                // a minority voter still needs would strand it (committed
-                // means a QUORUM holds the entries, not every voter).
-                // Follower log bounding is the documented open edge.
+            if status.fatal.is_some() || status.applied_index < decision.floor().index {
+                continue;
+            }
+            // STAGE 1 — the group LEADER truncates its own log under the
+            // all-matched gate, then publishes the confirmation THROUGH THE
+            // GROUP'S OWN RAFT LOG (an ordered `Command::CompactionConfirmed`),
+            // which replicates to every voter. No cross-node catalog RPC and no
+            // all-matched knowledge is needed by followers.
+            if status.role == kv9_raft::Role::Leader {
+                let step = (|| -> Result<()> {
+                    engine.sync_applied_now()?;
+                    driver
+                        .peer()
+                        .truncate_retained_log(decision.floor(), &decision.encode())?;
+                    // All-matched held (truncation succeeded): publish the
+                    // confirmation once, if not already at or above this floor.
+                    let published = Self::confirmed_compaction_floor(engine.as_ref())?;
+                    if published.is_none_or(|p| p.index < decision.floor().index) {
+                        self.publish_compaction_confirmation(
+                            decision.region().0,
+                            &driver,
+                            decision.floor(),
+                        )?;
+                    }
+                    Ok(())
+                })();
+                if let Err(error) = step {
+                    // All-matched refusals are EXPECTED while a voter catches
+                    // up; they surface here and the next turn retries.
+                    self.group_control_error = Some(format!("compaction: {error}"));
+                }
+            }
+            // STAGE 2 — ANY replica (follower or leader) compacts its own
+            // prefix at the CONFIRMED floor once its applied position has
+            // reached it. The replicated confirmation proves every voter
+            // matched the floor, so a committed entry at or below it is held
+            // by all — no strand, no leadership or peer-progress gate.
+            let confirmed = match Self::confirmed_compaction_floor(engine.as_ref()) {
+                Ok(Some(floor)) => floor,
+                Ok(None) => continue,
+                Err(error) => {
+                    self.group_control_error = Some(format!("confirmation read: {error}"));
+                    continue;
+                }
+            };
+            if status.applied_index < confirmed.index {
                 continue;
             }
             let step = (|| -> Result<()> {
                 engine.sync_applied_now()?;
+                let mut decision = b"kv9-compaction-confirmed".to_vec();
+                decision.extend_from_slice(&confirmed.term.to_be_bytes());
+                decision.extend_from_slice(&confirmed.index.to_be_bytes());
                 driver
                     .peer()
-                    .truncate_retained_log(decision.floor(), &decision.encode())?;
+                    .compact_confirmed_prefix(confirmed, &decision)?;
                 Ok(())
             })();
             if let Err(error) = step {
-                // All-matched refusals are EXPECTED while a voter catches
-                // up; they surface here and the next turn retries.
-                self.group_control_error = Some(format!("compaction: {error}"));
+                self.group_control_error = Some(format!("follower compaction: {error}"));
             }
         }
+    }
+
+    /// The confirmed compaction floor published in a group's own replicated
+    /// state (reserved key), or None. Read from the local engine snapshot.
+    fn confirmed_compaction_floor(engine: &WalEngine) -> Result<Option<AppliedPosition>> {
+        let view = engine.snapshot()?;
+        let Some(bytes) = view.get(
+            kv9_engine::ColumnFamily::Default,
+            kv9_common::data_range::COMPACTION_CONFIRMED_KEY,
+        )?
+        else {
+            return Ok(None);
+        };
+        if bytes.len() != 16 {
+            return Err(Error::Config("compaction confirmation is malformed".into()));
+        }
+        Ok(Some(AppliedPosition {
+            term: u64::from_be_bytes(bytes[0..8].try_into().unwrap()),
+            index: u64::from_be_bytes(bytes[8..16].try_into().unwrap()),
+        }))
+    }
+
+    /// The group leader publishes the all-matched-confirmed floor into the
+    /// group's OWN raft log via `Command::CompactionConfirmed`, replicating it
+    /// to every voter, each of which applies it monotonically to the reserved
+    /// key. A dedicated ordered command — NOT a fenced write — because the
+    /// reserved key is a system key (the RangeFence permits only Raw user
+    /// keys) and the floor authorizes prefix discard (it must not be
+    /// client-forgeable).
+    fn publish_compaction_confirmation(
+        &self,
+        region: u64,
+        driver: &NodeDriver<DiskRaftStorage, WalEngine>,
+        floor: AppliedPosition,
+    ) -> Result<()> {
+        let command = kv9_raft::Command::CompactionConfirmed { region, floor };
+        let proposed = driver.propose(&command)?;
+        driver
+            .wait_applied(proposed, Duration::from_secs(10))
+            .map_err(|e| Error::Raft(format!("confirmation publish: {e:?}")))?;
+        Ok(())
     }
 
     /// Automatic splits: the SAME committed manual pipeline, driven
@@ -5971,8 +6050,14 @@ impl NodeRuntime {
                 &self.node.meta_raft.store,
             )
             .unwrap_or_default();
+            // Follower-side compaction persists a compacted base on every
+            // voter; recovery accepts a base backed by its kind-110 floor too.
+            let compactions = kv9_meta::data_groups::compaction::committed_compaction_floors(
+                &self.node.meta_raft.store,
+            )
+            .unwrap_or_default();
             self.data_groups
-                .resume_active(&self.transport, TICK, &truncations);
+                .resume_active(&self.transport, TICK, &truncations, &compactions);
             if Instant::now() >= self.next_group_reconcile {
                 self.next_group_reconcile = Instant::now() + Duration::from_millis(100);
                 // Each reconcile below records its own failure; a turn where

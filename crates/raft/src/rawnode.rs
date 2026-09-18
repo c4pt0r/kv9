@@ -544,6 +544,54 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         store.compact_retained_prefix(floor, &configuration, decision)
     }
 
+    /// Compact THIS replica's local log prefix at a floor whose all-matched
+    /// safety is already ESTABLISHED by a committed confirmation (the caller
+    /// owns that authority). No leadership or peer-progress gate: the
+    /// confirmation proves every voter matched the floor, so a committed
+    /// entry at or below it is held by every voter and this replica's own
+    /// prefix can be discarded without stranding anyone. The only local
+    /// checks are the exact-term match and that this replica's applied
+    /// position has itself reached the floor.
+    pub fn compact_confirmed_prefix(
+        &self,
+        floor: kv9_common::AppliedPosition,
+        decision: &[u8],
+    ) -> Result<u64>
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        if floor.index == 0 || floor.term == 0 || decision.is_empty() {
+            return Err(Error::Raft("compaction requires an exact floor".into()));
+        }
+        let g = self.lock();
+        g.check_fatal()?;
+        if g.raw.raft.raft_log.applied < floor.index {
+            return Err(Error::Raft(
+                "compaction floor is not applied on this replica".into(),
+            ));
+        }
+        let store: &crate::storage::DiskRaftStorage = g.raw.store().borrow();
+        use raft::Storage as _;
+        let first = store.first_index().map_err(raft_err)?;
+        if first > floor.index {
+            return Ok(first); // already compacted at or past the floor
+        }
+        if store.term(floor.index).map_err(raft_err)? != floor.term {
+            return Err(Error::Raft(
+                "compaction floor term differs from the retained log".into(),
+            ));
+        }
+        let configuration = match store.configuration_at_committed(floor)? {
+            crate::storage::ConfigurationLookup::Found(at) => at.state().clone(),
+            other => {
+                return Err(Error::Raft(format!(
+                    "compaction floor has no committed configuration: {other:?}"
+                )))
+            }
+        };
+        store.compact_retained_prefix(floor, &configuration, decision)
+    }
+
     /// Request a quorum-confirmed read index (task #28). Leader-only by
     /// design: the establishing read type owns leadership discovery, and a
     /// follower answering reads is exactly what the linearizable promise

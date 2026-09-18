@@ -184,6 +184,7 @@ fn group_activation_publication_cuts_never_start_an_unfenced_voter() {
                 &transport,
                 Duration::from_secs(60),
                 &[],
+                &[],
                 &mut |at, done| {
                     if at == step && done == after {
                         fired = true;

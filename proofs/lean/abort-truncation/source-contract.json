@@ -18,7 +18,7 @@
   ],
   "source_sha256": {
     "crates/meta/src/data_groups/truncation.rs": "bad8a58ff2a8745cdff643230142eba9ce74cc617c59c02f725bcfd4f290c2b9",
-    "crates/server/src/runtime.rs": "b673cc13c1b838123aef413a389341a033a148095e18c8811ef1591584401252",
+    "crates/server/src/runtime.rs": "5c81a27ea925b3c0d73ee227571e4471cf1454d7a50853eaaef8270d27ef9eae",
     "scripts/abort-truncation-e2e.py": "845bb86ad81a2b02289902671774b296bd467f6add6ead2974336c4399dedfbe",
     "proofs/lean/abort-truncation/AbortTruncation.lean": "d0350719ac157c410404f63a2b0bb6417c2786dc1f59d7517dbc87535b9eae2a",
     "proofs/lean/abort-truncation/README.md": "e42c9a58ad0f35830cb6bd4ae0226f490fb5090d6fa4f268185e132fe4b1796c"

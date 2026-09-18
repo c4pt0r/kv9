@@ -15,13 +15,13 @@
     "the_committed_chain_reaches_the_fence"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "b673cc13c1b838123aef413a389341a033a148095e18c8811ef1591584401252",
+    "crates/server/src/runtime.rs": "5c81a27ea925b3c0d73ee227571e4471cf1454d7a50853eaaef8270d27ef9eae",
     "crates/server/src/api.rs": "0790ce411d0f498cb0a178fca3a4a33d559d669f3d3420636283595b271e40ee",
     "crates/server/src/grpc.rs": "b7194206a0359c4d19ad157fe0db6782aa1b9eed84f02b4b45f53cc58e0ba073",
     "crates/server/src/data_groups.rs": "86d72d1fa1e27f79614cc21d4fdacaeb70552956683161f58c5a1d8a1658d8fd",
     "crates/server/proto/kv9.proto": "9d5a31e070c1a74568aedf2b101862cb7f47e3734919ae879fcb6ff15ddc6f01",
-    "crates/raft/src/state_machine/data_range.rs": "1b337b6a262ae9911393734042852d06224ac8e9e5d246dcabe0bd38b2af82f5",
-    "crates/common/src/data_range.rs": "63fbcd17d2857691aa0e89cb603d47ca9d7349e674929c60a73b9729b4653c89",
+    "crates/raft/src/state_machine/data_range.rs": "18f59bcace69d768c12898b9303f3215a69d6725f57f3737d8a243678ebf079d",
+    "crates/common/src/data_range.rs": "9fba248684ecfa6fc811a8be98eb8e572c14f916e4337e61b1e83ac325894700",
     "src/data_group_cli.rs": "16a8986c5c1808b5017609960f66cbb356778f3e0983b7555b34e270d926233a",
     "src/main.rs": "427c54eb77023b7613a7cc255f292df2714c35af576fc3a95de291608fdc07a2",
     "scripts/parent-seal-e2e.py": "8976eaa6625b22e2aed37f0a8bad4d8889f45b63b6b8d519764bcaa04ed85fa7",
