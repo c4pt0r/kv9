@@ -23,7 +23,7 @@
     "crates/raft/src/rawnode.rs": "e0b0b78c8bba52dd79ab741ec059d337fd980fff518031418e74cdac791c5199",
     "crates/raft/src/storage.rs": "3ae1606bfe6bdc86dd93fbf614939cb937a2f4d4a4b5e5991fe5885bdac799d4",
     "crates/raft/src/storage/configuration.rs": "be6b0e98c862166fe2ef7bf2cb15c809122b5e7fde0710c28e0465ed84247be5",
-    "crates/server/src/runtime.rs": "a919c878e733f35cfcf38ef90fec270e369aeb9578c95df5c77c15ea95459759",
+    "crates/server/src/runtime.rs": "ac4c9cfa805c118079bb9543d580eb84daaefe4bda3cc64f1563fa74463c08b3",
     "crates/server/src/region_manager.rs": "fee30f893738cf6b42bda0c04dfbf028febec818797b073871cf1feba3283271",
     "crates/server/src/api.rs": "0790ce411d0f498cb0a178fca3a4a33d559d669f3d3420636283595b271e40ee",
     "crates/server/src/grpc.rs": "b7194206a0359c4d19ad157fe0db6782aa1b9eed84f02b4b45f53cc58e0ba073",

@@ -4609,6 +4609,19 @@ pub struct NodeRuntime {
     /// bytes. Same floor (the replica's applied position) and same gated
     /// execution; only the trigger differs.
     auto_compact_bytes: u64,
+    /// KV9_AUTO_COMPACT_AGE_SECS: seconds the oldest retained committed entry
+    /// may linger before an automatic compaction floor is proposed, even when
+    /// the entries and bytes thresholds are never reached. 0 disables
+    /// (default). This bounds a LOW-TRAFFIC group's recovery-replay staleness:
+    /// a quiet group whose log never grows past a size threshold still
+    /// compacts at least every T. Measured locally as how long this replica's
+    /// `first_index` has stayed put (a compaction is the only thing that
+    /// advances it), so no per-entry timestamp is stored.
+    auto_compact_age: Duration,
+    /// Per-region mark of (observed first_index, when it was first seen at
+    /// that value) — the age-trigger clock. Reset whenever first_index
+    /// advances (i.e., a compaction executed). Local, rebuilt after restart.
+    compact_age_marks: BTreeMap<u64, (u64, Instant)>,
     /// KV9_RECLAIM_RETIRED=1: physically delete retired local group
     /// payloads once their committed authority re-verifies. Off by default.
     reclaim_retired: bool,
@@ -5213,6 +5226,13 @@ impl NodeRuntime {
                 .ok()
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(0),
+            auto_compact_age: Duration::from_secs(
+                std::env::var("KV9_AUTO_COMPACT_AGE_SECS")
+                    .ok()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(0),
+            ),
+            compact_age_marks: BTreeMap::new(),
             reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
@@ -5552,7 +5572,9 @@ impl NodeRuntime {
     /// fails the all-matched gate and retries, never strands a voter. One
     /// automatic floor per group per turn.
     fn reconcile_auto_compaction(&mut self) {
-        if (self.auto_compact_entries == 0 && self.auto_compact_bytes == 0)
+        if (self.auto_compact_entries == 0
+            && self.auto_compact_bytes == 0
+            && self.auto_compact_age == Duration::ZERO)
             || self.driver.status().role != kv9_raft::Role::Leader
         {
             return;
@@ -5624,7 +5646,26 @@ impl NodeRuntime {
                         false
                     }
                 };
-            if !(entries_triggered || bytes_triggered) {
+            // AGE trigger: the oldest retained committed entry has lingered
+            // past the threshold. Measured as how long first_index has stayed
+            // put (a compaction is the only thing that advances it): the mark
+            // resets each time first_index moves, so the clock times the CURRENT
+            // retained window. Fires only with something to compact
+            // (`retained > 0`) and a floor that strictly advances. This bounds a
+            // quiet group that never trips the size thresholds.
+            let now = Instant::now();
+            let mark = self
+                .compact_age_marks
+                .entry(region.0)
+                .or_insert((status.log_first_index, now));
+            if mark.0 != status.log_first_index {
+                *mark = (status.log_first_index, now);
+            }
+            let age_triggered = self.auto_compact_age > Duration::ZERO
+                && retained > 0
+                && now.duration_since(mark.1) >= self.auto_compact_age
+                && status.applied_index > last_floor;
+            if !(entries_triggered || bytes_triggered || age_triggered) {
                 continue;
             }
             let floor = kv9_common::AppliedPosition {

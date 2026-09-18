@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/age-compaction/AgeCompaction.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "a_proposal_requires_aging",
+    "a_proposal_requires_something_to_compact",
+    "a_committed_floor_requires_a_proposal",
+    "the_floor_is_always_committed_backed",
+    "the_floor_never_regresses",
+    "an_unexecutable_floor_is_never_forced",
+    "an_unexecutable_floor_only_retries",
+    "a_commit_is_permanent",
+    "aging_without_retained_proposes_nothing",
+    "the_age_trigger_chain_commits_a_backed_floor"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime.rs": "ac4c9cfa805c118079bb9543d580eb84daaefe4bda3cc64f1563fa74463c08b3",
+    "scripts/auto-compact-age-e2e.py": "dcf16d277715f560b0bece12259c028877630d1f7c156ebec2319ab81705c83a",
+    "proofs/lean/age-compaction/AgeCompaction.lean": "154e9e4e953f4abe6173f579217f2e726d6bcb195791b325099047f11789f05e",
+    "proofs/lean/age-compaction/README.md": "01a2ae0629b7f82eb14f33b4c6094bf288dbd2ae895a202b92f0fe66826e155b"
+  }
+}

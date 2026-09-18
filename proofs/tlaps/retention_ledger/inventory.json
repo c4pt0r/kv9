@@ -40,7 +40,7 @@
     "crates/meta/src/root.rs": "3d623190e1913f0fc27284b5a47b880d192708394fc716b4fceda6ef48004452",
     "crates/meta/src/checkpoint.rs": "79697c1e933f83cc417fd30c12861fdffad9c16ee30fcae75668c652c473d4c4",
     "crates/meta/src/store.rs": "ec6100e2caab7e028aaf89f18e7095fa161a542b33f30ed4dadf412519e3bc1b",
-    "crates/server/src/runtime.rs": "a919c878e733f35cfcf38ef90fec270e369aeb9578c95df5c77c15ea95459759",
+    "crates/server/src/runtime.rs": "ac4c9cfa805c118079bb9543d580eb84daaefe4bda3cc64f1563fa74463c08b3",
     "crates/server/src/retention.rs": "3895b12ab28af59333133c088166f798013c9911bd2aa1169ef1012c9b780a5e",
     "crates/server/src/grpc.rs": "b7194206a0359c4d19ad157fe0db6782aa1b9eed84f02b4b45f53cc58e0ba073",
     "crates/server/proto/kv9.proto": "9d5a31e070c1a74568aedf2b101862cb7f47e3734919ae879fcb6ff15ddc6f01",
