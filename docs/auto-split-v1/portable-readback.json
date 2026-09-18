@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "archive_sha256": "ca6ee2499c1ed3e653d703955a5692d60bf57e33b4c325efe6acd69ab376538a",
+  "members_verified": 2669,
+  "decoded_bytes": 7921112,
+  "receipts_verified": [
+    "e2e-fifth/result.json (final source)",
+    "e2e-fourth/result.json (also accepted)",
+    "3 retained failures (segment metric; parent-pinned fill; the cascade experiment with its open sealed-unpublished edge)",
+    "local-validation.json",
+    "auto-split-proof/result.json",
+    "retention-ledger-recheck.log",
+    "23 sibling model logs",
+    "minio-focused.log"
+  ],
+  "no_elf_no_credentials": true
+}

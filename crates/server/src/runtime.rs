@@ -4348,6 +4348,12 @@ type RouteSnapshotGate = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver
 /// A running real-process metadata member.
 pub struct NodeRuntime {
     data_groups: crate::region_manager::RegionManager,
+    /// The same backend the gRPC surface serves; the auto-split reconcile
+    /// drives the proven manual pipeline through it, step-locally.
+    rpc_backend: Arc<RuntimeBackend>,
+    /// KV9_AUTO_SPLIT_BYTES: local replica WAL bytes that trigger an
+    /// automatic split of a bound, unsealed range. 0 disables (default).
+    auto_split_bytes: u64,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -4936,6 +4942,11 @@ impl NodeRuntime {
         };
         Ok(Self {
             data_groups,
+            rpc_backend: backend.clone(),
+            auto_split_bytes: std::env::var("KV9_AUTO_SPLIT_BYTES")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(0),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             node,
@@ -5084,6 +5095,226 @@ impl NodeRuntime {
             }
             break;
         }
+    }
+
+    /// Automatic splits: the SAME committed manual pipeline, driven
+    /// step-locally by whichever node holds the needed role — the committed
+    /// state is the only coordination, so any coordinator loss resumes.
+    /// Metadata leader: observe local replica WAL bytes for bound unsealed
+    /// ranges, derive one DETERMINISTIC operation per region, create and
+    /// activate children, commit the intent, publish when both children
+    /// verify. Parent-group leader: seal. Child-group leaders: populate.
+    /// Disabled unless KV9_AUTO_SPLIT_BYTES > 0; best-effort per turn with
+    /// errors surfaced in the control status.
+    fn reconcile_auto_split(&mut self) {
+        if self.auto_split_bytes == 0 {
+            return;
+        }
+        let store = &self.node.meta_raft.store;
+        let Ok(Some(certified)) = store
+            .begin()
+            .and_then(|txn| kv9_meta::root::certified_root(&txn))
+        else {
+            return;
+        };
+        let root = certified.digest();
+        let Ok(bindings) = kv9_meta::data_groups::ranges::committed_ranges(store) else {
+            return;
+        };
+        let Ok(intents) = kv9_meta::data_groups::split::committed_splits(store) else {
+            return;
+        };
+        let meta_leader = self.driver.status().role == kv9_raft::Role::Leader;
+        let backend = self.rpc_backend.clone();
+        let derive = |operation: [u8; 16], salt: &[u8]| -> [u8; 16] {
+            let mut bytes = b"kv9-auto-split-v1".to_vec();
+            bytes.extend_from_slice(root.as_bytes());
+            bytes.extend_from_slice(&operation);
+            bytes.extend_from_slice(salt);
+            RootDigest::sha256(&bytes).as_bytes()[..16]
+                .try_into()
+                .expect("16 bytes")
+        };
+        // Trigger + children + intent: metadata-leader steps.
+        if meta_leader {
+            for binding in &bindings {
+                let range = binding.range();
+                if range.sealed || intents.iter().any(|i| i.parent_region() == range.region) {
+                    continue;
+                }
+                let handle = {
+                    let handles = self.rpc_backend.group_handles.lock().expect("handles");
+                    handles.get(&range.region).cloned()
+                };
+                let Some((engine, _)) = handle else { continue };
+                let bytes = Self::engine_disk_bytes(&engine.path());
+                if bytes < self.auto_split_bytes {
+                    continue;
+                }
+                let Some(split_key) = Self::sampled_median_key(engine.as_ref(), range) else {
+                    continue; // too few keys to split yet
+                };
+                let operation = derive([0; 16], &range.region.0.to_be_bytes());
+                let low_op = derive(operation, b"low");
+                let high_op = derive(operation, b"high");
+                let voters: Vec<NodeId> = binding
+                    .creation()
+                    .intent()
+                    .replicas()
+                    .iter()
+                    .map(|r| r.node)
+                    .collect();
+                let step = (|| -> Result<()> {
+                    let low = backend.create_data_group("auto-split", root, low_op, &voters)?;
+                    let high = backend.create_data_group("auto-split", root, high_op, &voters)?;
+                    backend.record_split_intent(
+                        "auto-split",
+                        root,
+                        operation,
+                        range.region,
+                        &split_key,
+                        low.intent.task(),
+                        high.intent.task(),
+                    )?;
+                    Ok(())
+                })();
+                if let Err(error) = step {
+                    self.group_control_error = Some(error.to_string());
+                }
+                break; // at most one trigger per turn
+            }
+        }
+        // Seal / populate / publish: role-local steps per committed intent.
+        for intent in &intents {
+            let parent_binding = bindings
+                .iter()
+                .find(|b| b.range().region == intent.parent_region());
+            let published = parent_binding.is_some_and(|b| b.range().sealed);
+            if published {
+                continue; // retirement and serving reconciles take over
+            }
+            let handle = {
+                let handles = self.rpc_backend.group_handles.lock().expect("handles");
+                handles.get(&intent.parent_region()).cloned()
+            };
+            let Some((parent_engine, parent_driver)) = handle else {
+                continue;
+            };
+            let sealed_row = parent_engine
+                .get(
+                    kv9_engine::ColumnFamily::Default,
+                    kv9_common::data_range::RANGE_KEY,
+                )
+                .ok()
+                .flatten()
+                .and_then(|b| kv9_common::data_range::DataRange::decode(&b).ok())
+                .is_some_and(|r| r.sealed);
+            if !sealed_row {
+                if parent_driver.status().role == kv9_raft::Role::Leader {
+                    if let Err(error) =
+                        backend.seal_split_parent("auto-split", root, intent.operation())
+                    {
+                        self.group_control_error = Some(error.to_string());
+                    }
+                }
+                continue;
+            }
+            // Populate whichever child this node leads; then try publishing.
+            for (high, task) in [(false, intent.child_low()), (true, intent.child_high())] {
+                let Ok(Some(creation)) = kv9_meta::data_groups::committed_creation(store, task)
+                else {
+                    continue;
+                };
+                let child = {
+                    let handles = self.rpc_backend.group_handles.lock().expect("handles");
+                    handles.get(&creation.intent().region()).cloned()
+                };
+                let Some((_, child_driver)) = child else {
+                    continue;
+                };
+                if child_driver.status().role == kv9_raft::Role::Leader {
+                    if let Err(error) =
+                        backend.populate_split_child("auto-split", root, intent.operation(), high)
+                    {
+                        self.group_control_error = Some(error.to_string());
+                    }
+                }
+            }
+            if meta_leader {
+                // Refuses until both children verify; commits exactly then.
+                // The refusal is EXPECTED while population converges, but it
+                // must stay observable — a silent swallow here cost real
+                // diagnosis time in the cascade experiments.
+                if let Err(error) = backend.publish_split("auto-split", root, intent.operation()) {
+                    self.group_control_error = Some(format!("auto-split publish: {error}"));
+                }
+            }
+        }
+    }
+
+    /// The local replica's durable engine bytes: the active WAL plus its
+    /// segment directory. An observation, not an exact live-data size —
+    /// overwrites and tombstones count, which is the honest write-volume
+    /// trigger this threshold documents.
+    fn engine_disk_bytes(wal_path: &std::path::Path) -> u64 {
+        let mut total = std::fs::metadata(wal_path).map(|m| m.len()).unwrap_or(0);
+        if let Some(parent) = wal_path.parent() {
+            let segments = parent.join("data.segments");
+            let mut stack = vec![segments];
+            while let Some(dir) = stack.pop() {
+                let Ok(entries) = std::fs::read_dir(&dir) else {
+                    continue;
+                };
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if path.is_dir() {
+                        stack.push(path);
+                    } else if let Ok(meta) = entry.metadata() {
+                        total += meta.len();
+                    }
+                }
+            }
+        }
+        total
+    }
+
+    /// An approximate median USER key of one bound range, sampled from the
+    /// local replica. `None` when fewer than two distinct interior keys
+    /// exist — a range that small has nothing to split.
+    fn sampled_median_key(
+        engine: &WalEngine,
+        range: &kv9_common::data_range::DataRange,
+    ) -> Option<Vec<u8>> {
+        let prefix =
+            kv9_common::codec::encode_key(kv9_common::codec::KeyMode::Raw, range.keyspace, b"")
+                .ok()?;
+        let end = kv9_common::codec::encode_key(
+            kv9_common::codec::KeyMode::Raw,
+            kv9_common::KeyspaceId(range.keyspace.0.checked_add(1)?),
+            b"",
+        )
+        .ok()?;
+        let view = engine.snapshot().ok()?;
+        let rows = view
+            .scan(kv9_engine::ColumnFamily::Default, &prefix, &end, 1024)
+            .ok()?;
+        let mut keys: Vec<Vec<u8>> = rows
+            .into_iter()
+            .filter(|(k, _)| k.as_slice() != kv9_common::data_range::RANGE_KEY)
+            .filter_map(|(k, _)| {
+                kv9_common::codec::decode_key(&k)
+                    .ok()
+                    .map(|d| d.user_key.to_vec())
+            })
+            .collect();
+        keys.dedup();
+        if keys.len() < 2 {
+            return None;
+        }
+        let candidate = keys[keys.len() / 2].clone();
+        let inside = (range.start.is_empty() || candidate.as_slice() > range.start.as_slice())
+            && (range.end.is_empty() || candidate.as_slice() < range.end.as_slice());
+        inside.then_some(candidate)
     }
 
     fn reconcile_adoption(&mut self) {
@@ -5308,6 +5539,7 @@ impl NodeRuntime {
                             self.reconcile_adoption();
                             self.reconcile_retirement();
                             self.reconcile_split_retirement();
+                            self.reconcile_auto_split();
                             kv9_meta::data_groups::ranges::committed_ranges(
                                 &self.node.meta_raft.store,
                             )
