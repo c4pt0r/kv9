@@ -231,6 +231,19 @@ pub enum Command {
         fence: RegionFence,
         inner: FencedInner,
     },
+    /// A group leader's CONFIRMED compaction floor (follower-side log
+    /// bounding). Proposed into the group's OWN raft log ONLY after the
+    /// leader's all-matched truncation succeeds at `floor`; replicates to
+    /// every voter, each of which applies it monotonically to the reserved
+    /// [`kv9_common::data_range::COMPACTION_CONFIRMED_KEY`] and may then
+    /// compact its own prefix up to that floor. Applied via an ordered
+    /// identity+monotonicity CAS (the `DataRange` precedent), never a fenced
+    /// write — the key is a reserved system key, not a Raw user key, and the
+    /// floor authorizes prefix discard, so it must not be client-forgeable.
+    CompactionConfirmed {
+        region: u64,
+        floor: kv9_common::AppliedPosition,
+    },
 }
 
 impl Command {
@@ -329,6 +342,13 @@ impl Command {
                         .into(),
                 ));
             }
+            Command::CompactionConfirmed { .. } => {
+                return Err(kv9_common::Error::Raft(
+                    "a compaction confirmation requires ordered identity + monotonic \
+                     CAS; the ordered-apply loop writes the reserved floor key"
+                        .into(),
+                ));
+            }
         }
         Ok(wb)
     }
@@ -409,6 +429,12 @@ impl Command {
                         put_ops(&mut out, ops);
                     }
                 }
+            }
+            Command::CompactionConfirmed { region, floor } => {
+                out.push(TAG_COMPACTION_CONFIRMED);
+                out.extend_from_slice(&region.to_be_bytes());
+                out.extend_from_slice(&floor.term.to_be_bytes());
+                out.extend_from_slice(&floor.index.to_be_bytes());
             }
         }
         out
@@ -494,6 +520,13 @@ impl Command {
                 };
                 Command::Fenced { fence, inner }
             }
+            TAG_COMPACTION_CONFIRMED => Command::CompactionConfirmed {
+                region: r.u64()?,
+                floor: kv9_common::AppliedPosition {
+                    term: r.u64()?,
+                    index: r.u64()?,
+                },
+            },
             other => {
                 return Err(kv9_common::Error::Raft(format!(
                     "unknown command tag {other}"
@@ -522,6 +555,7 @@ const TAG_WRITE: u8 = 5;
 const TAG_FENCED: u8 = 6;
 const TAG_DATA_RANGE: u8 = 8;
 const TAG_MANIFEST_CHANGE: u8 = 7;
+const TAG_COMPACTION_CONFIRMED: u8 = 9;
 const OP_PUT: u8 = 1;
 const OP_DELETE: u8 = 2;
 
@@ -722,6 +756,20 @@ mod tests {
             node: 0,
         });
         roundtrip(&Command::Noop);
+        roundtrip(&Command::CompactionConfirmed {
+            region: 100,
+            floor: kv9_common::AppliedPosition {
+                term: 7,
+                index: 4096,
+            },
+        });
+        roundtrip(&Command::CompactionConfirmed {
+            region: u64::MAX,
+            floor: kv9_common::AppliedPosition {
+                term: u64::MAX,
+                index: u64::MAX,
+            },
+        });
     }
 
     #[test]

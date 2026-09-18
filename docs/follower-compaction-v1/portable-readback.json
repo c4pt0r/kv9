@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "archive_sha256": "148dc1863f6c99675083c335b34428423e1612e1867e1e7c6dfc276b58689e9e",
+  "members_verified": 844,
+  "decoded_bytes": 22870930,
+  "receipts_verified": [
+    "e2e-cmd accepted (exact final source; 800 writes; every voter's confirmed_floor + log_first_index advance; compacted restart recovers all three voters)",
+    "retained diagnostic failures: e2e-diag (fenced write silently rejected by RangeFence -> confirmed_floor None -> dedicated command) + e2e-accept (latent kind-110 recovery-gate bug -> region_manager fix)",
+    "local-validation.json (serial 951/0, clippy 0)",
+    "follower-compaction-proof (15 theorems, 7+2 controls)",
+    "34 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true,
+  "no_root_bin": true
+}

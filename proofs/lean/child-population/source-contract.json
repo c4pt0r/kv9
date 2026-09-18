@@ -15,13 +15,13 @@
     "the_chain_reaches_both_exact_children"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "b673cc13c1b838123aef413a389341a033a148095e18c8811ef1591584401252",
-    "crates/server/src/region_manager.rs": "bf48ef9f717e51a98da08a3b9bb6a24d3540350316eaa788c51feebdca28fdfb",
+    "crates/server/src/runtime.rs": "5c81a27ea925b3c0d73ee227571e4471cf1454d7a50853eaaef8270d27ef9eae",
+    "crates/server/src/region_manager.rs": "59423127353ff6546b46ac63f900b9d50d87512a998917c23a9fb6709e8b700d",
     "crates/server/src/api.rs": "0790ce411d0f498cb0a178fca3a4a33d559d669f3d3420636283595b271e40ee",
     "crates/server/src/grpc.rs": "b7194206a0359c4d19ad157fe0db6782aa1b9eed84f02b4b45f53cc58e0ba073",
     "crates/server/src/data_groups.rs": "86d72d1fa1e27f79614cc21d4fdacaeb70552956683161f58c5a1d8a1658d8fd",
     "crates/server/proto/kv9.proto": "9d5a31e070c1a74568aedf2b101862cb7f47e3734919ae879fcb6ff15ddc6f01",
-    "crates/raft/src/command.rs": "2bd9eede9154f50130c56624234bb1c33417c635ffae4aa7d8f25b4590797a7e",
+    "crates/raft/src/command.rs": "7f79bb93a887da63b3542f169daea397cfe48ced4f9425b4946da0d436a82009",
     "src/data_group_cli.rs": "16a8986c5c1808b5017609960f66cbb356778f3e0983b7555b34e270d926233a",
     "src/main.rs": "427c54eb77023b7613a7cc255f292df2714c35af576fc3a95de291608fdc07a2",
     "scripts/child-population-e2e.py": "caea7c5426f4eee81bb85d36e68048ee0035f214d74f19dbd159911095e11a0a",

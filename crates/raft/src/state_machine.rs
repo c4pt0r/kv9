@@ -507,6 +507,9 @@ impl<E: ApplyStore> MemStateMachine<E> {
         if let Command::DataRange { expected, next } = cmd {
             return self.apply_data_range(at, *expected, next);
         }
+        if let Command::CompactionConfirmed { region, floor } = cmd {
+            return self.apply_compaction_confirmed(at, *region, *floor);
+        }
         // EVERY applied entry advances the durable watermark — including
         // commands with no data mutations (Noop/ConfChange). Advancing those
         // only in memory would regress the watermark on restart and re-deliver

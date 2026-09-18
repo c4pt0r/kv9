@@ -2,6 +2,12 @@
 use crate::{Error, KeyspaceId, RegionId, Result, RootDigest, TenantId};
 
 pub const RANGE_KEY: &[u8] = b"s\0\0\0kv9.data-range.v1";
+/// Reserved group-replicated key holding the confirmed compaction floor
+/// (term:u64 | index:u64, big-endian). Written ONLY by an ordered
+/// `Command::CompactionConfirmed` after the group leader's all-matched
+/// truncation; every voter reads it to bound its own log (follower-side
+/// compaction). A reserved `s\0\0\0` key, NOT a fenceable Raw user key.
+pub const COMPACTION_CONFIRMED_KEY: &[u8] = b"s\0\0\0kv9.compaction-confirmed.v1";
 const MAX_BOUND: usize = 65536;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
