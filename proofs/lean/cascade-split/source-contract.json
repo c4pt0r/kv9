@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/cascade-split/CascadeSplit.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "valid_history_never_refuses_readback",
+    "no_published_parent_is_starved",
+    "no_recorded_refusal_is_erased",
+    "a_childs_seal_requires_the_published_parent",
+    "retirement_requires_the_publication",
+    "a_publication_is_permanent",
+    "a_childs_seal_never_invalidates_its_grandparent",
+    "the_second_pipeline_completes_after_a_siblings_seal",
+    "an_earlier_confirmation_starves_no_later_parent"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups/split.rs": "bdc4ff29f74d4aea58979b24fb5f73a81c4f5297202d43ca84d5eae2b21a1258",
+    "crates/server/src/runtime.rs": "dccf54bdf32a60b786d6454c2e45b8127494826fe0004a8b923a306761112faf",
+    "scripts/cascade-split-e2e.py": "4af622bda7dbdc0a269463edf4bc48596b99bf94607276ed286776446bfb75af",
+    "proofs/lean/cascade-split/CascadeSplit.lean": "db9f5a1e2d2d080d84c341be92cfaddcfc23cd854e96a83ef2ec4183c9295e8e",
+    "proofs/lean/cascade-split/README.md": "c6436949e65604ce123954d8cd18589565bde0aa8958e1aac7097bdaba93d8c4"
+  }
+}

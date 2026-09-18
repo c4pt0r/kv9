@@ -29,13 +29,15 @@ split a range with no operator verb at all.
 
 ## Known limits, deliberately out of scope
 
-**Cascade splits are real but unqualified.** With a threshold small
-enough for children to re-trigger, the cascade experiments produced a
-second-level parent stuck sealed-but-unpublished, permanently fencing
-its key slice — retained as e2e evidence, root cause not yet diagnosed.
-This increment therefore qualifies SINGLE automatic splits (threshold
-sized so children stay below it); cascade correctness, load-based
-triggers, richer hysteresis and time-based cooldowns are future work.
+**Cascade splits are real but unqualified** — *as of this increment*.
+With a threshold small enough for children to re-trigger, the cascade
+experiments produced a second-level parent stuck sealed-but-unpublished,
+permanently fencing its key slice — retained as e2e evidence, root cause
+not yet diagnosed at the time. This increment therefore qualified SINGLE
+automatic splits (threshold sized so children stay below it). The
+follow-up increment diagnosed and fixed the hang and qualifies cascades:
+see [CASCADE-SPLIT.md](CASCADE-SPLIT.md). Load-based triggers, richer
+hysteresis and time-based cooldowns remain future work.
 
 ## Evidence
 

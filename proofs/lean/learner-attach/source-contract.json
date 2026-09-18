@@ -13,7 +13,7 @@
     "an_intent_alone_attaches_nothing"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "07c08c3ad01d0c24fd16f3850b33195305c9d22fe3434d7c5968655552743396",
+    "crates/server/src/runtime.rs": "dccf54bdf32a60b786d6454c2e45b8127494826fe0004a8b923a306761112faf",
     "crates/server/src/runtime/tests/data_group_tests.rs": "9d00911246b3e0ad2fd523ef9312ff04d133d81f06e8def46d21fd2bc91dc07d",
     "crates/server/src/api.rs": "4a736aefaaf9502df83fe4afc0c5143a8edaaece3305e82c397c4a9231a9dfcc",
     "crates/server/src/grpc.rs": "179941b0d54162acd676a958e394e80a6d33e1a1207cb477caca1d10c2a09bb7",

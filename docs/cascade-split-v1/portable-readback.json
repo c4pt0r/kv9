@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "archive_sha256": "56103efb5138799f32824b4b4f6f28abb228af82d420b0ba747983248276c0da",
+  "members_verified": 12438,
+  "decoded_bytes": 21990590,
+  "receipts_verified": [
+    "e2e-first/result.json completed (the qualifying cascade gate)",
+    "repro-second/result.json reproduced (the hang, from scratch, write 114)",
+    "repro-third/result.json completed (fixed code, from scratch, 860 writes)",
+    "repro-first retained (weak acceptance, a real finding)",
+    "six diagnosis revivals retained; revive-fourth logs contain the diagnosed refusal \"split parent range is already sealed\"",
+    "local-validation.json (serial 932/0, clippy 0)",
+    "cascade-split-proof/result.json (12 theorems, 5+2 controls)",
+    "retention-ledger-recheck.log PASS",
+    "24 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true
+}

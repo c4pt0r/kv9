@@ -5046,8 +5046,10 @@ impl NodeRuntime {
     /// node and incarnation plus the locally selected, verified generation;
     /// absence of either is simply not-yet, never an error surfaced upward.
     /// A committed removal decision naming THIS exact store (node and
-    /// incarnation) permanently fences the local replica: at most one
-    /// retirement per turn, errors surface in the control status and retry.
+    /// incarnation) permanently fences the local replica. EVERY matching
+    /// decision is processed each turn — retirement confirms idempotently,
+    /// and stopping after the first would starve every later decision
+    /// forever behind its no-op confirmation.
     fn reconcile_retirement(&mut self) {
         let removals =
             match kv9_meta::data_groups::removal::committed_removals(&self.node.meta_raft.store) {
@@ -5063,15 +5065,15 @@ impl NodeRuntime {
             if let Err(error) = self.data_groups.retire_removed(&decision) {
                 self.group_control_error = Some(error.to_string());
             }
-            break;
         }
     }
 
     /// A PUBLISHED split — the sealed parent binding with covering children
     /// in the committed directory — retires the local parent replica on
-    /// every hosting node: at most one per turn, errors surface in the
-    /// control status and retry. The split intent names the parent; the
-    /// sealed committed binding is the proof of publication.
+    /// every hosting node. EVERY published intent is processed each turn:
+    /// retirement confirms idempotently, and breaking after the first
+    /// starved every later cascade parent forever behind the earliest
+    /// intent's no-op confirmation (part of the cascade hang).
     fn reconcile_split_retirement(&mut self) {
         let store = &self.node.meta_raft.store;
         let Ok(intents) = kv9_meta::data_groups::split::committed_splits(store) else {
@@ -5093,7 +5095,6 @@ impl NodeRuntime {
             {
                 self.group_control_error = Some(error.to_string());
             }
-            break;
         }
     }
 
@@ -5118,11 +5119,21 @@ impl NodeRuntime {
             return;
         };
         let root = certified.digest();
-        let Ok(bindings) = kv9_meta::data_groups::ranges::committed_ranges(store) else {
-            return;
+        // Catalog read failures are observations, never silent: the cascade
+        // hang hid for a whole increment behind a bare `else return` here.
+        let bindings = match kv9_meta::data_groups::ranges::committed_ranges(store) {
+            Ok(bindings) => bindings,
+            Err(error) => {
+                self.group_control_error = Some(format!("auto-split directory: {error}"));
+                return;
+            }
         };
-        let Ok(intents) = kv9_meta::data_groups::split::committed_splits(store) else {
-            return;
+        let intents = match kv9_meta::data_groups::split::committed_splits(store) {
+            Ok(intents) => intents,
+            Err(error) => {
+                self.group_control_error = Some(format!("auto-split intents: {error}"));
+                return;
+            }
         };
         let meta_leader = self.driver.status().role == kv9_raft::Role::Leader;
         let backend = self.rpc_backend.clone();
@@ -5529,26 +5540,32 @@ impl NodeRuntime {
                 .resume_active(&self.transport, TICK, &truncations);
             if Instant::now() >= self.next_group_reconcile {
                 self.next_group_reconcile = Instant::now() + Duration::from_millis(100);
-                self.group_control_error =
-                    match kv9_meta::data_groups::activation::committed_activations(
-                        &self.node.meta_raft.store,
-                    ) {
-                        Ok(requests) => {
-                            self.data_groups
-                                .reconcile_activation(&requests, &self.transport, TICK);
-                            self.reconcile_adoption();
-                            self.reconcile_retirement();
-                            self.reconcile_split_retirement();
-                            self.reconcile_auto_split();
-                            kv9_meta::data_groups::ranges::committed_ranges(
-                                &self.node.meta_raft.store,
-                            )
-                            .and_then(|bindings| self.data_groups.reconcile_ranges(&bindings))
-                            .err()
-                            .map(|e| e.to_string())
+                // Each reconcile below records its own failure; a turn where
+                // EVERY step ran clean clears the observation. Assigning the
+                // final step's result over the whole field erased the inner
+                // reconciles' errors every turn — the cascade-split
+                // publish refusal was invisible exactly that way.
+                self.group_control_error = None;
+                match kv9_meta::data_groups::activation::committed_activations(
+                    &self.node.meta_raft.store,
+                ) {
+                    Ok(requests) => {
+                        self.data_groups
+                            .reconcile_activation(&requests, &self.transport, TICK);
+                        self.reconcile_adoption();
+                        self.reconcile_retirement();
+                        self.reconcile_split_retirement();
+                        self.reconcile_auto_split();
+                        if let Err(error) = kv9_meta::data_groups::ranges::committed_ranges(
+                            &self.node.meta_raft.store,
+                        )
+                        .and_then(|bindings| self.data_groups.reconcile_ranges(&bindings))
+                        {
+                            self.group_control_error = Some(error.to_string());
                         }
-                        Err(error) => Some(error.to_string()),
-                    };
+                    }
+                    Err(error) => self.group_control_error = Some(error.to_string()),
+                }
             }
         }
         if serving && !ready {
