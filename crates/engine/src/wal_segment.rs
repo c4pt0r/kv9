@@ -163,6 +163,17 @@ pub struct WalSegment {
     summary: SegmentSummary,
     poisoned: bool,
     metrics: Arc<WalIoMetrics>,
+    /// 0 (default): synchronize every append — the strict contract. N > 0:
+    /// DEFER the sync until N unsynced bytes accumulate. Deferral is legal
+    /// ONLY where a durable log above this one replays the tail (data-group
+    /// engines under the raft log): a crash simply truncates the torn tail
+    /// at recovery and replay re-applies it deterministically.
+    defer_bytes: u64,
+    unsynced_bytes: u64,
+    /// The first unsynced append's instant: deferral is ALSO bounded in
+    /// time (100ms), so dirty data never accumulates long enough to
+    /// entangle other files' fsyncs in one giant journal commit.
+    unsynced_since: Option<std::time::Instant>,
 }
 
 impl WalSegment {
@@ -197,6 +208,9 @@ impl WalSegment {
             summary: SegmentSummary::default(),
             poisoned: false,
             metrics,
+            defer_bytes: 0,
+            unsynced_bytes: 0,
+            unsynced_since: None,
         })
     }
 
@@ -238,13 +252,43 @@ impl WalSegment {
                 summary: report.summary,
                 poisoned: false,
                 metrics,
+                defer_bytes: 0,
+                unsynced_bytes: 0,
+                unsynced_since: None,
             },
             report,
         ))
     }
 
-    /// Acknowledges only after the complete data/position frame is synchronized.
-    /// Any write or sync error fences the handle until it is dropped and recovered.
+    /// Set the deferred-sync threshold (0 restores strict per-append sync).
+    /// The caller owns the durability argument; this type only bounds the
+    /// unsynced window and truncates torn tails at recovery.
+    pub fn set_deferred_sync(&mut self, defer_bytes: u64) {
+        self.defer_bytes = defer_bytes;
+    }
+
+    /// Synchronize any deferred bytes now. A barrier for callers that are
+    /// about to discard the replay source (log compaction) or seal state.
+    pub fn sync_now(&mut self) -> Result<()> {
+        if self.poisoned {
+            return Err(bad("failed writer requires recovery"));
+        }
+        if self.unsynced_bytes == 0 {
+            return Ok(());
+        }
+        if let Err(error) = self.metrics.sync.measure(|| self.file.sync_all()) {
+            self.poisoned = true;
+            return Err(io(error));
+        }
+        self.unsynced_bytes = 0;
+        self.unsynced_since = None;
+        Ok(())
+    }
+
+    /// Strict mode acknowledges only after the complete data/position frame is
+    /// synchronized; deferred mode acknowledges after the write, within the
+    /// bounded unsynced window. Any write or sync error fences the handle
+    /// until it is dropped and recovered.
     pub fn append(&mut self, batch: &WriteBatch, position: Option<AppliedPosition>) -> Result<()> {
         if self.poisoned {
             return Err(bad("failed writer requires recovery"));
@@ -270,18 +314,35 @@ impl WalSegment {
             FRAME_HEADER_BYTES as u64 + payload.len() as u64 + 4,
             position,
         )?;
-        let result = self
-            .metrics
-            .write
-            .measure(|| {
-                self.file.write_all(&header)?;
-                self.file.write_all(&payload)?;
-                self.file.write_all(&crc)
-            })
-            .and_then(|_| self.metrics.sync.measure(|| self.file.sync_all()));
+        let frame_bytes = FRAME_HEADER_BYTES as u64 + payload.len() as u64 + 4;
+        let result = self.metrics.write.measure(|| {
+            self.file.write_all(&header)?;
+            self.file.write_all(&payload)?;
+            self.file.write_all(&crc)
+        });
         if let Err(error) = result {
             self.poisoned = true;
             return Err(io(error));
+        }
+        const MAX_UNSYNCED_AGE: std::time::Duration = std::time::Duration::from_millis(100);
+        let aged = self
+            .unsynced_since
+            .is_some_and(|since| since.elapsed() >= MAX_UNSYNCED_AGE);
+        if self.defer_bytes == 0
+            || aged
+            || self.unsynced_bytes.saturating_add(frame_bytes) >= self.defer_bytes
+        {
+            if let Err(error) = self.metrics.sync.measure(|| self.file.sync_all()) {
+                self.poisoned = true;
+                return Err(io(error));
+            }
+            self.unsynced_bytes = 0;
+            self.unsynced_since = None;
+        } else {
+            if self.unsynced_since.is_none() {
+                self.unsynced_since = Some(std::time::Instant::now());
+            }
+            self.unsynced_bytes += frame_bytes;
         }
         self.summary = next;
         Ok(())
@@ -535,6 +596,74 @@ mod tests {
     }
     fn recover(path: &Path) -> Result<(WalSegment, RecoveryReport)> {
         WalSegment::recover_active(path, header(), WalIoMetrics::shared(), |_, _| Ok(()))
+    }
+
+    #[test]
+    fn deferred_sync_bounds_the_window_and_recovers_every_written_record() {
+        let path = path("deferred");
+        let mut segment = create(&path);
+        segment.set_deferred_sync(1 << 20);
+        // Appends succeed without a per-record sync; the records are in the
+        // file (write_all) and a clean recovery replays every one of them.
+        for (i, key) in [b"a", b"b", b"c"].iter().enumerate() {
+            segment
+                .append(&batch(*key, b"v"), Some(at(2, 4 + i as u64)))
+                .unwrap();
+        }
+        assert_eq!(segment.summary().last, Some(at(2, 6)));
+        // sync_now is the explicit barrier and is idempotent.
+        segment.sync_now().unwrap();
+        segment.sync_now().unwrap();
+        drop(segment);
+        let mut recovered = Vec::new();
+        let (_, report) =
+            WalSegment::recover_active(&path, header(), WalIoMetrics::shared(), |_, position| {
+                recovered.push(position);
+                Ok(())
+            })
+            .unwrap();
+        assert_eq!(report.discarded_tail_bytes, 0);
+        assert_eq!(
+            recovered,
+            vec![Some(at(2, 4)), Some(at(2, 5)), Some(at(2, 6))]
+        );
+    }
+
+    #[test]
+    fn a_torn_deferred_tail_truncates_and_the_summary_regresses_to_durable() {
+        // Simulate a crash mid-deferral: append records, then chop the file
+        // mid-record (as an unsynced tail may land). Recovery must truncate
+        // the torn tail and report exactly the surviving prefix — the raft
+        // log above replays the rest.
+        let path = path("torn-deferred");
+        let mut segment = create(&path);
+        segment.set_deferred_sync(1 << 20);
+        segment
+            .append(&batch(b"a", b"one"), Some(at(2, 4)))
+            .unwrap();
+        let durable_bytes = segment.summary().bytes;
+        segment
+            .append(&batch(b"b", b"two"), Some(at(2, 5)))
+            .unwrap();
+        drop(segment);
+        let full = std::fs::metadata(&path).unwrap().len();
+        assert!(full > durable_bytes, "the second record extended the file");
+        // Chop into the SECOND record's frame (summary.bytes is the whole
+        // durable file length including the segment header).
+        let file = OpenOptions::new().write(true).open(&path).unwrap();
+        file.set_len(durable_bytes + 3).unwrap();
+        drop(file);
+        let mut recovered = Vec::new();
+        let (reopened, report) =
+            WalSegment::recover_active(&path, header(), WalIoMetrics::shared(), |_, position| {
+                recovered.push(position);
+                Ok(())
+            })
+            .unwrap();
+        assert_eq!(recovered, vec![Some(at(2, 4))]);
+        assert!(report.discarded_tail_bytes > 0);
+        assert_eq!(reopened.summary().last, Some(at(2, 4)));
+        assert_eq!(reopened.summary().bytes, durable_bytes);
     }
 
     #[test]

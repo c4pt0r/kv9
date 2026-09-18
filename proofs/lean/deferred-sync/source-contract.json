@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/deferred-sync/DeferredSync.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "an_ack_requires_the_durable_raft_entry",
+    "no_acked_write_is_ever_lost",
+    "the_replay_source_is_never_discarded_under_deferral",
+    "an_ack_requires_the_applied_write",
+    "compaction_requires_the_sync_barrier",
+    "raft_durability_survives_a_crash",
+    "an_acknowledgement_survives_a_crash",
+    "a_crash_loses_only_the_unsynced_tail",
+    "replay_restores_the_applied_write",
+    "an_unsynced_crash_leaves_the_write_to_replay",
+    "the_crashed_acked_write_reads_back_after_replay"
+  ],
+  "source_sha256": {
+    "crates/engine/src/wal_segment.rs": "92e617f1c85d04bbbefe1a43d867d4a843306627c0532d2825744978b69746c6",
+    "crates/engine/src/wal_stream.rs": "856b233df61014a12528099a75b9468937c5708f1d23954ee4388b30cef15df2",
+    "crates/engine/src/persist.rs": "a1b2b13ad0962aa0165d8ca2736eab81dde70e2a8528be19093db26e253a1534",
+    "crates/server/src/region_manager.rs": "827d9ee99aea47a980f7dc1ff762ce7989a16c9b0f59dbe7a25b28ab2270866a",
+    "crates/server/src/runtime.rs": "ac4d777216c1d48d7a1f50094e430eb4c3ba9cce0bb5ee5d0d5c44b4d4d5ddf0",
+    "scripts/deferred-sync-e2e.py": "36602393960902bad805877e4798faaff4012e9123ffb007d0def6af5956e511",
+    "proofs/lean/deferred-sync/DeferredSync.lean": "864eec740ef55bd691657ef028434d924f56e0eadd3c112be719f7cd7056eb88",
+    "proofs/lean/deferred-sync/README.md": "0d2650180f5f32b7129697922e2e5853c57c0c161d9434ab8959f4b596ebce6e"
+  }
+}

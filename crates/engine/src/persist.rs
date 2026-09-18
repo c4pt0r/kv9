@@ -655,6 +655,31 @@ impl Engine for WalEngine {
     }
 }
 
+impl WalEngine {
+    /// Deferred apply-sync policy for DATA-GROUP engines only (0 = strict,
+    /// the default). Legal exactly because a durable raft log above this
+    /// engine replays the unsynced tail deterministically after a crash;
+    /// the segmented recovery truncates the torn tail. A Legacy-layout
+    /// engine ignores the policy (it stays strict).
+    pub fn set_data_sync_defer(&self, defer_bytes: u64) {
+        let mut wal = self.wal.lock().expect("wal lock poisoned");
+        if let Some(WalBacking::Segmented(stream)) = wal.backing.as_mut() {
+            stream.set_deferred_sync(defer_bytes);
+        }
+    }
+
+    /// Barrier: synchronize any deferred apply bytes now. Callers that are
+    /// about to discard the replay source (raft-log compaction) MUST call
+    /// this first.
+    pub fn sync_applied_now(&self) -> Result<()> {
+        let mut wal = self.wal.lock().expect("wal lock poisoned");
+        match wal.backing.as_mut() {
+            Some(WalBacking::Segmented(stream)) => stream.sync_now(),
+            _ => Ok(()),
+        }
+    }
+}
+
 impl ReplicatedEngine for WalEngine {
     fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()> {
         let mut wal = self.wal.lock().expect("wal lock poisoned");

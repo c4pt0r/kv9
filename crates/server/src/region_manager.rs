@@ -191,6 +191,18 @@ fn position_in_history(storage: &DiskRaftStorage, at: kv9_common::AppliedPositio
     Ok(storage.committed_term(at.index)? == at.term)
 }
 
+/// KV9_DATA_SYNC_DEFER_BYTES: deferred apply-sync threshold for DATA-GROUP
+/// engines (0 = strict per-apply sync, the default). Metadata catalogs are
+/// NEVER deferred. Legal because acknowledged writes rest on the synced
+/// raft log and deterministic replay; the compaction path forces a sync
+/// barrier before discarding any replay source.
+fn data_sync_defer_bytes() -> u64 {
+    std::env::var("KV9_DATA_SYNC_DEFER_BYTES")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(0)
+}
+
 fn read_record(path: &Path) -> Result<Option<Record>> {
     let mut file = match File::open(path) {
         Ok(file) => file,
@@ -487,6 +499,7 @@ impl RegionManager {
         let storage = DiskRaftStorage::recover(&adopted.raft_directory)?;
         let (engine, _) =
             WalEngine::open_with_uploader(adopted.engine_wal.clone(), Some(uploader))?;
+        engine.set_data_sync_defer(data_sync_defer_bytes());
         let engine = Arc::new(engine);
         let mut state = MemStateMachine::with_engine(engine.clone())?;
         state.set_data_group(adopted.range.root, region, adopted.range.creation)?;
@@ -975,6 +988,9 @@ impl RegionManager {
                 _ => return Err(invalid("group engine has an unauthorized applied position")),
             }
             engine.enable_segmentation()?;
+            // AFTER segmentation: the policy lives on the Segmented backing;
+            // setting it before the switch lands on the discarded Legacy one.
+            engine.set_data_sync_defer(data_sync_defer_bytes());
             Ok(Arc::new(engine))
         })?;
         if record.phase == Phase::IntentDurable {
