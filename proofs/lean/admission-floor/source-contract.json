@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/admission-floor/AdmissionFloor.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "no_raw_work_ever_consumes_the_floor",
+    "metadata_is_never_starved",
+    "every_refusal_is_typed_and_pre_append",
+    "the_total_fills_only_beyond_the_shared_pool",
+    "a_saturated_shared_pool_refuses_raw_work_typed",
+    "metadata_admits_while_capacity_remains",
+    "a_release_reopens_the_shared_pool",
+    "the_flood_cannot_reach_the_total_limit_alone",
+    "metadata_admits_through_a_full_shared_pool",
+    "only_metadata_consumes_the_last_capacity",
+    "the_released_pool_admits_raw_work_again"
+  ],
+  "source_sha256": {
+    "crates/server/src/admission.rs": "b1d85416b6336ad8384e26eb06007105135211ef937a3339ed5dfab8cf48bf8f",
+    "scripts/admission-floor-e2e.py": "73724f408987d70278bb0dac555ed1352da2d50dece3363cb1b4fac6cc520d3f",
+    "proofs/lean/admission-floor/AdmissionFloor.lean": "6cfbd7815aec95a9f6dde1b2bb482b8a22703d1f09e881850017b5843a3a803f",
+    "proofs/lean/admission-floor/README.md": "710af29ba9e5eec11876b2291b019a3de8b498fb17d948ffa56aec1a657b6dc6"
+  }
+}

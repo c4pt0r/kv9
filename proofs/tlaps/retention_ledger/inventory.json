@@ -42,7 +42,7 @@
     "crates/meta/src/store.rs": "ec6100e2caab7e028aaf89f18e7095fa161a542b33f30ed4dadf412519e3bc1b",
     "crates/server/src/runtime.rs": "ac4d777216c1d48d7a1f50094e430eb4c3ba9cce0bb5ee5d0d5c44b4d4d5ddf0",
     "crates/server/src/retention.rs": "3895b12ab28af59333133c088166f798013c9911bd2aa1169ef1012c9b780a5e",
-    "crates/server/src/grpc.rs": "ff51e2ab3944d9e86287c9d84585097d2a5ace4bc2cec40201cb852efdf019d3",
+    "crates/server/src/grpc.rs": "d7554e1c566e27df6e4f8a13f2314bc14da3c43872e9d2c18b81c026a501d191",
     "crates/server/proto/kv9.proto": "27fc8fc991f901e3582f11dddccd581a00f54c651f6423004b2463b3d1f13e95",
     "crates/server/src/api.rs": "2124ea5684ac16b67878f64f4019142f686eaa8fa6543946e822b288960ded46",
     "crates/server/src/runtime/tests/retention_tests.rs": "11a449472d51f039d277ddb8a507f04c4323b54c8c1fbbf54c0a1ecbf1388b03"

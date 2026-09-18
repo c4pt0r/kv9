@@ -351,6 +351,7 @@ async fn interrupted_write_keeps_ownership(use_deadline: bool) {
         PublicApiLimits {
             max_requests: 1,
             max_encoded_bytes: 4096,
+            metadata_reserved_requests: 0,
         },
     )
     .unwrap();

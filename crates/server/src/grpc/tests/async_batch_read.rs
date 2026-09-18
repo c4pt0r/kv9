@@ -34,6 +34,7 @@ fn completed_batch_read_bypasses_a_saturated_blocking_pool() {
             PublicApiLimits {
                 max_requests: 1,
                 max_encoded_bytes: message().encoded_len(),
+                metadata_reserved_requests: 0,
             },
         )
         .unwrap();
@@ -96,6 +97,7 @@ async fn cancelled_batch_preparation_drops_the_wait_without_starting_engine_work
         PublicApiLimits {
             max_requests: 1,
             max_encoded_bytes: bytes,
+            metadata_reserved_requests: 0,
         },
     )
     .unwrap();
@@ -154,6 +156,7 @@ async fn cancelled_blocking_batch_keeps_its_whole_request_reservation() {
             PublicApiLimits {
                 max_requests: 1,
                 max_encoded_bytes: bytes,
+                metadata_reserved_requests: 0,
             },
         )
         .unwrap(),
