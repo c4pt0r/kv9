@@ -2325,11 +2325,15 @@ impl AdminApi for RuntimeBackend {
             .raw_directory
             .by_region(decision.region())
             .ok_or_else(|| Error::MetaNotReady("truncation group is not active locally".into()))?;
-        let (driver, _, _) = group.capture_parts();
+        let (driver, engine, _) = group.capture_parts();
         let status = driver.status();
         if status.fatal.is_some() {
             return Err(Error::Raft("group driver is fatally stopped".into()));
         }
+        // SYNC BARRIER: compaction discards the raft-log replay source below
+        // the floor; any DEFERRED engine-apply bytes must be durable first,
+        // or a crash could lose applied state with nothing left to replay it.
+        engine.sync_applied_now()?;
         let first_index = driver
             .peer()
             .truncate_retained_log(decision.floor(), &decision.encode())?;
@@ -6451,6 +6455,31 @@ impl NodeRuntime {
                 .expect("serialize control observation"),
         );
         body.push('\n');
+        // DATA-GROUP engine I/O aggregate: the node-level metrics export
+        // carries the METADATA catalog engine only, which mis-attributed
+        // apply-sync measurements for two increments. Sums are success
+        // counts across every locally started data group's engine.
+        {
+            let mut record_writes: u64 = 0;
+            let mut record_syncs: u64 = 0;
+            let handles = self.rpc_backend.group_handles.lock().expect("handles");
+            for (engine, _) in handles.values() {
+                let io = engine.io_metrics();
+                let outcome = |latency: &kv9_common::metrics::Latency| {
+                    latency
+                        .snapshot()
+                        .outcomes
+                        .first()
+                        .map(|h| h.count)
+                        .unwrap_or(0)
+                };
+                record_writes += outcome(&io.write);
+                record_syncs += outcome(&io.sync);
+            }
+            body.push_str(&format!(
+                "data_engine_io={{\"record_write_success\":{record_writes},\"record_sync_success\":{record_syncs}}}\n"
+            ));
+        }
         #[cfg(feature = "write-stage-tracing")]
         {
             if let Ok(trace) = serde_json::to_string(&self.driver.write_stage_trace()) {

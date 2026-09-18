@@ -23,7 +23,7 @@
     "crates/common/src/store_lifecycle.rs": "a01462d0c6ac63e2fc3f6d5edc24d1dac3e494785efddd969ebcacfda7653d12",
     "crates/raft/src/storage/snapshot.rs": "abf9eff13c2599cd25f65fcaef6a034548c3215220352c62515e5bf0207e3ce6",
     "crates/raft/src/rawnode.rs": "333117c88ad3d39ae3a1f0d081128bd5b25aed42e044a5fb39f85f069cb83aea",
-    "crates/engine/src/persist.rs": "49b7c0af87c6606a0a64f188164708fcc8134170c12d3750a3db313d5b274f47",
+    "crates/engine/src/persist.rs": "a1b2b13ad0962aa0165d8ca2736eab81dde70e2a8528be19093db26e253a1534",
     "crates/engine/src/checkpoint.rs": "c56c6b0419962d20e6cf98cfc609316b57c2627395d4f8cfea4eccdb8e34793e",
     "proofs/lean/joint-install/Installation.lean": "e9b5196e5d362b0633e339cc0b87e454e09e4790efe9196b910d3404f1d3e249",
     "proofs/lean/joint-install/README.md": "bb4a1c4698aa2eb7f29e9da0b25fd05a5472fe20977080ff3aa487c7076efc16"

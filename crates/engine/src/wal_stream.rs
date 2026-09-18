@@ -132,6 +132,7 @@ impl RecoveryPlan {
             target_bytes,
             metrics,
             poisoned: false,
+            defer_bytes: 0,
         };
         // Orphans from a crash are not selected by this plan and never replay.
         // Their reclamation can be retried separately after opening the stream.
@@ -160,6 +161,8 @@ pub struct SegmentedWal {
     target_bytes: u64,
     metrics: Arc<WalIoMetrics>,
     poisoned: bool,
+    /// Deferred-sync threshold applied to every active segment (0 = strict).
+    defer_bytes: u64,
 }
 
 impl SegmentedWal {
@@ -217,7 +220,32 @@ impl SegmentedWal {
             target_bytes,
             metrics,
             poisoned: false,
+            defer_bytes: 0,
         })
+    }
+
+    /// Apply the deferred-sync policy to this stream (0 = strict). Applies
+    /// to the current active segment and to every successor at rotation;
+    /// rotation itself still seals with a full sync.
+    pub fn set_deferred_sync(&mut self, defer_bytes: u64) {
+        self.defer_bytes = defer_bytes;
+        if let Some(active) = self.active.as_mut() {
+            active.set_deferred_sync(defer_bytes);
+        }
+    }
+
+    /// Synchronize any deferred bytes in the active segment now.
+    pub fn sync_now(&mut self) -> Result<()> {
+        self.ensure_healthy()?;
+        let result = self
+            .active
+            .as_mut()
+            .ok_or_else(|| bad("active writer unavailable"))?
+            .sync_now();
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
     }
 
     pub fn applied_position(&self) -> Option<AppliedPosition> {
@@ -326,7 +354,8 @@ impl SegmentedWal {
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
             Err(e) => return Err(io(e)),
         }
-        let active = WalSegment::create(&path, next.active, self.metrics.clone())?;
+        let mut active = WalSegment::create(&path, next.active, self.metrics.clone())?;
+        active.set_deferred_sync(self.defer_bytes);
         self.publish(&next)?;
         self.topology = next;
         self.active = Some(active);

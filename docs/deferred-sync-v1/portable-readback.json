@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "archive_sha256": "52e07d700b3f2d810021d3da57731a6f9cab13e95c9a4e0baa7233fea7d06b16",
+  "members_verified": 3394,
+  "decoded_bytes": 185283889,
+  "receipts_verified": [
+    "e2e-second accepted (exact final source; 373 acked writes through two SIGKILL-all crashes); e2e-first also accepted (341)",
+    "defer-bench-eighth ACCEPTED: T1 2.13x, T2 10.2x, T3 0ms (median-of-3, raw repeats retained)",
+    "seven earlier bench runs + two measurement runs retained, including defer-bench-fourth with the published T3 FAILURE (+939ms journal entanglement) that produced the 100ms age bound",
+    "local-validation.json (serial 945/0, clippy 0)",
+    "deferred-sync-proof (14 theorems, 5+2 controls)",
+    "retention PASS",
+    "28 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true
+}
