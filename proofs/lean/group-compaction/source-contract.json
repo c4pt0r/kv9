@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/group-compaction/GroupCompaction.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "compaction_requires_floor_apply_and_matched_voters",
+    "a_higher_floor_requires_the_first_compaction",
+    "no_committed_entry_is_ever_lost",
+    "only_the_local_prefix_is_ever_discarded",
+    "floors_never_regress",
+    "recompaction_requires_the_earlier_base",
+    "a_compaction_resolves_the_configuration",
+    "the_gated_chain_compacts",
+    "a_second_floor_recompacts_and_resolves_its_configuration",
+    "a_committed_floor_alone_compacts_nothing"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups/compaction.rs": "e1b894bff9e65cb1c579b9202da9ba8c0c12eef92c48f3ac00e1daf2f1513f39",
+    "crates/raft/src/storage/configuration.rs": "be6b0e98c862166fe2ef7bf2cb15c809122b5e7fde0710c28e0465ed84247be5",
+    "crates/raft/src/rawnode.rs": "6bca5d9fed17e4fdb3436b624c326ed20a0f8d782d61fa0900062d756e919780",
+    "crates/server/src/runtime.rs": "9d4caccadf1dc8b96d4f35edc55e0759caf9f9355580b29997bfc88b18b0732e",
+    "scripts/group-compaction-e2e.py": "7c984095f2b9ecd5a3cd2960ddc07035fb1c6671a1461e3ca6bc5ab1117b684e",
+    "proofs/lean/group-compaction/GroupCompaction.lean": "e6794f6c492570c6b41b669da59373763493c6dedb52a3e4d46bc8640339cd77",
+    "proofs/lean/group-compaction/README.md": "c5063635f8dda37eec0dba255cdf31034aae6c639ec6878d18d301714c28d047"
+  }
+}

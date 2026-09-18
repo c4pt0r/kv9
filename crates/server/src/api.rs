@@ -341,6 +341,13 @@ pub struct DetachAbortedLearnerResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecordGroupCompactionResult {
+    pub decision: kv9_meta::data_groups::compaction::GroupCompaction,
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RecordSourceTruncationResult {
     pub decision: kv9_meta::data_groups::truncation::TruncationDecision,
     pub changed: bool,
@@ -600,6 +607,17 @@ pub trait AdminApi {
     ) -> Result<DetachAbortedLearnerResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::detach_aborted_learner",
+        ))
+    }
+    fn record_group_compaction(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _region: kv9_common::RegionId,
+        _floor: AppliedPosition,
+    ) -> Result<RecordGroupCompactionResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::record_group_compaction",
         ))
     }
     fn record_source_truncation(

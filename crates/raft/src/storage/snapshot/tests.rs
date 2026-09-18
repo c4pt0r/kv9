@@ -77,11 +77,25 @@ fn check_new<F: FileSystem>(store: &DiskRaftStorage<F>, image: &Snapshot, hs: &H
             raft::StorageError::SnapshotTemporarilyUnavailable
         ))
     ));
-    assert_eq!(
+    // The configuration AT the durable base (installed snapshot metadata,
+    // or a REC_COMPACTION record) is defensibly known and now resolves —
+    // this is what lets a second compaction floor, and image capture at a
+    // snapshot base, proceed. A cut BELOW the base is still gone.
+    match store
+        .configuration_at_committed(AppliedPosition { term: 5, index: 12 })
+        .unwrap()
+    {
+        ConfigurationLookup::Found(found) => {
+            assert_eq!(found.state(), image.get_metadata().get_conf_state());
+            assert_eq!(found.cut(), AppliedPosition { term: 5, index: 12 });
+        }
+        other => panic!("base configuration did not resolve: {other:?}"),
+    }
+    assert!(
         store
-            .configuration_at_committed(AppliedPosition { term: 5, index: 12 })
-            .unwrap(),
-        ConfigurationLookup::Unavailable(ConfigurationUnavailable::ProtocolHistoryCompacted)
+            .configuration_at_committed(AppliedPosition { term: 5, index: 11 })
+            .is_err(),
+        "a cut below the durable base must not resolve"
     );
 }
 

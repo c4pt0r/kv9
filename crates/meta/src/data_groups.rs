@@ -13,6 +13,7 @@ use crate::store::{MetaStore, MetaTxn, Row, SequenceKind, FIRST_DYNAMIC_ID};
 
 pub mod abort;
 pub mod activation;
+pub mod compaction;
 pub mod evidence;
 pub mod migration;
 pub mod ranges;

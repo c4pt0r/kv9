@@ -2561,6 +2561,35 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn record_group_compaction(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        region: RegionId,
+        floor: AppliedPosition,
+    ) -> Result<crate::api::RecordGroupCompactionResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("compaction request root differs".into()));
+        }
+        let (decision, changed) =
+            kv9_meta::data_groups::compaction::plan_compaction(&mut txn, region, floor)?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::RecordGroupCompactionResult {
+            decision,
+            changed,
+            applied,
+        })
+    }
+
     fn apply_retention(
         &self,
         _caller: &str,
@@ -5353,6 +5382,58 @@ impl NodeRuntime {
         }
     }
 
+    /// Execute committed healthy-group compaction floors LOCALLY: each
+    /// replica discards its OWN log prefix once its applied position has
+    /// reached the floor (committed entries are permanent, so a voter that
+    /// once contained the floor never re-fetches below it), behind its own
+    /// deferred-sync barrier. Every candidate processes each turn; errors
+    /// surface and retry. The committed decision is the only coordination.
+    fn reconcile_compaction(&mut self) {
+        let store = &self.node.meta_raft.store;
+        let floors = match kv9_meta::data_groups::compaction::committed_compaction_floors(store) {
+            Ok(floors) => floors,
+            Err(error) => {
+                // Never silent: an invalid committed row freezing this
+                // reconcile must be observable (the cascade lesson).
+                self.group_control_error = Some(format!("compaction readback: {error}"));
+                return;
+            }
+        };
+        for decision in floors {
+            let handle = {
+                let handles = self.rpc_backend.group_handles.lock().expect("handles");
+                handles.get(&decision.region()).cloned()
+            };
+            let Some((engine, driver)) = handle else {
+                continue;
+            };
+            let status = driver.status();
+            if status.fatal.is_some()
+                || status.role != kv9_raft::Role::Leader
+                || status.applied_index < decision.floor().index
+            {
+                // v1 executes ONLY at the group leader, through the
+                // all-matched-gated seam: compacting a replica whose prefix
+                // a minority voter still needs would strand it (committed
+                // means a QUORUM holds the entries, not every voter).
+                // Follower log bounding is the documented open edge.
+                continue;
+            }
+            let step = (|| -> Result<()> {
+                engine.sync_applied_now()?;
+                driver
+                    .peer()
+                    .truncate_retained_log(decision.floor(), &decision.encode())?;
+                Ok(())
+            })();
+            if let Err(error) = step {
+                // All-matched refusals are EXPECTED while a voter catches
+                // up; they surface here and the next turn retries.
+                self.group_control_error = Some(format!("compaction: {error}"));
+            }
+        }
+    }
+
     /// Automatic splits: the SAME committed manual pipeline, driven
     /// step-locally by whichever node holds the needed role — the committed
     /// state is the only coordination, so any coordinator loss resumes.
@@ -5825,6 +5906,7 @@ impl NodeRuntime {
                         self.reconcile_retirement();
                         self.reconcile_split_retirement();
                         self.reconcile_reclamation();
+                        self.reconcile_compaction();
                         self.reconcile_auto_split();
                         if let Err(error) = kv9_meta::data_groups::ranges::committed_ranges(
                             &self.node.meta_raft.store,

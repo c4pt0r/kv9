@@ -15,8 +15,8 @@
     "the_published_chain_reaches_retirement"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "de900b4d5856aeced0ba1a13b1ac366509b7176d03895a737be1e4cf3d199052",
-    "crates/server/src/region_manager.rs": "827d9ee99aea47a980f7dc1ff762ce7989a16c9b0f59dbe7a25b28ab2270866a",
+    "crates/server/src/runtime.rs": "9d4caccadf1dc8b96d4f35edc55e0759caf9f9355580b29997bfc88b18b0732e",
+    "crates/server/src/region_manager.rs": "bf48ef9f717e51a98da08a3b9bb6a24d3540350316eaa788c51feebdca28fdfb",
     "crates/meta/src/data_groups/split.rs": "bdc4ff29f74d4aea58979b24fb5f73a81c4f5297202d43ca84d5eae2b21a1258",
     "crates/meta/src/data_groups/ranges.rs": "58c89feb4b0c53587915cf6655f97245ff20ba8a31fd4ec5a4bea6b52e8abaa1",
     "scripts/parent-retirement-e2e.py": "ce8b621f8f4cf526d9b68f539e303050c19a06027f52b4042e753339ff72f45e",

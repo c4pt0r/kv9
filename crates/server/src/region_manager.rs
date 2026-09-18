@@ -724,6 +724,7 @@ impl RegionManager {
                         "region": region.0, "state": if s.fatal.is_some() { "failed" } else { "active" },
                         "role": format!("{:?}", s.role), "term": s.term,
                         "leader": s.leader_id.map(|n| n.0), "committed": s.raft_committed,
+                        "log_first_index": s.log_first_index,
                         "engine_applied": s.applied_index,
                         "driver_applied": s.driver_applied.map(|p| serde_json::json!({"term": p.term, "index": p.index})),
                         "error": s.fatal,

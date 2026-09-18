@@ -1825,6 +1825,49 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn record_group_compaction(
+        &self,
+        request: Request<proto::RecordGroupCompactionRequest>,
+    ) -> Result<Response<proto::RecordGroupCompactionResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        if root.as_bytes() == &[0; 32]
+            || request.region_id == 0
+            || request.floor_term == 0
+            || request.floor_index == 0
+        {
+            return Err(Status::invalid_argument(
+                "nonzero root, region and floor required",
+            ));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.record_group_compaction(
+                    &caller,
+                    root,
+                    kv9_common::RegionId(request.region_id),
+                    kv9_common::AppliedPosition {
+                        term: request.floor_term,
+                        index: request.floor_index,
+                    },
+                )
+            })
+            .await?;
+        Ok(Response::new(proto::RecordGroupCompactionResponse {
+            task: result.decision.task(),
+            changed: result.changed,
+        }))
+    }
+
     async fn record_migration_abort(
         &self,
         request: Request<proto::RecordMigrationAbortRequest>,

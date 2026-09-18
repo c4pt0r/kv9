@@ -1380,3 +1380,77 @@ admission_refused={reason}"
         }
     }
 }
+
+pub(super) fn run_record_compaction(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut values = HashMap::new();
+    while let Some(flag) = args.next() {
+        if !matches!(
+            flag.as_str(),
+            "--addr" | "--root-digest" | "--region" | "--floor-term" | "--floor-index"
+        ) {
+            return super::command_error(&format!("unknown compaction flag {flag}"));
+        }
+        let Some(value) = args.next() else {
+            return super::command_error(&format!("{flag} needs a value"));
+        };
+        if values.insert(flag.clone(), value).is_some() {
+            return super::command_error(&format!("duplicate compaction flag {flag}"));
+        }
+    }
+    match execute_record_compaction(values) {
+        Ok(code) => code,
+        Err(e) => super::command_error(&e),
+    }
+}
+
+fn execute_record_compaction(values: HashMap<String, String>) -> Result<ExitCode, String> {
+    let required = |key: &str| values.get(key).ok_or_else(|| format!("{key} is required"));
+    let root = RootDigest::from_bytes(
+        super::decode_hex("--root-digest", required("--root-digest")?)?
+            .try_into()
+            .map_err(|_| "--root-digest must contain 32 bytes")?,
+    );
+    let region = kv9_common::RegionId(
+        required("--region")?
+            .parse()
+            .map_err(|_| "--region must be a number")?,
+    );
+    let floor = kv9_common::AppliedPosition {
+        term: required("--floor-term")?
+            .parse()
+            .map_err(|_| "--floor-term must be a number")?,
+        index: required("--floor-index")?
+            .parse()
+            .map_err(|_| "--floor-index must be a number")?,
+    };
+    let Some(token) = super::client_token() else {
+        return Ok(ExitCode::FAILURE);
+    };
+    match DataGroupClient::connect(required("--addr")?, &token)
+        .and_then(|mut c| c.record_group_compaction(root, region, floor))
+    {
+        Ok((task, changed)) => {
+            println!(
+                "compaction_outcome={}
+compaction_task={task}
+capability=committed_floor_only",
+                if changed { "recorded" } else { "confirmed" }
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+        Err(DataGroupRpcError::Local(e)) => Err(e),
+        Err(DataGroupRpcError::NotLeader { leader }) => Ok(super::print_not_leader(leader)),
+        Err(DataGroupRpcError::AdmissionRefused { reason }) => {
+            println!(
+                "compaction_outcome=refused
+admission_refused={reason}"
+            );
+            Ok(ExitCode::FAILURE)
+        }
+        Err(DataGroupRpcError::Unconfirmed(e)) => {
+            println!("compaction_outcome=unconfirmed");
+            eprintln!("the identical floor may retry: {e}");
+            Ok(ExitCode::FAILURE)
+        }
+    }
+}
