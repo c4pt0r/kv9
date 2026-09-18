@@ -120,6 +120,16 @@ impl DiskRaftStorage<OsFileSystem> {
     pub fn recover(data_dir: &Path) -> Result<DiskRaftStorage> {
         Self::open_mode(OsFileSystem, data_dir, &[], false).map(|(storage, _)| storage)
     }
+
+    /// The current ON-DISK size of the append-only `raft.log`. The file only
+    /// grows — compaction advances `first_index` (shrinking the LIVE retained
+    /// bytes) but never rewrites the file — so the gap between this and
+    /// [`Self::retained_committed_bytes`] is the compacted-away waste still
+    /// occupying disk. A plain stat (no writer lock, safe concurrent with
+    /// appends); a missing/failed file reads as 0.
+    pub fn log_file_bytes(&self) -> u64 {
+        std::fs::metadata(&self.path).map(|m| m.len()).unwrap_or(0)
+    }
 }
 
 impl<F: FileSystem> DiskRaftStorage<F> {
@@ -963,6 +973,48 @@ mod tests {
             )
             .unwrap();
         assert_eq!(storage.retained_committed_bytes(3).unwrap(), 2);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn log_file_bytes_grows_on_append_and_does_not_shrink_on_compaction() {
+        let dir = tmp();
+        let (storage, _) = DiskRaftStorage::open(&dir, &[1, 2, 3]).unwrap();
+        let empty = storage.log_file_bytes();
+        storage
+            .append(&[
+                entry(1, 1, b"aaaa"),
+                entry(2, 1, b"bbbb"),
+                entry(3, 1, b"cc"),
+            ])
+            .unwrap();
+        let after_append = storage.log_file_bytes();
+        assert!(
+            after_append > empty,
+            "the file grows as entries are appended"
+        );
+        // Compaction advances first_index (the LIVE retained bytes drop) but the
+        // append-only file only GROWS — it even appends a REC_COMPACTION record.
+        // This gap is exactly what physical reclamation would reclaim.
+        storage
+            .set_hardstate(&HardState {
+                term: 1,
+                commit: 3,
+                ..Default::default()
+            })
+            .unwrap();
+        storage
+            .compact_retained_prefix(
+                kv9_common::AppliedPosition { term: 1, index: 2 },
+                &raft::prelude::ConfState::default(),
+                b"floor",
+            )
+            .unwrap();
+        assert!(storage.retained_committed_bytes(3).unwrap() < after_append);
+        assert!(
+            storage.log_file_bytes() >= after_append,
+            "the on-disk file never shrinks under compaction"
+        );
         let _ = std::fs::remove_dir_all(&dir);
     }
 

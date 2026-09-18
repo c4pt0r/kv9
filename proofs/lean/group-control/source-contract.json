@@ -22,7 +22,7 @@
     "crates/server/src/data_groups.rs": "86d72d1fa1e27f79614cc21d4fdacaeb70552956683161f58c5a1d8a1658d8fd",
     "crates/server/proto/kv9.proto": "9d5a31e070c1a74568aedf2b101862cb7f47e3734919ae879fcb6ff15ddc6f01",
     "crates/server/src/grpc.rs": "b7194206a0359c4d19ad157fe0db6782aa1b9eed84f02b4b45f53cc58e0ba073",
-    "crates/server/src/region_manager.rs": "fee30f893738cf6b42bda0c04dfbf028febec818797b073871cf1feba3283271",
+    "crates/server/src/region_manager.rs": "76bb8d9710ceeb74a28b518bcab5331bb2ffdfa6b8cc0170c7cd11b2a1ece23c",
     "crates/server/src/region_manager/tests.rs": "f29736a080977c477132a4e9b6c11d1b5a50b009409922d9b561271fc7805cf1",
     "crates/server/src/runtime.rs": "ac4c9cfa805c118079bb9543d580eb84daaefe4bda3cc64f1563fa74463c08b3",
     "src/data_group_cli.rs": "16a8986c5c1808b5017609960f66cbb356778f3e0983b7555b34e270d926233a",

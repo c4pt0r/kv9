@@ -607,6 +607,19 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         store.retained_committed_bytes(committed)
     }
 
+    /// The on-disk `raft.log` file size for THIS replica — the append-only
+    /// file that never shrinks under compaction. Paired with
+    /// [`Self::retained_log_bytes`] it exposes the compacted-away waste still
+    /// on disk (the signal a future log-reclamation trigger would observe).
+    pub fn log_file_bytes(&self) -> u64
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        let g = self.lock();
+        let store: &crate::storage::DiskRaftStorage = g.raw.store().borrow();
+        store.log_file_bytes()
+    }
+
     /// Request a quorum-confirmed read index (task #28). Leader-only by
     /// design: the establishing read type owns leadership discovery, and a
     /// follower answering reads is exactly what the linearizable promise

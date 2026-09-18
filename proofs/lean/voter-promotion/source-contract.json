@@ -21,7 +21,7 @@
     "crates/server/src/data_groups.rs": "86d72d1fa1e27f79614cc21d4fdacaeb70552956683161f58c5a1d8a1658d8fd",
     "crates/server/proto/kv9.proto": "9d5a31e070c1a74568aedf2b101862cb7f47e3734919ae879fcb6ff15ddc6f01",
     "crates/raft/src/driver.rs": "41590a6f888c776be2f5ea37307c06e5452183b65b21ae1d706cfe0779958057",
-    "crates/raft/src/storage.rs": "3ae1606bfe6bdc86dd93fbf614939cb937a2f4d4a4b5e5991fe5885bdac799d4",
+    "crates/raft/src/storage.rs": "2c6bc1bd82dac6c5db2a390868ca67b55793534a705e1d532b84b7694ee49f5d",
     "crates/raft/src/storage/configuration.rs": "be6b0e98c862166fe2ef7bf2cb15c809122b5e7fde0710c28e0465ed84247be5",
     "src/data_group_cli.rs": "16a8986c5c1808b5017609960f66cbb356778f3e0983b7555b34e270d926233a",
     "src/main.rs": "427c54eb77023b7613a7cc255f292df2714c35af576fc3a95de291608fdc07a2",
