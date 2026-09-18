@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "archive_sha256": "06ec1220673897b799095adc49a0abdac6336ba290475384578194bb73effb60",
+  "members_verified": 810,
+  "decoded_bytes": 24889930,
+  "receipts_verified": [
+    "e2e-first accepted (exact final source; 240 writes; ENTRIES trigger OFF, ~4 KiB values cross the 256 KiB byte threshold and every voter compacts at ~67 entries; second burst advances; compacted restart recovers all three voters)",
+    "local-validation.json (serial 952/0, clippy 0)",
+    "byte-compaction-proof (12 theorems, 6+2 controls)",
+    "35 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true,
+  "no_root_bin": true
+}

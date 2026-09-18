@@ -412,6 +412,31 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             .map_err(|e| Error::Raft(format!("applied position missing from Raft history: {e}")))
     }
 
+    /// Total encoded payload bytes of the RETAINED committed log prefix
+    /// `[first_index, committed]`. The on-disk raft-log file is append-only
+    /// and never shrinks, so this in-memory sum over the LIVE retained
+    /// entries is the honest retained-bytes signal (compaction advancing
+    /// `first_index` is what shrinks it). O(retained) — the sole caller gates
+    /// it behind an opt-in byte threshold. Per-entry framing overhead is
+    /// excluded; the payload sum is the size that dominates and the one an
+    /// operator reasons about.
+    pub fn retained_committed_bytes(&self, committed: u64) -> Result<u64> {
+        use raft::Storage as _;
+        let first = self.first_index().map_err(|e| Error::Raft(e.to_string()))?;
+        if committed < first {
+            return Ok(0);
+        }
+        let entries = self
+            .entries(
+                first,
+                committed + 1,
+                None,
+                raft::GetEntriesContext::empty(false),
+            )
+            .map_err(|e| Error::Raft(e.to_string()))?;
+        Ok(entries.iter().map(|e| e.data.len() as u64).sum())
+    }
+
     /// The durable compacted/installed base, when the retained log no longer
     /// starts at 1. Reading it grants no startup authorization by itself.
     pub fn compacted_base(&self) -> Result<Option<kv9_common::AppliedPosition>> {
@@ -900,6 +925,44 @@ mod tests {
         assert_eq!(state.hard_state.vote, 2);
         assert_eq!(raft::Storage::last_index(&s).unwrap(), 2);
         assert_eq!(raft::Storage::term(&s, 2).unwrap(), 7);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn retained_committed_bytes_sums_the_live_prefix_and_excludes_the_compacted_range() {
+        let dir = tmp();
+        let (storage, _) = DiskRaftStorage::open(&dir, &[1, 2, 3]).unwrap();
+        storage
+            .append(&[
+                entry(1, 1, b"aaaa"),
+                entry(2, 1, b"bbbbbb"),
+                entry(3, 1, b"cc"),
+            ])
+            .unwrap();
+        // committed below last only sums the committed prefix payloads.
+        assert_eq!(storage.retained_committed_bytes(2).unwrap(), 4 + 6);
+        assert_eq!(storage.retained_committed_bytes(3).unwrap(), 4 + 6 + 2);
+        // committed below first_index is a legitimate zero, never an error.
+        assert_eq!(storage.retained_committed_bytes(0).unwrap(), 0);
+        // A compaction advancing first_index drops the discarded prefix from
+        // the sum — the append-only file size would NOT reflect this, which is
+        // exactly why the metric sums live entries.
+        storage
+            .set_hardstate(&HardState {
+                term: 1,
+                commit: 3,
+                ..Default::default()
+            })
+            .unwrap();
+        let conf = raft::prelude::ConfState::default();
+        storage
+            .compact_retained_prefix(
+                kv9_common::AppliedPosition { term: 1, index: 2 },
+                &conf,
+                b"floor",
+            )
+            .unwrap();
+        assert_eq!(storage.retained_committed_bytes(3).unwrap(), 2);
         let _ = std::fs::remove_dir_all(&dir);
     }
 

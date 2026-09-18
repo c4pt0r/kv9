@@ -4602,6 +4602,13 @@ pub struct NodeRuntime {
     /// (default). The floor is the local replica's applied position; a
     /// too-aggressive floor simply fails the all-matched gate and retries.
     auto_compact_entries: u64,
+    /// KV9_AUTO_COMPACT_BYTES: retained committed-log PAYLOAD bytes that
+    /// trigger an automatic compaction floor for a bound group. 0 disables
+    /// (default). Complements the entries trigger: entries are a poor proxy
+    /// when value sizes vary, so a group of large values bounds its log by
+    /// bytes. Same floor (the replica's applied position) and same gated
+    /// execution; only the trigger differs.
+    auto_compact_bytes: u64,
     /// KV9_RECLAIM_RETIRED=1: physically delete retired local group
     /// payloads once their committed authority re-verifies. Off by default.
     reclaim_retired: bool,
@@ -5202,6 +5209,10 @@ impl NodeRuntime {
                 .ok()
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(0),
+            auto_compact_bytes: std::env::var("KV9_AUTO_COMPACT_BYTES")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(0),
             reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
@@ -5532,7 +5543,8 @@ impl NodeRuntime {
     /// Disabled unless KV9_AUTO_SPLIT_BYTES > 0; best-effort per turn with
     /// errors surfaced in the control status.
     /// Automatically propose a compaction floor for a bound group whose
-    /// retained raft log has grown past KV9_AUTO_COMPACT_ENTRIES (0 = off).
+    /// retained raft log has grown past KV9_AUTO_COMPACT_ENTRIES entries OR
+    /// KV9_AUTO_COMPACT_BYTES retained payload bytes (each 0 = off).
     /// Metadata-leader-driven, observing the LOCAL replica (any replica's
     /// applied position is a committed position). The floor is that applied
     /// position; plan_compaction enforces strictly increasing floors and the
@@ -5540,7 +5552,9 @@ impl NodeRuntime {
     /// fails the all-matched gate and retries, never strands a voter. One
     /// automatic floor per group per turn.
     fn reconcile_auto_compaction(&mut self) {
-        if self.auto_compact_entries == 0 || self.driver.status().role != kv9_raft::Role::Leader {
+        if (self.auto_compact_entries == 0 && self.auto_compact_bytes == 0)
+            || self.driver.status().role != kv9_raft::Role::Leader
+        {
             return;
         }
         let store = &self.node.meta_raft.store;
@@ -5578,21 +5592,39 @@ impl NodeRuntime {
                 continue;
             }
             let retained = status.raft_committed.saturating_sub(status.log_first_index);
-            if retained < self.auto_compact_entries {
-                continue;
-            }
-            // The floor is this replica's applied position — a durable,
-            // committed (term, index). Only propose when applied has advanced
-            // a full threshold past the last committed floor, avoiding churn.
             let last_floor = floors
                 .iter()
                 .find(|d| d.region() == region)
                 .map(|d| d.floor().index)
                 .unwrap_or(0);
-            if status.applied_index == 0
-                || status.applied_term == 0
-                || status.applied_index < last_floor.saturating_add(self.auto_compact_entries)
-            {
+            if status.applied_index == 0 || status.applied_term == 0 {
+                continue;
+            }
+            // ENTRIES trigger: the retained window past the threshold AND the
+            // applied position advanced a full threshold past the last floor
+            // (rate-limits proposals, guarantees meaningful progress).
+            let entries_triggered = self.auto_compact_entries > 0
+                && retained >= self.auto_compact_entries
+                && status.applied_index >= last_floor.saturating_add(self.auto_compact_entries);
+            // BYTES trigger: the retained committed PAYLOAD past the threshold.
+            // Churn guard is EXECUTION-based: only once the last floor has been
+            // executed here (`log_first_index > last_floor`, or none yet) does
+            // `retained_committed_bytes` measure growth SINCE that floor, so a
+            // reading past the threshold is genuine post-floor accumulation —
+            // never a re-proposal while an earlier floor still awaits its
+            // all-matched execution. The byte sum is computed only in this
+            // opt-in branch.
+            let bytes_triggered = self.auto_compact_bytes > 0
+                && status.log_first_index > last_floor
+                && status.applied_index > last_floor
+                && match driver.peer().retained_log_bytes() {
+                    Ok(bytes) => bytes >= self.auto_compact_bytes,
+                    Err(error) => {
+                        self.group_control_error = Some(format!("auto-compact bytes: {error}"));
+                        false
+                    }
+                };
+            if !(entries_triggered || bytes_triggered) {
                 continue;
             }
             let floor = kv9_common::AppliedPosition {
