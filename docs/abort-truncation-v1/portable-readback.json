@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "archive_sha256": "7be728e722aeae5b262c2d8de421fc2b3dc5f8079d3d011e6e46d58e4726cde3",
+  "members_verified": 1465,
+  "decoded_bytes": 7280424,
+  "receipts_verified": [
+    "e2e-fifth accepted (exact final source; abort-settled compaction receipt re-verified in-packet); e2e-third also accepted",
+    "three retained failures (token slip; two metadata-leader-migration walls -> per-verb re-resolution)",
+    "local-validation.json (serial 948/0, clippy 0)",
+    "abort-truncation-proof (13 theorems, 5+2 controls)",
+    "retention PASS",
+    "30 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true
+}
