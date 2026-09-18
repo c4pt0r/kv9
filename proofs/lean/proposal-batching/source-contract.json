@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/proposal-batching/ProposalBatching.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "receipts_fan_out_only_after_the_apply",
+    "the_batch_applies_only_after_its_one_proposal",
+    "the_proposal_requires_the_taken_batch",
+    "no_cross_epoch_write_ever_merges",
+    "no_writer_joins_a_taken_batch",
+    "arrival_order_is_never_reordered",
+    "no_write_is_ever_lost",
+    "a_join_requires_a_live_open_batch",
+    "a_retry_keeps_the_exact_identity",
+    "the_take_is_permanent",
+    "an_open_batch_alone_proposes_nothing",
+    "the_batched_chain_completes"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime/range_api.rs": "25a159787d23ff85a5f912dda680ccbf9bac3f0e7764b4865a803f7dd9af9498",
+    "crates/raft/src/command.rs": "2bd9eede9154f50130c56624234bb1c33417c635ffae4aa7d8f25b4590797a7e",
+    "scripts/proposal-batching-e2e.py": "4f69a9caaaceed782122891c18d1e7ca017ce0ad7f6adb5f5b8b1833d2c9e5e0",
+    "scripts/batching-bench.py": "ee6ff479b3e9ab1c00dd8a4a7c9b881607d93e8ad85ede770e6795850b2170ce",
+    "proofs/lean/proposal-batching/ProposalBatching.lean": "4c88091a7a0ef8664dab49239702ec547de9f686395730a7c1e28f240c25029e",
+    "proofs/lean/proposal-batching/README.md": "c5921aa03ba4f9aae150c9baa973ee39fc47cbc012b1159cbf238b4f9aaa1943"
+  }
+}
