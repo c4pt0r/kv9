@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "archive_sha256": "e1462032d74a5999a8df76792d4e779b6c1826d05024cc40746034de7635535a",
+  "members_verified": 829,
+  "decoded_bytes": 17220987,
+  "receipts_verified": [
+    "e2e-first accepted (exact final source; 24 writes; BOTH size triggers OFF, a dozen tiny values stay far below any threshold and every voter compacts on AGE alone at ~15 entries; second burst+idle advances; compacted restart recovers all three)",
+    "local-validation.json (serial 952/0, clippy 0)",
+    "age-compaction-proof (13 theorems, 6+2 controls)",
+    "36 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true,
+  "no_root_bin": true
+}
