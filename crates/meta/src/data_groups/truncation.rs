@@ -132,6 +132,24 @@ fn matches_evidence(
     Ok(())
 }
 
+fn matches_abort(
+    decision: &TruncationDecision,
+    abort: &super::abort::MigrationAbort,
+) -> Result<()> {
+    if abort.task() != decision.evidence_task
+        || abort.operation() != decision.operation
+        || abort.root() != decision.root
+        || abort.region() != decision.region
+    {
+        return Err(invalid("decision differs from the committed abort"));
+    }
+    // An aborted operation has no installed image and no evidence cut: the
+    // detached learner no longer consumes the tail. The floor's guard is
+    // the raft-level compaction gate (leader-only, every voter matched at
+    // or beyond the floor, local prefix only) plus the released source pin.
+    Ok(())
+}
+
 /// Stage one idempotent truncation decision in the serialized, term-fenced
 /// catalog transaction. `false` means the exact decision already exists and
 /// this commit is a confirmation receipt. The committed evidence row is the
@@ -147,22 +165,43 @@ pub fn plan_truncation<E: Engine>(
     if rows.len() > MAX_CREATION_TASKS {
         return Err(invalid("bounded truncation task scan exceeded"));
     }
+    // The committed SETTLEMENT is the authority: install evidence (the
+    // transfer completed; the floor stays at or below its cut) or a
+    // committed abort (the operation was abandoned and its learner
+    // detached; the raft compaction gate guards the floor). Exactly one
+    // exists per operation — evidence and abort are mutually exclusive.
     let mut evidence = None;
+    let mut abort = None;
     for row in &rows {
         if let Some(committed) = super::evidence::from_row_for_siblings(row, root.digest())? {
             if committed.operation() == operation {
                 evidence = Some(committed);
             }
         }
+        if let Some(committed) = super::abort::from_abort_row(row, root.digest())? {
+            if committed.operation() == operation {
+                abort = Some(committed);
+            }
+        }
     }
-    let evidence =
-        evidence.ok_or_else(|| invalid("truncation requires the committed install evidence"))?;
+    let (settlement_task, region) = match (&evidence, &abort) {
+        (Some(evidence), None) => (evidence.task(), evidence.region()),
+        (None, Some(abort)) => (abort.task(), abort.region()),
+        (Some(_), Some(_)) => {
+            return Err(invalid("an operation carries both evidence and an abort"))
+        }
+        (None, None) => {
+            return Err(invalid(
+                "truncation requires the committed install evidence",
+            ))
+        }
+    };
     let decision = TruncationDecision {
         root: root.digest(),
         operation,
         task: 0,
-        evidence_task: evidence.task(),
-        region: evidence.region(),
+        evidence_task: settlement_task,
+        region,
         floor,
     };
     for row in &rows {
@@ -177,7 +216,7 @@ pub fn plan_truncation<E: Engine>(
                 }
                 return Ok((previous, false));
             }
-            if previous.region == evidence.region() {
+            if previous.region == region {
                 return Err(invalid("a committed decision already binds this group"));
             }
         }
@@ -186,7 +225,11 @@ pub fn plan_truncation<E: Engine>(
         task: txn.allocate_id(SequenceKind::Task)?,
         ..decision
     };
-    matches_evidence(&decision, &evidence)?;
+    match (&evidence, &abort) {
+        (Some(evidence), None) => matches_evidence(&decision, evidence)?,
+        (None, Some(abort)) => matches_abort(&decision, abort)?,
+        _ => unreachable!("settlement resolved above"),
+    }
     TruncationDecision::decode(&decision.encode())?;
     if rows.len() == MAX_CREATION_TASKS {
         return Err(invalid("truncation task capacity reached"));
@@ -219,6 +262,7 @@ pub fn committed_truncations<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Trun
     for row in &rows {
         if let Some(decision) = from_truncation_row(row, root.digest())? {
             let mut evidence = None;
+            let mut abort = None;
             for other in &rows {
                 if let Some(committed) =
                     super::evidence::from_row_for_siblings(other, root.digest())?
@@ -227,10 +271,24 @@ pub fn committed_truncations<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Trun
                         evidence = Some(committed);
                     }
                 }
+                if let Some(committed) = super::abort::from_abort_row(other, root.digest())? {
+                    if committed.operation() == decision.operation {
+                        abort = Some(committed);
+                    }
+                }
             }
-            let evidence = evidence
-                .ok_or_else(|| invalid("truncation requires the committed install evidence"))?;
-            matches_evidence(&decision, &evidence)?;
+            match (&evidence, &abort) {
+                (Some(evidence), None) => matches_evidence(&decision, evidence)?,
+                (None, Some(abort)) => matches_abort(&decision, abort)?,
+                (Some(_), Some(_)) => {
+                    return Err(invalid("an operation carries both evidence and an abort"))
+                }
+                (None, None) => {
+                    return Err(invalid(
+                        "truncation requires the committed install evidence",
+                    ))
+                }
+            }
             if out.iter().any(|prior| {
                 prior.task == decision.task
                     || prior.operation == decision.operation
@@ -389,5 +447,45 @@ mod tests {
             txn.commit().unwrap();
             assert!(committed_truncations(&store).is_err(), "accepted {defect}");
         }
+    }
+
+    #[test]
+    fn an_abort_settles_truncation_without_an_evidence_cut() {
+        let store = super::super::tests::fixture();
+        register_node(&store, 4, [40; 16]);
+        let mut txn = store.begin().unwrap();
+        let creation =
+            plan_empty_group(&mut txn, [1; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        super::super::activation::plan_activation(&mut txn, &creation).unwrap();
+        let (migration, _) =
+            super::super::migration::plan_migration(&mut txn, [2; 16], creation.task(), NodeId(4))
+                .unwrap();
+        let floor = AppliedPosition { term: 5, index: 40 };
+        assert!(
+            plan_truncation(&mut txn, migration.operation(), floor).is_err(),
+            "an unsettled operation must refuse"
+        );
+        super::super::abort::plan_abort(&mut txn, migration.operation(), [42; 32]).unwrap();
+        txn.commit().unwrap();
+        let mut txn = store.begin().unwrap();
+        let (planned, changed) = plan_truncation(&mut txn, migration.operation(), floor).unwrap();
+        assert!(changed);
+        assert_eq!(planned.region(), migration.region());
+        assert_eq!(planned.floor(), floor);
+        txn.commit().unwrap();
+        assert_eq!(
+            committed_truncations(&store).unwrap(),
+            vec![planned.clone()]
+        );
+        let mut txn = store.begin().unwrap();
+        let (retry, changed) = plan_truncation(&mut txn, migration.operation(), floor).unwrap();
+        assert!(!changed);
+        assert_eq!(retry, planned);
+        assert!(plan_truncation(
+            &mut txn,
+            migration.operation(),
+            AppliedPosition { term: 5, index: 41 }
+        )
+        .is_err());
     }
 }

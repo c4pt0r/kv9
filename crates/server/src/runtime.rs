@@ -2260,18 +2260,32 @@ impl AdminApi for RuntimeBackend {
         }
         let (decision, changed) =
             kv9_meta::data_groups::truncation::plan_truncation(&mut txn, operation, floor)?;
-        // The decision consumes the settled transfer: the SOURCE pin must be
-        // Released before any log below the floor is authorized away.
-        let evidence = kv9_meta::data_groups::evidence::committed_install_evidence(
-            &self.node.meta_raft.store,
-        )?
-        .into_iter()
-        .find(|e| e.operation() == operation)
-        .ok_or_else(|| Error::Config("truncation requires committed evidence".into()))?;
+        // The decision consumes the settled operation: the SOURCE pin must be
+        // Released before any log below the floor is authorized away. Either
+        // settlement carries the destination incarnation the owner ids were
+        // derived from — install evidence (completed transfer) or the
+        // committed abort (abandoned transfer, learner detached).
+        let destination_incarnation = if let Some(evidence) =
+            kv9_meta::data_groups::evidence::committed_install_evidence(&self.node.meta_raft.store)?
+                .into_iter()
+                .find(|e| e.operation() == operation)
+        {
+            evidence.destination().incarnation
+        } else if let Some(abort) =
+            kv9_meta::data_groups::abort::committed_aborts(&self.node.meta_raft.store)?
+                .into_iter()
+                .find(|a| a.operation() == operation)
+        {
+            abort.destination().incarnation
+        } else {
+            return Err(Error::Config(
+                "truncation requires committed evidence".into(),
+            ));
+        };
         let (source_owner, _) = crate::migration_retention::migration_owner_ids(
             root,
             operation,
-            &evidence.destination().incarnation,
+            &destination_incarnation,
         )?;
         let view = self.node.meta_raft.store.begin()?.into_view();
         let owner = kv9_meta::retention::retention_owner(view.as_ref(), &certified, source_owner)?

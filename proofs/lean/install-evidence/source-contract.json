@@ -22,7 +22,7 @@
     "crates/meta/src/data_groups/migration.rs": "cd87ad2b1a21d1a48f1560ca8f8d393078377f1f864419959a82aa9abf349b33",
     "crates/meta/src/retention.rs": "9d0121dbe04faa6f6a634edb218fdc56697069e845c03b023691944e129961ce",
     "crates/server/src/migration_retention.rs": "d0ce2593475092c6a09fa6e8b65420f66a7fd5ab42e75fc9a1d2824b380b34d1",
-    "crates/server/src/runtime.rs": "ac4d777216c1d48d7a1f50094e430eb4c3ba9cce0bb5ee5d0d5c44b4d4d5ddf0",
+    "crates/server/src/runtime.rs": "de900b4d5856aeced0ba1a13b1ac366509b7176d03895a737be1e4cf3d199052",
     "crates/server/src/region_manager.rs": "827d9ee99aea47a980f7dc1ff762ce7989a16c9b0f59dbe7a25b28ab2270866a",
     "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
     "crates/server/src/api.rs": "2124ea5684ac16b67878f64f4019142f686eaa8fa6543946e822b288960ded46",
