@@ -4354,6 +4354,9 @@ pub struct NodeRuntime {
     /// KV9_AUTO_SPLIT_BYTES: local replica WAL bytes that trigger an
     /// automatic split of a bound, unsealed range. 0 disables (default).
     auto_split_bytes: u64,
+    /// KV9_RECLAIM_RETIRED=1: physically delete retired local group
+    /// payloads once their committed authority re-verifies. Off by default.
+    reclaim_retired: bool,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -4947,6 +4950,7 @@ impl NodeRuntime {
                 .ok()
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(0),
+            reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             node,
@@ -5094,6 +5098,43 @@ impl NodeRuntime {
                 .retire_published_parent(intent.parent_region())
             {
                 self.group_control_error = Some(error.to_string());
+            }
+        }
+    }
+
+    /// Physical reclamation of RETIRED local group payloads, off unless
+    /// KV9_RECLAIM_RETIRED=1. Deletion is local and irreversible, so each
+    /// candidate's committed authority is re-verified from LOCAL applied
+    /// state first: either the published split (a SEALED binding for the
+    /// region — its children's bindings are the permanent evidence) or a
+    /// committed removal decision naming this exact store. A retired group
+    /// with neither is left untouched — refusal in the safe direction.
+    /// Every candidate is processed each turn; errors surface and retry.
+    fn reconcile_reclamation(&mut self) {
+        if !self.reclaim_retired {
+            return;
+        }
+        let store = &self.node.meta_raft.store;
+        let Ok(bindings) = kv9_meta::data_groups::ranges::committed_ranges(store) else {
+            return; // metadata not ready; not-yet, never fatal
+        };
+        let Ok(removals) = kv9_meta::data_groups::removal::committed_removals(store) else {
+            return;
+        };
+        for region in self.data_groups.retired_regions() {
+            let sealed = bindings
+                .iter()
+                .any(|b| b.range().region == region && b.range().sealed);
+            let removed = removals.iter().any(|d| {
+                d.region() == region
+                    && d.source().node == self.store_identity.node_id
+                    && d.source().incarnation == self.store_identity.store_incarnation
+            });
+            if !sealed && !removed {
+                continue; // no committed authority locally applied yet
+            }
+            if let Err(error) = self.data_groups.reclaim_retired(region) {
+                self.group_control_error = Some(format!("reclamation: {error}"));
             }
         }
     }
@@ -5555,6 +5596,7 @@ impl NodeRuntime {
                         self.reconcile_adoption();
                         self.reconcile_retirement();
                         self.reconcile_split_retirement();
+                        self.reconcile_reclamation();
                         self.reconcile_auto_split();
                         if let Err(error) = kv9_meta::data_groups::ranges::committed_ranges(
                             &self.node.meta_raft.store,

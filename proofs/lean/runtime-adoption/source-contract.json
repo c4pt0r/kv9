@@ -23,8 +23,8 @@
     "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
     "crates/raft/src/snapshot_install/tests.rs": "0733d4068fc717e541ac1fb9242adf356abf907b3e1582110a98aa4e104724d9",
     "crates/raft/src/storage/snapshot/tests.rs": "418d17f65a5d3ce035a5e824f75b9a0a5b9664bcafa5c7476e59faedd6f9a732",
-    "crates/server/src/region_manager.rs": "3bf1b08381da984e54f5a7f78b931921631fa114a397fda435d05f3c2b208c3e",
-    "crates/server/src/runtime.rs": "dccf54bdf32a60b786d6454c2e45b8127494826fe0004a8b923a306761112faf",
+    "crates/server/src/region_manager.rs": "ecf5c947810d15666c28663ebbffb376418e84b6a57b8048fb6de01d2c6f2ae4",
+    "crates/server/src/runtime.rs": "7209e4e7c3e4749bbbcddf7958427ee2a910c52f5d76600012e102e292ad0265",
     "scripts/runtime-install-e2e.py": "06ba7fa081f19ed577314ccc5f9f8cc93b12fad03022959e010aff4c80d7c6a5",
     "proofs/lean/runtime-adoption/Adoption.lean": "32677db1e04d5a90c5d45c8c96c15f2fef65fcd6de5530471fd489d5f0f29835",
     "proofs/lean/runtime-adoption/README.md": "d63902e2335e855ecd4c32429d1702d91e830af78b497273c9056eb17e73ed3c"

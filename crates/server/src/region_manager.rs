@@ -36,6 +36,10 @@ enum Phase {
     /// The committed removal named this exact store; the local replica is
     /// permanently fenced. Storage stays durable; nothing is deleted.
     Retired = 3,
+    /// The retired payload (engine WAL/segments and raft log) has been
+    /// physically deleted under re-verified committed authority. The record
+    /// itself IS the surviving fence and is never deleted.
+    Reclaimed = 4,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -69,6 +73,7 @@ impl Record {
             1 => Phase::StorageReady,
             2 => Phase::Active,
             3 => Phase::Retired,
+            4 => Phase::Reclaimed,
             _ => return Err(invalid("unknown local group phase")),
         };
         Ok(Self {
@@ -105,6 +110,10 @@ enum LocalGroup {
     /// Permanently fenced by a committed removal; the lock keeps any other
     /// opener out and the durable storage untouched.
     Retired {
+        _lock: File,
+    },
+    /// Fenced AND physically reclaimed: only the record and lock remain.
+    Reclaimed {
         _lock: File,
     },
 }
@@ -228,7 +237,7 @@ fn publish(
             PrepareStep::ReadyRename,
             PrepareStep::ReadyDirectorySync,
         ],
-        Phase::Active | Phase::Retired => [
+        Phase::Active | Phase::Retired | Phase::Reclaimed => [
             PrepareStep::ActiveFileSync,
             PrepareStep::ActiveRename,
             PrepareStep::ActiveDirectorySync,
@@ -248,6 +257,38 @@ fn publish(
     operation(steps[2], observe, || {
         kv9_common::fs::sync_ancestors(&kv9_common::fs::OsFileSystem, directory).map_err(io)
     })
+}
+
+/// Delete a group directory's PAYLOAD only — engine WAL, segment directory,
+/// raft log — leaving the record (the fence) and the lock file untouched.
+/// Idempotent: absent paths are simply already gone. Returns bytes removed.
+fn delete_group_payload(directory: &Path) -> Result<u64> {
+    let mut freed = 0u64;
+    let wal = directory.join("data.wal");
+    if let Ok(meta) = fs::metadata(&wal) {
+        freed += meta.len();
+        fs::remove_file(&wal).map_err(io)?;
+    }
+    for name in ["data.segments", "raft"] {
+        let path = directory.join(name);
+        if !path.exists() {
+            continue;
+        }
+        let mut stack = vec![path.clone()];
+        while let Some(dir) = stack.pop() {
+            for entry in fs::read_dir(&dir).map_err(io)?.flatten() {
+                let child = entry.path();
+                if child.is_dir() {
+                    stack.push(child);
+                } else if let Ok(meta) = entry.metadata() {
+                    freed += meta.len();
+                }
+            }
+        }
+        fs::remove_dir_all(&path).map_err(io)?;
+    }
+    kv9_common::fs::sync_ancestors(&kv9_common::fs::OsFileSystem, directory).map_err(io)?;
+    Ok(freed)
 }
 
 impl RegionManager {
@@ -425,7 +466,7 @@ impl RegionManager {
         let region = migration.intent().region();
         match self.groups.get(&region) {
             Some(LocalGroup::Ready(prepared)) if prepared.driver.is_some() => return Ok(()),
-            Some(LocalGroup::Retired { .. }) => return Ok(()),
+            Some(LocalGroup::Retired { .. }) | Some(LocalGroup::Reclaimed { .. }) => return Ok(()),
             _ => {}
         }
         let adopted =
@@ -540,7 +581,7 @@ impl RegionManager {
             return Ok(()); // nothing local to fence
         };
         match entry {
-            LocalGroup::Retired { .. } => return Ok(()),
+            LocalGroup::Retired { .. } | LocalGroup::Reclaimed { .. } => return Ok(()),
             LocalGroup::Failed(_) => return Ok(()), // quarantined already
             LocalGroup::Ready(_) => {}
         }
@@ -576,6 +617,48 @@ impl RegionManager {
         Ok(())
     }
 
+    /// Physically delete a RETIRED local group's payload — the engine WAL,
+    /// its segment directory and the raft log — under the caller's
+    /// re-verified committed authority. The durable record survives as the
+    /// permanent fence and is REWRITTEN to `Reclaimed` BEFORE any file is
+    /// deleted, so a crash mid-deletion resumes idempotently at discovery.
+    /// Returns the payload bytes freed (0 on an idempotent confirmation).
+    pub(crate) fn reclaim_retired(&mut self, region: RegionId) -> Result<u64> {
+        match self.groups.get(&region) {
+            None => return Ok(0), // nothing local to reclaim
+            Some(LocalGroup::Reclaimed { .. }) => return Ok(0),
+            Some(LocalGroup::Retired { .. }) => {}
+            Some(LocalGroup::Ready(_)) => {
+                return Err(invalid("reclamation requires the retired fence"));
+            }
+            Some(LocalGroup::Failed(_)) => {
+                return Err(invalid("a quarantined group is never reclaimed"));
+            }
+        }
+        let directory = self.directory.join(region.0.to_string());
+        let record = read_record(&directory.join(RECORD))?
+            .ok_or_else(|| invalid("retired group record is missing"))?;
+        if record.phase != Phase::Retired || record.intent.region() != region {
+            return Err(invalid("retired group record differs"));
+        }
+        // Durable fence first: the Reclaimed record commits the deletion
+        // before one byte disappears.
+        publish(
+            &directory,
+            &Record {
+                phase: Phase::Reclaimed,
+                ..record
+            },
+            &mut |_, _| Ok(()),
+        )?;
+        let freed = delete_group_payload(&directory)?;
+        let Some(LocalGroup::Retired { _lock }) = self.groups.remove(&region) else {
+            unreachable!()
+        };
+        self.groups.insert(region, LocalGroup::Reclaimed { _lock });
+        Ok(freed)
+    }
+
     /// At most one new local activation per reconciliation turn. Terminal
     /// failures stay quarantined until a new manager performs disk recovery.
     pub(crate) fn reconcile_activation(
@@ -598,7 +681,7 @@ impl RegionManager {
             let region = intent.region();
             match self.groups.get(&region) {
                 Some(LocalGroup::Failed(_)) => continue,
-                Some(LocalGroup::Retired { .. }) => continue,
+                Some(LocalGroup::Retired { .. }) | Some(LocalGroup::Reclaimed { .. }) => continue,
                 Some(LocalGroup::Ready(p)) if p.driver.is_some() => continue,
                 _ => {}
             }
@@ -618,6 +701,9 @@ impl RegionManager {
                 }),
                 LocalGroup::Retired { .. } => serde_json::json!({
                     "region": region.0, "state": "retired",
+                }),
+                LocalGroup::Reclaimed { .. } => serde_json::json!({
+                    "region": region.0, "state": "reclaimed",
                 }),
                 LocalGroup::Ready(p) => match p.driver.as_ref().map(|d| d.status()) {
                     None => serde_json::json!({"region": region.0, "state": "prepared"}),
@@ -706,6 +792,7 @@ impl RegionManager {
                 .ok_or_else(|| invalid("data group is not active")),
             Some(LocalGroup::Failed(cause)) => Err(invalid(cause)),
             Some(LocalGroup::Retired { .. }) => Err(invalid("data group is retired")),
+            Some(LocalGroup::Reclaimed { .. }) => Err(invalid("data group is reclaimed")),
             None => Err(invalid("unknown data group")),
         }
     }
@@ -751,6 +838,7 @@ impl RegionManager {
                 }
                 LocalGroup::Ready(_) => Err(invalid("group ID is already bound to another intent")),
                 LocalGroup::Retired { .. } => Err(invalid("data group is retired")),
+                LocalGroup::Reclaimed { .. } => Err(invalid("data group is reclaimed")),
                 LocalGroup::Failed(cause) => Err(invalid(&format!(
                     "group requires recovery after failure: {cause}"
                 ))),
@@ -949,7 +1037,7 @@ impl RegionManager {
                     if record.intent.region() != id {
                         return Err(invalid("group directory and record identity differ"));
                     }
-                    if record.phase == Phase::Retired {
+                    if record.phase == Phase::Retired || record.phase == Phase::Reclaimed {
                         // Permanently fenced: hold the lock, open nothing.
                         let lock = OpenOptions::new()
                             .read(true)
@@ -961,7 +1049,16 @@ impl RegionManager {
                         lock.try_lock().map_err(|e| {
                             invalid(&format!("retired group is already owned: {e}"))
                         })?;
-                        self.groups.insert(id, LocalGroup::Retired { _lock: lock });
+                        if record.phase == Phase::Reclaimed {
+                            // The durable Reclaimed record committed the
+                            // deletion; a crash mid-deletion left payload
+                            // behind — finishing it here is the resume.
+                            delete_group_payload(&entry.path())?;
+                            self.groups
+                                .insert(id, LocalGroup::Reclaimed { _lock: lock });
+                        } else {
+                            self.groups.insert(id, LocalGroup::Retired { _lock: lock });
+                        }
                         return Ok(());
                     }
                 }
@@ -978,6 +1075,15 @@ impl RegionManager {
         Ok(())
     }
 
+    /// The locally RETIRED (not yet reclaimed) regions — reclamation
+    /// candidates for the caller to authorize against committed state.
+    pub(crate) fn retired_regions(&self) -> Vec<RegionId> {
+        self.groups
+            .iter()
+            .filter_map(|(id, group)| matches!(group, LocalGroup::Retired { .. }).then_some(*id))
+            .collect()
+    }
+
     pub(crate) fn observations(&self) -> Vec<(RegionId, Result<GroupPreparation>)> {
         self.groups
             .iter()
@@ -988,6 +1094,7 @@ impl RegionManager {
                         LocalGroup::Ready(p) => Ok(p.observation.clone()),
                         LocalGroup::Failed(cause) => Err(invalid(cause)),
                         LocalGroup::Retired { .. } => Err(invalid("data group is retired")),
+                        LocalGroup::Reclaimed { .. } => Err(invalid("data group is reclaimed")),
                     },
                 )
             })
