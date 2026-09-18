@@ -592,6 +592,21 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         store.compact_retained_prefix(floor, &configuration, decision)
     }
 
+    /// Retained committed-log payload bytes on THIS replica — the honest
+    /// byte signal for a byte-based auto-compaction trigger (the append-only
+    /// file never shrinks; only advancing `first_index` does). O(retained);
+    /// the caller gates it behind an opt-in threshold.
+    pub fn retained_log_bytes(&self) -> Result<u64>
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        let g = self.lock();
+        g.check_fatal()?;
+        let committed = g.raw.raft.raft_log.committed;
+        let store: &crate::storage::DiskRaftStorage = g.raw.store().borrow();
+        store.retained_committed_bytes(committed)
+    }
+
     /// Request a quorum-confirmed read index (task #28). Leader-only by
     /// design: the establishing read type owns leadership discovery, and a
     /// follower answering reads is exactly what the linearizable promise

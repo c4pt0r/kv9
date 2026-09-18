@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/byte-compaction/ByteCompaction.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "a_proposal_requires_grown_bytes",
+    "a_committed_floor_requires_a_proposal",
+    "the_floor_is_always_committed_backed",
+    "the_floor_never_regresses",
+    "an_unexecutable_floor_is_never_forced",
+    "an_unexecutable_floor_only_retries",
+    "a_commit_is_permanent",
+    "entries_growth_alone_proposes_nothing",
+    "the_byte_trigger_chain_commits_a_backed_floor"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime.rs": "a919c878e733f35cfcf38ef90fec270e369aeb9578c95df5c77c15ea95459759",
+    "crates/server/src/region_manager.rs": "fee30f893738cf6b42bda0c04dfbf028febec818797b073871cf1feba3283271",
+    "crates/raft/src/storage.rs": "3ae1606bfe6bdc86dd93fbf614939cb937a2f4d4a4b5e5991fe5885bdac799d4",
+    "crates/raft/src/rawnode.rs": "e0b0b78c8bba52dd79ab741ec059d337fd980fff518031418e74cdac791c5199",
+    "scripts/auto-compact-bytes-e2e.py": "c7fb881817b1bde5cb15ab4e7241cb84013898a69038f487d50783d02e75120f",
+    "proofs/lean/byte-compaction/ByteCompaction.lean": "55857cc8d7cae68846d234777a2eb111314aa7f089c8c05e07eec0dade5ba38c",
+    "proofs/lean/byte-compaction/README.md": "61201266439d74e872e4cfd716cb61cb60f717201fbd416f842ad982c96f2290"
+  }
+}

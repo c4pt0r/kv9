@@ -18,13 +18,13 @@
     "after_adoption_the_engine_never_regresses"
   ],
   "source_sha256": {
-    "crates/raft/src/rawnode.rs": "662c98211aa83b222ecd5ad422345115a97241e85b26ef310a97af028be9146f",
+    "crates/raft/src/rawnode.rs": "e0b0b78c8bba52dd79ab741ec059d337fd980fff518031418e74cdac791c5199",
     "crates/raft/src/driver.rs": "41590a6f888c776be2f5ea37307c06e5452183b65b21ae1d706cfe0779958057",
     "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
     "crates/raft/src/snapshot_install/tests.rs": "0733d4068fc717e541ac1fb9242adf356abf907b3e1582110a98aa4e104724d9",
     "crates/raft/src/storage/snapshot/tests.rs": "76a4b8f1a8e2683d4aa7c1a9f9ce41d5be4cfe139afa98895a44335552cc8ce6",
-    "crates/server/src/region_manager.rs": "59423127353ff6546b46ac63f900b9d50d87512a998917c23a9fb6709e8b700d",
-    "crates/server/src/runtime.rs": "5c81a27ea925b3c0d73ee227571e4471cf1454d7a50853eaaef8270d27ef9eae",
+    "crates/server/src/region_manager.rs": "fee30f893738cf6b42bda0c04dfbf028febec818797b073871cf1feba3283271",
+    "crates/server/src/runtime.rs": "a919c878e733f35cfcf38ef90fec270e369aeb9578c95df5c77c15ea95459759",
     "scripts/runtime-install-e2e.py": "06ba7fa081f19ed577314ccc5f9f8cc93b12fad03022959e010aff4c80d7c6a5",
     "proofs/lean/runtime-adoption/Adoption.lean": "32677db1e04d5a90c5d45c8c96c15f2fef65fcd6de5530471fd489d5f0f29835",
     "proofs/lean/runtime-adoption/README.md": "d63902e2335e855ecd4c32429d1702d91e830af78b497273c9056eb17e73ed3c"
