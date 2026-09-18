@@ -145,6 +145,12 @@ fn validate_against<E: Engine>(
     }
     // A sealed parent is legal ONLY as this intent's own published shape:
     // both children bound with the exact partition the intent describes.
+    // The children may themselves be sealed by NOW — a bound range never
+    // changes its boundaries, so their exact start/end remain permanent
+    // evidence of this publication. Requiring them unsealed made a
+    // grandchild's publication retroactively invalidate its grandparent's
+    // intent, and that one row froze the whole split subsystem (the
+    // cascade sealed-unpublished hang).
     if parent.range().sealed {
         let bindings = super::ranges::committed_ranges_in_txn(txn)?;
         let published = [
@@ -168,7 +174,6 @@ fn validate_against<E: Engine>(
                 .is_some_and(|creation| {
                     bindings.iter().any(|b| {
                         b.range().region == creation.region()
-                            && !b.range().sealed
                             && b.range().start == start
                             && b.range().end == end
                     })
@@ -489,6 +494,65 @@ mod tests {
         assert!(!changed);
         assert_eq!(again.low_region, low.region());
         assert_eq!(again.sealed_version, 2);
+    }
+
+    #[test]
+    fn a_cascade_publication_never_invalidates_its_grandparent_intent() {
+        // The historical hang: publish split 1, then split one of its
+        // children and publish THAT — the child's binding seals, and the
+        // first intent's published-shape readback must keep accepting it.
+        // Before the fix committed_splits errored with "split parent range
+        // is already sealed", freezing every split (and the OTHER child's
+        // in-flight pipeline) forever.
+        let store = super::super::tests::fixture();
+        let (parent_region, low, high) = bound_parent(&store);
+        let mut txn = store.begin().unwrap();
+        let (first, _) = plan_split(
+            &mut txn,
+            [9; 16],
+            parent_region,
+            b"m",
+            low.task(),
+            high.task(),
+        )
+        .unwrap();
+        txn.commit().unwrap();
+        let mut txn = store.begin().unwrap();
+        publish_split(&mut txn, [9; 16]).unwrap();
+        txn.commit().unwrap();
+        // Two activated grandchildren, then split the LOW child.
+        let mut txn = store.begin().unwrap();
+        let grand_low =
+            plan_empty_group(&mut txn, [4; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        super::super::activation::plan_activation(&mut txn, &grand_low).unwrap();
+        let grand_high =
+            plan_empty_group(&mut txn, [5; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        super::super::activation::plan_activation(&mut txn, &grand_high).unwrap();
+        txn.commit().unwrap();
+        let mut txn = store.begin().unwrap();
+        let (second, _) = plan_split(
+            &mut txn,
+            [10; 16],
+            low.region(),
+            b"g",
+            grand_low.task(),
+            grand_high.task(),
+        )
+        .unwrap();
+        txn.commit().unwrap();
+        let mut txn = store.begin().unwrap();
+        publish_split(&mut txn, [10; 16]).unwrap();
+        txn.commit().unwrap();
+        // BOTH intents read back: the low child is sealed now, and the
+        // grandparent's published shape still validates.
+        let intents = committed_splits(&store).unwrap();
+        assert_eq!(intents, vec![first, second]);
+        let bindings = super::super::ranges::committed_ranges(&store).unwrap();
+        let sealed_low = bindings
+            .iter()
+            .find(|b| b.range().region == low.region())
+            .unwrap();
+        assert!(sealed_low.range().sealed, "the cascade sealed the child");
     }
 
     #[test]
