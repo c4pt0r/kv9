@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "model": "Kv9.CrossRange",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "chunks_walk_in_key_order",
+    "chunks_require_the_partition",
+    "no_key_is_skipped",
+    "no_key_is_duplicated",
+    "the_span_is_never_one_snapshot",
+    "a_chunk_is_permanent",
+    "a_partition_alone_serves_nothing",
+    "the_span_completes_across_the_boundary"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime.rs": "48e143f4f35a7e0c0fec53374022d5dd7d6b0009e8cb56b0a33e5613361013d6",
+    "crates/server/src/runtime/range_api.rs": "c76fe9317eb9ce99a1bd724eefb49fd565cb8562c5e6ede46a2ff07c2d88824f",
+    "crates/server/src/api.rs": "4a736aefaaf9502df83fe4afc0c5143a8edaaece3305e82c397c4a9231a9dfcc",
+    "crates/server/src/grpc.rs": "179941b0d54162acd676a958e394e80a6d33e1a1207cb477caca1d10c2a09bb7",
+    "crates/server/src/lib.rs": "6bc56cb9000d17d31491df8e6240644f543c7a451d622625b98939cb5f7c61ca",
+    "crates/server/proto/kv9.proto": "da047abf527052479da196cea5c278e9fabb51cff882c2d1bc066a6d20127ae1",
+    "src/main.rs": "6488a804acac953ca742d2459f545a31da3722bfa63cc4132e39d230f9620432",
+    "scripts/cross-range-e2e.py": "fd8de1918a57612a27ab668578e578f02560cbd52f13cba21ca247ff4e7cfe04",
+    "proofs/lean/cross-range/CrossRange.lean": "59d2918fb11fb0cd6fcf0b9e4cc47a1ec4715ecb3184b9ee9418501f33203f73",
+    "proofs/lean/cross-range/README.md": "e4aca0b18975a1493f1556093be765b69f7bd258979f3b05b93b5a0d0f852750"
+  }
+}

@@ -440,6 +440,9 @@ pub enum RawClientOutcome<T> {
 }
 
 /// One scanned row as the client surfaces it: `(key, value)`, both raw bytes.
+/// One raw scan page plus its (possibly empty) cross-range resume cursor.
+pub type RawScanPage = (Vec<RawRow>, Vec<u8>);
+
 pub type RawRow = (Vec<u8>, Vec<u8>);
 
 /// Blocking raw-KV client used by the CLI and the external acceptance gate.
@@ -587,7 +590,7 @@ impl RawClient {
         start: Vec<u8>,
         end: Vec<u8>,
         limit: u32,
-    ) -> Result<RawClientOutcome<Vec<RawRow>>, Error> {
+    ) -> Result<RawClientOutcome<RawScanPage>, Error> {
         let context = self.context();
         self.call("RawScan", move |mut client, metadata| async move {
             let request = Request::from_parts(
@@ -601,12 +604,13 @@ impl RawClient {
                 },
             );
             client.raw_scan(request).await.map(|response| {
-                response
-                    .into_inner()
+                let response = response.into_inner();
+                let rows: Vec<RawRow> = response
                     .pairs
                     .into_iter()
                     .map(|pair| (pair.key, pair.value))
-                    .collect()
+                    .collect();
+                (rows, response.resume_from)
             })
         })
     }
@@ -756,6 +760,7 @@ fn receipt_response(receipt: crate::api::DeleteRangeReceipt) -> proto::RawDelete
         committed_chunks: receipt.committed_chunks,
         last_applied_term: last.term,
         last_applied_index: last.index,
+        resume_from: receipt.resume_from.unwrap_or_default(),
     }
 }
 
@@ -887,11 +892,19 @@ fn optional_value(value: Option<Vec<u8>>) -> proto::OptionalValue {
 }
 
 fn scan_response(pairs: Vec<(Vec<u8>, Vec<u8>)>) -> proto::ScanResponse {
+    scan_response_paged(pairs, None)
+}
+
+fn scan_response_paged(
+    pairs: Vec<(Vec<u8>, Vec<u8>)>,
+    resume_from: Option<Vec<u8>>,
+) -> proto::ScanResponse {
     proto::ScanResponse {
         pairs: pairs
             .into_iter()
             .map(|(key, value)| proto::KeyValue { key, value })
             .collect(),
+        resume_from: resume_from.unwrap_or_default(),
     }
 }
 
@@ -1250,13 +1263,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let limit = nonzero_limit(request.limit)?;
-        let pairs = self
+        let (pairs, resume_from) = self
             .backend
             .call(reservation, move |backend| {
-                backend.raw_scan(&context, &request.start, &request.end, limit)
+                backend.raw_scan_paged(&context, &request.start, &request.end, limit)
             })
             .await?;
-        Ok(Response::new(scan_response(pairs)))
+        Ok(Response::new(scan_response_paged(pairs, resume_from)))
     }
 
     async fn raw_delete_range(

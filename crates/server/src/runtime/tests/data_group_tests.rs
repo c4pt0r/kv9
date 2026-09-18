@@ -274,7 +274,7 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
         });
         assert!(
             matches!(client.scan(b"batch-".to_vec(), b"batch.".to_vec(), 2048).unwrap(),
-            RawClientOutcome::Ok(rows) if rows.len() == RAW_DELETE_RANGE_CHUNK + 1)
+            RawClientOutcome::Ok((rows, _)) if rows.len() == RAW_DELETE_RANGE_CHUNK + 1)
         );
         assert!(
             matches!(client.delete_range(b"batch-".to_vec(), b"batch.".to_vec()).unwrap(),
@@ -282,7 +282,7 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
         );
         assert!(
             matches!(client.scan(b"batch-".to_vec(), b"batch.".to_vec(), 2048).unwrap(),
-            RawClientOutcome::Ok(rows) if rows.is_empty())
+            RawClientOutcome::Ok((rows, _)) if rows.is_empty())
         );
         assert!(matches!(
             client.put(b"delete-me".to_vec(), vec![7]).unwrap(),

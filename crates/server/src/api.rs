@@ -170,6 +170,20 @@ pub trait RawApi: Send + Sync + 'static {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>>;
+    /// Cross-range pagination: `Some(cursor)` means the walk paused at a
+    /// foreign-leader chunk and the caller continues from exactly there,
+    /// even over an empty page. Single-range backends never pause.
+    fn raw_scan_paged(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<ScanPage> {
+        self.raw_scan(ctx, start, end, limit)
+            .map(|pairs| (pairs, None))
+    }
+
     fn raw_delete_range(
         &self,
         ctx: &RequestContext,
@@ -216,11 +230,17 @@ pub type RawReadPreparation<T> =
 /// [`Error::PartialDeleteRange`](kv9_common::Error::PartialDeleteRange). Either way the
 /// caller can tell "nothing happened" from "some of it happened", which a bare error or a
 /// bare `()` cannot express.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+/// One scan page and its optional cross-range resume cursor.
+pub type ScanPage = (Vec<(UserKey, Value)>, Option<Vec<u8>>);
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct DeleteRangeReceipt {
     pub committed_chunks: u64,
     /// Position of the last chunk that applied; `None` when no chunk was needed.
     pub last_applied: Option<AppliedPosition>,
+    /// `Some` when a cross-range walk paused at a foreign-leader chunk: the
+    /// caller continues from exactly here. Committed chunks stay committed.
+    pub resume_from: Option<Vec<u8>>,
 }
 
 /// A resolved region location handed back by routing (DESIGN §11 `GetRegion`).

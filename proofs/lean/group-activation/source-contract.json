@@ -21,8 +21,8 @@
   "source_sha256": {
     "crates/server/src/region_manager.rs": "3bf1b08381da984e54f5a7f78b931921631fa114a397fda435d05f3c2b208c3e",
     "crates/server/src/region_manager/tests.rs": "e3ffd11dd2e5ce63b5a296a8579cdf405a85198722f7688f7db336feab1dc7c8",
-    "crates/server/src/runtime.rs": "af81f8723172077cb0348672841a1b4fa5df8daab3545ae61fe8573a819b50be",
-    "crates/server/src/runtime/tests/data_group_tests.rs": "f56a35835790816b448f4c1f55a6641573d9d6e60d749bf5b578e3c61fa72a00",
+    "crates/server/src/runtime.rs": "48e143f4f35a7e0c0fec53374022d5dd7d6b0009e8cb56b0a33e5613361013d6",
+    "crates/server/src/runtime/tests/data_group_tests.rs": "9d00911246b3e0ad2fd523ef9312ff04d133d81f06e8def46d21fd2bc91dc07d",
     "crates/raft/src/storage.rs": "417dd2604132c42e66d1e778dabded1d0a4f50720aaf3dc431c07cd93cc7aaea",
     "crates/raft/src/work.rs": "4f5670cb16fab6a5cd0ceab516161d040b93c66bf1837861827e8121a997da64",
     "crates/raft/src/driver.rs": "39dbf5bd9c14b3d575804e11ca4706fe97da8e09c951f83c5e572e1b4cdda3c3",

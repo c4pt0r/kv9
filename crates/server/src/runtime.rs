@@ -1131,6 +1131,52 @@ where
 }
 
 impl RuntimeBackend {
+    /// The cross-range scan walk: RANGE-SIZED CHUNKS over the unsealed
+    /// partition in key order, each chunk one group's own linearizable read
+    /// under its own authorization — the span as a whole is never one
+    /// snapshot. A foreign-leader chunk pauses the walk and hands back the
+    /// exact resume cursor (even over an empty page, which plain pagination
+    /// cannot express); with no covering split directory at all, the legacy
+    /// single-range path serves unchanged.
+    fn raw_scan_paged_inner(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<crate::api::ScanPage> {
+        self.ensure_serving()?;
+        if self.raw_directory.get_for(ctx.keyspace, start).is_some() {
+            let mut out: Vec<(UserKey, Value)> = Vec::new();
+            let mut cursor = start.to_vec();
+            loop {
+                let Some(group) = self.raw_directory.get_for(ctx.keyspace, &cursor) else {
+                    return Ok((out, None)); // partition edge
+                };
+                let range_end = group.range_binding().end.clone();
+                let clamp = !range_end.is_empty() && (end.is_empty() || range_end.as_slice() < end);
+                let chunk_end: &[u8] = if clamp { &range_end } else { end };
+                let batch = match group.raw_scan(ctx, &cursor, chunk_end, limit - out.len()) {
+                    Ok(batch) => batch,
+                    Err(Error::NotLeader { .. }) if cursor.as_slice() != start => {
+                        return Ok((out, Some(cursor)));
+                    }
+                    Err(error) => return Err(error),
+                };
+                out.extend(batch);
+                if out.len() >= limit || !clamp {
+                    return Ok((out, None));
+                }
+                cursor = range_end;
+            }
+        }
+        let view = self.established_read(ctx, KeySpan::Range { start, end })?;
+        let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
+        RawExecutor
+            .scan(&read, ctx.keyspace, start, end, limit)
+            .map(|pairs| (pairs, None))
+    }
+
     /// sha256 over the ordered (key, value) stream of one engine view range,
     /// skipping the range-ownership row. Shared by population and the
     /// pre-publication verification.
@@ -3365,6 +3411,7 @@ where
             return Ok(DeleteRangeReceipt {
                 committed_chunks,
                 last_applied,
+                resume_from: None,
             });
         }
         // Revalidate the authorisation for the REMAINING range, every round including the
@@ -3397,6 +3444,7 @@ where
             return Ok(DeleteRangeReceipt {
                 committed_chunks,
                 last_applied,
+                resume_from: None,
             });
         };
         // Only "partial" once something has actually committed. Failing before the first
@@ -3997,13 +4045,18 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>> {
-        self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get_for(ctx.keyspace, start) {
-            return group.raw_scan(ctx, start, end, limit);
-        }
-        let view = self.established_read(ctx, KeySpan::Range { start, end })?;
-        let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
-        RawExecutor.scan(&read, ctx.keyspace, start, end, limit)
+        self.raw_scan_paged_inner(ctx, start, end, limit)
+            .map(|(pairs, _)| pairs)
+    }
+
+    fn raw_scan_paged(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<crate::api::ScanPage> {
+        self.raw_scan_paged_inner(ctx, start, end, limit)
     }
 
     fn raw_delete_range(
@@ -4013,8 +4066,47 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
     ) -> Result<DeleteRangeReceipt> {
         self.ensure_serving()?;
-        if let Some(group) = self.raw_directory.get_for(ctx.keyspace, start) {
-            return group.raw_delete_range(ctx, start, end);
+        // A split keyspace deletes in RANGE-SIZED CHUNKS across the unsealed
+        // partition, each chunk under its own group authorization with the
+        // per-chunk atomicity delete_range has always documented. Receipts
+        // aggregate; the LAST chunk's applied position is reported.
+        if self.raw_directory.get_for(ctx.keyspace, start).is_some() {
+            let mut receipt = DeleteRangeReceipt {
+                committed_chunks: 0,
+                last_applied: None,
+                resume_from: None,
+            };
+            let mut cursor = start.to_vec();
+            loop {
+                let Some(group) = self.raw_directory.get_for(ctx.keyspace, &cursor) else {
+                    break;
+                };
+                let range_end = group.range_binding().end.clone();
+                let clamp = !range_end.is_empty() && (end.is_empty() || range_end.as_slice() < end);
+                let chunk_end: &[u8] = if clamp { &range_end } else { end };
+                // A foreign-leader chunk pauses the walk: committed chunks
+                // stay committed (the documented per-chunk contract) and the
+                // receipt carries the exact resume cursor for the client to
+                // continue at the hinted leader. With no progress, the typed
+                // NotLeader propagates for the ordinary redirect.
+                let chunk = match group.raw_delete_range(ctx, &cursor, chunk_end) {
+                    Ok(chunk) => chunk,
+                    Err(Error::NotLeader { .. }) if receipt.committed_chunks > 0 => {
+                        receipt.resume_from = Some(cursor.clone());
+                        break;
+                    }
+                    Err(error) => return Err(error),
+                };
+                receipt.committed_chunks += chunk.committed_chunks;
+                if chunk.last_applied.is_some() {
+                    receipt.last_applied = chunk.last_applied;
+                }
+                if !clamp {
+                    break;
+                }
+                cursor = range_end;
+            }
+            return Ok(receipt);
         }
         // ONE barrier for the whole request, exchanged for ONE stable snapshot that every
         // chunk plans from (@Tess's ruling; neither my "skip the barrier in the planner" nor

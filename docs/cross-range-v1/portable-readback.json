@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "archive_sha256": "96984ad70c6e9b6878b8998ac42444cea1ab63d3e1997ce37e07107ae1bccf27",
+  "members_verified": 2036,
+  "decoded_bytes": 6846411,
+  "receipts_verified": [
+    "e2e-seventh/result.json (final source)",
+    "e2e-sixth/result.json (also accepted)",
+    "3 substantive retained failures (2 real serving gaps solved by resume cursors; 1 harness sort bug); 2 syntax-abort launches left no artifacts",
+    "local-validation.json",
+    "cross-range-proof/result.json",
+    "retention-ledger-recheck.log",
+    "22 sibling model logs",
+    "minio-focused.log"
+  ],
+  "no_elf_no_credentials": true
+}
