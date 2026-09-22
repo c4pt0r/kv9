@@ -620,6 +620,23 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         store.log_file_bytes()
     }
 
+    /// Physically reclaim this replica's `raft.log` (drop the compacted-away
+    /// prefix from disk). A LOCAL maintenance operation — every replica reclaims
+    /// its own file independently, like follower-side compaction. The peer lock
+    /// is held for the crash-safe rewrite, which serializes it against appends
+    /// (they take the same lock) so nothing races the swap; the rewrite refuses
+    /// (typed) a protocol-snapshot or lease group, which the caller treats as a
+    /// skip, not an error.
+    pub fn reclaim_log(&self) -> Result<bool>
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        let g = self.lock();
+        g.check_fatal()?;
+        let store: &crate::storage::DiskRaftStorage = g.raw.store().borrow();
+        store.rewrite_log()
+    }
+
     /// Request a quorum-confirmed read index (task #28). Leader-only by
     /// design: the establishing read type owns leadership discovery, and a
     /// follower answering reads is exactly what the linearizable promise

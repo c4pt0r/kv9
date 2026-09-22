@@ -9,6 +9,10 @@ use raft::{GetEntriesContext, Storage};
 
 use super::{DiskRaftStorage, FileSystem};
 
+/// The initial configuration and each applied indexed configuration (in index
+/// order) — enough to re-serialize a [`ConfigurationHistory`] verbatim.
+pub(super) type ReserializedHistory = (Option<ConfState>, Vec<(u64, ConfState)>);
+
 #[derive(Default)]
 pub(super) struct ConfigurationHistory {
     initial: Option<ConfState>,
@@ -43,6 +47,27 @@ impl ConfigurationHistory {
             self.ambiguous = true;
         }
         self.applied.entry(index).or_insert_with(|| state.clone());
+    }
+
+    /// The records needed to RE-SERIALIZE this history verbatim during physical
+    /// log reclamation: the initial configuration and each applied indexed
+    /// configuration in index order. Refuses an ambiguous history (reclamation
+    /// must not launder away an unindexed/conflicting membership) — the caller
+    /// then skips reclaiming that group. Replaying `initial` then `applied` (in
+    /// order) reconstructs an identical `ConfigurationHistory`.
+    pub(super) fn reserialize(&self) -> Result<ReserializedHistory> {
+        if self.ambiguous {
+            return Err(Error::Raft(
+                "cannot reclaim a group with an ambiguous configuration history".into(),
+            ));
+        }
+        Ok((
+            self.initial.clone(),
+            self.applied
+                .iter()
+                .map(|(index, state)| (*index, state.clone()))
+                .collect(),
+        ))
     }
 }
 

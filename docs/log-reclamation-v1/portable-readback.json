@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "archive_sha256": "048e4ed11fd1f042503bebd31ec4f0449655b6fcf80f9715ae55a5b8a3c97187",
+  "members_verified": 856,
+  "decoded_bytes": 19109724,
+  "receipts_verified": [
+    "e2e-third accepted (exact final source; 64 writes; every voter's append-only raft.log grows past the reclaim threshold then PHYSICALLY shrinks to under half its peak (~134 KiB -> 33-58 KiB) while the base survives; restart recovers on the rewritten logs)",
+    "retained load-bearing findings: e2e-first (trivial 375-byte shrink from mismatched thresholds) + the per-replica observation race",
+    "local-validation.json (serial 955/0, clippy 0)",
+    "log-reclamation-proof (12 crash-safety theorems, 6+2 controls)",
+    "37 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true,
+  "no_root_bin": true
+}

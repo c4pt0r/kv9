@@ -69,6 +69,13 @@ const REC_SNAPSHOT: u8 = 6;
 /// survives; only entries at or below the floor become unavailable. Replay
 /// re-performs the same in-memory transformation at the same file position.
 const REC_COMPACTION: u8 = 7;
+/// A compacted BASE re-serialized by physical log reclamation (`rewrite_log`):
+/// the floor's `(term, index)` and its `ConfState`. Unlike `REC_COMPACTION`,
+/// this installs the base DIRECTLY (the discarded prefix's entries are gone, so
+/// there is nothing to compact), and unlike `REC_SNAPSHOT` it does NOT reset
+/// the configuration history or forbid a lease — it is a compaction base, not a
+/// protocol snapshot. Older readers reject this kind (forward-only).
+const REC_RETAINED_BASE: u8 = 8;
 
 /// Max record body; anything larger is corrupt (same spirit as the frame cap).
 const MAX_RECORD_LEN: u32 = 64 * 1024 * 1024;
@@ -129,6 +136,90 @@ impl DiskRaftStorage<OsFileSystem> {
     /// appends); a missing/failed file reads as 0.
     pub fn log_file_bytes(&self) -> u64 {
         std::fs::metadata(&self.path).map(|m| m.len()).unwrap_or(0)
+    }
+
+    /// Physically reclaim the append-only `raft.log`: rewrite it to contain only
+    /// the live state (`reclamation_records`), dropping the compacted-away prefix
+    /// that only wastes disk. Crash-safe: the new image is built in `raft.log.tmp`,
+    /// fsync'd, then atomically renamed over `raft.log` (the single commit point)
+    /// and the directory fsync'd. A crash BEFORE the rename leaves the original
+    /// intact; a crash AFTER it leaves the new file, which holds every live
+    /// committed entry plus the base — nothing committed is ever lost and the
+    /// commit watermark never regresses. The writer lock is held throughout, so
+    /// no append races the rewrite. v1 scope: ordinary groups only (a protocol
+    /// snapshot has its own base record; a lease is a sequence that one epoch
+    /// cannot rebuild) — both refuse here rather than reclaim unsafely.
+    pub fn rewrite_log(&self) -> Result<bool> {
+        let io = |e: std::io::Error| Error::Raft(format!("raft log reclamation: {e}"));
+        // Out-of-scope groups are SKIPPED (Ok(false)), not errored, so the
+        // periodic trigger does not spam a permanent exclusion every turn.
+        if self.snapshot.lock().expect("snapshot poisoned").is_some()
+            || self
+                .lease_epoch
+                .lock()
+                .expect("lease epoch poisoned")
+                .is_some()
+        {
+            return Ok(false);
+        }
+        let mut writer = self.file.lock().expect("raft log file poisoned");
+        if writer.is_none() {
+            return Err(Error::Raft(
+                "reclamation requires recovered durable storage".into(),
+            ));
+        }
+        let records = self.reclamation_records()?;
+        let tmp = self.path.with_extension("log.tmp");
+        // Build the fresh image in the temp file and make it durable.
+        let built = (|| -> Result<()> {
+            let _ = std::fs::remove_file(&tmp);
+            let mut file = std::fs::OpenOptions::new()
+                .write(true)
+                .create(true)
+                .truncate(true)
+                .open(&tmp)
+                .map_err(io)?;
+            for (kind, payload) in &records {
+                Self::write_record_unsynced(&self.io_metrics, &mut file, *kind, payload)?;
+            }
+            file.sync_data().map_err(io)
+        })();
+        if let Err(error) = built {
+            let _ = std::fs::remove_file(&tmp);
+            return Err(error); // original file and handle remain valid
+        }
+        // The single atomic commit point.
+        if let Err(error) = std::fs::rename(&tmp, &self.path).map_err(io) {
+            let _ = std::fs::remove_file(&tmp);
+            return Err(error); // original file and handle remain valid
+        }
+        // Past the commit point: the new file is live. Any failure now leaves a
+        // valid on-disk log but a stale handle, so force reopen-on-recovery
+        // rather than trust it — no committed entry is lost either way.
+        let finish = (|| -> Result<std::fs::File> {
+            if let Some(parent) = self.path.parent() {
+                std::fs::File::open(parent)
+                    .and_then(|dir| dir.sync_all())
+                    .map_err(io)?;
+            }
+            let mut reopened = std::fs::OpenOptions::new()
+                .read(true)
+                .append(true)
+                .open(&self.path)
+                .map_err(io)?;
+            reopened.seek(SeekFrom::End(0)).map_err(io)?;
+            Ok(reopened)
+        })();
+        match finish {
+            Ok(reopened) => {
+                *writer = Some(reopened);
+                Ok(true)
+            }
+            Err(error) => {
+                *writer = None;
+                Err(error)
+            }
+        }
     }
 }
 
@@ -331,6 +422,38 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                     })?;
                     Self::compact_memory(&mem, floor, &cs)?;
                 }
+                REC_RETAINED_BASE => {
+                    // A compacted base re-serialized by log reclamation. Install
+                    // it DIRECTLY (its underlying entries are gone, so this is not
+                    // a compaction over present entries) via a base image, and
+                    // leave conf_history / conf_idx / lease untouched — this is a
+                    // compaction base, not a protocol snapshot. `snapshot` (the
+                    // local) stays None so a following lease record is still legal.
+                    if lease_epoch.is_some() || snapshot.is_some() {
+                        return Err(Error::Raft(
+                            "a retained base cannot follow a lease or snapshot".into(),
+                        ));
+                    }
+                    if payload.len() < 16 {
+                        return Err(Error::Raft(
+                            "checksum-valid retained-base record shorter than its floor".into(),
+                        ));
+                    }
+                    let index = u64::from_be_bytes(payload[8..16].try_into().expect("8 bytes"));
+                    let term = u64::from_be_bytes(payload[..8].try_into().expect("8 bytes"));
+                    let cs = ConfState::parse_from_bytes(&payload[16..]).map_err(|e| {
+                        Error::Raft(format!(
+                            "checksum-valid retained-base ConfState undecodable: {e}"
+                        ))
+                    })?;
+                    let mut image = raft::prelude::Snapshot::default();
+                    image.mut_metadata().index = index;
+                    image.mut_metadata().term = term;
+                    image.mut_metadata().set_conf_state(cs);
+                    mem.wl()
+                        .apply_snapshot(image)
+                        .map_err(|e| Error::Raft(format!("replay retained base: {e}")))?;
+                }
                 other => {
                     return Err(Error::Raft(format!(
                         "unknown raft-log record kind {other} (newer format?) — refusing to guess"
@@ -445,6 +568,70 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             )
             .map_err(|e| Error::Raft(e.to_string()))?;
         Ok(entries.iter().map(|e| e.data.len() as u64).sum())
+    }
+
+    /// The minimal record sequence that re-serializes the CURRENT durable state
+    /// for physical log reclamation. Replaying it into a fresh store recovers an
+    /// IDENTICAL runtime view (base, retained entries, hardstate, configuration
+    /// history) while dropping the compacted-away prefix that only wastes disk.
+    /// Caller holds the writer lock, so the mem/conf view is stable. v1 refuses
+    /// a protocol-snapshot or lease group (checked by the caller) and an
+    /// ambiguous configuration history (checked here).
+    fn reclamation_records(&self) -> Result<Vec<(u8, Vec<u8>)>> {
+        use raft::Storage as _;
+        let raft_err = |e: raft::Error| Error::Raft(e.to_string());
+        let enc = |e: protobuf::ProtobufError| Error::Raft(format!("reclamation encode: {e}"));
+        let mut records: Vec<(u8, Vec<u8>)> = Vec::new();
+        let first = self.first_index().map_err(raft_err)?;
+        let last = self.last_index().map_err(raft_err)?;
+        // 1. The compacted base, installed directly on replay (its underlying
+        //    entries are gone). base_conf comes from the mem base image.
+        if first > 1 {
+            let base = self
+                .compacted_base()?
+                .ok_or_else(|| Error::Raft("first_index>1 without a durable base".into()))?;
+            let snap = self.mem.snapshot(0, 0).map_err(raft_err)?;
+            let conf = snap
+                .get_metadata()
+                .get_conf_state()
+                .write_to_bytes()
+                .map_err(enc)?;
+            let mut payload = Vec::with_capacity(16 + conf.len());
+            payload.extend_from_slice(&base.term.to_be_bytes());
+            payload.extend_from_slice(&base.index.to_be_bytes());
+            payload.extend_from_slice(&conf);
+            records.push((REC_RETAINED_BASE, payload));
+        }
+        // 2. Configuration history verbatim: initial, then applied in order.
+        let (initial, applied) = self
+            .conf_history
+            .lock()
+            .expect("conf history poisoned")
+            .reserialize()?;
+        if let Some(initial) = initial {
+            records.push((REC_CONF_STATE, initial.write_to_bytes().map_err(enc)?));
+        }
+        for (index, state) in applied {
+            let pb = state.write_to_bytes().map_err(enc)?;
+            let mut bytes = Vec::with_capacity(8 + pb.len());
+            bytes.extend_from_slice(&index.to_be_bytes());
+            bytes.extend_from_slice(&pb);
+            records.push((REC_CONF_STATE_AT, bytes));
+        }
+        // 3. The retained tail [first, last].
+        if last >= first {
+            let entries = self
+                .entries(first, last + 1, None, GetEntriesContext::empty(false))
+                .map_err(raft_err)?;
+            for entry in &entries {
+                records.push((REC_ENTRY, entry.write_to_bytes().map_err(enc)?));
+            }
+        }
+        // 4. The current HardState LAST — replay is last-write-wins, so the
+        //    committed watermark and vote are preserved exactly.
+        let hs = self.mem.initial_state().map_err(raft_err)?.hard_state;
+        records.push((REC_HARD_STATE, hs.write_to_bytes().map_err(enc)?));
+        Ok(records)
     }
 
     /// The durable compacted/installed base, when the retained log no longer
@@ -1014,6 +1201,142 @@ mod tests {
         assert!(
             storage.log_file_bytes() >= after_append,
             "the on-disk file never shrinks under compaction"
+        );
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn rewrite_log_round_trips_a_compacted_base_and_shrinks_the_file() {
+        let dir = tmp();
+        let voters = ConfState::from((vec![1, 2, 3], vec![]));
+        let (storage, _) = DiskRaftStorage::open(&dir, &[1, 2, 3]).unwrap();
+        // A log with a wide compacted-away prefix and a small retained tail.
+        let entries: Vec<_> = (1..=200)
+            .map(|i| entry(i, 1, format!("value-{i}").as_bytes()))
+            .collect();
+        storage.append(&entries).unwrap();
+        storage
+            .set_hardstate(&HardState {
+                term: 1,
+                vote: 2,
+                commit: 200,
+                ..Default::default()
+            })
+            .unwrap();
+        storage
+            .compact_retained_prefix(
+                kv9_common::AppliedPosition {
+                    term: 1,
+                    index: 190,
+                },
+                &voters,
+                b"floor",
+            )
+            .unwrap();
+        // Snapshot the pre-rewrite runtime view.
+        let before = raft::Storage::initial_state(&storage).unwrap();
+        let first = raft::Storage::first_index(&storage).unwrap();
+        let last = raft::Storage::last_index(&storage).unwrap();
+        let tail: Vec<_> = raft::Storage::entries(
+            &storage,
+            first,
+            last + 1,
+            None,
+            raft::GetEntriesContext::empty(false),
+        )
+        .unwrap();
+        let base = storage.compacted_base().unwrap();
+        let file_before = storage.log_file_bytes();
+
+        storage.rewrite_log().unwrap();
+        // The rewrite alone shrinks the on-disk file (the append-only log never
+        // did) while keeping the live view identical in this same process.
+        assert!(
+            storage.log_file_bytes() < file_before,
+            "reclamation must shrink the file: {} !< {file_before}",
+            storage.log_file_bytes()
+        );
+        assert_eq!(raft::Storage::first_index(&storage).unwrap(), first);
+        assert_eq!(raft::Storage::last_index(&storage).unwrap(), last);
+        drop(storage);
+
+        // The rewritten file RECOVERS to an identical runtime view.
+        let recovered = DiskRaftStorage::recover(&dir).unwrap();
+        assert_eq!(raft::Storage::first_index(&recovered).unwrap(), first);
+        assert_eq!(raft::Storage::last_index(&recovered).unwrap(), last);
+        assert_eq!(recovered.compacted_base().unwrap(), base);
+        let after = raft::Storage::initial_state(&recovered).unwrap();
+        assert_eq!(
+            after.hard_state, before.hard_state,
+            "commit/term/vote preserved"
+        );
+        assert_eq!(after.conf_state, before.conf_state, "membership preserved");
+        let recovered_tail = raft::Storage::entries(
+            &recovered,
+            first,
+            last + 1,
+            None,
+            raft::GetEntriesContext::empty(false),
+        )
+        .unwrap();
+        assert_eq!(
+            recovered_tail, tail,
+            "every retained entry survives verbatim"
+        );
+        // The base's configuration still resolves for a retained cut.
+        assert!(matches!(
+            recovered
+                .configuration_at_committed(kv9_common::AppliedPosition {
+                    term: 1,
+                    index: 195
+                })
+                .unwrap(),
+            crate::storage::ConfigurationLookup::Found(_)
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn rewrite_log_survives_a_crash_before_and_after_the_rename() {
+        // Pre-rename crash: a stale/partial raft.log.tmp is IGNORED by recovery
+        // (it only ever reads raft.log), and the original log recovers intact.
+        let dir = tmp();
+        let (storage, _) = DiskRaftStorage::open(&dir, &[1]).unwrap();
+        storage
+            .append(&[entry(1, 1, b"a"), entry(2, 1, b"b")])
+            .unwrap();
+        storage
+            .set_hardstate(&HardState {
+                term: 1,
+                commit: 2,
+                ..Default::default()
+            })
+            .unwrap();
+        drop(storage);
+        std::fs::write(dir.join("raft.log.tmp"), b"torn partial rewrite\xff\x00").unwrap();
+        let recovered = DiskRaftStorage::recover(&dir).unwrap();
+        assert_eq!(raft::Storage::last_index(&recovered).unwrap(), 2);
+        assert_eq!(
+            raft::Storage::initial_state(&recovered)
+                .unwrap()
+                .hard_state
+                .commit,
+            2
+        );
+        drop(recovered);
+        // Post-rename crash: reclamation completed the swap, so the NEW file is
+        // live and recovers to the same committed state (nothing lost).
+        let survivor = DiskRaftStorage::recover(&dir).unwrap();
+        survivor.rewrite_log().unwrap();
+        drop(survivor);
+        let after = DiskRaftStorage::recover(&dir).unwrap();
+        assert_eq!(raft::Storage::last_index(&after).unwrap(), 2);
+        assert_eq!(
+            raft::Storage::initial_state(&after)
+                .unwrap()
+                .hard_state
+                .commit,
+            2
         );
         let _ = std::fs::remove_dir_all(&dir);
     }

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/log-reclamation/LogReclamation.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "a_build_requires_a_complete_image",
+    "a_rename_requires_a_built_image",
+    "no_committed_entry_is_ever_lost",
+    "the_commit_never_regresses",
+    "no_partial_file_becomes_live",
+    "recovery_never_reads_the_temp_file",
+    "a_rename_is_permanent",
+    "a_crash_before_the_rename_keeps_the_original",
+    "the_full_reclamation_completes"
+  ],
+  "source_sha256": {
+    "crates/raft/src/storage.rs": "e120ddea627a86e3dbdb24f8ecff93d2f056f808c0218c60abb893199c0c8054",
+    "crates/raft/src/storage/configuration.rs": "61d2b1b0d93e20a03d018c5eba176cec6a86877c8eba81753af2326ae6574bb8",
+    "crates/raft/src/rawnode.rs": "452e243ce31772789e3710ade9490ae18b916f10b98345fac37934c8a7ece885",
+    "crates/server/src/runtime.rs": "e0ab076f61ea2d4568776d46d7894c990900bea9bf5d8b36e37d2edd31c64919",
+    "scripts/raft-log-reclaim-e2e.py": "62b2685ef21989eaf63fc1ba669821f2537586663c26bf2501df1e71c8a5c663",
+    "proofs/lean/log-reclamation/LogReclamation.lean": "0e97e0ddc1cd1b503adbeecf624cb217205c198fd99a9eced97836de9627c73e",
+    "proofs/lean/log-reclamation/README.md": "c5e5f187a6aacb9969569e2340591f42f1666f7b2e8e96dbda5c64a716da80e8"
+  }
+}

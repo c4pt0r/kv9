@@ -4622,6 +4622,12 @@ pub struct NodeRuntime {
     /// that value) — the age-trigger clock. Reset whenever first_index
     /// advances (i.e., a compaction executed). Local, rebuilt after restart.
     compact_age_marks: BTreeMap<u64, (u64, Instant)>,
+    /// KV9_RECLAIM_RAFT_LOG_BYTES: on-disk raft.log size past which a compacted
+    /// group PHYSICALLY reclaims its log (a crash-safe rewrite that drops the
+    /// compacted-away prefix from disk). 0 disables (default). The append-only
+    /// log otherwise grows forever; compaction only advances first_index. A
+    /// LOCAL per-replica maintenance op, like follower-side compaction.
+    auto_reclaim_bytes: u64,
     /// KV9_RECLAIM_RETIRED=1: physically delete retired local group
     /// payloads once their committed authority re-verifies. Off by default.
     reclaim_retired: bool,
@@ -5233,6 +5239,10 @@ impl NodeRuntime {
                     .unwrap_or(0),
             ),
             compact_age_marks: BTreeMap::new(),
+            auto_reclaim_bytes: std::env::var("KV9_RECLAIM_RAFT_LOG_BYTES")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(0),
             reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
@@ -5677,6 +5687,44 @@ impl NodeRuntime {
                 self.group_control_error = Some(format!("auto-compact: {error}"));
             }
             break; // one automatic floor per turn
+        }
+    }
+
+    /// Physically reclaim the on-disk `raft.log` of any local COMPACTED group
+    /// whose file has grown past `KV9_RECLAIM_RAFT_LOG_BYTES` (0 = off). The
+    /// append-only log never shrinks under compaction, so this crash-safe
+    /// rewrite drops the compacted-away prefix from disk. LOCAL per-replica
+    /// maintenance — runs on every serving node for its own groups, gated on
+    /// the file size AND on the group actually being compacted
+    /// (`log_first_index > 1`, so there is waste to reclaim). One reclamation
+    /// per turn: the rewrite briefly holds the group's lock.
+    fn reconcile_auto_reclaim(&mut self) {
+        if self.auto_reclaim_bytes == 0 {
+            return;
+        }
+        let regions: Vec<kv9_common::RegionId> = {
+            let handles = self.rpc_backend.group_handles.lock().expect("handles");
+            handles.keys().copied().collect()
+        };
+        for region in regions {
+            let handle = {
+                let handles = self.rpc_backend.group_handles.lock().expect("handles");
+                handles.get(&region).cloned()
+            };
+            let Some((_, driver)) = handle else { continue };
+            let status = driver.status();
+            // Only a compacted group has a discarded prefix wasting disk.
+            if status.fatal.is_some() || status.log_first_index <= 1 {
+                continue;
+            }
+            if driver.peer().log_file_bytes() < self.auto_reclaim_bytes {
+                continue;
+            }
+            // Ok(false) = out of scope (snapshot/lease); not an error.
+            if let Err(error) = driver.peer().reclaim_log() {
+                self.group_control_error = Some(format!("raft-log reclamation: {error}"));
+            }
+            break; // one reclamation per turn (each briefly holds the group lock)
         }
     }
 
@@ -6151,6 +6199,7 @@ impl NodeRuntime {
                         self.reconcile_reclamation();
                         self.reconcile_compaction();
                         self.reconcile_auto_compaction();
+                        self.reconcile_auto_reclaim();
                         self.reconcile_auto_split();
                         if let Err(error) = kv9_meta::data_groups::ranges::committed_ranges(
                             &self.node.meta_raft.store,
