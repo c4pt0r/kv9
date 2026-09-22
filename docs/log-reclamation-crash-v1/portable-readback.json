@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "archive_sha256": "4d6db705e1b2b1656042f5314bb7b05f04f5f617c7e1c41b02c6b238bd7133ed",
+  "members_verified": 859,
+  "decoded_bytes": 20023032,
+  "receipts_verified": [
+    "crash-fourth accepted (exact final source; 110 writes): a follower victim aborts DETERMINISTICALLY at before-rename and after-rename, the on-disk shape is confirmed, it recovers on its crash-time log + catches up, and every committed key survives \u2014 no committed data lost",
+    "recovery-gate fix (found by the crash test): a replica down while its group compacted further now rejoins (base accepted if a committed floor reaches at/beyond it)",
+    "retained load-bearing crash attempts: racy rejoin wait; never-aborted; the recovery bug + a follower-read verification flaw",
+    "local-validation.json (serial 955/0, clippy 0)",
+    "log-reclamation crash-safety proof (12 theorems, 6+2 controls)",
+    "37 sibling model logs accepted"
+  ],
+  "no_elf_no_credentials": true,
+  "no_root_bin": true
+}

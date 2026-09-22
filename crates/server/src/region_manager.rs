@@ -388,12 +388,16 @@ impl RegionManager {
             .storage
             .take()
             .ok_or_else(|| invalid("group storage already has a voter owner"))?;
-        // A compacted prefix is legitimate ONLY under committed authority whose
-        // floor equals the durable base exactly: either a kind-105 migration
-        // truncation decision OR a kind-110 healthy-group compaction floor
-        // (follower-side compaction persists a compacted base on every voter,
-        // not just the leader, so recovery must accept the compaction floor
-        // that authorized it). Anything else keeps the refusal.
+        // A compacted prefix is legitimate ONLY under committed authority: a
+        // kind-105 migration truncation decision whose floor EQUALS the base, OR
+        // a kind-110 healthy-group compaction floor that reaches the base. A
+        // migration truncation is a single exact floor; compaction, by contrast,
+        // advances a SEQUENCE of floors, and a replica that lagged (or was down
+        // while the group compacted further) recovers with a base at an EARLIER
+        // committed floor than the latest — so the base is legitimate as long as
+        // a committed compaction floor reaches at or beyond it (that authority
+        // covers discarding every entry at or below the base). `compactions`
+        // carries the highest committed floor per region. Anything else refuses.
         let installed_base = match storage.compacted_base()? {
             None => None,
             Some(base) => {
@@ -402,7 +406,7 @@ impl RegionManager {
                     .any(|d| d.region() == region && d.floor() == base);
                 let by_compaction = compactions
                     .iter()
-                    .any(|c| c.region() == region && c.floor() == base);
+                    .any(|c| c.region() == region && c.floor().index >= base.index);
                 if !by_truncation && !by_compaction {
                     return Err(invalid(
                         "compacted group log lacks a committed truncation decision",

@@ -15,7 +15,7 @@
     "snapshot_reply_is_exact"
   ],
   "source_sha256": {
-    "crates/raft/src/storage.rs": "e120ddea627a86e3dbdb24f8ecff93d2f056f808c0218c60abb893199c0c8054",
+    "crates/raft/src/storage.rs": "22fc71a48f882aa6b9a56f4df0643546ef116388dda1f1f39344c86a7f7cfdc5",
     "crates/raft/src/storage/snapshot.rs": "abf9eff13c2599cd25f65fcaef6a034548c3215220352c62515e5bf0207e3ce6",
     "crates/raft/src/storage/snapshot/tests.rs": "76a4b8f1a8e2683d4aa7c1a9f9ce41d5be4cfe139afa98895a44335552cc8ce6",
     "crates/raft/src/rawnode.rs": "452e243ce31772789e3710ade9490ae18b916f10b98345fac37934c8a7ece885",

@@ -16,11 +16,13 @@
     "the_full_reclamation_completes"
   ],
   "source_sha256": {
-    "crates/raft/src/storage.rs": "e120ddea627a86e3dbdb24f8ecff93d2f056f808c0218c60abb893199c0c8054",
+    "crates/raft/src/storage.rs": "22fc71a48f882aa6b9a56f4df0643546ef116388dda1f1f39344c86a7f7cfdc5",
     "crates/raft/src/storage/configuration.rs": "61d2b1b0d93e20a03d018c5eba176cec6a86877c8eba81753af2326ae6574bb8",
     "crates/raft/src/rawnode.rs": "452e243ce31772789e3710ade9490ae18b916f10b98345fac37934c8a7ece885",
     "crates/server/src/runtime.rs": "e0ab076f61ea2d4568776d46d7894c990900bea9bf5d8b36e37d2edd31c64919",
     "scripts/raft-log-reclaim-e2e.py": "62b2685ef21989eaf63fc1ba669821f2537586663c26bf2501df1e71c8a5c663",
+    "scripts/raft-log-reclaim-crash-e2e.py": "e4e2d1844584998d7ed9de82a616fecf7c4841ba8526e6ed39aecb38f16169f4",
+    "crates/server/src/region_manager.rs": "a0d5a80d69a74e814ff2f692d0ab55a899458ce18d1bec1badf995e55265a4cc",
     "proofs/lean/log-reclamation/LogReclamation.lean": "0e97e0ddc1cd1b503adbeecf624cb217205c198fd99a9eced97836de9627c73e",
     "proofs/lean/log-reclamation/README.md": "c5e5f187a6aacb9969569e2340591f42f1666f7b2e8e96dbda5c64a716da80e8"
   }
