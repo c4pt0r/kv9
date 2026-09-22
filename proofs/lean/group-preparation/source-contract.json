@@ -15,9 +15,9 @@
   "source_sha256": {
     "crates/meta/src/data_groups.rs": "89467c029a74f07d2246e556b2ab935332f56b359e8617979698b61eb01ef1c5",
     "crates/server/src/region_manager.rs": "76bb8d9710ceeb74a28b518bcab5331bb2ffdfa6b8cc0170c7cd11b2a1ece23c",
-    "crates/server/src/runtime.rs": "ac4c9cfa805c118079bb9543d580eb84daaefe4bda3cc64f1563fa74463c08b3",
-    "crates/raft/src/storage.rs": "2c6bc1bd82dac6c5db2a390868ca67b55793534a705e1d532b84b7694ee49f5d",
-    "crates/raft/src/storage/configuration.rs": "be6b0e98c862166fe2ef7bf2cb15c809122b5e7fde0710c28e0465ed84247be5",
+    "crates/server/src/runtime.rs": "e0ab076f61ea2d4568776d46d7894c990900bea9bf5d8b36e37d2edd31c64919",
+    "crates/raft/src/storage.rs": "e120ddea627a86e3dbdb24f8ecff93d2f056f808c0218c60abb893199c0c8054",
+    "crates/raft/src/storage/configuration.rs": "61d2b1b0d93e20a03d018c5eba176cec6a86877c8eba81753af2326ae6574bb8",
     "proofs/lean/group-preparation/Preparation.lean": "eaf5394d4860db94a8c6889cfa17f4ae4204e2d0dce9e75b5aefb091918d0872",
     "proofs/lean/group-preparation/README.md": "8a26c05fee9354656ffaa0f8898abfbe939b2db9589e128055f9c716853b252b"
   }
