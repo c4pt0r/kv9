@@ -60,5 +60,28 @@ chaos campaign, no performance claims.
   stays > 1) and no key is lost; the group keeps serving and writing after the
   swap; a full-cluster restart recovers on the REWRITTEN logs with every sampled
   key serving.
+- An accepted deterministic CRASH-INJECTION e2e (`scripts/raft-log-reclaim-crash-e2e.py`,
+  env hook `KV9_RECLAIM_TEST_ABORT`, unset in production): a follower victim is
+  aborted EXACTLY at each safety-critical point — `before-rename` (raft.log
+  intact, orphaned tmp) and `after-rename` (raft.log already the rewritten file);
+  the on-disk shape is verified; the victim restarts, recovers on its crash-time
+  log (an unrecoverable torn/corrupt log would fail to open), rejoins and catches
+  up, and every committed key survives. Covers process-crash safety; power-loss
+  durability of the post-rename directory entry rests on the fsync-before-publish
+  ordering and the Lean model.
 
-Validation packet: [docs/log-reclamation-v1](log-reclamation-v1/README.md).
+## Recovery robustness (found by the crash test)
+
+The crash test surfaced a latent bug in the compaction recovery gate, now fixed:
+a replica that restarts while its group has compacted PAST that replica's on-disk
+base failed to recover, because the gate accepted only a base EQUAL to the
+HIGHEST committed floor (compaction advances a sequence of floors, and a lagging
+or restarted replica's base is an earlier committed floor). Recovery now accepts
+a base that any committed compaction floor reaches at or beyond
+(`floor().index >= base.index`) — that committed authority covers discarding
+every entry at or below the base. This also hardens the shipped
+[follower-compaction](FOLLOWER-COMPACTION.md) feature (a node down during active
+compaction can now rejoin); kind-105 migration truncation stays exact-match.
+
+Validation packet: [docs/log-reclamation-v1](log-reclamation-v1/README.md);
+crash-injection packet: [docs/log-reclamation-crash-v1](log-reclamation-crash-v1/README.md).

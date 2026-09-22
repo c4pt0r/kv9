@@ -17,8 +17,8 @@
   ],
   "source_sha256": {
     "crates/server/src/runtime.rs": "e0ab076f61ea2d4568776d46d7894c990900bea9bf5d8b36e37d2edd31c64919",
-    "crates/server/src/region_manager.rs": "76bb8d9710ceeb74a28b518bcab5331bb2ffdfa6b8cc0170c7cd11b2a1ece23c",
-    "crates/raft/src/storage.rs": "e120ddea627a86e3dbdb24f8ecff93d2f056f808c0218c60abb893199c0c8054",
+    "crates/server/src/region_manager.rs": "a0d5a80d69a74e814ff2f692d0ab55a899458ce18d1bec1badf995e55265a4cc",
+    "crates/raft/src/storage.rs": "22fc71a48f882aa6b9a56f4df0643546ef116388dda1f1f39344c86a7f7cfdc5",
     "crates/raft/src/rawnode.rs": "452e243ce31772789e3710ade9490ae18b916f10b98345fac37934c8a7ece885",
     "scripts/auto-compact-bytes-e2e.py": "c7fb881817b1bde5cb15ab4e7241cb84013898a69038f487d50783d02e75120f",
     "proofs/lean/byte-compaction/ByteCompaction.lean": "55857cc8d7cae68846d234777a2eb111314aa7f089c8c05e07eec0dade5ba38c",

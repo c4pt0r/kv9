@@ -138,6 +138,16 @@ impl DiskRaftStorage<OsFileSystem> {
         std::fs::metadata(&self.path).map(|m| m.len()).unwrap_or(0)
     }
 
+    /// Test-only deterministic crash injection for the reclamation rewrite.
+    /// Aborts the process when `KV9_RECLAIM_TEST_ABORT` equals `point`, leaving
+    /// the on-disk state exactly as a real crash at that point would. The env
+    /// is unset in production, so this is a no-op there.
+    fn reclaim_test_abort(point: &str) {
+        if std::env::var("KV9_RECLAIM_TEST_ABORT").as_deref() == Ok(point) {
+            std::process::abort();
+        }
+    }
+
     /// Physically reclaim the append-only `raft.log`: rewrite it to contain only
     /// the live state (`reclamation_records`), dropping the compacted-away prefix
     /// that only wastes disk. Crash-safe: the new image is built in `raft.log.tmp`,
@@ -188,11 +198,19 @@ impl DiskRaftStorage<OsFileSystem> {
             let _ = std::fs::remove_file(&tmp);
             return Err(error); // original file and handle remain valid
         }
+        // TEST-ONLY deterministic crash injection (KV9_RECLAIM_TEST_ABORT,
+        // default unset): abort the process exactly in the rewrite window so a
+        // crash test can prove recovery loses nothing. `before-rename` leaves
+        // the intact original with an orphaned complete tmp; `after-rename`
+        // leaves the new file before the directory fsync. Never fires in
+        // production (the env is unset).
+        Self::reclaim_test_abort("before-rename");
         // The single atomic commit point.
         if let Err(error) = std::fs::rename(&tmp, &self.path).map_err(io) {
             let _ = std::fs::remove_file(&tmp);
             return Err(error); // original file and handle remain valid
         }
+        Self::reclaim_test_abort("after-rename");
         // Past the commit point: the new file is live. Any failure now leaves a
         // valid on-disk log but a stale handle, so force reopen-on-recovery
         // rather than trust it — no committed entry is lost either way.
