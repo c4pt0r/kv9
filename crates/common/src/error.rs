@@ -68,6 +68,15 @@ pub enum Error {
     #[error("raft error: {0}")]
     Raft(String),
 
+    /// End-to-end write backpressure (#20): the target region's retained raft
+    /// log has reached its absolute bound (`KV9_MAX_RAFT_LOG_ENTRIES`), so a new
+    /// write is refused until compaction drains it. Retryable with backoff — the
+    /// data is NOT written and nothing has happened; unlike `StaleEpoch` no
+    /// routing refresh is needed. Bounds live resource usage when writes outrun
+    /// commit+compaction.
+    #[error("write backpressure: region {region:?} raft log is at its bound")]
+    WriteBackpressure { region: RegionId },
+
     /// A range or batch spans more than one region, so a single `RequestContext` (which
     /// authorises exactly one region at one epoch) cannot cover it.
     ///

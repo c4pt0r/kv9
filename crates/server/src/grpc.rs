@@ -956,6 +956,10 @@ fn error_status(error: Error) -> Status {
         | Error::SplitCrossesKeyspace
         | Error::CrossTxnGroup { .. } => Status::failed_precondition(message),
         Error::WriteConflict(_) | Error::KeyIsLocked => Status::aborted(message),
+        // RESOURCE_EXHAUSTED: end-to-end write backpressure. The write did not
+        // happen and nothing changed; the client must back off and retry (the
+        // group's log drains as compaction advances), not refresh routing.
+        Error::WriteBackpressure { .. } => Status::resource_exhausted(message),
         // `internal`, not `invalid_argument`. The basis, stated so it can be falsified: this
         // error must only ever be raised by an internal object-store/drain path, never by
         // anything a request parameter can steer. Under that condition it means one file-id
