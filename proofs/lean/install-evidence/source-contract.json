@@ -26,7 +26,7 @@
     "crates/server/src/region_manager.rs": "a0d5a80d69a74e814ff2f692d0ab55a899458ce18d1bec1badf995e55265a4cc",
     "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
     "crates/server/src/api.rs": "0790ce411d0f498cb0a178fca3a4a33d559d669f3d3420636283595b271e40ee",
-    "crates/server/src/grpc.rs": "b7194206a0359c4d19ad157fe0db6782aa1b9eed84f02b4b45f53cc58e0ba073",
+    "crates/server/src/grpc.rs": "6cf6361d7b149c2549f68cccf86792d74afb70d8066e26e5554baf05b44aa70c",
     "crates/server/src/data_groups.rs": "86d72d1fa1e27f79614cc21d4fdacaeb70552956683161f58c5a1d8a1658d8fd",
     "crates/server/proto/kv9.proto": "9d5a31e070c1a74568aedf2b101862cb7f47e3734919ae879fcb6ff15ddc6f01",
     "src/data_group_cli.rs": "16a8986c5c1808b5017609960f66cbb356778f3e0983b7555b34e270d926233a",

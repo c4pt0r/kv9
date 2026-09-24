@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "model": "proofs/lean/write-backpressure/WriteBackpressure.lean",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "retained_never_exceeds_the_bound",
+    "an_admitted_write_was_below_the_bound",
+    "no_write_grows_the_log_at_the_bound",
+    "a_full_log_refuses_writes_typed",
+    "reads_serve_at_any_retention",
+    "draining_releases_backpressure",
+    "the_log_can_fill_to_the_bound"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime/range_api.rs": "ff6aa8aca5ca8cb827fd7997ad40acbaeedbedd4c4bc35f94838357b59c0ec35",
+    "crates/common/src/error.rs": "7122c8cdeec611b191ac2c11fbdcdfff91596ad83cfa0e8e816f2d93268f324c",
+    "crates/server/src/grpc.rs": "6cf6361d7b149c2549f68cccf86792d74afb70d8066e26e5554baf05b44aa70c",
+    "scripts/write-backpressure-e2e.py": "dc4ddfae7b138b5fbace1c00886af336b237ecb313a208bebc3a894f62b49ca4",
+    "proofs/lean/write-backpressure/WriteBackpressure.lean": "36ba8d6f1e57fdb5ff100c5b0ebf7c2ed251a943050959c83a12d6cd13ddcc30",
+    "proofs/lean/write-backpressure/README.md": "dd8fdb1bd3c576686dced3e5a203455af32710b2eabae5314b956e250d218bf3"
+  }
+}

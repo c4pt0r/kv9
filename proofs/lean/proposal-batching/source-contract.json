@@ -19,7 +19,7 @@
     "the_batched_chain_completes"
   ],
   "source_sha256": {
-    "crates/server/src/runtime/range_api.rs": "25a159787d23ff85a5f912dda680ccbf9bac3f0e7764b4865a803f7dd9af9498",
+    "crates/server/src/runtime/range_api.rs": "ff6aa8aca5ca8cb827fd7997ad40acbaeedbedd4c4bc35f94838357b59c0ec35",
     "crates/raft/src/command.rs": "7f79bb93a887da63b3542f169daea397cfe48ced4f9425b4946da0d436a82009",
     "scripts/proposal-batching-e2e.py": "4f69a9caaaceed782122891c18d1e7ca017ce0ad7f6adb5f5b8b1833d2c9e5e0",
     "scripts/batching-bench.py": "ee6ff479b3e9ab1c00dd8a4a7c9b881607d93e8ad85ede770e6795850b2170ce",

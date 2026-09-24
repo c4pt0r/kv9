@@ -72,6 +72,14 @@ pub(crate) struct RawGroup {
     engine: Arc<WalEngine>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
     aggregator: WriteAggregator,
+    /// KV9_MAX_RAFT_LOG_ENTRIES: end-to-end write backpressure (#20). When the
+    /// group's retained committed log (`raft_committed - log_first_index`)
+    /// reaches this bound, raw WRITES are refused with a retryable
+    /// backpressure error until compaction drains it — bounding absolute log
+    /// growth when writes outrun commit+compaction (a lagging voter blocking
+    /// truncation, a client faster than fsync). 0 disables (default). Reads are
+    /// never gated.
+    max_log_entries: u64,
 }
 impl RawGroup {
     pub(crate) fn range_binding(&self) -> &DataRange {
@@ -235,6 +243,10 @@ impl RawGroup {
             engine,
             driver,
             aggregator: WriteAggregator::from_env(),
+            max_log_entries: std::env::var("KV9_MAX_RAFT_LOG_ENTRIES")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(0),
         })
     }
     /// Read-only handles for driver-owned source capture. This grants no
@@ -309,7 +321,21 @@ impl RawGroup {
         }))
     }
     fn permit(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<RangePermit> {
-        self.authorize(self.engine.snapshot()?.as_ref(), ctx, span)
+        let permit = self.authorize(self.engine.snapshot()?.as_ref(), ctx, span)?;
+        // End-to-end write backpressure: refuse (retryably) when the retained
+        // committed log has reached the absolute bound, so it cannot grow
+        // further until compaction drains it. Applies ONLY to writes (reads go
+        // through `view`, never `permit`); disabled when the bound is 0.
+        if self.max_log_entries > 0 {
+            let status = self.driver.status();
+            let retained = status.raft_committed.saturating_sub(status.log_first_index);
+            if retained >= self.max_log_entries {
+                return Err(Error::WriteBackpressure {
+                    region: self.binding.region,
+                });
+            }
+        }
+        Ok(permit)
     }
     fn view(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<Box<dyn ReadView + '_>> {
         let barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;

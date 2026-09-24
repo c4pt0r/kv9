@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "archive_sha256": "c5eb3691b5a8b049d104b47728082d8fa8d6b967f4293d97a834f241d7466566",
+  "members_verified": 934,
+  "decoded_bytes": 2663640,
+  "receipts_verified": [
+    "backpressure-third accepted (120 writes; the retained committed raft log grows to the absolute bound (cap 120), then every further write is refused with typed RESOURCE_EXHAUSTED and the log stays BOUNDED (120->120); reads still serve; a committed compaction floor drains it and writes RESUME)",
+    "local-validation.json (serial 955/0, clippy 0, fmt clean)",
+    "write-backpressure-proof (10 theorems, 5+2 controls, axioms in the trusted base only)",
+    "38 sibling Lean models re-accepted (pin sweep for range_api.rs/grpc.rs/error.rs); retention TLAPS re-accepted (7 theorems / 55 obligations)"
+  ],
+  "no_elf_no_credentials": true,
+  "no_root_bin": true
+}
