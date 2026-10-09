@@ -759,6 +759,118 @@ means "no marked debt for this task" and never "no stale comments about this tas
 comments are not to be marked by guess — audit candidates individually and attach a marker only
 where the canonical task and the expiry condition are both verified.
 
+### Convention — when the laziest repair is wrong, the marker must say so
+
+The two parts above tell a reader **when** the statement dies. They do not say **what to do with
+the corpse**, and usually they need not: if the obvious repair is correct, the expiry condition
+already implies it.
+
+The obvious repair is not always correct. A comment can assert an invariant that *survives* the
+task while resting on a mechanism that does not. The cheap repair — past tense, or a bare pointer
+to the new design — yields prose that is no longer false and no longer carries the argument. Tense
+is the cheapest edit that makes a stale sentence defensible, which is exactly why it is the one to
+expect.
+
+So an expiring marker is in one of three states, and only the first of them may be silent:
+
+1. **The laziest repair is correct.** No disposal line; the condition is enough.
+2. **The laziest repair is wrong and you know the right one.** Write it, imperatively:
+   `REWRITE THE ARGUMENT, not the tense.`
+3. **The laziest repair is wrong and you do not know the right one.** Say
+   **"disposal undetermined"**, in those words.
+
+State 3 must be explicit **because silence is indistinguishable from state 1**. A marker with no
+disposal line reads as *the obvious thing is fine*, so omitting the line while you are actually
+unsure does not transmit your doubt — it transmits a reassurance you never meant to give, to
+someone who cannot recover it. A disposal line is guidance, not authority over a reviewer: review
+may rule a different repair correct. What the line buys is that the laziest wrong repair is not
+executed **silently**.
+
+*Evidence — a state-2 line, a different implementer (2026-10-08).* The line at
+`persist.rs:330` (`739ca1d`) read *"REWRITE THE ARGUMENT, not the tense. ... its support moves from
+a reserved KV key written in the same batch to the positioned record's atomic CRC / fsync /
+replay"*. It expired when WAL v2 landed. Three things are observable: the line sat at its own
+guarded site; the person who did the work (EdHuang) is not the line's author (Ren); and what landed
+moved the pivot onto the positioned record rather than changing the tense.
+
+That is an **outcome aligned with the disposal under a different implementer** — which is the most
+this evidence supports. It is not proof that the line caused the outcome, nor a claim about what
+its executor had read or taken part in: no participant has stated either, and Git authorship
+cannot establish them. A convention exercised only by its own author would show less, but this
+instance does not reach causation.
+
+*Two boundaries on that evidence, both load-bearing:*
+
+**(a) A disposal line moves the argument; it cannot move the code beneath the argument** — and the
+same gap opens wherever a repair and the authority over it live in different places, so what starts
+here as a boundary on markers ends as a general rule. At the
+same site, the repaired doc comment now asserts the positioned record while the test body still
+calls plain `write` twice against a hand-written `b"\x00kv9\x00applied_index"` and never calls
+`write_applied`. The pre-repair text — "reserved KV key written in the same batch" — described that
+body **accurately**. So the repair made the prose true about the system and false about the test
+under it, and *harder* to catch than the stale version: stale prose reads as stale, repaired prose
+reads as current, and it lends the test a coverage claim the test does not honour. Pair any
+disposal that re-pivots an argument with a check on what the code below it exercises.
+
+The general shape is wider than markers: **a repair lands in one place while the authority that
+contradicts it sits in another.** Three instances in one day, from three authors:
+
+- a doc comment repaired onto the new mechanism, thirteen lines above a body still exercising the
+  old one (`persist.rs:1313` against `:1326` and the test beneath them);
+- a tripwire script whose header still asserted `rc=0 = zero references` and "there is no
+  legitimate use ... today" after a reviewed test-only allowance had been added to its body;
+- **and, on the second review pass over that same header, two further sentences resting on the
+  same dead premise.** The first pass had taken the most visible ones. It took four rounds to
+  clear that one block, and the premise's last hiding place was **the replacement sentence written
+  to remove it** — the reviewer's own prescribed wording inferred identity from equal counts, which
+  the instrument cannot measure. She withdrew it herself on the next pass.
+
+The third instance is the one that fixes the criterion: **expiry is clustered, not pointwise.**
+Whoever wrote an authoritative block usually derived several sentences from one premise, so
+deleting the sentence you found leaves its siblings in place. Re-read the whole block against the
+new mechanism; do not grep for the sentence you already have.
+
+The instances are also not equally visible, which is why "find two sentences that contradict each
+other" is the wrong instruction. The script header sat next to the allowance that falsified it —
+findable at a glance. The repaired doc comment reads as entirely normal and *is* true about the
+system; **it gives cover precisely because it is correct.** An honest reader who reaches it
+concludes the test below has been migrated, and stops reading. So ask instead (questions: Ren):
+
+1. **Which layer will a reader believe?** Title, contract and module header outrank an inline
+   comment, which outranks the code.
+2. **Does that layer still describe what sits underneath it?**
+3. **Does anything else in the same block rest on the same dead premise?**
+
+Run them on the replacement text as hard as on the text it replaced (Ren). That is not symmetry
+for its own sake: in the chain above, the dead premise's last refuge was a correction written to
+remove it, by the reviewer who had just required someone else to withdraw an overclaim. **The
+defect can occur in the act of correcting the defect**, and a correction arrives feeling verified
+because you just did the work of finding the fault.
+
+*Why this is institutionalised rather than left to care:* in the chain above, authors who
+already held the relevant lesson reproduced its shape in their own work, and the faults were in
+each case named by a second reader. Against that, the self-check does fire: the questions above
+caught a defect in the diff that introduced them — the `(a)` heading still scoped the boundary to
+disposal lines after the text beneath it had generalised, so the layer a reader trusts no longer
+described what sat under it.
+
+So the evidence supports the narrower claim, and only it: **prior knowledge and self-audit are not
+sufficient as the only control.** Run these three questions as a self-preflight on your own diff
+before asking for review, and keep the independent review as well. Neither replaces the other, and
+the self-preflight is not decoration — it found the fault above.
+
+**(b) State 3 has no instance.** Every marker written so far has been state 1 or 2; nothing yet
+shows an author writing "disposal undetermined" when he was in fact unsure. That branch is still
+intent, not practice, and should be read as the weakest of the three.
+
+*How this instance was nearly mis-witnessed (Cindy):* the first evidence offered for "the disposal
+was honoured" was `persist.rs:1-3`, a module header — which no marker guarded, and which at
+`739ca1d` did not mention the reserved key at all. The marker's own site was the doc comment on
+`a_reserved_prefix_key_survives_replay_with_its_data`. The ruling happened to be right because
+that site was also repaired; **had it not been, the same evidence would have produced the same
+confident ruling.** When you certify a disposal, read the marker's own lines, not a nearby passage
+that agrees with you.
+
 ## 21. A negative result must first prove the command ran
 
 *Origin (three instances in one day, three people, 2026-09-07):* **a failed invocation can produce
