@@ -488,7 +488,7 @@ jobs:
           printf '%s\n' "$output"
           [ "$rc" -eq 0 ] || exit "$rc"
           last="${output##*$'\n'}"
-          [ "$last" = "7 passed, 0 failed" ] || {
+          [ "$last" = "9 passed, 0 failed" ] || {
             printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
             exit 1
           }
