@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 #
-# Does the apply-side crate reference the object store at all?
+# Does the PRODUCTION apply side reference the object store anywhere outside
+# the reviewed, pinned test-only allowance?
 #
 #   scripts/apply-store-tripwire.sh [--repo <dir>]
 #
 # Exit codes:
-#   0  zero references -- the invariant's name-level face holds
+#   0  zero escapes AND every allowed file at its exact pinned count
 #   1  usage
-#   2  references present (listed with exact file:line)
+#   2  an escape (a hit outside the allowed files, listed with exact
+#      file:line) OR a pin drift (an allowed file's count moved in either
+#      direction)
 #   3  the search instrument failed its own positive control
 #
 # THE INVARIANT THIS GUARDS (task #9; contract in docs/OBJECT-STORAGE.md §3.1)
@@ -22,11 +25,16 @@
 # unlanded-check.sh explains why a wording family can never carry "must be
 # zero" -- content words have endless legitimate uses. This check is the
 # narrow exception that proves that rule: the SCOPE makes the count a
-# criterion, not the word. Within crates/raft there is no legitimate use of
-# the identifier `ObjectStore` today (measured at introduction: engine 17,
-# raft 0, all other crates 0). The day a legitimate use appears, this check
-# reds and must be changed in a reviewed diff -- that visibility is the whole
-# point. Weakening the tripwire cannot happen silently.
+# criterion, not the word. At INTRODUCTION (task #9, 2026-09) crates/raft had
+# zero legitimate uses of the identifier `ObjectStore` (measured then:
+# engine 17, raft 0, all other crates 0), and the criterion was a flat zero.
+# That historical fact has since been SUPERSEDED by the reviewed test-only
+# allowance below (2026-10-08): real-MinIO integration tests inside
+# crates/raft are legitimate, enumerated by exact path, and pinned by count.
+# The criterion is now "zero ESCAPES and exact pins", not "zero references".
+# The contract that produced this change is unchanged: a new legitimate use
+# reds this check and must move a pin in a reviewed diff -- that visibility
+# is the whole point. Weakening the tripwire cannot happen silently.
 #
 # WHAT THIS DOES NOT CATCH (honest cap -- do not widen claims from a green)
 #
