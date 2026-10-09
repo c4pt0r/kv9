@@ -43,8 +43,10 @@
 # The name-level ESCAPE/PIN ACCOUNTING is the TRIPWIRE half of the invariant;
 # the guarantee half is the capability-narrowed apply face, under which
 # apply-side types cannot hold a store regardless of naming. Green here means
-# "no spelling was added, removed, or moved outside the reviewed exact pins",
-# never "nobody can reach a store".
+# "there are zero escapes, and each allowed file has exactly its pinned
+# matching-line count" -- equal counts do not prove the spellings are the
+# SAME lines (the swap case in the honest cap below) -- and never
+# "nobody can reach a store".
 #
 # TEST-ONLY ALLOWANCE (reviewed adjustment, 2026-10-08; the contract above
 # said the day a legitimate use appears this check reds and is changed in a
