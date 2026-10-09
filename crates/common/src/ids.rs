@@ -147,6 +147,70 @@ impl std::str::FromStr for ClusterId {
 }
 
 #[cfg(test)]
+mod applied_through_tests {
+    use super::{AppliedPosition, AppliedThrough};
+
+    /// The acceptance I committed to in #dev before writing this: ordering must not be able
+    /// to answer an identity question, and identity must not leak into an ordering answer.
+    #[test]
+    fn same_index_different_terms_project_to_one_ordering_answer() {
+        // A reused index after failover: two DIFFERENT entries, one index. As identities they
+        // differ; as prefix positions they are the same place. Both halves are asserted,
+        // because the bug was using the identity answer where the ordering one belongs.
+        let a = AppliedPosition { term: 7, index: 42 };
+        let b = AppliedPosition { term: 9, index: 42 };
+        assert_ne!(
+            a, b,
+            "distinct entries must remain distinguishable as identities"
+        );
+        assert_eq!(
+            a.through(),
+            b.through(),
+            "as prefix positions they are the same place; term must not survive projection"
+        );
+    }
+
+    #[test]
+    fn a_lower_index_is_covered_regardless_of_term() {
+        // THE DEFECT, stated as a test. The old predicate required `at.term <= cut.term`, so a
+        // record at a lower index under a HIGHER term read as "not covered" and legitimate
+        // reclaim was refused. Index alone decides.
+        let cut = AppliedPosition {
+            term: 3,
+            index: 100,
+        }
+        .through();
+        let lower_but_newer_term = AppliedPosition {
+            term: 99,
+            index: 50,
+        }
+        .through();
+        assert!(
+            lower_but_newer_term <= cut,
+            "a lower index is behind the cut whatever its term"
+        );
+        assert!(cut.covers(lower_but_newer_term));
+        assert!(!lower_but_newer_term.covers(cut));
+    }
+
+    #[test]
+    fn covers_is_inclusive_at_the_cut() {
+        let cut = AppliedThrough::at_index(10);
+        assert!(cut.covers(cut), "`through` is inclusive of the cut itself");
+    }
+
+    #[test]
+    fn the_projection_carries_nothing_but_the_index() {
+        // Anti-vacuity for the two tests above: if `through()` kept the term in any form,
+        // `same_index_different_terms` would still pass only if equality ignored it. This
+        // pins that the value genuinely is the index.
+        let p = AppliedPosition { term: 5, index: 77 };
+        assert_eq!(p.through().index(), 77);
+        assert_eq!(p.through(), AppliedThrough::at_index(77));
+    }
+}
+
+#[cfg(test)]
 mod cluster_id_tests {
     use super::ClusterId;
     use std::str::FromStr;
@@ -201,9 +265,62 @@ mod cluster_id_tests {
 /// claiming a write landed when it may have been discarded — which is precisely why
 /// `commit_batch` compares the two rather than assuming they agree.
 ///
-/// Index alone is never sufficient: after a failover the new leader may reuse an index.
+/// Index alone is never sufficient **to identify an entry**: after a failover the new leader
+/// may reuse an index, so two different entries can share one. It *is* sufficient to order a
+/// prefix — see [`AppliedThrough`], which is the projection reclaim and skip decisions take.
+///
+/// The unqualified form of this sentence used to read "index alone is never sufficient", which
+/// is how a prefix-ordering question ended up being answered with an exact pair: every consumer
+/// held a `term` and comparing it looked like extra safety. It is not — it wrongly refuses
+/// legitimate reclaim (a record at a lower index under a *higher* term reads as "not covered").
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct AppliedPosition {
     pub term: u64,
     pub index: u64,
+}
+
+impl AppliedPosition {
+    /// Project to the prefix-ordering view, discarding the term.
+    ///
+    /// Explicit and one-way on purpose: this is where a caller states "I only need ordering
+    /// here". There is no route back, because recovering a term from an index would be the
+    /// same reuse-after-failover mistake in reverse.
+    pub fn through(self) -> AppliedThrough {
+        AppliedThrough(self.index)
+    }
+}
+
+/// How far a prefix has been applied — an **ordering** answer, never an identity.
+///
+/// Opaque, and holding only the index. Reclaim, state-machine skip and checkpoint coverage ask
+/// "have we reached this far"; none of them may ask "is this the same entry", because a reused
+/// index makes that question unanswerable from ordering alone. Giving those consumers a `term`
+/// is what let `covers()` compare whole pairs and gate on term, which is the defect this type
+/// exists to make unrepresentable (task #16 blocker 1; interface shape ruled by Tess, rev 6).
+///
+/// Obtained by projection from [`AppliedPosition::through`], so the engine still answers with
+/// **one atomic observation** — splitting it into two reads would let identity and ordering come
+/// from two different instants, the tearing `write_applied` fuses on the write side.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct AppliedThrough(u64);
+
+impl AppliedThrough {
+    /// Build from a bare index. For callers that legitimately have only an index (a log
+    /// watermark, a reclaim cut) and never had a term to begin with.
+    pub fn at_index(index: u64) -> Self {
+        AppliedThrough(index)
+    }
+
+    /// The index. The only thing this type carries.
+    pub fn index(self) -> u64 {
+        self.0
+    }
+
+    /// Whether this prefix reaches `cut` — the whole question this type answers.
+    ///
+    /// Index-only by construction. A record at a lower index can never fail to be covered on
+    /// account of its term, which is precisely the bug in the predicate this replaces.
+    pub fn covers(self, cut: AppliedThrough) -> bool {
+        self.0 >= cut.0
+    }
 }

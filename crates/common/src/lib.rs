@@ -22,7 +22,7 @@ pub mod time;
 
 pub use config::{Config, SeedPeer};
 pub use error::{Error, ReadBarrierPhase, Result};
-pub use ids::AppliedPosition;
+pub use ids::{AppliedPosition, AppliedThrough};
 pub use ids::{
     ClusterId, KeyspaceId, NodeId, RegionId, TenantId, TimelineId, TsoProviderId, TxnGroupId,
     META_REGION_0,
