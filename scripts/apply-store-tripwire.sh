@@ -40,10 +40,11 @@
 #
 # Indirect reach: a helper that already holds a store, reached through a
 # generic bound or a glob import, never spells the name and passes this scan.
-# The name-level zero is the TRIPWIRE half of the invariant; the guarantee
-# half is the capability-narrowed apply face (this card's later commits),
-# under which apply-side types cannot hold a store regardless of naming.
-# Green here means "nobody wrote the name", never "nobody can reach a store".
+# The name-level ESCAPE/PIN ACCOUNTING is the TRIPWIRE half of the invariant;
+# the guarantee half is the capability-narrowed apply face, under which
+# apply-side types cannot hold a store regardless of naming. Green here means
+# "no spelling was added, removed, or moved outside the reviewed exact pins",
+# never "nobody can reach a store".
 #
 # TEST-ONLY ALLOWANCE (reviewed adjustment, 2026-10-08; the contract above
 # said the day a legitimate use appears this check reds and is changed in a
@@ -51,8 +52,13 @@
 #
 # Snapshot capture/install and checkpoint recovery gained real-MinIO
 # INTEGRATION TESTS inside crates/raft. Those tests legitimately construct a
-# store; the invariant was always about the PRODUCTION apply path, and the
-# production modules still measure zero. The allowance is by EXACT PATH with
+# store; the invariant was always about the PRODUCTION apply path. What each
+# instrument actually establishes: the two pure tests.rs files classify as
+# test code by PATH; for checkpoint_recovery.rs the text gate proves only the
+# FILE COUNT -- that its hits sit in the #[cfg(test)] module was established
+# by the human review of this allowance (2026-10-08), and the semantic
+# guarantee comes from the capability face, not from this scan. The
+# allowance is by EXACT PATH with
 # a PINNED per-file count (the manifest-key tripwire's design): a new hit in
 # an allowed file, a lost hit, or any hit in any other file reds, so every
 # change to the allowed surface shows up in a reviewed diff. No pattern
