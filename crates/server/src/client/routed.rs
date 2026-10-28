@@ -395,6 +395,12 @@ impl RoutedRawClient {
                 0,
             ),
             RawOperation::Delete { key } => (Operation::DeleteKey(key.clone()), 0),
+            RawOperation::Batch { mutations } => (
+                Operation::Batch(proto::RoutedMutations {
+                    mutations: wire_mutations(mutations),
+                }),
+                0,
+            ),
         };
         let request = proto::RoutedRawRequest {
             binding: route.binding.encode(),
@@ -659,6 +665,7 @@ fn keys(operation: &RawOperation) -> Vec<&[u8]> {
         | RawOperation::Delete { key } => vec![key],
         RawOperation::BatchGet { keys } => keys.iter().map(Vec::as_slice).collect(),
         RawOperation::BatchPut { pairs } => pairs.iter().map(|(key, _)| key.as_slice()).collect(),
+        RawOperation::Batch { mutations } => mutations.iter().map(Mutation::key).collect(),
     }
 }
 fn peers(values: Vec<proto::NodeEndpoint>, data: bool) -> Result<Vec<Peer>, Failure> {

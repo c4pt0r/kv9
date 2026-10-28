@@ -28,7 +28,7 @@
     "crates/server/src/api.rs": "4eb8f5ea932b7a7ce7366bfb0a9ba09b633c4b49bba6bd6dd55475f3cf8017ec",
     "crates/server/src/grpc.rs": "a97fcb85b32ba91ea73f479c4be6372e57c377b447f1de3d10c26b921d1b9d52",
     "crates/server/src/data_groups.rs": "86d72d1fa1e27f79614cc21d4fdacaeb70552956683161f58c5a1d8a1658d8fd",
-    "crates/server/proto/kv9.proto": "7c2ca3fc1c0cd73f032f48d83e64bac6c2f9c02ddca979902e42c771eccd4a94",
+    "crates/server/proto/kv9.proto": "2fd178ad1317e3ad8210b47eb318df9d7e61bcdf3c361c39c64cab340e25a078",
     "src/data_group_cli.rs": "16a8986c5c1808b5017609960f66cbb356778f3e0983b7555b34e270d926233a",
     "src/main.rs": "806b091eee8fc3f0d118e87ced39b1fc15024ebf7820bef28e7c336b5f970438",
     "scripts/source-truncation-e2e.py": "d2ebbc22d62cf136ba29fdf628c3e97f6df0db6767029af4ab9f3e13d62ecfe7",

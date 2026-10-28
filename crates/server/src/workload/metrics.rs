@@ -141,7 +141,7 @@ impl Metrics {
             OperationKind::Get => 0,
             OperationKind::Put => 1,
             OperationKind::Delete => 2,
-            OperationKind::BatchGet | OperationKind::BatchPut => {
+            OperationKind::BatchGet | OperationKind::BatchPut | OperationKind::Batch => {
                 return Err("batch calls require a batch metrics schema")
             }
         };

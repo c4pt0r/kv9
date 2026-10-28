@@ -101,8 +101,11 @@ impl Metrics {
         let kind = match report.operation {
             OperationKind::BatchGet => 0,
             OperationKind::BatchPut => 1,
-            OperationKind::Get | OperationKind::Put | OperationKind::Delete => {
-                panic!("point operation in batch benchmark")
+            OperationKind::Get
+            | OperationKind::Put
+            | OperationKind::Delete
+            | OperationKind::Batch => {
+                panic!("unsupported operation kind in batch benchmark")
             }
         };
         let (outcome, reason) = match &report.outcome {

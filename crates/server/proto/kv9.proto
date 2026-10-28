@@ -717,10 +717,12 @@ message RoutedRawRequest {
     RoutedKeys get = 2;
     RoutedPairs put = 3;
     bytes delete_key = 4;
+    RoutedMutations batch = 5; // One atomic range batch inside the bound range.
   }
 }
 message RoutedKeys { repeated bytes keys = 1; }
 message RoutedPairs { repeated KeyValue pairs = 1; }
+message RoutedMutations { repeated RawMutation mutations = 1; }
 message RoutedRawResponse {
   bytes binding_digest = 1;
   oneof result {

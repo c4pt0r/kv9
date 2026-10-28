@@ -447,6 +447,7 @@ fn former_hundred_key_mix_counterexample_now_has_shared_read_and_write_keys() {
             | RawOperation::Delete { key } => key,
             RawOperation::BatchGet { keys } => &keys[0],
             RawOperation::BatchPut { pairs } => &pairs[0].0,
+            RawOperation::Batch { .. } => unreachable!("batch workload never emits a range batch"),
         };
         visited.entry(op_kind).or_default().insert(key.clone());
         assert_ne!(*key, config.key(config.keys));
@@ -504,6 +505,7 @@ fn generated_values_retain_unique_call_and_item_identity_and_exclude_the_empty_s
                 assert!(keys.iter().all(|key| allowed.contains(key)));
                 continue;
             }
+            RawOperation::Batch { .. } => unreachable!("batch workload never emits a range batch"),
         };
         writes += 1;
         for (item, (key, value)) in pairs.iter().enumerate() {

@@ -676,12 +676,75 @@ async fn canceling_one_call_closes_only_its_generation_and_all_collateral_waiter
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn stream_raw_batch_applies_mixed_mutations_and_refuses_bad_bounds() {
+    let backend = Arc::new(Backend::default());
+    let (server, client) = server(Kv9Grpc::new(backend.clone())).await;
+    bounded(client.raw_put(request(put(b"gone", b"old")), deadline()))
+        .await
+        .unwrap();
+    let batch = |mutations| proto::RawBatchRequest {
+        context: Some(context_message()),
+        mutations,
+    };
+    let at = bounded(client.raw_batch(
+        request(batch(vec![
+            proto::RawMutation {
+                op: Some(proto::raw_mutation::Op::Put(proto::KeyValue {
+                    key: b"kept".to_vec(),
+                    value: b"new".to_vec(),
+                })),
+            },
+            proto::RawMutation {
+                op: Some(proto::raw_mutation::Op::Delete(b"gone".to_vec())),
+            },
+        ])),
+        deadline(),
+    ))
+    .await
+    .unwrap()
+    .into_inner();
+    assert_eq!(
+        (at.applied_term, at.applied_index),
+        (APPLIED.term, APPLIED.index)
+    );
+    for (key, found) in [(&b"kept"[..], true), (&b"gone"[..], false)] {
+        let value = bounded(client.raw_get(request(get(key)), deadline()))
+            .await
+            .unwrap()
+            .into_inner()
+            .value
+            .unwrap();
+        assert_eq!(value.found, found, "{key:?}");
+    }
+    assert_eq!(backend.calls.lock().unwrap().len(), 4);
+    // An empty batch and an op-less entry are refused on the wire before dispatch;
+    // the stream itself stays usable, exactly like the unary bound checks.
+    for mutations in [
+        vec![],
+        vec![proto::RawMutation { op: None }],
+        vec![
+            proto::RawMutation {
+                op: Some(proto::raw_mutation::Op::Delete(vec![0; 4097])),
+            };
+            1
+        ],
+    ] {
+        let refused = bounded(client.raw_batch(request(batch(mutations)), deadline()))
+            .await
+            .unwrap_err();
+        assert_eq!(refused.code(), Code::InvalidArgument);
+    }
+    assert_eq!(backend.calls.lock().unwrap().len(), 4);
+    stop(server).await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn invalid_server_frames_close_the_stream_before_backend_dispatch() {
     let backend = Arc::new(Backend::default());
     let (server, client) = server(Kv9Grpc::new(backend.clone())).await;
     for (id, operation, remaining) in [
         (0, 1, 1_000_000),
-        (1, 7, 1_000_000),
+        (1, 8, 1_000_000),
         (1, 257, 1_000_000),
         (1, 1, 0),
         (1, 1, 30_000_001),

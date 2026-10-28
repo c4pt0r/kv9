@@ -1,10 +1,13 @@
 # Native RawKV batch client
 
-`PersistentRawClient` provides `batch_get(keys)` and `batch_put(pairs)` through
-its existing bounded call/retry path. The normal transport is streaming gRPC
-on the node's ordinary public/Raft endpoint. Explicit `TonicUnary` remains
-available; `TarpcTcp` requires the `rpc-experiment` feature and its reference
-listener. There is no extra production port or centralized proxy.
+`PersistentRawClient` provides `batch_get(keys)`, `batch_put(pairs)` and the
+mixed atomic range batch `batch(mutations)` through its existing bounded
+call/retry path. The normal transport is streaming gRPC on the node's ordinary
+public/Raft endpoint (point-stream operations 3, 4 and 7); explicit `TonicUnary`
+remains available. The range-aware `RoutedClient` accepts the same
+`RawOperation` values, including `Batch`, and routes a batch by its first key
+(`RoutedRawRequest.batch`). There is no extra production port or centralized
+proxy. (The tarpc transport experiment was removed on 2026-10-28.)
 
 This document describes the integration candidate. Its normal-port
 [point process acceptance](STREAMING-RPC-PROCESS-ACCEPTANCE.md) passed. Promotion
@@ -39,9 +42,23 @@ if let Outcome::Success { value: Value::BatchGet { values } } = read.outcome {
 }
 ```
 
-Both methods return `CallReport`. The corresponding lower-level operations
-are `RawOperation::BatchGet { keys }` and `RawOperation::BatchPut { pairs }`.
-One report and one logical latency sample describe the complete batch.
+```rust,ignore
+use kv9_server::client::Mutation;
+
+// Mixed puts and deletes, applied in order at ONE (term, index); a later entry
+// for the same key wins and deleting an absent key is a no-op.
+let batch = client.batch(vec![
+    Mutation::Put { key: b"a".to_vec(), value: b"three".to_vec() },
+    Mutation::Delete { key: b"b".to_vec() },
+]).await;
+```
+
+All three methods return `CallReport`. The corresponding lower-level operations
+are `RawOperation::BatchGet { keys }`, `RawOperation::BatchPut { pairs }` and
+`RawOperation::Batch { mutations }`. One report and one logical latency sample
+describe the complete batch. The bounds below apply to every mutation of a mixed
+batch exactly as to a pair of `BatchPut`; a mutation without an op is invalid
+input.
 
 BatchGet reads every key from one established quorum-confirmed view. Results
 preserve request order and duplicates. BatchPut plans ordered mutations into
@@ -49,9 +66,11 @@ one fenced Raft command. Duplicate writes are last-wins within that command.
 The write acknowledgement requires the exact successful applied receipt;
 transport receipt or proposal enqueue does not establish success.
 
-All keys belong to the client's configured keyspace and region epoch. This
-is the current unsplit-region API, not a cross-region transaction interface.
-Batches are never sorted, deduplicated or automatically split.
+All keys belong to the client's configured keyspace and region epoch (for the
+routed client: to the one range its first key resolves to; a key outside it is
+`CrossRange`, refused before anything is proposed). This is a one-region API,
+not a cross-region transaction interface (`DESIGN.md` §9.1). Batches are never
+sorted, deduplicated or automatically split.
 
 ## Bounds and failure behavior
 

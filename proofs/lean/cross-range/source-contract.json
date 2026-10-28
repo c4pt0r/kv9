@@ -20,7 +20,7 @@
     "crates/server/src/api.rs": "4eb8f5ea932b7a7ce7366bfb0a9ba09b633c4b49bba6bd6dd55475f3cf8017ec",
     "crates/server/src/grpc.rs": "a97fcb85b32ba91ea73f479c4be6372e57c377b447f1de3d10c26b921d1b9d52",
     "crates/server/src/lib.rs": "9d3b68c1146843fd2492a0544dbb0692068b382dec3232f646345821133e6346",
-    "crates/server/proto/kv9.proto": "7c2ca3fc1c0cd73f032f48d83e64bac6c2f9c02ddca979902e42c771eccd4a94",
+    "crates/server/proto/kv9.proto": "2fd178ad1317e3ad8210b47eb318df9d7e61bcdf3c361c39c64cab340e25a078",
     "src/main.rs": "806b091eee8fc3f0d118e87ced39b1fc15024ebf7820bef28e7c336b5f970438",
     "scripts/cross-range-e2e.py": "fd8de1918a57612a27ab668578e578f02560cbd52f13cba21ca247ff4e7cfe04",
     "proofs/lean/cross-range/CrossRange.lean": "59d2918fb11fb0cd6fcf0b9e4cc47a1ec4715ecb3184b9ee9418501f33203f73",

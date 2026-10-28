@@ -2,8 +2,8 @@
 //! Throughput measurements require a separate, accepted performance run mode.
 use kv9_common::metrics::{Latency, Outcome as MetricOutcome};
 use kv9_server::client::{
-    CallReport, ClientConfig, Outcome, PersistentRawClient, RawOperation, Reason, TransportKind,
-    Value,
+    CallReport, ClientConfig, Mutation, Outcome, PersistentRawClient, RawOperation, Reason,
+    TransportKind, Value,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as Json};
@@ -233,12 +233,19 @@ fn arguments(op: &RawOperation, keyspace: u32) -> Json {
         RawOperation::BatchPut { pairs } => {
             json!({"keyspace":keyspace,"pairs":pairs.iter().map(|(k,v)|[hex(k),hex(v)]).collect::<Vec<_>>()})
         }
+        RawOperation::Batch { mutations } => {
+            json!({"keyspace":keyspace,"mutations":mutations.iter().map(|m| match m {
+                Mutation::Put { key, value } => json!({"put":[hex(key),hex(value)]}),
+                Mutation::Delete { key } => json!({"delete":hex(key)}),
+            }).collect::<Vec<_>>()})
+        }
     }
 }
 fn items(op: &RawOperation) -> usize {
     match op {
         RawOperation::BatchGet { keys } => keys.len(),
         RawOperation::BatchPut { pairs } => pairs.len(),
+        RawOperation::Batch { mutations } => mutations.len(),
         _ => 1,
     }
 }
@@ -249,6 +256,8 @@ fn kind(op: &RawOperation) -> &'static str {
         RawOperation::Delete { .. } => KINDS[2],
         RawOperation::BatchGet { .. } => KINDS[3],
         RawOperation::BatchPut { .. } => KINDS[4],
+        // The batch workload never issues a mixed range batch; its schema stays fixed.
+        RawOperation::Batch { .. } => "batch",
     }
 }
 

@@ -116,6 +116,7 @@ macro_rules! service {
                         Reply::Applied(self.0.write(pair.key, Some(pair.value), action).await?.into_inner())
                     }
                     Operation::DeleteKey(key) => Reply::Applied(self.0.write(key, None, action).await?.into_inner()),
+                    Operation::Batch(_) => return Err(Status::unimplemented("single-write fixture")),
                     Operation::Get(keys) => {
                         if let Some(Action::Refuse { delay, status }) = action {
                             tokio::time::sleep(delay).await;

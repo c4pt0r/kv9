@@ -19,7 +19,7 @@
     "crates/server/src/api.rs": "4eb8f5ea932b7a7ce7366bfb0a9ba09b633c4b49bba6bd6dd55475f3cf8017ec",
     "crates/server/src/grpc.rs": "a97fcb85b32ba91ea73f479c4be6372e57c377b447f1de3d10c26b921d1b9d52",
     "crates/server/src/data_groups.rs": "86d72d1fa1e27f79614cc21d4fdacaeb70552956683161f58c5a1d8a1658d8fd",
-    "crates/server/proto/kv9.proto": "7c2ca3fc1c0cd73f032f48d83e64bac6c2f9c02ddca979902e42c771eccd4a94",
+    "crates/server/proto/kv9.proto": "2fd178ad1317e3ad8210b47eb318df9d7e61bcdf3c361c39c64cab340e25a078",
     "crates/raft/src/driver.rs": "ec5b527f2e5f91bf681e36473b58c452471afa346d5d5e606efbb63202585994",
     "crates/raft/src/storage.rs": "95a09aa526e65530754c409a1a35eb0bde96d807245e1a53631ad882c9ed2a56",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",

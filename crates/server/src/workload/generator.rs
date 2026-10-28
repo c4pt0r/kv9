@@ -85,7 +85,9 @@ mod tests {
             kinds[operation.kind() as usize] += 1;
             let key = match operation {
                 RawOperation::Get { key } | RawOperation::Delete { key } => key,
-                RawOperation::BatchGet { .. } | RawOperation::BatchPut { .. } => {
+                RawOperation::BatchGet { .. }
+                | RawOperation::BatchPut { .. }
+                | RawOperation::Batch { .. } => {
                     panic!("point generator emitted a batch")
                 }
                 RawOperation::Put { key, value } => {

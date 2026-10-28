@@ -149,6 +149,12 @@ impl Kv9Grpc {
                     Operation::DeleteKey(key) if key.len() <= crate::client::MAX_KEY_BYTES => {
                         crate::api::RawWrite::Delete { key }
                     }
+                    Operation::Batch(batch) => {
+                        if !crate::client::valid_wire_mutations(&batch.mutations) {
+                            return Err(Status::invalid_argument("invalid scoped batch bounds"));
+                        }
+                        crate::api::RawWrite::Batch(raw_mutations(batch.mutations)?)
+                    }
                     _ => return Err(Status::invalid_argument("invalid scoped delete bounds")),
                 };
                 let backend = self.backend.inner.clone();

@@ -95,11 +95,42 @@ impl ClientConfig {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum RawOperation {
-    Get { key: Vec<u8> },
+    Get {
+        key: Vec<u8>,
+    },
+    Put {
+        key: Vec<u8>,
+        value: Vec<u8>,
+    },
+    Delete {
+        key: Vec<u8>,
+    },
+    BatchGet {
+        keys: Vec<Vec<u8>>,
+    },
+    BatchPut {
+        pairs: Vec<(Vec<u8>, Vec<u8>)>,
+    },
+    /// One atomic range batch: mixed puts and deletes, one fenced Raft entry.
+    Batch {
+        mutations: Vec<Mutation>,
+    },
+}
+
+/// One entry of an atomic range batch, in application order.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
+pub enum Mutation {
     Put { key: Vec<u8>, value: Vec<u8> },
     Delete { key: Vec<u8> },
-    BatchGet { keys: Vec<Vec<u8>> },
-    BatchPut { pairs: Vec<(Vec<u8>, Vec<u8>)> },
+}
+
+impl Mutation {
+    pub fn key(&self) -> &[u8] {
+        match self {
+            Self::Put { key, .. } | Self::Delete { key } => key,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
@@ -110,6 +141,7 @@ pub enum OperationKind {
     Delete,
     BatchGet,
     BatchPut,
+    Batch,
 }
 
 impl OperationKind {
@@ -126,6 +158,7 @@ impl RawOperation {
             Self::Delete { .. } => OperationKind::Delete,
             Self::BatchGet { .. } => OperationKind::BatchGet,
             Self::BatchPut { .. } => OperationKind::BatchPut,
+            Self::Batch { .. } => OperationKind::Batch,
         }
     }
 
@@ -153,8 +186,51 @@ impl RawOperation {
                     .encoded_len()
                         <= MAX_MESSAGE_BYTES
             }
+            Self::Batch { mutations } => {
+                let mutations = wire_mutations(mutations);
+                valid_wire_mutations(&mutations)
+                    && proto::RawBatchRequest { context, mutations }.encoded_len()
+                        <= MAX_MESSAGE_BYTES
+            }
         }
     }
+}
+
+/// The client-side bounds of one atomic range batch, checked on the wire form so
+/// that the stream and routed transports apply exactly the same rule as the client.
+pub(crate) fn valid_wire_mutations(mutations: &[proto::RawMutation]) -> bool {
+    (1..=MAX_BATCH_ITEMS).contains(&mutations.len())
+        && mutations.iter().all(|mutation| match &mutation.op {
+            Some(proto::raw_mutation::Op::Put(pair)) => {
+                pair.key.len() <= MAX_KEY_BYTES && pair.value.len() <= MAX_VALUE_BYTES
+            }
+            Some(proto::raw_mutation::Op::Delete(key)) => key.len() <= MAX_KEY_BYTES,
+            None => false,
+        })
+        && mutations
+            .iter()
+            .map(|mutation| match &mutation.op {
+                Some(proto::raw_mutation::Op::Put(pair)) => pair.key.len() + pair.value.len(),
+                Some(proto::raw_mutation::Op::Delete(key)) => key.len(),
+                None => 0,
+            })
+            .sum::<usize>()
+            <= MAX_MESSAGE_BYTES
+}
+
+pub(crate) fn wire_mutations(mutations: &[Mutation]) -> Vec<proto::RawMutation> {
+    mutations
+        .iter()
+        .map(|mutation| proto::RawMutation {
+            op: Some(match mutation {
+                Mutation::Put { key, value } => proto::raw_mutation::Op::Put(proto::KeyValue {
+                    key: key.clone(),
+                    value: value.clone(),
+                }),
+                Mutation::Delete { key } => proto::raw_mutation::Op::Delete(key.clone()),
+            }),
+        })
+        .collect()
 }
 
 pub(crate) fn valid_batch_keys(keys: &[Vec<u8>]) -> bool {
@@ -446,6 +522,12 @@ impl PersistentRawClient {
         self.call(RawOperation::BatchPut { pairs }).await
     }
 
+    /// One atomic range batch of mixed puts and deletes, applied in order at one
+    /// position; the same local bounds and no-split rule as `batch_put`.
+    pub async fn batch(&self, mutations: Vec<Mutation>) -> CallReport {
+        self.call(RawOperation::Batch { mutations }).await
+    }
+
     fn context(&self) -> Option<proto::RequestContext> {
         Some(proto::RequestContext {
             keyspace_id: self.0.config.keyspace_id,
@@ -529,6 +611,18 @@ impl PersistentRawClient {
             return clients[peer].raw_batch_put(request, deadline).await;
         }
         self.0.clients[peer].clone().raw_batch_put(request).await
+    }
+
+    async fn raw_batch(
+        &self,
+        peer: usize,
+        request: Request<proto::RawBatchRequest>,
+        deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
+        if let Some(clients) = &self.0.streaming {
+            return clients[peer].raw_batch(request, deadline).await;
+        }
+        self.0.clients[peer].clone().raw_batch(request).await
     }
 
     async fn dispatch(
@@ -625,6 +719,20 @@ impl PersistentRawClient {
                 );
                 applied(
                     self.raw_batch_put(peer, request, deadline)
+                        .await
+                        .map_err(|status| classify_status(&status, false))?,
+                )
+            }
+            RawOperation::Batch { mutations } => {
+                let request = self.request(
+                    proto::RawBatchRequest {
+                        context,
+                        mutations: wire_mutations(mutations),
+                    },
+                    deadline,
+                );
+                applied(
+                    self.raw_batch(peer, request, deadline)
                         .await
                         .map_err(|status| classify_status(&status, false))?,
                 )

@@ -251,6 +251,17 @@ impl Handler {
                 Ok(request) => self.api.raw_ttl(request).await,
                 Err(error) => Err(error),
             }),
+            7 => WireReply::encode(
+                match self.request::<crate::proto::RawBatchRequest>(&authorization, &payload) {
+                    Ok(request)
+                        if crate::client::valid_wire_mutations(&request.get_ref().mutations) =>
+                    {
+                        self.api.raw_batch(request).await
+                    }
+                    Ok(_) => Err(Status::invalid_argument("invalid batch write bounds")),
+                    Err(error) => Err(error),
+                },
+            ),
             _ => WireReply::error(Status::unimplemented("unknown point operation")),
         }
     }

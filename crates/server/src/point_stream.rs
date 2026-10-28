@@ -192,7 +192,7 @@ impl wire::point_stream_server::PointStream for Service {
                                 break;
                             }
                         };
-                        if frame.id <= last_id || frame.operation > 6 ||
+                        if frame.id <= last_id || frame.operation > 7 ||
                             !(1..=30_000_000).contains(&frame.remaining_micros) {
                             reserved.send(Err(Status::invalid_argument("invalid point stream frame")));
                             break;
@@ -762,6 +762,16 @@ impl StreamClient {
         deadline: Instant,
     ) -> Result<Response<proto::RawWriteResponse>, Status> {
         match self.call(4, 0, request, deadline).await? {
+            Decoded::Write(reply) => Ok(reply),
+            _ => Err(unconfirmed()),
+        }
+    }
+    pub(crate) async fn raw_batch(
+        &self,
+        request: Request<proto::RawBatchRequest>,
+        deadline: Instant,
+    ) -> Result<Response<proto::RawWriteResponse>, Status> {
+        match self.call(7, 0, request, deadline).await? {
             Decoded::Write(reply) => Ok(reply),
             _ => Err(unconfirmed()),
         }

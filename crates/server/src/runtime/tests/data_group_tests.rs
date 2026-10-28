@@ -965,6 +965,51 @@ fn routed_client_keeps_its_lifetime_across_each_endpoint_loss() {
         ),
         "{read:?}"
     );
+    // The routed path carries an atomic range batch end to end: one applied
+    // position for a put and a delete inside the bound range.
+    let seeded = executor.block_on(client.call(RawOperation::Put {
+        key: b"routed-gone".to_vec(),
+        value: vec![1],
+    }));
+    assert!(
+        matches!(seeded.outcome, RoutedOutcome::Success { .. }),
+        "{seeded:?}"
+    );
+    let batch = executor.block_on(client.call(RawOperation::Batch {
+        mutations: vec![
+            crate::client::Mutation::Put {
+                key: b"routed-kept".to_vec(),
+                value: vec![2],
+            },
+            crate::client::Mutation::Delete {
+                key: b"routed-gone".to_vec(),
+            },
+        ],
+    }));
+    assert!(
+        matches!(
+            batch.outcome,
+            RoutedOutcome::Success {
+                value: Value::Applied { term, index }
+            } if term > 0 && index > 0
+        ),
+        "{batch:?}"
+    );
+    for (key, expected) in [
+        (&b"routed-kept"[..], Some(vec![2u8])),
+        (&b"routed-gone"[..], None),
+    ] {
+        let read = executor.block_on(client.call(RawOperation::Get { key: key.to_vec() }));
+        assert!(
+            matches!(
+                &read.outcome,
+                RoutedOutcome::Success {
+                    value: Value::Get { value }
+                } if *value == expected
+            ),
+            "{key:?}: {read:?}"
+        );
+    }
     drop(client);
     drop(executor);
 }

@@ -86,11 +86,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--release", action="store_true")
     parser.add_argument("--binary", choices=("kv9-workload", "kv9-batch-workload", "kv9-batch-benchmark", "kv9-redis-batch-reference"), default="kv9-workload")
-    parser.add_argument("--rpc-experiment", action="store_true",
-                        help="explicitly compile the opt-in RPC transport experiment")
     args = parser.parse_args()
-    if args.binary == 'kv9-redis-batch-reference' and args.rpc_experiment:
-        raise RuntimeError('Redis reference has no RPC experiment feature')
     output = args.output.resolve()
     if output.is_relative_to(ROOT):
         raise RuntimeError("build artifacts must be outside the source tree")
@@ -101,27 +97,23 @@ def main():
         retain(args, output, before, session)
 
 
-def build_component(output, session, *, binary='kv9-workload', release=False, rpc_experiment=False):
+def build_component(output, session, *, binary='kv9-workload', release=False):
     """Build within the caller's already-held, already-invalidated transaction."""
     session.require_lock()
     if session.root != ROOT or session.release != release:
         raise RuntimeError('component source/profile differs from the cache transaction')
     output.mkdir(parents=True, exist_ok=False)
-    args = argparse.Namespace(binary=binary, release=release, rpc_experiment=rpc_experiment)
+    args = argparse.Namespace(binary=binary, release=release)
     retain(args, output, snapshot(), session)
 
 
 def retain(args, output, before, session):
     if args.binary == "kv9-redis-batch-reference":
-        if args.rpc_experiment:
-            raise RuntimeError("Redis reference has no RPC experiment feature")
         command = ["cargo", "build", "--locked", "--manifest-path", "scripts/redis-reference/Cargo.toml", "--bin", args.binary, "--message-format=json-render-diagnostics"]
     else:
         command = ["cargo", "build", "--locked", "-p", "kv9-server", "--bin", args.binary, "--message-format=json-render-diagnostics"]
     if args.release:
         command.append("--release")
-    if args.rpc_experiment:
-        command.extend(["--features", "rpc-experiment"])
     rustc = subprocess.check_output(["rustc", "-vV"], cwd=ROOT, text=True)
     # These are build inputs, not a dump of credentials or the process environment.
     build_environment = {key: os.environ[key] for key in (
