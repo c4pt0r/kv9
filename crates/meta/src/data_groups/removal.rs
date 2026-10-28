@@ -144,13 +144,10 @@ pub fn plan_removal<E: Engine>(
 ) -> Result<(RemovalDecision, bool)> {
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("removal requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded removal task scan exceeded"));
-    }
     let mut evidence = None;
-    for row in &rows {
-        if let Some(committed) = super::evidence::from_row_for_siblings(row, root.digest())? {
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(committed) = super::evidence::from_row_for_siblings(&row, root.digest())? {
             if committed.operation() == operation {
                 evidence = Some(committed);
             }
@@ -158,7 +155,7 @@ pub fn plan_removal<E: Engine>(
     }
     let evidence =
         evidence.ok_or_else(|| invalid("removal requires the committed install evidence"))?;
-    let migration = super::migration::committed_migrations_in_txn(txn, &rows, root.digest())?
+    let migration = super::migration::committed_migrations_in_txn(txn, root.digest())?
         .into_iter()
         .find(|m| m.operation() == operation)
         .ok_or_else(|| invalid("removal requires the committed migration"))?;
@@ -175,8 +172,9 @@ pub fn plan_removal<E: Engine>(
         region: evidence.region(),
         source,
     };
-    for row in &rows {
-        if let Some(previous) = from_removal_row(row, root.digest())? {
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(previous) = from_removal_row(&row, root.digest())? {
             if previous.operation == operation {
                 let expected = RemovalDecision {
                     task: previous.task,
@@ -198,9 +196,6 @@ pub fn plan_removal<E: Engine>(
     };
     matches_authority(&decision, &evidence, &creation)?;
     RemovalDecision::decode(&decision.encode())?;
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("removal task capacity reached"));
-    }
     let mut row = RowValue::new();
     for (column, value) in [
         (ColumnId(1), ColumnValue::Uint(decision.task)),
@@ -221,18 +216,16 @@ pub fn committed_removals<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Removal
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("removal readback requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded removal task scan exceeded"));
-    }
-    let migrations = super::migration::committed_migrations_in_txn(&txn, &rows, root.digest())?;
+    let migrations = super::migration::committed_migrations_in_txn(&txn, root.digest())?;
     let mut out: Vec<RemovalDecision> = Vec::new();
-    for row in &rows {
-        if let Some(decision) = from_removal_row(row, root.digest())? {
+    for row in task_rows(&txn) {
+        let row = row?;
+        if let Some(decision) = from_removal_row(&row, root.digest())? {
             let mut evidence = None;
-            for other in &rows {
+            for other in task_rows(&txn) {
+                let other = other?;
                 if let Some(committed) =
-                    super::evidence::from_row_for_siblings(other, root.digest())?
+                    super::evidence::from_row_for_siblings(&other, root.digest())?
                 {
                     if committed.operation() == decision.operation {
                         evidence = Some(committed);
@@ -308,6 +301,7 @@ mod tests {
     #[test]
     fn a_removal_names_only_an_initial_replica_and_never_the_destination() {
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         {
             let mut txn = store.begin().unwrap();
             let outsider = InitialReplica {

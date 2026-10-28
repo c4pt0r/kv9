@@ -63,6 +63,32 @@ pub(crate) struct MigrationOwners {
 }
 
 impl MigrationOwners {
+    pub(crate) fn verify_binding(&self, binding: &OwnerBinding) -> Result<()> {
+        if binding != &self.source && binding != &self.destination {
+            return Err(invalid("owner differs from committed capture plan"));
+        }
+        Ok(())
+    }
+    /// A new catalog descriptor may coexist only with these exact owner
+    /// bindings. This check performs no acquire/publish and no object I/O.
+    pub(crate) fn verify_compatible_locally(
+        &self,
+        view: &dyn kv9_engine::ReadView,
+        root: &RootDescriptor,
+    ) -> Result<()> {
+        for binding in [&self.source, &self.destination] {
+            if let Some(owner) =
+                kv9_meta::retention::optional_retention_owner(view, root, binding.descriptor.id)?
+            {
+                if owner.binding != *binding {
+                    return Err(invalid(
+                        "capture catalog conflicts with existing image owners",
+                    ));
+                }
+            }
+        }
+        Ok(())
+    }
     /// Verify, from one LOCAL applied ledger view, that both owners are
     /// committed and Published for exactly this image. Local visibility
     /// implies commitment; absence only means "not yet locally applied",

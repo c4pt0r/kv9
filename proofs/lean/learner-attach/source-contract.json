@@ -13,17 +13,17 @@
     "an_intent_alone_attaches_nothing"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "e0ab076f61ea2d4568776d46d7894c990900bea9bf5d8b36e37d2edd31c64919",
-    "crates/server/src/runtime/tests/data_group_tests.rs": "9d00911246b3e0ad2fd523ef9312ff04d133d81f06e8def46d21fd2bc91dc07d",
-    "crates/server/src/api.rs": "0790ce411d0f498cb0a178fca3a4a33d559d669f3d3420636283595b271e40ee",
-    "crates/server/src/grpc.rs": "6cf6361d7b149c2549f68cccf86792d74afb70d8066e26e5554baf05b44aa70c",
+    "crates/server/src/runtime.rs": "4b809dff28247ba64160f91f45e3e2531f55c7a10f0bfc5bce7db29532e08562",
+    "crates/server/src/runtime/tests/data_group_tests.rs": "0a58e3a5dd48d130d725589f49cce51a7573871be4b47cbae5074139fed62562",
+    "crates/server/src/api.rs": "4eb8f5ea932b7a7ce7366bfb0a9ba09b633c4b49bba6bd6dd55475f3cf8017ec",
+    "crates/server/src/grpc.rs": "a97fcb85b32ba91ea73f479c4be6372e57c377b447f1de3d10c26b921d1b9d52",
     "crates/server/src/data_groups.rs": "86d72d1fa1e27f79614cc21d4fdacaeb70552956683161f58c5a1d8a1658d8fd",
-    "crates/server/proto/kv9.proto": "9d5a31e070c1a74568aedf2b101862cb7f47e3734919ae879fcb6ff15ddc6f01",
-    "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
-    "crates/raft/src/driver.rs": "41590a6f888c776be2f5ea37307c06e5452183b65b21ae1d706cfe0779958057",
+    "crates/server/proto/kv9.proto": "7c2ca3fc1c0cd73f032f48d83e64bac6c2f9c02ddca979902e42c771eccd4a94",
+    "crates/raft/src/snapshot_install.rs": "8e7146cbc3380500245ba9e5bf9fcb24e8d2a08ed15fe41fb25fb74e816b1a69",
+    "crates/raft/src/driver.rs": "ec5b527f2e5f91bf681e36473b58c452471afa346d5d5e606efbb63202585994",
     "src/data_group_cli.rs": "16a8986c5c1808b5017609960f66cbb356778f3e0983b7555b34e270d926233a",
-    "src/main.rs": "427c54eb77023b7613a7cc255f292df2714c35af576fc3a95de291608fdc07a2",
-    "scripts/learner-attach-e2e.py": "eb2bc0387a9f34b9efe115f8a010d60ebe833e16df0468e03ab27f966e933fdb",
+    "src/main.rs": "806b091eee8fc3f0d118e87ced39b1fc15024ebf7820bef28e7c336b5f970438",
+    "scripts/learner-attach-e2e.py": "120c1c7b36a3f1090accfa42c5ff93b001d927d0d7e3d8d2484a65c1066b5a4b",
     "proofs/lean/learner-attach/Attach.lean": "c3b9195c163e1ac0bf4359a29756df1e1137e5486e67f293693e40a06dba0dcf",
     "proofs/lean/learner-attach/README.md": "d190670d1962007bf4f4d172316c509049338a6ad97fff0d9bca414d07953796"
   }

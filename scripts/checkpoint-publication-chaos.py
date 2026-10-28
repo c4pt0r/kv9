@@ -383,6 +383,9 @@ class Cell:
     def after_recovery(self):
         """Extension point after fresh all-voter progress, before scoped cleanup."""
 
+    def after_container_restart(self, victim, before, after):
+        """Optional test-gate observation before the usual Serving/readback checks."""
+
     def run(self):
         require(os.geteuid() == 0, "root needed for isolated Kind/Docker fixture")
         self.guard()
@@ -590,6 +593,7 @@ printf 'physical_files_checked=%s\\n' "${#files[@]}"
             p=self.pod(victim);s=p["status"]["containerStatuses"][0]
             return p if s["restartCount"]>old["restartCount"]and "running"in s["state"] else None
         after=self.wait("samePod fresh container restart",restarted)
+        self.after_container_restart(victim, before, after)
         self.wait("all voters Serving after checkpoint recovery",self.agreement)
         after=self.pod(victim);new=after["status"]["containerStatuses"][0];self.save("victim-after.json",after)
         require(before["metadata"]["uid"]==after["metadata"]["uid"] and before["spec"]["volumes"]==after["spec"]["volumes"],"same Pod and volumes")

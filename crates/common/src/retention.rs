@@ -18,6 +18,8 @@ const HEADER: usize = 8 + 32 + 1 + 16 + 32 + 8 + 1 + 4;
 const OWNER_BYTES: usize = 16 + 8 + 1;
 /// Includes released-owner tombstones. Capacity exhaustion never evicts them.
 pub const MAX_PIN_OWNERS: usize = 4096;
+/// One owner must protect a complete, bounded immutable-object closure.
+pub const MAX_OWNER_RESOURCES: usize = 64;
 pub const MAX_PIN_RECORD_BYTES: usize = HEADER + MAX_PIN_OWNERS * OWNER_BYTES + 32;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

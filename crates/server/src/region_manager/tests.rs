@@ -7,6 +7,10 @@ use kv9_meta::{
     ColumnValue, MetaStore, RowValue,
 };
 
+mod adoption;
+mod checkpoint;
+mod retained;
+
 struct Fixture {
     path: PathBuf,
     store: MetaStore<WalEngine>,
@@ -97,6 +101,33 @@ fn test_transport(runtime: &tokio::runtime::Runtime, f: &Fixture) -> Arc<GrpcTra
         runtime.handle().clone(),
         f.identity.root_digest,
     )
+}
+
+fn drain_retirement(manager: &mut RegionManager, region: RegionId) {
+    let deadline = std::time::Instant::now() + Duration::from_secs(3);
+    loop {
+        manager.retire_published_parent(region).unwrap();
+        if matches!(
+            manager.groups.get(&region),
+            Some(LocalGroup::Retired { draining: None })
+        ) {
+            return;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "retirement did not drain"
+        );
+        std::thread::yield_now();
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn group_fds(directory: &Path) -> usize {
+    fs::read_dir("/proc/self/fd")
+        .unwrap()
+        .filter_map(|entry| fs::read_link(entry.ok()?.path()).ok())
+        .filter(|path| path.starts_with(directory))
+        .count()
 }
 
 #[test]
@@ -478,7 +509,7 @@ fn group_preparation_never_reinitializes_ready_or_orphaned_logs() {
 #[test]
 fn group_preparation_rejects_voting_history_foreign_configuration_and_data() {
     use kv9_raft::rawnode::PersistentRaftStorage;
-    for mode in 0..3 {
+    for mode in 0..4 {
         let f = Fixture::new();
         f.manager().prepare(&f.creation).unwrap();
         if mode == 0 {
@@ -493,7 +524,7 @@ fn group_preparation_rejects_voting_history_foreign_configuration_and_data() {
         } else if mode == 1 {
             fs::remove_file(f.group_dir().join("raft/raft.log")).unwrap();
             DiskRaftStorage::open(&f.group_dir().join("raft"), &[1, 2, 4]).unwrap();
-        } else {
+        } else if mode == 2 {
             let engine = WalEngine::open(f.group_dir().join("data.wal")).unwrap().0;
             let mut batch = kv9_engine::WriteBatch::new();
             batch.put(
@@ -502,6 +533,8 @@ fn group_preparation_rejects_voting_history_foreign_configuration_and_data() {
                 b"value".to_vec(),
             );
             engine.write(batch).unwrap();
+        } else {
+            fs::write(f.group_dir().join("data.pending"), b"unexpected journal").unwrap();
         }
         assert!(
             f.manager().prepare(&f.creation).is_err(),
@@ -557,15 +590,75 @@ fn reclamation_deletes_only_fenced_payload_and_resumes_across_crash_and_restart(
         manager.reclaim_retired(region).is_err(),
         "an active group must refuse reclamation"
     );
-    manager.retire_published_parent(region).unwrap();
+    drain_retirement(&mut manager, region);
     assert_eq!(manager.retired_regions(), vec![region]);
     let dir = f.group_dir();
     assert!(dir.join("data.wal").exists() && dir.join("raft").exists());
+    for name in [
+        "data.pending",
+        "data.pending.tmp",
+        "data.checkpoint-image.tmp",
+        "capture.plan",
+        "capture.pending.tmp",
+        "capture-replica.plan",
+        "capture-replica.pending.tmp",
+    ] {
+        fs::write(dir.join(name), b"retired pending payload").unwrap();
+    }
+    let installed = dir.join("install-capture-test");
+    fs::create_dir_all(&installed).unwrap();
+    for name in [
+        "capture.plan",
+        "capture.pending.tmp",
+        "capture-replica.plan",
+        "capture-replica.pending.tmp",
+    ] {
+        fs::write(installed.join(name), [0; 13]).unwrap();
+    }
+    fs::write(installed.join("capture.lock"), []).unwrap();
+    fs::write(installed.join("capture-replica.lock"), []).unwrap();
+    let budget =
+        Arc::new(kv9_engine::checkpoint_pending_budget::PendingDiskBudget::new(1).unwrap());
+    budget.inventory_journal(&dir.join("data.pending")).unwrap();
+    budget.inventory_journal(&dir.join("capture.plan")).unwrap();
+    budget
+        .inventory_journal(&dir.join("capture-replica.plan"))
+        .unwrap();
+    budget
+        .inventory_journal(&installed.join("capture.plan"))
+        .unwrap();
+    budget
+        .inventory_journal(&installed.join("capture-replica.plan"))
+        .unwrap();
+    assert_eq!(
+        budget.snapshot().retained_bytes,
+        6 * b"retired pending payload".len() as u64 + 52
+    );
+    manager.uploader = Some(Arc::new(
+        kv9_engine::checkpoint::RemoteUploader::for_harness(Arc::new(
+            kv9_engine::MemoryObjectStore::new(),
+        ))
+        .with_pending_budget(budget.clone()),
+    ));
     let freed = manager.reclaim_retired(region).unwrap();
+    assert_eq!(budget.snapshot().retained_bytes, 0);
+    assert!(!installed.join("capture.plan").exists());
+    assert!(!installed.join("capture.pending.tmp").exists());
+    assert!(installed.join("capture.lock").exists());
+    assert!(installed.join("capture-replica.lock").exists());
+    assert!(!installed.join("capture-replica.plan").exists());
+    assert!(!installed.join("capture-replica.pending.tmp").exists());
     assert!(freed > 0, "payload bytes must be counted");
     assert!(!dir.join("data.wal").exists());
     assert!(!dir.join("data.segments").exists());
     assert!(!dir.join("raft").exists());
+    assert!(!dir.join("data.pending").exists());
+    assert!(!dir.join("data.pending.tmp").exists());
+    assert!(!dir.join("data.checkpoint-image.tmp").exists());
+    assert!(!dir.join("capture.plan").exists());
+    assert!(!dir.join("capture.pending.tmp").exists());
+    assert!(!dir.join("capture-replica.plan").exists());
+    assert!(!dir.join("capture-replica.pending.tmp").exists());
     // The fence survives: record present, phase Reclaimed, lock present.
     let record = read_record(&dir.join(RECORD)).unwrap().unwrap();
     assert_eq!(record.phase, Phase::Reclaimed);
@@ -577,18 +670,389 @@ fn reclamation_deletes_only_fenced_payload_and_resumes_across_crash_and_restart(
     // Crash mid-deletion: the durable Reclaimed record with leftover payload
     // must finish the deletion at discovery — and never reopen the group.
     fs::write(dir.join("data.wal"), b"leftover-after-crash").unwrap();
+    for name in [
+        "data.pending",
+        "data.pending.tmp",
+        "data.checkpoint-image.tmp",
+        "capture.plan",
+        "capture.pending.tmp",
+        "capture-replica.plan",
+        "capture-replica.pending.tmp",
+    ] {
+        fs::write(dir.join(name), b"leftover-after-crash").unwrap();
+    }
     fs::create_dir_all(dir.join("raft")).unwrap();
     fs::write(dir.join("raft").join("log"), b"leftover").unwrap();
     let mut recovered = f.manager();
+    let installed = dir.join("install-capture-test");
+    fs::create_dir_all(&installed).unwrap();
+    for name in [
+        "capture.plan",
+        "capture.pending.tmp",
+        "capture-replica.plan",
+        "capture-replica.pending.tmp",
+    ] {
+        fs::write(installed.join(name), [0; 13]).unwrap();
+    }
+    fs::write(installed.join("capture.lock"), []).unwrap();
+    fs::write(installed.join("capture-replica.lock"), []).unwrap();
+    let budget =
+        Arc::new(kv9_engine::checkpoint_pending_budget::PendingDiskBudget::new(1).unwrap());
+    budget.inventory_journal(&dir.join("data.pending")).unwrap();
+    budget.inventory_journal(&dir.join("capture.plan")).unwrap();
+    budget
+        .inventory_journal(&dir.join("capture-replica.plan"))
+        .unwrap();
+    budget
+        .inventory_journal(&installed.join("capture.plan"))
+        .unwrap();
+    budget
+        .inventory_journal(&installed.join("capture-replica.plan"))
+        .unwrap();
+    assert_eq!(
+        budget.snapshot().retained_bytes,
+        6 * b"leftover-after-crash".len() as u64 + 52
+    );
+    recovered.uploader = Some(Arc::new(
+        kv9_engine::checkpoint::RemoteUploader::for_harness(Arc::new(
+            kv9_engine::MemoryObjectStore::new(),
+        ))
+        .with_pending_budget(budget.clone()),
+    ));
     recovered.recover(&f.store).unwrap();
+    assert_eq!(budget.snapshot().retained_bytes, 0);
+    assert!(!installed.join("capture.plan").exists());
+    assert!(!installed.join("capture.pending.tmp").exists());
+    assert!(installed.join("capture.lock").exists());
+    assert!(installed.join("capture-replica.lock").exists());
+    assert!(!installed.join("capture-replica.plan").exists());
+    assert!(!installed.join("capture-replica.pending.tmp").exists());
     assert!(
         !dir.join("data.wal").exists(),
         "discovery resumes the deletion"
     );
     assert!(!dir.join("raft").exists());
+    assert!(!dir.join("data.pending").exists());
+    assert!(!dir.join("data.pending.tmp").exists());
+    assert!(!dir.join("data.checkpoint-image.tmp").exists());
+    assert!(!dir.join("capture.plan").exists());
+    assert!(!dir.join("capture.pending.tmp").exists());
+    assert!(!dir.join("capture-replica.plan").exists());
+    assert!(!dir.join("capture-replica.pending.tmp").exists());
     assert!(recovered.status_json().contains("\"reclaimed\""));
     assert!(
         recovered.prepare(&f.creation).is_err(),
         "a reclaimed group must never re-prepare"
     );
+}
+
+#[test]
+fn stopping_owners_keeps_group_lock_until_background_captures_are_drained() {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    let f = Fixture::new();
+    let mut manager = f.manager();
+    let transport = test_transport(&runtime, &f);
+    manager
+        .activate(&f.creation, &transport, Duration::from_secs(60))
+        .unwrap();
+    let region = f.creation.intent().region();
+    let capture = manager.group_handles.lock().unwrap()[&region].clone();
+    let weak = Arc::downgrade(&capture.0);
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(f.group_dir().join(LOCK))
+        .unwrap();
+    manager.stop_owners();
+    assert!(manager.pool.is_none());
+    assert!(manager.group_handles.lock().unwrap().is_empty());
+    assert!(
+        lock.try_lock().is_err(),
+        "draining job must retain disk ownership"
+    );
+    drop(capture);
+    assert!(
+        lock.try_lock().is_err(),
+        "only final shutdown releases the lock"
+    );
+    manager.shutdown();
+    assert!(weak.upgrade().is_none());
+    assert!(lock.try_lock().is_ok());
+}
+
+#[test]
+fn retirement_releases_driver_engine_and_transport_without_pool_shutdown() {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    let f = Fixture::new();
+    let mut manager = f.manager();
+    let transport = test_transport(&runtime, &f);
+    manager
+        .activate(&f.creation, &transport, Duration::from_secs(60))
+        .unwrap();
+    let region = f.creation.intent().region();
+    let (engine, driver) = manager.group_handles.lock().unwrap()[&region].clone();
+    let weak_engine = Arc::downgrade(&engine);
+    let weak_driver = Arc::downgrade(&driver);
+    drop((engine, driver));
+    let deadline = std::time::Instant::now() + Duration::from_secs(3);
+    loop {
+        manager.retire_published_parent(region).unwrap();
+        if weak_driver.upgrade().is_none() && weak_engine.upgrade().is_none() {
+            break;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "retired payload is still owned"
+        );
+        std::thread::yield_now();
+    }
+    // Infrastructure capacity was returned; lifecycle authority still refuses
+    // reactivation of this ID, including through a fresh local manager.
+    assert!(transport.register_group(region).is_ok());
+    assert!(manager.prepare(&f.creation).is_err());
+    assert!(f.manager().prepare(&f.creation).is_err());
+    assert!(
+        manager.pool.is_some(),
+        "retirement must not require pool shutdown"
+    );
+}
+
+#[test]
+fn retirement_waits_for_external_engine_and_peer_before_deleting_payload() {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    let f = Fixture::new();
+    let mut manager = f.manager();
+    let transport = test_transport(&runtime, &f);
+    manager
+        .activate(&f.creation, &transport, Duration::from_secs(60))
+        .unwrap();
+    let region = f.creation.intent().region();
+    let (reader, driver) = manager.group_handles.lock().unwrap()[&region].clone();
+    let peer = driver.peer().clone();
+    drop(driver);
+    manager.retire_published_parent(region).unwrap();
+    assert_eq!(
+        manager.reclaim_retired(region).unwrap(),
+        0,
+        "reader still holds the engine"
+    );
+    assert!(f.group_dir().join("data.wal").exists());
+    drop(reader);
+    manager.retire_published_parent(region).unwrap();
+    assert_eq!(
+        manager.reclaim_retired(region).unwrap(),
+        0,
+        "capture still holds the Raft storage"
+    );
+    assert!(f.group_dir().join("raft").exists());
+    drop(peer);
+    let deadline = std::time::Instant::now() + Duration::from_secs(3);
+    loop {
+        manager.retire_published_parent(region).unwrap();
+        if manager.reclaim_retired(region).unwrap() > 0 {
+            break;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "released readers did not unblock reclamation"
+        );
+        std::thread::yield_now();
+    }
+    assert!(!f.group_dir().join("data.wal").exists());
+    assert!(!f.group_dir().join("raft").exists());
+}
+
+#[test]
+fn retirement_churn_preserves_full_catalog_beyond_old_capacity() {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    let f = Fixture::new();
+    let mut txn = f.store.begin().unwrap();
+    kv9_meta::data_groups::activation::plan_activation(&mut txn, f.creation.intent()).unwrap();
+    txn.commit().unwrap();
+    let mut manager = f.manager();
+    let transport = test_transport(&runtime, &f);
+    manager
+        .activate(&f.creation, &transport, Duration::from_secs(60))
+        .unwrap();
+    let live = f.creation.intent().region();
+    #[cfg(target_os = "linux")]
+    let baseline_fds = group_fds(&f.path.join("data-groups"));
+    let mut history = Vec::new();
+    for sequence in 0..MAX_LOCAL_GROUPS + 5 {
+        let mut operation = [42; 16];
+        operation[..8].copy_from_slice(&(sequence as u64).to_be_bytes());
+        let mut txn = f.store.begin().unwrap();
+        let intent = kv9_meta::data_groups::plan_empty_group(
+            &mut txn,
+            operation,
+            &[NodeId(1), NodeId(2), NodeId(3)],
+        )
+        .unwrap();
+        kv9_meta::data_groups::activation::plan_activation(&mut txn, &intent).unwrap();
+        txn.commit().unwrap();
+        let creation = kv9_meta::data_groups::committed_creation(&f.store, intent.task())
+            .unwrap()
+            .unwrap();
+        manager
+            .activate(&creation, &transport, Duration::from_secs(60))
+            .unwrap();
+        assert_eq!(manager.occupied_groups(), 2);
+        let region = intent.region();
+        drain_retirement(&mut manager, region);
+        assert_eq!(manager.occupied_groups(), 1);
+        assert!(manager.status(live).is_ok());
+        assert_eq!(manager.group_handles.lock().unwrap().len(), 1);
+        // Cover both retained payload and reclaimed fences at discovery.
+        if sequence % 2 == 0 {
+            assert!(manager.reclaim_retired(region).unwrap() > 0);
+        }
+        #[cfg(target_os = "linux")]
+        assert_eq!(
+            group_fds(&f.path.join("data-groups")),
+            baseline_fds,
+            "retirement leaked payload or lock descriptors at lifetime {sequence}"
+        );
+        history.push(creation);
+    }
+    assert_eq!(
+        kv9_meta::data_groups::committed_creations(&f.store)
+            .unwrap()
+            .len(),
+        MAX_LOCAL_GROUPS + 6
+    );
+    assert_eq!(
+        kv9_meta::data_groups::activation::committed_activations(&f.store)
+            .unwrap()
+            .len(),
+        MAX_LOCAL_GROUPS + 6
+    );
+    assert_eq!(
+        f.store
+            .begin()
+            .unwrap()
+            .scan(&kv9_meta::schema::TASKS_DESC, 1000)
+            .unwrap()
+            .len(),
+        2 * (MAX_LOCAL_GROUPS + 6)
+    );
+    drop(manager);
+    #[cfg(target_os = "linux")]
+    assert_eq!(group_fds(&f.path.join("data-groups")), 0);
+    // Keep the node transport alive across recovery: its old group inboxes
+    // must already be gone, independently of dropping the whole transport.
+    let mut recovered = f.manager();
+    recovered.recover(&f.store).unwrap();
+    assert_eq!(recovered.groups.len(), MAX_LOCAL_GROUPS + 6);
+    assert_eq!(recovered.occupied_groups(), 1);
+    recovered.resume_active(&transport, Duration::from_secs(60), &[], &[]);
+    assert!(recovered.status(live).is_ok());
+    #[cfg(target_os = "linux")]
+    assert_eq!(group_fds(&f.path.join("data-groups")), baseline_fds);
+    for creation in history {
+        let mut retry = f.store.begin().unwrap();
+        assert_eq!(
+            kv9_meta::data_groups::plan_empty_group(
+                &mut retry,
+                creation.intent().operation(),
+                &[NodeId(1), NodeId(2), NodeId(3)]
+            )
+            .unwrap(),
+            *creation.intent()
+        );
+        assert!(
+            !kv9_meta::data_groups::activation::plan_activation(&mut retry, creation.intent())
+                .unwrap()
+        );
+        assert!(retry.into_batch().is_empty());
+        assert!(
+            recovered.prepare(&creation).is_err(),
+            "historical voter was resurrected"
+        );
+    }
+}
+
+#[test]
+fn retirement_publication_failures_keep_ownership_and_retry_every_cut() {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    for step in [
+        PrepareStep::RetiredFileSync,
+        PrepareStep::RetiredRename,
+        PrepareStep::RetiredDirectorySync,
+    ] {
+        for after in [false, true] {
+            let f = Fixture::new();
+            let mut manager = f.manager();
+            let transport = test_transport(&runtime, &f);
+            manager
+                .activate(&f.creation, &transport, Duration::from_secs(60))
+                .unwrap();
+            let region = f.creation.intent().region();
+            let error = manager.retire_observed(region, &mut |at, completed| {
+                if (at, completed) == (step, after) {
+                    Err(invalid("injected retirement I/O failure"))
+                } else {
+                    Ok(())
+                }
+            });
+            assert!(error.is_err(), "injection must hit {step:?}, after={after}");
+            assert_eq!(manager.occupied_groups(), 1);
+            assert!(manager.prepare(&f.creation).is_err());
+            assert!(manager.group_handles.lock().unwrap().is_empty());
+            let lock = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(f.group_dir().join(LOCK))
+                .unwrap();
+            assert!(
+                lock.try_lock().is_err(),
+                "ambiguous fence released ownership"
+            );
+            drain_retirement(&mut manager, region);
+            assert_eq!(
+                read_record(&f.group_dir().join(RECORD))
+                    .unwrap()
+                    .unwrap()
+                    .phase,
+                Phase::Retired
+            );
+            assert_eq!(manager.occupied_groups(), 0);
+            assert!(lock.try_lock().is_ok());
+            drop(lock);
+            drop(manager);
+            let mut recovered = f.manager();
+            recovered.recover(&f.store).unwrap();
+            assert_eq!(recovered.occupied_groups(), 0);
+            assert!(recovered.prepare(&f.creation).is_err());
+        }
+    }
+}
+
+#[test]
+fn reclamation_retries_a_durable_deletion_intent_without_restart() {
+    let f = Fixture::new();
+    let mut manager = f.manager();
+    manager.prepare(&f.creation).unwrap();
+    let region = f.creation.intent().region();
+    drain_retirement(&mut manager, region);
+    // A directory at the WAL pathname deterministically fails remove_file,
+    // even for privileged test runners. The Reclaimed record is already durable.
+    let wal = f.group_dir().join("data.wal");
+    fs::remove_file(&wal).unwrap();
+    fs::create_dir(&wal).unwrap();
+    assert!(manager.reclaim_retired(region).is_err());
+    assert_eq!(
+        read_record(&f.group_dir().join(RECORD))
+            .unwrap()
+            .unwrap()
+            .phase,
+        Phase::Reclaimed
+    );
+    assert!(manager.prepare(&f.creation).is_err());
+    fs::remove_dir(&wal).unwrap();
+    manager.reclaim_retired(region).unwrap();
+    assert!(matches!(
+        manager.groups.get(&region),
+        Some(LocalGroup::Reclaimed {})
+    ));
+    assert!(!f.group_dir().join("raft").exists());
 }

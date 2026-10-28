@@ -80,6 +80,14 @@ pub enum DurableAppliedPosition {
 /// trait from kv9-raft, whose only mutation is `write_applied`. Compile-fail
 /// probes guard that boundary; unpositioned histories remain non-reclaimable.
 pub trait ReplicatedEngine: Engine {
+    /// Optional local checkpoint/history restriction, shared with the actual
+    /// driver. Engines without checkpoint selection have no such dependency.
+    fn checkpoint_history(
+        &self,
+    ) -> Option<std::sync::Arc<crate::checkpoint_history::CheckpointHistory>> {
+        None
+    }
+
     /// Apply `batch` and record that it applied at `at`, atomically.
     ///
     /// No reader and no restart may observe one without the other.

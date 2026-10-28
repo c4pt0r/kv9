@@ -11,7 +11,7 @@ Current runtime and recovery flow: [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Each 
                     kv9 cluster : N identical single-binary nodes  (no external PD / etcd / Chubby)
 
   ┌──────────── node A ────────────┐  ┌──────────── node B ────────────┐  ┌──────────── node C ────────────┐
-  │  Router | Txn/Raw | Admin  API │  │  Router | Txn/Raw | Admin  API │  │  Router | Txn/Raw | Admin  API │
+  │  Router |  Raw   | Admin  API │  │  Router |  Raw   | Admin  API │  │  Router |  Raw   | Admin  API │
   │ ─────────────────────────────  │  │ ─────────────────────────────  │  │ ─────────────────────────────  │
   │  DATA PLANE                    │  │  DATA PLANE                    │  │  DATA PLANE                    │
   │   region replicas (raft grps)  │  │   region replicas (raft grps)  │  │   region replicas (raft grps)  │
@@ -30,21 +30,21 @@ Current runtime and recovery flow: [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Each 
 
 ```
  ┌────────────────────────────── one kv9 node (single binary) ──────────────────────────────┐
- │  gRPC :   Router API   │   Txn API   │   Raw API   │   Admin API                         │
- │              │              │             │             │                                │
- │              ▼              ▼             ▼             ▼                                │
- │        RegionRouter ──▶ TxnExecutor / RawExecutor ─────────────▶ Store                   │
- │        (caches L0→L1→L2)        │                                  │                     │
- │              │                  ▼                                  ▼                     │
- │              │           TimestampOracle                    Region (Raft group)          │
- │              │           (provider for txn-group)             ├─ RaftGroup (consensus)   │
+ │  gRPC :   Router API   │   Raw API (point · atomic range batch · scan)  │   Admin API      │
+ │              │              │                                             │                │
+ │              ▼              ▼                                             ▼                │
+ │        RegionRouter ──▶ RawExecutor (plans) ──▶ range permit ──────────▶ Store            │
+ │        (caches L0→L1→L2)   (keyspace · region containment · epoch)        │                │
+ │              │                                                            ▼                │
+ │              │                                                    Region (Raft group)      │
+ │              │                                                      ├─ RaftGroup (consensus)│
  │              │                                                ├─ apply ─▶ Engine (LSM)   │
  │              │                                                └─ append ─▶ WAL stream    │
  │              │                                                            (from WalPool) │
  │   ┌──────────┴─────────── META PLANE  (this node is a member) ─────────────────────┐     │
  │   │  system-keyspace regions (raft) hold:                                          │     │
  │   │   membership · keyspace catalog · region routing (L1) · placement ·            │     │
- │   │   per-txn-group TSO windows · MetaLeader lease                                 │     │
+ │   │   MetaLeader lease                                                             │     │
  │   └────────────────────────────────────────────────────────────────────────────────┘     │
  └──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -56,7 +56,7 @@ Current runtime and recovery flow: [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Each 
 ```
    L0  ROOT  ── META_REGION_0 : fixed id, tiny, NEVER grows (always in memory)
        │        holds only:  locations of L1 meta-regions ("meta of meta")
-       │                     membership root · MetaLeader lease · TSO windows
+       │                     membership root · MetaLeader lease
        │  points to
        ▼
    L1  META-REGIONS  ── ordinary SHARDED regions in the system keyspace (split/merge like data)
@@ -100,8 +100,8 @@ Current runtime and recovery flow: [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Each 
                                       │            │ write catalog:│   │ wait for catalog,│
                                       │            │ sys keyspace, │   │ then register    │
                                       │            │ default tenant│   │ self             │
-                                      │            │ L0/L1 records,│   └────────┬─────────┘
-                                      │            │ TSO window    │            │
+                                      │            │ L0/L1 records │   └────────┬─────────┘
+                                      │            │               │            │
                                       │            └───────┬───────┘            │
                                       │                    └─────────┬──────────┘
                                       └──────────────────────────────┤
@@ -114,25 +114,25 @@ Current runtime and recovery flow: [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Each 
 
 ---
 
-## 5. Sharded TSO — keyspace ⊇ txn groups; a pool of providers hosts the timelines (§3.6, §8.1)
+## 5. Atomic range batch — one permit, one fenced entry, one region (§9.1)
 
 ```
-  keyspaces                        txn groups (txn ks only)     timelines           TSO provider pool
- ┌───────────────────┐            ┌──────────┐                ┌──────────┐        ┌─────────────────────┐
- │ ks A  (txn)        │───────────▶│ A/g0     │──────────────▶│ TL:A.g0  │──────▶ │ Provider P1 (node A)│
- │   1 group (default)│            └──────────┘                └──────────┘   ┌──▶ │  hosts TL:A.g0, B.g1│
- ├───────────────────┤            ┌──────────┐                ┌──────────┐   │    └─────────────────────┘
- │ ks B  (txn, HOT)   │  sharded ┬▶│ B/g0     │──────────────▶│ TL:B.g0  │───┘
- │   3 groups by      │          ├▶│ B/g1     │──────────────▶│ TL:B.g1  │──────▶ ┌─────────────────────┐
- │   user-id range    │          └▶│ B/g2     │──────────────▶│ TL:B.g2  │──────▶ │ Provider P2 (node C)│
- ├───────────────────┤            └──────────┘                └──────────┘        │  hosts TL:B.g2      │
- │ ks C  (raw)        │   — no txn groups, no timeline (no transactions at all) — └─────────────────────┘
- └───────────────────┘
+   client   RawBatch(ctx{keyspace, epoch}, [put a, put b, delete a, put c])
+     │
+     ▼
+   permit  ── keyspace == ctx.keyspace ─┬─ every key ∈ region[start,end) ─┬─ epoch == region epoch ─┐
+     │        (else KeyspaceNotFound)   │  (else RangeCrossesRegion:      │ (else StaleEpoch:       │
+     │                                  │   nothing proposed, never split) │  refresh route, retry)  │
+     ▼                                                                                               │
+   ONE fenced Raft entry  { fence(region, conf_ver, version), [ops in order] }  ◀────────────────────┘
+     │   append → fsync + quorum  ═══▶ commit
+     ▼   ordered apply on EVERY replica:
+   fence re-check against the region row current at this log position
+     ├─ matches     → apply all ops in order (later op for the same key wins)   → receipt (term, index)
+     └─ mismatches  → apply nothing, typed failure            (a split landed in between: no partial write)
 
-  hierarchy: tenant ─1:N▶ keyspace ─1:N▶ txn group ─1:1▶ timeline ─N:1▶ provider   (assignment is data,
-             rebalanceable: a hot group → its own provider; many cold groups → share one)
-  ABSOLUTE boundary: a transaction NEVER crosses a keyspace (raw keyspaces have no transactions).
-  within a txn keyspace: default 1 group = full SI; opt-in sharding ⇒ independent timelines, no cross-group txn.
+   boundary rule: a batch never crosses a region or a keyspace. Multi-region = one batch per region,
+   per-region atomicity, chosen by the client — the server does not split batches.
 ```
 
 ## 6. Sharded WAL — K independent streams, each shared by many regions (§6.4)
@@ -161,42 +161,44 @@ Current runtime and recovery flow: [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Each 
 
 ---
 
-## 7. Write path (txn keyspace) — commit does NOT wait for object storage (§6, §8)
+## 7. Write path — commit does NOT wait for object storage (§6, §9.1)
 
 ```
    client
-     │  begin: start_ts ← TSO(provider of this txn group)
+     │  RawPut / RawBatch (atomic range batch, §5 above)
      ▼
-   TxnExecutor (Percolator 2PC)     all keys in ONE txn group  (cross-group ⇒ rejected at begin)
-     │  prewrite → locks   ── commit_ts ← TSO ──▶  commit primary (atomic) → secondaries
-     ▼  encode MVCC modify as custom raft log
+   RawExecutor plan + range permit     (keyspace · region containment · epoch; a cross-range batch is refused)
+     │  encode the plan as ONE fenced raft entry
+     ▼
    Region RaftGroup ── append ─▶  WAL stream fsync  +  raft majority   ═══════▶  ★ COMMIT ★
      │                              (LOCAL disk + quorum; independent of S3)
-     ▼  apply committed entry
+     ▼  apply committed entry (fence re-checked at apply)
    Engine memtable          (raft log IS the memtable's WAL; recovery = replay raft log)
      │  memtable full → flush
      ▼
    L0 SSTable ── upload ─▶  OBJECT STORAGE        ← first & only time bytes leave the node (async, off hot path)
      │  flush committed → persisted-index↑ → WAL / raft-log truncation advances
      ▼
-   compaction (storage→storage reorg; row + columnar + fts; may OFFLOAD to worker)
+   compaction (storage→storage reorg; may OFFLOAD to worker)
 ```
 
 ---
 
-## 8. Read path — snapshot read, follower-capable (§8.3, §9)
+## 8. Read path — linearizable via an established read (§8, §9.2)
 
 ```
-   read (snapshot at ts)
-     │  RegionRouter: keyspace → region (epoch-checked), api_type match
+   read (RawGet / RawBatchGet / RawScan)
+     │  RegionRouter: keyspace → region (epoch-checked)
      ▼
-   any replica with safe_time ≥ ts    (leader OR a caught-up follower — read-replicas are cheap)
+   leader: ReadIndex barrier (live quorum confirms leadership, local apply catches up)
+     │  then ONE engine snapshot, judged by the same context/region gate
      │  snapshot = memtable + local block cache
      │                    │ miss
      │                    ▼
      │              OBJECT STORAGE (immutable SST blocks)   ── see §9
      ▼
-   lock-free consistent read at ts     (read-only txns take no locks)
+   answer, or a typed refusal (read_unconfirmed / not_leader) — never a stale local-role read
+   (follower reads past a leader-confirmed applied index remain an option; no clock involved)
 ```
 
 ---

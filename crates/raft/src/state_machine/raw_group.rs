@@ -22,6 +22,9 @@ fn raw_ops(ops: &[KvOp]) -> bool {
 
 impl<E: ApplyStore> MemStateMachine<E> {
     pub(crate) fn can_group_raw(&self, cmd: &Command) -> bool {
+        if self.ttl_enabled {
+            return false;
+        }
         match cmd {
             Command::Put { cf, key, .. } => raw_key(*cf, key),
             Command::Write { ops } => raw_ops(ops),
@@ -487,28 +490,6 @@ mod tests {
                 d.driver_applied().unwrap().index,
                 commands.last().unwrap().index.0
             );
-            #[cfg(feature = "write-path-diagnostics")]
-            {
-                let snapshot = d.write_diagnostics();
-                let groups = snapshot
-                    .driver
-                    .distributions
-                    .iter()
-                    .find(|m| m.name == "successful_apply_group_commands")
-                    .unwrap();
-                assert_eq!(groups.count, writes.len() as u64);
-                assert_eq!(groups.sum, count as u64);
-                assert_eq!(groups.max, lengths.iter().max().map(|&n| n as u64));
-                assert_eq!(groups.buckets.iter().sum::<u64>(), groups.count);
-                let ready_sum: u64 = snapshot
-                    .ready
-                    .iter()
-                    .filter(|m| m.name != "ready_entries_to_persist")
-                    .map(|m| m.sum)
-                    .sum();
-                // Includes the elected leader's no-op, which is never a command group.
-                assert_eq!(ready_sum, count as u64 + 1);
-            }
         }
     }
 
@@ -533,30 +514,6 @@ mod tests {
         }
         assert_eq!(store.writes.lock().unwrap().len(), 1);
         assert_eq!(machine(&store).applied_index(), b.index);
-    }
-
-    #[cfg(feature = "write-stage-tracing")]
-    #[test]
-    fn failed_group_trace_cannot_claim_receipt_publication() {
-        let store = Arc::new(ProbeStore::default());
-        let d = driver(&store);
-        let before = d.driver_applied();
-        let proposals: Vec<_> = (0..32).map(|_| d.propose(&put(b"fail")).unwrap()).collect();
-        store.failure.store(2, Ordering::SeqCst);
-        assert!(d.step().is_err());
-        assert_eq!(d.driver_applied(), before);
-        let trace = d.write_stage_trace();
-        assert!(trace.valid);
-        assert_eq!(trace.group_commands_seen, 32);
-        assert!(!trace.groups.rows.is_empty());
-        assert!(trace
-            .groups
-            .rows
-            .iter()
-            .all(|r| r.receipts_inserted_ns.is_none()));
-        for proposal in proposals {
-            assert!(d.wait_applied(proposal, Duration::ZERO).is_err());
-        }
     }
 
     #[test]

@@ -13,19 +13,23 @@ use crate::store::{MetaStore, MetaTxn, Row, SequenceKind, FIRST_DYNAMIC_ID};
 
 pub mod abort;
 pub mod activation;
+pub mod capture;
 pub mod compaction;
 pub mod evidence;
 pub mod migration;
 pub mod ranges;
 pub mod removal;
 pub mod split;
+pub mod store_history;
 pub mod truncation;
 
 /// Stable task kind and encoding. This uses the existing tasks table, not a
 /// new table/schema version. No other task may reuse this kind.
 const CREATE_EMPTY_GROUP: u64 = 100;
 const MAGIC: &[u8; 8] = b"KV9GRP01";
-pub const MAX_CREATION_TASKS: usize = 255;
+/// Transient row-page budget, independent of the amount of retained history.
+/// Immutable history is required for old operation retries and recovery.
+const TASK_PAGE_ROWS: usize = 128;
 pub const MAX_INTENT_BYTES: usize = 8 + 32 + 16 + 8 + 8 + 1 + 7 * 24;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -135,6 +139,35 @@ fn invalid(message: &str) -> Error {
     Error::Config(message.into())
 }
 
+/// Walk all task history on one fixed transaction view. Only one decoded page
+/// is buffered; callers retain their required protocol results, not a copy of
+/// every task payload. No row is removed and IDs are never recycled here.
+fn task_rows<'t, E: Engine>(txn: &'t MetaTxn<'_, E>) -> impl Iterator<Item = Result<Row>> + 't {
+    let mut after = None::<Vec<crate::codec::PkComponent>>;
+    let mut page = Vec::new().into_iter();
+    let mut done = false;
+    std::iter::from_fn(move || {
+        if let Some(row) = page.next() {
+            return Some(Ok(row));
+        }
+        if done {
+            return None;
+        }
+        match txn.scan_after(&TASKS_DESC, after.as_deref(), TASK_PAGE_ROWS) {
+            Err(error) => {
+                done = true;
+                Some(Err(error))
+            }
+            Ok(rows) => {
+                done = rows.len() < TASK_PAGE_ROWS;
+                after = rows.last().map(|row| row.pk.clone());
+                page = rows.into_iter();
+                page.next().map(Ok)
+            }
+        }
+    })
+}
+
 fn from_row(row: &Row, root: RootDigest) -> Result<Option<CreationIntent>> {
     if row.value.get(ColumnId(2)) != Some(&ColumnValue::Uint(CREATE_EMPTY_GROUP)) {
         return Ok(None);
@@ -186,22 +219,22 @@ pub fn plan_empty_group<E: Engine>(
             })
         })
         .collect::<Result<Vec<_>>>()?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded creation task scan exceeded"));
-    }
-    for row in &rows {
-        if let Some(previous) = from_row(row, root.digest())? {
+    let mut existing = None;
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(previous) = from_row(&row, root.digest())? {
             if previous.operation == operation {
                 if previous.replicas != replicas {
                     return Err(invalid("group operation binding conflicts"));
                 }
-                return Ok(previous);
+                if existing.replace(previous).is_some() {
+                    return Err(invalid("duplicate group operation"));
+                }
             }
         }
     }
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("creation task capacity reached"));
+    if let Some(previous) = existing {
+        return Ok(previous);
     }
     // No partial allocation is exposed: caller commits or drops the entire txn.
     let intent = CreationIntent {
@@ -250,12 +283,9 @@ pub fn committed_creations<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Commit
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("group readback requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded creation task scan exceeded"));
-    }
     let mut intents = Vec::new();
-    for row in rows {
+    for row in task_rows(&txn) {
+        let row = row?;
         if let Some(intent) = from_row(&row, root.digest())? {
             if intents.iter().any(|previous: &CommittedCreation| {
                 previous.intent().region() == intent.region()
@@ -277,8 +307,198 @@ mod tests {
     use kv9_engine::MemEngine;
     use std::sync::Arc;
 
+    /// Retain unrelated task kinds before the authority under test. This makes
+    /// the protocol tests exercise later pages without changing their group set.
+    pub(super) fn fill_task_history(store: &MetaStore<MemEngine>, count: usize) {
+        let mut txn = store.begin().unwrap();
+        for _ in 0..count {
+            let id = txn.allocate_id(SequenceKind::Task).unwrap();
+            let mut row = RowValue::new();
+            row.set(ColumnId(1), ColumnValue::Uint(id));
+            row.set(ColumnId(2), ColumnValue::Uint(999));
+            row.set(ColumnId(3), ColumnValue::Bytes(vec![]));
+            row.set(ColumnId(4), ColumnValue::Uint(1));
+            row.set(ColumnId(5), ColumnValue::Uint(0));
+            txn.insert(&TASKS_DESC, &[memcmp_uint(id)], row).unwrap();
+        }
+        txn.commit().unwrap();
+    }
+
+    #[test]
+    fn task_history_surfaces_late_corruption_and_fuses_after_error() {
+        use kv9_engine::{ColumnFamily, WriteBatch};
+        let store = fixture();
+        let mut txn = store.begin().unwrap();
+        let first =
+            plan_empty_group(&mut txn, [8; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        txn.commit().unwrap();
+        fill_task_history(&store, TASK_PAGE_ROWS * 2 - 1);
+        let mut txn = store.begin().unwrap();
+        let intent =
+            plan_empty_group(&mut txn, [9; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        txn.commit().unwrap();
+        let mut batch = WriteBatch::new();
+        batch.put(
+            ColumnFamily::Default,
+            crate::codec::encode_row_key(TASKS_DESC.id, &[memcmp_uint(intent.task())]).unwrap(),
+            vec![255],
+        );
+        store.engine().write(batch).unwrap();
+        let txn = store.begin().unwrap();
+        let mut rows = task_rows(&txn);
+        for _ in 0..TASK_PAGE_ROWS * 2 {
+            assert!(rows.next().unwrap().is_ok());
+        }
+        assert!(rows.next().unwrap().is_err());
+        assert!(rows.next().is_none());
+        assert!(rows.next().is_none());
+        assert!(committed_creations(&store).is_err());
+        assert!(activation::committed_activations(&store).is_err());
+        let mut retry = store.begin().unwrap();
+        assert!(plan_empty_group(
+            &mut retry,
+            first.operation(),
+            &[NodeId(1), NodeId(2), NodeId(3)]
+        )
+        .is_err());
+        assert!(retry.into_batch().is_empty());
+    }
+
+    #[test]
+    fn task_history_detects_duplicate_operations_across_pages() {
+        let store = fixture();
+        let mut txn = store.begin().unwrap();
+        let first =
+            plan_empty_group(&mut txn, [8; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        txn.commit().unwrap();
+        fill_task_history(&store, TASK_PAGE_ROWS * 2);
+        let mut txn = store.begin().unwrap();
+        let mut duplicate =
+            plan_empty_group(&mut txn, [9; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        duplicate.operation = first.operation;
+        txn.update(
+            &TASKS_DESC,
+            &[memcmp_uint(duplicate.task())],
+            vec![(ColumnId(3), ColumnValue::Bytes(duplicate.encode()))],
+        )
+        .unwrap();
+        txn.commit().unwrap();
+        assert!(committed_creations(&store).is_err());
+        assert!(plan_empty_group(
+            &mut store.begin().unwrap(),
+            first.operation(),
+            &[NodeId(1), NodeId(2), NodeId(3)]
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn task_history_preserves_creation_and_activation_beyond_255_rows() {
+        let store = fixture();
+        let mut expected = Vec::new();
+        for sequence in 1u64..=270 {
+            let mut operation = [31; 16];
+            operation[..8].copy_from_slice(&sequence.to_be_bytes());
+            let mut txn = store.begin().unwrap();
+            let intent =
+                plan_empty_group(&mut txn, operation, &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+            assert!(activation::plan_activation(&mut txn, &intent).unwrap());
+            txn.commit().unwrap();
+            expected.push(intent);
+        }
+        assert_eq!(committed_creations(&store).unwrap().len(), expected.len());
+        assert_eq!(
+            activation::committed_activations(&store).unwrap().len(),
+            expected.len()
+        );
+        for original in &expected {
+            let mut txn = store.begin().unwrap();
+            assert_eq!(
+                plan_empty_group(
+                    &mut txn,
+                    original.operation(),
+                    &[NodeId(3), NodeId(1), NodeId(2)]
+                )
+                .unwrap(),
+                *original
+            );
+            assert!(!activation::plan_activation(&mut txn, original).unwrap());
+            assert!(
+                txn.into_batch().is_empty(),
+                "a retry allocated new catalog state"
+            );
+            assert_eq!(
+                committed_creation(&store, original.task())
+                    .unwrap()
+                    .unwrap()
+                    .intent(),
+                original
+            );
+        }
+        assert_eq!(
+            store
+                .begin()
+                .unwrap()
+                .scan(&TASKS_DESC, 1000)
+                .unwrap()
+                .len(),
+            540
+        );
+    }
+
+    #[test]
+    fn task_history_repeated_compaction_keeps_old_receipts_and_newest_floor() {
+        let store = fixture();
+        let mut txn = store.begin().unwrap();
+        let creation =
+            plan_empty_group(&mut txn, [21; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        txn.commit().unwrap();
+        let mut first = None;
+        for index in 1..=300 {
+            let mut txn = store.begin().unwrap();
+            let (decision, fresh) = compaction::plan_compaction(
+                &mut txn,
+                creation.region(),
+                kv9_common::AppliedPosition { term: 1, index },
+            )
+            .unwrap();
+            assert!(fresh);
+            if index == 1 {
+                first = Some(decision);
+            }
+            txn.commit().unwrap();
+        }
+        let floors = compaction::committed_compaction_floors(&store).unwrap();
+        assert_eq!(floors.len(), 1);
+        assert_eq!(floors[0].floor().index, 300);
+        let mut txn = store.begin().unwrap();
+        let (old, fresh) = compaction::plan_compaction(
+            &mut txn,
+            creation.region(),
+            kv9_common::AppliedPosition { term: 1, index: 1 },
+        )
+        .unwrap();
+        assert!(!fresh);
+        assert_eq!(Some(old), first);
+        assert!(txn.into_batch().is_empty());
+        assert_eq!(
+            store
+                .begin()
+                .unwrap()
+                .scan(&TASKS_DESC, 1000)
+                .unwrap()
+                .len(),
+            301
+        );
+    }
+
     pub(super) fn fixture() -> MetaStore<MemEngine> {
         let store = MetaStore::new(Arc::new(MemEngine::new()));
+        initialize_fixture(&store);
+        store
+    }
+
+    fn initialize_fixture<E: Engine>(store: &MetaStore<E>) {
         let voters: Vec<_> = (1..=3)
             .map(|id| RootVoter {
                 node_id: NodeId(id),
@@ -308,7 +528,59 @@ mod tests {
                 .unwrap();
         }
         txn.commit().unwrap();
-        store
+    }
+
+    #[test]
+    fn task_history_wal_reopen_preserves_old_retries_and_allocation() {
+        use kv9_engine::WalEngine;
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-task-history-{}",
+            StoreIncarnation::mint().unwrap()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("metadata.wal");
+        let store = MetaStore::new(Arc::new(WalEngine::open(&path).unwrap().0));
+        initialize_fixture(&store);
+        let mut original = Vec::new();
+        for sequence in 1u64..=130 {
+            let mut operation = [71; 16];
+            operation[..8].copy_from_slice(&sequence.to_be_bytes());
+            let mut txn = store.begin().unwrap();
+            let intent =
+                plan_empty_group(&mut txn, operation, &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+            activation::plan_activation(&mut txn, &intent).unwrap();
+            txn.commit().unwrap();
+            original.push(intent);
+        }
+        drop(store);
+        let recovered = MetaStore::new(Arc::new(WalEngine::open(&path).unwrap().0));
+        assert_eq!(committed_creations(&recovered).unwrap().len(), 130);
+        assert_eq!(
+            activation::committed_activations(&recovered).unwrap().len(),
+            130
+        );
+        for intent in &original {
+            let mut txn = recovered.begin().unwrap();
+            assert_eq!(
+                plan_empty_group(
+                    &mut txn,
+                    intent.operation(),
+                    &[NodeId(1), NodeId(2), NodeId(3)]
+                )
+                .unwrap(),
+                *intent
+            );
+            assert!(!activation::plan_activation(&mut txn, intent).unwrap());
+            assert!(txn.into_batch().is_empty());
+        }
+        let mut txn = recovered.begin().unwrap();
+        let next =
+            plan_empty_group(&mut txn, [72; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        assert!(next.task() > original.last().unwrap().task());
+        assert_eq!(next.region().0, original.last().unwrap().region().0 + 1);
+        txn.commit().unwrap();
+        drop(recovered);
+        std::fs::remove_dir_all(dir).unwrap();
     }
 
     #[test]

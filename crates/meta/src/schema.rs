@@ -105,8 +105,7 @@ impl TableDesc {
 
 pub const TENANTS: TableId = TableId(1);
 pub const KEYSPACES: TableId = TableId(2);
-pub const TXN_GROUPS: TableId = TableId(3);
-pub const TSO_TIMELINES: TableId = TableId(4);
+// TableId(3) and TableId(4) were the retired txn_groups / tso_timelines tables; never reuse.
 pub const NODES: TableId = TableId(5);
 pub const REGIONS: TableId = TableId(6);
 pub const REGION_PEERS: TableId = TableId(7);
@@ -170,21 +169,6 @@ mod cols {
         col!(6, "end_key", Bytes),
         col!(7, "state", Uint),
         col!(8, "config", Bytes),
-    ];
-
-    pub const TXN_GROUPS: &[ColumnDesc] = &[
-        col!(1, "id", Uint, pk),
-        col!(2, "keyspace_id", Uint),
-        col!(3, "name", Text),
-        col!(4, "sub_start", Bytes),
-        col!(5, "sub_end", Bytes),
-    ];
-
-    pub const TSO_TIMELINES: &[ColumnDesc] = &[
-        col!(1, "id", Uint, pk),
-        col!(2, "txn_group_id", Uint),
-        col!(3, "provider_node", Uint),
-        col!(4, "window_hi", Uint),
     ];
 
     pub const NODES: &[ColumnDesc] = &[
@@ -321,14 +305,6 @@ mod idx {
         },
     ];
 
-    /// txn_groups.by_keyspace(keyspace_id) — column id 2.
-    pub const TXN_GROUPS_BY_KEYSPACE: &[IndexDesc] = &[IndexDesc {
-        id: IndexId(1),
-        name: "by_keyspace",
-        columns: &[ColumnId(2)],
-        unique: false,
-    }];
-
     /// regions.by_range(keyspace_id, start_key) — column ids 2, 3.
     pub const REGIONS_BY_RANGE: &[IndexDesc] = &[IndexDesc {
         id: IndexId(1),
@@ -360,20 +336,6 @@ mod fk {
         column: ColumnId(3),
         references: super::TENANTS,
     }];
-    pub const TXN_GROUPS: &[FkDesc] = &[FkDesc {
-        column: ColumnId(2),
-        references: super::KEYSPACES,
-    }];
-    pub const TSO_TIMELINES: &[FkDesc] = &[
-        FkDesc {
-            column: ColumnId(2),
-            references: super::TXN_GROUPS,
-        },
-        FkDesc {
-            column: ColumnId(3),
-            references: super::NODES,
-        },
-    ];
     pub const REGIONS: &[FkDesc] = &[FkDesc {
         column: ColumnId(2),
         references: super::KEYSPACES,
@@ -422,22 +384,6 @@ pub const KEYSPACES_DESC: TableDesc = TableDesc {
     columns: cols::KEYSPACES,
     indexes: idx::KEYSPACES_IDX,
     fks: fk::KEYSPACES,
-};
-
-pub const TXN_GROUPS_DESC: TableDesc = TableDesc {
-    id: TXN_GROUPS,
-    name: "txn_groups",
-    columns: cols::TXN_GROUPS,
-    indexes: idx::TXN_GROUPS_BY_KEYSPACE,
-    fks: fk::TXN_GROUPS,
-};
-
-pub const TSO_TIMELINES_DESC: TableDesc = TableDesc {
-    id: TSO_TIMELINES,
-    name: "tso_timelines",
-    columns: cols::TSO_TIMELINES,
-    indexes: idx::NONE,
-    fks: fk::TSO_TIMELINES,
 };
 
 pub const NODES_DESC: TableDesc = TableDesc {
@@ -541,8 +487,6 @@ pub const ROOT_META_DESC: TableDesc = TableDesc {
 pub const ALL_TABLES: &[TableDesc] = &[
     TENANTS_DESC,
     KEYSPACES_DESC,
-    TXN_GROUPS_DESC,
-    TSO_TIMELINES_DESC,
     NODES_DESC,
     REGIONS_DESC,
     REGION_PEERS_DESC,

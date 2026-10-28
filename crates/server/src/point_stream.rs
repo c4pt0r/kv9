@@ -6,10 +6,10 @@ use crate::point_wire::{
     Handler, WireMetadata, WireReply, WireRequest, CHANNEL_LIMIT, CONNECTION_LIMIT, FRAME_LIMIT,
 };
 use futures_util::Stream;
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 use futures_util::StreamExt;
 use prost::Message;
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 use std::io;
 use std::{
     collections::HashMap,
@@ -21,7 +21,7 @@ use std::{
     task::{Context, Poll},
     time::Duration,
 };
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 use tokio::{
     io::{AsyncRead, AsyncWrite, ReadBuf},
     net::{TcpListener, TcpStream},
@@ -31,10 +31,10 @@ use tokio::{
     task::{JoinHandle, JoinSet},
     time::{timeout_at, Instant},
 };
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 use tokio_stream::wrappers::TcpListenerStream;
 use tokio_util::sync::{CancellationToken, WaitForCancellationFutureOwned};
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 use tonic::transport::{server::Connected, Server};
 use tonic::{transport::Endpoint, Request, Response, Status};
 
@@ -192,7 +192,7 @@ impl wire::point_stream_server::PointStream for Service {
                                 break;
                             }
                         };
-                        if frame.id <= last_id || frame.operation > 5 ||
+                        if frame.id <= last_id || frame.operation > 6 ||
                             !(1..=30_000_000).contains(&frame.remaining_micros) {
                             reserved.send(Err(Status::invalid_argument("invalid point stream frame")));
                             break;
@@ -235,18 +235,18 @@ impl wire::point_stream_server::PointStream for Service {
     }
 }
 
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 struct Connection {
     stream: TcpStream,
     _permit: OwnedSemaphorePermit,
     cancelled: Pin<Box<WaitForCancellationFutureOwned>>,
 }
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 impl Connected for Connection {
     type ConnectInfo = ();
     fn connect_info(&self) {}
 }
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 impl AsyncRead for Connection {
     fn poll_read(
         mut self: Pin<&mut Self>,
@@ -259,7 +259,7 @@ impl AsyncRead for Connection {
         Pin::new(&mut self.stream).poll_read(cx, buf)
     }
 }
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 impl AsyncWrite for Connection {
     fn poll_write(
         mut self: Pin<&mut Self>,
@@ -279,19 +279,19 @@ impl AsyncWrite for Connection {
     }
 }
 
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 pub(crate) struct StreamServer {
     pub(crate) task: JoinHandle<io::Result<()>>,
     shutdown: CancellationToken,
 }
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 impl Drop for StreamServer {
     fn drop(&mut self) {
         self.shutdown.cancel();
         self.task.abort();
     }
 }
-#[cfg(any(test, feature = "rpc-experiment"))]
+#[cfg(test)]
 pub(crate) async fn start(
     address: SocketAddr,
     api: Kv9Grpc,
@@ -342,6 +342,7 @@ pub(crate) async fn start(
 }
 
 enum Decoded {
+    Ttl(Response<proto::RawTtlResponse>),
     Routed(Response<proto::RoutedRawResponse>),
     Get(Response<proto::RawGetResponse>),
     BatchGet(Response<proto::RawBatchGetResponse>),
@@ -350,6 +351,7 @@ enum Decoded {
 impl Decoded {
     fn valid(&self, expected_items: usize) -> bool {
         match self {
+            Self::Ttl(reply) => crate::client::ttl::valid_envelope(reply, expected_items),
             Self::Routed(reply) => crate::client::routed::valid_reply(reply, expected_items),
             Self::Get(reply) => {
                 !crate::client::has_control(reply.metadata())
@@ -456,6 +458,8 @@ impl Stream for Outgoing {
 }
 
 pub(crate) struct StreamClient {
+    #[cfg(test)]
+    test_transport: Option<tonic::transport::Channel>,
     address: SocketAddr,
     max_in_flight: usize,
     channel: RwLock<Option<Arc<StreamChannel>>>,
@@ -464,11 +468,22 @@ pub(crate) struct StreamClient {
 impl StreamClient {
     pub(crate) fn new(address: SocketAddr, max_in_flight: usize) -> Self {
         Self {
+            #[cfg(test)]
+            test_transport: None,
             address,
             max_in_flight,
             channel: RwLock::new(None),
             connecting: tokio::sync::Mutex::new(()),
         }
+    }
+    #[cfg(test)]
+    pub(crate) fn with_test_transport(
+        transport: tonic::transport::Channel,
+        max_in_flight: usize,
+    ) -> Self {
+        let mut client = Self::new("127.0.0.1:1".parse().unwrap(), max_in_flight);
+        client.test_transport = Some(transport);
+        client
     }
     fn live_channel(&self) -> Result<Option<Arc<StreamChannel>>, Status> {
         let channel = self.channel.read().map_err(|_| unconfirmed())?.clone();
@@ -490,16 +505,30 @@ impl StreamClient {
         if let Some(channel) = self.live_channel()? {
             return Ok(channel);
         }
-        let transport = Endpoint::from_shared(format!("http://{}", self.address))
+        let transport = self.connect_transport().await?;
+        let client = wire::point_stream_client::PointStreamClient::new(transport)
+            .max_decoding_message_size(FRAME_LIMIT)
+            .max_encoding_message_size(FRAME_LIMIT);
+        self.exchange(client, authorization).await
+    }
+    async fn connect_transport(&self) -> Result<tonic::transport::Channel, Status> {
+        #[cfg(test)]
+        if let Some(transport) = &self.test_transport {
+            return Ok(transport.clone());
+        }
+        Endpoint::from_shared(format!("http://{}", self.address))
             .map_err(|_| unconfirmed())?
             .tcp_nodelay(true)
             .connect_timeout(Duration::from_secs(1))
             .connect()
             .await
-            .map_err(|_| unconfirmed())?;
-        let mut client = wire::point_stream_client::PointStreamClient::new(transport)
-            .max_decoding_message_size(FRAME_LIMIT)
-            .max_encoding_message_size(FRAME_LIMIT);
+            .map_err(|_| unconfirmed())
+    }
+    async fn exchange(
+        &self,
+        mut client: wire::point_stream_client::PointStreamClient<tonic::transport::Channel>,
+        authorization: &str,
+    ) -> Result<Arc<StreamChannel>, Status> {
         let (outgoing, incoming) = mpsc::channel(self.max_in_flight);
         let cancel = CancellationToken::new();
         let request_stream = Outgoing {
@@ -547,6 +576,7 @@ impl StreamClient {
                 let decoded = match pending.operation {
                     0 => reply.decode().map(Decoded::Get),
                     5 => reply.decode().map(Decoded::Routed),
+                    6 => reply.decode().map(Decoded::Ttl),
                     3 => reply.decode().map(Decoded::BatchGet),
                     _ => reply.decode().map(Decoded::Write),
                 };
@@ -554,7 +584,14 @@ impl StreamClient {
                     Ok(reply) => !reply.valid(pending.expected_items),
                     Err(status) => {
                         status.code() == tonic::Code::DataLoss
-                            || if pending.operation == 5 {
+                            || if pending.operation == 6 {
+                                matches!(
+                                    crate::client::ttl::classify(status),
+                                    crate::client::ttl::Failure::Rpc {
+                                        reason: crate::client::Reason::Protocol
+                                    }
+                                )
+                            } else if pending.operation == 5 {
                                 matches!(
                                     crate::client::routed::classify(
                                         status,
@@ -655,6 +692,17 @@ impl StreamClient {
         let result = receive.await.map_err(|_| unconfirmed())?;
         guard.armed = false;
         result
+    }
+    pub(crate) async fn raw_ttl(
+        &self,
+        request: Request<proto::RawTtlRequest>,
+        expected: usize,
+        deadline: Instant,
+    ) -> Result<Response<proto::RawTtlResponse>, Status> {
+        match self.call(6, expected, request, deadline).await? {
+            Decoded::Ttl(reply) => Ok(reply),
+            _ => Err(unconfirmed()),
+        }
     }
     pub(crate) async fn routed_raw(
         &self,

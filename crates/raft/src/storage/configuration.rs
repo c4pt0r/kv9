@@ -11,7 +11,10 @@ use super::{DiskRaftStorage, FileSystem};
 
 /// The initial configuration and each applied indexed configuration (in index
 /// order) — enough to re-serialize a [`ConfigurationHistory`] verbatim.
-pub(super) type ReserializedHistory = (Option<ConfState>, Vec<(u64, ConfState)>);
+pub(super) type ReserializedHistory<'a> = (
+    Option<&'a ConfState>,
+    std::collections::btree_map::Iter<'a, u64, ConfState>,
+);
 
 #[derive(Default)]
 pub(super) struct ConfigurationHistory {
@@ -55,19 +58,13 @@ impl ConfigurationHistory {
     /// must not launder away an unindexed/conflicting membership) — the caller
     /// then skips reclaiming that group. Replaying `initial` then `applied` (in
     /// order) reconstructs an identical `ConfigurationHistory`.
-    pub(super) fn reserialize(&self) -> Result<ReserializedHistory> {
+    pub(super) fn reserialize(&self) -> Result<ReserializedHistory<'_>> {
         if self.ambiguous {
             return Err(Error::Raft(
                 "cannot reclaim a group with an ambiguous configuration history".into(),
             ));
         }
-        Ok((
-            self.initial.clone(),
-            self.applied
-                .iter()
-                .map(|(index, state)| (*index, state.clone()))
-                .collect(),
-        ))
+        Ok((self.initial.as_ref(), self.applied.iter()))
     }
 }
 
@@ -102,7 +99,8 @@ impl CommittedConfiguration {
     pub fn cut(&self) -> AppliedPosition {
         self.cut
     }
-    /// None names the initial configuration, not a fabricated Raft term/index.
+    /// None names the initial or compacted-base configuration, not a fabricated
+    /// configuration-change term/index.
     pub fn applied_at(&self) -> Option<AppliedPosition> {
         self.applied_at
     }
@@ -163,53 +161,45 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             ));
         }
         let first = self.mem.first_index().map_err(raft_error)?;
-        if first != 1 {
-            // The prefix below `first` is compacted: its configuration lives
-            // in the durable REC_COMPACTION base (restored into the mem
-            // snapshot's ConfState by compact_memory). A cut at or above the
-            // base whose retained tail contains no configuration entry
-            // inherits the base configuration — that is exactly what a fresh
-            // compaction floor above an earlier one needs. A cut BELOW the
-            // base is genuinely gone.
-            use raft::Storage as _;
-            if cut.index < first.saturating_sub(1) {
-                return Ok(ConfigurationLookup::Unavailable(
-                    ConfigurationUnavailable::ProtocolHistoryCompacted,
-                ));
-            }
-            let snapshot = self.mem.snapshot(0, 0).map_err(raft_error)?;
-            let base_state = snapshot.get_metadata().get_conf_state().clone();
-            for next in first..=cut.index {
-                if is_configuration(self.configuration_entry(next)?.get_entry_type()) {
-                    return Ok(ConfigurationLookup::Unavailable(
-                        ConfigurationUnavailable::ConfigurationNotApplied { index: next },
-                    ));
-                }
-            }
-            return Ok(ConfigurationLookup::Found(CommittedConfiguration {
-                cut,
-                applied_at: None,
-                state: base_state,
-            }));
-        }
         let history = self.conf_history.lock().expect("conf history poisoned");
         if history.ambiguous {
             return Ok(ConfigurationLookup::Unavailable(
                 ConfigurationUnavailable::UnindexedOrConflictingHistory,
             ));
         }
-        let Some(initial) = &history.initial else {
+        let base_index = first - 1;
+        if cut.index < base_index {
             return Ok(ConfigurationLookup::Unavailable(
-                ConfigurationUnavailable::InitialConfigurationMissing,
+                ConfigurationUnavailable::ProtocolHistoryCompacted,
             ));
+        }
+        let base_state = if base_index == 0 {
+            let Some(initial) = &history.initial else {
+                return Ok(ConfigurationLookup::Unavailable(
+                    ConfigurationUnavailable::InitialConfigurationMissing,
+                ));
+            };
+            initial.clone()
+        } else {
+            // The durable compaction base replaces ONLY the removed prefix.
+            // Indexed, actually applied configuration changes in the retained
+            // suffix must still participate in historical checkpoint lookup.
+            self.configuration_at_base(
+                AppliedPosition {
+                    term: self.mem.term(base_index).map_err(raft_error)?,
+                    index: base_index,
+                },
+                &history,
+            )?
         };
+        use std::ops::Bound::{Excluded, Included};
         let (index, state) = history
             .applied
-            .range(..=cut.index)
+            .range((Excluded(base_index), Included(cut.index)))
             .next_back()
             .map(|(index, state)| (*index, state))
-            .unwrap_or((0, initial));
-        let applied_at = if index == 0 {
+            .unwrap_or((base_index, &base_state));
+        let applied_at = if index == base_index {
             None
         } else {
             let entry = self.configuration_entry(index)?;
@@ -242,6 +232,38 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             applied_at,
             state: state.clone(),
         }))
+    }
+
+    /// Caller holds the protocol writer and configuration-history locks.
+    pub(super) fn configuration_at_base(
+        &self,
+        base: AppliedPosition,
+        history: &ConfigurationHistory,
+    ) -> Result<ConfState> {
+        let cached = self
+            .configuration_base
+            .lock()
+            .expect("configuration base poisoned");
+        let Some((at, state)) = cached.as_ref().filter(|(at, _)| *at == base) else {
+            return Err(Error::Raft(
+                "exact durable configuration base is unavailable".into(),
+            ));
+        };
+        // Older rewrites could mistakenly encode latest membership at an
+        // earlier base. If retained indexed history contradicts those bytes,
+        // refuse them rather than treating either description as a new grant.
+        let historical = history
+            .applied
+            .range(..=at.index)
+            .next_back()
+            .map(|(_, state)| state)
+            .or(history.initial.as_ref());
+        if history.ambiguous || historical.is_some_and(|expected| expected != state) {
+            return Err(Error::Raft(
+                "durable configuration base contradicts indexed history".into(),
+            ));
+        }
+        Ok(state.clone())
     }
 
     fn configuration_entry(&self, index: u64) -> Result<raft::prelude::Entry> {
@@ -397,6 +419,143 @@ mod tests {
         assert_eq!(found(&store, 6).state(), &stable());
         assert_eq!(old.state(), &joint());
     }
+
+    #[test]
+    fn indexed_joint_and_stable_changes_after_compacted_base_survive_recovery() {
+        for floor in [1, 3] {
+            let fs = ModelFs::default();
+            let store = prepared(&fs);
+            store.set_conf_state(&joint(), 2).unwrap();
+            store.set_conf_state(&stable(), 4).unwrap();
+            let base = found(&store, floor);
+            store
+                .compact_retained_prefix(cut(floor), base.state(), b"decision")
+                .unwrap();
+            for current in [&store, &opened(&fs)] {
+                let at_base = found(current, floor);
+                assert_eq!(at_base.state(), base.state());
+                assert_eq!(at_base.applied_at(), None);
+                let old = found(current, 3);
+                assert_eq!(old.state(), &joint());
+                assert_eq!(old.applied_at(), (floor == 1).then_some(cut(2)));
+                let latest = found(current, 6);
+                assert_eq!(latest.state(), &stable());
+                assert_eq!(latest.applied_at(), Some(cut(4)));
+            }
+        }
+    }
+
+    #[test]
+    fn compacted_base_never_substitutes_for_unapplied_or_ambiguous_suffix_configuration() {
+        let fs = ModelFs::default();
+        let store = prepared(&fs);
+        let initial = found(&store, 1);
+        store
+            .compact_retained_prefix(cut(1), initial.state(), b"decision")
+            .unwrap();
+        assert_eq!(
+            store.configuration_at_committed(cut(3)).unwrap(),
+            ConfigurationLookup::Unavailable(ConfigurationUnavailable::ConfigurationNotApplied {
+                index: 2,
+            })
+        );
+        store.set_conf_state(&joint(), 2).unwrap();
+        assert_eq!(found(&store, 3).state(), &joint());
+        assert_eq!(
+            store.configuration_at_committed(cut(6)).unwrap(),
+            ConfigurationLookup::Unavailable(ConfigurationUnavailable::ConfigurationNotApplied {
+                index: 4,
+            })
+        );
+        store.set_conf_state(&stable(), 2).unwrap();
+        for current in [&store, &opened(&fs)] {
+            assert_eq!(
+                current.configuration_at_committed(cut(3)).unwrap(),
+                ConfigurationLookup::Unavailable(
+                    ConfigurationUnavailable::UnindexedOrConflictingHistory
+                )
+            );
+        }
+    }
+
+    #[test]
+    fn a_stored_base_with_latest_instead_of_historical_membership_is_refused() {
+        let fs = ModelFs::default();
+        let store = prepared(&fs);
+        store.set_conf_state(&joint(), 2).unwrap();
+        store.set_conf_state(&stable(), 4).unwrap();
+        // Reproduce an old incorrect rewrite: valid framing and the correct
+        // cut, but latest membership was substituted for the joint base.
+        store
+            .compact_retained_prefix(cut(3), &stable(), b"test-only wrong base")
+            .unwrap();
+        for current in [&store, &opened(&fs)] {
+            assert!(current.configuration_at_committed(cut(3)).is_err());
+            assert!(current.configuration_at_committed(cut(6)).is_err());
+        }
+    }
+
+    #[test]
+    fn actual_log_rewrite_preserves_a_joint_base_and_its_later_stable_configuration() {
+        let path = std::env::temp_dir().join(format!(
+            "kv9-configuration-base-{}",
+            kv9_common::StoreIncarnation::mint().unwrap()
+        ));
+        let store = DiskRaftStorage::open(&path, &[1, 2, 3]).unwrap().0;
+        let entries: Vec<_> = (1..=6)
+            .map(|i| Entry {
+                index: i,
+                term: cut(i).term,
+                entry_type: match i {
+                    2 => EntryType::EntryConfChange,
+                    4 => EntryType::EntryConfChangeV2,
+                    _ => EntryType::EntryNormal,
+                },
+                ..Default::default()
+            })
+            .collect();
+        store
+            .persist_ready(
+                &entries,
+                Some(&HardState {
+                    term: 5,
+                    vote: 2,
+                    commit: 6,
+                    ..Default::default()
+                }),
+            )
+            .unwrap();
+        store.set_conf_state(&joint(), 2).unwrap();
+        store.set_conf_state(&stable(), 4).unwrap();
+        store
+            .compact_retained_prefix(cut(3), &joint(), b"test committed decision")
+            .unwrap();
+        store.rewrite_log().unwrap();
+        drop(store);
+        let store = DiskRaftStorage::recover(&path).unwrap();
+        let ConfigurationLookup::Found(base) = store.configuration_at_committed(cut(3)).unwrap()
+        else {
+            panic!("exact historical base");
+        };
+        assert_eq!(base.state(), &joint());
+        assert_eq!(base.applied_at(), None);
+        let ConfigurationLookup::Found(later) = store.configuration_at_committed(cut(6)).unwrap()
+        else {
+            panic!("exact later configuration");
+        };
+        assert_eq!(later.state(), &stable());
+        assert_eq!(later.applied_at(), Some(cut(4)));
+        // Repeated rewrite must preserve the same historical base again.
+        store.rewrite_log().unwrap();
+        drop(store);
+        let store = DiskRaftStorage::recover(&path).unwrap();
+        assert_eq!(
+            store.configuration_at_committed(cut(3)).unwrap(),
+            ConfigurationLookup::Found(base)
+        );
+        drop(store);
+        std::fs::remove_dir_all(path).unwrap();
+    }
     #[test]
     fn future_same_term_membership_cannot_replace_an_older_cut() {
         let fs = ModelFs::default();
@@ -473,6 +632,8 @@ mod tests {
         // config in the retained tail.
         let fs = ModelFs::default();
         let store = prepared(&fs);
+        store.set_conf_state(&joint(), 2).unwrap();
+        store.set_conf_state(&stable(), 4).unwrap();
         store
             .compact_retained_prefix(cut(6), &stable(), b"decision")
             .unwrap();

@@ -5,12 +5,11 @@
 //! external placement driver.
 //!
 //! Modules: membership, keyspace catalog, region routing, multi-level metadata (L0/L1),
-//! election-first bootstrap, MetaLeader, placement/scheduler, and the sharded TSO
-//! provider pool.
+//! election-first bootstrap, MetaLeader, and placement/scheduler.
 //!
 //! The relational catalog engine (`docs/METADATA-CATALOG.md`) lives in
 //! [`schema`]/[`codec`]/[`store`]/[`tables`]/[`migrate`](mod@crate::migrate): `membership / catalog /
-//! routing / placement / tso` become **one [`MetaStore`]** — a fixed, versioned schema
+//! routing / placement` become **one [`MetaStore`]** — a fixed, versioned schema
 //! with auto-maintained indexes and transactions over the system keyspace KV. The
 //! legacy in-memory [`Catalog`]/[`Membership`]/[`RoutingTable`] structs remain as the
 //! Phase-0 typed façades and are migrated onto `MetaStore` incrementally.
@@ -21,6 +20,7 @@ pub mod migrate;
 pub mod schema;
 pub mod store;
 pub mod tables;
+pub mod task_history;
 
 // Election-first FSM, MetaLeader, and the typed façades wired to MetaStore over time.
 pub mod admission;
@@ -37,7 +37,6 @@ pub mod recovery;
 pub mod retention;
 pub mod root;
 pub mod routing;
-pub mod tso;
 
 pub use bootstrap::{Bootstrap, BootstrapEvent, BootstrapState};
 pub use catalog::Catalog;
@@ -46,7 +45,6 @@ pub use leader::{should_force_failover, Lease, MetaLeader};
 pub use membership::{Membership, NodeInfo, NodeState};
 pub use placement::{store_score, ScheduleTask, Scheduler, StoreScoreInput, TokenBucket};
 pub use routing::RoutingTable;
-pub use tso::{EmbeddedTso, TimelineWindow, TimestampOracle, TsoPool, TsoProvider};
 
 // Catalog engine exports (docs/METADATA-CATALOG.md).
 pub use codec::{ColumnValue, RowValue};
@@ -57,5 +55,5 @@ pub use schema::{
 pub use store::{Changes, MetaStore, MetaTxn, Row};
 pub use tables::{
     Keyspace as KeyspaceRow, Node as NodeRow, Region as RegionRow, RegionPeer, SstFile, Tables,
-    Tenant as TenantRow, TsoTimeline, TxnGroup,
+    Tenant as TenantRow,
 };

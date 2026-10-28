@@ -1,7 +1,7 @@
 //! Local, bounded group demultiplexing on the node's shared peer streams.
 //!
-//! Registration is explicit and append-only for this first D01 increment. It
-//! is not catalog authority, durable creation, or permission to reuse a retired
+//! Registration is explicit and lasts until the last group transport is dropped.
+//! It is not catalog authority, durable creation, or permission to reuse a retired
 //! region ID. Those lifecycle transitions belong to the RegionManager.
 
 use super::*;
@@ -92,6 +92,24 @@ impl GrpcTransport {
             inbox,
             bound: AtomicBool::new(false),
         }))
+    }
+}
+
+impl Drop for GroupTransport {
+    fn drop(&mut self) {
+        // A live handle excludes another registration of this ID. Removing
+        // this entry cannot remove a replacement: registration only becomes
+        // possible after this removal. Close copies racing with send too.
+        let inbox = self
+            .shared
+            .regions
+            .inboxes
+            .lock()
+            .expect("region inboxes poisoned")
+            .remove(&self.region.0);
+        if let Some(inbox) = inbox {
+            inbox.close();
+        }
     }
 }
 
@@ -206,6 +224,37 @@ mod tests {
         let second = NodeDriver::new(make_peer(RegionId(10)), group, MemStateMachine::new());
         assert!(
             matches!(second, Err(Error::Config(ref s)) if s == "region transport already bound to a driver")
+        );
+    }
+
+    #[test]
+    fn multi_group_drop_releases_capacity_and_closes_racing_senders() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let shared = GrpcTransport::new(
+            NodeId(1),
+            None,
+            rt.handle().clone(),
+            RootDigest::from_bytes([0; 32]),
+        );
+        for id in 2..MAX_LOCAL_GROUPS as u64 + 12 {
+            let group = shared.register_group(RegionId(id)).unwrap();
+            let retained = group.clone();
+            let racing = group.inbox.clone();
+            assert!(shared.regions.send(id, Message::default()));
+            drop(group);
+            assert!(shared.register_group(RegionId(id)).is_err());
+            drop(retained);
+            assert!(shared.regions.inboxes.lock().unwrap().is_empty());
+            assert!(!shared.regions.send(id, Message::default()));
+            assert!(racing.send(Message::default()).is_err());
+            assert!(
+                racing.drain().is_empty(),
+                "retirement releases queued payload"
+            );
+        }
+        assert!(
+            shared.regions.send(0, Message::default()),
+            "metadata stays independent"
         );
     }
 }

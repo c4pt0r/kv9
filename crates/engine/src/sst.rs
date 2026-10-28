@@ -30,7 +30,7 @@
 //!
 //! **What that range is *not*, in this version:** a way to decide whether an object is
 //! worth fetching before fetching it. There is no locatable footer — the only entry point
-//! is [`Sst::parse`] over the whole object, which parses every entry. Pre-fetch filtering
+//! requires validating the whole object, including every entry. Pre-fetch filtering
 //! is the manifest's job (`docs/OBJECT-STORAGE.md` §5: `PreparedSst` carries `key_range`,
 //! and the manifest is consulted before any object is retrieved). Giving *this* layout that
 //! capability would need a fixed-offset trailer plus an API that reads it alone, and round
@@ -40,6 +40,11 @@
 use kv9_common::{Error, Result, UserKey, Value};
 
 use crate::cf::ColumnFamily;
+
+mod view;
+pub(crate) use view::{SharedSst, SstView};
+mod encode;
+pub(crate) use encode::encode_borrowed;
 
 const MAGIC: [u8; 4] = *b"KV9S";
 const VERSION: u8 = 1;
@@ -183,6 +188,7 @@ fn crc32(bytes: &[u8]) -> u32 {
 pub struct SstWriter {
     cf: ColumnFamily,
     entries: Vec<(UserKey, Value)>,
+    entry_bytes: usize,
     limits: Limits,
 }
 
@@ -191,6 +197,7 @@ impl SstWriter {
         SstWriter {
             cf,
             entries: Vec::new(),
+            entry_bytes: 0,
             limits: Limits::PRODUCTION,
         }
     }
@@ -203,6 +210,7 @@ impl SstWriter {
         SstWriter {
             cf,
             entries: Vec::new(),
+            entry_bytes: 0,
             limits,
         }
     }
@@ -228,8 +236,36 @@ impl SstWriter {
                 ));
             }
         }
+        self.entry_bytes = self.next_entry_bytes(key.len(), value.len())?;
         self.entries.push((key, value));
         Ok(())
+    }
+
+    /// Legacy checkpoint planner oracle for partition/acceptance regression tests.
+    #[cfg(test)]
+    pub(crate) fn add_bounded(&mut self, key: &[u8], value: &[u8], limit: usize) -> Result<()> {
+        let entries = self.next_entry_bytes(key.len(), value.len())?;
+        let smallest = self.entries.first().map_or(key.len(), |(k, _)| k.len());
+        let encoded = Self::table_bytes(entries, smallest, key.len())?;
+        check_total_size(encoded, limit.min(self.limits.total_bytes))?;
+        self.add(key.to_vec(), value.to_vec())
+    }
+
+    fn next_entry_bytes(&self, key: usize, value: usize) -> Result<usize> {
+        self.entry_bytes
+            .checked_add(8)
+            .and_then(|n| n.checked_add(key))
+            .and_then(|n| n.checked_add(value))
+            .ok_or_else(|| Error::Engine("sst: encoded length overflows usize".into()))
+    }
+
+    pub(crate) fn table_bytes(entries: usize, smallest: usize, largest: usize) -> Result<usize> {
+        // Header (10), two footer length prefixes (8), checksum (4).
+        entries
+            .checked_add(22)
+            .and_then(|n| n.checked_add(smallest))
+            .and_then(|n| n.checked_add(largest))
+            .ok_or_else(|| Error::Engine("sst: encoded length overflows usize".into()))
     }
 
     pub fn is_empty(&self) -> bool {
@@ -243,27 +279,9 @@ impl SstWriter {
     /// Exact serialised size, computed with checked arithmetic so an overflow is a refusal
     /// rather than a wrapped total that would pass a limit check it should have failed.
     fn encoded_len(&self) -> Result<usize> {
-        let overflow = || Error::Engine("sst: encoded length overflows usize".into());
-        // magic + version + cf + count
-        let mut n: usize = 4 + 1 + 1 + 4;
-        for (k, v) in &self.entries {
-            n = n
-                .checked_add(4)
-                .and_then(|n| n.checked_add(k.len()))
-                .and_then(|n| n.checked_add(4))
-                .and_then(|n| n.checked_add(v.len()))
-                .ok_or_else(overflow)?;
-        }
         let smallest = self.entries.first().map(|(k, _)| k.len()).unwrap_or(0);
         let largest = self.entries.last().map(|(k, _)| k.len()).unwrap_or(0);
-        n = n
-            .checked_add(4)
-            .and_then(|n| n.checked_add(smallest))
-            .and_then(|n| n.checked_add(4))
-            .and_then(|n| n.checked_add(largest))
-            .and_then(|n| n.checked_add(4)) // crc
-            .ok_or_else(overflow)?;
-        Ok(n)
+        Self::table_bytes(self.entry_bytes, smallest, largest)
     }
 
     /// Serialise. Consumes the writer: an SST is written once.
@@ -272,57 +290,15 @@ impl SstWriter {
     /// range-filtered, and a manifest referencing it would carry an entry that can never
     /// match a read — a silent waste rather than an error.
     pub fn finish(self) -> Result<Vec<u8>> {
-        if self.entries.is_empty() {
-            return Err(Error::Engine(
-                "sst: refusing to write an empty table — it would have no key range".into(),
-            ));
-        }
-
-        let count = on_disk_count(self.entries.len(), self.limits.entries)?;
-
-        // Total size is computed and refused BEFORE serialising. Checking afterwards would
-        // mean building the whole buffer — up to a gigabyte — only to throw it away, and
-        // the point of a resource limit is not to pay the cost first.
-        let encoded = self.encoded_len()?;
-        check_total_size(encoded, self.limits.total_bytes)?;
-
-        let mut out = Vec::with_capacity(encoded);
-        out.extend_from_slice(&MAGIC);
-        out.push(VERSION);
-        out.push(cf_code(self.cf));
-        out.extend_from_slice(&count.to_le_bytes());
-
-        for (k, v) in &self.entries {
-            out.extend_from_slice(
-                &on_disk_len(k.len(), "key", self.limits.field_len)?.to_le_bytes(),
-            );
-            out.extend_from_slice(k);
-            out.extend_from_slice(
-                &on_disk_len(v.len(), "value", self.limits.field_len)?.to_le_bytes(),
-            );
-            out.extend_from_slice(v);
-        }
-
-        let smallest = &self.entries.first().expect("non-empty checked above").0;
-        let largest = &self.entries.last().expect("non-empty checked above").0;
-        out.extend_from_slice(
-            &on_disk_len(smallest.len(), "smallest key", self.limits.field_len)?.to_le_bytes(),
-        );
-        out.extend_from_slice(smallest);
-        out.extend_from_slice(
-            &on_disk_len(largest.len(), "largest key", self.limits.field_len)?.to_le_bytes(),
-        );
-        out.extend_from_slice(largest);
-
-        let crc = crc32(&out);
-        out.extend_from_slice(&crc.to_le_bytes());
-        debug_assert_eq!(
-            out.len(),
-            encoded,
-            "encoded_len must predict the serialised size exactly, or the pre-check bounds \
-             a different quantity than the one produced"
-        );
-        Ok(out)
+        encode::encode_rows(
+            self.cf,
+            self.entries.len(),
+            self.encoded_len()?,
+            self.limits,
+            self.entries
+                .iter()
+                .map(|(key, value)| (key.as_slice(), value.as_slice())),
+        )
     }
 }
 
@@ -339,47 +315,6 @@ pub struct Sst {
     largest: UserKey,
 }
 
-struct Cursor<'a> {
-    bytes: &'a [u8],
-    pos: usize,
-    limits: Limits,
-}
-
-impl<'a> Cursor<'a> {
-    fn take(&mut self, n: usize) -> Result<&'a [u8]> {
-        let end = self
-            .pos
-            .checked_add(n)
-            .ok_or_else(|| Error::Engine("sst: length overflow".into()))?;
-        if end > self.bytes.len() {
-            return Err(Error::Engine(format!(
-                "sst: truncated — wanted {n} bytes at offset {}, {} remain",
-                self.pos,
-                self.bytes.len() - self.pos
-            )));
-        }
-        let out = &self.bytes[self.pos..end];
-        self.pos = end;
-        Ok(out)
-    }
-
-    fn u32(&mut self) -> Result<u32> {
-        let b = self.take(4)?;
-        Ok(u32::from_le_bytes([b[0], b[1], b[2], b[3]]))
-    }
-
-    fn len_prefixed(&mut self) -> Result<Vec<u8>> {
-        let n = self.u32()? as usize;
-        if n > self.limits.field_len {
-            return Err(Error::Engine(format!(
-                "sst: length field {n} exceeds the {} byte limit",
-                self.limits.field_len
-            )));
-        }
-        Ok(self.take(n)?.to_vec())
-    }
-}
-
 impl Sst {
     /// Parse and verify. Every failure here is a refusal, never a silent empty result.
     pub fn parse(bytes: &[u8]) -> Result<Sst> {
@@ -390,94 +325,12 @@ impl Sst {
     /// small ones so the real refusal path is driven at a reachable boundary instead of
     /// allocating an object the size of the production cap just to watch it be refused.
     fn parse_with_limits(bytes: &[u8], limits: Limits) -> Result<Sst> {
-        if bytes.len() > limits.total_bytes {
-            return Err(Error::Engine(format!(
-                "sst: buffer of {} bytes exceeds the {} byte limit",
-                bytes.len(),
-                limits.total_bytes
-            )));
-        }
-        // Checksum first: nothing else in the buffer may be trusted until it matches.
-        if bytes.len() < 4 {
-            return Err(Error::Engine("sst: too short to contain a checksum".into()));
-        }
-        let split = bytes.len() - 4;
-        let (body, stored) = bytes.split_at(split);
-        let stored = u32::from_le_bytes([stored[0], stored[1], stored[2], stored[3]]);
-        let actual = crc32(body);
-        if stored != actual {
-            return Err(Error::Engine(format!(
-                "sst: checksum mismatch — stored {stored:#010x}, computed {actual:#010x}"
-            )));
-        }
-
-        let mut c = Cursor {
-            bytes: body,
-            pos: 0,
-            limits,
-        };
-        if c.take(4)? != MAGIC {
-            return Err(Error::Engine("sst: bad magic — not an SST".into()));
-        }
-        let version = c.take(1)?[0];
-        if version != VERSION {
-            return Err(Error::Engine(format!(
-                "sst: unknown format version {version} (this build writes {VERSION}) — \
-                 refusing to guess"
-            )));
-        }
-        let cf = cf_from_code(c.take(1)?[0])?;
-        let count = c.u32()? as usize;
-        if count > limits.entries {
-            return Err(Error::Engine(format!(
-                "sst: entry count {count} exceeds the {} entry limit",
-                limits.entries
-            )));
-        }
-
-        let mut entries = Vec::with_capacity(count.min(1024));
-        let mut prev: Option<UserKey> = None;
-        for i in 0..count {
-            let key = c.len_prefixed()?;
-            let value = c.len_prefixed()?;
-            if let Some(p) = &prev {
-                if key <= *p {
-                    return Err(Error::Engine(format!(
-                        "sst: entries out of order at index {i} — keys must strictly ascend"
-                    )));
-                }
-            }
-            prev = Some(key.clone());
-            entries.push((key, value));
-        }
-
-        let smallest = c.len_prefixed()?;
-        let largest = c.len_prefixed()?;
-
-        if c.pos != body.len() {
-            return Err(Error::Engine(format!(
-                "sst: {} trailing bytes after the footer",
-                body.len() - c.pos
-            )));
-        }
-
-        if entries.is_empty() {
-            return Err(Error::Engine("sst: no entries — refusing".into()));
-        }
-
-        // The declared range is checked against the data rather than believed. A file
-        // whose footer disagrees with its entries has two answers to one question.
-        if smallest != entries[0].0 || largest != entries[entries.len() - 1].0 {
-            return Err(Error::Engine(
-                "sst: declared key range disagrees with the entries it bounds".into(),
-            ));
-        }
-
+        let view = SstView::parse_with_limits(bytes, limits)?;
         Ok(Sst {
-            cf,
-            entries,
-            smallest,
-            largest,
+            cf: view.column_family(),
+            entries: view.iter().map(|(k, v)| (k.to_vec(), v.to_vec())).collect(),
+            smallest: view.smallest_key().to_vec(),
+            largest: view.largest_key().to_vec(),
         })
     }
 

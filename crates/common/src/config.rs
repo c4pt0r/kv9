@@ -46,6 +46,10 @@ pub struct Config {
     /// Shared Ready/tick worker threads driving data-group Raft (default 2).
     /// Bounded; the metadata group keeps its dedicated owner regardless.
     pub data_workers: usize,
+    /// No implicit wall-clock fallback. Enabling this provider is an explicit
+    /// assertion that deployment clock/error assumptions have been qualified.
+    #[serde(default)]
+    pub raw_ttl_clock: Option<crate::raw_ttl::clock::TtlClockPolicy>,
 }
 
 impl Default for Config {
@@ -58,6 +62,7 @@ impl Default for Config {
             wal_streams: 1,
             replication_factor: 3,
             data_workers: 2,
+            raw_ttl_clock: None,
         }
     }
 }
@@ -65,6 +70,9 @@ impl Default for Config {
 impl Config {
     /// Basic validation of a config (DESIGN §11).
     pub fn validate(&self) -> crate::error::Result<()> {
+        if let Some(policy) = self.raw_ttl_clock {
+            policy.validate()?;
+        }
         if let Some(address) = &self.advertise_addr {
             let addr: SocketAddr = address.parse().map_err(|_| {
                 crate::Error::Config("advertise_addr must be a numeric socket address".into())

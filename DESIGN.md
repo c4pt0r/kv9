@@ -18,8 +18,8 @@ Object-storage path contract: `docs/OBJECT-STORAGE.md`. Current implementation s
    tenant-aware. See §1.1.
 2. **Single binary.** One `kv9` executable is *every* role: storage node, metadata member, request router. A
    cluster is N identical processes. No separate placement driver, no external etcd, no lock service.
-3. **Keyspaces.** The unit of namespacing and configuration, declared with a **tenant** and an **API type**
-   (`txn` or `raw`).
+3. **Keyspaces.** The unit of namespacing and configuration, declared with a **tenant**. Every keyspace is a
+   raw key-value namespace (`api = raw`); there is no second API type.
 4. **Object storage is THE source of truth (storage-compute disaggregation).** All durable state lives in object
    storage (S3/GCS/Azure); **compute holds no authoritative data** — local NVMe is only cache + a *transient,
    raft-replicated WAL* staging the not-yet-flushed tail. Stateless compute is what makes nodes elastic (add/kill in
@@ -27,16 +27,21 @@ Object-storage path contract: `docs/OBJECT-STORAGE.md`. Current implementation s
    references*, not bytes). Core, not optional — see §6.5.
 5. **Horizontal throughput scaling** via **range-sharded regions** with **split/merge**, where **split is driven
    by consumed throughput, not just size** (DynamoDB 2022).
-6. **Familiar API.** The common TiKV surface: transactional and raw.
-7. **Correctness first.** Snapshot Isolation for `txn` keyspaces via Percolator-style 2PC over a monotonically
-   ordered timestamp; a log-backed WAL; continuous replica verification.
+6. **Familiar API.** The TiKV raw surface (`RawGet/Put/Delete/Scan/BatchGet/BatchPut/DeleteRange`) plus
+   **one multi-key write primitive: the atomic range batch** (`RawBatch`, §9.1).
+7. **Correctness first.** Linearizable raw reads (§9.2); every write — point or batch — is exactly one fenced
+   Raft entry, so a batch is all-or-nothing within its range (§9.1); a log-backed WAL; continuous replica
+   verification.
 
 ### Non-goals (for now)
+- **Multi-key transactions** (MVCC, snapshot isolation, Percolator 2PC, a timestamp oracle). Removed from the
+  design on 2026-10-28: the only multi-key write is the atomic range batch (§9.1), which needs no timestamps, no
+  locks and no cross-range coordination. If transactions ever return they are a layer *above* range batches (§14).
 - SQL, coprocessor push-down, secondary indexes (kv9 is the storage engine; a SQL layer is out of scope).
 - Cross-tenant / cross-group external consistency on commodity clocks at Spanner's TrueTime level (§8).
 
 ### 1.1 Multi-tenancy is the organizing principle
-A tenant owns keyspaces; a keyspace has an API type and belongs to a txn group. **Isolation is enforced on every
+A tenant owns keyspaces; a keyspace is a raw namespace split into regions. **Isolation is enforced on every
 axis**, and each axis has a concrete mechanism:
 
 | Isolation axis | Mechanism in kv9 | Section |
@@ -47,13 +52,12 @@ axis**, and each axis has a concrete mechanism:
 | **Performance / QoS** | per-keyspace fair scheduling of CPU on the serving threads; per-tenant request budgets | §7 |
 | **Cache** (dominates latency under disaggregation) | per-tenant **cache-fill tokens** so a scan can't evict a neighbor's hot set | §6.5, §7.1 |
 | **Backpressure fairness** | shared pipeline tokens are allocated by a per-tenant weighted fair queue | §7 |
-| **Timestamp / commit throughput** | **sharded TSO**: per-txn-group timelines served by a pool of providers | §3.6, §8 |
-| **Correctness under contention** | **keyspace-aware deadlock detection** (per-tenant wait-for graphs) | §9 |
+| **Write atomicity** | an atomic range batch is ONE fenced Raft entry inside ONE region; it never crosses a region or a keyspace | §9.1 |
 | **Physical data isolation** | per-keyspace/tenant object-storage prefixes (opt. per-tenant buckets) + per-tenant object encryption (CMEK) | §6.5 |
 | **Accounting** | keyspace = the billing/metering unit (incl. object-storage usage) | §6.5, §10 |
 
-The design consequence: *tenant / keyspace / txn-group identifiers are first-class types threaded through the whole
-stack* (see the `common` crate, §11), and the default path (`default` tenant/group) degrades gracefully to a
+The design consequence: *tenant / keyspace identifiers are first-class types threaded through the whole
+stack* (see the `common` crate, §11), and the default path (`default` tenant) degrades gracefully to a
 simple single-tenant system.
 
 ---
@@ -87,15 +91,15 @@ per tenant. A tenant never sees another tenant's keys. `default` tenant exists o
 The namespace unit, declared once with immutable core attributes:
 
 ```
-CREATE KEYSPACE <name> WITH tenant = <tenant_id>, api = txn | raw [, txn_group = <g>, config...]
+CREATE KEYSPACE <name> WITH tenant = <tenant_id>, api = raw [, config...]
 ```
 
-- `api = txn`  → MVCC + Percolator 2PC + Snapshot Isolation. The engine manages versions; keys carry no user ts.
-- `api = raw`  → direct KV, optional TTL, optional causal timestamps. **No transactions.**
+- `api = raw` → direct KV, optional TTL, and the atomic **range batch** (§9.1). It is the only API type; the
+  field exists so the catalog row and the wire stay explicit and a retired code is refused, never reinterpreted.
 
-**The keyspace is the absolute transaction boundary.** A `txn` keyspace supports Snapshot-Isolation transactions
-*within itself only* — a transaction **never** crosses a keyspace (not even within one tenant); a `raw` keyspace
-supports none. Keyspace > txn group: a keyspace *contains* txn groups (§3.6), which merely shard its TSO.
+**The keyspace is a hard write boundary.** A range batch never crosses a keyspace (a batch's keys all carry the
+same keyspace id by construction), and regions never span keyspaces (§3.3), so a batch that fits one region fits one
+keyspace.
 
 A keyspace maps to a numeric `keyspace_id` and a **contiguous key range** in the global keyspace via a prefix
 encoding (§3.4). All of a keyspace's regions live within that range.
@@ -111,41 +115,24 @@ Adopted from TiKV's API v2 and hardened. Every stored key is prefixed:
 
 ```
 mode_byte (1)  keyspace_id (3 bytes, big-endian)  user_key...
-mode_byte ∈ { 't' = txn, 'r' = raw, 's' = system }
+mode_byte ∈ { 'r' = raw, 's' = system }      ('t' was the retired txn mode; it decodes as an error)
 ```
 
 - 3-byte keyspace id ⇒ up to 2^24 keyspaces. kv9 **validates** the id range at encode time (a prefix scheme that
   silently truncates an out-of-range id would misroute keys across tenants).
 - The prefix makes keyspaces contiguous ranges, so region routing, GC, backup, and encryption all key off the same
   prefix. **Region split points are constrained never to cross a keyspace boundary.**
-- `txn` keys carry an internal MVCC suffix (`user_key + inverted(commit_ts)`) in the write CF.
 
 ### 3.5 Node / Store
 One `kv9` process = one node, simultaneously: (1) a **Store** hosting region replicas (engine + Raft state),
 (2) a **member** of the system-keyspace Raft groups (candidate MetaLeader), (3) a **router**. One binary, one node
 type; roles are behaviors, not deployables.
 
-### 3.6 Txn group (a TSO shard *inside* a keyspace)
-The transaction model is Percolator 2PC / Snapshot Isolation / MVCC (§9). The concept hierarchy is
-**tenant → keyspace → txn group → timeline**, and the keyspace is the hard boundary:
-
-- **The keyspace is the absolute transaction boundary — a transaction NEVER crosses a keyspace** (not even within one
-  tenant). Each keyspace is an independent transaction/consistency domain; this is a hard multi-tenant isolation
-  guarantee.
-- **Only a `txn` keyspace has txn groups.** A `raw` keyspace supports **no transactions at all** (§3.2) — it has no
-  txn group and no TSO timeline (at most a per-key causal timestamp). The txn group is strictly a sub-concept of a
-  `txn` keyspace, which is another reason the keyspace is the larger concept.
-- A `txn` keyspace contains **one or more txn groups** (default: exactly one). A **txn group** is a *subdivision of a
-  txn keyspace's transaction domain that shards its TSO* — each txn group owns its own timeline (§8), covering a
-  sub-range of the keyspace. A transaction is confined to one txn group, hence to one keyspace.
-- **Default:** a txn keyspace = one txn group = one timeline → transactions range freely over the whole keyspace with
-  full Snapshot Isolation (the common case). **Opt-in:** a single very hot keyspace may shard into several txn groups
-  (e.g. by user-id range) to scale commit-timestamp throughput, at the cost of not transacting across those sub-groups.
-
-Two nested confinements, the outer one absolute:
-- **cross-keyspace transaction → always rejected** (the hard boundary — never relaxed by any timestamp tier);
-- **cross-txn-group transaction *within* a keyspace → rejected** (only relevant if the keyspace opted into
-  subdivision; this is what lets each group own an independent timeline with no cross-group timestamp comparison).
+### 3.6 Range batch (the multi-key write unit)
+The only multi-key write kv9 offers is the **atomic range batch**: an ordered list of puts and deletes whose keys
+all lie inside **one region** of **one keyspace**, applied as **one fenced Raft entry** — all of it or none of it.
+It needs no timestamps, no locks and no coordinator, which is exactly why it replaces transactions as the
+design's write primitive. Boundaries, failure modes and the client contract are specified in §9.1.
 
 ---
 
@@ -169,11 +156,11 @@ mode `'s'`).
 ### 5.0 The metadata catalog is a small embedded SQL engine
 > Concrete simple design: [`docs/METADATA-CATALOG.md`](METADATA-CATALOG.md).
 
-Metadata is inherently **relational** (tenants→keyspaces→txn-groups→timelines; regions↔peers↔nodes; files↔refcounts).
-kv9 models it as **relational tables managed by a small embedded SQL engine that runs on kv9's own transactional KV**
-— the system keyspace (its own txn group `system`, §3.6). This is deliberate dogfooding: kv9 manages its own metadata
-through its own MVCC+2PC, with a thin relational layer on top; no external etcd, no bespoke key encoding, no
-hand-rolled indexes.
+Metadata is inherently **relational** (tenants→keyspaces→regions; regions↔peers↔nodes; files↔refcounts).
+kv9 models it as **relational tables managed by a small embedded catalog engine that runs on kv9's own replicated
+KV** — the system keyspace. This is deliberate dogfooding: kv9 manages its own metadata through its own Raft-committed
+atomic batches (a catalog mutation is one `CatalogTxn` entry of the metadata group), with a thin relational layer on
+top; no external etcd, no bespoke key encoding, no hand-rolled indexes.
 
 Why relational, not ad-hoc KV records: it makes a whole class of control-plane bugs **structurally impossible** —
 auto-maintained secondary indexes rolled back atomically within the transaction (no orphaned `name→id` index on a
@@ -185,10 +172,11 @@ in-memory trees), for observability, and for admin/debug.
 
 **Scope — small on purpose:** a *fixed, versioned* schema (not user DDL); PK + a few secondary indexes; single-table
 scans + simple joins; parametrized/prepared queries (internally a typed query API; SQL *text* mainly for
-admin/tools/debug). No cost-based optimizer or general planner — the query set is known and tiny. Transactions reuse
-the `system` group's MVCC+2PC.
+admin/tools/debug). No cost-based optimizer or general planner — the query set is known and tiny. A catalog
+mutation is one atomic, Raft-committed batch of the metadata group (a "catalog transaction" in the single-group,
+all-or-nothing sense — not a multi-key user transaction).
 
-**Illustrative schema:** `tenants`, `keyspaces`(idx name, tenant), `txn_groups`, `tso_timelines`, `nodes`
+**Illustrative schema:** `tenants`, `keyspaces`(idx name, tenant), `nodes`
 (membership), `regions`(idx keyspace, range), `region_peers`(idx node → "regions on node"), `sst_files`
 (the GC refcount table, §6.5), `placement_rules`, `tasks`, `gac_allotments`, `schema_version`.
 
@@ -201,10 +189,9 @@ regress. Because the tables live in L1 regions, the catalog **shards and scales*
 ### 5.1 What lives in the system keyspace
 The metadata tables (§5.0), each ultimately rows in the system keyspace, replicated by ordinary Raft:
 - **Membership:** node id → address, state, heartbeat, capacity units.
-- **Keyspace catalog:** keyspace_id → {name, tenant, api_type, txn_group, config, key range}.
+- **Keyspace catalog:** keyspace_id → {name, tenant, api_type, config, key range}.
 - **Region routing table:** region_id → {range, epoch, peers, leader hint} + a `key → region` range index.
 - **Placement/scheduler state:** rebalance queue, split/merge tasks, operator log.
-- **Timestamp-oracle state:** per-txn-group persisted timestamp windows (§8).
 - **SST reference counts:** per-file refcount for object-storage GC (§6.5). The **manifest is authoritative**; the
   refcount is a **conservative upper bound** maintained by ordering, not by cross-group atomicity (none exists
   between a region's raft state and the system keyspace): **+ref commits *before* the manifest change that
@@ -212,10 +199,11 @@ The metadata tables (§5.0), each ultimately rows in the system keyspace, replic
   a sufficient condition for safe deletion. Crashes only leak over-counts (never endanger data); a
   manifest-verifying leak scan revises counts **downward only**.
 
-The **system keyspace is its own txn group (`system`)** with its own timeline; metadata operations that span multiple
-meta-regions (e.g., a split updates the parent region *and* the routing L1 region) use **2PC within `system`** for
-atomicity. **Meta regions (L0/L1) run a higher replication factor (R=5)** and flush L0 aggressively, so the root of
-all metadata survives 2 seed failures even before its first object-storage flush.
+Today all catalog rows live in one metadata group, so every metadata mutation is one atomic entry. When the
+system keyspace is sharded into L1 meta-regions (§5.1.1), a mutation that spans two of them needs a metadata-plane
+commit protocol (intent row + idempotent task id, principle 15) — that is a control-plane concern and does not
+reintroduce user transactions. **Meta regions (L0/L1) run a higher replication factor (R=5)** and flush L0
+aggressively, so the root of all metadata survives 2 seed failures even before its first object-storage flush.
 
 ### 5.1.1 Metadata is *layered* and scales like data (the key design point)
 A single in-memory metadata table does not scale — a well-known limit of a centralized placement driver (e.g.,
@@ -226,7 +214,7 @@ kv9 refuses that. Metadata is **multi-level**, and the bulk of it is **sharded a
 tablet-location hierarchy, adapted — see `docs/ARCHITECTURE.md` §3):
 
 - **L0 Root** — a tiny, fixed, well-known Raft group (`META_REGION_0`). NEVER grows. Holds only the *locations of the
-  L1 meta-regions* ("meta of meta"), the membership root, TSO windows, and the MetaLeader lease. Always in memory.
+  L1 meta-regions* ("meta of meta"), the membership root, and the MetaLeader lease. Always in memory.
 - **L1 Meta-regions** — the region routing table + keyspace catalog + placement state, stored as **ordinary sharded
   KV in the system keyspace that split/merge like user data** and spread across nodes. As the cluster grows to
   millions of regions, routing metadata throughput and memory scale **horizontally**.
@@ -249,7 +237,7 @@ metadata server**, and the winner performs metadata initialization and a simple 
 - **BootstrapElection = Raft leader election over the (empty) `META_REGION_0` log** — the same Raft that replicates
   data. The winner is the metadata server.
 - The winner **initializes metadata** as the first Raft-committed entries: create the system keyspace, the default
-  tenant, the `META_REGION_0` record (L0), the first L1 meta-region, and the default TSO window. Because these are
+  tenant, the `META_REGION_0` record (L0), and the first L1 meta-region. Because these are
   ordinary committed entries, init is crash-safe and idempotent (a crashed initializer re-elects and continues).
 - Non-winners wait for the catalog, then **register into membership**. Nodes that join *later* skip election: they
   find the cluster initialized, learn `META_REGION_0`'s members from any peer, and register. Data-driven thereafter.
@@ -312,7 +300,7 @@ rest. (Learned from the cost of *not* having this in comparable engines.)
 ### 6.2 Storage engine abstraction (disaggregated LSM over object storage)
 `Engine` is a trait; each region owns a logical LSM keyed within its range. Two backends: `MemEngine` (in-memory
 BTree; skeleton/tests) and the real **disaggregated `LsmEngine`** — memtable + local block cache on NVMe, **SSTs on
-object storage** (§6.5), with `default/lock/write` CFs for txn keyspaces. As in TiKV, the **raft log is the WAL** for
+object storage** (§6.5). As in TiKV, the **raft log is the WAL** for
 the memtable: a committed raft entry is applied into the memtable; a memtable flush builds an SSTable, **uploads it to
 object storage**, and advances a persisted data watermark that bounds raft-log truncation. kv9 keeps this coupling
 explicit and **adds backpressure** so a slow flush/upload throttles ingestion *before* the log backs up.
@@ -648,93 +636,75 @@ back off / retry elsewhere").
 
 ---
 
-## 8. Time & consistency
+## 8. Time & consistency — no global timestamp order
 
-`txn` keyspaces need Snapshot Isolation, which needs a timestamp order. kv9's key move: this order is **per txn group,
-not global** — which is what makes the timestamp path scale.
+kv9 has **no timestamp oracle**. Nothing in the data path needs a cluster-wide order:
 
-### 8.1 Sharded TSO — a pool of providers serving many keyspaces / txn groups
-Because a transaction never crosses a txn group (§3.6), each group needs timestamps ordered only within itself. So
-kv9 runs a **pool of TSO providers** (diagram: `docs/ARCHITECTURE.md` §5). Mapping (all metadata in the system
-keyspace):
+- A read is **linearizable per key/range** by establishing a ReadIndex barrier on the owning region's leader
+  before taking the snapshot it answers from (§9.2). "The write returned, so the next read sees it" holds across
+  leadership changes without any clock.
+- A write — point or batch — is **one Raft entry in one region**, ordered by that region's log (§9.1). There is
+  no cross-region write, so there is nothing to order across regions.
+- Consistency across *different* regions is therefore per-region, not global: two batches in two regions have no
+  defined relative order, and the API does not pretend otherwise.
 
-```
-   tenant ─1:N▶ keyspace ─1:N▶ txn group ─1:1▶ TSO timeline ─N:1▶ TSO provider (pool member)
-                  (txn keyspace only; raw keyspace has no txn group / no timeline)
-```
+**Follower / bounded-staleness reads** remain an optimization option (each replica tracks the index it has applied;
+a follower may serve a read once it has applied past a leader-confirmed index). They need no clock either.
 
-- A **cluster has many TSO providers, not one.** Each provider **hosts one or more TSO timelines** and serves the
-  txn groups assigned to those timelines — a single provider serves timelines from *different* keyspaces at once.
-- A **txn group owns exactly one timeline** (its own monotonic clock + persisted window). A **`txn` keyspace has ≥1
-  txn groups** (default 1 → one timeline, a single classic TSO for that keyspace); a **`raw` keyspace has none**.
-- **Assignment is data, and rebalanceable:** the metadata plane assigns each group's timeline to a provider and can
-  move it — a hot group gets its own provider; many cold groups share one. Adding providers spreads oracle load, so
-  commit-timestamp throughput scales horizontally.
-- Each provider is **elected and lease-held** via the metadata plane; its timelines recover from the system keyspace
-  on failover. Standard TSO anti-regression rules apply **per timeline** (never hand out ≤ the persisted bound; on
-  provider failover start above the persisted window; refuse to serve until the new lease is confirmed; a
-  clock-regression monitor guards monotonicity). The keyspace→group→provider mapping has a **single authoritative
-  source** (no stale secondary copy) and per-timeline state (no single global lock).
-
-This is TiKV/PD's keyspace-group TSO generalized into a user-facing concept and folded into the single binary.
-
-### 8.2 Timestamp tiers — pluggable, with Spanner as the top tier
-The default (sharded TSO per group, no cross-group txn) is the scalability-optimal, clock-agnostic choice for the
-common case. But some workloads need cross-group / global transactions. Spanner shows how to get a **global timeline
-without a central allocator** — from synchronized clocks + commit-wait — so kv9 makes the timestamp source a
-**pluggable tier** behind a TrueTime-shaped `TimeSource: now() → [earliest, latest]`:
-
-1. **Tier 1 — sharded embedded TSO (default).** Per-group timeline from a persisted window served in memory. *No
-   clock assumptions*, lowest latency, best scale; transactions are **confined to a txn group** (§3.6). Returns a
-   point (ε=0) valid only within its group.
-2. **Tier 2 — HLC + bounded max-offset (CockroachDB-style).** Hybrid logical clocks + an assumed max clock offset,
-   with uncertainty intervals and read-restart. Enables **cross-group serializable** transactions with *no special
-   hardware*; safety rests on the clock-offset bound; occasional restarts. No central allocator.
-3. **Tier 3 — TrueTime + commit-wait (Spanner).** With a bounded-ε clock source (GPS/atomic, or a *measured*-bound
-   PTP/NTP): pick commit ts `s ≥ now().latest`, then **commit-wait** until `now().earliest > s` (~2ε) before
-   releasing locks ⇒ **cross-group external consistency**. Cost: ~2ε commit latency.
-
-The key point: **the keyspace boundary is absolute — no tier ever permits a cross-keyspace transaction.** What the
-tier affects is only the *cross-txn-group* restriction **within** a sharded `txn` keyspace: an unsharded keyspace is
-one Tier-1 timeline with full SI; a keyspace that shards its TSO into groups yet still needs transactions across those
-sub-groups can opt into Tier 2/3 (accepting the clock requirement + commit-wait). Spanner's within-keyspace mechanisms
-— leader leases (§5.3) and 2PC participant-coordinator (§9.1) — kv9 already uses.
-
-v0 skeleton defines a per-group `TimestampOracle`/`TimeSource` trait with an `EmbeddedTso` (Tier 1) stub and a
-`TxnGroupId` on the handle; the interval-returning shape leaves room for Tiers 2/3.
-
-### 8.3 Reads — adopt Spanner's read side now (tier-independent)
-These are pure read-scalability wins and need no special clocks (within a group's timeline); kv9 adopts them from
-the start:
-- **Lock-free consistent snapshot reads.** Read-only transactions take **no locks**; they read a snapshot at a
-  timestamp.
-- **Safe-time follower reads.** Each replica tracks a **safe-time** = the max timestamp at which it has applied all
-  writes with no pending prepare below it. A follower may serve a read at `ts` once `safe_time ≥ ts` ⇒ read
-  throughput scales with **replicas**, and a client reads the **nearest** replica (latency), offloading leaders.
-- **Bounded-staleness reads.** Read at `now − δ` for cheaper follower reads when slight staleness is acceptable.
+What was here before — a sharded TSO pool, per-group timelines, HLC and TrueTime tiers — served snapshot-isolation
+transactions, which left the design on 2026-10-28 (§1 non-goals). If a transaction layer ever returns, its
+timestamp source lives in that layer (§14), not in the raw engine.
 
 ---
 
-## 9. Transactions & the raw path
+## 9. Writes & reads on the raw path
 
-### 9.1 Txn keyspaces — Percolator 2PC over MVCC (TiKV model)
-- `start_ts` from the group's oracle; snapshot reads see versions ≤ start_ts.
-- **Prewrite** locks the primary then secondaries (intents in the `lock` CF, data in `default`).
-- **Commit** takes `commit_ts`, commits the primary (atomic point) then secondaries lazily (`lock`→`write`).
-- **Cross-region** transactions **within one txn group**: 2PC where one region's primary lock is the atomic commit
-  point (Spanner's participant-coordinator). ResolveLock cleans up on failure.
-- **Confinement is keyspace-absolute + fail-fast.** A transaction runs in **one `txn` keyspace**; **any access to
-  another keyspace is rejected immediately** — the keyspace boundary is absolute and **never** relaxed by any
-  timestamp tier. Within that keyspace the txn is pinned to one **txn group** (the group whose sub-range covers its
-  keys; the keyspace's single group by default); touching a *different* txn group of the same keyspace returns
-  `CrossTxnGroup` at the router. This is what makes per-group TSO timelines correct (§3.6). (`raw` keyspaces have no
-  transactions at all.)
-- **Deadlock detection is keyspace-aware:** the wait-for graph is partitioned per tenant. (TiKV's detector is a
-  single global graph; kv9 partitions it so tenants are isolated and the detector scales.)
+### 9.1 The atomic range batch — boundaries and contract
+
+`RawBatch(context, mutations[])` writes an ordered list of `Put(key, value)` / `Delete(key)` mutations as **one
+fenced Raft entry** of **one region**. The whole batch is applied at one `(term, index)` or refused before anything
+is proposed. The rules, in the order the server checks them:
+
+1. **One keyspace.** The request context names the keyspace; every key is encoded under it. There is no way to
+   address two keyspaces in one batch.
+2. **One region, checked twice.** The serving node resolves the *first* key to a region and requires **every** key to
+   be inside that region's `[start, end)`. A key outside it fails the whole batch with `RangeCrossesRegion`
+   (typed, FAILED_PRECONDITION on the wire); nothing is written, nothing is proposed. The same containment check
+   runs again **at apply time** on every replica, against the region row that is current at that log position, so
+   a batch admitted on a stale view is still refused where it would apply.
+3. **Epoch fence.** The context carries the region epoch `(conf_ver, version)`. A split, seal or membership change
+   bumps it; a batch carrying the old epoch is refused with `StaleEpoch` and the client refreshes its route. A
+   batch whose epoch matches at admission but not at apply (the split committed in between) is refused by the
+   apply-time fence the same way — a fenced entry that does not match is a no-op with a typed failure, never a
+   partial write.
+4. **Order and duplicates.** Mutations apply in list order; a later mutation for the same key wins. Duplicate keys
+   are allowed. Deleting an absent key is a no-op, not an error.
+5. **Size.** A batch is bounded by the public request limits (entry bytes, item count, key/value sizes). An
+   over-size batch is refused at admission, not split.
+6. **Empty batch.** Applies nothing and returns position `(0, 0)` without a proposal.
+7. **The receipt is the applied position**, not a proposal id: the server waited for this exact entry to apply
+   before answering, so the `(term, index)` in the response is a committed fact for every mutation in the batch.
+
+**What the client does at a region boundary.** The server never splits a batch across regions, because doing so
+would silently drop the atomicity the caller asked for. A client that wants to write keys in several regions
+issues one batch per region and accepts per-region atomicity, or routes its keys so related data shares a
+region (keyspace pre-split points and split-key choice are the tools; §10). The routed client resolves the
+owning region from the first key and reports `RangeCrossesRegion` to the caller instead of retrying.
+
+**Why this is enough without transactions.** The batch gives the two things applications most often used a
+transaction for — write several keys atomically, and never observe half of it — at the cost of a Raft entry,
+with no locks to leak, no timestamps to allocate and no cross-region commit to recover. What it does not give is
+a read-modify-write across keys under isolation; that is a layer above the engine (§14), not a raw primitive.
+
+**Legacy point/batch-put calls are the same mechanism.** `RawPut`, `RawDelete` and `RawBatchPut` are single-key
+or put-only batches going through the identical permit (keyspace, region containment, epoch) and the identical
+fenced entry. `RawDeleteRange` is the deliberate exception: it is applied in bounded chunks, each chunk one entry,
+and its receipt reports how many chunks committed so a half-finished delete cannot masquerade as one that never
+began.
 
 ### 9.2 Raw keyspaces — direct KV
-`RawPut/RawGet/RawDelete/RawScan/RawBatchGet`, optional TTL, optional causal timestamps for ordering without full
-transactions. No locks, no 2PC. The keyspace's `api_type` selects the executor at routing; a keyspace cannot mix.
+`RawPut/RawGet/RawDelete/RawScan/RawBatchGet/RawBatchPut/RawBatch/RawDeleteRange`, optional TTL. No locks, no
+2PC, no MVCC.
 
 **Read semantics — linearizable, via an established read.** A raw read takes a ReadIndex barrier first. The barrier
 returns a credential that is consumed, by value, for exactly one engine snapshot, and the context/region gate is
@@ -783,8 +753,8 @@ quorum confirmed this node as leader.
   substituted for completion was itself satisfiable by a test that proves nothing. And "deposed" is narrower than the
   property: an isolated leader must fail *throughout*, before and after demotion.
 
-The same round-trip is a hard prerequisite for the txn path, where the equivalent window is not merely staleness: a
-2PC read that misses locks or commits landed on the new leader violates snapshot isolation (§9.1).
+The same established read is what a range batch's permit is judged on: the containment and epoch checks of §9.1
+run against a snapshot taken after this node's leadership was confirmed, never against a stale local role.
 
 ---
 
@@ -825,9 +795,8 @@ Transport is gRPC. The Rust traits remain the synchronous core contract; tonic a
 blocking workers, and a single server listener registers the public and node-internal services. Authentication
 interceptors establish trusted request identities outside protobuf bodies.
 
-- **Txn:** `KvGet, KvBatchGet, KvScan, KvPrewrite, KvCommit, KvPessimisticLock, KvPessimisticRollback,
-  KvResolveLock, KvCleanup, KvCheckTxnStatus`.
-- **Raw:** `RawGet, RawBatchGet, RawPut, RawBatchPut, RawDelete, RawScan, RawDeleteRange`.
+- **Raw:** `RawGet, RawBatchGet, RawPut, RawBatchPut, RawBatch (atomic range batch, §9.1), RawDelete, RawScan,
+  RawDeleteRange`, plus the TTL and routed variants (`RawTtl`, `LookupRawRoute`, `RoutedRaw`).
 - **Admin/meta:** `CreateKeyspace, ListKeyspaces, GetRegion (routing), SplitRegion, ClusterInfo`.
 - **Auth is in scope:** admin/meta and any destructive endpoint authenticate and authorize the caller from day one
   (not network/mTLS alone).
@@ -847,18 +816,18 @@ kv9/
 ├── DESIGN.md                     ← this document          docs/ARCHITECTURE.md ← diagrams
 ├── Cargo.toml                    ← workspace
 ├── crates/
-│   ├── common/   ← ids (Node/Region/Keyspace/Tenant/TxnGroup), Keyspace/Tenant/ApiType, key codec,
-│   │               TimeStamp/HLC, errors, config          (multi-tenant types are here, §1.1/§3)
+│   ├── common/   ← ids (Node/Region/Keyspace/Tenant), Keyspace/Tenant/ApiType, key codec,
+│   │               errors, config                        (multi-tenant types are here, §1.1/§3)
 │   ├── meta/     ← MetaStore = small SQL/catalog engine over the system keyspace (docs/METADATA-CATALOG.md):
-│   │               schema/codec/tables/migrate; membership · catalog · routing · placement/scheduler ·
-│   │               TSO provider pool — all as tables; multi-level metadata (L0/L1); Bootstrap FSM; MetaLeader
-│   ├── engine/   ← Engine trait + MemEngine; MVCC layout (default/lock/write); WriteBatch;
+│   │               schema/codec/tables/migrate; membership · catalog · routing · placement/scheduler —
+│   │               all as tables; multi-level metadata (L0/L1); Bootstrap FSM; MetaLeader
+│   ├── engine/   ← Engine trait + MemEngine; column families; WriteBatch (the unit a batch applies as);
 │   │               ObjectStore trait (S3/GCS/Azure/local) + disaggregated LsmEngine design (§6.5);
 │   │               Manifest (immutable-SST file refs, mutable via raft), local block cache
 │   ├── raft/     ← RaftGroup trait + single-node stub
 │   ├── region/   ← Region, RegionRouter, epoch, split/merge (throughput-aware), WalStream/WalPool (§6.4)
-│   ├── txn/      ← Percolator 2PC (txn keyspaces) + txn-group confinement; raw executor
-│   └── server/   ← Node assembly, API traits (Txn/Raw/Admin/Router), request routing
+│   ├── raw/      ← raw executor: point / atomic range batch / range-delete / TTL plans
+│   └── server/   ← Node assembly, API traits (Raw/Admin/Router), request routing, range permits (§9.1)
 └── src/ (bin `kv9`) ← main.rs: single binary; node CLI (--node-id, --join, --data-dir, --addr)
 ```
 
@@ -874,18 +843,19 @@ The choices above, as standalone principles:
    cloud-native — seconds-scale elasticity, scale-to-zero, instant failover, independent storage/compute scaling.
 1. **No separate control plane.** Metadata is self-hosted, layered, and sharded — it scales like data and never
    becomes a single-node bottleneck.
-2. **Tenant-first everywhere.** Namespace, capacity, QoS, timestamp order, blast radius, and billing are all
-   per-tenant; identifiers are first-class through the stack.
+2. **Tenant-first everywhere.** Namespace, capacity, QoS, blast radius, and billing are all per-tenant;
+   identifiers are first-class through the stack.
 3. **Region boundaries align to keyspace boundaries** — an invariant, so keyspace-id derives unambiguously from a
    region's start key and a tenant's blast radius is contained.
 4. **Validate encoded ids** (never silently truncate a keyspace id) — misrouting across tenants must be impossible.
-5. **Shard the hot serialization points.** TSO (per txn group) and the WAL (a pool of streams) are sharded so
-   per-node and per-cluster throughput are not pinned to one writer/allocator.
+5. **Shard the hot serialization points.** Regions (one Raft log each) and the WAL (a pool of streams) are
+   sharded so per-node and per-cluster throughput are not pinned to one writer; there is no global allocator.
 6. **Backpressure, not collapse.** Storage/flush slowness throttles ingestion before the log backs up.
 7. **Consumption-aware placement + split-by-throughput**, not disk-capacity-and-size-first.
 8. **Warm, steadily-refreshed metadata caches** that never serve before a freshness watermark (no bimodal cold start).
 9. **Auth on the control/management plane from day one.**
-10. **Keyspace-aware deadlock detection** (per-tenant isolation and scale).
+10. **Multi-key writes are atomic range batches, never cross-region transactions.** One fenced entry, one
+    region, all-or-nothing; a batch that would cross a boundary is refused, not split (§9.1).
 11. **Quiesce idle regions** — heartbeat/election cost must not scale with region count (multi-tenant has millions of
     cold regions). (§6.1)
 12. **Forward-compatible formats, never panic on the unknown.** Raft-log entries, manifests, and on-object formats
@@ -912,7 +882,9 @@ The choices above, as standalone principles:
 - **Coprocessor / pushdown**, **CDC / change feeds**, **PITR / native backup** — layers above the region.
 - **Elastic background compute** — offload compaction / index build to stateless workers reading/writing object
   storage directly, keeping the serving path light.
-- **HLC / TrueTime** timestamp sources behind `TimeSource` (§8.2).
+- **A transaction layer above range batches.** Removed from the core on 2026-10-28. If reintroduced it owns its
+  own timestamp source (sharded TSO, HLC or TrueTime) and MVCC layout, and composes atomic range batches as its
+  per-region write; the raw engine does not grow locks or versions for it.
 
 ---
 

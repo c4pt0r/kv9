@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Real-process END-TO-END WRITE BACKPRESSURE gate (#20): bound absolute raft
-log growth when writes outrun commit+compaction. With KV9_MAX_RAFT_LOG_ENTRIES
+"""Real-process data-write admission gate (#20). With KV9_MAX_RAFT_LOG_ENTRIES
 set and auto-compaction OFF (so nothing drains the log), sustained writes grow
-the retained committed log to the bound and then every further WRITE is refused
+the retained log to the threshold and then every further data WRITE is refused
 with a retryable RESOURCE_EXHAUSTED (Error::WriteBackpressure) — the log stays
-BOUNDED at the cap instead of growing without limit. Reads are never gated.
+unchanged by refused writes. Control entries may exceed the threshold; ordinary
+Raw reads remain available. This is not a disk-byte capacity test.
 
 The fixture proves: (1) writes succeed up to the bound; (2) once the retained
-log (committed - first_index) reaches the cap, writes are refused and the log
+log (last_index - first_index + 1) reaches the cap, writes are refused and the log
 stays bounded (does not grow) under continued attempts; (3) reads still serve
 during backpressure; (4) draining the log via a committed compaction floor
 (the manual record-group-compaction verb) drops retained below the cap and
@@ -164,8 +164,8 @@ def main():
 
         def retained(node):
             g = data_groups(node).get(region, {})
-            c, f = g.get('committed'), g.get('log_first_index')
-            return None if c is None or f is None else int(c) - int(f)
+            last, first = g.get('log_last_index'), g.get('log_first_index')
+            return None if last is None or first is None else max(0, int(last) - int(first) + 1)
 
         def put_one(tag, i, want=None):
             node = group_leader()
@@ -200,7 +200,7 @@ def main():
         require(refusal_is_backpressure(refused_r),
                 'the refusal must be typed write backpressure (RESOURCE_EXHAUSTED): '
                 + (refused_r.get('_raw') or '')[:200])
-        # The gate reads the LIVE driver (raft_committed - log_first_index);
+        # Admission checks LIVE retained entries, including the unstable tail;
         # the on-disk status file publishing the same two counters lags it by a
         # flush, so poll it up to the cap rather than sampling instantaneously.
         wait('the retained log readback reaches the cap',

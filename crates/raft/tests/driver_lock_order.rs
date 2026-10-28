@@ -110,6 +110,9 @@ fn run_scenario() -> Result<(), String> {
                 Ok(ApplyWaitOutcome::FenceRejected { .. }) => {
                     return Err(format!("proposal {i} is not fenced; verdict impossible"))
                 }
+                Ok(ApplyWaitOutcome::RawTtlRejected { .. }) => {
+                    return Err(format!("proposal {i} has no TTL; verdict impossible"))
+                }
                 Ok(ApplyWaitOutcome::Manifest { .. }) => {
                     return Err(format!(
                         "proposal {i} is not a manifest change; verdict impossible"

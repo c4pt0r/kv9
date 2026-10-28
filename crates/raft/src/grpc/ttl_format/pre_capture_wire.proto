@@ -1,0 +1,311 @@
+// kv9 internal node-to-node service (task #19): raft transport + discovery.
+// Shape follows TiKV/CSE's tikvpb raft surface (client-streaming, batched),
+// carried by tonic/prost. The synchronous core is reached ONLY through
+// channels — nothing in this service implies an async core.
+syntax = "proto3";
+// A distinct service path prevents either generation from silently accepting
+// the other's registration or Raft traffic. V5 additionally requires Raw
+// population and TTL split transfer/recovery support. V6 additionally permits
+// unfinished-import checkpoints. V7 additionally permits large V2 checkpoint
+// manifests and tag 14, with a durable V7 floor before any owner starts.
+// No legacy service fallback is provided.
+package kv9.raft.v7;
+
+service Kv9Raft {
+  // Long-lived client-streaming raft transport: a peer opens one stream and
+  // pushes batches for the life of the connection. The response closes the
+  // stream (normal end or error); per-message acks are the raft protocol's
+  // own job, not the transport's.
+  rpc BatchRaft(stream BatchRaftMessage) returns (Done);
+
+  // Data groups MUST use this method on every connection. Old V2 BatchRaft
+  // servers ignored region_id and would feed data traffic into metadata.
+  // A distinct RPC path fails with UNIMPLEMENTED on those servers, including
+  // after endpoint replacement/downgrade. Never fall back to BatchRaft.
+  // All data groups share one stream per peer; metadata has its own stream.
+  rpc BatchDataRaft(stream BatchRaftMessage) returns (Done);
+
+  // Bootstrap discovery (fencing rule a). Unary: silence = transport error =
+  // never an answer. The answer binds to the responder's declared voter set
+  // via the fingerprint; callers count only exact matches.
+  rpc Discover(DiscoverRequest) returns (DiscoverResponse);
+
+  // Node registration (task #24, three-gate contract, gate 3): a previously
+  // ADMITTED node asks the leader to consume its admission and record it in
+  // the membership catalog — one committed transaction, confirmed by the
+  // exact applied (term, index). The caller's identity comes from the auth
+  // interceptor, never from the body; a valid cluster token alone is not
+  // admission. NotLeader answers carry a redirect hint like the public API.
+  rpc Register(RegisterRequest) returns (RegisterReceipt);
+  // Confirms an operator-authorized address for the same existing store.
+  // It never changes the address or membership and needs no old join ticket.
+  rpc ConfirmEndpoint(ConfirmEndpointRequest) returns (EndpointConfirmationReceipt);
+  // Read-only format evidence for one exact store. TTL activation must obtain
+  // every required replica's confirmation, not merely a reachable quorum.
+  rpc ConfirmRawTtlFormat(RawTtlFormatRequest) returns (RawTtlFormatReceipt);
+  // One metadata-leader snapshot for the exact data configuration's stores.
+  rpc ResolveRawTtlStores(RawTtlStoresRequest) returns (RawTtlStoresResponse);
+  // Checkpoint ownership uses the metadata leader even when the data leader
+  // lives elsewhere. Opaque ledger bytes retain the catalog's canonical codec.
+  // An unknown reply never authorizes object I/O or an automatic write retry.
+  rpc CheckpointRetention(CheckpointRetentionRequest) returns (CheckpointRetentionResponse);
+  // Fresh, exact-store pressure evidence. This read-only report grants no
+  // capacity and acknowledges no Raft entry. Unsupported older V7 services
+  // remain unknown; a failed request must never clear an earlier pressure report.
+  rpc InspectLogPressure(LogPressureRequest) returns (LogPressureResponse);
+  // Exact immutable checkpoint window from an actual local group replica.
+  // Missing history is Unknown, never a negative settlement or GC authority.
+  rpc InspectCheckpointHistory(CheckpointHistoryRequest) returns (CheckpointHistoryResponse);
+  // Same bounded identity envelope, distinct RPC: only return the winner if
+  // this live data replica has actually selected that exact checkpoint.
+  // Older services cannot confirm selection by answering a history query.
+  rpc InspectCheckpointSelection(CheckpointHistoryRequest) returns (CheckpointHistoryResponse);
+  // Independently inspect an existing durable migration plan at an exact store.
+  rpc InspectMigrationCapture(MigrationCaptureRequest) returns (MigrationCaptureResponse);
+}
+
+message MigrationCaptureRequest {
+  bytes store_identity = 1;
+  uint64 region_id = 2;
+  bytes operation_id = 3;
+  bytes challenge = 4;
+  uint64 budget_micros = 5;
+}
+message MigrationCaptureResponse {
+  bytes store_identity = 1;
+  uint64 region_id = 2;
+  bytes operation_id = 3;
+  bytes challenge = 4;
+  optional bytes descriptor_digest = 5; // Absent means unknown, never confirmed.
+}
+
+message CheckpointHistoryRequest {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  uint64 region_id = 5;
+  uint64 predecessor = 6;
+  bytes challenge = 7;
+  uint64 budget_micros = 8;
+}
+message CheckpointHistoryResponse {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  uint64 region_id = 5;
+  uint64 predecessor = 6;
+  bytes challenge = 7;
+  oneof observation {
+    bytes winner_change_id = 8; // Exactly 32 bytes from canonical committed history.
+    bool unknown = 9; // Must be true. Missing/false is invalid.
+  }
+}
+
+message LogPressureRequest {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  bytes challenge = 5;
+  uint64 budget_micros = 6;
+}
+message LogPressureResponse {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  bytes challenge = 5;
+  oneof observation {
+    uint64 available_bytes = 6;
+    bool uncertain = 7; // Must be true. Missing/false is not a healthy report.
+  }
+}
+
+message CheckpointRetentionRequest {
+  bytes root_digest = 1;
+  uint64 budget_micros = 2;
+  oneof query {
+    bytes apply = 3;
+    bytes owner_id = 4;
+    // Pending owner ID; returns its exact canonical checkpoint intent.
+    bytes intent_owner_id = 5;
+    CheckpointExecutorsQuery executors = 6;
+    bytes capture_plan = 7; // Canonical durable capture descriptor; independently checked.
+  }
+}
+message CheckpointExecutorsQuery {
+  bytes pending_owner_id = 1;
+  optional bytes after_owner_id = 2;
+  uint32 limit = 3;
+}
+message CheckpointRetentionApplied {
+  uint64 revision = 1;
+  bool changed = 2;
+  uint64 term = 3;
+  uint64 index = 4;
+}
+message CheckpointRetentionOwner {
+  // Absent and an invalid empty observation are different wire values.
+  optional bytes observation = 1;
+}
+message CheckpointRetentionResponse {
+  bytes root_digest = 1;
+  // Binds the reply to root, query kind and exact command/owner bytes.
+  bytes query_digest = 2;
+  oneof reply {
+    CheckpointRetentionApplied applied = 3;
+    CheckpointRetentionOwner owner = 4;
+    CheckpointRetentionOwner intent = 5;
+    CheckpointRetentionOwner executors = 6;
+  }
+}
+
+message RawTtlStoresRequest {
+  bytes binding = 1;
+  repeated uint64 replicas = 2; // Sorted unique union of all four ConfState sets.
+  uint64 budget_micros = 3;
+}
+message RawTtlStore {
+  uint64 node_id = 1;
+  bytes store_incarnation = 2;
+  string address = 3;
+  uint64 generation = 4;
+  optional string previous_address = 5;
+}
+message RawTtlStoresResponse {
+  bytes cluster_id = 1;
+  bytes root_digest = 2;
+  bytes binding_digest = 3;
+  repeated RawTtlStore stores = 4;
+}
+
+message RawTtlFormatRequest {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+}
+message RawTtlFormatReceipt {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  uint32 format_version = 5;
+}
+
+message EndpointRoute {
+  uint64 node_id = 1;
+  bytes store_incarnation = 2;
+  string address = 3;
+  uint64 generation = 4;
+}
+message ConfirmEndpointRequest {
+  uint64 node_id = 1;
+  bytes cluster_id = 2;
+  bytes store_incarnation = 3;
+  string address = 4;
+  bytes root_digest = 5;
+}
+message EndpointConfirmationReceipt {
+  EndpointRoute subject = 1;
+  // Certified at the same position, so a recovering node can reach a moved
+  // leader even when its own applied directory still contains the old route.
+  EndpointRoute responder = 2;
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
+  bytes root_digest = 5;
+}
+
+// Envelope mimicking kvproto's RaftMessage: routing/epoch metadata OUTSIDE
+// the opaque raft payload, so multi-region routing (Phase 4) needs no format
+// change. Legacy V2 metadata uses wire ID 0 (catalog META_REGION_0 is 1).
+// Data groups use their catalog IDs, greater than 1, on BatchDataRaft only;
+// BatchRaft accepts only wire ID 0. Wire ID 1 is reserved on both methods.
+message RaftEnvelope {
+  uint64 region_id = 1;
+  uint64 from_node = 2;
+  uint64 to_node = 3;
+  // raft-rs Message, serialized by its own protobuf-codec (write_to_bytes).
+  // Opaque here: the transport routes it, never interprets it.
+  bytes raft_message = 4;
+  // Region epoch (conf_ver, version) — zero in Phase 1-final; checked once
+  // multi-region routing exists.
+  uint64 epoch_conf_ver = 5;
+  uint64 epoch_version = 6;
+}
+
+message BatchRaftMessage {
+  repeated RaftEnvelope msgs = 1;
+  // Sender's clock (nanos since epoch) when the batch was flushed; receiver
+  // observes propagation delay. Diagnostic only — never used for correctness.
+  uint64 flushed_unix_nanos = 2;
+  // SHA-256 of the canonical RootDescriptor. Every stream is fenced before
+  // any raft payload reaches the core; a shared token is authentication, not
+  // proof that two processes belong to the same cluster incarnation.
+  bytes root_digest = 3;
+}
+
+message Done {}
+
+message DiscoverRequest {
+  uint64 from_node = 1;
+  // Fingerprint of the ASKER's declared voter set (FNV-1a-64 over the sorted
+  // (node_id, address) declaration). Misconfiguration detection, not auth —
+  // see transport docs; real peer auth is the token interceptor / principle 9.
+  fixed64 voter_fingerprint = 2;
+  // Pre-provisioned creation authority. These fields are present before the
+  // first raft entry, so two uninitialized roots can never cross-endorse.
+  bytes bootstrap_generation = 3;
+  bytes root_digest = 4;
+}
+
+message DiscoverResponse {
+  uint64 node_id = 1;
+  bool initialized = 2;
+  // The RESPONDER's declared-set fingerprint. Callers count this answer only
+  // if it equals their own — an answer endorsing a different declaration is
+  // an outsider (overlapping seed sets must not cross-endorse). The
+  // fingerprint's authority ENDS at initialization: it exists to keep two
+  // uninitialized declarations from cross-endorsing, nothing more.
+  fixed64 voter_fingerprint = 3;
+  // The cluster identity (16 raw ClusterId bytes) — the POST-initialization
+  // authority. REQUIRED whenever initialized=true (an initialized answer
+  // that cannot name its cluster is a protocol error, not a lenient case);
+  // empty while uninitialized. Joiners verify this against their expected
+  // id — a same-token wrong-environment answer must not admit anyone.
+  bytes cluster_id = 4;
+  // Root identity remains authoritative after initialization; it is not a
+  // bootstrap-only checksum that gets retired when the catalog appears.
+  bytes bootstrap_generation = 5;
+  bytes root_digest = 6;
+}
+
+message RegisterRequest {
+  // Must equal the AUTHENTICATED node id from the interceptor; a mismatch is
+  // rejected before any catalog access (bodies never self-report identity).
+  uint64 node_id = 1;
+  // The exact admitted endpoint (canonical socket address): consume-time
+  // comparison against the admission record's binding.
+  string addr = 2;
+  // The cluster the caller believes it is joining (16 raw ClusterId bytes);
+  // three-way-checked against the local singleton and the admission row.
+  bytes cluster_id = 3;
+  // SHA-256 of the one-time join ticket issued by AdmitNode. The plaintext
+  // never enters the catalog or a request/log; this digest is itself treated
+  // as a bearer secret and consumed exactly once.
+  bytes join_ticket_sha256 = 4;
+  // Durable incarnation minted before registration. The first valid ticket
+  // binds it; a wiped store cannot later reuse the same node id.
+  bytes store_incarnation = 5;
+}
+
+message RegisterReceipt {
+  // The registration transaction's exact applied position on the leader.
+  uint64 applied_term = 1;
+  uint64 applied_index = 2;
+  // Membership as of that position (sorted node ids).
+  repeated uint64 voters = 3;
+  repeated uint64 learners = 4;
+}

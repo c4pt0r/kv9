@@ -4,7 +4,18 @@
   "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
   "modules": {
     "PinRetentionProof": {
-      "theorems": ["PinDeletedUnreferenced", "PinGenerationMonotonic", "PinInvariantAlways", "PinInvariantInit", "PinInvariantStep", "PinPublicationGuard", "PinReleaseFence", "PinRetiredDeletionProgress", "PinRetirementPermanent", "PinShareOverlap"],
+      "theorems": [
+        "PinDeletedUnreferenced",
+        "PinGenerationMonotonic",
+        "PinInvariantAlways",
+        "PinInvariantInit",
+        "PinInvariantStep",
+        "PinPublicationGuard",
+        "PinReleaseFence",
+        "PinRetiredDeletionProgress",
+        "PinRetirementPermanent",
+        "PinShareOverlap"
+      ],
       "obligations": 59
     }
   },
@@ -15,11 +26,18 @@
   "models": {
     "PinRetention": {
       "source": "proofs/tla/retention/PinRetention.tla",
-      "assumptions": [{"axiom": false, "sha256": "c9d3780c979b611cc8b3b4ffff53d45f1135c75be8c00bdf84e6adf1379b5153"}]
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "c9d3780c979b611cc8b3b4ffff53d45f1135c75be8c00bdf84e6adf1379b5153"
+        }
+      ]
     }
   },
-  "roots": ["PinRetentionProof"],
+  "roots": [
+    "PinRetentionProof"
+  ],
   "source_pins": {
-    "crates/common/src/retention.rs": "7260025252aae933c9c21f1109122300d3ba6179ad849c5efd4bec1999a108fa"
+    "crates/common/src/retention.rs": "163f87a0e7d6fc6597bc2a5e29ae7bf191898d1ef38d19cab354210ed01084ec"
   }
 }

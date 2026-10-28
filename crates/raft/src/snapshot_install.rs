@@ -1,9 +1,10 @@
 //! Offline, destination-bound preparation of an immutable engine/protocol pair.
 //!
 //! This module grants NO admission, voting, serving, or retention capability.
-//! Source authority and durable object owners must be provided by a future
-//! migration coordinator. Existing RaftPeer constructors still refuse these
-//! bases. The only supported destination is a new group or a prior installation
+//! Source authority and durable object owners remain the caller's obligations.
+//! Ordinary RaftPeer constructors refuse these bases; runtime adoption uses
+//! the separate validated installed-base constructors. The supported destination
+//! is a new group or a prior installation
 //! made by this module; an existing flat active group is never adopted.
 //!
 //! A versioned group record fences older RegionManager readers. Each attempt
@@ -16,15 +17,20 @@ use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
-use kv9_common::codec::{decode_key, KeyMode};
 use kv9_common::data_range::{DataRange, RANGE_KEY};
+use kv9_common::raw_ttl::ClockWatermark;
 use kv9_common::store_lifecycle::{StoreGuard, StorePhase};
 use kv9_common::{AppliedPosition, Error, Result, RootDigest, StoreIdentity, StoreIncarnation};
-use kv9_engine::checkpoint::{CheckpointManifest, RemoteUploader};
-use kv9_engine::{ColumnFamily, DurableAppliedPosition, ReadView, ReplicatedEngine, WalEngine};
+use kv9_engine::checkpoint::{CheckpointManifest, CheckpointRestore, RemoteUploader};
+use kv9_engine::{
+    ColumnFamily, DurableAppliedPosition, Engine, ReadView, ReplicatedEngine, WalEngine,
+};
 use raft::prelude::{HardState, Snapshot};
 use raft::Storage;
 
+use crate::state_machine::checkpoint_recovery::data_group::{
+    inspect_image, DataCheckpointIdentity, InspectedDataImage,
+};
 use crate::storage::{snapshot, DiskRaftStorage, MAX_PROTOCOL_SNAPSHOT_BYTES};
 
 const MAX_IMAGE: usize = MAX_PROTOCOL_SNAPSHOT_BYTES + 128;
@@ -138,7 +144,10 @@ pub struct InstalledImage {
     pub image_digest: RootDigest,
     pub position: AppliedPosition,
     pub target: StoreIdentity,
+    /// Raw values only; expiry and other system records are excluded.
     pub records: u64,
+    /// Observation from the verified image, not a clock or serving authority.
+    pub ttl_watermark: Option<ClockWatermark>,
     pub object_bytes: u64,
 }
 
@@ -176,6 +185,7 @@ impl<'a> JointInstaller<'a> {
         allow_adopted: bool,
     ) -> Result<Self> {
         range.validate()?;
+        store.require_current_writer_format()?;
         let record = store.verify(&identity)?;
         if !matches!(record.phase, StorePhase::Bound(root) | StorePhase::Active(root) if root == range.root)
             || identity.root_digest != range.root
@@ -292,11 +302,24 @@ impl<'a> JointInstaller<'a> {
         )))
     }
 
+    fn check_read_floor(&self, manifest: &CheckpointManifest) -> Result<()> {
+        crate::state_machine::checkpoint_recovery::data_group::check_local_read_floor(
+            self._store.data_read_fences(&self.identity)?.as_ref(),
+            DataCheckpointIdentity {
+                cluster: self.identity.cluster_id,
+                root: self.range.root,
+                region: self.range.region,
+                creation: self.range.creation,
+            },
+            Some(manifest),
+        )
+    }
+
     fn verify_generation(
         &self,
         generation: StoreIncarnation,
         digest: RootDigest,
-        uploader: &RemoteUploader,
+        uploader: &dyn CheckpointRestore,
     ) -> Result<(InstalledImage, Snapshot, HardState)> {
         let directory = self.directory.join(format!("install-{generation}"));
         if !fs::symlink_metadata(&directory).map_err(io)?.is_dir() {
@@ -308,6 +331,7 @@ impl<'a> JointInstaller<'a> {
         }
         let (image, hs) = snapshot::decode(&bytes)?;
         let (_, manifest) = self.validate(&image, &hs)?;
+        self.check_read_floor(&manifest)?;
         let ready = read(&directory.join("ready"), 168)?;
         let fields = checked(&ready, b"KV9PAIR1")?;
         if fields.len() != 128 || &fields[..32] != self.binding.as_bytes() {
@@ -337,8 +361,8 @@ impl<'a> JointInstaller<'a> {
         {
             return Err(invalid("selected protocol base differs from engine image"));
         }
-        let mut records = 0;
-        let (engine, replay) = WalEngine::open_with_base_observer(
+        let mut inspected = None;
+        let (engine, replay) = WalEngine::open_with_checkpoint_reader(
             directory.join("data.wal"),
             Some(uploader),
             |base| {
@@ -349,7 +373,7 @@ impl<'a> JointInstaller<'a> {
                 }
             },
             |_, view| {
-                records = validate_view(view, &self.range, &manifest)?;
+                inspected = Some(validate_view(view, &self.range, &manifest, self.identity)?);
                 Ok(())
             },
             |_, _| Err(invalid("immutable installation contains a WAL tail")),
@@ -361,13 +385,15 @@ impl<'a> JointInstaller<'a> {
         {
             return Err(invalid("engine position or immutable WAL differs"));
         }
+        let inspected = inspected.ok_or_else(|| invalid("missing restored image inspection"))?;
         Ok((
             InstalledImage {
                 generation,
                 image_digest: digest,
                 position: manifest.position(),
                 target: self.identity,
-                records,
+                records: inspected.raw_values,
+                ttl_watermark: inspected.watermark,
                 object_bytes: manifest.files.iter().map(|f| f.size).sum(),
             },
             image,
@@ -399,6 +425,17 @@ impl<'a> JointInstaller<'a> {
         self.install_inner(image, hs, uploader, &mut |_, _| Ok(()))
     }
 
+    /// Install through a caller's GET-only, retained image reader. This same
+    /// dependency covers the old selected image, preparation and final verify.
+    pub fn install_with_reader(
+        &mut self,
+        image: &Snapshot,
+        hs: &HardState,
+        reader: &dyn CheckpointRestore,
+    ) -> Result<InstalledImage> {
+        self.install_inner(image, hs, reader, &mut |_, _| Ok(()))
+    }
+
     #[cfg(any(test, feature = "testing"))]
     pub fn install_observed(
         &mut self,
@@ -414,13 +451,15 @@ impl<'a> JointInstaller<'a> {
         &mut self,
         image: &Snapshot,
         hs: &HardState,
-        uploader: &RemoteUploader,
+        uploader: &dyn CheckpointRestore,
         observe: &mut impl FnMut(InstallStep, StoreIncarnation) -> Result<()>,
     ) -> Result<InstalledImage> {
         self.healthy()?;
         let (bytes, manifest) = self.validate(image, hs)?;
+        self.check_read_floor(&manifest)?;
         let digest = RootDigest::sha256(&bytes);
         let result = (|| {
+            let mut previous_watermark = None;
             if let Some((g, d)) = self.selected()? {
                 let (old, old_image, old_hs) = self.verify_generation(g, d, uploader)?;
                 if d == digest {
@@ -435,6 +474,7 @@ impl<'a> JointInstaller<'a> {
                         "replacement rolls back committed cut, term or vote",
                     ));
                 }
+                previous_watermark = old.ttl_watermark;
             }
             let count =
                 fs::read_dir(&self.directory)
@@ -461,13 +501,19 @@ impl<'a> JointInstaller<'a> {
             // The final validation below checks exact bytes and both watermarks.
             drop(WalEngine::open(directory.join("data.wal"))?);
             write_new(&directory.join("data.checkpoint"), &manifest.encode()?)?;
-            let mut records = 0;
-            let (engine, _) = WalEngine::open_with_base_observer(
+            let (engine, _) = WalEngine::open_with_checkpoint_reader(
                 directory.join("data.wal"),
                 Some(uploader),
                 |_| Ok(()),
                 |_, view| {
-                    records = validate_view(view, &self.range, &manifest)?;
+                    let inspected = validate_view(view, &self.range, &manifest, self.identity)?;
+                    if previous_watermark
+                        .is_some_and(|old| inspected.watermark.is_none_or(|next| next < old))
+                    {
+                        return Err(invalid(
+                            "replacement removes or regresses TTL activation/watermark",
+                        ));
+                    }
                     Ok(())
                 },
                 |_, _| Err(invalid("new generation unexpectedly contains WAL records")),
@@ -524,41 +570,26 @@ fn validate_view(
     view: &dyn ReadView,
     range: &DataRange,
     manifest: &CheckpointManifest,
-) -> Result<u64> {
+    identity: StoreIdentity,
+) -> Result<InspectedDataImage> {
     if view.get(ColumnFamily::Default, RANGE_KEY)?.as_deref() != Some(range.encode().as_slice()) {
         return Err(invalid(
             "restored image has a different ownership descriptor",
         ));
     }
-    let mut records = 0;
-    // restore() materializes exactly these verified, nonoverlapping SSTs. Use
-    // their true maximum keys: an empty end or a single 0xff is NOT infinity.
-    for file in &manifest.files {
-        let cf = ColumnFamily::ALL[file.cf as usize];
-        let mut end = file.largest.clone();
-        end.push(0);
-        let mut count = 0;
-        for entry in view.iter(cf, &file.smallest, &end)? {
-            let (encoded, _) = entry?;
-            count += 1;
-            if cf == ColumnFamily::Default && encoded == RANGE_KEY {
-                continue;
-            }
-            let key = decode_key(&encoded)?;
-            if cf != ColumnFamily::Default
-                || key.mode != KeyMode::Raw
-                || key.keyspace != range.keyspace
-                || !range.contains(key.user_key)
-            {
-                return Err(invalid("restored image contains foreign keys"));
-            }
-            records += 1;
-        }
-        if count != file.count {
-            return Err(invalid("restored image count differs from verified SST"));
-        }
-    }
-    Ok(records)
+    // Restore has verified the complete SST closure. Reuse the same TTL,
+    // namespace, CF, history and count rules as ordinary group recovery;
+    // source expiry identities and deadlines must survive unchanged.
+    inspect_image(
+        view,
+        manifest,
+        DataCheckpointIdentity {
+            cluster: identity.cluster_id,
+            root: range.root,
+            region: range.region,
+            creation: range.creation,
+        },
+    )
 }
 
 /// The one-way receipt turning a SELECTED installed generation into the
@@ -579,24 +610,63 @@ pub struct AdoptedGeneration {
     pub raft_directory: PathBuf,
     pub engine_wal: PathBuf,
     pub group_lock: File,
+    recovery: recovery::Anchor,
+    data_read_fences: std::sync::Arc<kv9_common::data_read_fence::DataReadFences>,
 }
 
 /// Adopt the selected generation for runtime use, or re-open a previously
 /// adopted one after restart.
 ///
 /// First adoption verifies the complete pair and every remote object exactly
-/// like recovery, then durably publishes the `runtime-adopted` marker; from
+/// like recovery, then durably publishes a V2 `runtime-adopted` marker including
+/// the original image's verified TTL state; from
 /// that point installation for this group is closed and the generation's
 /// files may legitimately diverge from their sealed hashes (the log appends,
 /// the WAL grows). Re-adoption therefore validates the marker against the
 /// selector and leaves file validation to the ordinary storage and engine
-/// recovery machinery. The group record and range come from the destination's
+/// recovery machinery. V1 markers are upgraded only after restoring their
+/// original image; V2 permits later published checkpoints to recover without
+/// the superseded image's remote closure. The group record and range come from the destination's
 /// own durable state, never from a caller-supplied description.
 pub fn adopt_for_runtime(
     store: &StoreGuard,
     identity: StoreIdentity,
     region: kv9_common::RegionId,
     uploader: &RemoteUploader,
+) -> Result<AdoptedGeneration> {
+    adopt_for_runtime_observed(store, identity, region, uploader, |_| Ok(()))
+}
+
+/// Fault-observation seam for the same durable adoption operation. Any error
+/// returns no receipt; retry must reopen and validate the selected marker.
+#[doc(hidden)]
+pub fn adopt_for_runtime_observed(
+    store: &StoreGuard,
+    identity: StoreIdentity,
+    region: kv9_common::RegionId,
+    uploader: &RemoteUploader,
+    observe: impl FnMut(AdoptStep) -> Result<()>,
+) -> Result<AdoptedGeneration> {
+    adopt_with_reader_observed(store, identity, region, uploader, observe)
+}
+
+/// Runtime adoption with an externally retained GET-only dependency. Original
+/// validation and V1 upgrades use it; a valid V2 marker needs no original GET.
+pub fn adopt_for_runtime_with_reader(
+    store: &StoreGuard,
+    identity: StoreIdentity,
+    region: kv9_common::RegionId,
+    reader: &dyn CheckpointRestore,
+) -> Result<AdoptedGeneration> {
+    adopt_with_reader_observed(store, identity, region, reader, |_| Ok(()))
+}
+
+fn adopt_with_reader_observed(
+    store: &StoreGuard,
+    identity: StoreIdentity,
+    region: kv9_common::RegionId,
+    uploader: &dyn CheckpointRestore,
+    mut observe: impl FnMut(AdoptStep) -> Result<()>,
 ) -> Result<AdoptedGeneration> {
     let directory = store
         .directory()
@@ -617,18 +687,10 @@ pub fn adopt_for_runtime(
     let (generation, digest) = installer
         .selected()?
         .ok_or_else(|| invalid("no generation is selected for adoption"))?;
-    let mut marker = b"KV9ADP01".to_vec();
-    marker.extend_from_slice(installer.binding.as_bytes());
-    marker.extend_from_slice(generation.as_bytes());
-    marker.extend_from_slice(digest.as_bytes());
-    let marker = checksum(marker);
+    let binding = adoption::Binding::new(installer.binding, generation, digest);
     let generation_dir = directory.join(format!("install-{generation}"));
-    let (cut, configuration, subject) = if adopted_before {
-        if read(&marker_path, 120)? != marker {
-            return Err(invalid(
-                "adoption marker differs from the selected generation",
-            ));
-        }
+    let (cut, configuration, subject, manifest, watermark, verified_original) = if adopted_before {
+        let marker = binding.decode(&read(&marker_path, adoption::MAX_MARKER_BYTES)?)?;
         // Files may legitimately have grown; read the image record only.
         let bytes = read(&generation_dir.join("image"), MAX_IMAGE)?;
         if RootDigest::sha256(&bytes) != digest {
@@ -636,6 +698,24 @@ pub fn adopt_for_runtime(
         }
         let (image, _) = snapshot::decode(&bytes)?;
         let (_, manifest) = parse_image(&image)?;
+        let (watermark, verified_original) = match marker {
+            adoption::Marker::Verified { watermark } => {
+                // Resolve a previous rename whose directory sync was uncertain
+                // before this same-process retry exposes a runtime owner.
+                sync_dir(&directory)?;
+                (watermark, false)
+            }
+            adoption::Marker::Legacy => {
+                // V1 carried no TTL facts. Never guess from the current engine
+                // or a later image: verify the original closure before upgrade.
+                installer.check_read_floor(&manifest)?;
+                let restored = uploader.restore(&manifest)?;
+                let inspected =
+                    validate_view(restored.snapshot()?.as_ref(), &range, &manifest, identity)?;
+                binding.publish(&directory, inspected.watermark, &mut observe)?;
+                (inspected.watermark, true)
+            }
+        };
         let metadata = image.get_metadata();
         (
             AppliedPosition {
@@ -644,22 +724,32 @@ pub fn adopt_for_runtime(
             },
             metadata.get_conf_state().clone(),
             *RootDigest::sha256(&manifest.encode()?).as_bytes(),
+            manifest,
+            watermark,
+            verified_original,
         )
     } else {
         let (observation, image, _) = installer.verify_generation(generation, digest, uploader)?;
         let (_, manifest) = parse_image(&image)?;
-        let temporary = directory.join(".runtime-adopted.tmp");
-        let mut file = File::create(&temporary).map_err(io)?;
-        file.write_all(&marker).map_err(io)?;
-        file.sync_all().map_err(io)?;
-        fs::rename(temporary, &marker_path).map_err(io)?;
-        sync_dir(&directory)?;
+        binding.publish(&directory, observation.ttl_watermark, &mut observe)?;
         (
             observation.position,
             image.get_metadata().get_conf_state().clone(),
             *RootDigest::sha256(&manifest.encode()?).as_bytes(),
+            manifest,
+            observation.ttl_watermark,
+            true,
         )
     };
+    let recovery = recovery::Anchor::new(
+        identity,
+        range.clone(),
+        manifest,
+        configuration.clone(),
+        generation_dir.join("data.wal"),
+        watermark,
+        (generation, digest, verified_original),
+    )?;
     Ok(AdoptedGeneration {
         generation,
         range,
@@ -669,11 +759,16 @@ pub fn adopt_for_runtime(
         subject,
         raft_directory: generation_dir.join("raft"),
         engine_wal: generation_dir.join("data.wal"),
+        data_read_fences: store.data_read_fences(&identity)?,
         group_lock: installer._lock,
+        recovery,
     })
 }
 
+mod adoption;
 pub mod capture;
+pub use adoption::AdoptStep;
+mod recovery;
 
 /// Offline convenience for a destination operator: decode one canonical
 /// captured record, derive its exact range from the image itself, and run
@@ -686,10 +781,20 @@ pub fn install_captured_record(
     record: &[u8],
     uploader: &RemoteUploader,
 ) -> Result<InstalledImage> {
+    install_captured_record_with_reader(guard, identity, record, uploader)
+}
+
+/// Exact installer with an externally retained, GET-only restore dependency.
+pub fn install_captured_record_with_reader(
+    guard: &StoreGuard,
+    identity: StoreIdentity,
+    record: &[u8],
+    reader: &dyn CheckpointRestore,
+) -> Result<InstalledImage> {
     let (image, hs) = snapshot::decode(record)?;
     let (range, _) = parse_image(&image)?;
     let mut installer = JointInstaller::open(guard, identity, range)?;
-    installer.install(&image, &hs, uploader)
+    installer.install_with_reader(&image, &hs, reader)
 }
 
 #[cfg(test)]

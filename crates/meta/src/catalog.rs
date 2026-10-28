@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use kv9_common::codec::validate_keyspace_id;
-use kv9_common::{ApiType, Error, Keyspace, KeyspaceId, Result, Tenant, TenantId, TxnGroupId};
+use kv9_common::{ApiType, Error, Keyspace, KeyspaceId, Result, Tenant, TenantId};
 
 /// Legacy in-memory keyspace catalog and tenant registry (DESIGN §5.1).
 /// The persisted relational catalog lives in [`crate::MetaStore`].
@@ -30,15 +30,13 @@ impl Catalog {
     /// Create a keyspace (DESIGN §3.2, §10 `CreateKeyspace`).
     ///
     /// Validates the keyspace-id width (DESIGN §3.4, §13 principle 4), rejects duplicate IDs
-    /// and names, and requires the owning tenant to exist. For `raw` keyspaces the txn group is
-    /// ignored; for `txn` keyspaces it defaults to [`TxnGroupId::DEFAULT`] unless given.
+    /// and names, and requires the owning tenant to exist.
     pub fn create_keyspace(
         &mut self,
         id: KeyspaceId,
         name: impl Into<String>,
         tenant: TenantId,
         api_type: ApiType,
-        txn_group: TxnGroupId,
     ) -> Result<&Keyspace> {
         validate_keyspace_id(id)?;
         if self.keyspaces.contains_key(&id) {
@@ -58,7 +56,6 @@ impl Catalog {
             name: name.clone(),
             tenant,
             api_type,
-            txn_group,
         };
         self.by_name.insert(name, id);
         self.keyspaces.insert(id, ks);

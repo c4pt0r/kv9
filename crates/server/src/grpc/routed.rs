@@ -32,7 +32,9 @@ impl Kv9Grpc {
         let request = request.into_inner();
         if request.keyspace_id == 0
             || request.keyspace_id > KeyspaceId::MAX
-            || request.key.len() > crate::client::MAX_KEY_BYTES
+            // A scan may resume immediately after a maximum-length user key.
+            // This is a lookup position; it does not enlarge Raw mutation keys.
+            || !crate::raw_ttl::valid_range_position(&request.key)
         {
             return Err(Status::invalid_argument("invalid route lookup bounds"));
         }

@@ -18,6 +18,17 @@ open and records the contracts that round one must honour.
 
 ## Recovery and retention amendment — 2026-09-15
 
+2026-10-04 runtime follow-up: [checkpoint payload admission and bounded reads](RAW-TTL-OBJECT-IO.md)
+now share a 64 MiB/s default payload budget and 48 MiB burst through the configured object client.
+Conditional-PUT comparison reads are charged too; budgeted clients disable SDK retries below
+admission. Checkpoint GETs enforce descriptor sizes while collecting the response. This does
+not establish NIC bandwidth, whole-node memory bounds, MinIO durability or complete acceptance.
+
+2026-10-05: [pending journal disk admission](RAW-TTL-PENDING-DISK.md) adds a shared
+`KV9_CHECKPOINT_PENDING_BYTES` limit (default 1 GiB) for named journals, publication temporary
+files and open unlinked readers, with startup inventory and settlement under a lowered limit.
+It is separate from the 512 MiB anonymous spool budget and does not bound WAL or the full volume.
+
 The [C04 recovery and retention contract](RECOVERY-RETENTION-CONTRACT.md)
 defines the common anchor, owner lifecycle and migration requirements for
 snapshots, incremental versions, GC and backups. It distinguishes today's
@@ -82,10 +93,14 @@ fails after rename, the live handle has already switched to the new inode.
 This is **O(tail)** work under the write lock, not the segmented unlink protocol
 promised by the target design. Segmentation/group commit remain ROADMAP P1 work.
 
-**Other current limits:** full dataset in RAM; 48 MiB serialized checkpoint ceiling;
-no incremental/block-cache reads, Raft log truncation, SST GC or bucket-only recovery.
+**Other current limits:** full dataset in RAM; no incremental/block-cache reads,
+complete SST GC or bucket-only recovery. [V2 streamed checkpoints](RAW-TTL-LARGE-CHECKPOINT.md)
+now exceed 48 MiB, with at most 64 SSTs and 48 MiB per SST; resident capture/planning
+interfaces still have the original 48 MiB whole-image limit. Raft truncation is guarded
+by committed floors, checkpoint history and all-member replication, including
+[unfinished TTL imports](RAW-TTL-IMPORT-COMPACTION.md).
 The 8 MiB SST target avoids multipart for ordinary checkpoints; one oversize record
-can exceed the target but never the checkpoint ceiling. Historical manifests and
+can exceed the target but never the per-SST ceiling. Historical manifests and
 objects are retained. The runtime now fsyncs a checksummed `catalog.pending`
 record before first propose and clears it only after typed settlement. Restart
 validates the record against cluster/region and committed Raft term, rechecks the

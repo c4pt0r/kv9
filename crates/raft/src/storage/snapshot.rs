@@ -172,8 +172,14 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             return Ok(());
         }
         validate_transition(&self.mem, selected.as_ref(), image, hs)?;
+        let debt = self.log_debt.lock().expect("raft log accounting").clone();
         let result = (|| {
-            Self::write_record(&self.io_metrics, file, REC_SNAPSHOT, &bytes)?;
+            Self::write_record(
+                &self.io_metrics,
+                &mut BudgetWriter::new(file, debt.as_ref()),
+                REC_SNAPSHOT,
+                &bytes,
+            )?;
             let mut memory = self.mem.wl();
             memory
                 .apply_snapshot(image.clone())
@@ -182,6 +188,26 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             *self.conf_index.lock().expect("conf index poisoned") = image.get_metadata().index;
             *self.conf_history.lock().expect("conf history poisoned") =
                 ConfigurationHistory::default();
+            self.membership_history
+                .lock()
+                .expect("membership history poisoned")
+                .installed(
+                    kv9_common::AppliedPosition {
+                        term: image.get_metadata().term,
+                        index: image.get_metadata().index,
+                    },
+                    image.get_metadata().get_conf_state(),
+                );
+            *self
+                .configuration_base
+                .lock()
+                .expect("configuration base poisoned") = Some((
+                kv9_common::AppliedPosition {
+                    term: image.get_metadata().term,
+                    index: image.get_metadata().index,
+                },
+                image.get_metadata().get_conf_state().clone(),
+            ));
             *selected = Some(image.clone());
             Ok(())
         })();

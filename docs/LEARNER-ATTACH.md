@@ -22,7 +22,7 @@ startup land in a later increment.
 
 ## Offline installation at the destination
 
-`kv9 install-migration-image --data-dir <stopped-store> --record-file <r>`
+`KV9_CLIENT_TOKEN=<token> kv9 install-migration-image --data-dir <stopped-store> --record-file <r> --addr <metadata-leader> --owners <destination-owner>`
 is a new offline command beside `init`/`join`: it locks the stopped store,
 loads its durable root/identity bundle, derives the exact range from the
 record itself, and runs the **unchanged** joint installer. Every check —

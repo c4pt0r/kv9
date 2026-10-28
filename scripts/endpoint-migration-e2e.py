@@ -172,7 +172,7 @@ def main():
         require(recovered.get('value_hex') == '64757261626c65', 'upgrade lost the previous writer acknowledgement')
         for node in addresses:
             data = output / f'n{node}'
-            require((data / 'kv9-store-lifecycle').read_bytes()[:8] == b'KV9LIFE3', 'writer floor not published')
+            require((data / 'kv9-store-lifecycle').read_bytes()[:8] == b'KV9LIF11', 'writer floor not published')
             require(original[node] == {name: sha(data / name) for name in original[node]}, 'upgrade changed root/store identity')
         victim = next(node for node in addresses if node != current_leader)
         before = fields(client('endpoint-before', 'get-node-endpoint', addresses[current_leader], '--node-id', victim))

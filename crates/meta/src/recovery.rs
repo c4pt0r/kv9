@@ -76,12 +76,27 @@ pub fn open_initial_checkpoint_engine(
     uploader: Option<&RemoteUploader>,
     root: &RootDescriptor,
 ) -> Result<(WalEngine, EngineReplay, Option<LocalRecoveryAnchor>)> {
+    open_initial_checkpoint_engine_with_reader(
+        storage,
+        path,
+        uploader.map(|u| u as &dyn kv9_engine::checkpoint::CheckpointRestore),
+        root,
+    )
+}
+
+/// Same complete recovery using a runtime-supplied retained bootstrap reader.
+pub fn open_initial_checkpoint_engine_with_reader(
+    storage: &mut DiskRaftStorage,
+    path: impl AsRef<std::path::Path>,
+    reader: Option<&dyn kv9_engine::checkpoint::CheckpointRestore>,
+    root: &RootDescriptor,
+) -> Result<(WalEngine, EngineReplay, Option<LocalRecoveryAnchor>)> {
     let mut base = None;
     let (engine, report, publication) =
-        kv9_raft::state_machine::checkpoint_recovery::open_checkpoint_engine_with_base(
+        kv9_raft::state_machine::checkpoint_recovery::open_checkpoint_engine_with_reader(
             storage,
             path,
-            uploader,
+            reader,
             root.cluster_id.to_string(),
             META_REGION_0.0,
             |manifest, view| {

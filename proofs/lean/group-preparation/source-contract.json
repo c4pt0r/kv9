@@ -13,11 +13,11 @@
     "restart_discards_report"
   ],
   "source_sha256": {
-    "crates/meta/src/data_groups.rs": "89467c029a74f07d2246e556b2ab935332f56b359e8617979698b61eb01ef1c5",
-    "crates/server/src/region_manager.rs": "a0d5a80d69a74e814ff2f692d0ab55a899458ce18d1bec1badf995e55265a4cc",
-    "crates/server/src/runtime.rs": "e0ab076f61ea2d4568776d46d7894c990900bea9bf5d8b36e37d2edd31c64919",
-    "crates/raft/src/storage.rs": "22fc71a48f882aa6b9a56f4df0643546ef116388dda1f1f39344c86a7f7cfdc5",
-    "crates/raft/src/storage/configuration.rs": "61d2b1b0d93e20a03d018c5eba176cec6a86877c8eba81753af2326ae6574bb8",
+    "crates/meta/src/data_groups.rs": "b5972117328d04afedf77d44407dc2b2ebeb93762e76618cc5c8cb7cb9bd67e5",
+    "crates/server/src/region_manager.rs": "4cab2ed990ec699ce47456cebb5b371870473bfdfdaa41aae8b75e9eff6dd102",
+    "crates/server/src/runtime.rs": "4b809dff28247ba64160f91f45e3e2531f55c7a10f0bfc5bce7db29532e08562",
+    "crates/raft/src/storage.rs": "95a09aa526e65530754c409a1a35eb0bde96d807245e1a53631ad882c9ed2a56",
+    "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
     "proofs/lean/group-preparation/Preparation.lean": "eaf5394d4860db94a8c6889cfa17f4ae4204e2d0dce9e75b5aefb091918d0872",
     "proofs/lean/group-preparation/README.md": "8a26c05fee9354656ffaa0f8898abfbe939b2db9589e128055f9c716853b252b"
   }

@@ -1,0 +1,11 @@
+[package]
+name = "kv9-raw"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "kv9 raw executor: direct-KV plans (point, atomic range batch, range delete, TTL) over the multi-tenant key codec (DESIGN §9)."
+
+[dependencies]
+kv9-common.workspace = true
+kv9-engine.workspace = true
+kv9-region.workspace = true

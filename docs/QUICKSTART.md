@@ -142,7 +142,7 @@ bucket-only cluster reconstruction is not supported.
 All data currently shares one Raft group and remains in memory. Checkpoints are full-state with a 48 MiB serialized
 limit; hitting it defers checkpointing. Automatic admission/backpressure is not implemented, so this is not a
 production-capacity guarantee. SSTs and historical manifests are retained; Raft logs are not truncated.
-Transactions, split/merge, TTL and block cache are future work.
+Range merge and the block cache are future work; multi-key writes are atomic range batches (`raw-batch`).
 
 [ROADMAP.md](ROADMAP.md) orders the work needed to remove these limits.
 

@@ -117,6 +117,11 @@ macro_rules! batch_service {
                 }))
             }
 
+            async fn raw_batch(&self, request: Request<proto::RawBatchRequest>) -> Result<Response<proto::RawWriteResponse>, Status> {
+                let _ = self.0.inspect(&request);
+                Err(Status::unimplemented("raw_batch is not part of the batch client fixture"))
+            }
+
             async fn raw_batch_put(&self, request: Request<proto::RawBatchPutRequest>) -> Result<Response<proto::RawWriteResponse>, Status> {
                 let action = self.0.inspect(&request);
                 let request = request.into_inner();
@@ -156,22 +161,13 @@ macro_rules! batch_service {
 }
 
 batch_service! {
+    activate_raw_ttl: ActivateRawTtlRequest => RawTtlResponse,
+    raw_ttl: RawTtlRequest => RawTtlResponse,
     raw_get: RawGetRequest => RawGetResponse,
     raw_put: RawPutRequest => RawWriteResponse,
     raw_delete: RawDeleteRequest => RawWriteResponse,
     raw_scan: RawScanRequest => ScanResponse,
     raw_delete_range: RawDeleteRangeRequest => RawDeleteRangeResponse,
-    kv_begin: KvBeginRequest => KvBeginResponse,
-    kv_get: KvGetRequest => KvGetResponse,
-    kv_batch_get: KvBatchGetRequest => KvBatchGetResponse,
-    kv_scan: KvScanRequest => ScanResponse,
-    kv_prewrite: KvPrewriteRequest => Empty,
-    kv_commit: KvCommitRequest => Empty,
-    kv_pessimistic_lock: KvPessimisticLockRequest => Empty,
-    kv_pessimistic_rollback: KvPessimisticRollbackRequest => Empty,
-    kv_resolve_lock: KvResolveLockRequest => Empty,
-    kv_cleanup: KvCleanupRequest => Empty,
-    kv_check_txn_status: KvCheckTxnStatusRequest => KvCheckTxnStatusResponse,
     create_keyspace: CreateKeyspaceRequest => CreateKeyspaceResponse,
     create_data_group: CreateDataGroupRequest => CreateDataGroupResponse,
     create_data_keyspace: CreateDataKeyspaceRequest => CreateDataKeyspaceResponse,

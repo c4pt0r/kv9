@@ -12,9 +12,12 @@
 //! Segmented recovery streams batches directly into the index. The full dataset
 //! is still resident in memory; incremental LSM and group commit are later work.
 
+mod inspection;
+
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
+use kv9_common::log_budget::{BudgetWriter, LogBudget, LogDebt, Reconciliation};
 use kv9_common::{AppliedPosition, Result, Value};
 
 use crate::cf::ColumnFamily;
@@ -28,6 +31,7 @@ use crate::{Durability, DurableAppliedPosition, Engine, ReadView, ReplicatedEngi
 /// An [`Engine`] whose writes survive a restart.
 #[derive(Debug)]
 pub struct WalEngine {
+    history: std::sync::Arc<crate::checkpoint_history::CheckpointHistory>,
     /// Visible state. Rebuilt from the log at open.
     index: MemEngine,
     /// Durable state. Guarded separately so a write serializes on the log, which is also
@@ -56,15 +60,23 @@ struct EngineWal {
     metrics: std::sync::Arc<kv9_common::metrics::WalIoMetrics>,
     // None fences writes during an ambiguous offline layout publication.
     backing: Option<WalBacking>,
+    log_debt: Option<LogDebt>,
 }
 impl EngineWal {
+    fn reconciliation(&self) -> Option<Reconciliation> {
+        let path = self.path.clone();
+        self.log_debt
+            .as_ref()
+            .map(|debt| debt.reconciliation(move || wal_disk_bytes(&path)))
+    }
     fn ensure_available(&self) -> Result<()> {
-        if self.backing.is_none() {
-            return Err(kv9_common::Error::Engine(
+        match &self.backing {
+            Some(WalBacking::Legacy(wal)) => wal.ensure_healthy(),
+            Some(WalBacking::Segmented(wal)) => wal.ensure_healthy(),
+            None => Err(kv9_common::Error::Engine(
                 "WAL layout transition requires recovery".into(),
-            ));
+            )),
         }
-        Ok(())
     }
     fn path(&self) -> &Path {
         &self.path
@@ -92,7 +104,64 @@ impl EngineWal {
     }
 }
 
+pub(crate) fn wal_disk_bytes(path: &Path) -> Result<u64> {
+    wal_disk_bytes_with_budget(path, None)
+}
+fn wal_disk_bytes_with_budget(path: &Path, budget: Option<&LogBudget>) -> Result<u64> {
+    let mut paths = std::collections::BTreeSet::from([path.to_path_buf()]);
+    for extension in [
+        "segments",
+        "checkpoint",
+        "checkpoint.tmp",
+        "tail.tmp",
+        "upgrade.tmp",
+        "migration",
+        "topology.tmp",
+    ] {
+        paths.insert(path.with_extension(extension));
+    }
+    paths.into_iter().try_fold(0u64, |total, path| {
+        let bytes = match budget {
+            Some(budget) => budget.tree_bytes(&path)?,
+            None => kv9_common::log_budget::tree_bytes(&path)?,
+        };
+        total
+            .checked_add(bytes)
+            .ok_or_else(|| kv9_common::Error::Engine("WAL layout byte count overflow".into()))
+    })
+}
+
 impl WalEngine {
+    /// Includes obsolete/orphan segments and known layout temporary files.
+    /// Used at exclusive startup and after successful layout publication.
+    pub fn log_disk_bytes(path: impl AsRef<Path>) -> Result<u64> {
+        wal_disk_bytes(path.as_ref())
+    }
+    /// Startup inventory also verifies every WAL-family path is on the node's
+    /// monitored filesystem, including orphan segments and temporary files.
+    pub fn log_disk_bytes_on_budget(path: &Path, budget: &LogBudget) -> Result<u64> {
+        wal_disk_bytes_with_budget(path, Some(budget))
+    }
+
+    pub fn attach_log_budget(&self, budget: &std::sync::Arc<LogBudget>) -> Result<LogDebt> {
+        let mut log = self.wal.lock().expect("wal lock poisoned");
+        let debt = budget.track(
+            &log.path,
+            Self::log_disk_bytes_on_budget(&log.path, budget)?,
+        )?;
+        match log.backing.as_mut() {
+            Some(WalBacking::Legacy(wal)) => wal.set_log_debt(Some(debt.clone())),
+            Some(WalBacking::Segmented(wal)) => wal.set_log_debt(Some(debt.clone())),
+            None => {
+                debt.mark_uncertain();
+                return Err(kv9_common::Error::Engine(
+                    "WAL owner unavailable for log accounting".into(),
+                ));
+            }
+        }
+        log.log_debt = Some(debt.clone());
+        Ok(debt)
+    }
     /// Open the engine at `path`, replaying any existing log.
     ///
     /// Returns the engine and the [`EngineReplay`] report. The report is handed back rather than
@@ -138,33 +207,33 @@ impl WalEngine {
     pub fn open_with_base_observer(
         path: impl AsRef<Path>,
         uploader: Option<&RemoteUploader>,
+        checkpoint_observer: impl FnMut(Option<&CheckpointManifest>) -> Result<()>,
+        base_observer: impl FnMut(&CheckpointManifest, &dyn crate::ReadView) -> Result<()>,
+        batch_observer: impl FnMut(&WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    ) -> Result<(Self, EngineReplay)> {
+        Self::open_with_checkpoint_reader(
+            path,
+            uploader.map(|u| u as &dyn crate::checkpoint::CheckpointRestore),
+            checkpoint_observer,
+            base_observer,
+            batch_observer,
+        )
+    }
+
+    /// Same verified WAL open using a GET-only restore dependency. Reader
+    /// implementations must finish their actual object jobs before returning.
+    pub fn open_with_checkpoint_reader(
+        path: impl AsRef<Path>,
+        uploader: Option<&dyn crate::checkpoint::CheckpointRestore>,
         mut checkpoint_observer: impl FnMut(Option<&CheckpointManifest>) -> Result<()>,
         mut base_observer: impl FnMut(&CheckpointManifest, &dyn crate::ReadView) -> Result<()>,
         mut batch_observer: impl FnMut(&WriteBatch, Option<AppliedPosition>) -> Result<()>,
     ) -> Result<(Self, EngineReplay)> {
         let path = path.as_ref();
-        if path
-            .with_extension("segments")
-            .try_exists()
-            .map_err(checkpoint_io)?
-        {
-            match std::fs::metadata(path) {
-                Ok(metadata) if metadata.len() >= 5 => {}
-                Ok(_) => {
-                    return Err(kv9_common::Error::Engine(
-                        "segment directory exists with a truncated WAL topology".into(),
-                    ))
-                }
-                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                    return Err(kv9_common::Error::Engine(
-                        "segment directory exists without its WAL topology".into(),
-                    ))
-                }
-                Err(e) => return Err(checkpoint_io(e)),
-            }
-        }
+        inspection::validate_layout(path)?;
         if RecoveryPlan::is_segmented(path)? {
             let plan = RecoveryPlan::read(path)?;
+            let selected = plan.checkpoint().map(CheckpointManifest::position);
             let index = std::cell::RefCell::new(MemEngine::new());
             let metrics = kv9_common::metrics::WalIoMetrics::shared();
             let (wal, report) = plan.recover(
@@ -196,12 +265,16 @@ impl WalEngine {
             )?;
             return Ok((
                 Self {
+                    history: std::sync::Arc::new(
+                        crate::checkpoint_history::CheckpointHistory::new(selected),
+                    ),
                     index: index.into_inner(),
                     io_metrics: metrics.clone(),
                     wal: Mutex::new(EngineWal {
                         path: path.to_path_buf(),
                         metrics,
                         backing: Some(WalBacking::Segmented(Box::new(wal))),
+                        log_debt: None,
                     }),
                 },
                 EngineReplay {
@@ -211,10 +284,8 @@ impl WalEngine {
                 },
             ));
         }
-        let checkpoint_path = path.with_extension("checkpoint");
-        let (index, base) = match std::fs::read(&checkpoint_path) {
-            Ok(bytes) => {
-                let manifest = CheckpointManifest::decode(&bytes)?;
+        let (index, base) = match inspection::legacy_checkpoint(path)? {
+            Some(manifest) => {
                 checkpoint_observer(Some(&manifest))?;
                 let uploader = uploader.ok_or_else(|| {
                     kv9_common::Error::Config(
@@ -227,11 +298,10 @@ impl WalEngine {
                 drop(view);
                 (restored, Some(manifest.position()))
             }
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            None => {
                 checkpoint_observer(None)?;
                 (MemEngine::new(), None)
             }
-            Err(e) => return Err(kv9_common::Error::Engine(format!("read checkpoint: {e}"))),
         };
         let (wal, replay) = Wal::open_strict(path)?;
         let mut report = EngineReplay {
@@ -256,12 +326,16 @@ impl WalEngine {
         }
         Ok((
             WalEngine {
+                history: std::sync::Arc::new(crate::checkpoint_history::CheckpointHistory::new(
+                    base,
+                )),
                 index,
                 io_metrics: wal.io_metrics(),
                 wal: Mutex::new(EngineWal {
                     path: path.to_path_buf(),
                     metrics: wal.io_metrics(),
                     backing: Some(WalBacking::Legacy(wal)),
+                    log_debt: None,
                 }),
             },
             report,
@@ -297,6 +371,47 @@ impl WalEngine {
         })
     }
 
+    /// Capture the actual image cut atomically with a bounded protocol-history
+    /// restriction. The returned reservation owns no image after staging.
+    pub fn freeze_checkpoint_candidate(
+        &self,
+        scope_for_view: impl FnOnce(&dyn crate::ReadView) -> Result<FlushScope>,
+    ) -> Result<(FrozenFlush, crate::checkpoint_history::CheckpointCandidate)> {
+        let ((view, data_revision), candidate) = self.history.reserve(|| {
+            let wal = self.wal.lock().expect("wal lock poisoned");
+            wal.ensure_available()?;
+            let (view, position, revision) = self.index.freeze_parts();
+            let at = position
+                .ok_or_else(|| kv9_common::Error::Engine("nothing applied to freeze".into()))?;
+            Ok(((view, revision), at))
+        })?;
+        // User validation/serialization never runs while holding history/WAL.
+        let scope = scope_for_view(&view)?;
+        let frozen = FrozenFlush {
+            view,
+            position: candidate.position(),
+            scope,
+            data_revision,
+        };
+        Ok((frozen, candidate))
+    }
+
+    /// Startup only: the caller first validates the actual pending journal's
+    /// immutable group identity and exact committed cut, before any driver runs.
+    pub fn restore_checkpoint_candidate(
+        &self,
+        pending: &crate::checkpoint::PendingFlush,
+    ) -> Result<()> {
+        self.history.restore(pending)
+    }
+
+    pub fn claim_checkpoint_candidate(
+        &self,
+        pending: &crate::checkpoint::PendingFlush,
+    ) -> Result<crate::checkpoint_history::CheckpointCandidate> {
+        self.history.claim(pending)
+    }
+
     pub fn io_metrics(&self) -> std::sync::Arc<kv9_common::metrics::WalIoMetrics> {
         self.io_metrics.clone()
     }
@@ -305,18 +420,43 @@ impl WalEngine {
         self.index.data_revision()
     }
 
-    /// Read the actual selected checkpoint without opening or repairing a log.
-    /// The runtime certifies these exact bytes against committed Raft history.
+    /// Read a checkpoint descriptor without opening or repairing a log.
+    /// Intended for exclusive recovery/diagnostics, not online adoption proof:
+    /// a renamed reference can be visible after a failed publication. Online
+    /// owners use `selected_checkpoint`; recovery separately certifies these
+    /// exact bytes against committed Raft history and the restored image/tail.
     pub fn checkpoint_reference(path: impl AsRef<Path>) -> Result<Option<CheckpointManifest>> {
         let path = path.as_ref();
         if RecoveryPlan::is_segmented(path)? {
             return Ok(RecoveryPlan::read(path)?.checkpoint().cloned());
         }
-        match std::fs::read(path.with_extension("checkpoint")) {
-            Ok(bytes) => Ok(Some(CheckpointManifest::decode(&bytes)?)),
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
-            Err(e) => Err(checkpoint_io(e)),
-        }
+        inspection::legacy_checkpoint(path)
+    }
+
+    /// Observe this live owner's selection while excluding checkpoint changes
+    /// and protocol compaction. Ambiguous publication, compaction, layout or
+    /// append failures require recovery, even when a reference file is visible.
+    /// This is a local scheduling observation, not a transferable recovery
+    /// anchor, object-retention handoff or validation of the complete WAL tail.
+    pub fn selected_checkpoint(&self) -> Result<Option<CheckpointManifest>> {
+        self.history.observe_selected(|expected| {
+            let log = self.wal.lock().expect("wal lock poisoned");
+            log.ensure_available()?;
+            let selected = match &log.backing {
+                Some(WalBacking::Segmented(wal)) => wal.checkpoint().cloned(),
+                Some(WalBacking::Legacy(_)) => Self::checkpoint_reference(&log.path)?,
+                None => unreachable!("availability checked above"),
+            };
+            if selected.as_ref().map(CheckpointManifest::position) != expected {
+                return Err(kv9_common::Error::Engine(
+                    "checkpoint reference differs from live selection".into(),
+                ));
+            }
+            if let Some(manifest) = &selected {
+                manifest.check_applied_position(self.index.volatile_applied_position())?;
+            }
+            Ok(selected)
+        })
     }
 
     /// Offline, crash-safe transition into the segmented layout. The runtime
@@ -329,70 +469,81 @@ impl WalEngine {
 
     fn enable_segmentation_with_target(&self, target_bytes: u64) -> Result<()> {
         let mut log = self.wal.lock().expect("wal lock poisoned");
-        if matches!(log.backing, Some(WalBacking::Segmented(_))) {
-            return Ok(());
-        }
-        let path = log.path.clone();
-        let checkpoint = Self::checkpoint_reference(&path)?;
-        let Some(WalBacking::Legacy(mut legacy)) = log.backing.take() else {
-            return Err(kv9_common::Error::Engine(
-                "WAL layout transition requires recovery".into(),
-            ));
-        };
-        // A zero-length legacy tail is valid, but once segment directories
-        // exist it is indistinguishable from a truncated new topology. Make
-        // the old selected source explicitly framed and durable BEFORE any
-        // staging directory can survive a failed migration. The empty record
-        // changes no data; a checkpoint-backed tail retains its exact position.
-        if std::fs::metadata(legacy.path())
-            .map_err(checkpoint_io)?
-            .len()
-            == 0
-        {
-            let empty = WriteBatch::new();
-            match self.index.volatile_applied_position() {
-                Some(at) => legacy.append_applied(&empty, at)?,
-                None => legacy.append(&empty)?,
-            }
-        }
-        let temporary = path.with_extension("migration");
-        match std::fs::remove_file(&temporary) {
-            Ok(()) => {}
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-            Err(e) => return Err(checkpoint_io(e)),
-        }
-        let identity = *kv9_common::StoreIncarnation::mint()?.as_bytes();
-        let mut migrated = SegmentedWal::create_with_checkpoint(
-            &temporary,
-            identity,
-            target_bytes,
-            log.io_metrics(),
-            checkpoint.clone(),
-        )?;
-        Wal::visit_strict(legacy.path(), |batch, at| {
-            // Unpositioned empty batches have neither data effects nor applied
-            // authority. Omitting only those no-ops prevents the empty-source
-            // framing record from pinning the new stream forever. Positioned
-            // empty batches still carry progress and must be preserved.
-            if at.is_none() && batch.is_empty() {
+        let log_debt = log.log_debt.clone();
+        let mut reconciliation = log.reconciliation();
+        let result = (|| {
+            if matches!(log.backing, Some(WalBacking::Segmented(_))) {
                 return Ok(());
             }
-            if let Some(base) = checkpoint.as_ref() {
-                if checkpoint_covers(base.position(), at)? {
-                    return Ok(());
+            let path = log.path.clone();
+            let checkpoint = Self::checkpoint_reference(&path)?;
+            let Some(WalBacking::Legacy(mut legacy)) = log.backing.take() else {
+                return Err(kv9_common::Error::Engine(
+                    "WAL layout transition requires recovery".into(),
+                ));
+            };
+            // A zero-length legacy tail is valid, but once segment directories
+            // exist it is indistinguishable from a truncated new topology. Make
+            // the old selected source explicitly framed and durable BEFORE any
+            // staging directory can survive a failed migration. The empty record
+            // changes no data; a checkpoint-backed tail retains its exact position.
+            if std::fs::metadata(legacy.path())
+                .map_err(checkpoint_io)?
+                .len()
+                == 0
+            {
+                let empty = WriteBatch::new();
+                match self.index.volatile_applied_position() {
+                    Some(at) => legacy.append_applied(&empty, at)?,
+                    None => legacy.append(&empty)?,
                 }
             }
-            migrated.append(&batch, at)
-        })?;
-        if migrated.applied_position() != self.index.volatile_applied_position() {
-            return Err(kv9_common::Error::Engine(
-                "segmented migration changed the exact applied position".into(),
-            ));
+            let temporary = path.with_extension("migration");
+            match std::fs::remove_file(&temporary) {
+                Ok(()) => {}
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                Err(e) => return Err(checkpoint_io(e)),
+            }
+            let identity = *kv9_common::StoreIncarnation::mint()?.as_bytes();
+            let mut migrated = SegmentedWal::create_with_checkpoint(
+                &temporary,
+                identity,
+                target_bytes,
+                log.io_metrics(),
+                checkpoint.clone(),
+                log_debt.clone(),
+            )?;
+            Wal::visit_strict(legacy.path(), |batch, at| {
+                // Unpositioned empty batches have neither data effects nor applied
+                // authority. Omitting only those no-ops prevents the empty-source
+                // framing record from pinning the new stream forever. Positioned
+                // empty batches still carry progress and must be preserved.
+                if at.is_none() && batch.is_empty() {
+                    return Ok(());
+                }
+                if let Some(base) = checkpoint.as_ref() {
+                    if checkpoint_covers(base.position(), at)? {
+                        return Ok(());
+                    }
+                }
+                migrated.append(&batch, at)
+            })?;
+            if migrated.applied_position() != self.index.volatile_applied_position() {
+                return Err(kv9_common::Error::Engine(
+                    "segmented migration changed the exact applied position".into(),
+                ));
+            }
+            migrated.install_as(&path)?;
+            log.backing = Some(WalBacking::Segmented(Box::new(migrated)));
+            drop(legacy);
+            Ok(())
+        })();
+        if result.is_ok() {
+            if let Some(guard) = &mut reconciliation {
+                guard.completed();
+            }
         }
-        migrated.install_as(&path)?;
-        log.backing = Some(WalBacking::Segmented(Box::new(migrated)));
-        drop(legacy);
-        Ok(())
+        result
     }
 
     /// Upgrade an old in-band watermark after the caller verifies its exact
@@ -412,60 +563,71 @@ impl WalEngine {
         limit: usize,
     ) -> Result<()> {
         let mut log = self.wal.lock().expect("wal lock poisoned");
-        let Some(WalBacking::Legacy(wal)) = log.backing.as_mut() else {
-            return Err(kv9_common::Error::Engine(
-                "legacy marker upgrade must precede segmentation".into(),
-            ));
-        };
-        let (view, position, _) = self.index.freeze_parts();
-        if position.is_some()
-            || view.get(ColumnFamily::Default, marker)?.as_deref()
-                != Some(at.index.to_be_bytes().as_slice())
-        {
-            return Err(kv9_common::Error::Engine(
-                "legacy applied upgrade requires an exact unpositioned marker".into(),
-            ));
-        }
-        let mut state = WriteBatch::new();
-        let mut encoded_size = 4usize;
-        for cf in ColumnFamily::ALL {
-            for entry in view.iter_all(cf) {
-                let (key, value) = entry?;
-                if cf != ColumnFamily::Default || key != marker {
-                    encoded_size = encoded_size
-                        .saturating_add(10)
-                        .saturating_add(key.len())
-                        .saturating_add(value.len());
-                    if encoded_size > limit {
-                        // A large existing database must not become unopenable
-                        // solely because migration cannot fit one WAL record.
-                        // Keeping unpositioned records also keeps the reclaim ban.
-                        let mut transition = WriteBatch::new();
-                        transition.delete(ColumnFamily::Default, marker.to_vec());
-                        wal.append_applied(&transition, at)?;
-                        return self.index.write_applied(transition, at);
+        let log_debt = log.log_debt.clone();
+        let mut reconciliation = log.reconciliation();
+        let result = (|| {
+            let Some(WalBacking::Legacy(wal)) = log.backing.as_mut() else {
+                return Err(kv9_common::Error::Engine(
+                    "legacy marker upgrade must precede segmentation".into(),
+                ));
+            };
+            let (view, position, _) = self.index.freeze_parts();
+            if position.is_some()
+                || view.get(ColumnFamily::Default, marker)?.as_deref()
+                    != Some(at.index.to_be_bytes().as_slice())
+            {
+                return Err(kv9_common::Error::Engine(
+                    "legacy applied upgrade requires an exact unpositioned marker".into(),
+                ));
+            }
+            let mut state = WriteBatch::new();
+            let mut encoded_size = 4usize;
+            for cf in ColumnFamily::ALL {
+                for entry in view.iter_all(cf) {
+                    let (key, value) = entry?;
+                    if cf != ColumnFamily::Default || key != marker {
+                        encoded_size = encoded_size
+                            .saturating_add(10)
+                            .saturating_add(key.len())
+                            .saturating_add(value.len());
+                        if encoded_size > limit {
+                            // A large existing database must not become unopenable
+                            // solely because migration cannot fit one WAL record.
+                            // Keeping unpositioned records also keeps the reclaim ban.
+                            let mut transition = WriteBatch::new();
+                            transition.delete(ColumnFamily::Default, marker.to_vec());
+                            wal.append_applied(&transition, at)?;
+                            return self.index.write_applied(transition, at);
+                        }
+                        state.put(cf, key, value);
                     }
-                    state.put(cf, key, value);
                 }
             }
+            let tmp = wal.path().with_extension("upgrade.tmp");
+            match std::fs::remove_file(&tmp) {
+                Ok(()) => {}
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                Err(e) => return Err(checkpoint_io(e)),
+            }
+            let (mut upgraded, _) = Wal::open_with_metrics(&tmp, self.io_metrics.clone())?;
+            upgraded.set_log_debt(log_debt.clone());
+            upgraded.append_applied(&state, at)?;
+            std::fs::rename(&tmp, wal.path()).map_err(checkpoint_io)?;
+            upgraded.relocated(wal.path().to_path_buf());
+            *wal = upgraded;
+            self.io_metrics
+                .namespace_publish
+                .measure(|| sync_parent(wal.path()))?;
+            let mut remove_marker = WriteBatch::new();
+            remove_marker.delete(ColumnFamily::Default, marker.to_vec());
+            self.index.write_applied(remove_marker, at)
+        })();
+        if result.is_ok() {
+            if let Some(guard) = &mut reconciliation {
+                guard.completed();
+            }
         }
-        let tmp = wal.path().with_extension("upgrade.tmp");
-        match std::fs::remove_file(&tmp) {
-            Ok(()) => {}
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-            Err(e) => return Err(checkpoint_io(e)),
-        }
-        let (mut upgraded, _) = Wal::open_with_metrics(&tmp, self.io_metrics.clone())?;
-        upgraded.append_applied(&state, at)?;
-        std::fs::rename(&tmp, wal.path()).map_err(checkpoint_io)?;
-        upgraded.relocated(wal.path().to_path_buf());
-        *wal = upgraded;
-        self.io_metrics
-            .namespace_publish
-            .measure(|| sync_parent(wal.path()))?;
-        let mut remove_marker = WriteBatch::new();
-        remove_marker.delete(ColumnFamily::Default, marker.to_vec());
-        self.index.write_applied(remove_marker, at)
+        result
     }
 
     /// Install a reference whose ManifestChange has been confirmed by ordered
@@ -476,70 +638,83 @@ impl WalEngine {
     /// covered closed segments. Legacy storage retains its copy/rename path
     /// until the caller completes the offline layout transition.
     pub fn checkpoint_applied(&self, manifest: &CheckpointManifest) -> Result<bool> {
+        let mut history = self.history.selecting(manifest.position())?;
+        let result = self.select_checkpoint(manifest);
+        history.selected(manifest.position(), &result);
+        result
+    }
+
+    fn select_checkpoint(&self, manifest: &CheckpointManifest) -> Result<bool> {
         use std::io::Write;
         let mut log = self.wal.lock().expect("wal lock poisoned");
-        let wal = match log.backing.as_mut() {
-            Some(WalBacking::Segmented(wal)) => return wal.checkpoint_applied(manifest),
-            Some(WalBacking::Legacy(wal)) => wal,
-            None => {
-                return Err(kv9_common::Error::Engine(
-                    "WAL layout transition requires recovery".into(),
-                ))
+        let log_debt = log.log_debt.clone();
+        let mut reconciliation = log.reconciliation();
+        let result = (|| {
+            log.ensure_available()?;
+            let wal = match log.backing.as_mut() {
+                Some(WalBacking::Segmented(wal)) => return wal.checkpoint_applied(manifest),
+                Some(WalBacking::Legacy(wal)) => wal,
+                None => {
+                    return Err(kv9_common::Error::Engine(
+                        "WAL layout transition requires recovery".into(),
+                    ))
+                }
+            };
+            let previous = Self::checkpoint_reference(wal.path())?;
+            if !manifest
+                .check_selection(self.index.volatile_applied_position(), previous.as_ref())?
+            {
+                return Ok(false);
             }
-        };
-        let position = self
-            .index
-            .volatile_applied_position()
-            .ok_or_else(|| kv9_common::Error::Engine("checkpoint before apply".into()))?;
-        if manifest.index > position.index {
-            return Err(kv9_common::Error::Engine(
-                "checkpoint ahead of applied data".into(),
-            ));
-        }
-        let (reader, replay) = Wal::open_with_metrics(wal.path(), self.io_metrics.clone())?;
-        drop(reader);
-        // Unpositioned records carry no reclaim authority; retain the entire log.
-        if replay.positions.iter().any(Option::is_none) {
-            return Ok(false);
-        }
-        let checkpoint_path = wal.path().with_extension("checkpoint");
-        match std::fs::read(&checkpoint_path) {
-            Ok(bytes) if CheckpointManifest::decode(&bytes)?.index > manifest.index => {
-                return Ok(false)
+            let (reader, replay) = Wal::open_with_metrics(wal.path(), self.io_metrics.clone())?;
+            drop(reader);
+            // Unpositioned records carry no reclaim authority; retain the entire log.
+            if replay.positions.iter().any(Option::is_none) {
+                return Ok(false);
             }
-            Ok(_) => {}
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-            Err(e) => return Err(checkpoint_io(e)),
-        }
-        let tmp = checkpoint_path.with_extension("checkpoint.tmp");
-        let mut file = std::fs::File::create(&tmp).map_err(checkpoint_io)?;
-        file.write_all(&manifest.encode()?).map_err(checkpoint_io)?;
-        file.sync_all().map_err(checkpoint_io)?;
-        std::fs::rename(&tmp, &checkpoint_path).map_err(checkpoint_io)?;
-        sync_parent(&checkpoint_path)?;
-        // From here both old-full-WAL and new-tail-WAL recover correctly against
-        // the durable checkpoint. A failed rewrite leaves the old WAL live.
-        let tail_path = wal.path().with_extension("tail.tmp");
-        match std::fs::remove_file(&tail_path) {
-            Ok(()) => {}
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-            Err(e) => return Err(checkpoint_io(e)),
-        }
-        let (mut tail, _) = Wal::open_with_metrics(&tail_path, self.io_metrics.clone())?;
-        for (batch, at) in replay.batches.iter().zip(&replay.positions) {
-            if let Some(at) = at.filter(|at| at.index > manifest.index) {
-                tail.append_applied(batch, at)?;
+            for position in &replay.positions {
+                checkpoint_covers(manifest.position(), *position)?;
+            }
+            let checkpoint_path = wal.path().with_extension("checkpoint");
+            let tmp = checkpoint_path.with_extension("checkpoint.tmp");
+            let mut file = std::fs::File::create(&tmp).map_err(checkpoint_io)?;
+            BudgetWriter::new(&mut file, log_debt.as_ref())
+                .write_all(&manifest.encode()?)
+                .map_err(checkpoint_io)?;
+            file.sync_all().map_err(checkpoint_io)?;
+            std::fs::rename(&tmp, &checkpoint_path).map_err(checkpoint_io)?;
+            sync_parent(&checkpoint_path)?;
+            // From here both old-full-WAL and new-tail-WAL recover correctly against
+            // the durable checkpoint. A failed rewrite leaves the old WAL live.
+            let tail_path = wal.path().with_extension("tail.tmp");
+            match std::fs::remove_file(&tail_path) {
+                Ok(()) => {}
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                Err(e) => return Err(checkpoint_io(e)),
+            }
+            let (mut tail, _) = Wal::open_with_metrics(&tail_path, self.io_metrics.clone())?;
+            tail.set_log_debt(log_debt.clone());
+            for (batch, at) in replay.batches.iter().zip(&replay.positions) {
+                if let Some(at) = at.filter(|at| at.index > manifest.index) {
+                    tail.append_applied(batch, at)?;
+                }
+            }
+            std::fs::rename(&tail_path, wal.path()).map_err(checkpoint_io)?;
+            // Switch the live file handle immediately after rename. Even if the
+            // directory sync fails, future appends must never hit the unlinked inode.
+            tail.relocated(wal.path().to_path_buf());
+            *wal = tail;
+            self.io_metrics
+                .namespace_publish
+                .measure(|| sync_parent(wal.path()))?;
+            Ok(true)
+        })();
+        if result.is_ok() {
+            if let Some(guard) = &mut reconciliation {
+                guard.completed();
             }
         }
-        std::fs::rename(&tail_path, wal.path()).map_err(checkpoint_io)?;
-        // Switch the live file handle immediately after rename. Even if the
-        // directory sync fails, future appends must never hit the unlinked inode.
-        tail.relocated(wal.path().to_path_buf());
-        *wal = tail;
-        self.io_metrics
-            .namespace_publish
-            .measure(|| sync_parent(wal.path()))?;
-        Ok(true)
+        result
     }
 
     /// The log's path, for diagnostics.
@@ -681,6 +856,12 @@ impl WalEngine {
 }
 
 impl ReplicatedEngine for WalEngine {
+    fn checkpoint_history(
+        &self,
+    ) -> Option<std::sync::Arc<crate::checkpoint_history::CheckpointHistory>> {
+        Some(self.history.clone())
+    }
+
     fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()> {
         let mut wal = self.wal.lock().expect("wal lock poisoned");
         if self
@@ -707,6 +888,11 @@ impl ReplicatedEngine for WalEngine {
         })
     }
 }
+
+#[cfg(test)]
+mod log_budget_tests;
+#[cfg(test)]
+mod selection_tests;
 
 #[cfg(test)]
 mod tests {

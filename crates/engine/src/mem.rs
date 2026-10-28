@@ -22,8 +22,8 @@ type CfMap = RedBlackTreeMapSync<Vec<u8>, Vec<u8>>;
 ///
 /// The three CFs share a single lock rather than holding one each. That is what makes
 /// [`Engine::write`] atomic *across* column families: with a lock per CF there is no way
-/// to apply a multi-CF batch without exposing an intermediate state, and a Percolator
-/// commit (`lock` → `write` plus `default`) is exactly such a batch.
+/// to apply a multi-CF batch without exposing an intermediate state, and a catalog
+/// mutation (a row plus its index entries) is exactly such a batch.
 ///
 /// Cloning a `State` is O(1) — it clones three persistent maps, each of which shares its
 /// structure with the original.
@@ -80,6 +80,38 @@ impl State {
             .range(..=target.to_vec())
             .next_back()
             .map(|(k, v)| (k.clone(), v.clone()))
+    }
+}
+
+fn changes_data_revision(cf: ColumnFamily, key: &[u8]) -> bool {
+    // Internal durable maintenance records cannot recursively schedule their
+    // own checkpoint. The same byte prefix in another CF is user data.
+    cf != ColumnFamily::Default
+        || !(key.starts_with(b"\x00kv9\x00manifest_")
+            || key.starts_with(b"\0kv9\0retention_v1\0")
+            || key == kv9_common::data_range::COMPACTION_CONFIRMED_KEY)
+}
+
+/// Private, unpublished restoration state. It cannot provide a read view or an
+/// applied position; only a completely verified checkpoint may finish it.
+#[derive(Default)]
+pub(crate) struct CheckpointBuilder {
+    state: State,
+}
+impl CheckpointBuilder {
+    pub(crate) fn put(&mut self, cf: ColumnFamily, key: &[u8], value: &[u8]) {
+        if changes_data_revision(cf, key) {
+            self.state.data_revision = 1;
+        }
+        self.state
+            .cf_mut(cf)
+            .insert_mut(key.to_vec(), value.to_vec());
+    }
+    pub(crate) fn finish(mut self, at: AppliedPosition) -> MemEngine {
+        self.state.applied = Some(at);
+        MemEngine {
+            state: RwLock::new(self.state),
+        }
     }
 }
 
@@ -274,12 +306,7 @@ impl ReplicatedEngine for MemEngine {
             let (cf, key) = match m {
                 Mutation::Put { cf, key, .. } | Mutation::Delete { cf, key } => (cf, key),
             };
-            // These durable records are included in every frozen image and
-            // WAL replay, but cannot recursively schedule their own checkpoint.
-            // An identical byte prefix in a user column family is still data.
-            *cf != ColumnFamily::Default
-                || !(key.starts_with(b"\x00kv9\x00manifest_")
-                    || key.starts_with(b"\0kv9\0retention_v1\0"))
+            changes_data_revision(*cf, key)
         }) {
             state.data_revision = state.data_revision.saturating_add(1);
         }
@@ -339,6 +366,18 @@ pub(crate) struct MemSnapshot {
 }
 
 impl MemSnapshot {
+    /// Borrow entries while a checkpoint owns this immutable snapshot. Limits
+    /// can be checked before allocating another copy of a large value.
+    pub(crate) fn iter_all_ref(
+        &self,
+        cf: ColumnFamily,
+    ) -> impl Iterator<Item = (&[u8], &[u8])> + '_ {
+        self.state
+            .cf(cf)
+            .iter()
+            .map(|(k, v)| (k.as_slice(), v.as_slice()))
+    }
+
     pub(crate) fn iter_all(
         &self,
         cf: ColumnFamily,
@@ -351,6 +390,9 @@ impl MemSnapshot {
 }
 
 impl ReadView for MemSnapshot {
+    fn resident_len(&self, cf: ColumnFamily) -> Option<usize> {
+        Some(self.state.cf(cf).size())
+    }
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>> {
         Ok(self.state.get(cf, key))
     }
@@ -486,6 +528,42 @@ mod resident_tests {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn resident_counts_cover_all_key_bytes_and_stay_at_the_snapshot_position() {
+        use super::*;
+        let engine = MemEngine::new();
+        let mut batch = WriteBatch::new();
+        for cf in ColumnFamily::ALL {
+            batch.put(cf, vec![255, 255], vec![7; 1024]);
+        }
+        batch.put(ColumnFamily::Default, vec![], vec![]);
+        engine
+            .write_applied(batch, kv9_common::AppliedPosition { term: 1, index: 1 })
+            .unwrap();
+        let before = engine.try_positioned_resident_snapshot().unwrap();
+        assert_eq!(
+            before.position(),
+            Some(kv9_common::AppliedPosition { term: 1, index: 1 })
+        );
+        let before = before.into_view();
+        let mut batch = WriteBatch::new();
+        batch.delete(ColumnFamily::Default, vec![255, 255]);
+        batch.put(ColumnFamily::Lock, vec![0], vec![1]);
+        engine
+            .write_applied(batch, kv9_common::AppliedPosition { term: 1, index: 2 })
+            .unwrap();
+        let after = engine.snapshot().unwrap();
+        assert_eq!(before.resident_len(ColumnFamily::Default), Some(2));
+        assert_eq!(after.resident_len(ColumnFamily::Default), Some(1));
+        assert_eq!(before.resident_len(ColumnFamily::Lock), Some(1));
+        assert_eq!(after.resident_len(ColumnFamily::Lock), Some(2));
+        assert_eq!(before.resident_len(ColumnFamily::Write), Some(1));
+        let borrowed: &dyn ReadView = before.as_ref();
+        assert_eq!(
+            ReadView::resident_len(&borrowed, ColumnFamily::Default),
+            Some(2)
+        );
+    }
     use super::*;
 
     fn engine_with(entries: &[(&[u8], &[u8])]) -> MemEngine {
@@ -964,6 +1042,34 @@ mod tests {
         assert_eq!(
             revision, 0,
             "the frozen scheduling observation must stay at its own cut"
+        );
+    }
+    #[test]
+    fn compaction_confirmation_is_frozen_without_starting_checkpoint_compaction_feedback() {
+        let engine = MemEngine::new();
+        let key = kv9_common::data_range::COMPACTION_CONFIRMED_KEY;
+        engine
+            .write_applied(one_put(key, &[1; 16]), at(1, 1))
+            .unwrap();
+        let (view, position, revision) = engine.freeze_parts();
+        assert_eq!(position, Some(at(1, 1)));
+        assert_eq!(revision, 0);
+        assert_eq!(
+            view.get(ColumnFamily::Default, key).unwrap(),
+            Some(vec![1; 16])
+        );
+        let mut ordinary = key.to_vec();
+        ordinary.extend(b"-another-key");
+        engine
+            .write_applied(one_put(&ordinary, b"v"), at(1, 2))
+            .unwrap();
+        let mut batch = WriteBatch::new();
+        batch.put(ColumnFamily::Write, key.to_vec(), b"v".to_vec());
+        engine.write_applied(batch, at(1, 3)).unwrap();
+        assert_eq!(
+            engine.data_revision(),
+            2,
+            "only the exact maintenance key in its reserved CF is excluded"
         );
     }
 }

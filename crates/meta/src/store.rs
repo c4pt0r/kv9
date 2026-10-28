@@ -1,6 +1,6 @@
 //! `MetaStore` — the small SQL/catalog engine over the system keyspace (METADATA-CATALOG §4, §8).
 //!
-//! `membership / catalog / routing / placement / tso` stop being five hand-rolled
+//! `membership / catalog / routing / placement` stop being four hand-rolled
 //! structs and become **one `MetaStore`** (METADATA-CATALOG §8): a fixed, versioned
 //! relational schema with auto-maintained indexes and transactions, so control-plane
 //! consistency is structural, not by convention.
@@ -13,8 +13,8 @@
 //! key → put/delete) consulted before the engine on every read, so PK/UNIQUE/FK checks
 //! see buffered writes; `commit`/`into_batch` lower the overlay into one atomic
 //! [`WriteBatch`]. Concurrency control is the raft log (committed commands apply
-//! serially); Percolator 2PC with real conflict detection arrives in Phase-3 and
-//! replaces the overlay's optimism, not this API.
+//! serially); the catalog mutex plus the planning-term barrier serialize proposers
+//! above this API.
 
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -50,8 +50,7 @@ type MergedRange<'t> = Box<dyn Iterator<Item = Result<KvPair>> + 't>;
 pub enum SequenceKind {
     Tenant = 1,
     Keyspace = 2,
-    TxnGroup = 3,
-    Timeline = 4,
+    // 3 and 4 were the retired txn-group / TSO-timeline sequences; never reuse.
     Region = 5,
     Task = 6,
     SstFile = 7,
@@ -149,6 +148,20 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
 
     fn write_kv(&mut self, key: Vec<u8>, value: Vec<u8>) {
         self.overlay.insert(key, Some(value));
+    }
+
+    fn mark_task_change(
+        &self,
+        table: &TableDesc,
+        pending: &mut BTreeMap<Vec<u8>, Option<Vec<u8>>>,
+        uncertain: bool,
+    ) -> Result<()> {
+        if table.id == crate::schema::TASKS {
+            let previous = self.read_kv(crate::task_history::KEY)?;
+            let next = crate::task_history::next(previous.as_deref(), uncertain)?;
+            pending.insert(crate::task_history::KEY.to_vec(), Some(next));
+        }
+        Ok(())
     }
 
     /// Streaming merge of the snapshot view with the txn overlay over `[start, end)`
@@ -274,6 +287,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
             }
         }
         pending.insert(key, Some(value.encode()));
+        self.mark_task_change(table, &mut pending, false)?;
         self.overlay.extend(pending);
         Ok(())
     }
@@ -322,6 +336,15 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
             }
         }
         pending.insert(key, Some(new_value.encode()));
+        if new_value != old_value {
+            let kind = old_value.get(crate::schema::ColumnId(2));
+            // Range binding updates seal a split parent without changing its
+            // creation's possible stores. Other task rewrites are not a
+            // supported way to erase immutable placement history.
+            let uncertain = kind != new_value.get(crate::schema::ColumnId(2))
+                || !matches!(kind, Some(ColumnValue::Uint(102)));
+            self.mark_task_change(table, &mut pending, uncertain)?;
+        }
         self.overlay.extend(pending);
         Ok(())
     }
@@ -346,6 +369,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
             pending.insert(idx_key, None);
         }
         pending.insert(key, None);
+        self.mark_task_change(table, &mut pending, true)?;
         self.overlay.extend(pending);
         Ok(())
     }
@@ -353,7 +377,33 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
     /// Full table scan over the row space, reconstructing each row's pk from its
     /// physical key (METADATA-CATALOG §4).
     pub fn scan(&self, table: &TableDesc, limit: usize) -> Result<Vec<Row>> {
-        let (start, end) = row_range(table.id)?;
+        self.scan_after(table, None, limit)
+    }
+
+    /// A bounded page in primary-key order, exclusively after `after`.
+    /// All pages on this transaction use the same snapshot and read-your-writes
+    /// overlay. Keep the overlay unchanged while walking pages; the cursor is
+    /// a complete primary key, not a row offset or an inclusive prefix.
+    pub fn scan_after(
+        &self,
+        table: &TableDesc,
+        after: Option<&[PkComponent]>,
+        limit: usize,
+    ) -> Result<Vec<Row>> {
+        let (mut start, end) = row_range(table.id)?;
+        if let Some(pk) = after {
+            let key = encode_row_key(table.id, pk)?;
+            // Check arity/types and canonical completion before accepting a
+            // cursor. A key from a partial PK must not skip a whole prefix.
+            let decoded = codec::split_components(&pk_types(table), row_key_suffix(&key)?, true)?;
+            if decoded != pk {
+                return Err(Error::MalformedKey("invalid catalog scan cursor".into()));
+            }
+            start = key;
+            // The least byte string greater than this exact complete key.
+            // prefix_upper_bound would also skip keys extending its prefix.
+            start.push(0);
+        }
         let entries = self.merged_scan(&start, &end, limit)?;
         let pk_ts = pk_types(table);
         let mut out = Vec::with_capacity(entries.len());
@@ -448,9 +498,8 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
     /// bump commits atomically with the rows that consume the id.
     ///
     /// Concurrency: Phase-1 serializes catalog txns through the raft propose path, so
-    /// two in-flight txns never interleave on the sequence row. Real optimistic
-    /// conflict detection (two concurrent proposers bumping the same sequence) arrives
-    /// with Percolator 2PC in Phase-3.
+    /// two in-flight catalog transactions never interleave on the sequence row; the
+    /// catalog mutex serializes concurrent proposers above this API.
     pub fn allocate_id(&mut self, kind: SequenceKind) -> Result<u64> {
         let table = &crate::schema::ID_SEQUENCES_DESC;
         let pk = vec![codec::memcmp_uint(kind as u64)];

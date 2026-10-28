@@ -16,13 +16,11 @@ use std::io::{BufReader, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use kv9_common::log_budget::{BudgetWriter, LogDebt};
 use kv9_common::metrics::WalIoMetrics;
 use kv9_common::{AppliedPosition, Error, Result};
 
-#[cfg(not(feature = "wal-payload-preallocation"))]
 use crate::wal::encode_batch;
-#[cfg(feature = "wal-payload-preallocation")]
-use crate::wal::encode_batch_with_capacity;
 use crate::wal::{crc32, crc32_parts, decode_batch};
 use crate::wal_v2::MAX_RECORD_LEN;
 use crate::WriteBatch;
@@ -159,6 +157,7 @@ pub struct RecoveryReport {
 pub struct WalSegment {
     path: PathBuf,
     file: File,
+    log_debt: Option<LogDebt>,
     header: SegmentHeader,
     summary: SegmentSummary,
     poisoned: bool,
@@ -184,6 +183,14 @@ impl WalSegment {
         header: SegmentHeader,
         metrics: Arc<WalIoMetrics>,
     ) -> Result<Self> {
+        Self::create_with_debt(path, header, metrics, None)
+    }
+    pub(crate) fn create_with_debt(
+        path: impl AsRef<Path>,
+        header: SegmentHeader,
+        metrics: Arc<WalIoMetrics>,
+        log_debt: Option<LogDebt>,
+    ) -> Result<Self> {
         let encoded = header.encode()?;
         let path = path.as_ref().to_path_buf();
         let mut file = OpenOptions::new()
@@ -194,7 +201,7 @@ impl WalSegment {
             .map_err(io)?;
         metrics
             .write
-            .measure(|| file.write_all(&encoded))
+            .measure(|| BudgetWriter::new(&mut file, log_debt.as_ref()).write_all(&encoded))
             .map_err(io)?;
         metrics.sync.measure(|| file.sync_all()).map_err(io)?;
         metrics
@@ -204,6 +211,7 @@ impl WalSegment {
         Ok(Self {
             path,
             file,
+            log_debt,
             header,
             summary: SegmentSummary::default(),
             poisoned: false,
@@ -212,6 +220,17 @@ impl WalSegment {
             unsynced_bytes: 0,
             unsynced_since: None,
         })
+    }
+
+    /// Read the recoverable active prefix without repairing or synchronizing it.
+    /// The same parser is used by the eventual writer open.
+    pub(crate) fn inspect_active(
+        path: impl AsRef<Path>,
+        header: SegmentHeader,
+        visitor: impl FnMut(WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    ) -> Result<RecoveryReport> {
+        let mut file = File::open(path).map_err(io)?;
+        scan(&mut file, header, true, visitor)
     }
 
     /// Recover an existing file selected as active by durable topology. Memory
@@ -248,6 +267,7 @@ impl WalSegment {
             Self {
                 path,
                 file,
+                log_debt: None,
                 header,
                 summary: report.summary,
                 poisoned: false,
@@ -265,6 +285,9 @@ impl WalSegment {
     /// unsynced window and truncates torn tails at recovery.
     pub fn set_deferred_sync(&mut self, defer_bytes: u64) {
         self.defer_bytes = defer_bytes;
+    }
+    pub(crate) fn set_log_debt(&mut self, debt: Option<LogDebt>) {
+        self.log_debt = debt;
     }
 
     /// Synchronize any deferred bytes now. A barrier for callers that are
@@ -295,13 +318,6 @@ impl WalSegment {
         }
         check_position(self.summary.last.or(self.header.previous), position)?;
         let _frame_size = encoded_size(batch)?;
-        #[cfg(feature = "wal-payload-preallocation")]
-        let payload = encode_batch_with_capacity(
-            batch,
-            usize::try_from(_frame_size - FRAME_HEADER_BYTES as u64 - 4)
-                .map_err(|_| bad("record length overflow"))?,
-        );
-        #[cfg(not(feature = "wal-payload-preallocation"))]
         let payload = encode_batch(batch);
         let length = u32::try_from(payload.len()).map_err(|_| bad("record length overflow"))?;
         if length > MAX_RECORD_LEN {
@@ -316,9 +332,10 @@ impl WalSegment {
         )?;
         let frame_bytes = FRAME_HEADER_BYTES as u64 + payload.len() as u64 + 4;
         let result = self.metrics.write.measure(|| {
-            self.file.write_all(&header)?;
-            self.file.write_all(&payload)?;
-            self.file.write_all(&crc)
+            let mut writer = BudgetWriter::new(&mut self.file, self.log_debt.as_ref());
+            writer.write_all(&header)?;
+            writer.write_all(&payload)?;
+            writer.write_all(&crc)
         });
         if let Err(error) = result {
             self.poisoned = true;

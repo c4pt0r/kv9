@@ -48,6 +48,8 @@ use std::sync::mpsc::{sync_channel, Receiver, RecvTimeoutError, SyncSender};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
+use crate::object_memory::BufferBudget;
+use bytes::Bytes;
 use kv9_common::{Error, Result};
 use s3_client::aws::AmazonS3Builder;
 use s3_client::path::Path as S3Path;
@@ -59,7 +61,14 @@ use s3_client::{
     PutPayload, RetryConfig,
 };
 
+use crate::object_io::{Direction, ObjectIoBudget, ObjectIoSnapshot};
 use crate::object_store::{ObjectKey, ObjectStore};
+use std::sync::Arc;
+
+#[cfg(any(test, feature = "testing"))]
+mod execution_harness;
+#[cfg(any(test, feature = "testing"))]
+pub use execution_harness::ObjectWorkerPause;
 
 /// Environment variables this backend reads. Named constants so an operator can be told
 /// what to set without being told to read this file, and so a test cannot drift from the
@@ -167,21 +176,26 @@ impl DeadlineControl {
 }
 
 struct Job {
+    #[cfg(any(test, feature = "testing"))]
+    test_gate: Option<Arc<execution_harness::Gate>>,
     #[cfg(test)]
     control: Option<std::sync::Arc<DeadlineControl>>,
     deadline: Instant,
     kind: JobKind,
+    // Last field: retain the scope until the future and queued payload drop.
+    _execution: Option<crate::object_execution::JobLease>,
 }
 
 enum JobKind {
     Put {
         key: String,
-        bytes: Vec<u8>,
+        bytes: Bytes,
         reply: SyncSender<(Completion, Result<()>)>,
     },
     Get {
         key: String,
-        reply: SyncSender<(Completion, Result<Option<Vec<u8>>>)>,
+        max_bytes: Option<usize>,
+        reply: SyncSender<(Completion, Result<Option<Bytes>>)>,
     },
     Delete {
         key: String,
@@ -329,6 +343,10 @@ fn pushdown_prefix(literal: &str) -> Option<String> {
 /// Owns one worker thread and the channel to it. Dropping the store closes the channel,
 /// which ends the worker loop, and joins the thread.
 pub struct MinioObjectStore {
+    #[cfg(any(test, feature = "testing"))]
+    test_gate: Option<Arc<execution_harness::Gate>>,
+    io_budget: Option<Arc<ObjectIoBudget>>,
+    buffer_budget: Arc<BufferBudget>,
     #[cfg(test)]
     test_control: Option<std::sync::Arc<DeadlineControl>>,
     /// `Option` only so that [`Drop`] can close the channel before joining. Every method
@@ -364,16 +382,48 @@ impl MinioObjectStore {
     /// constructed, not that the endpoint answered. The S3 builder performs no I/O. For
     /// "the store is reachable", do a round trip and observe it.
     pub fn connect(config: MinioConfig) -> Result<MinioObjectStore> {
+        Self::connect_inner(config, None, Arc::default())
+    }
+
+    pub fn connect_with_io_budget(
+        config: MinioConfig,
+        budget: Arc<ObjectIoBudget>,
+    ) -> Result<Self> {
+        Self::connect_inner(config, Some(budget), Arc::default())
+    }
+
+    pub fn connect_with_budgets(
+        config: MinioConfig,
+        io: Arc<ObjectIoBudget>,
+        buffers: Arc<BufferBudget>,
+    ) -> Result<Self> {
+        Self::connect_inner(config, Some(io), buffers)
+    }
+    pub fn object_memory_snapshot(&self) -> crate::object_memory::Snapshot {
+        self.buffer_budget.snapshot()
+    }
+
+    pub fn object_io_snapshot(&self) -> Option<ObjectIoSnapshot> {
+        self.io_budget.as_ref().map(|b| b.snapshot())
+    }
+
+    fn connect_inner(
+        config: MinioConfig,
+        io_budget: Option<Arc<ObjectIoBudget>>,
+        buffer_budget: Arc<BufferBudget>,
+    ) -> Result<Self> {
         let (tx, rx) = sync_channel::<Job>(JOB_QUEUE_DEPTH);
         let (ready_tx, ready_rx) = sync_channel::<Result<()>>(1);
 
         let endpoint = config.endpoint.clone();
         let bucket = config.bucket.clone();
         let op_deadline = config.op_deadline;
+        let worker_budget = io_budget.clone();
+        let worker_buffers = buffer_budget.clone();
 
         let worker = std::thread::Builder::new()
             .name(WORKER_THREAD_NAME.to_string())
-            .spawn(move || worker_loop(config, rx, ready_tx))
+            .spawn(move || worker_loop(config, worker_budget, worker_buffers, rx, ready_tx))
             .map_err(|e| Error::Engine(format!("object store: cannot spawn worker: {e}")))?;
 
         match ready_rx.recv() {
@@ -391,6 +441,10 @@ impl MinioObjectStore {
         }
 
         Ok(MinioObjectStore {
+            #[cfg(any(test, feature = "testing"))]
+            test_gate: None,
+            io_budget,
+            buffer_budget,
             #[cfg(test)]
             test_control: None,
             tx: Some(tx),
@@ -446,6 +500,18 @@ impl MinioObjectStore {
         &self,
         make: impl FnOnce(SyncSender<(Completion, Result<T>)>) -> JobKind,
     ) -> (Completion, Result<T>) {
+        self.submit_in_execution(None, make)
+    }
+
+    fn submit_in_execution<T>(
+        &self,
+        execution: Option<&Arc<crate::object_execution::Execution>>,
+        make: impl FnOnce(SyncSender<(Completion, Result<T>)>) -> JobKind,
+    ) -> (Completion, Result<T>) {
+        let lease = match execution.map(|e| e.admit()).transpose() {
+            Ok(lease) => lease,
+            Err(error) => return (Completion::AdmissionRefused, Err(error)),
+        };
         let started = Instant::now();
         #[cfg(test)]
         let started = self.test_control.as_ref().map_or(started, |c| c.origin);
@@ -468,12 +534,15 @@ impl MinioObjectStore {
         // more useful answer, because a full queue is backpressure the caller can act on,
         // whereas a silent stall is not.
         let job = Job {
+            #[cfg(any(test, feature = "testing"))]
+            test_gate: self.test_gate.clone(),
             #[cfg(test)]
             control: self.test_control.clone(),
             // Stamped from the same `started` as the caller's own wait, so the worker and
             // the caller are measuring one interval rather than two that drift apart.
             deadline,
             kind: make(reply_tx),
+            _execution: lease,
         };
         if let Err(e) = tx.try_send(job) {
             let why = match e {
@@ -639,7 +708,10 @@ impl MinioObjectStore {
     /// Behind the `testing` feature, so this exists only where a test can see it.
     pub fn put_traced(&self, key: &ObjectKey, bytes: &[u8]) -> (TestCompletion, Result<()>) {
         let key = key.as_str().to_string();
-        let bytes = bytes.to_vec();
+        let bytes = match self.buffer_budget.copy(bytes) {
+            Ok(bytes) => bytes,
+            Err(error) => return (TestCompletion::AdmissionRefused, Err(error)),
+        };
         let (source, outcome) = self.submit_traced(|reply| JobKind::Put { key, bytes, reply });
         (source.into(), outcome)
     }
@@ -730,7 +802,13 @@ impl Bounded {
     }
 }
 
-fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<()>>) {
+fn worker_loop(
+    config: MinioConfig,
+    io_budget: Option<Arc<ObjectIoBudget>>,
+    buffer_budget: Arc<BufferBudget>,
+    rx: Receiver<Job>,
+    ready: SyncSender<Result<()>>,
+) {
     // Current-thread, not multi-thread: this runtime exists to drive one operation at a
     // time on this one thread. A multi-thread runtime would spawn a pool per store and
     // contradict the one-worker property the structural probe checks.
@@ -789,10 +867,7 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
         // attempted-and-failed connection.
         .with_allow_http(true);
 
-    let retry = RetryConfig {
-        retry_timeout: ceiling,
-        ..Default::default()
-    };
+    let retry = retry_policy(ceiling, io_budget.is_some());
 
     let client = AmazonS3Builder::new()
         .with_endpoint(&config.endpoint)
@@ -824,11 +899,49 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
     // on it -- the bypass stops compiling rather than stopping at review.
     let bounded = Bounded { runtime };
 
+    drive_jobs(
+        &client,
+        bounded,
+        configured,
+        io_budget.as_deref(),
+        &buffer_budget,
+        rx,
+        ready,
+    );
+}
+
+fn retry_policy(ceiling: Duration, budgeted: bool) -> RetryConfig {
+    RetryConfig {
+        retry_timeout: ceiling,
+        // Every reattempt must reacquire payload credit. Return unknown failures
+        // to the durable caller instead of retrying beneath admission.
+        max_retries: if budgeted {
+            0
+        } else {
+            RetryConfig::default().max_retries
+        },
+        ..Default::default()
+    }
+}
+
+fn drive_jobs(
+    client: &impl S3ObjectStore,
+    bounded: Bounded,
+    configured: Duration,
+    io_budget: Option<&ObjectIoBudget>,
+    buffer_budget: &Arc<BufferBudget>,
+    rx: Receiver<Job>,
+    ready: SyncSender<Result<()>>,
+) {
     if ready.send(Ok(())).is_err() {
         return;
     }
 
     while let Ok(job) = rx.recv() {
+        #[cfg(any(test, feature = "testing"))]
+        if let Some(gate) = &job.test_gate {
+            gate.arrive(job._execution.as_ref());
+        }
         // Issue only if enough of the caller's budget is left to be worth spending, AND to
         // get an answer back. Not just `now < deadline`: a job with a millisecond left would
         // be issued, spend the worker, and complete after the caller had gone -- so the work
@@ -876,18 +989,35 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
         // does not force it to be BOUNDED, and that is the gap this closes.
         ISSUED_TOTAL.fetch_add(1, Ordering::Relaxed);
         match job.kind {
-            JobKind::Put { key, bytes, reply } => {
-                bounded.run(budget, do_put(&client, &key, bytes), reply)
-            }
-            JobKind::Get { key, reply } => bounded.run(budget, do_get(&client, &key), reply),
-            JobKind::Delete { key, reply } => bounded.run(budget, do_delete(&client, &key), reply),
+            JobKind::Put { key, bytes, reply } => bounded.run(
+                budget,
+                do_put(
+                    client,
+                    &key,
+                    bytes,
+                    io_budget,
+                    buffer_budget,
+                    job._execution.as_ref(),
+                ),
+                reply,
+            ),
+            JobKind::Get {
+                key,
+                max_bytes,
+                reply,
+            } => bounded.run(
+                budget,
+                do_get(client, &key, max_bytes, io_budget, buffer_budget),
+                reply,
+            ),
+            JobKind::Delete { key, reply } => bounded.run(budget, do_delete(client, &key), reply),
             JobKind::List {
                 pushdown,
                 literal,
                 reply,
             } => bounded.run(
                 budget,
-                do_list(&client, pushdown.as_deref(), &literal),
+                do_list(client, pushdown.as_deref(), &literal),
                 reply,
             ),
             // Through the SAME `bounded.run` as every real operation — a seam that bypassed
@@ -942,32 +1072,56 @@ impl JobKind {
 /// ignored the precondition, the create would silently succeed and the overwrite the trait
 /// forbids would happen with nothing to report it. Nothing here assumes either way; that is
 /// what the integration test observes.
-async fn do_put(client: &impl S3ObjectStore, key: &str, bytes: Vec<u8>) -> Result<()> {
+async fn do_put(
+    client: &impl S3ObjectStore,
+    key: &str,
+    bytes: Bytes,
+    budget: Option<&ObjectIoBudget>,
+    buffers: &Arc<BufferBudget>,
+    execution: Option<&crate::object_execution::JobLease>,
+) -> Result<()> {
     let path = checked_path(key)?;
+    if let Some(budget) = budget {
+        budget.admit(Direction::Put, bytes.len() as u64).await?;
+    }
     let options = PutOptions {
         mode: PutMode::Create,
         ..Default::default()
     };
-    match client
+    let issued = execution.map(|lease| lease.start_put()).transpose()?;
+    let response = client
         .put_opts(&path, PutPayload::from(bytes.clone()), options)
-        .await
+        .await;
+    // Budgeted production clients have max_retries=0. A successful retry on
+    // another client cannot prove a previous timed-out wire attempt ended.
+    // Resolve before comparison GET: a read failure cannot revive this PUT.
+    if budget.is_some()
+        && matches!(
+            &response,
+            Ok(_) | Err(s3_client::Error::AlreadyExists { .. })
+        )
     {
+        if let Some(issued) = issued {
+            issued.resolved();
+        }
+    }
+    match response {
         Ok(_) => Ok(()),
         Err(s3_client::Error::AlreadyExists { .. }) => {
             // Retransmission after a timeout, or a reissue by a node that has since lost
             // leadership, is a normal event; identical content is not an error.
-            match read_body(client, &path).await? {
-                Some(existing) if existing == bytes => Ok(()),
+            match read_body(client, &path, Some(bytes.len()), budget, buffers).await? {
+                Body::Bytes(existing) if existing == bytes => Ok(()),
                 // Two distinct objects assigned one file-id. Refusing is the point; the key
                 // is a file-id, not user data, so naming it leaks nothing.
-                Some(_) => Err(Error::ObjectContentMismatch {
+                Body::Bytes(_) | Body::TooLarge => Err(Error::ObjectContentMismatch {
                     key: key.to_string(),
                 }),
                 // Present for the conditional put, absent for the read that followed: a
                 // concurrent delete landed between them. Report it rather than inventing an
                 // answer — in particular, do not report success, which would claim the
                 // bytes are stored when they are not.
-                None => Err(Error::Engine(format!(
+                Body::Missing => Err(Error::Engine(format!(
                     "object store: {key} vanished between the conditional put and the \
                      read-back; retry"
                 ))),
@@ -981,23 +1135,95 @@ async fn do_put(client: &impl S3ObjectStore, key: &str, bytes: Vec<u8>) -> Resul
     }
 }
 
-async fn do_get(client: &impl S3ObjectStore, key: &str) -> Result<Option<Vec<u8>>> {
+async fn do_get(
+    client: &impl S3ObjectStore,
+    key: &str,
+    max_bytes: Option<usize>,
+    budget: Option<&ObjectIoBudget>,
+    buffers: &Arc<BufferBudget>,
+) -> Result<Option<Bytes>> {
     let path = checked_path(key)?;
-    read_body(client, &path).await
+    match read_body(client, &path, max_bytes, budget, buffers).await? {
+        Body::Missing => Ok(None),
+        Body::Bytes(bytes) => Ok(Some(bytes)),
+        Body::TooLarge => Err(Error::Engine("object body exceeds read limit".into())),
+    }
 }
 
-/// Fetch and collect an object's bytes. `Ok(None)` for absent, which is a normal answer.
-async fn read_body(client: &impl S3ObjectStore, path: &S3Path) -> Result<Option<Vec<u8>>> {
+enum Body {
+    Missing,
+    Bytes(Bytes),
+    TooLarge,
+}
+/// Fetch and collect an object's bytes, or preserve explicit missing/oversize outcomes.
+async fn read_body(
+    client: &impl S3ObjectStore,
+    path: &S3Path,
+    mut max_bytes: Option<usize>,
+    budget: Option<&ObjectIoBudget>,
+    buffers: &Arc<BufferBudget>,
+) -> Result<Body> {
+    if let Some(budget) = budget {
+        if max_bytes.is_none() {
+            // Non-checkpoint readers have no descriptor. HEAD supplies only a
+            // size bound, never data/retention authority; GET is checked again.
+            max_bytes = Some(match client.head(path).await {
+                Ok(meta) => usize::try_from(meta.size)
+                    .map_err(|_| Error::Engine("object size overflow".into()))?,
+                Err(s3_client::Error::NotFound { .. }) => return Ok(Body::Missing),
+                Err(e) => return Err(Error::Engine(format!("object store: head failed: {e}"))),
+            });
+        }
+        budget
+            .admit(Direction::Get, max_bytes.unwrap() as u64)
+            .await?;
+    }
     match client.get(path).await {
-        Ok(response) => match response.bytes().await {
-            Ok(bytes) => Ok(Some(bytes.to_vec())),
-            Err(e) => Err(Error::Engine(format!(
-                "object store: reading body failed: {e}"
-            ))),
-        },
-        Err(s3_client::Error::NotFound { .. }) => Ok(None),
+        Ok(response) => collect_body(response, max_bytes, buffers).await,
+        Err(s3_client::Error::NotFound { .. }) => Ok(Body::Missing),
         Err(e) => Err(Error::Engine(format!("object store: get failed: {e}"))),
     }
+}
+
+async fn collect_body(
+    response: s3_client::GetResult,
+    max_bytes: Option<usize>,
+    buffers: &Arc<BufferBudget>,
+) -> Result<Body> {
+    use futures_util::TryStreamExt;
+    if max_bytes.is_some_and(|limit| response.meta.size > limit as u64) {
+        return Ok(Body::TooLarge);
+    }
+    let expected = response.meta.size;
+    if response.range.start != 0 || response.range.end != expected {
+        return Err(Error::Engine(
+            "object store: unexpected partial body".into(),
+        ));
+    }
+    let expected =
+        usize::try_from(expected).map_err(|_| Error::Engine("object size overflow".into()))?;
+    let reservation = buffers.reserve(expected)?;
+    let mut bytes = Vec::with_capacity(expected);
+    let mut stream = response.into_stream();
+    while let Some(chunk) = stream
+        .try_next()
+        .await
+        .map_err(|e| Error::Engine(format!("object store: reading body failed: {e}")))?
+    {
+        if max_bytes.is_some_and(|limit| chunk.len() > limit.saturating_sub(bytes.len())) {
+            return Ok(Body::TooLarge);
+        }
+        if chunk.len() > expected.saturating_sub(bytes.len()) {
+            return Err(Error::Engine("object body exceeds declared length".into()));
+        }
+        bytes.extend_from_slice(&chunk);
+    }
+    if bytes.len() != expected {
+        return Err(Error::Engine(
+            "object store: truncated or oversized body".into(),
+        ));
+    }
+    Ok(Body::Bytes(reservation.finish(bytes)))
 }
 
 async fn do_delete(client: &impl S3ObjectStore, key: &str) -> Result<()> {
@@ -1045,14 +1271,25 @@ async fn do_list(
 
 impl ObjectStore for MinioObjectStore {
     fn put(&self, key: &ObjectKey, bytes: &[u8]) -> Result<()> {
-        let key = key.as_str().to_string();
-        let bytes = bytes.to_vec();
-        self.submit(|reply| JobKind::Put { key, bytes, reply })
+        self.put_in_execution(key, bytes, None)
     }
 
     fn get(&self, key: &ObjectKey) -> Result<Option<Vec<u8>>> {
         let key = key.as_str().to_string();
-        self.submit(|reply| JobKind::Get { key, reply })
+        let result = self.submit(|reply| JobKind::Get {
+            key,
+            max_bytes: None,
+            reply,
+        })?;
+        Ok(result.map(|b| b.to_vec()))
+    }
+
+    fn get_bounded(&self, key: &ObjectKey, max_bytes: usize) -> Result<Option<Vec<u8>>> {
+        Ok(self.get_shared_bounded(key, max_bytes)?.map(|b| b.to_vec()))
+    }
+
+    fn get_shared_bounded(&self, key: &ObjectKey, max_bytes: usize) -> Result<Option<Bytes>> {
+        self.get_in_execution(key, max_bytes, None)
     }
 
     fn delete(&self, key: &ObjectKey) -> Result<()> {
@@ -1069,6 +1306,35 @@ impl ObjectStore for MinioObjectStore {
             reply,
         })?;
         names.into_iter().map(ObjectKey::new).collect()
+    }
+}
+
+impl MinioObjectStore {
+    pub(crate) fn put_in_execution(
+        &self,
+        key: &ObjectKey,
+        bytes: &[u8],
+        execution: Option<&Arc<crate::object_execution::Execution>>,
+    ) -> Result<()> {
+        let key = key.as_str().to_string();
+        let bytes = self.buffer_budget.copy(bytes)?;
+        self.submit_in_execution(execution, |reply| JobKind::Put { key, bytes, reply })
+            .1
+    }
+
+    pub(crate) fn get_in_execution(
+        &self,
+        key: &ObjectKey,
+        max_bytes: usize,
+        execution: Option<&Arc<crate::object_execution::Execution>>,
+    ) -> Result<Option<Bytes>> {
+        let key = key.as_str().to_string();
+        self.submit_in_execution(execution, |reply| JobKind::Get {
+            key,
+            max_bytes: Some(max_bytes),
+            reply,
+        })
+        .1
     }
 }
 
@@ -1190,6 +1456,9 @@ mod tests {
         // Built by hand rather than by `connect`, so this needs no server: the subject is
         // the formatter, not the connection.
         let store = MinioObjectStore {
+            test_gate: None,
+            io_budget: None,
+            buffer_budget: Arc::default(),
             test_control: None,
             tx: None,
             worker: None,
@@ -1324,3 +1593,9 @@ mod deadline_barrier_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod budget_tests;
+
+#[cfg(test)]
+mod memory_tests;

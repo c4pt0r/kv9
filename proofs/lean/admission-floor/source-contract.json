@@ -18,7 +18,7 @@
     "the_released_pool_admits_raw_work_again"
   ],
   "source_sha256": {
-    "crates/server/src/admission.rs": "b1d85416b6336ad8384e26eb06007105135211ef937a3339ed5dfab8cf48bf8f",
+    "crates/server/src/admission.rs": "b863136eeb7e19c16edf6dde4f626cf16ee9b09abf08ff984f8fabba9e3e6464",
     "scripts/admission-floor-e2e.py": "73724f408987d70278bb0dac555ed1352da2d50dece3363cb1b4fac6cc520d3f",
     "proofs/lean/admission-floor/AdmissionFloor.lean": "6cfbd7815aec95a9f6dde1b2bb482b8a22703d1f09e881850017b5843a3a803f",
     "proofs/lean/admission-floor/README.md": "710af29ba9e5eec11876b2291b019a3de8b498fb17d948ffa56aec1a657b6dc6"

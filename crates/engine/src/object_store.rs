@@ -85,6 +85,27 @@ pub trait ObjectStore: Send + Sync + std::fmt::Debug {
     /// have been collected), not an error.
     fn get(&self, key: &ObjectKey) -> Result<Option<Vec<u8>>>;
 
+    /// Refuse an object larger than the caller's verified descriptor. The
+    /// default checks after reading; production remote backends must override
+    /// this to bound body collection before allocating the entire object.
+    fn get_bounded(&self, key: &ObjectKey, max_bytes: usize) -> Result<Option<Vec<u8>>> {
+        let value = self.get(key)?;
+        if value.as_ref().is_some_and(|v| v.len() > max_bytes) {
+            return Err(Error::Engine("object body exceeds read limit".into()));
+        }
+        Ok(value)
+    }
+
+    /// Shared read result. Production MinIO keeps its buffer reservation on
+    /// this owner through every clone; legacy Vec callers own their own copies.
+    fn get_shared_bounded(
+        &self,
+        key: &ObjectKey,
+        max_bytes: usize,
+    ) -> Result<Option<bytes::Bytes>> {
+        Ok(self.get_bounded(key, max_bytes)?.map(bytes::Bytes::from))
+    }
+
     /// Remove an object. Idempotent: deleting an absent object is `Ok(())`, because a late or
     /// repeated delete is expected rather than exceptional.
     fn delete(&self, key: &ObjectKey) -> Result<()>;
@@ -146,6 +167,14 @@ impl ObjectStore for MemoryObjectStore {
 
     fn get(&self, key: &ObjectKey) -> Result<Option<Vec<u8>>> {
         let objects = self.objects.lock().expect("object store mutex poisoned");
+        Ok(objects.get(key).cloned())
+    }
+
+    fn get_bounded(&self, key: &ObjectKey, max_bytes: usize) -> Result<Option<Vec<u8>>> {
+        let objects = self.objects.lock().expect("object store mutex poisoned");
+        if objects.get(key).is_some_and(|v| v.len() > max_bytes) {
+            return Err(Error::Engine("object body exceeds read limit".into()));
+        }
         Ok(objects.get(key).cloned())
     }
 

@@ -12,6 +12,7 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use kv9_common::log_budget::{BudgetWriter, LogDebt, Reconciliation};
 use kv9_common::metrics::WalIoMetrics;
 use kv9_common::{AppliedPosition, Error, Result};
 use sha2::{Digest, Sha256};
@@ -24,7 +25,7 @@ use crate::WriteBatch;
 
 // The prefix causes old Wal::open readers to reject VERSION=3 before editing.
 const MAGIC: &[u8; 9] = b"KV9W\x03SEG1";
-const MAX_TOPOLOGY_BYTES: usize = 4 * 1024 * 1024;
+pub const MAX_TOPOLOGY_BYTES: usize = 4 * 1024 * 1024;
 const MAX_CLOSED_SEGMENTS: usize = 4096;
 pub const DEFAULT_SEGMENT_BYTES: u64 = 16 * 1024 * 1024;
 
@@ -73,6 +74,35 @@ impl RecoveryPlan {
         self.topology.checkpoint.as_ref()
     }
 
+    /// Stream the selected recoverable tail without obtaining a writer or
+    /// repairing a torn active record. The enclosing store/group lock must
+    /// exclude writes throughout inspection and the subsequent full recovery.
+    pub(crate) fn inspect_tail(
+        &self,
+        mut visitor: impl FnMut(WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    ) -> Result<StreamRecovery> {
+        if read_bounded(&self.path)? != self.encoded {
+            return Err(bad("recovery topology changed before inspection"));
+        }
+        let mut report = StreamRecovery::default();
+        let checkpoint = self.checkpoint().map(CheckpointManifest::position);
+        let mut replay =
+            |batch, at| visit_recovery_record(checkpoint, &mut report, &mut visitor, batch, at);
+        for closed in &self.topology.closed {
+            closed.replay(segment_path(&self.path, closed.header()), &mut replay)?;
+        }
+        let recovered = WalSegment::inspect_active(
+            segment_path(&self.path, self.topology.active),
+            self.topology.active,
+            &mut replay,
+        )?;
+        report.discarded_tail_bytes = recovered.discarded_tail_bytes;
+        if read_bounded(&self.path)? != self.encoded {
+            return Err(bad("recovery topology changed during inspection"));
+        }
+        Ok(report)
+    }
+
     /// `restore` must check the selected checkpoint against committed authority
     /// and restore its complete state. It runs before file repair or tail replay.
     /// On any later error the caller discards all unpublished visitor state.
@@ -95,26 +125,8 @@ impl RecoveryPlan {
         sync_parent(&self.path)?;
         let mut report = StreamRecovery::default();
         let checkpoint = self.checkpoint().map(CheckpointManifest::position);
-        let mut replay = |batch, at: Option<AppliedPosition>| {
-            if checkpoint.is_some() && at.is_none() {
-                return Err(bad("unpositioned record beside a published checkpoint"));
-            }
-            if let (Some(cut), Some(at)) = (checkpoint, at) {
-                if at.index <= cut.index {
-                    if !covers(cut, Some(at)) {
-                        return Err(bad("covered record disagrees with checkpoint term"));
-                    }
-                    report.covered_records += 1;
-                    return Ok(());
-                }
-                if at.term < cut.term {
-                    return Err(bad("tail term regresses behind checkpoint"));
-                }
-            }
-            visitor(batch, at)?;
-            report.replayed_records += 1;
-            Ok(())
-        };
+        let mut replay =
+            |batch, at| visit_recovery_record(checkpoint, &mut report, &mut visitor, batch, at);
         for closed in &self.topology.closed {
             closed.replay(segment_path(&self.path, closed.header()), &mut replay)?;
         }
@@ -133,11 +145,39 @@ impl RecoveryPlan {
             metrics,
             poisoned: false,
             defer_bytes: 0,
+            log_debt: None,
         };
         // Orphans from a crash are not selected by this plan and never replay.
         // Their reclamation can be retried separately after opening the stream.
         Ok((stream, report))
     }
+}
+
+fn visit_recovery_record(
+    checkpoint: Option<AppliedPosition>,
+    report: &mut StreamRecovery,
+    visitor: &mut impl FnMut(WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    batch: WriteBatch,
+    at: Option<AppliedPosition>,
+) -> Result<()> {
+    if checkpoint.is_some() && at.is_none() {
+        return Err(bad("unpositioned record beside a published checkpoint"));
+    }
+    if let (Some(cut), Some(at)) = (checkpoint, at) {
+        if at.index <= cut.index {
+            if !covers(cut, Some(at)) {
+                return Err(bad("covered record disagrees with checkpoint term"));
+            }
+            report.covered_records += 1;
+            return Ok(());
+        }
+        if at.term < cut.term {
+            return Err(bad("tail term regresses behind checkpoint"));
+        }
+    }
+    visitor(batch, at)?;
+    report.replayed_records += 1;
+    Ok(())
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -163,6 +203,7 @@ pub struct SegmentedWal {
     poisoned: bool,
     /// Deferred-sync threshold applied to every active segment (0 = strict).
     defer_bytes: u64,
+    log_debt: Option<LogDebt>,
 }
 
 impl SegmentedWal {
@@ -174,7 +215,7 @@ impl SegmentedWal {
         target_bytes: u64,
         metrics: Arc<WalIoMetrics>,
     ) -> Result<Self> {
-        Self::create_with_checkpoint(path, stream_id, target_bytes, metrics, None)
+        Self::create_with_checkpoint(path, stream_id, target_bytes, metrics, None, None)
     }
 
     pub(crate) fn create_with_checkpoint(
@@ -183,6 +224,7 @@ impl SegmentedWal {
         target_bytes: u64,
         metrics: Arc<WalIoMetrics>,
         checkpoint: Option<CheckpointManifest>,
+        log_debt: Option<LogDebt>,
     ) -> Result<Self> {
         validate_target(target_bytes)?;
         let path = path.as_ref().to_path_buf();
@@ -196,7 +238,12 @@ impl SegmentedWal {
         };
         header.encode()?;
         std::fs::create_dir_all(segment_directory(&path, stream_id)).map_err(io)?;
-        let active = WalSegment::create(segment_path(&path, header), header, metrics.clone())?;
+        let active = WalSegment::create_with_debt(
+            segment_path(&path, header),
+            header,
+            metrics.clone(),
+            log_debt.clone(),
+        )?;
         let topology = Topology {
             generation: 1,
             active: header,
@@ -209,7 +256,8 @@ impl SegmentedWal {
             .write(true)
             .open(&path)
             .map_err(io)?;
-        file.write_all(&bytes)
+        BudgetWriter::new(&mut file, log_debt.as_ref())
+            .write_all(&bytes)
             .and_then(|_| file.sync_all())
             .map_err(io)?;
         sync_parent(&path)?;
@@ -221,6 +269,7 @@ impl SegmentedWal {
             metrics,
             poisoned: false,
             defer_bytes: 0,
+            log_debt,
         })
     }
 
@@ -232,6 +281,18 @@ impl SegmentedWal {
         if let Some(active) = self.active.as_mut() {
             active.set_deferred_sync(defer_bytes);
         }
+    }
+    pub(crate) fn set_log_debt(&mut self, debt: Option<LogDebt>) {
+        if let Some(active) = self.active.as_mut() {
+            active.set_log_debt(debt.clone());
+        }
+        self.log_debt = debt;
+    }
+    fn reconciliation(&self) -> Option<Reconciliation> {
+        self.log_debt.as_ref().map(|debt| {
+            let path = debt.path().to_path_buf();
+            debt.reconciliation(move || crate::persist::wal_disk_bytes(&path))
+        })
     }
 
     /// Synchronize any deferred bytes in the active segment now.
@@ -322,6 +383,7 @@ impl SegmentedWal {
     /// write. Failure after retiring the current writer requires recovery.
     pub fn rotate(&mut self) -> Result<()> {
         self.ensure_healthy()?;
+        let mut reconciliation = self.reconciliation();
         if self.topology.closed.len() >= MAX_CLOSED_SEGMENTS {
             return Err(bad("closed-segment capacity reached; checkpoint required"));
         }
@@ -354,12 +416,20 @@ impl SegmentedWal {
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
             Err(e) => return Err(io(e)),
         }
-        let mut active = WalSegment::create(&path, next.active, self.metrics.clone())?;
+        let mut active = WalSegment::create_with_debt(
+            &path,
+            next.active,
+            self.metrics.clone(),
+            self.log_debt.clone(),
+        )?;
         active.set_deferred_sync(self.defer_bytes);
         self.publish(&next)?;
         self.topology = next;
         self.active = Some(active);
         self.poisoned = false;
+        if let Some(guard) = &mut reconciliation {
+            guard.completed();
+        }
         Ok(())
     }
 
@@ -369,35 +439,8 @@ impl SegmentedWal {
     /// older checkpoint would move the anchor backwards.
     pub fn checkpoint_applied(&mut self, manifest: &CheckpointManifest) -> Result<bool> {
         self.ensure_healthy()?;
-        CheckpointManifest::decode(&manifest.encode()?)?;
-        let Some(applied) = self.applied_position() else {
-            return Err(bad("checkpoint before positioned apply"));
-        };
-        if !covers(applied, Some(manifest.position())) {
-            return Err(bad(
-                "checkpoint is ahead of applied position or has a conflicting term",
-            ));
-        }
-        if let Some(old) = self.checkpoint() {
-            if old.scope.cluster != manifest.scope.cluster
-                || old.scope.region != manifest.scope.region
-            {
-                return Err(bad("checkpoint scope changed within one stream"));
-            }
-            if old.index > manifest.index {
-                return Ok(false);
-            }
-            if old.index == manifest.index && old != manifest {
-                return Err(bad("conflicting checkpoint at one applied index"));
-            }
-            if old.term > manifest.term {
-                return Err(bad("checkpoint term regresses"));
-            }
-            if old.scope.conf_ver > manifest.scope.conf_ver
-                || old.scope.version > manifest.scope.version
-            {
-                return Err(bad("checkpoint epoch regresses"));
-            }
+        if !manifest.check_selection(self.applied_position(), self.checkpoint())? {
+            return Ok(false);
         }
         // Refuse contradictions already visible in segment summaries before
         // publishing an anchor. Exact committed-position certification remains
@@ -452,6 +495,7 @@ impl SegmentedWal {
     /// longer references it. Foreign streams and future orphan files stay intact.
     pub fn reclaim_obsolete(&self) -> Result<Reclaimed> {
         self.ensure_healthy()?;
+        let mut reconciliation = self.reconciliation();
         let Some(_) = self.checkpoint() else {
             return Ok(Reclaimed::default());
         };
@@ -489,10 +533,13 @@ impl SegmentedWal {
         File::open(directory)
             .and_then(|file| file.sync_all())
             .map_err(io)?;
+        if let Some(guard) = &mut reconciliation {
+            guard.completed();
+        }
         Ok(reclaimed)
     }
 
-    fn ensure_healthy(&self) -> Result<()> {
+    pub(crate) fn ensure_healthy(&self) -> Result<()> {
         if self.poisoned || self.active.is_none() {
             Err(bad("failed stream requires recovery"))
         } else {
@@ -503,7 +550,8 @@ impl SegmentedWal {
         let bytes = next.encode()?;
         let temporary = self.path.with_extension("topology.tmp");
         let mut file = File::create(&temporary).map_err(io)?;
-        file.write_all(&bytes)
+        BudgetWriter::new(&mut file, self.log_debt.as_ref())
+            .write_all(&bytes)
             .and_then(|_| file.sync_all())
             .map_err(io)?;
         std::fs::rename(&temporary, &self.path).map_err(io)?;

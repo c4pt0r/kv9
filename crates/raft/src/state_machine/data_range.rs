@@ -90,6 +90,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
             identity: (root, region, creation),
         };
         fence.current()?;
+        self.check_ttl_split_local(fence.identity)?;
         self.data_identity = Some(fence.identity);
         self.adjudicator = Some(Arc::new(fence));
         Ok(())
@@ -119,6 +120,30 @@ impl<E: ApplyStore> MemStateMachine<E> {
             return Err(Error::Raft(
                 "stored range has a foreign group identity".into(),
             ));
+        }
+        // Legacy split copies only Default CF. Serialize its sealing decision
+        // against Enable in this log until the TTL-preserving split protocol
+        // exists. A preflight read alone would leave an activation/seal race.
+        if self.ttl_enabled && next.sealed {
+            return self.ttl_refuse(
+                at,
+                next.region,
+                kv9_common::raw_ttl::TtlRejection::LegacyCommand,
+            );
+        }
+        if self
+            .engine
+            .get(
+                ColumnFamily::Default,
+                kv9_common::raw_ttl::split::IMPORT_KEY,
+            )?
+            .map(|bytes| kv9_common::raw_ttl::split::ImportState::decode(&bytes))
+            .transpose()?
+            .is_some_and(|state| !state.complete)
+        {
+            self.engine.write_applied(WriteBatch::new(), at)?;
+            self.applied = LogIndex(at.index);
+            return Ok(ApplyResult::fence_rejected(self.applied, next.region));
         }
         let accepted = if current.as_ref() == Some(next) {
             true // New confirmation of identical state, not an old mutation receipt.
@@ -190,6 +215,8 @@ impl<E: ApplyStore> MemStateMachine<E> {
         Ok(ApplyResult::write_ok(self.applied))
     }
 }
+
+mod population;
 
 #[cfg(test)]
 mod tests {

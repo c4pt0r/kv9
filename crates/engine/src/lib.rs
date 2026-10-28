@@ -8,6 +8,9 @@
 pub mod cf;
 pub mod mem;
 pub mod minio;
+mod object_execution;
+pub mod object_io;
+pub mod object_memory;
 pub mod object_store;
 pub mod persist;
 pub mod replicated;
@@ -27,6 +30,10 @@ pub use object_store::{MemoryObjectStore, ObjectKey, ObjectStore};
 pub use persist::{EngineReplay, WalEngine};
 pub use replicated::{DurableAppliedPosition, ReplicatedEngine};
 pub mod checkpoint;
+pub mod checkpoint_history;
+pub mod checkpoint_memory;
+pub mod checkpoint_pending_budget;
+pub mod checkpoint_spool_budget;
 mod flush_journal;
 pub use sst::{Sst, SstWriter};
 #[cfg(any(test, feature = "testing"))]
@@ -74,10 +81,8 @@ pub type ScanEntry = (UserKey, Value);
 ///   If state changes between them, the scan chases an index entry whose row is gone.
 ///   Routing's `region_for_key` has the same shape: [`ReadView::seek_le`] for the
 ///   candidate region, then an `end_key` bound check, which must agree with each other.
-/// * `txn` — a Percolator `Get` must check the `lock` CF and read `write`/`default` from
-///   one view, or a racing prewrite's lock is missed and snapshot isolation breaks
-///   (DESIGN §9.1: *"snapshot reads see versions ≤ start_ts"*). That lands with the txn
-///   path; the view itself is timestamp-agnostic, and MVCC version selection sits above.
+/// * An atomic range batch (DESIGN §9.1) is applied as ONE `write`, so a view taken before
+///   or after it sees all of the batch or none of it — the read side of batch atomicity.
 pub trait ReadView: Send + Sync {
     /// Point read from a column family, within this view.
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>>;
@@ -86,6 +91,11 @@ pub trait ReadView: Send + Sync {
     /// or copying value bytes. Outer `None` declines this optional resident path;
     /// `Some(None)` means absent, and `Some(Some(&[]))` means present but empty.
     fn get_resident(&self, _cf: ColumnFamily, _key: &[u8]) -> Option<Option<&[u8]>> {
+        None
+    }
+    /// Exact number of entries in this immutable resident CF, with no scan or
+    /// value copies. `None` declines the capability; it never means empty.
+    fn resident_len(&self, _cf: ColumnFamily) -> Option<usize> {
         None
     }
 
@@ -163,6 +173,9 @@ impl<T: ReadView + ?Sized> ReadView for &T {
     fn get_resident(&self, cf: ColumnFamily, key: &[u8]) -> Option<Option<&[u8]>> {
         (**self).get_resident(cf, key)
     }
+    fn resident_len(&self, cf: ColumnFamily) -> Option<usize> {
+        (**self).resident_len(cf)
+    }
 
     fn scan(
         &self,
@@ -236,8 +249,8 @@ pub trait Engine: Send + Sync {
     /// Atomic means no reader — via [`Engine::get`], [`Engine::scan`], or a [`ReadView`] —
     /// ever observes a state where some of `batch`'s mutations are applied and others are
     /// not. This holds *across* column families, which is what makes a catalog
-    /// transaction (a row plus its secondary index entries) and a Percolator commit
-    /// (`lock` → `write` plus `default`) safe to build on.
+    /// transaction (a row plus its secondary index entries) and an atomic range batch
+    /// (DESIGN §9.1) safe to build on.
     fn write(&self, batch: WriteBatch) -> Result<()>;
 
     /// Forward range scan `[start, end)` over a column family, bounded by `limit`.

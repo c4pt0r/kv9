@@ -8,7 +8,7 @@ use kv9_engine::MemEngine;
 use kv9_meta::codec::{memcmp_text, memcmp_uint, ColumnValue, RowValue};
 use kv9_meta::schema::{self, ColumnId, IndexId};
 use kv9_meta::store::{MetaStore, SequenceKind, FIRST_DYNAMIC_ID};
-use kv9_meta::tables::{Keyspace, Region, RegionPeer, Tables, Tenant, TxnGroup};
+use kv9_meta::tables::{Keyspace, Region, RegionPeer, Tables, Tenant};
 
 fn store() -> MetaStore<MemEngine> {
     MetaStore::new(Arc::new(MemEngine::new()))
@@ -66,7 +66,7 @@ fn insert_get_scan_roundtrip_with_pk_reconstruction() {
     let s = store();
     seed_tenant(&s);
     let mut txn = s.begin().unwrap();
-    let (pk, row) = keyspace_row(7, "ks-a", 1, ApiType::Txn);
+    let (pk, row) = keyspace_row(7, "ks-a", 1, ApiType::Raw);
     txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
     // Read-your-writes: visible before commit.
     assert!(txn.get(&schema::KEYSPACES_DESC, &pk).unwrap().is_some());
@@ -77,6 +77,151 @@ fn insert_get_scan_roundtrip_with_pk_reconstruction() {
     assert_eq!(rows.len(), 1);
     // scan reconstructs the pk from the physical key.
     assert_eq!(rows[0].pk, pk);
+}
+
+#[test]
+fn paged_scan_keeps_one_snapshot_and_the_transaction_overlay() {
+    let s = store();
+    let mut seed = s.begin().unwrap();
+    for id in 1..=8 {
+        seed.insert(
+            &schema::TENANTS_DESC,
+            &[memcmp_uint(id)],
+            tenant_row(id, &format!("tenant-{id}")),
+        )
+        .unwrap();
+    }
+    seed.commit().unwrap();
+    let mut txn = s.begin().unwrap();
+    txn.delete(&schema::TENANTS_DESC, &[memcmp_uint(2)])
+        .unwrap();
+    txn.update(
+        &schema::TENANTS_DESC,
+        &[memcmp_uint(3)],
+        vec![(ColumnId(2), ColumnValue::Text("overlay".into()))],
+    )
+    .unwrap();
+    txn.insert(
+        &schema::TENANTS_DESC,
+        &[memcmp_uint(9)],
+        tenant_row(9, "nine"),
+    )
+    .unwrap();
+    let first = txn.scan_after(&schema::TENANTS_DESC, None, 2).unwrap();
+    assert_eq!(first[1].pk, vec![memcmp_uint(3)]);
+
+    // Change both sides of the cursor in a later committed snapshot.
+    let mut concurrent = s.begin().unwrap();
+    concurrent
+        .delete(&schema::TENANTS_DESC, &[memcmp_uint(1)])
+        .unwrap();
+    concurrent
+        .delete(&schema::TENANTS_DESC, &[memcmp_uint(4)])
+        .unwrap();
+    concurrent
+        .update(
+            &schema::TENANTS_DESC,
+            &[memcmp_uint(5)],
+            vec![(ColumnId(2), ColumnValue::Text("new snapshot".into()))],
+        )
+        .unwrap();
+    concurrent
+        .insert(
+            &schema::TENANTS_DESC,
+            &[memcmp_uint(10)],
+            tenant_row(10, "ten"),
+        )
+        .unwrap();
+    concurrent.commit().unwrap();
+
+    // Include empty pages and an exactly full final page. No duplicate, skip,
+    // or visibility of the later commit may depend on the page size.
+    for page_size in [1, 2, 3, 4, 7, 8, 128] {
+        let mut after = None;
+        let mut all = Vec::new();
+        loop {
+            let page = txn
+                .scan_after(&schema::TENANTS_DESC, after.as_deref(), page_size)
+                .unwrap();
+            assert!(page.len() <= page_size);
+            if page.is_empty() {
+                break;
+            }
+            after = Some(page.last().unwrap().pk.clone());
+            all.extend(page);
+            assert!(all.len() <= 8, "cursor repeated a page");
+        }
+        assert_eq!(
+            all.iter().map(|row| row.pk.clone()).collect::<Vec<_>>(),
+            [1, 3, 4, 5, 6, 7, 8, 9].map(|id| vec![memcmp_uint(id)])
+        );
+        assert_eq!(
+            all[1].value.get(ColumnId(2)),
+            Some(&ColumnValue::Text("overlay".into()))
+        );
+        assert_eq!(
+            all[3].value.get(ColumnId(2)),
+            Some(&ColumnValue::Text("tenant-5".into()))
+        );
+    }
+    assert!(txn
+        .scan_after(&schema::TENANTS_DESC, None, 0)
+        .unwrap()
+        .is_empty());
+    assert!(txn
+        .scan_after(&schema::TENANTS_DESC, Some(&[memcmp_uint(u64::MAX)]), 1)
+        .unwrap()
+        .is_empty());
+}
+
+#[test]
+fn paged_scan_rejects_partial_and_noncanonical_cursors() {
+    let s = store();
+    let txn = s.begin().unwrap();
+    for cursor in [
+        vec![],
+        vec![vec![0; 7]],
+        vec![memcmp_uint(1), memcmp_uint(2)],
+    ] {
+        assert!(txn
+            .scan_after(&schema::TENANTS_DESC, Some(&cursor), 1)
+            .is_err());
+    }
+    assert!(txn
+        .scan_after(&schema::REGION_PEERS_DESC, Some(&[memcmp_uint(1)]), 1)
+        .is_err());
+    // Complete composite keys are valid even if no row exists at the cursor.
+    assert!(txn
+        .scan_after(
+            &schema::REGION_PEERS_DESC,
+            Some(&[memcmp_uint(1), memcmp_uint(2)]),
+            1
+        )
+        .unwrap()
+        .is_empty());
+}
+
+#[test]
+fn paged_scan_does_not_skip_a_corrupt_key_extending_the_cursor() {
+    use kv9_engine::{ColumnFamily, Engine, WriteBatch};
+    let s = store();
+    seed_tenant(&s);
+    let mut bad_key =
+        kv9_meta::codec::encode_row_key(schema::TENANTS_DESC.id, &[memcmp_uint(1)]).unwrap();
+    bad_key.push(0);
+    let mut batch = WriteBatch::new();
+    batch.put(
+        ColumnFamily::Default,
+        bad_key,
+        tenant_row(1, "corrupt").encode(),
+    );
+    s.engine().write(batch).unwrap();
+    let txn = s.begin().unwrap();
+    let first = txn.scan_after(&schema::TENANTS_DESC, None, 1).unwrap();
+    assert_eq!(first.len(), 1);
+    assert!(txn
+        .scan_after(&schema::TENANTS_DESC, Some(&first[0].pk), 1)
+        .is_err());
 }
 
 #[test]
@@ -209,7 +354,7 @@ fn allocate_id_sequences_are_independent_and_durable() {
     );
     // A different kind has its own sequence.
     assert_eq!(
-        txn.allocate_id(SequenceKind::TxnGroup).unwrap(),
+        txn.allocate_id(SequenceKind::Region).unwrap(),
         FIRST_DYNAMIC_ID
     );
     txn.commit().unwrap();
@@ -257,9 +402,9 @@ fn seed_routing(s: &MetaStore<MemEngine>) {
     )
     .unwrap();
     for (id, name, api) in [
-        (7u32, "ks-txn", ApiType::Txn),
+        (7u32, "ks-txn", ApiType::Raw),
         (8, "ks-raw", ApiType::Raw),
-        (9, "ks-other", ApiType::Txn),
+        (9, "ks-other", ApiType::Raw),
     ] {
         let (pk, row) = keyspace_row(id, name, 1, api);
         txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
@@ -296,16 +441,6 @@ fn seed_routing(s: &MetaStore<MemEngine>) {
         )
         .unwrap();
     }
-    // Default whole-range txn group for keyspace 7 only.
-    let group = TxnGroup {
-        id: kv9_common::TxnGroupId(200),
-        keyspace_id: KeyspaceId(7),
-        name: "default".into(),
-        sub_start: Vec::new(),
-        sub_end: Vec::new(),
-    };
-    txn.insert(&schema::TXN_GROUPS_DESC, &group.pk(), group.to_row_value())
-        .unwrap();
     txn.commit().unwrap();
 }
 
@@ -421,21 +556,6 @@ fn regions_on_node_join() {
     ids.sort_unstable();
     assert_eq!(ids, vec![100, 101]);
     assert!(t.regions_on_node(NodeId(6)).unwrap().is_empty());
-}
-
-#[test]
-fn txn_group_for_key_default_and_raw() {
-    let s = store();
-    seed_routing(&s);
-    let t = Tables::new(&s);
-    // Txn keyspace: default whole-range group hit for any key.
-    assert_eq!(
-        t.txn_group_for_key(KeyspaceId(7), b"anything").unwrap(),
-        Some(kv9_common::TxnGroupId(200))
-    );
-    // Txn keyspace without a group row yet, and raw keyspace: None.
-    assert!(t.txn_group_for_key(KeyspaceId(9), b"k").unwrap().is_none());
-    assert!(t.txn_group_for_key(KeyspaceId(8), b"k").unwrap().is_none());
 }
 
 #[test]
@@ -683,10 +803,8 @@ fn malformed_rows_are_rejected_before_any_index_mutation() {
 
 #[test]
 fn unknown_api_and_out_of_namespace_ids_fail_closed() {
-    assert_eq!(
-        kv9_meta::tables::api_type_from_code(0).unwrap(),
-        ApiType::Txn
-    );
+    // Code 0 was the retired transactional type: a typed refusal, never a silent raw.
+    assert!(kv9_meta::tables::api_type_from_code(0).is_err());
     assert_eq!(
         kv9_meta::tables::api_type_from_code(1).unwrap(),
         ApiType::Raw

@@ -6,7 +6,7 @@ members = [
     "crates/engine",
     "crates/raft",
     "crates/region",
-    "crates/txn",
+    "crates/raw",
     "crates/server",
 ]
 
@@ -88,6 +88,7 @@ rpds = "1"
 # inside any engine submodule silently resolves to the EXTERNAL crate, not ours. Measured,
 # not assumed: `use object_store::aws::AmazonS3Builder` compiles from inside a submodule,
 # and `aws` exists only upstream.
+bytes = "1.12"
 s3_client = { package = "object_store", version = "0.14", default-features = false, features = ["aws"] }
 # `s3_client::ObjectStore::list` returns a `BoxStream`, and the trait that drives it is not
 # re-exported. Already in the tree as object_store's own dependency, so naming it directly
@@ -110,7 +111,7 @@ kv9-meta = { path = "crates/meta" }
 kv9-engine = { path = "crates/engine" }
 kv9-raft = { path = "crates/raft" }
 kv9-region = { path = "crates/region" }
-kv9-txn = { path = "crates/txn" }
+kv9-raw = { path = "crates/raw" }
 kv9-server = { path = "crates/server" }
 
 [package]
@@ -132,20 +133,15 @@ path = "src/main.rs"
 partition-testing = ["kv9-raft/testing"]
 # Deterministic remote-flush crash cuts; absent from production binaries.
 checkpoint-testing = ["kv9-server/checkpoint-testing"]
-rpc-experiment = ["kv9-server/rpc-experiment"]
-write-path-diagnostics = ["kv9-server/write-path-diagnostics"]
-# Bounded sampled timestamps for write-stage diagnosis; absent by default.
-write-stage-tracing = ["kv9-server/write-stage-tracing"]
-# Experimental allocation change; byte encoding and durability are unchanged.
-wal-payload-preallocation = ["kv9-engine/wal-payload-preallocation"]
 
 [dependencies]
+serde_json.workspace = true
 kv9-common.workspace = true
 kv9-meta.workspace = true
 kv9-engine.workspace = true
 kv9-raft.workspace = true
 kv9-region.workspace = true
-kv9-txn.workspace = true
+kv9-raw.workspace = true
 kv9-server.workspace = true
 
 # Isolated Linux server allocator experiment. Background threads are off by

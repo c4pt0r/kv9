@@ -29,11 +29,15 @@ struct LiveGroup {
     engine: Arc<WalEngine>,
     range: DataRange,
     cluster: ClusterId,
+    preserve: bool,
 }
 
 impl Drop for LiveGroup {
     fn drop(&mut self) {
         self.driver.stop();
+        if self.preserve {
+            return;
+        }
         if !std::thread::panicking() {
             let _ = std::fs::remove_dir_all(&self.directory);
         } else {
@@ -89,6 +93,7 @@ fn live_group_with(root: RootDigest, cluster: ClusterId) -> LiveGroup {
         engine,
         range: range.clone(),
         cluster,
+        preserve: false,
     };
     apply(
         &group,
@@ -99,6 +104,8 @@ fn live_group_with(root: RootDigest, cluster: ClusterId) -> LiveGroup {
     );
     group
 }
+
+mod durable;
 
 fn apply(group: &LiveGroup, command: &Command) {
     let proposed = group.driver.propose(command).unwrap();
@@ -225,11 +232,44 @@ fn capture_refuses_groups_without_applied_ownership() {
     let (bare_engine, _) = WalEngine::open(bare.join("data.wal")).unwrap();
     let error = plan_capture(&group.driver, &bare_engine, group.cluster).unwrap_err();
     assert!(
-        error.to_string().contains("nothing applied")
-            || error.to_string().contains("no applied range ownership"),
+        error.to_string().contains("engine does not belong"),
         "{error}"
     );
     std::fs::remove_dir_all(&bare).ok();
+}
+
+#[test]
+fn spooled_capture_matches_resident_bytes_and_refuses_foreign_or_stopped_owner() {
+    let group = live_group();
+    put_row(&group, b"a", b"original");
+    let objects = Arc::new(kv9_engine::MemoryObjectStore::new());
+    let uploader = RemoteUploader::for_harness(objects.clone());
+    let resident = plan_capture(&group.driver, &group.engine, group.cluster).unwrap();
+    let spool =
+        plan_capture_spooled(&group.driver, &group.engine, group.cluster, &uploader).unwrap();
+    assert_eq!(resident.manifest(), spool.manifest());
+    assert_eq!(resident.record, spool.record);
+    assert!(objects.is_empty(), "planning must not PUT or GET");
+    assert_eq!(uploader.spool_disk_snapshot().active_spools, 1);
+    assert_eq!(
+        resident.upload(&uploader).unwrap(),
+        spool.upload(&uploader).unwrap()
+    );
+    assert_eq!(uploader.spool_disk_snapshot().active_spools, 0);
+    let other = live_group();
+    assert!(
+        plan_capture_spooled(&group.driver, &other.engine, group.cluster, &uploader)
+            .unwrap_err()
+            .to_string()
+            .contains("engine does not belong")
+    );
+    group.driver.stop();
+    assert!(
+        plan_capture_spooled(&group.driver, &group.engine, group.cluster, &uploader)
+            .unwrap_err()
+            .to_string()
+            .contains("driver is stopped")
+    );
 }
 
 /// The full component loop: a live group captures at its cut with a learner

@@ -14,13 +14,7 @@ use crate::driver::{BarrierPhase, ReadIndexError};
 use crate::work::WorkSignal;
 
 type ReadResult = std::result::Result<u64, ReadIndexError>;
-#[cfg(not(feature = "read-stage-timing"))]
 type ReadReply = ReadResult;
-#[cfg(feature = "read-stage-timing")]
-struct ReadReply {
-    result: ReadResult,
-    timeline: crate::read_stage_timing::Timeline,
-}
 const MAX_REQUESTS: usize = 128;
 const TURN_REQUESTS: usize = 64;
 
@@ -46,8 +40,6 @@ struct Request {
     started: Instant,
     deadline: Instant,
     owner: Weak<Inner>,
-    #[cfg(feature = "read-stage-timing")]
-    timeline: crate::read_stage_timing::Timeline,
 }
 
 impl Request {
@@ -57,14 +49,6 @@ impl Request {
 
     fn finish(mut self, result: ReadResult) {
         if let Some(sender) = self.sender.take() {
-            #[cfg(feature = "read-stage-timing")]
-            let result = {
-                self.timeline.sending = Some(Instant::now());
-                ReadReply {
-                    result,
-                    timeline: self.timeline,
-                }
-            };
             let _ = sender.send(result);
         }
     }
@@ -75,11 +59,6 @@ impl Drop for Request {
         // A callback unwind/owner destruction cannot leave a live receiver parked.
         if let Some(sender) = self.sender.take() {
             let result = Err(failed("read owner dropped a pending request"));
-            #[cfg(feature = "read-stage-timing")]
-            let result = ReadReply {
-                result,
-                timeline: self.timeline,
-            };
             let _ = sender.send(result);
         }
         if let Some(owner) = self.owner.upgrade() {
@@ -119,8 +98,6 @@ struct State {
 struct Inner {
     state: Mutex<State>,
     signal: Arc<WorkSignal>,
-    #[cfg(feature = "read-stage-timing")]
-    timing: Arc<crate::read_stage_timing::ReadStageMetrics>,
 }
 
 #[derive(Clone)]
@@ -150,8 +127,6 @@ pub(crate) struct ReadTicket {
     deadline: Instant,
     signal: Arc<WorkSignal>,
     finished: bool,
-    #[cfg(feature = "read-stage-timing")]
-    timing: Arc<crate::read_stage_timing::ReadStageMetrics>,
 }
 
 /// The same bounded admission slot can either finish a local lease attempt or
@@ -189,8 +164,6 @@ impl LocalReadReservation {
                 started: self.started,
                 deadline: self.deadline,
                 owner: Arc::downgrade(&self.owner),
-                #[cfg(feature = "read-stage-timing")]
-                timeline: crate::read_stage_timing::Timeline::new(Instant::now()),
             });
             state.local_reserved -= 1;
             self.retained = false;
@@ -203,8 +176,6 @@ impl LocalReadReservation {
             deadline: self.deadline,
             signal: self.owner.signal.clone(),
             finished: false,
-            #[cfg(feature = "read-stage-timing")]
-            timing: self.owner.timing.clone(),
         })
     }
 }
@@ -230,14 +201,6 @@ impl ReadTicket {
             biased;
             result = &mut self.receiver => {
                 self.finished = true;
-                #[cfg(feature = "read-stage-timing")]
-                let result = result.map(|reply| {
-                    let resumed = Instant::now();
-                    if reply.result.is_ok() {
-                        self.timing.record(reply.timeline, self.started, resumed);
-                    }
-                    reply.result
-                });
                 result.unwrap_or_else(|_| Err(failed("read owner lost its sender")))
             },
             _ = tokio::time::sleep_until(self.deadline.into()) => {
@@ -262,14 +225,7 @@ impl AsyncReads {
         Self(Arc::new(Inner {
             state: Mutex::default(),
             signal,
-            #[cfg(feature = "read-stage-timing")]
-            timing: Arc::default(),
         }))
-    }
-
-    #[cfg(feature = "read-stage-timing")]
-    pub(crate) fn timing(&self) -> Arc<crate::read_stage_timing::ReadStageMetrics> {
-        self.0.timing.clone()
     }
 
     pub(crate) fn register(
@@ -307,8 +263,6 @@ impl AsyncReads {
                 started,
                 deadline,
                 owner: Arc::downgrade(&self.0),
-                #[cfg(feature = "read-stage-timing")]
-                timeline: crate::read_stage_timing::Timeline::new(Instant::now()),
             });
         }
         self.0.signal.notify();
@@ -319,8 +273,6 @@ impl AsyncReads {
             deadline,
             signal: self.0.signal.clone(),
             finished: false,
-            #[cfg(feature = "read-stage-timing")]
-            timing: self.0.timing.clone(),
         })
     }
 
@@ -398,8 +350,6 @@ impl AsyncReads {
                 }
                 state.group_attempts = state.group_attempts.saturating_add(1);
             }
-            #[cfg(feature = "read-stage-timing")]
-            let issued = Instant::now();
             let admitted = read_index(context.to_vec());
             let admitted = match admitted {
                 Ok(value) => Some(value),
@@ -432,10 +382,6 @@ impl AsyncReads {
                     request.finish(Err(failed("read owner stopped during admission")));
                 }
             } else if admitted == Some(true) {
-                #[cfg(feature = "read-stage-timing")]
-                for request in &mut members {
-                    request.timeline.issued = Some(issued);
-                }
                 let previous = state.active.insert(
                     context,
                     ReadGroup {
@@ -472,14 +418,8 @@ impl AsyncReads {
         };
         if group.confirmed.is_none() {
             group.confirmed = Some(index);
-            #[cfg(feature = "read-stage-timing")]
-            let confirmed = Instant::now();
             for request in &mut group.members {
                 request.quorum_observed.store(true, Ordering::Release);
-                #[cfg(feature = "read-stage-timing")]
-                {
-                    request.timeline.confirmed = Some(confirmed);
-                }
             }
         }
         true
@@ -673,54 +613,6 @@ mod tests {
         drop(local.submit().unwrap());
         assert_eq!(queue.snapshot().in_flight, 1);
         queue.submit(|_| panic!("canceled fallback reached Raft"));
-        assert_eq!(queue.snapshot().in_flight, 0);
-    }
-
-    #[cfg(feature = "read-stage-timing")]
-    #[tokio::test]
-    async fn timing_requires_the_same_sealed_confirmation_apply_and_successful_delivery() {
-        use kv9_common::metrics::Outcome;
-
-        let queue = AsyncReads::new(Arc::default());
-        let first = register(&queue, 1);
-        let second = register(&queue, 2);
-        queue.submit(|_| Ok(false));
-        let mut late = None;
-        queue.submit(|ctx| {
-            assert_eq!(ctx, context(1));
-            late = Some(register(&queue, 3));
-            Ok(true)
-        });
-        drop(first);
-        assert!(!queue.confirm(&context(2), 9));
-        assert!(queue.confirm(&context(1), 9));
-        queue.complete(Some(8));
-        assert!(queue
-            .timing()
-            .snapshots()
-            .iter()
-            .all(|metric| { metric.latency.outcomes.iter().all(|h| h.count == 0) }));
-        queue.complete(Some(9));
-        assert_eq!(
-            tokio::time::timeout(Duration::from_secs(1), second.wait())
-                .await
-                .unwrap()
-                .unwrap(),
-            9
-        );
-        queue.close();
-        assert!(late.unwrap().wait().await.is_err());
-        let snapshots = queue.timing().snapshots();
-        let sums: Vec<_> = snapshots
-            .iter()
-            .map(|metric| {
-                let success = &metric.latency.outcomes[Outcome::Success as usize];
-                assert_eq!(success.count, 1);
-                assert!(metric.latency.outcomes[1..].iter().all(|h| h.count == 0));
-                success.sum_ns
-            })
-            .collect();
-        assert_eq!(sums[..5].iter().sum::<u64>(), sums[5]);
         assert_eq!(queue.snapshot().in_flight, 0);
     }
 

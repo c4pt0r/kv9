@@ -13,7 +13,7 @@ use std::time::Instant;
 
 use kv9_common::{Error, Result};
 
-const CLASS_COUNT: usize = 5;
+pub(crate) const CLASS_COUNT: usize = 4;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PublicApiLimits {
@@ -87,7 +87,6 @@ pub(crate) enum WorkClass {
     RawWrite,
     MetadataRead,
     MetadataWrite,
-    Transaction,
 }
 
 impl WorkClass {
@@ -96,7 +95,6 @@ impl WorkClass {
         Self::RawWrite,
         Self::MetadataRead,
         Self::MetadataWrite,
-        Self::Transaction,
     ];
 
     fn timing_names(self) -> (&'static str, &'static str) {
@@ -111,10 +109,6 @@ impl WorkClass {
                 "public_metadata_write_prepare_queue",
                 "public_metadata_write_backend",
             ),
-            Self::Transaction => (
-                "public_transaction_prepare_queue",
-                "public_transaction_backend",
-            ),
         }
     }
 
@@ -124,7 +118,6 @@ impl WorkClass {
             Self::RawWrite => "raw_write",
             Self::MetadataRead => "metadata_read",
             Self::MetadataWrite => "metadata_write",
-            Self::Transaction => "transaction",
         }
     }
 }
@@ -466,10 +459,6 @@ mod tests {
             Err(Refusal::MetadataFloor)
         ));
         assert!(matches!(
-            budget.reserve(WorkClass::Transaction, 1),
-            Err(Refusal::MetadataFloor)
-        ));
-        assert!(matches!(
             budget.reserve(WorkClass::RawRead, 1),
             Err(Refusal::MetadataFloor)
         ));
@@ -523,7 +512,7 @@ mod tests {
             ),
             "aggregate encoded byte limit was bypassed"
         );
-        let second = budget.reserve(WorkClass::Transaction, 4).unwrap();
+        let second = budget.reserve(WorkClass::RawWrite, 4).unwrap();
         assert!(
             matches!(
                 budget.reserve(WorkClass::MetadataRead, 0),
@@ -624,7 +613,7 @@ mod tests {
             ],
             [u64::MAX; 4]
         );
-        assert_eq!(state.status_lines().lines().count(), 17);
+        assert_eq!(state.status_lines().lines().count(), 16);
     }
 
     #[test]

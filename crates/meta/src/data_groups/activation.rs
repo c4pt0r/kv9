@@ -1,12 +1,17 @@
 //! Durable activation desire, separate from immutable preparation authority.
 //!
-//! Creation and activation rows share the existing 255-row task budget. An
-//! online group uses two rows; preparation-only callers retain their semantics.
+//! Creation and activation history is retained and traversed in bounded pages.
+//! An online group uses two rows; preparation-only callers retain their semantics.
 //! No routing row is published and no request receipt claims quorum readiness.
 
 use super::*;
 
 const ACTIVATE_EMPTY_GROUP: u64 = 101;
+
+#[cfg(test)]
+fn rows<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<Row>> {
+    task_rows(txn).collect()
+}
 
 /// A fresh, applied-engine readback of both exact immutable rows. Decoding an
 /// RPC or a planner overlay cannot mint this capability.
@@ -19,21 +24,21 @@ impl CommittedActivation {
     }
 }
 
-fn rows<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<Row>> {
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded activation task scan exceeded"));
-    }
-    Ok(rows)
-}
-
 pub(super) fn decode<E: Engine>(
     txn: &MetaTxn<'_, E>,
-    rows: &[Row],
+    root: RootDigest,
+) -> Result<Vec<CreationIntent>> {
+    decode_rows(txn, task_rows(txn), root)
+}
+
+fn decode_rows<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    rows: impl IntoIterator<Item = Result<Row>>,
     root: RootDigest,
 ) -> Result<Vec<CreationIntent>> {
     let mut intents = Vec::new();
     for row in rows {
+        let row = row?;
         if row.value.get(ColumnId(2)) != Some(&ColumnValue::Uint(ACTIVATE_EMPTY_GROUP)) {
             continue;
         }
@@ -85,12 +90,8 @@ pub fn plan_activation<E: Engine>(
     if from_row(&creation, root.digest())?.as_ref() != Some(intent) {
         return Err(invalid("activation differs from exact creation"));
     }
-    let rows = rows(txn)?;
-    if decode(txn, &rows, root.digest())?.contains(intent) {
+    if decode(txn, root.digest())?.contains(intent) {
         return Ok(false);
-    }
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("activation task capacity reached"));
     }
     let task = txn.allocate_id(SequenceKind::Task)?;
     let mut row = RowValue::new();
@@ -113,7 +114,7 @@ pub fn committed_activations<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Comm
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("activation readback requires a certified metadata root"))?;
-    Ok(decode(&txn, &rows(&txn)?, root.digest())?
+    Ok(decode(&txn, root.digest())?
         .into_iter()
         .map(|intent| CommittedActivation(CommittedCreation(intent)))
         .collect())
@@ -152,7 +153,7 @@ mod tests {
                 "task" => {
                     let mut malformed = request.clone();
                     malformed.value.set(ColumnId(1), ColumnValue::Uint(999));
-                    assert!(decode(&txn, &[malformed], intent.root()).is_err());
+                    assert!(decode_rows(&txn, [Ok(malformed)], intent.root()).is_err());
                     assert!(
                         txn.update(
                             &TASKS_DESC,
@@ -234,13 +235,13 @@ mod tests {
     }
 
     #[test]
-    fn activation_retries_at_capacity_and_discards_partial_creation() {
+    fn activation_crosses_old_capacity_and_discards_uncommitted_creation() {
         let store = super::super::tests::fixture();
         let mut txn = store.begin().unwrap();
         let first =
             plan_empty_group(&mut txn, [1; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
         plan_activation(&mut txn, &first).unwrap();
-        // 254 occupied rows leave room for creation but not its desire.
+        // Creating and activating the next group crosses the old history cap.
         for id in 2..=253 {
             plan_empty_group(&mut txn, [id; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
         }
@@ -248,13 +249,15 @@ mod tests {
         let mut txn = store.begin().unwrap();
         let uncommitted =
             plan_empty_group(&mut txn, [254; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
-        assert!(plan_activation(&mut txn, &uncommitted).is_err());
+        assert!(plan_activation(&mut txn, &uncommitted).unwrap());
         drop(txn);
         assert!(committed_creation(&store, uncommitted.task())
             .unwrap()
             .is_none());
         let mut txn = store.begin().unwrap();
-        plan_empty_group(&mut txn, [254; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        let next =
+            plan_empty_group(&mut txn, [254; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        assert!(plan_activation(&mut txn, &next).unwrap());
         txn.commit().unwrap();
         let mut txn = store.begin().unwrap();
         assert_eq!(
@@ -263,6 +266,6 @@ mod tests {
         );
         assert!(!plan_activation(&mut txn, &first).unwrap());
         txn.commit().unwrap();
-        assert_eq!(committed_activations(&store).unwrap().len(), 1);
+        assert_eq!(committed_activations(&store).unwrap().len(), 2);
     }
 }

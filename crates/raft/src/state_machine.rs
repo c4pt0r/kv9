@@ -22,7 +22,11 @@ use crate::{CommittedEntry, LogIndex};
 
 pub mod checkpoint_recovery;
 mod data_range;
+mod manifest_effect;
+pub use manifest_effect::{ManifestEffectPage, MAX_MANIFEST_EFFECT_ROWS};
 pub(crate) mod raw_group;
+mod raw_ttl;
+mod ttl_split;
 
 /// The apply-side storage capability (task #9, the capability-narrowing half
 /// of the apply-never-touches-the-object-store invariant): EXACTLY what ordered
@@ -67,12 +71,18 @@ pub(crate) mod raw_group;
 /// }
 /// ```
 pub trait ApplyStore: Send + Sync {
+    fn checkpoint_history(&self) -> Option<Arc<kv9_engine::checkpoint_history::CheckpointHistory>> {
+        None
+    }
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Vec<u8>>>;
     fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()>;
     fn applied_position(&self) -> Result<DurableAppliedPosition>;
 }
 
 impl<E: ReplicatedEngine> ApplyStore for E {
+    fn checkpoint_history(&self) -> Option<Arc<kv9_engine::checkpoint_history::CheckpointHistory>> {
+        ReplicatedEngine::checkpoint_history(self)
+    }
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Vec<u8>>> {
         kv9_engine::Engine::get(self, cf, key)
     }
@@ -92,7 +102,7 @@ impl<E: ReplicatedEngine> ApplyStore for E {
 /// `ManifestChange` arm of `apply_at` (precondition P4: the pair is
 /// written only by one successful CAS, both fields together); readers go
 /// through [`MemStateMachine::manifest_pair`].
-fn manifest_pair_key(region: u64) -> Vec<u8> {
+pub(crate) fn manifest_pair_key(region: u64) -> Vec<u8> {
     let mut k = b"\x00kv9\x00manifest_pair\x00".to_vec();
     k.extend_from_slice(&region.to_be_bytes());
     k
@@ -100,7 +110,7 @@ fn manifest_pair_key(region: u64) -> Vec<u8> {
 
 /// Engine key holding the changeset installed at one region generation
 /// (add-only: a new generation is a new key; nothing rewrites an old one).
-fn manifest_gen_key(region: u64, generation: u64) -> Vec<u8> {
+pub(crate) fn manifest_gen_key(region: u64, generation: u64) -> Vec<u8> {
     let mut k = b"\x00kv9\x00manifest_gen\x00".to_vec();
     k.extend_from_slice(&region.to_be_bytes());
     k.push(0);
@@ -310,6 +320,11 @@ pub enum ApplyOutcome {
     /// re-deriving anything from the original command (apply-time facts
     /// only; review contract).
     FenceRejected(kv9_common::RegionId),
+    /// Deterministic TTL format/scope refusal; no user mutation occurred.
+    RawTtlRejected {
+        region: kv9_common::RegionId,
+        reason: kv9_common::raw_ttl::TtlRejection,
+    },
     /// The entry was a [`crate::Command::ManifestChange`]: the
     /// discriminator's verdict rides the receipt path (apply-time facts
     /// only; no second apply channel).
@@ -354,6 +369,18 @@ impl ApplyResult {
             applied_index: index,
             response: None,
             outcome: ApplyOutcome::FenceRejected(region),
+        }
+    }
+
+    pub fn raw_ttl_rejected(
+        index: LogIndex,
+        region: kv9_common::RegionId,
+        reason: kv9_common::raw_ttl::TtlRejection,
+    ) -> Self {
+        Self {
+            applied_index: index,
+            response: None,
+            outcome: ApplyOutcome::RawTtlRejected { region, reason },
         }
     }
 }
@@ -428,6 +455,9 @@ pub struct MemStateMachine<E: ApplyStore = MemEngine> {
     )>,
     engine: Arc<E>,
     applied: LogIndex,
+    /// Recovered from the durable clock record. Only TTL activation changes
+    /// this cache, after its atomic engine write succeeds.
+    ttl_enabled: bool,
     /// Adjudicates [`Command::Fenced`] entries. `None` — the default — makes a
     /// fenced entry a typed APPLY ERROR (driver poisons): adjudicator presence
     /// is node-local configuration, not log state, so a node without one must
@@ -470,11 +500,17 @@ impl<E: ApplyStore> MemStateMachine<E> {
             DurableAppliedPosition::Volatile | DurableAppliedPosition::AppliedNothing => 0,
             DurableAppliedPosition::AppliedThrough(at) => at.index,
         };
+        let ttl_enabled = engine
+            .get(ColumnFamily::Default, kv9_common::raw_ttl::CLOCK_KEY)?
+            .map(|bytes| kv9_common::raw_ttl::ClockWatermark::decode(&bytes))
+            .transpose()?
+            .is_some();
         Ok(MemStateMachine {
             engine,
             applied: LogIndex(applied),
             adjudicator: None,
             data_identity: None,
+            ttl_enabled,
         })
     }
 
@@ -503,6 +539,18 @@ impl<E: ApplyStore> MemStateMachine<E> {
         let index = LogIndex(at.index);
         if index <= self.applied {
             return Ok(ApplyResult::write_ok(index));
+        }
+        if let Command::RawTtl(command) = cmd {
+            return self.apply_raw_ttl(at, command);
+        }
+        if let Command::RawTtlSplit(command) = cmd {
+            return self.apply_ttl_split(at, command);
+        }
+        if let Some(result) = self.guard_legacy_ttl(at, cmd)? {
+            return Ok(result);
+        }
+        if let Command::PopulateRaw(population) = cmd {
+            return self.apply_raw_population(at, population);
         }
         if let Command::DataRange { expected, next } = cmd {
             return self.apply_data_range(at, *expected, next);
@@ -535,7 +583,10 @@ impl<E: ApplyStore> MemStateMachine<E> {
         // (the pair itself is only ever written by earlier entries of this
         // same log), and all three outcomes are logical verdicts that advance
         // the watermark — the `Fenced` precedent, not a second apply channel.
-        if let Command::ManifestChange(p) = cmd {
+        if let Command::ManifestChange(p)
+        | Command::StagingManifestChange(p)
+        | Command::LargeManifestChange(p) = cmd
+        {
             let ManifestChangePayload {
                 region,
                 change_id,
@@ -560,7 +611,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
             // own position previously persisted.
             let checkpoint_error =
                 if kv9_engine::checkpoint::CheckpointManifest::is_checkpoint(changeset) {
-                    let checkpoint = kv9_engine::checkpoint::CheckpointManifest::decode(changeset)?;
+                    let checkpoint = cmd.decode_checkpoint_manifest(changeset)?;
                     if checkpoint.scope.region != *region
                         || checkpoint.term != *watermark_term
                         || checkpoint.index != *watermark_index
@@ -573,13 +624,26 @@ impl<E: ApplyStore> MemStateMachine<E> {
                                 "checkpoint apply requires epoch adjudicator".into(),
                             )
                         })?;
-                        let fresh = adjudicator.is_fresh(&crate::RegionFence {
+                        let fence = crate::RegionFence {
                             region_id: *region,
                             conf_ver: checkpoint.scope.conf_ver,
                             version: checkpoint.scope.version,
-                        })?;
+                        };
+                        let fresh = if matches!(cmd, Command::LargeManifestChange(_)) {
+                            self.staging_checkpoint_epoch(&fence)? == Some(true)
+                                || adjudicator.is_fresh(&fence)?
+                        } else if matches!(cmd, Command::StagingManifestChange(_)) {
+                            self.staging_checkpoint_epoch(&fence)? == Some(true)
+                        } else {
+                            adjudicator.is_fresh(&fence)?
+                        };
                         (!fresh).then_some(ManifestInvalidReason::StaleEpoch)
                     }
+                } else if matches!(
+                    cmd,
+                    Command::StagingManifestChange(_) | Command::LargeManifestChange(_)
+                ) {
+                    Some(ManifestInvalidReason::InvalidCheckpoint)
                 } else {
                     None
                 };
@@ -709,27 +773,6 @@ impl<E: ApplyStore> MemStateMachine<E> {
                 last_change_id: Vec::new(),
             }),
         }
-    }
-
-    /// Positive-only add-only reconciliation. Historical generations retain
-    /// every reference; absence never establishes that a proposal did not apply.
-    pub fn manifest_effect(&self, region: u64, intended: &[u8]) -> Result<bool> {
-        if !kv9_engine::checkpoint::CheckpointManifest::is_checkpoint(intended) {
-            return Ok(false);
-        }
-        let intended = kv9_engine::checkpoint::CheckpointManifest::decode(intended)?;
-        let pair = self.manifest_pair(region)?;
-        for generation in (1..=pair.generation).rev() {
-            if let Some((_, _, bytes)) = self.manifest_at(region, generation)? {
-                if kv9_engine::checkpoint::CheckpointManifest::is_checkpoint(&bytes)
-                    && kv9_engine::checkpoint::CheckpointManifest::decode(&bytes)?
-                        .covers_effect(&intended)
-                {
-                    return Ok(true);
-                }
-            }
-        }
-        Ok(false)
     }
 
     /// Recover the exact winner of a retained canonical checkpoint transition.
@@ -950,20 +993,28 @@ mod tests {
         let m = checkpoint_fixture(10);
         let mut sm = MemStateMachine::new();
         sm.set_fence_adjudicator(Arc::new(Verdict(true)));
-        assert!(!sm.manifest_effect(9, &m.encode().unwrap()).unwrap());
+        assert!(
+            !sm.manifest_effect_page(9, &m.encode().unwrap(), None)
+                .unwrap()
+                .found
+        );
         verdict(&mut sm, LogIndex(11), &checkpoint_command(&m, 0));
         let mut later = checkpoint_fixture(12);
         later.files[0].sha256 = "1".repeat(64);
         later.files[0].key = format!("clusters/test/regions/9/sst/{}", later.files[0].sha256);
         verdict(&mut sm, LogIndex(13), &checkpoint_command(&later, 1));
         assert!(
-            sm.manifest_effect(9, &m.encode().unwrap()).unwrap(),
+            sm.manifest_effect_page(9, &m.encode().unwrap(), None)
+                .unwrap()
+                .found,
             "a newer pair must not erase an older installed effect"
         );
         let mut absent = m.clone();
         absent.scope.version += 1;
         assert!(
-            !sm.manifest_effect(9, &absent.encode().unwrap()).unwrap(),
+            !sm.manifest_effect_page(9, &absent.encode().unwrap(), None)
+                .unwrap()
+                .found,
             "no match supplies no negative verdict"
         );
     }

@@ -389,7 +389,8 @@ def main():
 
         stop(4)
         installed = command('install-2', 'install-migration-image',
-                            '--data-dir', output / 'n4', '--record-file', output / 'image2.record')
+                            '--data-dir', output / 'n4', '--record-file', output / 'image2.record',
+                            '--addr', addresses[owner_node], '--owners', captured2['destination_owner'])
         require(installed['install_outcome'] == 'selected', 'fresh image must install')
         start(4, 'readopted', ticket=None)
         wait('destination ready after install', lambda: status(4).get('endpoint_ready') == 'true')

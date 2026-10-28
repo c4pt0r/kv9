@@ -1,4 +1,4 @@
-//! Full-state remote checkpoints for the single-group KV implementation.
+//! Full-state remote checkpoints for one Raft-owned engine.
 //!
 //! Freeze is O(1) under the engine's write lock. Upload and recovery run outside
 //! Raft apply. Full checkpoints include all column families and deletions through
@@ -11,17 +11,36 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 use crate::minio::MinioObjectStore;
-use crate::sst::{Sst, SstWriter};
-use crate::{ColumnFamily, MemEngine, ObjectKey, ObjectStore, ReplicatedEngine, WriteBatch};
+#[cfg(test)]
+use crate::sst::Sst;
+use crate::sst::{SharedSst, SstView, SstWriter};
+use crate::{ColumnFamily, MemEngine, ObjectKey, ObjectStore};
+#[cfg(test)]
+use crate::{ReplicatedEngine, WriteBatch};
 
-pub use crate::flush_journal::{FlushJournal, PendingFlush};
+pub use crate::flush_journal::{
+    FlushJournal, PendingFlush, PendingTransfer, TransferJournal, TransferLock, TransferReader,
+};
+pub use crate::object_execution::{DrainedExecution, ExecutionIdentity};
 
 const MAGIC: &[u8] = b"KV9CHECKPOINT\x01";
+const LARGE_MAGIC: &[u8] = b"KV9CHECKPOINT\x02";
 const SST_TARGET: usize = 8 * 1024 * 1024;
-/// Bound the initial fully resident engine checkpoint. Incremental SST reads and
-/// memory admission will replace this implementation, not silently remove the cap.
+/// V1 whole-image ceiling and per-SST limit for both manifest versions.
 pub const MAX_CHECKPOINT_BYTES: usize = 48 * 1024 * 1024;
-const MAX_MANIFEST_BYTES: usize = 1024 * 1024;
+pub const MAX_STREAMED_SSTS: usize = kv9_common::retention::MAX_OWNER_RESOURCES;
+/// Derived descriptor/file bound, not a resident buffer allocation size.
+pub const MAX_STREAMED_CHECKPOINT_BYTES: u64 =
+    MAX_CHECKPOINT_BYTES as u64 * MAX_STREAMED_SSTS as u64;
+pub const MAX_MANIFEST_BYTES: usize = 1024 * 1024;
+
+mod execution;
+pub use execution::{CheckpointReader, CheckpointRestore, DrainedRead};
+mod manifest_codec;
+mod selection;
+mod spool;
+pub(crate) use spool::DiskObjects;
+pub use spool::SpooledFlush;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FlushScope {
@@ -60,6 +79,8 @@ impl FrozenFlush {
 pub struct PlannedFlush {
     pub(crate) manifest: CheckpointManifest,
     pub(crate) objects: Vec<Vec<u8>>,
+    // Declared after the buffers so ordinary drop frees them before admission.
+    pub(crate) reservation: Option<crate::checkpoint_memory::Reservation>,
 }
 impl PlannedFlush {
     pub fn manifest(&self) -> &CheckpointManifest {
@@ -128,18 +149,30 @@ impl CheckpointManifest {
         }
     }
     pub fn encode(&self) -> Result<Vec<u8>> {
-        let mut bytes = MAGIC.to_vec();
-        bytes.extend(serde_json::to_vec(self).map_err(codec_error)?);
-        if bytes.len() > MAX_MANIFEST_BYTES {
-            return Err(Error::Engine("checkpoint manifest too large".into()));
-        }
-        Ok(bytes)
+        manifest_codec::encode(self)
     }
     pub fn is_checkpoint(bytes: &[u8]) -> bool {
         bytes.starts_with(b"KV9CHECKPOINT")
     }
+    pub fn requires_large_format(&self) -> Result<bool> {
+        let total = self.files.iter().try_fold(0u64, |sum, file| {
+            sum.checked_add(file.size)
+                .ok_or_else(|| Error::Engine("checkpoint size overflow".into()))
+        })?;
+        Ok(total > MAX_CHECKPOINT_BYTES as u64)
+    }
+    /// Legacy log tags must never reinterpret a previously invalid checkpoint.
+    pub fn decode_legacy(bytes: &[u8]) -> Result<Self> {
+        if !bytes.starts_with(MAGIC) {
+            return Err(Error::Engine(
+                "legacy checkpoint command requires V1 manifest".into(),
+            ));
+        }
+        Self::decode(bytes)
+    }
     pub fn decode(bytes: &[u8]) -> Result<Self> {
-        if !bytes.starts_with(MAGIC) || bytes.len() > MAX_MANIFEST_BYTES {
+        let large = bytes.starts_with(LARGE_MAGIC);
+        if (!large && !bytes.starts_with(MAGIC)) || bytes.len() > MAX_MANIFEST_BYTES {
             return Err(Error::Engine(
                 "invalid checkpoint manifest version or size".into(),
             ));
@@ -167,7 +200,8 @@ impl CheckpointManifest {
                     .bytes()
                     .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
                 || file.key != object_name(&manifest.scope, &file.sha256)
-                || total > MAX_CHECKPOINT_BYTES as u64
+                || file.size > MAX_CHECKPOINT_BYTES as u64
+                || (!large && total > MAX_CHECKPOINT_BYTES as u64)
                 || previous.is_some_and(|p| {
                     p.cf > file.cf || (p.cf == file.cf && p.largest >= file.smallest)
                 })
@@ -175,6 +209,11 @@ impl CheckpointManifest {
                 return Err(Error::Engine("invalid checkpoint SST references".into()));
             }
             previous = Some(file);
+        }
+        if large
+            && (total <= MAX_CHECKPOINT_BYTES as u64 || manifest.files.len() > MAX_STREAMED_SSTS)
+        {
+            return Err(Error::Engine("invalid large checkpoint shape".into()));
         }
         Ok(manifest)
     }
@@ -213,75 +252,190 @@ fn object_name(scope: &FlushScope, hash: &str) -> String {
 /// stores cannot accidentally qualify as remote durability evidence.
 #[derive(Debug)]
 pub struct RemoteUploader {
-    store: Arc<MinioObjectStore>,
+    store: RemoteBackend,
+    image_budget: Arc<crate::checkpoint_memory::ImageBudget>,
+    spool_budget: Arc<crate::checkpoint_spool_budget::SpoolBudget>,
+    pending_budget: Arc<crate::checkpoint_pending_budget::PendingDiskBudget>,
+    execution: Option<Arc<crate::object_execution::Execution>>,
+}
+#[derive(Debug, Clone)]
+enum RemoteBackend {
+    Minio(Arc<MinioObjectStore>),
+    #[cfg(any(test, feature = "testing"))]
+    Harness(Arc<dyn ObjectStore>),
 }
 impl RemoteUploader {
+    pub fn object_memory_snapshot(&self) -> Option<crate::object_memory::Snapshot> {
+        match &self.store {
+            RemoteBackend::Minio(store) => Some(store.object_memory_snapshot()),
+            #[cfg(any(test, feature = "testing"))]
+            RemoteBackend::Harness(_) => None,
+        }
+    }
+    pub fn object_io_snapshot(&self) -> Option<crate::object_io::ObjectIoSnapshot> {
+        match &self.store {
+            RemoteBackend::Minio(store) => store.object_io_snapshot(),
+            #[cfg(any(test, feature = "testing"))]
+            RemoteBackend::Harness(_) => None,
+        }
+    }
     pub fn new(store: Arc<MinioObjectStore>) -> Self {
-        Self { store }
+        Self {
+            store: RemoteBackend::Minio(store),
+            image_budget: Arc::default(),
+            spool_budget: Arc::default(),
+            pending_budget: Arc::default(),
+            execution: None,
+        }
+    }
+    /// Component tests only. This exercises SST codecs and replay, and is
+    /// explicitly NOT evidence of remote durability. No such constructor is
+    /// present in an ordinary build; production construction stays MinIO-only.
+    #[cfg(any(test, feature = "testing"))]
+    #[doc(hidden)]
+    pub fn for_harness(store: Arc<dyn ObjectStore>) -> Self {
+        Self {
+            store: RemoteBackend::Harness(store),
+            image_budget: Arc::default(),
+            spool_budget: Arc::default(),
+            pending_budget: Arc::default(),
+            execution: None,
+        }
+    }
+    pub fn with_image_budget(mut self, budget: Arc<crate::checkpoint_memory::ImageBudget>) -> Self {
+        self.image_budget = budget;
+        self
+    }
+    pub fn image_memory_snapshot(&self) -> crate::checkpoint_memory::Snapshot {
+        self.image_budget.snapshot()
+    }
+    pub fn with_spool_budget(
+        mut self,
+        budget: Arc<crate::checkpoint_spool_budget::SpoolBudget>,
+    ) -> Self {
+        self.spool_budget = budget;
+        self
+    }
+    pub fn spool_disk_snapshot(&self) -> crate::checkpoint_spool_budget::Snapshot {
+        self.spool_budget.snapshot()
+    }
+    pub fn with_pending_budget(
+        mut self,
+        budget: Arc<crate::checkpoint_pending_budget::PendingDiskBudget>,
+    ) -> Self {
+        self.pending_budget = budget;
+        self
+    }
+    pub fn pending_disk_snapshot(&self) -> crate::checkpoint_pending_budget::Snapshot {
+        self.pending_budget.snapshot()
+    }
+    pub fn observe_removed_journal(&self, path: &std::path::Path) -> Result<()> {
+        self.pending_budget.observe_removed_journal(path)
+    }
+    /// Journals created from this uploader share admission with every group.
+    pub fn journal(&self, path: impl Into<std::path::PathBuf>) -> FlushJournal {
+        FlushJournal::new(path)
+            .with_image_budget(self.image_budget.clone())
+            .with_pending_budget(self.pending_budget.clone())
+            .with_streaming_objects()
+    }
+
+    /// One exclusively locked durable transfer slot, sharing checkpoint budgets.
+    pub fn transfer_journal(
+        &self,
+        path: impl Into<std::path::PathBuf>,
+    ) -> Result<crate::flush_journal::TransferJournal> {
+        crate::flush_journal::TransferJournal::lock(self.journal(path))
+    }
+    /// Borrowed preflight precedes any object allocation. The reservation moves
+    /// with the completed plan and survives every upload/readback return path.
+    pub fn plan_checkpoint(&self, frozen: FrozenFlush) -> Result<PlannedFlush> {
+        let layout = image_layout(&frozen, SST_TARGET, MAX_CHECKPOINT_BYTES)?;
+        let reservation = self.image_budget.reserve(layout.total as u64)?;
+        encode_plan(frozen, layout, Some(reservation))
+    }
+    fn store(&self) -> execution::CheckpointStore<'_> {
+        execution::CheckpointStore(self)
     }
     pub fn upload(&self, frozen: FrozenFlush) -> Result<PreparedFlush> {
-        upload(self.store.as_ref(), frozen)
+        self.upload_planned(self.plan_checkpoint(frozen)?)
     }
     /// Plan every immutable object before registering an owner or performing I/O.
     pub fn plan(frozen: FrozenFlush) -> Result<PlannedFlush> {
         plan(frozen)
     }
-    pub fn upload_planned(&self, planned: PlannedFlush) -> Result<PreparedFlush> {
-        upload_planned(self.store.as_ref(), planned)
+    pub fn upload_planned(&self, mut planned: PlannedFlush) -> Result<PreparedFlush> {
+        // Compatibility callers can still construct a plan with the static
+        // planner. Admit that existing image before issuing its first PUT.
+        if planned.reservation.is_none() {
+            let bytes = planned.objects.iter().map(|o| o.len() as u64).sum();
+            planned.reservation = Some(self.image_budget.reserve(bytes)?);
+        }
+        upload_planned(&self.store(), planned)
     }
     pub fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
-        restore(self.store.as_ref(), manifest)
+        restore(&self.store(), manifest)
     }
 
     pub(crate) fn recover_prepared(&self, manifest: &CheckpointManifest) -> Result<PreparedFlush> {
-        recover_prepared(self.store.as_ref(), manifest)
+        recover_prepared(&self.store(), manifest)
+    }
+
+    /// GET and validate every referenced SST, draining actual local jobs before
+    /// return. No PUT, restored index, publication capability or GC authority.
+    /// Callers must hold their committed retention protection throughout.
+    pub fn verify_checkpoint_objects(&self, manifest: &CheckpointManifest) -> Result<()> {
+        self.with_local_execution(|uploader| uploader.recover_prepared(manifest).map(|_| ()))
     }
 }
 
+#[cfg(test)]
 fn upload(store: &dyn ObjectStore, frozen: FrozenFlush) -> Result<PreparedFlush> {
     upload_planned(store, plan(frozen)?)
 }
 fn plan(frozen: FrozenFlush) -> Result<PlannedFlush> {
+    plan_with_limits(frozen, SST_TARGET, MAX_CHECKPOINT_BYTES)
+}
+fn plan_with_limits(frozen: FrozenFlush, target: usize, limit: usize) -> Result<PlannedFlush> {
+    let layout = image_layout(&frozen, target, limit.min(MAX_CHECKPOINT_BYTES))?;
+    encode_plan(frozen, layout, None)
+}
+
+struct TableLayout {
+    count: usize,
+    bytes: usize,
+}
+struct ImageLayout {
+    tables: [Vec<TableLayout>; 3],
+    total: usize,
+}
+
+fn encode_plan(
+    frozen: FrozenFlush,
+    layout: ImageLayout,
+    reservation: Option<crate::checkpoint_memory::Reservation>,
+) -> Result<PlannedFlush> {
     let mut files = Vec::new();
     let mut objects = Vec::new();
-    let mut total = 0usize;
-    for (cf_id, cf) in ColumnFamily::ALL.into_iter().enumerate() {
-        let mut writer = SstWriter::new(cf);
-        let mut size = 0usize;
-        for entry in frozen.view.iter_all(cf) {
-            let (key, value) = entry?;
-            size = size
-                .checked_add(key.len() + value.len() + 8)
-                .ok_or_else(|| Error::Engine("checkpoint size overflow".into()))?;
-            if size > SST_TARGET && !writer.is_empty() {
-                let (sst, bytes) = plan_sst(&frozen.scope, cf_id as u8, writer)?;
-                total += sst.size as usize;
-                if total > MAX_CHECKPOINT_BYTES {
-                    return Err(Error::Engine(
-                        "checkpoint exceeds resident engine limit".into(),
-                    ));
-                }
-                files.push(sst);
-                objects.push(bytes);
-                writer = SstWriter::new(cf);
-                size = key.len() + value.len() + 8;
-            }
-            writer.add(key, value)?;
-        }
-        if !writer.is_empty() {
-            let (sst, bytes) = plan_sst(&frozen.scope, cf_id as u8, writer)?;
-            total += sst.size as usize;
-            if total > MAX_CHECKPOINT_BYTES {
-                return Err(Error::Engine(
-                    "checkpoint exceeds resident engine limit".into(),
-                ));
-            }
+    for ((cf_id, cf), tables) in ColumnFamily::ALL.into_iter().enumerate().zip(layout.tables) {
+        let mut rows = frozen.view.iter_all_ref(cf);
+        for table in tables {
+            let bytes = crate::sst::encode_borrowed(
+                cf,
+                table.count,
+                table.bytes,
+                rows.by_ref().take(table.count),
+            )?;
+            let (sst, bytes) = plan_sst(&frozen.scope, cf_id as u8, bytes)?;
             files.push(sst);
             objects.push(bytes);
         }
+        if rows.next().is_some() {
+            return Err(Error::Engine("checkpoint layout omitted rows".into()));
+        }
     }
-    if files.is_empty() {
-        return Err(Error::Engine("refusing empty checkpoint".into()));
+    if objects.iter().map(Vec::len).sum::<usize>() != layout.total {
+        return Err(Error::Engine("checkpoint layout size mismatch".into()));
     }
     let manifest = CheckpointManifest {
         scope: frozen.scope,
@@ -290,16 +444,70 @@ fn plan(frozen: FrozenFlush) -> Result<PlannedFlush> {
         files,
     };
     CheckpointManifest::decode(&manifest.encode()?)?;
-    Ok(PlannedFlush { manifest, objects })
+    Ok(PlannedFlush {
+        manifest,
+        objects,
+        reservation,
+    })
 }
-fn plan_sst(scope: &FlushScope, cf: u8, writer: SstWriter) -> Result<(SstReference, Vec<u8>)> {
-    let bytes = writer.finish()?;
+/// Borrowed preflight retains only count/size per SST. The original target is
+/// based on entry bytes, while every prefix's limit includes header and footer.
+fn image_layout(frozen: &FrozenFlush, target: usize, limit: usize) -> Result<ImageLayout> {
+    let mut tables: [Vec<TableLayout>; 3] = std::array::from_fn(|_| Vec::new());
+    let mut total = 0usize;
+    for (cf, tables) in ColumnFamily::ALL.into_iter().zip(&mut tables) {
+        let (mut entries, mut first, mut last) = (0usize, 0usize, 0usize);
+        let mut count = 0;
+        for (key, value) in frozen.view.iter_all_ref(cf) {
+            let row = key
+                .len()
+                .checked_add(value.len())
+                .and_then(|n| n.checked_add(8))
+                .ok_or_else(|| Error::Engine("checkpoint size overflow".into()))?;
+            if entries.saturating_add(row) > target && count != 0 {
+                let bytes = SstWriter::table_bytes(entries, first, last)?;
+                total += bytes;
+                tables.push(TableLayout { count, bytes });
+                entries = 0;
+                count = 0;
+            }
+            if count == 0 {
+                first = key.len();
+            }
+            entries = entries
+                .checked_add(row)
+                .ok_or_else(|| Error::Engine("checkpoint size overflow".into()))?;
+            last = key.len();
+            count += 1;
+            let size = SstWriter::table_bytes(entries, first, last)?;
+            if size > MAX_CHECKPOINT_BYTES || size > limit - total {
+                return Err(Error::Engine(
+                    "checkpoint exceeds resident engine limit".into(),
+                ));
+            }
+        }
+        if count != 0 {
+            let bytes = SstWriter::table_bytes(entries, first, last)?;
+            total += bytes;
+            tables.push(TableLayout { count, bytes });
+        }
+    }
+    if total == 0 {
+        return Err(Error::Engine("refusing empty checkpoint".into()));
+    }
+    Ok(ImageLayout { tables, total })
+}
+#[cfg(test)]
+fn image_bytes(frozen: &FrozenFlush) -> Result<usize> {
+    Ok(image_layout(frozen, SST_TARGET, MAX_CHECKPOINT_BYTES)?.total)
+}
+fn plan_sst(scope: &FlushScope, cf: u8, bytes: Vec<u8>) -> Result<(SstReference, Vec<u8>)> {
     if bytes.len() > MAX_CHECKPOINT_BYTES {
         return Err(Error::Engine("SST exceeds checkpoint limit".into()));
     }
     let hash = digest(&bytes);
     let key = ObjectKey::new(object_name(scope, &hash))?;
-    let sst = Sst::parse(&bytes)?;
+    let sst = SstView::parse(&bytes)?;
     Ok((
         SstReference {
             key: key.as_str().into(),
@@ -317,13 +525,14 @@ pub(crate) fn upload_planned(
     store: &dyn ObjectStore,
     planned: PlannedFlush,
 ) -> Result<PreparedFlush> {
+    let _reservation = planned.reservation;
     let mut files = Vec::with_capacity(planned.manifest.files.len());
     for (reference, bytes) in planned.manifest.files.into_iter().zip(planned.objects) {
         let key = ObjectKey::new(reference.key.clone())?;
         store.put(&key, &bytes)?;
         // An ambiguous PUT retains the original journal and owner. It cannot
         // mint a prepared capability; retries use these exact bytes and keys.
-        if store.get(&key)?.as_deref() != Some(bytes.as_slice()) {
+        if store.get_shared_bounded(&key, bytes.len())?.as_deref() != Some(bytes.as_slice()) {
             return Err(Error::Engine("uploaded SST was not durably visible".into()));
         }
         files.push(PreparedSst { reference });
@@ -340,38 +549,53 @@ pub(crate) fn upload_planned(
 fn restore(store: &dyn ObjectStore, manifest: &CheckpointManifest) -> Result<MemEngine> {
     // Revalidate descriptors supplied via an API as well as those decoded from disk.
     let manifest = CheckpointManifest::decode(&manifest.encode()?)?;
-    let index = MemEngine::new();
-    let mut batch = WriteBatch::new();
+    let mut builder = crate::mem::CheckpointBuilder::default();
     for file in &manifest.files {
         let sst = verified_sst(store, file)?;
         for (key, value) in sst.iter() {
-            batch.put(sst.column_family(), key.to_vec(), value.to_vec());
+            builder.put(sst.column_family(), key, value);
         }
     }
-    index.write_applied(batch, manifest.position())?;
-    Ok(index)
+    // Neither an engine nor its position escapes before every SST has passed
+    // verification. A later-object failure drops the entire unpublished builder.
+    Ok(builder.finish(manifest.position()))
 }
 
-fn verified_sst(store: &dyn ObjectStore, file: &SstReference) -> Result<Sst> {
+fn verified_sst(store: &dyn ObjectStore, file: &SstReference) -> Result<SharedSst> {
     let bytes = store
-        .get(&ObjectKey::new(file.key.clone())?)?
+        .get_shared_bounded(
+            &ObjectKey::new(file.key.clone())?,
+            usize::try_from(file.size)
+                .map_err(|_| Error::Engine("SST read limit overflow".into()))?,
+        )?
         .ok_or_else(|| Error::Engine("checkpoint references a missing SST".into()))?;
-    checked_sst_bytes(file, &bytes)
+    check_sst_digest(file, &bytes)?;
+    let sst = SharedSst::parse(bytes)?;
+    check_sst_metadata(file, &sst.view())?;
+    Ok(sst)
 }
-pub(crate) fn checked_sst_bytes(file: &SstReference, bytes: &[u8]) -> Result<Sst> {
+fn check_sst_digest(file: &SstReference, bytes: &[u8]) -> Result<()> {
     if bytes.len() as u64 != file.size || digest(bytes) != file.sha256 {
         return Err(Error::Engine(
             "checkpoint SST checksum or size mismatch".into(),
         ));
     }
-    let sst = Sst::parse(bytes)?;
-    if sst.column_family() != ColumnFamily::ALL[file.cf as usize]
+    Ok(())
+}
+fn check_sst_metadata(file: &SstReference, sst: &SstView<'_>) -> Result<()> {
+    if Some(sst.column_family()) != ColumnFamily::ALL.get(file.cf as usize).copied()
         || sst.smallest_key() != file.smallest
         || sst.largest_key() != file.largest
         || sst.len() as u64 != file.count
     {
         return Err(Error::Engine("checkpoint SST metadata mismatch".into()));
     }
+    Ok(())
+}
+pub(crate) fn checked_sst_bytes<'a>(file: &SstReference, bytes: &'a [u8]) -> Result<SstView<'a>> {
+    check_sst_digest(file, bytes)?;
+    let sst = SstView::parse(bytes)?;
+    check_sst_metadata(file, &sst)?;
     Ok(sst)
 }
 
@@ -581,3 +805,6 @@ mod tests {
         assert!(!engine.path().with_extension("checkpoint").exists());
     }
 }
+
+#[cfg(test)]
+mod memory_tests;

@@ -7,18 +7,14 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use kv9_common::{
-    ApiType, AppliedPosition, Error, KeyspaceId, NodeId, RegionId, TenantId, TimeStamp, TimelineId,
-    TxnGroupId,
-};
+use kv9_common::{ApiType, AppliedPosition, Error, KeyspaceId, NodeId, RegionId, TenantId};
 use kv9_region::RegionEpoch;
-use kv9_txn::{QualifiedKey, TimelineGeneration, TxnDescriptor, TxnId, TxnStatus};
 use tonic::{metadata::MetadataMap, service::Interceptor, Request, Response, Status};
 
 use crate::admission::{
     PreparedReadKind, PublicAdmission, PublicApiLimits, Refusal, Reservation, WorkClass,
 };
-use crate::api::{AdminApi, RawApi, RequestContext, RequestOrigin, TxnApi};
+use crate::api::{AdminApi, RawApi, RequestContext, RequestOrigin};
 
 pub mod proto {
     tonic::include_proto!("kv9.v1");
@@ -140,9 +136,9 @@ impl Interceptor for AuthInterceptor {
 }
 
 /// The complete synchronous backend required by the public service.
-pub trait PublicApiBackend: RawApi + TxnApi + AdminApi + Send + Sync + 'static {}
+pub trait PublicApiBackend: RawApi + AdminApi + Send + Sync + 'static {}
 
-impl<T> PublicApiBackend for T where T: RawApi + TxnApi + AdminApi + Send + Sync + 'static {}
+impl<T> PublicApiBackend for T where T: RawApi + AdminApi + Send + Sync + 'static {}
 
 #[derive(Clone)]
 struct BlockingBackend {
@@ -171,10 +167,20 @@ impl BlockingBackend {
 
     async fn prepared_write_mapped(
         &self,
-        mut reservation: Reservation,
+        reservation: Reservation,
         preparation: crate::api::RawWritePreparation,
         map_error: fn(Error) -> Status,
     ) -> Result<AppliedPosition, Status> {
+        self.prepared_operation_mapped(reservation, preparation, map_error)
+            .await
+    }
+
+    async fn prepared_operation_mapped<T: Send + 'static>(
+        &self,
+        mut reservation: Reservation,
+        preparation: crate::api::OperationPreparation<T>,
+        map_error: fn(Error) -> Status,
+    ) -> Result<T, Status> {
         // Dropping the RPC's JoinHandle detaches this task. It owns the SAME
         // reservation until preparation and the internal logical wait finish.
         // The blocking closure owns it while queued/running, so cancelling the
@@ -333,7 +339,6 @@ pub fn create_keyspace_blocking(
             name,
             tenant_id,
             api_type: match api_type {
-                ApiType::Txn => proto::ApiType::Txn as i32,
                 ApiType::Raw => proto::ApiType::Raw as i32,
             },
         });
@@ -584,6 +589,34 @@ impl RawClient {
         })
     }
 
+    /// Atomic range batch: every mutation lands in ONE Raft entry or none does.
+    pub fn batch(
+        &self,
+        mutations: Vec<kv9_raw::RawMutation>,
+    ) -> Result<RawClientOutcome<proto::RawWriteResponse>, Error> {
+        let context = self.context();
+        let mutations = mutations
+            .into_iter()
+            .map(|mutation| proto::RawMutation {
+                op: Some(match mutation {
+                    kv9_raw::RawMutation::Put { key, value } => {
+                        proto::raw_mutation::Op::Put(proto::KeyValue { key, value })
+                    }
+                    kv9_raw::RawMutation::Delete { key } => proto::raw_mutation::Op::Delete(key),
+                }),
+            })
+            .collect();
+        self.call("RawBatch", move |mut client, metadata| async move {
+            let mut request = Request::from_parts(
+                metadata,
+                Default::default(),
+                proto::RawBatchRequest { context, mutations },
+            );
+            *request.extensions_mut() = Default::default();
+            client.raw_batch(request).await.map(Response::into_inner)
+        })
+    }
+
     pub fn get(&self, key: Vec<u8>) -> Result<RawClientOutcome<Option<Vec<u8>>>, Error> {
         let context = self.context();
         self.call("RawGet", move |mut client, metadata| async move {
@@ -823,78 +856,26 @@ fn request_context(
     })
 }
 
-fn qualified_key(key: Option<proto::QualifiedKey>) -> Result<QualifiedKey, Status> {
-    let key = key.ok_or_else(|| Status::invalid_argument("qualified key is required"))?;
-    if key.keyspace_id > KeyspaceId::MAX {
-        return Err(Status::invalid_argument("keyspace id exceeds 3-byte width"));
-    }
-    Ok(QualifiedKey {
-        keyspace: KeyspaceId(key.keyspace_id),
-        user_key: key.user_key,
-    })
-}
-
-fn transaction_descriptor(
-    transaction: Option<proto::TransactionDescriptor>,
-) -> Result<TxnDescriptor, Status> {
-    let transaction = transaction
-        .ok_or_else(|| Status::invalid_argument("transaction descriptor is required"))?;
-    if transaction.keyspace_id > KeyspaceId::MAX {
-        return Err(Status::invalid_argument("keyspace id exceeds 3-byte width"));
-    }
-    let id = transaction
-        .id
-        .ok_or_else(|| Status::invalid_argument("transaction id is required"))?;
-    let primary = qualified_key(transaction.primary)?;
-    let keyspace = KeyspaceId(transaction.keyspace_id);
-    if primary.keyspace != keyspace {
+/// Decode the wire mutations of an atomic range batch. An entry without an op is a
+/// malformed request, not an ignorable no-op: silently dropping it would make the
+/// batch the client sent differ from the batch the cluster applied.
+fn raw_mutations(mutations: Vec<proto::RawMutation>) -> Result<Vec<kv9_raw::RawMutation>, Status> {
+    if mutations.is_empty() {
         return Err(Status::invalid_argument(
-            "transaction and primary keyspace ids must match",
+            "a raw batch needs at least one mutation",
         ));
     }
-    Ok(TxnDescriptor {
-        keyspace,
-        id: TxnId {
-            txn_group: TxnGroupId(id.txn_group_id),
-            timeline: TimelineId(id.timeline_id),
-            timeline_generation: TimelineGeneration(id.timeline_generation),
-            start_ts: TimeStamp(id.start_ts),
-        },
-        primary,
-    })
-}
-
-fn transaction_message(transaction: TxnDescriptor) -> proto::TransactionDescriptor {
-    proto::TransactionDescriptor {
-        keyspace_id: transaction.keyspace.0,
-        id: Some(proto::TransactionId {
-            txn_group_id: transaction.id.txn_group.0,
-            timeline_id: transaction.id.timeline.0,
-            timeline_generation: transaction.id.timeline_generation.0,
-            start_ts: transaction.id.start_ts.0,
-        }),
-        primary: Some(proto::QualifiedKey {
-            keyspace_id: transaction.primary.keyspace.0,
-            user_key: transaction.primary.user_key,
-        }),
-    }
-}
-
-fn txn_status_response(status: TxnStatus) -> proto::KvCheckTxnStatusResponse {
-    let decision = match status {
-        TxnStatus::Locked => {
-            proto::kv_check_txn_status_response::Decision::Locked(proto::TxnLocked {})
-        }
-        TxnStatus::Committed { commit_ts } => {
-            proto::kv_check_txn_status_response::Decision::CommittedTs(commit_ts.0)
-        }
-        TxnStatus::RolledBack => {
-            proto::kv_check_txn_status_response::Decision::RolledBack(proto::TxnRolledBack {})
-        }
-    };
-    proto::KvCheckTxnStatusResponse {
-        decision: Some(decision),
-    }
+    mutations
+        .into_iter()
+        .map(|mutation| match mutation.op {
+            Some(proto::raw_mutation::Op::Put(pair)) => Ok(kv9_raw::RawMutation::Put {
+                key: pair.key,
+                value: pair.value,
+            }),
+            Some(proto::raw_mutation::Op::Delete(key)) => Ok(kv9_raw::RawMutation::Delete { key }),
+            None => Err(Status::invalid_argument("raw mutation without an op")),
+        })
+        .collect()
 }
 
 fn nonzero_limit(limit: u32) -> Result<usize, Status> {
@@ -915,10 +896,6 @@ fn optional_value(value: Option<Vec<u8>>) -> proto::OptionalValue {
             value: Vec::new(),
         },
     }
-}
-
-fn scan_response(pairs: Vec<(Vec<u8>, Vec<u8>)>) -> proto::ScanResponse {
-    scan_response_paged(pairs, None)
 }
 
 fn scan_response_paged(
@@ -953,9 +930,10 @@ fn error_status(error: Error) -> Status {
         Error::KeyspaceNotFound(_) | Error::RegionNotFound => Status::not_found(message),
         Error::ApiTypeMismatch { .. }
         | Error::StaleEpoch { .. }
-        | Error::SplitCrossesKeyspace
-        | Error::CrossTxnGroup { .. } => Status::failed_precondition(message),
-        Error::WriteConflict(_) | Error::KeyIsLocked => Status::aborted(message),
+        | Error::RawTtlRejected { .. }
+        | Error::SplitCrossesKeyspace => Status::failed_precondition(message),
+        Error::WriteConflict(_) => Status::aborted(message),
+        Error::RawTtlClock { .. } => Status::unavailable(message),
         // RESOURCE_EXHAUSTED: end-to-end write backpressure. The write did not
         // happen and nothing changed; the client must back off and retry (the
         // group's log drains as compaction advances), not refresh routing.
@@ -980,9 +958,7 @@ fn error_status(error: Error) -> Status {
         // diagnostics -- the redaction is at the wire boundary, not at the source, so we do
         // not lose the detail where it is actually useful.
         Error::ObjectContentMismatch { .. } => Status::internal("object store invariant violation"),
-        Error::TsoUnavailable(_) | Error::MetaNotReady(_) | Error::Raft(_) => {
-            Status::unavailable(message)
-        }
+        Error::MetaNotReady(_) | Error::Raft(_) => Status::unavailable(message),
         // UNAVAILABLE + a server-sent marker naming which barrier half never
         // arrived. The marker (not the code) is the protocol: transport
         // failures carry no server metadata, so nothing can impersonate the
@@ -1143,16 +1119,31 @@ pub const LAST_APPLIED_INDEX_KEY: &str = "kv9-last-applied-index";
 
 fn api_type(value: i32) -> Result<ApiType, Status> {
     match proto::ApiType::try_from(value) {
-        Ok(proto::ApiType::Txn) => Ok(ApiType::Txn),
         Ok(proto::ApiType::Raw) => Ok(ApiType::Raw),
+        // The retired transactional type is refused explicitly, never downgraded.
+        Ok(proto::ApiType::Txn) => Err(Status::invalid_argument(
+            "api_type TXN is no longer supported; kv9 keyspaces are RAW",
+        )),
         Ok(proto::ApiType::Unspecified) | Err(_) => {
-            Err(Status::invalid_argument("api_type must be TXN or RAW"))
+            Err(Status::invalid_argument("api_type must be RAW"))
         }
     }
 }
 
 #[tonic::async_trait]
 impl proto::kv9_server::Kv9 for Kv9Grpc {
+    async fn activate_raw_ttl(
+        &self,
+        request: Request<proto::ActivateRawTtlRequest>,
+    ) -> Result<Response<proto::RawTtlResponse>, Status> {
+        self.activate_ttl(request).await
+    }
+    async fn raw_ttl(
+        &self,
+        request: Request<proto::RawTtlRequest>,
+    ) -> Result<Response<proto::RawTtlResponse>, Status> {
+        self.call_ttl(request).await
+    }
     async fn lookup_raw_route(
         &self,
         request: Request<proto::LookupRawRouteRequest>,
@@ -1264,6 +1255,28 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         Ok(Response::new(applied_response(applied)))
     }
 
+    async fn raw_batch(
+        &self,
+        request: Request<proto::RawBatchRequest>,
+    ) -> Result<Response<proto::RawWriteResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::RawWrite)?;
+        let request = request.into_inner();
+        let context = request_context(request.context, &auth)?;
+        let mutations = raw_mutations(request.mutations)?;
+        let applied = self
+            .backend
+            .prepared_write(
+                reservation,
+                self.backend
+                    .inner
+                    .clone()
+                    .prepare_raw_write(context, crate::api::RawWrite::Batch(mutations)),
+            )
+            .await?;
+        Ok(Response::new(applied_response(applied)))
+    }
+
     async fn raw_delete(
         &self,
         request: Request<proto::RawDeleteRequest>,
@@ -1318,221 +1331,6 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             .await
             .map(receipt_response)
             .map(Response::new)
-    }
-
-    async fn kv_begin(
-        &self,
-        request: Request<proto::KvBeginRequest>,
-    ) -> Result<Response<proto::KvBeginResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let primary = qualified_key(request.primary)?;
-        let transaction = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.kv_begin(&context, primary)
-            })
-            .await?;
-        Ok(Response::new(proto::KvBeginResponse {
-            transaction: Some(transaction_message(transaction)),
-        }))
-    }
-
-    async fn kv_get(
-        &self,
-        request: Request<proto::KvGetRequest>,
-    ) -> Result<Response<proto::KvGetResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        let value = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.kv_get(&context, &request.key, &transaction)
-            })
-            .await?;
-        Ok(Response::new(proto::KvGetResponse {
-            value: Some(optional_value(value)),
-        }))
-    }
-
-    async fn kv_batch_get(
-        &self,
-        request: Request<proto::KvBatchGetRequest>,
-    ) -> Result<Response<proto::KvBatchGetResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        let values = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.kv_batch_get(&context, &request.keys, &transaction)
-            })
-            .await?;
-        Ok(Response::new(proto::KvBatchGetResponse {
-            values: values.into_iter().map(optional_value).collect(),
-        }))
-    }
-
-    async fn kv_scan(
-        &self,
-        request: Request<proto::KvScanRequest>,
-    ) -> Result<Response<proto::ScanResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let limit = nonzero_limit(request.limit)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        let pairs = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.kv_scan(&context, &request.start, &request.end, limit, &transaction)
-            })
-            .await?;
-        Ok(Response::new(scan_response(pairs)))
-    }
-
-    async fn kv_prewrite(
-        &self,
-        request: Request<proto::KvPrewriteRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        let mutations = request
-            .mutations
-            .into_iter()
-            .map(|mutation| {
-                let value = match mutation.operation {
-                    Some(proto::mutation::Operation::PutValue(value)) => Some(value),
-                    Some(proto::mutation::Operation::Delete(true)) => None,
-                    Some(proto::mutation::Operation::Delete(false)) | None => {
-                        return Err(Status::invalid_argument(
-                            "mutation operation must be put or delete",
-                        ));
-                    }
-                };
-                Ok((mutation.key, value))
-            })
-            .collect::<Result<Vec<_>, Status>>()?;
-        self.backend
-            .call(reservation, move |backend| {
-                backend.kv_prewrite(&context, &mutations, &transaction)
-            })
-            .await?;
-        Ok(Response::new(proto::Empty {}))
-    }
-
-    async fn kv_commit(
-        &self,
-        request: Request<proto::KvCommitRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        self.backend
-            .call(reservation, move |backend| {
-                backend.kv_commit(&context, &request.keys, &transaction)
-            })
-            .await?;
-        Ok(Response::new(proto::Empty {}))
-    }
-
-    async fn kv_pessimistic_lock(
-        &self,
-        request: Request<proto::KvPessimisticLockRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        self.backend
-            .call(reservation, move |backend| {
-                backend.kv_pessimistic_lock(&context, &request.keys, &transaction)
-            })
-            .await?;
-        Ok(Response::new(proto::Empty {}))
-    }
-
-    async fn kv_pessimistic_rollback(
-        &self,
-        request: Request<proto::KvPessimisticRollbackRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        self.backend
-            .call(reservation, move |backend| {
-                backend.kv_pessimistic_rollback(&context, &request.keys, &transaction)
-            })
-            .await?;
-        Ok(Response::new(proto::Empty {}))
-    }
-
-    async fn kv_resolve_lock(
-        &self,
-        request: Request<proto::KvResolveLockRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        self.backend
-            .call(reservation, move |backend| {
-                backend.kv_resolve_lock(&context, &transaction)
-            })
-            .await?;
-        Ok(Response::new(proto::Empty {}))
-    }
-
-    async fn kv_cleanup(
-        &self,
-        request: Request<proto::KvCleanupRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        self.backend
-            .call(reservation, move |backend| {
-                backend.kv_cleanup(&context, &request.key, &transaction)
-            })
-            .await?;
-        Ok(Response::new(proto::Empty {}))
-    }
-
-    async fn kv_check_txn_status(
-        &self,
-        request: Request<proto::KvCheckTxnStatusRequest>,
-    ) -> Result<Response<proto::KvCheckTxnStatusResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::Transaction)?;
-        let request = request.into_inner();
-        let context = request_context(request.context, &auth)?;
-        let transaction = transaction_descriptor(request.transaction)?;
-        let status = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.kv_check_txn_status(&context, &transaction)
-            })
-            .await?;
-        Ok(Response::new(txn_status_response(status)))
     }
 
     async fn create_data_keyspace(
@@ -2358,7 +2156,6 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                     &request.name,
                     TenantId(request.tenant_id),
                     api_type,
-                    TxnGroupId::DEFAULT,
                 )
             })
             .await?;
@@ -2388,11 +2185,8 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                     name: keyspace.name,
                     tenant_id: keyspace.tenant.0,
                     api_type: match keyspace.api_type {
-                        ApiType::Txn => proto::ApiType::Txn as i32,
                         ApiType::Raw => proto::ApiType::Raw as i32,
                     },
-                    txn_group_id: (keyspace.api_type == ApiType::Txn)
-                        .then_some(keyspace.txn_group.0),
                 })
                 .collect(),
         }))
@@ -2772,6 +2566,13 @@ mod tests {
         ) -> Result<crate::api::AppliedPosition> {
             Err(Error::NotImplemented("raw_batch_put"))
         }
+        fn raw_batch(
+            &self,
+            _: &RequestContext,
+            _: &[kv9_raw::RawMutation],
+        ) -> Result<crate::api::AppliedPosition> {
+            Err(Error::NotImplemented("raw_batch"))
+        }
         fn raw_delete(&self, _: &RequestContext, _: &[u8]) -> Result<crate::api::AppliedPosition> {
             Err(Error::NotImplemented("raw_delete"))
         }
@@ -2791,69 +2592,6 @@ mod tests {
             _: &[u8],
         ) -> Result<crate::api::DeleteRangeReceipt> {
             Err(Error::NotImplemented("raw_delete_range"))
-        }
-    }
-
-    impl TxnApi for FakeBackend {
-        fn kv_begin(&self, _: &RequestContext, _: QualifiedKey) -> Result<TxnDescriptor> {
-            Err(Error::NotImplemented("kv_begin"))
-        }
-        fn kv_get(&self, _: &RequestContext, _: &[u8], _: &TxnDescriptor) -> Result<Option<Value>> {
-            Err(Error::NotImplemented("kv_get"))
-        }
-        fn kv_batch_get(
-            &self,
-            _: &RequestContext,
-            _: &[UserKey],
-            _: &TxnDescriptor,
-        ) -> Result<Vec<Option<Value>>> {
-            Err(Error::NotImplemented("kv_batch_get"))
-        }
-        fn kv_scan(
-            &self,
-            _: &RequestContext,
-            _: &[u8],
-            _: &[u8],
-            _: usize,
-            _: &TxnDescriptor,
-        ) -> Result<Vec<(UserKey, Value)>> {
-            Err(Error::NotImplemented("kv_scan"))
-        }
-        fn kv_prewrite(
-            &self,
-            _: &RequestContext,
-            _: &[(UserKey, Option<Value>)],
-            _: &TxnDescriptor,
-        ) -> Result<()> {
-            Err(Error::NotImplemented("kv_prewrite"))
-        }
-        fn kv_commit(&self, _: &RequestContext, _: &[UserKey], _: &TxnDescriptor) -> Result<()> {
-            Err(Error::NotImplemented("kv_commit"))
-        }
-        fn kv_pessimistic_lock(
-            &self,
-            _: &RequestContext,
-            _: &[UserKey],
-            _: &TxnDescriptor,
-        ) -> Result<()> {
-            Err(Error::NotImplemented("kv_pessimistic_lock"))
-        }
-        fn kv_pessimistic_rollback(
-            &self,
-            _: &RequestContext,
-            _: &[UserKey],
-            _: &TxnDescriptor,
-        ) -> Result<()> {
-            Err(Error::NotImplemented("kv_pessimistic_rollback"))
-        }
-        fn kv_resolve_lock(&self, _: &RequestContext, _: &TxnDescriptor) -> Result<()> {
-            Err(Error::NotImplemented("kv_resolve_lock"))
-        }
-        fn kv_cleanup(&self, _: &RequestContext, _: &[u8], _: &TxnDescriptor) -> Result<()> {
-            Err(Error::NotImplemented("kv_cleanup"))
-        }
-        fn kv_check_txn_status(&self, _: &RequestContext, _: &TxnDescriptor) -> Result<TxnStatus> {
-            Err(Error::NotImplemented("kv_check_txn_status"))
         }
     }
 
@@ -2882,7 +2620,6 @@ mod tests {
             _: &str,
             _: TenantId,
             _: ApiType,
-            _: TxnGroupId,
         ) -> Result<crate::api::CreateKeyspaceResult> {
             Err(Error::NotImplemented("create_keyspace"))
         }
@@ -2925,92 +2662,40 @@ mod tests {
         request
     }
 
-    fn transaction_descriptor_message() -> proto::TransactionDescriptor {
-        proto::TransactionDescriptor {
-            keyspace_id: 7,
-            id: Some(proto::TransactionId {
-                txn_group_id: 11,
-                timeline_id: 13,
-                timeline_generation: 17,
-                start_ts: 19,
-            }),
-            primary: Some(proto::QualifiedKey {
-                keyspace_id: 7,
-                user_key: b"primary".to_vec(),
-            }),
-        }
-    }
-
     #[test]
-    fn transaction_descriptor_conversion_preserves_every_identity_coordinate() {
-        let decoded = transaction_descriptor(Some(transaction_descriptor_message())).unwrap();
-        assert_eq!(decoded.keyspace, KeyspaceId(7));
-        assert_eq!(decoded.id.txn_group, TxnGroupId(11));
-        assert_eq!(decoded.id.timeline, TimelineId(13));
-        assert_eq!(decoded.id.timeline_generation, TimelineGeneration(17));
-        assert_eq!(decoded.id.start_ts, TimeStamp(19));
-        assert_eq!(decoded.primary.keyspace, KeyspaceId(7));
-        assert_eq!(decoded.primary.user_key, b"primary");
-
+    fn raw_batch_wire_mutations_decode_in_order_and_refuse_malformed_entries() {
+        let decoded = raw_mutations(vec![
+            proto::RawMutation {
+                op: Some(proto::raw_mutation::Op::Put(proto::KeyValue {
+                    key: b"a".to_vec(),
+                    value: b"1".to_vec(),
+                })),
+            },
+            proto::RawMutation {
+                op: Some(proto::raw_mutation::Op::Delete(b"a".to_vec())),
+            },
+        ])
+        .unwrap();
         assert_eq!(
-            transaction_message(decoded),
-            transaction_descriptor_message()
+            decoded,
+            vec![
+                kv9_raw::RawMutation::Put {
+                    key: b"a".to_vec(),
+                    value: b"1".to_vec()
+                },
+                kv9_raw::RawMutation::Delete { key: b"a".to_vec() },
+            ]
         );
-    }
-
-    #[test]
-    fn transaction_descriptor_rejects_missing_or_mismatched_qualified_identity() {
         assert_eq!(
-            transaction_descriptor(None).unwrap_err().code(),
+            raw_mutations(Vec::new()).unwrap_err().code(),
             Code::InvalidArgument
         );
-
-        let mut missing_id = transaction_descriptor_message();
-        missing_id.id = None;
+        // An entry without an op is malformed, never a silently dropped no-op.
         assert_eq!(
-            transaction_descriptor(Some(missing_id))
+            raw_mutations(vec![proto::RawMutation { op: None }])
                 .unwrap_err()
-                .message(),
-            "transaction id is required"
-        );
-
-        let mut mismatched = transaction_descriptor_message();
-        mismatched.primary.as_mut().unwrap().keyspace_id = 8;
-        assert_eq!(
-            transaction_descriptor(Some(mismatched))
-                .unwrap_err()
-                .message(),
-            "transaction and primary keyspace ids must match"
-        );
-
-        let mut oversized = transaction_descriptor_message();
-        oversized.primary.as_mut().unwrap().keyspace_id = KeyspaceId::MAX + 1;
-        assert_eq!(
-            transaction_descriptor(Some(oversized))
-                .unwrap_err()
-                .message(),
-            "keyspace id exceeds 3-byte width"
-        );
-    }
-
-    #[test]
-    fn transaction_status_has_three_explicit_wire_decisions() {
-        use proto::kv_check_txn_status_response::Decision;
-
-        assert_eq!(
-            txn_status_response(TxnStatus::Locked).decision,
-            Some(Decision::Locked(proto::TxnLocked {}))
-        );
-        assert_eq!(
-            txn_status_response(TxnStatus::Committed {
-                commit_ts: TimeStamp(23),
-            })
-            .decision,
-            Some(Decision::CommittedTs(23))
-        );
-        assert_eq!(
-            txn_status_response(TxnStatus::RolledBack).decision,
-            Some(Decision::RolledBack(proto::TxnRolledBack {}))
+                .code(),
+            Code::InvalidArgument
         );
     }
 
@@ -3468,7 +3153,6 @@ mod tests {
             .code(),
             Code::FailedPrecondition
         );
-        assert_eq!(error_status(Error::KeyIsLocked).code(), Code::Aborted);
 
         // Internal, and the wire text must not carry the object key: it is a physical
         // identifier describing our storage layout, useless to a client. The redaction lives
@@ -3495,3 +3179,4 @@ mod tests {
 }
 
 mod routed;
+mod ttl;

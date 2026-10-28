@@ -6,13 +6,7 @@ use crate::api::RawReadJob;
 
 fn batch_context(backend: &RuntimeBackend, name: &str) -> RequestContext {
     let created = backend
-        .create_keyspace(
-            "acceptance",
-            name,
-            TenantId::DEFAULT,
-            ApiType::Raw,
-            TxnGroupId(0),
-        )
+        .create_keyspace("acceptance", name, TenantId::DEFAULT, ApiType::Raw)
         .unwrap();
     let location = backend
         .get_region("acceptance", created.keyspace, b"alpha")

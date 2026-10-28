@@ -10,3 +10,6 @@ kv9-common.workspace = true
 kv9-region.workspace = true
 kv9-raft.workspace = true
 kv9-engine.workspace = true
+
+[dev-dependencies]
+kv9-engine = { workspace = true, features = ["testing"] }

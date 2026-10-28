@@ -5,7 +5,7 @@
 //! commit the entire returned batch in that same term before acknowledging it.
 //! No caller may execute individual resource writes from a plan.
 //!
-//! Version 1 tracks explicitly registered owners only. It does not certify a
+//! The ledger tracks explicitly registered owners only. It does not certify a
 //! complete backfill of existing references and provides no deletion operation.
 //! Final release after actual use drains needs a separate settlement capability;
 //! this first interface permits quiescence only under a published successor.
@@ -13,20 +13,81 @@ use std::collections::BTreeMap;
 use std::num::NonZeroU64;
 
 use kv9_common::retention::{
-    OwnerId, OwnerToken, PinCommand, PinPhase, ResourceIdentity, ResourceKind, RetentionRecord,
+    OwnerId, OwnerSlot, OwnerToken, PinPhase, ResourceIdentity, ResourceKind,
 };
 use kv9_common::{Error, Result, RootDescriptor, RootDigest};
 use kv9_engine::{ColumnFamily, ReadView, WriteBatch};
 
-pub const MAX_OWNER_RESOURCES: usize = 64;
+pub const MAX_OWNER_RESOURCES: usize = kv9_common::retention::MAX_OWNER_RESOURCES;
 pub const MAX_LEDGER_BATCH_BYTES: usize = 8 * 1024 * 1024;
-pub const MAX_LEDGER_REQUEST_BYTES: usize = 16 * 1024;
+pub const MAX_LEDGER_REQUEST_BYTES: usize = kv9_engine::checkpoint::MAX_MANIFEST_BYTES + 256;
+const MAX_SMALL_REQUEST_BYTES: usize = 16 * 1024;
 const MAX_OWNER_BYTES: usize = 8 * 1024;
 const PREFIX: &[u8] = b"\0kv9\0retention_v1\0";
-const HEADER_MAGIC: &[u8; 8] = b"KV9LED01";
+const HEADER_MAGIC: &[u8; 8] = b"KV9LED27";
+const DATA_TIMELINE_HEADER_MAGIC: &[u8; 8] = b"KV9LED26";
+const DATA_INITIAL_HEADER_MAGIC: &[u8; 8] = b"KV9LED25";
+const DATA_ORIGINS_HEADER_MAGIC: &[u8; 8] = b"KV9LED24";
+const DATA_MEMBERSHIP_HEADER_MAGIC: &[u8; 8] = b"KV9LED23";
+const DATA_HISTORY_HEADER_MAGIC: &[u8; 8] = b"KV9LED22";
+const DATA_FENCE_HEADER_MAGIC: &[u8; 8] = b"KV9LED21";
+const IMAGE_PUBLISHER_HEADER_MAGIC: &[u8; 8] = b"KV9LED20";
+const IMAGE_READER_HEADER_MAGIC: &[u8; 8] = b"KV9LED19";
+const METADATA_IMAGE_GATE_HEADER_MAGIC: &[u8; 8] = b"KV9LED18";
+const BOOTSTRAP_UNENTERED_HEADER_MAGIC: &[u8; 8] = b"KV9LED17";
+const BOOTSTRAP_CLOSURE_HEADER_MAGIC: &[u8; 8] = b"KV9LED16";
+const METADATA_READ_GATE_HEADER_MAGIC: &[u8; 8] = b"KV9LED15";
+const METADATA_SELECTION_HEADER_MAGIC: &[u8; 8] = b"KV9LED14";
+const BOOTSTRAP_INDEX_HEADER_MAGIC: &[u8; 8] = b"KV9LED13";
+const BOOTSTRAP_ADMISSION_HEADER_MAGIC: &[u8; 8] = b"KV9LED12";
+const READER_CLOSURE_HEADER_MAGIC: &[u8; 8] = b"KV9LED11";
+const READER_GENERATION_HEADER_MAGIC: &[u8; 8] = b"KV9LED10";
+const READER_INDEX_HEADER_MAGIC: &[u8; 8] = b"KV9LED09";
+const MIGRATION_HEADER_MAGIC: &[u8; 8] = b"KV9LED08";
+const CLOSURE_HEADER_MAGIC: &[u8; 8] = b"KV9LED07";
+const ATOMIC_HEADER_MAGIC: &[u8; 8] = b"KV9LED06";
+const ENROLLMENT_HEADER_MAGIC: &[u8; 8] = b"KV9LED05";
+const BUILD_INDEX_HEADER_MAGIC: &[u8; 8] = b"KV9LED04";
+const GATED_HEADER_MAGIC: &[u8; 8] = b"KV9LED03";
+const ROWS_HEADER_MAGIC: &[u8; 8] = b"KV9LED02";
+const LEGACY_HEADER_MAGIC: &[u8; 8] = b"KV9LED01";
 const OWNER_MAGIC: &[u8; 8] = b"KV9OWN01";
+const EXECUTOR_OWNER_MAGIC: &[u8; 8] = b"KV9OWN02";
 const REQUEST_MAGIC: &[u8; 8] = b"KV9RTX01";
 const TRACKING_ONLY: u8 = 1;
+
+pub mod bootstrap_closure;
+pub mod bootstrap_index;
+pub mod build_index;
+pub mod image_publisher_closure;
+pub mod image_publisher_index;
+pub mod image_reader_closure;
+pub mod image_reader_index;
+pub mod metadata_image_gate;
+pub mod metadata_image_write_gate;
+pub mod reader_closure;
+pub mod reader_index;
+pub mod reader_lifecycle;
+mod resource_rows;
+use resource_rows::ResourceRecord;
+pub mod checkpoint_intent;
+pub mod data_configuration_intervals;
+pub mod data_configuration_origins;
+pub mod data_configuration_timeline;
+pub mod data_membership;
+pub mod data_read_fence;
+pub mod data_store_history;
+use checkpoint_intent::CheckpointIntent;
+pub mod bootstrap_reader;
+pub mod checkpoint_admission;
+pub mod checkpoint_begin;
+pub mod checkpoint_closure;
+pub mod checkpoint_reader;
+pub mod checkpoint_refusal;
+pub mod checkpoint_selection;
+pub mod image_reader;
+pub mod metadata_read_gate;
+pub mod migration_publisher;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -39,6 +100,10 @@ pub enum OwnerKind {
     Migration = 6,
     Backup = 7,
     Legacy = 8,
+    Publisher = 9,
+    /// Store-bound metadata bootstrap protection. It survives process restarts;
+    /// no generic transfer, drain report or release can retire this owner.
+    BootstrapReader = 10,
 }
 
 /// A random process incarnation, never a PID or an expiring clock lease.
@@ -92,7 +157,12 @@ impl OwnerBinding {
             || d.subject == [0; 32]
             || self.resources.is_empty()
             || self.resources.len() > MAX_OWNER_RESOURCES
-            || (d.kind == OwnerKind::Reader && d.local.is_none())
+            || (matches!(d.kind, OwnerKind::Reader | OwnerKind::Publisher) && d.local.is_none())
+            || (d.kind == OwnerKind::BootstrapReader
+                && (d.region != kv9_common::META_REGION_0.0
+                    || d.local.is_some()
+                    || d.subject_is_anchor
+                    || self.generation.get() != 1))
             || d.local
                 .is_some_and(|l| l.node == 0 || l.store == [0; 16] || l.process == [0; 16])
         {
@@ -110,6 +180,131 @@ pub struct LedgerOwner {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LedgerRequest {
+    /// Deny new uploads for an exact metadata image after its read fence.
+    CloseMetadataImageWrites(OwnerToken),
+    /// Bounded catalog coverage for non-anchor Build and migration Publishers.
+    AdvanceImagePublisherIndex {
+        expected: u64,
+        stage: u8,
+        after: Option<OwnerId>,
+        next: Option<OwnerId>,
+    },
+    /// Dense generation observation only; never grants resource release.
+    AdvanceImagePublisherClosure {
+        pending: OwnerToken,
+        expected: u64,
+    },
+    /// Bounded directory of non-anchor Readers across every image operation.
+    AdvanceImageReaderIndex {
+        expected: u64,
+        stage: u8,
+        after: Option<OwnerId>,
+        next: Option<OwnerId>,
+    },
+    /// One image-wide generation census page after metadata admission closes.
+    AdvanceImageReaderClosure {
+        pending: OwnerToken,
+        expected: u64,
+    },
+    /// Close all new catalog Reader/Bootstrap admissions for this exact
+    /// metadata image, using an already closed all-store checkpoint read gate.
+    CloseMetadataImageReads(OwnerToken),
+    /// Census one bounded page of persistent grants for this exact metadata
+    /// image after new read admission closes; never grants Version release.
+    AdvanceBootstrapClosure {
+        pending: OwnerToken,
+        expected: u64,
+    },
+    /// Verify at most four provisioned metadata stores have selected a strictly
+    /// later checkpoint; only the final page closes new reads of this attempt.
+    AdvanceMetadataReadGate {
+        pending: OwnerToken,
+        expected: u64,
+    },
+    /// Derive a persistent bootstrap grant from the exact Published metadata
+    /// Version and provisioned store, atomically retaining its admission origin.
+    BeginBootstrapRead {
+        pending: OwnerToken,
+        source: kv9_common::NodeId,
+        store: kv9_common::StoreIncarnation,
+    },
+    /// Requires an independent observation of this store's durable bootstrap
+    /// read fence. A caller-supplied drain assertion cannot retire this grant.
+    RetireBootstrapRead {
+        pending: OwnerToken,
+        source: kv9_common::NodeId,
+        store: kv9_common::StoreIncarnation,
+    },
+    /// Actual GET-only installation/recovery reader drained under the exact
+    /// still-Published Snapshot/Migration source; grants no source retirement.
+    FinishImageRead {
+        successor: OwnerToken,
+        reader: OwnerBinding,
+    },
+    /// Atomically admit a process generation for the catalog's exact migration image.
+    EnterMigrationPublisher {
+        operation: [u8; 16],
+        publisher: OwnerBinding,
+    },
+    /// Actual local jobs drained; preserve original PUT counts and complete coverage.
+    FinishMigrationPublisher {
+        operation: [u8; 16],
+        publisher: OwnerBinding,
+        issued: u64,
+        resolved: u64,
+    },
+    /// Request independent observation of a replica's selected checkpoint.
+    /// Caller assertions and committed manifest history alone are insufficient.
+    RecordCheckpointSelection {
+        pending: OwnerToken,
+        source: kv9_common::NodeId,
+        store: kv9_common::StoreIncarnation,
+    },
+    /// Independently inspect an exact store's durable prospective DATA floor.
+    /// Caller-supplied selection or drain assertions cannot mint this fact.
+    RecordDataMembership(data_membership::Request),
+    /// Independent exact-store inspection; caller cannot supply origin pages.
+    RecordConfigurationOrigins(data_configuration_origins::Request),
+    /// Independently query actual ordered configuration states; no caller page.
+    RecordConfigurationTimeline(data_configuration_timeline::Request),
+    /// Derive one bounded page from already durable actual configurations.
+    AdvanceConfigurationIntervals(data_configuration_intervals::Request),
+    RecordDataReadFence {
+        pending: OwnerToken,
+        source: kv9_common::NodeId,
+        store: kv9_common::StoreIncarnation,
+        creation: RootDigest,
+    },
+    /// One bounded page from the retained placement catalog at its exact
+    /// atomic task revision. Completion never grants all-store read closure.
+    AdvanceDataStoreHistory {
+        expected: u64,
+        revision: u64,
+        after: Option<u64>,
+    },
+    /// Actual local read scope drained. Finish/fence this Reader generation
+    /// atomically while its complete Published successor remains protected.
+    FinishCheckpointRead {
+        successor: OwnerToken,
+        reader: OwnerBinding,
+    },
+    /// The serving metadata leader must independently verify this exact window.
+    /// The ordinary metadata planner cannot persist a caller's assertion.
+    RecordCheckpointRefusal {
+        pending: OwnerToken,
+        source: kv9_common::NodeId,
+        winner: [u8; 32],
+    },
+    /// Recompute one bounded closure page; callers cannot supply its findings.
+    AdvanceCheckpointClosure {
+        pending: OwnerToken,
+        expected: u64,
+    },
+    /// Bounded dense Reader-generation census after an exact refusal.
+    AdvanceReaderClosure {
+        pending: OwnerToken,
+        expected: u64,
+    },
     /// Explicit bootstrap of an empty ledger namespace, never automatic repair.
     Initialize,
     /// Registration alone is not a pin or permission to upload/use a resource.
@@ -130,6 +325,70 @@ pub enum LedgerRequest {
         to: OwnerToken,
     },
     Release(OwnerToken),
+    /// Immutable recovery information only: no preparation, admission closure,
+    /// manifest settlement or release authority is created by this record.
+    RecordCheckpoint(CheckpointIntent),
+    /// Atomically create Published Pending, resources, intent and admission.
+    /// Existing Pending resumes without manufacturing an atomic-birth record.
+    BeginCheckpoint(CheckpointIntent),
+    /// Monotone admission fence, not an executor drain or negative certificate.
+    CloseCheckpointAdmission(OwnerToken),
+    /// Terminal generation for an executor that never reached Held/Published.
+    /// Prevents delayed entry after an uncertain pre-append failure.
+    CancelUnenteredCheckpoint(OwnerBinding),
+    /// Closed gate plus exact tracked Held generation proves Publish cannot
+    /// authorize this generation. Global Pending/Version coverage remains.
+    RetireUnpublishedCheckpoint {
+        pending: OwnerToken,
+        executor: OwnerToken,
+    },
+    /// CAS progress of the bounded Held-only sweep. Completion cannot certify
+    /// that Published executors, legacy writers or remote PUTs have drained.
+    AdvanceCheckpointSweep {
+        pending: OwnerToken,
+        expected: u64,
+        after: Option<OwnerId>,
+        next: Option<OwnerId>,
+    },
+    /// Trusted executor observation, never reconstructed from Released. Every
+    /// generation keeps its own immutable row; unresolved PUTs remain debt.
+    RecordCheckpointDrain {
+        pending: OwnerToken,
+        executor: OwnerToken,
+        issued: u64,
+        resolved: u64,
+    },
+    /// Exact locally drained scope: terminal executor pins and its immutable
+    /// observation commit together under complete Published Pending/Version
+    /// coverage. Unknown remote PUTs remain recorded, not cancelled.
+    FinishCheckpointExecution {
+        pending: OwnerToken,
+        executor: OwnerBinding,
+        issued: u64,
+        resolved: u64,
+    },
+    /// Bounded global owner/registration census. This establishes catalog
+    /// reverse-index coverage, never executor drain or remote I/O termination.
+    AdvanceBuildIndex {
+        expected: u64,
+        stage: u8,
+        after: Option<OwnerId>,
+        next: Option<OwnerId>,
+    },
+    /// Bounded census of persistent bootstrap owners, registrations and origins.
+    AdvanceBootstrapIndex {
+        expected: u64,
+        stage: u8,
+        after: Option<OwnerId>,
+        next: Option<OwnerId>,
+    },
+    /// Bounded census of per-process Reader registrations, not a drain proof.
+    AdvanceReaderIndex {
+        expected: u64,
+        stage: u8,
+        after: Option<OwnerId>,
+        next: Option<OwnerId>,
+    },
 }
 
 /// Encode untrusted request data, not a prepared/committed operation capability.
@@ -149,6 +408,197 @@ pub fn encode_request(root: RootDigest, request: &LedgerRequest) -> Result<Vec<u
         Ok(())
     };
     match request {
+        LedgerRequest::AdvanceConfigurationIntervals(request) => {
+            b.push(41);
+            b.extend_from_slice(&request.encode()?);
+        }
+        LedgerRequest::RecordConfigurationTimeline(request) => {
+            b.push(40);
+            b.extend_from_slice(&request.encode()?);
+        }
+        LedgerRequest::RecordConfigurationOrigins(request) => {
+            b.push(39);
+            b.extend_from_slice(&request.encode()?);
+        }
+        LedgerRequest::RecordDataMembership(request) => {
+            b.push(38);
+            b.extend_from_slice(&request.encode()?);
+        }
+        LedgerRequest::AdvanceDataStoreHistory {
+            expected,
+            revision,
+            after,
+        } => {
+            if after.is_some_and(|id| id < crate::store::FIRST_DYNAMIC_ID) {
+                return Err(invalid("DATA store census task cursor"));
+            }
+            b.push(37);
+            uint(&mut b, *expected);
+            uint(&mut b, *revision);
+            b.push(u8::from(after.is_some()));
+            if let Some(id) = after {
+                uint(&mut b, *id);
+            }
+        }
+        LedgerRequest::CloseMetadataImageWrites(pending) => {
+            if pending.generation.get() != 1 {
+                return Err(invalid("image write gate Pending generation"));
+            }
+            b.push(33);
+            token(&mut b, *pending);
+        }
+        LedgerRequest::AdvanceImagePublisherClosure { pending, expected } => {
+            if pending.generation.get() != 1 {
+                return Err(invalid("image Publisher closure Pending generation"));
+            }
+            b.push(35);
+            token(&mut b, *pending);
+            uint(&mut b, *expected);
+        }
+        LedgerRequest::AdvanceImageReaderClosure { pending, expected } => {
+            if pending.generation.get() != 1 {
+                return Err(invalid("image Reader closure Pending generation"));
+            }
+            b.push(32);
+            token(&mut b, *pending);
+            uint(&mut b, *expected);
+        }
+        LedgerRequest::CloseMetadataImageReads(pending) => {
+            if pending.generation.get() != 1 {
+                return Err(invalid("metadata image gate Pending generation"));
+            }
+            b.push(30);
+            token(&mut b, *pending);
+        }
+        LedgerRequest::AdvanceBootstrapClosure { pending, expected } => {
+            if pending.generation.get() != 1 {
+                return Err(invalid("bootstrap closure Pending generation"));
+            }
+            b.push(29);
+            token(&mut b, *pending);
+            uint(&mut b, *expected);
+        }
+        LedgerRequest::AdvanceMetadataReadGate { pending, expected } => {
+            if pending.generation.get() != 1 {
+                return Err(invalid("metadata read gate Pending generation"));
+            }
+            b.push(28);
+            token(&mut b, *pending);
+            uint(&mut b, *expected);
+        }
+        LedgerRequest::BeginBootstrapRead {
+            pending,
+            source,
+            store,
+        }
+        | LedgerRequest::RetireBootstrapRead {
+            pending,
+            source,
+            store,
+        } => {
+            if pending.generation.get() != 1 || source.0 == 0 || store.as_bytes() == &[0; 16] {
+                return Err(invalid("bootstrap request identity"));
+            }
+            b.push(
+                if matches!(request, LedgerRequest::BeginBootstrapRead { .. }) {
+                    26
+                } else {
+                    23
+                },
+            );
+            token(&mut b, *pending);
+            uint(&mut b, source.0);
+            b.extend_from_slice(store.as_bytes());
+        }
+        LedgerRequest::FinishImageRead { successor, reader } => {
+            b.push(22);
+            token(&mut b, *successor);
+            binding(&mut b, reader)?;
+        }
+        LedgerRequest::EnterMigrationPublisher {
+            operation,
+            publisher,
+        } => {
+            if operation == &[0; 16] {
+                return Err(invalid("migration operation zero"));
+            }
+            b.push(20);
+            b.extend_from_slice(operation);
+            binding(&mut b, publisher)?;
+        }
+        LedgerRequest::FinishMigrationPublisher {
+            operation,
+            publisher,
+            issued,
+            resolved,
+        } => {
+            if operation == &[0; 16] || resolved > issued {
+                return Err(invalid("migration drain bounds"));
+            }
+            b.push(21);
+            b.extend_from_slice(operation);
+            uint(&mut b, *issued);
+            uint(&mut b, *resolved);
+            binding(&mut b, publisher)?;
+        }
+        LedgerRequest::RecordDataReadFence {
+            pending,
+            source,
+            store,
+            creation,
+        } => {
+            if source.0 == 0 || store.as_bytes() == &[0; 16] || creation.as_bytes() == &[0; 32] {
+                return Err(invalid("DATA fence source, store or creation"));
+            }
+            b.push(36);
+            token(&mut b, *pending);
+            uint(&mut b, source.0);
+            b.extend_from_slice(store.as_bytes());
+            b.extend_from_slice(creation.as_bytes());
+        }
+        LedgerRequest::RecordCheckpointSelection {
+            pending,
+            source,
+            store,
+        } => {
+            if source.0 == 0 || store.as_bytes() == &[0; 16] {
+                return Err(invalid("checkpoint selection source or store"));
+            }
+            b.push(19);
+            token(&mut b, *pending);
+            uint(&mut b, source.0);
+            b.extend_from_slice(store.as_bytes());
+        }
+        LedgerRequest::FinishCheckpointRead { successor, reader } => {
+            b.push(18);
+            token(&mut b, *successor);
+            binding(&mut b, reader)?;
+        }
+        LedgerRequest::RecordCheckpointRefusal {
+            pending,
+            source,
+            winner,
+        } => {
+            if source.0 == 0 || winner == &[0; 32] {
+                return Err(invalid("checkpoint refusal source or winner"));
+            }
+            b.push(17);
+            token(&mut b, *pending);
+            uint(&mut b, source.0);
+            b.extend_from_slice(winner);
+        }
+        LedgerRequest::AdvanceCheckpointClosure { pending, expected }
+        | LedgerRequest::AdvanceReaderClosure { pending, expected } => {
+            b.push(
+                if matches!(request, LedgerRequest::AdvanceCheckpointClosure { .. }) {
+                    16
+                } else {
+                    25
+                },
+            );
+            token(&mut b, *pending);
+            uint(&mut b, *expected);
+        }
         LedgerRequest::Initialize => b.push(0),
         LedgerRequest::Register(resources) => {
             validate_resources(resources, root)?;
@@ -177,12 +627,140 @@ pub fn encode_request(root: RootDigest, request: &LedgerRequest) -> Result<Vec<u
             token(&mut b, *from);
             token(&mut b, *to);
         }
+        LedgerRequest::RecordCheckpointDrain {
+            pending,
+            executor,
+            issued,
+            resolved,
+        } => {
+            b.push(12);
+            token(&mut b, *pending);
+            token(&mut b, *executor);
+            uint(&mut b, *issued);
+            uint(&mut b, *resolved);
+        }
         LedgerRequest::Release(t) => {
             b.push(6);
             token(&mut b, *t);
         }
+        LedgerRequest::FinishCheckpointExecution {
+            pending,
+            executor,
+            issued,
+            resolved,
+        } => {
+            b.push(13);
+            token(&mut b, *pending);
+            uint(&mut b, *issued);
+            uint(&mut b, *resolved);
+            binding(&mut b, executor)?;
+        }
+        LedgerRequest::RecordCheckpoint(intent) | LedgerRequest::BeginCheckpoint(intent) => {
+            if intent.root() != root {
+                return Err(invalid("checkpoint intent root differs"));
+            }
+            b.push(if matches!(request, LedgerRequest::BeginCheckpoint(_)) {
+                15
+            } else {
+                7
+            });
+            b.extend_from_slice(&intent.encode());
+        }
+        LedgerRequest::CloseCheckpointAdmission(t) => {
+            b.push(8);
+            token(&mut b, *t);
+        }
+        LedgerRequest::CancelUnenteredCheckpoint(owner) => {
+            b.push(9);
+            binding(&mut b, owner)?;
+        }
+        LedgerRequest::RetireUnpublishedCheckpoint { pending, executor } => {
+            b.push(10);
+            token(&mut b, *pending);
+            token(&mut b, *executor);
+        }
+        LedgerRequest::AdvanceCheckpointSweep {
+            pending,
+            expected,
+            after,
+            next,
+        } => {
+            b.push(11);
+            token(&mut b, *pending);
+            uint(&mut b, *expected);
+            for cursor in [after, next] {
+                b.push(u8::from(cursor.is_some()));
+                if let Some(id) = cursor {
+                    b.extend_from_slice(id.as_bytes());
+                }
+            }
+        }
+        LedgerRequest::AdvanceBuildIndex {
+            expected,
+            stage,
+            after,
+            next,
+        }
+        | LedgerRequest::AdvanceReaderIndex {
+            expected,
+            stage,
+            after,
+            next,
+        }
+        | LedgerRequest::AdvanceImagePublisherIndex {
+            expected,
+            stage,
+            after,
+            next,
+        }
+        | LedgerRequest::AdvanceImageReaderIndex {
+            expected,
+            stage,
+            after,
+            next,
+        }
+        | LedgerRequest::AdvanceBootstrapIndex {
+            expected,
+            stage,
+            after,
+            next,
+        } => {
+            let bootstrap = matches!(request, LedgerRequest::AdvanceBootstrapIndex { .. });
+            if *stage > if bootstrap { 3 } else { 1 } {
+                return Err(invalid("owner index stage"));
+            }
+            b.push(
+                if matches!(request, LedgerRequest::AdvanceBuildIndex { .. }) {
+                    14
+                } else if matches!(request, LedgerRequest::AdvanceImageReaderIndex { .. }) {
+                    31
+                } else if matches!(request, LedgerRequest::AdvanceImagePublisherIndex { .. }) {
+                    34
+                } else if bootstrap {
+                    27
+                } else {
+                    24
+                },
+            );
+            uint(&mut b, *expected);
+            b.push(*stage);
+            for cursor in [after, next] {
+                b.push(u8::from(cursor.is_some()));
+                if let Some(id) = cursor {
+                    b.extend_from_slice(id.as_bytes());
+                }
+            }
+        }
     }
-    if root.as_bytes() == &[0; 32] || b.len() + 32 > MAX_LEDGER_REQUEST_BYTES {
+    let limit = if matches!(
+        request,
+        LedgerRequest::RecordCheckpoint(_) | LedgerRequest::BeginCheckpoint(_)
+    ) {
+        MAX_LEDGER_REQUEST_BYTES
+    } else {
+        MAX_SMALL_REQUEST_BYTES
+    };
+    if root.as_bytes() == &[0; 32] || b.len() + 32 > limit {
         return Err(invalid("request root or byte bound"));
     }
     Ok(seal(b))
@@ -213,6 +791,106 @@ pub fn decode_request(bytes: &[u8], root: RootDigest) -> Result<LedgerRequest> {
         Ok(owner.binding)
     };
     let request = match r.byte()? {
+        41 => LedgerRequest::AdvanceConfigurationIntervals(
+            data_configuration_intervals::Request::decode(&mut r)?,
+        ),
+        40 => LedgerRequest::RecordConfigurationTimeline(
+            data_configuration_timeline::Request::decode(&mut r)?,
+        ),
+        39 => LedgerRequest::RecordConfigurationOrigins(
+            data_configuration_origins::Request::decode(&mut r)?,
+        ),
+        38 => LedgerRequest::RecordDataMembership(data_membership::Request::decode(&mut r)?),
+        37 => LedgerRequest::AdvanceDataStoreHistory {
+            expected: r.uint()?,
+            revision: r.uint()?,
+            after: if r.boolean()? { Some(r.uint()?) } else { None },
+        },
+        33 => LedgerRequest::CloseMetadataImageWrites(token(&mut r)?),
+        35 => LedgerRequest::AdvanceImagePublisherClosure {
+            pending: token(&mut r)?,
+            expected: r.uint()?,
+        },
+        32 => LedgerRequest::AdvanceImageReaderClosure {
+            pending: token(&mut r)?,
+            expected: r.uint()?,
+        },
+        34 => LedgerRequest::AdvanceImagePublisherIndex {
+            expected: r.uint()?,
+            stage: r.byte()?,
+            after: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+            next: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+        },
+        31 => LedgerRequest::AdvanceImageReaderIndex {
+            expected: r.uint()?,
+            stage: r.byte()?,
+            after: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+            next: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+        },
+        30 => LedgerRequest::CloseMetadataImageReads(token(&mut r)?),
+        29 => LedgerRequest::AdvanceBootstrapClosure {
+            pending: token(&mut r)?,
+            expected: r.uint()?,
+        },
+        28 => LedgerRequest::AdvanceMetadataReadGate {
+            pending: token(&mut r)?,
+            expected: r.uint()?,
+        },
+        26 => LedgerRequest::BeginBootstrapRead {
+            pending: token(&mut r)?,
+            source: kv9_common::NodeId(r.uint()?),
+            store: kv9_common::StoreIncarnation::from_bytes(r.array()?),
+        },
+        23 => LedgerRequest::RetireBootstrapRead {
+            pending: token(&mut r)?,
+            source: kv9_common::NodeId(r.uint()?),
+            store: kv9_common::StoreIncarnation::from_bytes(r.array()?),
+        },
+        22 => LedgerRequest::FinishImageRead {
+            successor: token(&mut r)?,
+            reader: binding(&mut r)?,
+        },
+        20 => LedgerRequest::EnterMigrationPublisher {
+            operation: r.array()?,
+            publisher: binding(&mut r)?,
+        },
+        21 => LedgerRequest::FinishMigrationPublisher {
+            operation: r.array()?,
+            issued: r.uint()?,
+            resolved: r.uint()?,
+            publisher: binding(&mut r)?,
+        },
+        36 => LedgerRequest::RecordDataReadFence {
+            pending: token(&mut r)?,
+            source: kv9_common::NodeId(r.uint()?),
+            store: kv9_common::StoreIncarnation::from_bytes(r.array()?),
+            creation: RootDigest::from_bytes(r.array()?),
+        },
+        19 => LedgerRequest::RecordCheckpointSelection {
+            pending: token(&mut r)?,
+            source: kv9_common::NodeId(r.uint()?),
+            store: kv9_common::StoreIncarnation::from_bytes(r.array()?),
+        },
+        18 => LedgerRequest::FinishCheckpointRead {
+            successor: token(&mut r)?,
+            reader: binding(&mut r)?,
+        },
         0 => LedgerRequest::Initialize,
         1 => {
             let count = u32::from_be_bytes(r.array()?) as usize;
@@ -240,6 +918,101 @@ pub fn decode_request(bytes: &[u8], root: RootDigest) -> Result<LedgerRequest> {
             to: token(&mut r)?,
         },
         6 => LedgerRequest::Release(token(&mut r)?),
+        7 => {
+            let bytes = r.take(r.0.len())?;
+            LedgerRequest::RecordCheckpoint(CheckpointIntent::decode_request(bytes, root)?)
+        }
+        15 => {
+            let bytes = r.take(r.0.len())?;
+            LedgerRequest::BeginCheckpoint(CheckpointIntent::decode_request(bytes, root)?)
+        }
+        16 => LedgerRequest::AdvanceCheckpointClosure {
+            pending: token(&mut r)?,
+            expected: r.uint()?,
+        },
+        25 => LedgerRequest::AdvanceReaderClosure {
+            pending: token(&mut r)?,
+            expected: r.uint()?,
+        },
+        17 => LedgerRequest::RecordCheckpointRefusal {
+            pending: token(&mut r)?,
+            source: kv9_common::NodeId(r.uint()?),
+            winner: r.array()?,
+        },
+        8 => LedgerRequest::CloseCheckpointAdmission(token(&mut r)?),
+        9 => LedgerRequest::CancelUnenteredCheckpoint(binding(&mut r)?),
+        10 => LedgerRequest::RetireUnpublishedCheckpoint {
+            pending: token(&mut r)?,
+            executor: token(&mut r)?,
+        },
+        11 => LedgerRequest::AdvanceCheckpointSweep {
+            pending: token(&mut r)?,
+            expected: r.uint()?,
+            after: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+            next: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+        },
+        12 => LedgerRequest::RecordCheckpointDrain {
+            pending: token(&mut r)?,
+            executor: token(&mut r)?,
+            issued: r.uint()?,
+            resolved: r.uint()?,
+        },
+        13 => LedgerRequest::FinishCheckpointExecution {
+            pending: token(&mut r)?,
+            issued: r.uint()?,
+            resolved: r.uint()?,
+            executor: binding(&mut r)?,
+        },
+        14 => LedgerRequest::AdvanceBuildIndex {
+            expected: r.uint()?,
+            stage: r.byte()?,
+            after: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+            next: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+        },
+        24 => LedgerRequest::AdvanceReaderIndex {
+            expected: r.uint()?,
+            stage: r.byte()?,
+            after: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+            next: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+        },
+        27 => LedgerRequest::AdvanceBootstrapIndex {
+            expected: r.uint()?,
+            stage: r.byte()?,
+            after: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+            next: if r.boolean()? {
+                Some(OwnerId::new(r.array()?).map_err(pin_error)?)
+            } else {
+                None
+            },
+        },
         _ => return Err(invalid("unknown retention request operation")),
     };
     if !r.0.is_empty() || encode_request(root, &request)? != bytes {
@@ -363,12 +1136,211 @@ fn header(root: RootDigest, revision: u64) -> Vec<u8> {
     b.extend_from_slice(&revision.to_be_bytes());
     seal(b)
 }
-fn read_header(b: &[u8], root: RootDigest) -> Result<u64> {
-    let b = checked(b, HEADER_MAGIC, 81)?;
+// V8 introduced migration publisher generations. Newer formats retain them.
+fn bootstrap_index_format(bytes: &[u8]) -> bool {
+    metadata_selection_format(bytes) || bytes.starts_with(BOOTSTRAP_INDEX_HEADER_MAGIC)
+}
+fn metadata_selection_format(bytes: &[u8]) -> bool {
+    metadata_read_gate_format(bytes) || bytes.starts_with(METADATA_SELECTION_HEADER_MAGIC)
+}
+fn metadata_read_gate_format(bytes: &[u8]) -> bool {
+    bootstrap_closure_format(bytes) || bytes.starts_with(METADATA_READ_GATE_HEADER_MAGIC)
+}
+fn bootstrap_closure_format(bytes: &[u8]) -> bool {
+    bootstrap_unentered_format(bytes) || bytes.starts_with(BOOTSTRAP_CLOSURE_HEADER_MAGIC)
+}
+fn image_reader_format(bytes: &[u8]) -> bool {
+    image_publisher_format(bytes) || bytes.starts_with(IMAGE_READER_HEADER_MAGIC)
+}
+fn image_publisher_format(bytes: &[u8]) -> bool {
+    data_fence_format(bytes) || bytes.starts_with(IMAGE_PUBLISHER_HEADER_MAGIC)
+}
+fn data_fence_format(bytes: &[u8]) -> bool {
+    bytes.starts_with(HEADER_MAGIC)
+        || bytes.starts_with(DATA_TIMELINE_HEADER_MAGIC)
+        || bytes.starts_with(DATA_INITIAL_HEADER_MAGIC)
+        || bytes.starts_with(DATA_ORIGINS_HEADER_MAGIC)
+        || bytes.starts_with(DATA_MEMBERSHIP_HEADER_MAGIC)
+        || bytes.starts_with(DATA_HISTORY_HEADER_MAGIC)
+        || bytes.starts_with(DATA_FENCE_HEADER_MAGIC)
+}
+fn metadata_image_gate_format(bytes: &[u8]) -> bool {
+    image_reader_format(bytes) || bytes.starts_with(METADATA_IMAGE_GATE_HEADER_MAGIC)
+}
+fn bootstrap_unentered_format(bytes: &[u8]) -> bool {
+    metadata_image_gate_format(bytes) || bytes.starts_with(BOOTSTRAP_UNENTERED_HEADER_MAGIC)
+}
+fn bootstrap_admission_format(bytes: &[u8]) -> bool {
+    bootstrap_index_format(bytes) || bytes.starts_with(BOOTSTRAP_ADMISSION_HEADER_MAGIC)
+}
+fn reader_closure_format(bytes: &[u8]) -> bool {
+    bootstrap_admission_format(bytes) || bytes.starts_with(READER_CLOSURE_HEADER_MAGIC)
+}
+fn reader_generation_format(bytes: &[u8]) -> bool {
+    reader_closure_format(bytes) || bytes.starts_with(READER_GENERATION_HEADER_MAGIC)
+}
+fn migration_format(bytes: &[u8]) -> bool {
+    reader_generation_format(bytes)
+        || bytes.starts_with(READER_INDEX_HEADER_MAGIC)
+        || bytes.starts_with(MIGRATION_HEADER_MAGIC)
+}
+fn check_upgrade(view: &dyn ReadView, stored: &[u8]) -> Result<()> {
+    data_configuration_intervals::check_old_format(view)?;
+    if stored.starts_with(DATA_TIMELINE_HEADER_MAGIC) {
+        return Ok(());
+    }
+    data_configuration_timeline::check_old_format(view)?;
+    if stored.starts_with(DATA_INITIAL_HEADER_MAGIC) {
+        return Ok(());
+    }
+    data_configuration_origins::initial::check_old_format(view)?;
+    if stored.starts_with(DATA_ORIGINS_HEADER_MAGIC) {
+        return Ok(());
+    }
+    data_configuration_origins::check_old_format(view)?;
+    if stored.starts_with(DATA_MEMBERSHIP_HEADER_MAGIC) {
+        return Ok(());
+    }
+    data_membership::check_old_format(view)?;
+    if stored.starts_with(DATA_HISTORY_HEADER_MAGIC) {
+        return Ok(());
+    }
+    data_store_history::check_old_format(view)?;
+    if stored.starts_with(DATA_FENCE_HEADER_MAGIC) {
+        return Ok(());
+    }
+    data_read_fence::check_old_format(view)?;
+    if stored.starts_with(IMAGE_PUBLISHER_HEADER_MAGIC) {
+        return Ok(());
+    }
+    metadata_image_write_gate::check_old_format(view)?;
+    image_publisher_index::check_old_format(view)?;
+    image_publisher_closure::check_old_format(view)?;
+    if stored.starts_with(IMAGE_READER_HEADER_MAGIC) {
+        return Ok(());
+    }
+    image_reader_index::check_old_format(view)?;
+    image_reader_closure::check_old_format(view)?;
+    if stored.starts_with(METADATA_IMAGE_GATE_HEADER_MAGIC) {
+        return Ok(());
+    }
+    metadata_image_gate::check_old_format(view)?;
+    if stored.starts_with(BOOTSTRAP_UNENTERED_HEADER_MAGIC) {
+        return Ok(());
+    }
+    bootstrap_reader::unentered::check_old_format(view)?;
+    bootstrap_index::check_old_unentered_format(view)?;
+    if stored.starts_with(BOOTSTRAP_CLOSURE_HEADER_MAGIC) {
+        return Ok(());
+    }
+    bootstrap_closure::check_old_format(view)?;
+    if stored.starts_with(METADATA_READ_GATE_HEADER_MAGIC) {
+        return Ok(());
+    }
+    metadata_read_gate::check_old_format(view)?;
+    if stored.starts_with(METADATA_SELECTION_HEADER_MAGIC) {
+        return Ok(());
+    }
+    checkpoint_selection::check_old_metadata_format(view)?;
+    if stored.starts_with(BOOTSTRAP_INDEX_HEADER_MAGIC) {
+        return Ok(());
+    }
+    bootstrap_index::check_old_format(view)?;
+    if stored.starts_with(BOOTSTRAP_ADMISSION_HEADER_MAGIC) {
+        return Ok(());
+    }
+    bootstrap_reader::admission::check_old_format(view)?;
+    if stored.starts_with(READER_CLOSURE_HEADER_MAGIC) {
+        return Ok(());
+    }
+    reader_closure::check_old_format(view)?;
+    if stored.starts_with(READER_GENERATION_HEADER_MAGIC) {
+        return Ok(());
+    }
+    reader_lifecycle::check_old_format(view)?;
+    if stored.starts_with(READER_INDEX_HEADER_MAGIC) {
+        return Ok(());
+    }
+    reader_index::check_old_format(view)?;
+    if !stored.starts_with(MIGRATION_HEADER_MAGIC) {
+        migration_publisher::check_old_format(view)?;
+        if !stored.starts_with(CLOSURE_HEADER_MAGIC) {
+            checkpoint_closure::check_old_format(view, stored)?;
+        }
+    }
+    Ok(())
+}
+fn read_header(b: &[u8], root: RootDigest) -> Result<(u64, bool)> {
+    let rows_enabled = migration_format(b)
+        || b.starts_with(CLOSURE_HEADER_MAGIC)
+        || b.starts_with(ATOMIC_HEADER_MAGIC)
+        || b.starts_with(ENROLLMENT_HEADER_MAGIC)
+        || b.starts_with(BUILD_INDEX_HEADER_MAGIC)
+        || b.starts_with(GATED_HEADER_MAGIC)
+        || b.starts_with(ROWS_HEADER_MAGIC);
+    let magic = if b.starts_with(HEADER_MAGIC) {
+        HEADER_MAGIC
+    } else if b.starts_with(DATA_TIMELINE_HEADER_MAGIC) {
+        DATA_TIMELINE_HEADER_MAGIC
+    } else if b.starts_with(DATA_INITIAL_HEADER_MAGIC) {
+        DATA_INITIAL_HEADER_MAGIC
+    } else if b.starts_with(DATA_ORIGINS_HEADER_MAGIC) {
+        DATA_ORIGINS_HEADER_MAGIC
+    } else if b.starts_with(DATA_MEMBERSHIP_HEADER_MAGIC) {
+        DATA_MEMBERSHIP_HEADER_MAGIC
+    } else if b.starts_with(DATA_HISTORY_HEADER_MAGIC) {
+        DATA_HISTORY_HEADER_MAGIC
+    } else if b.starts_with(DATA_FENCE_HEADER_MAGIC) {
+        DATA_FENCE_HEADER_MAGIC
+    } else if b.starts_with(IMAGE_PUBLISHER_HEADER_MAGIC) {
+        IMAGE_PUBLISHER_HEADER_MAGIC
+    } else if b.starts_with(IMAGE_READER_HEADER_MAGIC) {
+        IMAGE_READER_HEADER_MAGIC
+    } else if b.starts_with(METADATA_IMAGE_GATE_HEADER_MAGIC) {
+        METADATA_IMAGE_GATE_HEADER_MAGIC
+    } else if b.starts_with(BOOTSTRAP_UNENTERED_HEADER_MAGIC) {
+        BOOTSTRAP_UNENTERED_HEADER_MAGIC
+    } else if b.starts_with(BOOTSTRAP_CLOSURE_HEADER_MAGIC) {
+        BOOTSTRAP_CLOSURE_HEADER_MAGIC
+    } else if b.starts_with(METADATA_READ_GATE_HEADER_MAGIC) {
+        METADATA_READ_GATE_HEADER_MAGIC
+    } else if b.starts_with(METADATA_SELECTION_HEADER_MAGIC) {
+        METADATA_SELECTION_HEADER_MAGIC
+    } else if b.starts_with(BOOTSTRAP_INDEX_HEADER_MAGIC) {
+        BOOTSTRAP_INDEX_HEADER_MAGIC
+    } else if b.starts_with(BOOTSTRAP_ADMISSION_HEADER_MAGIC) {
+        BOOTSTRAP_ADMISSION_HEADER_MAGIC
+    } else if b.starts_with(READER_CLOSURE_HEADER_MAGIC) {
+        READER_CLOSURE_HEADER_MAGIC
+    } else if b.starts_with(READER_GENERATION_HEADER_MAGIC) {
+        READER_GENERATION_HEADER_MAGIC
+    } else if b.starts_with(READER_INDEX_HEADER_MAGIC) {
+        READER_INDEX_HEADER_MAGIC
+    } else if b.starts_with(MIGRATION_HEADER_MAGIC) {
+        MIGRATION_HEADER_MAGIC
+    } else if b.starts_with(CLOSURE_HEADER_MAGIC) {
+        CLOSURE_HEADER_MAGIC
+    } else if b.starts_with(ATOMIC_HEADER_MAGIC) {
+        ATOMIC_HEADER_MAGIC
+    } else if b.starts_with(ENROLLMENT_HEADER_MAGIC) {
+        ENROLLMENT_HEADER_MAGIC
+    } else if b.starts_with(BUILD_INDEX_HEADER_MAGIC) {
+        BUILD_INDEX_HEADER_MAGIC
+    } else if b.starts_with(GATED_HEADER_MAGIC) {
+        GATED_HEADER_MAGIC
+    } else if rows_enabled {
+        ROWS_HEADER_MAGIC
+    } else {
+        LEGACY_HEADER_MAGIC
+    };
+    let b = checked(b, magic, 81)?;
     if b.len() != 41 || &b[..32] != root.as_bytes() || b[32] != TRACKING_ONLY {
         return Err(invalid("unsupported ledger root or coverage mode"));
     }
-    Ok(u64::from_be_bytes(b[33..41].try_into().unwrap()))
+    Ok((
+        u64::from_be_bytes(b[33..41].try_into().unwrap()),
+        rows_enabled,
+    ))
 }
 fn uint(b: &mut Vec<u8>, n: u64) {
     b.extend_from_slice(&n.to_be_bytes());
@@ -440,7 +1412,23 @@ impl<'a> Reader<'a> {
     }
 }
 fn decode_owner(bytes: &[u8], root: RootDigest, id: OwnerId) -> Result<LedgerOwner> {
-    let mut r = Reader(checked(bytes, OWNER_MAGIC, MAX_OWNER_BYTES)?);
+    let executor = bytes.starts_with(EXECUTOR_OWNER_MAGIC);
+    let managed_reader = bytes.starts_with(reader_lifecycle::OWNER_MAGIC);
+    let mut r = Reader(checked(
+        bytes,
+        if executor {
+            EXECUTOR_OWNER_MAGIC
+        } else if bytes.starts_with(bootstrap_reader::admission::OWNER_MAGIC) {
+            bootstrap_reader::admission::OWNER_MAGIC
+        } else if bytes.starts_with(bootstrap_reader::unentered::OWNER_MAGIC) {
+            bootstrap_reader::unentered::OWNER_MAGIC
+        } else if managed_reader {
+            reader_lifecycle::OWNER_MAGIC
+        } else {
+            OWNER_MAGIC
+        },
+        MAX_OWNER_BYTES,
+    )?);
     let stored_root = RootDigest::from_bytes(r.array()?);
     let stored_id = OwnerId::new(r.array()?).map_err(pin_error)?;
     if stored_root != root || stored_id != id {
@@ -455,6 +1443,8 @@ fn decode_owner(bytes: &[u8], root: RootDigest, id: OwnerId) -> Result<LedgerOwn
         6 => OwnerKind::Migration,
         7 => OwnerKind::Backup,
         8 => OwnerKind::Legacy,
+        9 => OwnerKind::Publisher,
+        10 => OwnerKind::BootstrapReader,
         _ => return Err(invalid("unknown owner kind")),
     };
     let region = r.uint()?;
@@ -518,7 +1508,22 @@ fn decode_owner(bytes: &[u8], root: RootDigest, id: OwnerId) -> Result<LedgerOwn
         phase,
     };
     owner.binding.validate(root)?;
-    if encode_owner(&owner) != bytes {
+    let canonical = if executor {
+        checkpoint_admission::encode_executor(&owner)
+    } else if bytes.starts_with(bootstrap_reader::admission::OWNER_MAGIC)
+        && owner.binding.descriptor.kind == OwnerKind::BootstrapReader
+    {
+        bootstrap_reader::admission::encode(&owner)
+    } else if bytes.starts_with(bootstrap_reader::unentered::OWNER_MAGIC)
+        && owner.binding.descriptor.kind == OwnerKind::BootstrapReader
+    {
+        bootstrap_reader::unentered::encode(&owner)
+    } else if managed_reader && owner.binding.descriptor.kind == OwnerKind::Reader {
+        reader_lifecycle::encode(&owner)
+    } else {
+        encode_owner(&owner)
+    };
+    if canonical != bytes {
         return Err(invalid("noncanonical owner record"));
     }
     Ok(owner)
@@ -528,10 +1533,40 @@ struct Planner<'a> {
     view: &'a dyn ReadView,
     root: RootDigest,
     revision: u64,
+    rows_enabled: bool,
     writes: BTreeMap<Vec<u8>, Vec<u8>>,
 }
 impl Planner<'_> {
-    fn resource(&self, identity: ResourceIdentity) -> Result<RetentionRecord> {
+    fn register_resource(&mut self, identity: ResourceIdentity) -> Result<ResourceRecord> {
+        let record = self
+            .view
+            .get(ColumnFamily::Default, &resource_key(&identity))?;
+        let registered = self
+            .view
+            .get(ColumnFamily::Default, &resource_registration_key(&identity))?;
+        match (record, registered) {
+            (Some(_), Some(_)) => {
+                let record = self.resource(identity)?;
+                if record.is_retired() {
+                    return Err(conflict("resource instance permanently retired"));
+                }
+                record.normalize(&mut self.writes);
+                Ok(record)
+            }
+            (None, None) => {
+                ResourceRecord::check_empty(self.view, identity)?;
+                let record = ResourceRecord::new(identity);
+                self.writes.insert(resource_key(&identity), record.encode());
+                self.writes.insert(
+                    resource_registration_key(&identity),
+                    resource_registration(&identity),
+                );
+                Ok(record)
+            }
+            _ => Err(invalid("resource registration/state pair is incomplete")),
+        }
+    }
+    fn resource(&self, identity: ResourceIdentity) -> Result<ResourceRecord> {
         let registered = self
             .view
             .get(ColumnFamily::Default, &resource_registration_key(&identity))?
@@ -543,7 +1578,7 @@ impl Planner<'_> {
             .view
             .get(ColumnFamily::Default, &resource_key(&identity))?
             .ok_or_else(|| invalid("registered resource missing; refusing empty reconstruction"))?;
-        RetentionRecord::decode(&value, identity).map_err(pin_error)
+        ResourceRecord::load(self.view, identity, &value, self.rows_enabled)
     }
     fn owner(&self, id: OwnerId) -> Result<Option<LedgerOwner>> {
         let value = self.view.get(ColumnFamily::Default, &owner_key(id))?;
@@ -556,7 +1591,18 @@ impl Planner<'_> {
             _ => return Err(invalid("owner registration/state pair is incomplete")),
         };
         let owner = decode_owner(&value, self.root, id)?;
-        if registered != owner_registration(&owner.binding) {
+        let expected_registration = if value.starts_with(EXECUTOR_OWNER_MAGIC) {
+            checkpoint_admission::executor_registration(&owner.binding)
+        } else if value.starts_with(bootstrap_reader::admission::OWNER_MAGIC) {
+            bootstrap_reader::admission::registration(&owner.binding)
+        } else if value.starts_with(bootstrap_reader::unentered::OWNER_MAGIC) {
+            bootstrap_reader::unentered::registration(&owner.binding)
+        } else if value.starts_with(reader_lifecycle::OWNER_MAGIC) {
+            reader_lifecycle::registration(&owner.binding)
+        } else {
+            owner_registration(&owner.binding)
+        };
+        if registered != expected_registration {
             return Err(invalid("owner immutable registration disagrees"));
         }
         // The owner row and every forward pin are one durable transaction.
@@ -564,12 +1610,36 @@ impl Planner<'_> {
         for resource in &owner.binding.resources {
             let record = self.resource(*resource)?;
             let slot = record
-                .owner(id)
+                .owner(self.view, id)?
                 .ok_or_else(|| invalid("owner resource link missing"))?;
             if slot.generation != owner.binding.generation || slot.phase != owner.phase {
                 return Err(invalid("owner resource link disagrees"));
             }
         }
+        if value.starts_with(EXECUTOR_OWNER_MAGIC) {
+            checkpoint_admission::check_index(self, &owner)?;
+        }
+        image_publisher_index::check(self, &owner.binding)?;
+        bootstrap_index::check(self, &owner.binding)?;
+        build_index::check(self, &owner.binding)?;
+        reader_index::check(self, &owner.binding)?;
+        reader_lifecycle::check(
+            self,
+            &owner,
+            value.starts_with(reader_lifecycle::OWNER_MAGIC),
+        )?;
+        checkpoint_admission::enrollment::check(self, &owner)?;
+        migration_publisher::check(self, &owner)?;
+        bootstrap_reader::admission::check(
+            self,
+            &owner,
+            value.starts_with(bootstrap_reader::admission::OWNER_MAGIC),
+        )?;
+        bootstrap_reader::unentered::check(
+            self,
+            &owner,
+            value.starts_with(bootstrap_reader::unentered::OWNER_MAGIC),
+        )?;
         Ok(Some(owner))
     }
     fn exact_owner(&self, token: OwnerToken) -> Result<LedgerOwner> {
@@ -581,16 +1651,45 @@ impl Planner<'_> {
         }
         Ok(owner)
     }
-    fn update_resources(&mut self, owner: &LedgerOwner, command: PinCommand) -> Result<()> {
+    fn update_resources(
+        &mut self,
+        owner: &LedgerOwner,
+        previous: Option<OwnerSlot>,
+        phase: PinPhase,
+    ) -> Result<()> {
         for identity in &owner.binding.resources {
             let mut record = self.resource(*identity)?;
-            record.apply(command).map_err(pin_error)?;
-            self.writes.insert(resource_key(identity), record.encode());
+            record.update(
+                self.view,
+                owner.binding.descriptor.id,
+                previous,
+                OwnerSlot {
+                    generation: owner.binding.generation,
+                    phase,
+                },
+                &mut self.writes,
+            )?;
         }
         Ok(())
     }
     fn acquire(&mut self, binding: &OwnerBinding, from: Option<OwnerToken>) -> Result<()> {
         binding.validate(self.root)?;
+        if binding.descriptor.kind == OwnerKind::Reader {
+            return reader_lifecycle::share(
+                self,
+                from.ok_or_else(|| conflict("Reader requires an exact Share source"))?,
+                binding,
+            );
+        }
+        if binding.descriptor.kind == OwnerKind::BootstrapReader {
+            return Err(conflict("bootstrap reader requires exact typed admission"));
+        }
+        if binding.descriptor.kind == OwnerKind::Publisher {
+            return Err(conflict("Publisher requires atomic migration entry"));
+        }
+        build_index::record(self, binding)?;
+        reader_index::record(self, binding)?;
+        let executor = checkpoint_admission::entry(self, binding)?;
         if let Some(source) = from {
             let source = self.exact_owner(source)?;
             if source.binding.descriptor.id == binding.descriptor.id
@@ -603,7 +1702,7 @@ impl Planner<'_> {
                 return Err(conflict("transfer source or subject/closure differs"));
             }
         }
-        match self.owner(binding.descriptor.id)? {
+        let previous = match self.owner(binding.descriptor.id)? {
             None if binding.generation.get() != 1 => {
                 return Err(conflict("initial generation must be one"))
             }
@@ -611,7 +1710,7 @@ impl Planner<'_> {
                 for resource in &binding.resources {
                     if self
                         .resource(*resource)?
-                        .owner(binding.descriptor.id)
+                        .owner(self.view, binding.descriptor.id)?
                         .is_some()
                     {
                         return Err(invalid(
@@ -623,6 +1722,7 @@ impl Planner<'_> {
                     owner_registration_key(binding.descriptor.id),
                     owner_registration(binding),
                 );
+                None
             }
             Some(old) => {
                 if old.binding.descriptor != binding.descriptor
@@ -632,6 +1732,10 @@ impl Planner<'_> {
                 }
                 if old.binding.generation == binding.generation {
                     if matches!(old.phase, PinPhase::Held | PinPhase::Published) {
+                        if let Some(pending) = executor {
+                            checkpoint_admission::enrollment::require_entered(self, &old)?;
+                            checkpoint_admission::write_index(self, pending, &old)?;
+                        }
                         return Ok(());
                     }
                     return Err(conflict("quiesced/released generation cannot resume"));
@@ -641,27 +1745,79 @@ impl Planner<'_> {
                 {
                     return Err(conflict("owner generation does not follow release"));
                 }
+                Some(OwnerSlot {
+                    generation: old.binding.generation,
+                    phase: old.phase,
+                })
             }
-        }
+        };
         let owner = LedgerOwner {
             binding: binding.clone(),
             phase: PinPhase::Held,
         };
-        let command = match from {
-            Some(from) => PinCommand::Share {
-                from,
-                to: binding.token(),
-            },
-            None => PinCommand::Acquire(binding.token()),
-        };
-        self.update_resources(&owner, command)?;
-        self.writes
-            .insert(owner_key(binding.descriptor.id), encode_owner(&owner));
+        if executor.is_some() {
+            checkpoint_admission::enrollment::record_new(
+                self,
+                binding,
+                checkpoint_admission::enrollment::Origin::Entered,
+            )?;
+        }
+        self.update_resources(&owner, previous, PinPhase::Held)?;
+        if let Some(pending) = executor {
+            checkpoint_admission::write_index(self, pending, &owner)?;
+        } else {
+            self.writes
+                .insert(owner_key(binding.descriptor.id), encode_owner(&owner));
+        }
         Ok(())
     }
     fn transition(&mut self, token: OwnerToken, phase: PinPhase) -> Result<()> {
         let mut owner = self.exact_owner(token)?;
+        if owner.binding.descriptor.kind == OwnerKind::Reader {
+            if phase == PinPhase::Published {
+                return reader_lifecycle::publish(self, &owner);
+            }
+            if self
+                .view
+                .get(ColumnFamily::Default, &owner_key(token.owner))?
+                .is_some_and(|b| b.starts_with(reader_lifecycle::OWNER_MAGIC))
+            {
+                return Err(conflict("Reader requires its exact drained finish"));
+            }
+        }
+        if owner.binding.descriptor.kind == OwnerKind::BootstrapReader {
+            return if phase == PinPhase::Published {
+                bootstrap_reader::admission::publish(self, &owner)
+            } else {
+                Err(conflict(
+                    "bootstrap reader requires durable store read fencing",
+                ))
+            };
+        }
+        if owner.binding.descriptor.kind == OwnerKind::Publisher {
+            return Err(conflict("Publisher requires exact drained finish"));
+        }
+        build_index::record(self, &owner.binding)?;
+        reader_index::record(self, &owner.binding)?;
+        let executor = if phase == PinPhase::Published {
+            checkpoint_admission::entry(self, &owner.binding)?
+        } else {
+            checkpoint_admission::managed(self, &owner.binding)?.map(|g| g.pending)
+        };
+        if executor.is_some() && phase == PinPhase::Published {
+            checkpoint_admission::enrollment::require_entered(self, &owner)?;
+        }
+        // Generic legacy generations can transfer their pins, but doing so
+        // must never retroactively enroll them in the managed I/O protocol.
+        let indexed = self
+            .view
+            .get(ColumnFamily::Default, &owner_key(token.owner))?
+            .is_some_and(|b| b.starts_with(EXECUTOR_OWNER_MAGIC));
+        let executor = executor.filter(|_| indexed);
         if owner.phase == phase {
+            if let Some(pending) = executor {
+                checkpoint_admission::write_index(self, pending, &owner)?;
+            }
             return Ok(());
         }
         let allowed = match phase {
@@ -673,21 +1829,40 @@ impl Planner<'_> {
         if !allowed {
             return Err(conflict("owner phase does not permit transition"));
         }
-        let command = match phase {
-            PinPhase::Published => PinCommand::Publish(token),
-            PinPhase::Quiesced => PinCommand::Quiesce(token),
-            PinPhase::Released => PinCommand::Release(token),
-            PinPhase::Held => unreachable!(),
-        };
-        self.update_resources(&owner, command)?;
+        self.update_resources(
+            &owner,
+            Some(OwnerSlot {
+                generation: token.generation,
+                phase: owner.phase,
+            }),
+            phase,
+        )?;
         owner.phase = phase;
-        self.writes
-            .insert(owner_key(token.owner), encode_owner(&owner));
+        if let Some(pending) = executor {
+            checkpoint_admission::write_index(self, pending, &owner)?;
+        } else {
+            self.writes
+                .insert(owner_key(token.owner), encode_owner(&owner));
+        }
         Ok(())
     }
     fn finish(mut self) -> Result<LedgerPlan> {
+        image_publisher_index::record_changes(&mut self)?;
+        image_publisher_closure::mark_changes(&mut self)?;
+        bootstrap_index::record_changes(&mut self)?;
+        checkpoint_closure::mark_changes(&mut self)?;
+        reader_closure::mark_changes(&mut self)?;
+        image_reader_closure::mark_changes(&mut self)?;
+        bootstrap_closure::mark_changes(&mut self)?;
         let changed = !self.writes.is_empty();
         if changed {
+            // Trusted specialized planners also write the current header.
+            // They must not bypass the same downgrade/orphan checks.
+            if let Some(stored) = self.view.get(ColumnFamily::Default, &key(1, &[]))? {
+                if !stored.starts_with(HEADER_MAGIC) {
+                    check_upgrade(self.view, &stored)?;
+                }
+            }
             self.revision = self
                 .revision
                 .checked_add(1)
@@ -726,7 +1901,9 @@ pub fn plan_retention(
     let digest = root.digest();
     let stored = view.get(ColumnFamily::Default, &key(1, &[]))?;
     let Some(stored) = stored else {
-        if *request != LedgerRequest::Initialize {
+        if *request != LedgerRequest::Initialize
+            && !matches!(request, LedgerRequest::BeginCheckpoint(_))
+        {
             return Err(invalid("ledger has not been initialized"));
         }
         let mut end = PREFIX.to_vec();
@@ -739,6 +1916,17 @@ pub fn plan_retention(
         {
             return Err(invalid("ledger header missing over nonempty state"));
         }
+        if let LedgerRequest::BeginCheckpoint(intent) = request {
+            let mut p = Planner {
+                view,
+                root: digest,
+                revision: 0,
+                rows_enabled: true,
+                writes: BTreeMap::new(),
+            };
+            checkpoint_begin::begin(&mut p, root, intent)?;
+            return p.finish();
+        }
         let mut batch = WriteBatch::new();
         batch.put(ColumnFamily::Default, key(1, &[]), header(digest, 0));
         return Ok(LedgerPlan {
@@ -747,40 +1935,68 @@ pub fn plan_retention(
             changed: true,
         });
     };
-    let revision = read_header(&stored, digest)?;
+    let (revision, rows_enabled) = read_header(&stored, digest)?;
     let mut p = Planner {
         view,
         root: digest,
         revision,
+        rows_enabled,
         writes: BTreeMap::new(),
     };
+    // Older planners must not grant Publish/retirement without generation
+    // provenance. Upgrade and all other writes share one transaction.
+    if !stored.starts_with(HEADER_MAGIC) {
+        check_upgrade(view, &stored)?;
+        p.writes.insert(key(1, &[]), header(digest, revision));
+    }
     match request {
+        LedgerRequest::BeginBootstrapRead {
+            pending,
+            source,
+            store,
+        } => {
+            bootstrap_reader::admission::begin(
+                &mut p,
+                root,
+                *pending,
+                kv9_common::StoreIdentity {
+                    cluster_id: root.cluster_id,
+                    root_digest: digest,
+                    node_id: *source,
+                    store_incarnation: *store,
+                },
+            )?;
+        }
+        LedgerRequest::RetireBootstrapRead { .. } => {
+            return Err(conflict(
+                "bootstrap retirement requires independently verified durable read fence",
+            ));
+        }
+        LedgerRequest::FinishImageRead { successor, reader } => {
+            image_reader::finish(&mut p, *successor, reader)?;
+        }
+        LedgerRequest::EnterMigrationPublisher {
+            operation,
+            publisher,
+        } => {
+            migration_publisher::enter(&mut p, root, *operation, publisher)?;
+        }
+        LedgerRequest::FinishMigrationPublisher {
+            operation,
+            publisher,
+            issued,
+            resolved,
+        } => {
+            migration_publisher::finish(&mut p, root, *operation, publisher, *issued, *resolved)?;
+        }
         LedgerRequest::Initialize => {}
+        LedgerRequest::FinishCheckpointRead { successor, reader } => {
+            checkpoint_reader::finish(&mut p, *successor, reader)?
+        }
         LedgerRequest::Register(resources) => {
             validate_resources(resources, digest)?;
             for identity in resources {
-                let record = view.get(ColumnFamily::Default, &resource_key(identity))?;
-                let registered =
-                    view.get(ColumnFamily::Default, &resource_registration_key(identity))?;
-                match (record, registered) {
-                    (Some(_), Some(_)) => {
-                        let record = p.resource(*identity)?;
-                        if record.is_retired() {
-                            return Err(conflict("resource instance permanently retired"));
-                        }
-                    }
-                    (None, None) => {
-                        p.writes.insert(
-                            resource_key(identity),
-                            RetentionRecord::new(*identity).encode(),
-                        );
-                        p.writes.insert(
-                            resource_registration_key(identity),
-                            resource_registration(identity),
-                        );
-                    }
-                    _ => return Err(invalid("resource registration/state pair is incomplete")),
-                }
+                p.register_resource(*identity)?;
             }
         }
         LedgerRequest::Acquire(binding) => p.acquire(binding, None)?,
@@ -836,7 +2052,135 @@ pub fn plan_retention(
             }
             p.transition(*from, PinPhase::Quiesced)?;
         }
+        LedgerRequest::RecordCheckpointDrain {
+            pending,
+            executor,
+            issued,
+            resolved,
+        } => checkpoint_admission::drain::record(&mut p, *pending, *executor, *issued, *resolved)?,
+        LedgerRequest::FinishCheckpointExecution {
+            pending,
+            executor,
+            issued,
+            resolved,
+        } => checkpoint_admission::drain::finish(&mut p, *pending, executor, *issued, *resolved)?,
         LedgerRequest::Release(token) => p.transition(*token, PinPhase::Released)?,
+        LedgerRequest::RecordCheckpoint(intent) => {
+            checkpoint_begin::reject_legacy_record(&p, intent)?;
+            checkpoint_intent::record(&mut p, root, intent)?;
+        }
+        LedgerRequest::BeginCheckpoint(intent) => checkpoint_begin::begin(&mut p, root, intent)?,
+        LedgerRequest::RecordCheckpointRefusal { .. } => {
+            return Err(conflict(
+                "checkpoint refusal requires independently verified history",
+            ))
+        }
+        LedgerRequest::AdvanceDataStoreHistory {
+            expected,
+            revision,
+            after,
+        } => {
+            data_store_history::advance(&mut p, root, *expected, *revision, *after)?;
+        }
+        LedgerRequest::AdvanceConfigurationIntervals(request) => {
+            data_configuration_intervals::advance(&mut p, root, *request)?;
+        }
+        LedgerRequest::RecordConfigurationTimeline(_) => {
+            return Err(conflict(
+                "configuration timeline requires independently verified source",
+            ));
+        }
+        LedgerRequest::RecordConfigurationOrigins(_) => {
+            return Err(conflict(
+                "configuration origins require independently verified source",
+            ));
+        }
+        LedgerRequest::RecordDataMembership(_) => {
+            return Err(conflict(
+                "DATA membership requires independently verified source",
+            ));
+        }
+        LedgerRequest::RecordDataReadFence { .. } => {
+            return Err(conflict(
+                "DATA read fence requires independently verified store",
+            ))
+        }
+        LedgerRequest::RecordCheckpointSelection { .. } => {
+            return Err(conflict(
+                "checkpoint selection requires independently verified replica",
+            ))
+        }
+        LedgerRequest::AdvanceCheckpointClosure { pending, expected } => {
+            checkpoint_closure::advance(&mut p, root, *pending, *expected)?;
+        }
+        LedgerRequest::AdvanceImageReaderClosure { pending, expected } => {
+            image_reader_closure::advance(&mut p, root, *pending, *expected)?;
+        }
+        LedgerRequest::AdvanceReaderClosure { pending, expected } => {
+            reader_closure::advance(&mut p, root, *pending, *expected)?;
+        }
+        LedgerRequest::AdvanceMetadataReadGate { pending, expected } => {
+            metadata_read_gate::advance(&mut p, root, *pending, *expected)?;
+        }
+        LedgerRequest::AdvanceBootstrapClosure { pending, expected } => {
+            bootstrap_closure::advance(&mut p, root, *pending, *expected)?;
+        }
+        LedgerRequest::CloseMetadataImageReads(pending) => {
+            metadata_image_gate::close(&mut p, root, *pending)?;
+        }
+        LedgerRequest::CloseMetadataImageWrites(pending) => {
+            metadata_image_write_gate::close(&mut p, root, *pending)?
+        }
+        LedgerRequest::AdvanceImagePublisherClosure { pending, expected } => {
+            image_publisher_closure::advance(&mut p, root, *pending, *expected)?
+        }
+        LedgerRequest::AdvanceImagePublisherIndex {
+            expected,
+            stage,
+            after,
+            next,
+        } => image_publisher_index::advance(&mut p, *expected, *stage, *after, *next)?,
+        LedgerRequest::CloseCheckpointAdmission(token) => {
+            checkpoint_admission::close(&mut p, *token)?
+        }
+        LedgerRequest::CancelUnenteredCheckpoint(binding) => {
+            checkpoint_admission::cancel(&mut p, binding)?
+        }
+        LedgerRequest::RetireUnpublishedCheckpoint { pending, executor } => {
+            checkpoint_admission::retirement::retire(&mut p, *pending, *executor)?
+        }
+        LedgerRequest::AdvanceCheckpointSweep {
+            pending,
+            expected,
+            after,
+            next,
+        } => {
+            checkpoint_admission::sweep::advance(&mut p, root, *pending, *expected, *after, *next)?
+        }
+        LedgerRequest::AdvanceBuildIndex {
+            expected,
+            stage,
+            after,
+            next,
+        } => build_index::advance(&mut p, *expected, *stage, *after, *next)?,
+        LedgerRequest::AdvanceReaderIndex {
+            expected,
+            stage,
+            after,
+            next,
+        } => reader_index::advance(&mut p, *expected, *stage, *after, *next)?,
+        LedgerRequest::AdvanceImageReaderIndex {
+            expected,
+            stage,
+            after,
+            next,
+        } => image_reader_index::advance(&mut p, *expected, *stage, *after, *next)?,
+        LedgerRequest::AdvanceBootstrapIndex {
+            expected,
+            stage,
+            after,
+            next,
+        } => bootstrap_index::advance(&mut p, *expected, *stage, *after, *next)?,
     }
     p.finish()
 }
@@ -853,14 +2197,34 @@ pub fn retention_owner(
     let header = view
         .get(ColumnFamily::Default, &key(1, &[]))?
         .ok_or_else(|| invalid("ledger header missing"))?;
-    let revision = read_header(&header, digest)?;
+    let (revision, rows_enabled) = read_header(&header, digest)?;
     Planner {
         view,
         root: digest,
         revision,
+        rows_enabled,
         writes: BTreeMap::new(),
     }
     .owner(id)
+}
+
+/// Pre-registration compatibility check. A missing ledger can describe only
+/// an absent owner; an orphan owner row still refuses instead of being hidden.
+pub fn optional_retention_owner(
+    view: &dyn ReadView,
+    root: &RootDescriptor,
+    id: OwnerId,
+) -> Result<Option<LedgerOwner>> {
+    crate::checkpoint::inspect_initial_checkpoint_base(view, root)?;
+    if view.get(ColumnFamily::Default, &key(1, &[]))?.is_none()
+        && view.get(ColumnFamily::Default, &owner_key(id))?.is_none()
+        && view
+            .get(ColumnFamily::Default, &owner_registration_key(id))?
+            .is_none()
+    {
+        return Ok(None);
+    }
+    retention_owner(view, root, id)
 }
 
 #[cfg(test)]
@@ -869,21 +2233,25 @@ mod tests {
     use crate::codec::{encode_row_key, memcmp_uint, ColumnValue, RowValue};
     use crate::schema::{ColumnId, REGIONS_DESC, SCHEMA_VERSION, SCHEMA_VERSION_DESC};
     use crate::store::MetaStore;
+    use kv9_common::retention::{PinCommand, RetentionRecord};
     use kv9_common::{
         AppliedPosition, BootstrapGeneration, ClusterId, NodeId, RootVoter, StoreIncarnation,
     };
     use kv9_engine::{Engine, MemEngine, ReplicatedEngine, WalEngine};
     use std::sync::Arc;
 
-    fn seed() -> (RootDescriptor, WriteBatch) {
+    pub(super) fn seed() -> (RootDescriptor, WriteBatch) {
+        seed_with_voters(vec![RootVoter {
+            node_id: NodeId(1),
+            addr: "127.0.0.1:20160".parse().unwrap(),
+            store_incarnation: StoreIncarnation::from_bytes([3; 16]),
+        }])
+    }
+    pub(super) fn seed_with_voters(voters: Vec<RootVoter>) -> (RootDescriptor, WriteBatch) {
         let root = RootDescriptor::new(
             ClusterId::from_bytes([1; 16]),
             BootstrapGeneration::from_bytes([2; 16]),
-            vec![RootVoter {
-                node_id: NodeId(1),
-                addr: "127.0.0.1:20160".parse().unwrap(),
-                store_incarnation: StoreIncarnation::from_bytes([3; 16]),
-            }],
+            voters,
             b"retention-ledger-test-credential",
         )
         .unwrap();
@@ -910,13 +2278,39 @@ mod tests {
         );
         (root, batch)
     }
-    fn fixture() -> (MemEngine, RootDescriptor) {
+    pub(super) fn fixture() -> (MemEngine, RootDescriptor) {
         let (root, batch) = seed();
         let engine = MemEngine::new();
         engine.write(batch).unwrap();
         (engine, root)
     }
-    fn resources(root: &RootDescriptor) -> Vec<ResourceIdentity> {
+    #[test]
+    fn optional_owner_refuses_orphan_state_or_registration_without_header() {
+        for registration in [false, true] {
+            let (engine, root) = fixture();
+            let id = OwnerId::new([21; 16]).unwrap();
+            assert!(
+                optional_retention_owner(engine.snapshot().unwrap().as_ref(), &root, id)
+                    .unwrap()
+                    .is_none()
+            );
+            let mut batch = WriteBatch::new();
+            batch.put(
+                ColumnFamily::Default,
+                if registration {
+                    owner_registration_key(id)
+                } else {
+                    owner_key(id)
+                },
+                vec![1],
+            );
+            engine.write(batch).unwrap();
+            assert!(
+                optional_retention_owner(engine.snapshot().unwrap().as_ref(), &root, id).is_err()
+            );
+        }
+    }
+    pub(super) fn resources(root: &RootDescriptor) -> Vec<ResourceIdentity> {
         (1..=2)
             .map(|n| {
                 ResourceIdentity::new(root.digest(), ResourceKind::Sst, [n; 16], [n + 8; 32])
@@ -924,7 +2318,7 @@ mod tests {
             })
             .collect()
     }
-    fn binding(root: &RootDescriptor, n: u8) -> OwnerBinding {
+    pub(super) fn binding(root: &RootDescriptor, n: u8) -> OwnerBinding {
         OwnerBinding {
             descriptor: OwnerDescriptor {
                 root: root.digest(),
@@ -944,25 +2338,25 @@ mod tests {
             resources: resources(root),
         }
     }
-    fn plan(
+    pub(super) fn plan(
         engine: &impl Engine,
         root: &RootDescriptor,
         request: &LedgerRequest,
     ) -> Result<LedgerPlan> {
         plan_retention(engine.snapshot()?.as_ref(), root, request)
     }
-    fn apply(engine: &MemEngine, root: &RootDescriptor, request: LedgerRequest) -> u64 {
+    pub(super) fn apply(engine: &MemEngine, root: &RootDescriptor, request: LedgerRequest) -> u64 {
         let plan = plan(engine, root, &request).unwrap();
         let revision = plan.revision();
         engine.write(plan.into_batch()).unwrap();
         revision
     }
-    fn owner(engine: &impl Engine, root: &RootDescriptor, id: OwnerId) -> LedgerOwner {
+    pub(super) fn owner(engine: &impl Engine, root: &RootDescriptor, id: OwnerId) -> LedgerOwner {
         retention_owner(engine.snapshot().unwrap().as_ref(), root, id)
             .unwrap()
             .unwrap()
     }
-    fn all(engine: &impl Engine) -> Vec<(Vec<u8>, Vec<u8>)> {
+    pub(super) fn all(engine: &impl Engine) -> Vec<(Vec<u8>, Vec<u8>)> {
         let mut end = PREFIX.to_vec();
         *end.last_mut().unwrap() += 1;
         engine
@@ -973,7 +2367,7 @@ mod tests {
             .collect::<Result<_>>()
             .unwrap()
     }
-    fn initialized(engine: &MemEngine, root: &RootDescriptor) {
+    pub(super) fn initialized(engine: &MemEngine, root: &RootDescriptor) {
         apply(engine, root, LedgerRequest::Initialize);
         apply(engine, root, LedgerRequest::Register(resources(root)));
     }

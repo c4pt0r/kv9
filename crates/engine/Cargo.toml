@@ -10,18 +10,18 @@ kv9-common.workspace = true
 thiserror.workspace = true
 rpds.workspace = true
 s3_client.workspace = true
+bytes.workspace = true
 futures_util.workspace = true
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sha2.workspace = true
+tempfile = "=3.27.0"
 
 [features]
 # Gates `mod testing` (FaultyEngine) out of production builds. Consumers that need
 # fault injection enable this from [dev-dependencies] only, never from [dependencies].
 testing = []
-# Reuse the already validated segment-record size when allocating its payload.
-wal-payload-preallocation = []
 
 # The MinIO backend's deadline acceptance binds to WHERE an outcome came from
 # (`minio::Completion`), not to error text. That seam is gated behind `testing`, and a file

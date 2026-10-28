@@ -1,6 +1,6 @@
 //! Identity preservation in the legacy in-memory catalog facade.
 
-use kv9_common::{ApiType, Error, KeyspaceId, Tenant, TenantId, TxnGroupId};
+use kv9_common::{ApiType, Error, KeyspaceId, Tenant, TenantId};
 use kv9_meta::Catalog;
 
 #[test]
@@ -15,24 +15,12 @@ fn duplicate_id_cannot_replace_identity_or_leave_a_name_alias() {
         });
     }
     let original = catalog
-        .create_keyspace(
-            KeyspaceId(7),
-            "original",
-            TenantId(1),
-            ApiType::Raw,
-            TxnGroupId::DEFAULT,
-        )
+        .create_keyspace(KeyspaceId(7), "original", TenantId(1), ApiType::Raw)
         .unwrap()
         .clone();
 
     // Reusing a physical prefix must not change its name, owner or API type.
-    let result = catalog.create_keyspace(
-        original.id,
-        "replacement",
-        TenantId(2),
-        ApiType::Txn,
-        TxnGroupId(9),
-    );
+    let result = catalog.create_keyspace(original.id, "replacement", TenantId(2), ApiType::Raw);
     assert!(matches!(result, Err(Error::Config(_))));
     assert_eq!(catalog.keyspace(original.id).unwrap(), &original);
     assert_eq!(catalog.keyspace_by_name("original"), Some(&original));
@@ -44,13 +32,7 @@ fn duplicate_id_cannot_replace_identity_or_leave_a_name_alias() {
 
     // Rejection must not reserve the candidate name or redirect it on a retry.
     let replacement = catalog
-        .create_keyspace(
-            KeyspaceId(8),
-            "replacement",
-            TenantId(2),
-            ApiType::Txn,
-            TxnGroupId(9),
-        )
+        .create_keyspace(KeyspaceId(8), "replacement", TenantId(2), ApiType::Raw)
         .unwrap()
         .clone();
     assert_eq!(catalog.keyspace_by_name("replacement"), Some(&replacement));
@@ -65,7 +47,6 @@ fn duplicate_id_cannot_replace_identity_or_leave_a_name_alias() {
             original.name.clone(),
             original.tenant,
             original.api_type,
-            original.txn_group,
         )
         .is_err());
     assert_eq!(catalog.keyspace(original.id).unwrap(), &original);

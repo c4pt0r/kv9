@@ -19,8 +19,8 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use kv9_common::{
     persist_root_bundle, ApiType, ClusterId, Config, Error, KeyspaceId, NodeId, RegionId, Result,
-    RootDescriptor, RootDigest, SeedPeer, StoreIdentity, StoreIncarnation, TenantId, TxnGroupId,
-    UserKey, Value, META_REGION_0,
+    RootDescriptor, RootDigest, SeedPeer, StoreIdentity, StoreIncarnation, TenantId, UserKey,
+    Value, META_REGION_0,
 };
 use kv9_engine::{Engine, ReadView, ReplicatedEngine, WalEngine};
 use kv9_meta::admission::INVALID_JOIN_TICKET_MESSAGE;
@@ -47,17 +47,29 @@ use tonic::Status;
 
 use crate::api::{
     AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, DeleteRangeReceipt,
-    MembershipChangeResult, RawApi, RegionLocation, RequestContext, TxnApi,
+    MembershipChangeResult, RawApi, RegionLocation, RequestContext,
 };
 use crate::grpc::{
     AuthContext, AuthInterceptor, AuthKind, Authenticator, Kv9Grpc, TokenAuthenticator,
 };
-use kv9_txn::{LeaderRead, RawExecutor, RawWriteOptions};
+use kv9_raw::{LeaderRead, RawExecutor, RawMutation, RawWriteOptions};
 
 use crate::fence::CatalogFenceAdjudicator;
 use crate::Node;
 
+mod checkpoint_retention;
+pub use checkpoint_retention::membership::DataMembershipObservation;
+mod checkpoint_sweep;
+mod data_checkpoint;
 mod endpoint_recovery;
+mod group_compaction;
+mod migration_capture;
+mod replica_pressure;
+mod split_maintenance;
+mod ttl_activation;
+mod ttl_maintenance;
+mod ttl_split;
+mod ttl_time;
 use endpoint_recovery::EndpointRecovery;
 
 const TICK: Duration = Duration::from_millis(20);
@@ -518,6 +530,7 @@ fn bounded_discovery_detail(detail: &str) -> String {
 struct RuntimeDiscovery {
     node: NodeId,
     root: RootWireIdentity,
+    raw_ttl_format: Option<kv9_common::store_lifecycle::RawTtlFormatFence>,
     initialized: AtomicBool,
     /// Incarnation-scoped, monotonic permission. A new component starts closed.
     raft_receive: AtomicBool,
@@ -538,6 +551,7 @@ impl RuntimeDiscovery {
         Self {
             node,
             root,
+            raw_ttl_format: None,
             initialized: AtomicBool::new(initialized),
             raft_receive: AtomicBool::new(false),
             voter_fp: Mutex::new(if initialized { None } else { Some(voter_fp) }),
@@ -549,6 +563,20 @@ impl RuntimeDiscovery {
         self.raft_receive.store(true, Ordering::Release);
     }
 
+    fn with_raw_ttl_format(
+        mut self,
+        fence: kv9_common::store_lifecycle::RawTtlFormatFence,
+    ) -> Result<Self> {
+        let identity = fence.identity();
+        if identity.node_id != self.node || identity.root_digest != self.root.root_digest {
+            return Err(Error::Config(
+                "Raw TTL format fence does not name the runtime store".into(),
+            ));
+        }
+        self.raw_ttl_format = Some(fence);
+        Ok(self)
+    }
+
     fn set_cluster_id(&self, id: kv9_common::ClusterId) {
         *self.cluster_id.lock().expect("cluster id poisoned") = Some(id);
         // Retirement moment: the fingerprint ceases to exist here.
@@ -558,6 +586,9 @@ impl RuntimeDiscovery {
 }
 
 impl GrpcDiscoveryState for RuntimeDiscovery {
+    fn raw_ttl_format_fence(&self) -> Option<kv9_common::store_lifecycle::RawTtlFormatFence> {
+        self.raw_ttl_format.clone()
+    }
     fn raft_receive_allowed(&self) -> bool {
         self.raft_receive.load(Ordering::Acquire)
     }
@@ -777,6 +808,8 @@ impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::ReplicatedEngin
 /// proposals go through `NodeDriver` so the response can return and verify the
 /// exact `(term,index)` that the production apply loop committed.
 struct RuntimeBackend {
+    maintenance: Arc<crate::maintenance::Budget>,
+    ttl_activation: Option<Arc<ttl_activation::ActivationContext>>,
     raw_directory: Arc<range_api::RawDirectory>,
     group_handles: crate::region_manager::GroupHandles,
     adoption_receipts: Arc<
@@ -971,7 +1004,10 @@ fn observe_proposal_wait(
                     outcome.set(match &result {
                         Ok(ApplyWaitOutcome::Applied(_)) => Outcome::Success,
                         Ok(ApplyWaitOutcome::Replaced) => Outcome::Replaced,
-                        Ok(ApplyWaitOutcome::FenceRejected { .. }) => Outcome::Rejected,
+                        Ok(
+                            ApplyWaitOutcome::FenceRejected { .. }
+                            | ApplyWaitOutcome::RawTtlRejected { .. },
+                        ) => Outcome::Rejected,
                         // A manifest receipt is invalid for this non-manifest path.
                         Ok(ApplyWaitOutcome::Manifest { .. }) => Outcome::Error,
                         Err(ApplyWaitError::Unconfirmed { .. }) => Outcome::Unconfirmed,
@@ -1030,6 +1066,9 @@ fn settle_proposal(
         // here (retrying re-proposes the same stale expectation; the
         // client must re-route/re-validate). Only Replaced re-proposes.
         Ok(ApplyWaitOutcome::FenceRejected { region, .. }) => Err(Error::StaleEpoch { region }),
+        Ok(ApplyWaitOutcome::RawTtlRejected { region, reason, .. }) => {
+            Err(Error::RawTtlRejected { region, reason })
+        }
         // This path proposes catalog/user writes, never manifest changes:
         // a manifest verdict here means receipt correlation broke (typed,
         // not absorbed into success or retry).
@@ -1106,7 +1145,9 @@ where
         let category = match &outcome {
             Ok(ApplyWaitOutcome::Applied(_)) => Outcome::Success,
             Ok(ApplyWaitOutcome::Replaced) => Outcome::Replaced,
-            Ok(ApplyWaitOutcome::FenceRejected { .. }) => Outcome::Rejected,
+            Ok(
+                ApplyWaitOutcome::FenceRejected { .. } | ApplyWaitOutcome::RawTtlRejected { .. },
+            ) => Outcome::Rejected,
             Ok(ApplyWaitOutcome::Manifest { .. }) => Outcome::Error,
             Err(ApplyWaitError::Unconfirmed { .. }) => Outcome::Unconfirmed,
             Err(ApplyWaitError::Failed(_)) => Outcome::Error,
@@ -1215,32 +1256,67 @@ impl RuntimeBackend {
         parent: &kv9_common::data_range::DataRange,
         split_key: &[u8],
     ) -> Result<(Vec<u8>, Vec<u8>, Vec<u8>)> {
+        parent.validate()?;
+        if split_key <= parent.start.as_slice() || !parent.contains(split_key) {
+            return Err(Error::Config(
+                "split key is outside the parent interior".into(),
+            ));
+        }
         let low_bound = kv9_common::codec::encode_key(
             kv9_common::codec::KeyMode::Raw,
             parent.keyspace,
             split_key,
         )
         .map_err(|e| Error::Config(e.to_string()))?;
-        let prefix =
-            kv9_common::codec::encode_key(kv9_common::codec::KeyMode::Raw, parent.keyspace, b"")
-                .map_err(|e| Error::Config(e.to_string()))?;
-        let prefix_end = kv9_common::codec::encode_key(
+        let prefix = kv9_common::codec::encode_key(
             kv9_common::codec::KeyMode::Raw,
-            kv9_common::KeyspaceId(
-                parent
-                    .keyspace
-                    .0
-                    .checked_add(1)
-                    .ok_or_else(|| Error::Config("keyspace id exhausted".into()))?,
-            ),
-            b"",
+            parent.keyspace,
+            &parent.start,
         )
         .map_err(|e| Error::Config(e.to_string()))?;
+        let prefix_end = if parent.end.is_empty() {
+            kv9_common::codec::encode_key(
+                kv9_common::codec::KeyMode::Raw,
+                kv9_common::KeyspaceId(
+                    parent
+                        .keyspace
+                        .0
+                        .checked_add(1)
+                        .ok_or_else(|| Error::Config("keyspace id exhausted".into()))?,
+                ),
+                b"",
+            )
+            .map_err(|e| Error::Config(e.to_string()))?
+        } else {
+            kv9_common::codec::encode_key(
+                kv9_common::codec::KeyMode::Raw,
+                parent.keyspace,
+                &parent.end,
+            )
+            .map_err(|e| Error::Config(e.to_string()))?
+        };
         Ok((prefix, low_bound, prefix_end))
     }
 }
 
 impl AdminApi for RuntimeBackend {
+    fn prepare_raw_ttl_activation(
+        self: Arc<Self>,
+        _caller: String,
+        binding: kv9_common::data_range::DataRange,
+        deadline: Instant,
+    ) -> crate::api::OperationPreparation<AppliedPosition> {
+        Box::new(move || {
+            let (group, probe) = self.begin_ttl_activation(&binding, deadline)?;
+            Ok(Box::pin(async move {
+                let pending = self.collect_ttl_activation(group, probe).await?;
+                let proposed = pending.proposed_at();
+                settle_proposal(proposed, pending.wait().await, true)?
+                    .ok_or_else(|| Error::Raft("TTL activation receipt missing".into()))
+            }))
+        })
+    }
+
     fn lookup_raw_route(
         &self,
         root: RootDigest,
@@ -1297,8 +1373,10 @@ impl AdminApi for RuntimeBackend {
         }
         response.data_leader = self
             .raw_directory
-            .any_unsealed(keyspace)
-            .and_then(|g| g.leader());
+            .by_region(range.region)
+            .filter(|g| g.range_binding() == &range)
+            .and_then(|g| g.leader())
+            .filter(|leader| response.replicas.iter().any(|p| p.node == *leader));
         response.range = Some(range);
         Ok(response)
     }
@@ -1454,7 +1532,15 @@ impl AdminApi for RuntimeBackend {
         let changed = if status.learners.contains(&destination.0) {
             false
         } else {
-            let proposed = driver.add_learner(destination)?;
+            let origin = kv9_meta::data_groups::store_history::configuration_origin(
+                store.begin()?.into_view().as_ref(),
+                group.range_binding(),
+                migration.intent().task(),
+                operation,
+                migration.intent().destination(),
+                kv9_raft::configuration_origin::Action::Attach,
+            )?;
+            let proposed = driver.change_data_member(origin)?;
             driver.wait_conf_applied(proposed, Duration::from_secs(10))?;
             true
         };
@@ -1484,34 +1570,15 @@ impl AdminApi for RuntimeBackend {
         root: RootDigest,
         operation: [u8; 16],
     ) -> Result<crate::api::PlanMigrationImageResult> {
-        self.ensure_serving()?;
-        let certified = {
-            let txn = self.node.meta_raft.store.begin()?;
-            kv9_meta::root::certified_root(&txn)?
-                .ok_or_else(|| Error::MetaNotReady("capture requires a certified root".into()))?
-        };
-        if certified.digest() != root {
-            return Err(Error::Config("capture request root differs".into()));
-        }
-        let store = &self.node.meta_raft.store;
-        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
-            .into_iter()
-            .find(|m| m.intent().operation() == operation)
-            .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
-        let region = migration.intent().region();
-        let group = self
-            .raw_directory
-            .by_region(region)
-            .ok_or_else(|| Error::MetaNotReady("migration group is not active locally".into()))?;
-        let (driver, engine, _) = group.capture_parts();
-        let planned = kv9_raft::snapshot_install::capture::plan_capture(
-            driver,
-            engine,
-            certified.cluster_id,
-        )?;
-        Ok(crate::api::PlanMigrationImageResult {
-            manifest: planned.manifest().encode()?,
-            cut: planned.cut(),
+        self.with_migration_capture(root, operation, |_, _, planned, _| {
+            let result = crate::api::PlanMigrationImageResult {
+                manifest: planned.manifest().encode()?,
+                cut: planned.cut(),
+            };
+            let descriptor = planned.descriptor()?;
+            drop(planned);
+            self.ensure_capture_replicas(&descriptor)?;
+            Ok(result)
         })
     }
 
@@ -1521,82 +1588,33 @@ impl AdminApi for RuntimeBackend {
         root: RootDigest,
         operation: [u8; 16],
     ) -> Result<crate::api::CaptureMigrationImageResult> {
-        self.ensure_serving()?;
-        let uploader = self
-            .uploader
-            .clone()
-            .ok_or_else(|| Error::Config("capture requires configured object storage".into()))?;
-        // Committed authority first, from LOCAL applied state: immutable
-        // intent/activation/range rows need no metadata leadership, exactly
-        // like group reconciliation. The capture itself is then gated by the
-        // GROUP driver's own leadership inside plan_capture. The live
-        // group's binding must equal the committed one exactly.
-        let certified = {
-            let txn = self.node.meta_raft.store.begin()?;
-            kv9_meta::root::certified_root(&txn)?
-                .ok_or_else(|| Error::MetaNotReady("capture requires a certified root".into()))?
-        };
-        if certified.digest() != root {
-            return Err(Error::Config("capture request root differs".into()));
-        }
-        let store = &self.node.meta_raft.store;
-        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
-            .into_iter()
-            .find(|m| m.intent().operation() == operation)
-            .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
-        let region = migration.intent().region();
-        let committed_range = kv9_meta::data_groups::ranges::committed_ranges(store)?
-            .into_iter()
-            .find(|r| r.creation().intent().region() == region)
-            .ok_or_else(|| Error::Config("migration group has no committed range".into()))?;
-        let group = self
-            .raw_directory
-            .by_region(region)
-            .ok_or_else(|| Error::MetaNotReady("migration group is not active locally".into()))?;
-        let (driver, engine, binding) = group.capture_parts();
-        if binding != committed_range.range() {
-            return Err(Error::Config(
-                "live group binding differs from the committed range".into(),
-            ));
-        }
-        let planned = kv9_raft::snapshot_install::capture::plan_capture(
-            driver,
-            engine,
-            certified.cluster_id,
-        )?;
-        if planned.range() != committed_range.range() {
-            return Err(Error::Config(
-                "captured ownership differs from the committed range".into(),
-            ));
-        }
-        // Pin before upload, decoupled from metadata leadership: the caller
-        // binds owners through the metadata leader (bind_migration_image on
-        // the plan_migration_image manifest); this group-leader node then
-        // verifies from LOCAL applied ledger state that both owners are
-        // Published for exactly this manifest before any PUT. A cut that
-        // moved since binding yields a different subject and refuses: one
-        // image per operation, by construction.
-        let owners = crate::migration_retention::MigrationOwners::new(
-            &certified,
-            &migration,
-            committed_range.range(),
-            planned.manifest(),
-        )?;
-        {
-            let txn = self.node.meta_raft.store.begin()?;
-            owners.verify_published_locally(txn.into_view().as_ref(), &certified)?;
-        }
-        let captured = planned.upload(&uploader)?;
-        Ok(crate::api::CaptureMigrationImageResult {
-            record: captured.record,
-            image_digest: captured.image_digest,
-            cut: captured.cut,
-            configuration_applied_at: captured.configuration_applied_at,
-            objects: captured.objects as u64,
-            object_bytes: captured.object_bytes,
-            source_owner: owners.source_id(),
-            destination_owner: owners.destination_id(),
-        })
+        self.with_migration_capture(
+            root,
+            operation,
+            |certified, migration, planned, uploader| {
+                let owners = crate::migration_retention::MigrationOwners::new(
+                    certified,
+                    migration,
+                    planned.range(),
+                    planned.manifest(),
+                )?;
+                // The journal fixes identity, but grants no upload authority. Both
+                // exact pins must be locally applied Published before any object I/O.
+                let txn = self.node.meta_raft.store.begin()?;
+                owners.verify_published_locally(txn.into_view().as_ref(), certified)?;
+                let captured = self.upload_migration_published(planned, uploader)?;
+                Ok(crate::api::CaptureMigrationImageResult {
+                    record: captured.record,
+                    image_digest: captured.image_digest,
+                    cut: captured.cut,
+                    configuration_applied_at: captured.configuration_applied_at,
+                    objects: captured.objects as u64,
+                    object_bytes: captured.object_bytes,
+                    source_owner: owners.source_id(),
+                    destination_owner: owners.destination_id(),
+                })
+            },
+        )
     }
 
     fn bind_migration_image(
@@ -1634,6 +1652,21 @@ impl AdminApi for RuntimeBackend {
             .into_iter()
             .find(|r| r.creation().intent().region() == migration.intent().region())
             .ok_or_else(|| Error::Config("migration group has no committed range".into()))?;
+        let fixed = kv9_meta::data_groups::capture::committed_capture(
+            store.begin()?.into_view().as_ref(),
+            &certified,
+            operation,
+        )?
+        .ok_or_else(|| {
+            Error::Config(
+                "bind requires a committed capture plan; plan the migration image first".into(),
+            )
+        })?;
+        if fixed.descriptor().manifest() != &manifest {
+            return Err(Error::Config(
+                "manifest differs from committed capture plan".into(),
+            ));
+        }
         let owners = crate::migration_retention::MigrationOwners::new(
             &certified,
             &migration,
@@ -1673,7 +1706,7 @@ impl AdminApi for RuntimeBackend {
         // destination durably adopted the exact pinned image and reconciled
         // it into a live replica. Local absence refuses in the safe
         // direction; a client may retry after commitment applies.
-        kv9_meta::data_groups::evidence::committed_install_evidence(store)?
+        let evidence = kv9_meta::data_groups::evidence::committed_install_evidence(store)?
             .into_iter()
             .find(|e| e.operation() == operation)
             .ok_or_else(|| Error::Config("promotion requires committed install evidence".into()))?;
@@ -1700,7 +1733,15 @@ impl AdminApi for RuntimeBackend {
                     "promotion requires the attached learner in the group configuration".into(),
                 ));
             }
-            let proposed = driver.promote_voter(destination)?;
+            let origin = kv9_meta::data_groups::store_history::configuration_origin(
+                store.begin()?.into_view().as_ref(),
+                group.range_binding(),
+                evidence.task(),
+                operation,
+                evidence.destination(),
+                kv9_raft::configuration_origin::Action::Promote,
+            )?;
+            let proposed = driver.change_data_member(origin)?;
             driver.wait_conf_applied(proposed, Duration::from_secs(10))?;
             true
         };
@@ -1809,7 +1850,15 @@ impl AdminApi for RuntimeBackend {
                     "a leader cannot remove itself; transfer leadership first".into(),
                 ));
             }
-            let proposed = driver.remove_voter(removed)?;
+            let origin = kv9_meta::data_groups::store_history::configuration_origin(
+                store.begin()?.into_view().as_ref(),
+                group.range_binding(),
+                decision.task(),
+                operation,
+                decision.source(),
+                kv9_raft::configuration_origin::Action::Remove,
+            )?;
+            let proposed = driver.change_data_member(origin)?;
             driver.wait_conf_applied(proposed, Duration::from_secs(10))?;
             true
         };
@@ -1910,12 +1959,23 @@ impl AdminApi for RuntimeBackend {
             .map(|b| kv9_common::data_range::DataRange::decode(&b))
             .transpose()?
             .ok_or_else(|| Error::MetaNotReady("parent range row has not applied".into()))?;
+        if engine
+            .get(
+                kv9_engine::ColumnFamily::Default,
+                kv9_common::raw_ttl::CLOCK_KEY,
+            )?
+            .is_some()
+        {
+            return self.seal_ttl_split(root, operation);
+        }
         if current.sealed {
             // Idempotent: the fence is already durable; confirm its shape.
             let advanced = driver.propose(&kv9_raft::Command::Noop)?;
-            driver
-                .wait_applied(advanced, Duration::from_secs(10))
-                .map_err(|e| Error::Raft(format!("seal confirmation: {e:?}")))?;
+            settle_proposal(
+                advanced,
+                driver.wait_applied(advanced, Duration::from_secs(10)),
+                true,
+            )?;
             return Ok(crate::api::SealSplitParentResult {
                 sealed_version: current.version,
                 changed: false,
@@ -1935,9 +1995,11 @@ impl AdminApi for RuntimeBackend {
             expected: Some(current.digest()),
             next: sealed.clone(),
         })?;
-        driver
-            .wait_applied(proposed, Duration::from_secs(10))
-            .map_err(|e| Error::Raft(format!("seal apply: {e:?}")))?;
+        settle_proposal(
+            proposed,
+            driver.wait_applied(proposed, Duration::from_secs(10)),
+            true,
+        )?;
         let now = engine
             .get(
                 kv9_engine::ColumnFamily::Default,
@@ -1988,10 +2050,22 @@ impl AdminApi for RuntimeBackend {
         } else {
             intent.child_low()
         };
-        let child_region = kv9_meta::data_groups::committed_creation(store, child_task)?
-            .ok_or_else(|| Error::Config("split child creation is not committed".into()))?
-            .intent()
-            .region();
+        let child_creation = kv9_meta::data_groups::committed_creation(store, child_task)?
+            .ok_or_else(|| Error::Config("split child creation is not committed".into()))?;
+        let child_region = child_creation.intent().region();
+        // A completed split is not a request to restore the parent's old values.
+        // This local preflight avoids needless work; the child log's range
+        // barrier below is what makes concurrent publication safe.
+        if kv9_meta::data_groups::ranges::committed_ranges(store)?
+            .iter()
+            .any(|binding| {
+                binding.range().region == intent.parent_region() && binding.range().sealed
+            })
+        {
+            return Err(Error::StaleEpoch {
+                region: child_region,
+            });
+        }
         let (parent_engine, child_engine, child_driver) = {
             let handles = self.group_handles.lock().expect("group handles poisoned");
             let (parent_engine, _) = handles
@@ -2004,6 +2078,26 @@ impl AdminApi for RuntimeBackend {
                 .clone();
             (parent_engine, child_engine, child_driver)
         };
+        if parent_engine
+            .get(
+                kv9_engine::ColumnFamily::Default,
+                kv9_common::raw_ttl::CLOCK_KEY,
+            )?
+            .is_some()
+        {
+            return self.populate_ttl_split(root, operation, high);
+        }
+        if child_engine
+            .get(
+                kv9_engine::ColumnFamily::Default,
+                kv9_common::data_range::RANGE_KEY,
+            )?
+            .is_some()
+        {
+            return Err(Error::StaleEpoch {
+                region: child_region,
+            });
+        }
         // Population happens ONLY under the durable fence: the parent's own
         // range row must be sealed, so the copied half cannot move again.
         let parent_range = parent_engine
@@ -2019,6 +2113,17 @@ impl AdminApi for RuntimeBackend {
                 "population requires the sealed parent fence".into(),
             ));
         }
+        let mut target = parent_range.clone();
+        target.region = child_region;
+        target.creation = child_creation.intent().digest();
+        target.conf_ver = 1;
+        target.version = 1;
+        target.sealed = false;
+        if high {
+            target.start = intent.split_key().to_vec();
+        } else {
+            target.end = intent.split_key().to_vec();
+        }
         let status = child_driver.status();
         if status.fatal.is_some() {
             return Err(Error::Raft("child driver is fatally stopped".into()));
@@ -2030,30 +2135,8 @@ impl AdminApi for RuntimeBackend {
         }
         // Half bounds in ENGINE key encoding. The split key is a user key;
         // an empty upper bound means "to the end of this keyspace's prefix".
-        let keyspace = parent_range.keyspace;
-        let low_bound = kv9_common::codec::encode_key(
-            kv9_common::codec::KeyMode::Raw,
-            keyspace,
-            intent.split_key(),
-        )
-        .map_err(|e| Error::Config(e.to_string()))?;
-        let prefix = kv9_common::codec::encode_key(kv9_common::codec::KeyMode::Raw, keyspace, b"")
-            .map_err(|e| Error::Config(e.to_string()))?;
-        // The exclusive end of this keyspace: the NEXT keyspace's empty
-        // prefix, which the order-preserving encoding places strictly after
-        // every key of this one. Keyspace ids are u32 and allocation refuses
-        // the maximum, so the successor id always encodes.
-        let prefix_end = kv9_common::codec::encode_key(
-            kv9_common::codec::KeyMode::Raw,
-            kv9_common::KeyspaceId(
-                keyspace
-                    .0
-                    .checked_add(1)
-                    .ok_or_else(|| Error::Config("keyspace id exhausted".into()))?,
-            ),
-            b"",
-        )
-        .map_err(|e| Error::Config(e.to_string()))?;
+        let (prefix, low_bound, prefix_end) =
+            Self::split_bounds(&parent_range, intent.split_key())?;
         let (start, end) = if high {
             (low_bound.clone(), prefix_end.clone())
         } else {
@@ -2063,12 +2146,41 @@ impl AdminApi for RuntimeBackend {
         let mut parent_hash = sha2::Sha256::new();
         let mut cursor = start.clone();
         let mut rows_copied: u64 = 0;
+        let row_bytes = kv9_raft::RawPopulation::row_bytes_budget(&parent_range, &target)?;
         loop {
-            let batch = view.scan(kv9_engine::ColumnFamily::Default, &cursor, &end, 256)?;
+            let mut batch = view.scan(
+                kv9_engine::ColumnFamily::Default,
+                &cursor,
+                &end,
+                kv9_raft::command::population::MAX_ROWS,
+            )?;
             if batch.is_empty() {
                 break;
             }
-            let mut ops = Vec::with_capacity(batch.len());
+            let mut remaining = row_bytes;
+            let count = batch
+                .iter()
+                .take_while(|(key, value)| {
+                    let Some(size) = key
+                        .len()
+                        .checked_add(value.len())
+                        .and_then(|n| n.checked_add(8))
+                    else {
+                        return false;
+                    };
+                    if size > remaining {
+                        return false;
+                    }
+                    remaining -= size;
+                    true
+                })
+                .count();
+            if count == 0 {
+                return Err(Error::Config(
+                    "one Raw row exceeds the population frame budget".into(),
+                ));
+            }
+            batch.truncate(count);
             for (key, value) in &batch {
                 if key.as_slice() == kv9_common::data_range::RANGE_KEY {
                     continue;
@@ -2077,20 +2189,21 @@ impl AdminApi for RuntimeBackend {
                 parent_hash.update(key);
                 parent_hash.update((value.len() as u64).to_be_bytes());
                 parent_hash.update(value);
-                ops.push(kv9_raft::KvOp::Put {
-                    cf: 0,
-                    key: key.clone(),
-                    value: value.clone(),
-                });
             }
             let last = batch.last().expect("nonempty batch").0.clone();
-            if !ops.is_empty() {
-                rows_copied += ops.len() as u64;
-                let proposed = child_driver.propose(&kv9_raft::Command::Write { ops })?;
-                child_driver
-                    .wait_applied(proposed, Duration::from_secs(10))
-                    .map_err(|e| Error::Raft(format!("population batch apply: {e:?}")))?;
-            }
+            rows_copied += batch.len() as u64;
+            let population = kv9_raft::RawPopulation::new(
+                parent_range.clone(),
+                target.clone(),
+                operation,
+                batch,
+            )?;
+            let proposed = child_driver.propose(&kv9_raft::Command::PopulateRaw(population))?;
+            settle_proposal(
+                proposed,
+                child_driver.wait_applied(proposed, Duration::from_secs(10)),
+                true,
+            )?;
             cursor = last;
             cursor.push(0); // strictly past the last copied key
         }
@@ -2207,25 +2320,45 @@ impl AdminApi for RuntimeBackend {
                 "publication requires the sealed parent fence".into(),
             ));
         }
-        let (prefix, low_bound, prefix_end) =
-            Self::split_bounds(&parent_range, intent.split_key())?;
-        let parent_view = parent_engine.snapshot()?;
-        let (_, low_expected) = Self::half_digest(parent_view.as_ref(), &prefix, &low_bound)?;
-        let (_, high_expected) = Self::half_digest(parent_view.as_ref(), &low_bound, &prefix_end)?;
-        let (_, low_actual) =
-            Self::half_digest(low_engine.snapshot()?.as_ref(), &prefix, &low_bound)?;
-        let (_, high_actual) =
-            Self::half_digest(high_engine.snapshot()?.as_ref(), &low_bound, &prefix_end)?;
-        if low_actual != low_expected || high_actual != high_expected {
-            return Err(Error::Config(
-                "publication requires both children populated exactly".into(),
-            ));
-        }
+        let ttl_plan = if parent_engine
+            .get(
+                kv9_engine::ColumnFamily::Default,
+                kv9_common::raw_ttl::CLOCK_KEY,
+            )?
+            .is_some()
+        {
+            Some(self.verify_ttl_split_publication(root, operation)?)
+        } else {
+            let (prefix, low_bound, prefix_end) =
+                Self::split_bounds(&parent_range, intent.split_key())?;
+            let parent_view = parent_engine.snapshot()?;
+            let (_, low_expected) = Self::half_digest(parent_view.as_ref(), &prefix, &low_bound)?;
+            let (_, high_expected) =
+                Self::half_digest(parent_view.as_ref(), &low_bound, &prefix_end)?;
+            let (_, low_actual) =
+                Self::half_digest(low_engine.snapshot()?.as_ref(), &prefix, &low_bound)?;
+            let (_, high_actual) =
+                Self::half_digest(high_engine.snapshot()?.as_ref(), &low_bound, &prefix_end)?;
+            if low_actual != low_expected || high_actual != high_expected {
+                return Err(Error::Config(
+                    "publication requires both children populated exactly".into(),
+                ));
+            }
+            None
+        };
         let _guard = self.node.meta_raft.lock_catalog_txn();
         let term = self.prepare_catalog()?;
         let mut txn = self.node.meta_raft.store.begin()?;
         if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
             return Err(Error::Config("publication request root differs".into()));
+        }
+        if let Some(expected) = ttl_plan {
+            let now = kv9_meta::data_groups::split::committed_split_plan(store, operation)?;
+            if now.plan() != &expected || now.published() {
+                return Err(Error::StaleEpoch {
+                    region: expected.parent.region,
+                });
+            }
         }
         let (publication, changed) =
             kv9_meta::data_groups::split::publish_split(&mut txn, operation)?;
@@ -2542,7 +2675,15 @@ impl AdminApi for RuntimeBackend {
         let changed = if !status.learners.contains(&stranded.0) {
             false // idempotent: already detached
         } else {
-            let proposed = driver.remove_voter(stranded)?;
+            let origin = kv9_meta::data_groups::store_history::configuration_origin(
+                self.node.meta_raft.store.begin()?.into_view().as_ref(),
+                group.range_binding(),
+                abort.task(),
+                operation,
+                abort.destination(),
+                kv9_raft::configuration_origin::Action::Detach,
+            )?;
+            let proposed = driver.change_data_member(origin)?;
             driver.wait_conf_applied(proposed, Duration::from_secs(10))?;
             true
         };
@@ -2595,35 +2736,12 @@ impl AdminApi for RuntimeBackend {
         _caller: &str,
         request: Vec<u8>,
     ) -> Result<crate::api::RetentionUpdateResult> {
-        use kv9_meta::retention::{decode_request, plan_retention, MAX_LEDGER_REQUEST_BYTES};
-        if request.len() > MAX_LEDGER_REQUEST_BYTES {
+        if request.len() > kv9_meta::retention::MAX_LEDGER_REQUEST_BYTES {
             return Err(Error::Config("retention request exceeds byte bound".into()));
         }
         self.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
-        // Drain prior ambiguous proposals before taking the one planning view.
-        // The term fence prevents a plan from surviving a leadership change.
-        let term = self.prepare_catalog()?;
-        let txn = self.node.meta_raft.store.begin()?;
-        let root = kv9_meta::root::certified_root(&txn)?
-            .ok_or_else(|| Error::MetaNotReady("retention requires a certified root".into()))?;
-        let request =
-            decode_request(&request, root.digest()).map_err(|e| Error::Config(e.to_string()))?;
-        let view = txn.into_view();
-        let plan = plan_retention(view.as_ref(), &root, &request)?;
-        let revision = plan.revision();
-        let changed = plan.changed();
-        let command = if changed {
-            kv9_raft::Command::from_batch(&plan.into_batch())
-        } else {
-            kv9_raft::Command::Noop
-        };
-        let applied = self.commit_catalog(&command, term)?;
-        Ok(crate::api::RetentionUpdateResult {
-            revision,
-            changed,
-            applied,
-        })
+        self.apply_checkpoint_retention(None, &request, Instant::now() + Duration::from_secs(20))
     }
 
     fn get_retention_owner(
@@ -2632,18 +2750,7 @@ impl AdminApi for RuntimeBackend {
         expected_root: kv9_common::RootDigest,
         owner: kv9_common::retention::OwnerId,
     ) -> Result<Option<Vec<u8>>> {
-        self.ensure_serving()?;
-        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
-        let txn = self.node.meta_raft.store.begin()?;
-        let root = kv9_meta::root::certified_root(&txn)?
-            .ok_or_else(|| Error::MetaNotReady("retention requires a certified root".into()))?;
-        if root.digest() != expected_root {
-            return Err(Error::Config("retention read root differs".into()));
-        }
-        kv9_meta::retention::retention_owner(txn.into_view().as_ref(), &root, owner)?
-            .as_ref()
-            .map(kv9_meta::retention::encode_owner_observation)
-            .transpose()
+        self.read_checkpoint_owner(expected_root, owner, Instant::now() + READ_BARRIER_DEADLINE)
     }
 
     fn get_node_endpoint(
@@ -2722,7 +2829,6 @@ impl AdminApi for RuntimeBackend {
         name: &str,
         tenant: TenantId,
         api_type: ApiType,
-        _txn_group: TxnGroupId,
     ) -> Result<CreateKeyspaceResult> {
         self.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
@@ -2945,6 +3051,133 @@ fn registration_error(error: Error) -> RegistrationError {
 }
 
 impl RegistrationBackend for RuntimeBackend {
+    fn export_migration_capture(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        operation: [u8; 16],
+        digest: RootDigest,
+        deadline: Instant,
+    ) -> Result<kv9_raft::grpc::migration_payload::PayloadExport> {
+        self.export_capture_payload(root, region, operation, digest, deadline)
+    }
+    fn replicate_migration_capture(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        operation: [u8; 16],
+        digest: RootDigest,
+        source: StoreIdentity,
+        deadline: Instant,
+    ) -> Result<()> {
+        self.copy_capture_payload(root, region, operation, digest, source, deadline)
+    }
+    fn migration_capture(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        operation: [u8; 16],
+        deadline: Instant,
+    ) -> Result<Option<[u8; 32]>> {
+        self.observe_migration_capture(root, region, operation, deadline)
+    }
+    fn bootstrap_read_fence(
+        &self,
+        root: RootDigest,
+        predecessor: u64,
+        deadline: Instant,
+    ) -> Result<Option<[u8; 32]>> {
+        self.observe_bootstrap_read_fence(root, predecessor, deadline)
+    }
+    fn data_read_fence(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        creation: RootDigest,
+        deadline: Instant,
+    ) -> Result<Option<kv9_common::data_read_fence::ReadFloor>> {
+        self.observe_data_read_fence(root, region, creation, deadline)
+    }
+    fn configuration_timeline(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        creation: RootDigest,
+        cursor: Option<kv9_raft::storage::configuration_timeline::TimelineCursor>,
+        deadline: Instant,
+    ) -> Result<Option<kv9_raft::storage::configuration_timeline::TimelinePage>> {
+        self.observe_configuration_timeline(root, region, creation, cursor, deadline)
+    }
+    fn configuration_origins(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        creation: RootDigest,
+        cursor: Option<kv9_raft::storage::configuration_origins::OriginCursor>,
+        deadline: Instant,
+    ) -> Result<Option<kv9_raft::storage::configuration_origins::OriginPage>> {
+        self.observe_configuration_origins(root, region, creation, cursor, deadline)
+    }
+    fn data_membership(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        creation: RootDigest,
+        cursor: Option<kv9_raft::storage::membership_history::MembershipCursor>,
+        deadline: Instant,
+    ) -> Result<Option<kv9_raft::storage::membership_history::MembershipPage>> {
+        self.observe_data_membership(root, region, creation, cursor, deadline)
+    }
+    fn checkpoint_selection(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        predecessor: u64,
+        deadline: Instant,
+    ) -> Result<Option<[u8; 32]>> {
+        self.observe_checkpoint_selection(root, region, predecessor, deadline)
+    }
+    fn checkpoint_history(
+        &self,
+        root: RootDigest,
+        region: RegionId,
+        predecessor: u64,
+        deadline: Instant,
+    ) -> Result<Option<[u8; 32]>> {
+        self.ensure_serving()?;
+        let context = self.ttl_context()?;
+        if context.root.digest() != root || Instant::now() >= deadline {
+            return Err(Error::MetaNotReady(
+                "checkpoint history root or deadline differs".into(),
+            ));
+        }
+        let result = checkpoint_sweep::local_history(self, &context.root, region, predecessor)?;
+        self.ensure_serving()?;
+        if Instant::now() >= deadline {
+            return Err(Error::MetaNotReady(
+                "checkpoint history deadline elapsed".into(),
+            ));
+        }
+        Ok(result)
+    }
+    fn checkpoint_retention(
+        &self,
+        root: RootDigest,
+        query: &kv9_raft::grpc::checkpoint_retention::LedgerQuery,
+        deadline: Instant,
+    ) -> Result<kv9_raft::grpc::checkpoint_retention::LedgerReply> {
+        self.checkpoint_retention_local(root, query, deadline)
+    }
+
+    fn raw_ttl_directory(
+        &self,
+        binding: &kv9_common::data_range::DataRange,
+        replicas: &[NodeId],
+        deadline: Instant,
+    ) -> Result<kv9_raft::grpc::ttl_directory::RawTtlDirectory> {
+        self.ttl_directory_snapshot(binding, replicas, deadline)
+    }
+
     fn confirm_endpoint(
         &self,
         node: NodeId,
@@ -3303,8 +3536,7 @@ mod gate {
     /// The context gate: keyspace, region and epoch, all decided from **one** `MetaTxn`.
     ///
     /// The context arrives from the wire already deserialized and otherwise unexamined. Without
-    /// this, a client could name a keyspace that was never created, or write raw bytes into a
-    /// `txn` keyspace where Percolator expects its own lock/write structure, or act on a region
+    /// this, a client could name a keyspace that was never created, or act on a region
     /// whose epoch has since moved — none of which would error.
     ///
     /// **Every lookup shares one transaction.** Reading the keyspace from one snapshot and the
@@ -3519,6 +3751,7 @@ enum KeySpan<'a> {
     // Borrow request storage instead of allocating a vector of key references.
     BatchKeys(&'a [UserKey]),
     BatchPairs(&'a [(UserKey, Value)]),
+    BatchMutations(&'a [RawMutation]),
     /// Half-open `[start, end)`; an empty `end` means "to the end of the keyspace".
     Range {
         start: &'a [u8],
@@ -3540,6 +3773,9 @@ impl<'a> KeySpan<'a> {
             KeySpan::BatchKeys(keys) => keys.first().map(Vec::as_slice).unwrap_or(&[]),
             KeySpan::BatchPairs(pairs) => {
                 pairs.first().map(|(key, _)| key.as_slice()).unwrap_or(&[])
+            }
+            KeySpan::BatchMutations(mutations) => {
+                mutations.first().map(RawMutation::key).unwrap_or(&[])
             }
             KeySpan::Range { start, .. } => start,
         }
@@ -3571,6 +3807,10 @@ impl<'a> KeySpan<'a> {
             KeySpan::BatchPairs(pairs) => {
                 pairs.iter().skip(1).try_for_each(|(key, _)| check_key(key))
             }
+            KeySpan::BatchMutations(mutations) => mutations
+                .iter()
+                .skip(1)
+                .try_for_each(|mutation| check_key(mutation.key())),
             KeySpan::Range { end, .. } => {
                 if range_end_within_region(end, &region.end_key) {
                     Ok(())
@@ -4051,13 +4291,7 @@ impl RawApi for RuntimeBackend {
     ) -> crate::api::RawWritePreparation {
         Box::new(move || {
             self.ensure_serving()?;
-            let anchor = match &operation {
-                crate::api::RawWrite::Put { key, .. } => key.clone(),
-                crate::api::RawWrite::Delete { key } => key.clone(),
-                crate::api::RawWrite::BatchPut(pairs) => {
-                    pairs.first().map(|(k, _)| k.clone()).unwrap_or_default()
-                }
-            };
+            let anchor = operation.anchor().to_vec();
             if let Some(group) = self.raw_directory.get_for(ctx.keyspace, &anchor) {
                 return group.prepare_raw_write(ctx, operation)();
             }
@@ -4077,6 +4311,16 @@ impl RawApi for RuntimeBackend {
                     let batch = RawExecutor.plan_batch_put(
                         ctx.keyspace,
                         &pairs,
+                        RawWriteOptions::default(),
+                    )?;
+                    (fence, batch)
+                }
+                crate::api::RawWrite::Batch(mutations) => {
+                    let fence =
+                        self.validated_context(&ctx, KeySpan::BatchMutations(&mutations))?;
+                    let batch = RawExecutor.plan_batch(
+                        ctx.keyspace,
+                        &mutations,
                         RawWriteOptions::default(),
                     )?;
                     (fence, batch)
@@ -4271,6 +4515,23 @@ impl RawApi for RuntimeBackend {
         self.commit_batch(fence, plan)
     }
 
+    fn raw_batch(
+        &self,
+        ctx: &RequestContext,
+        mutations: &[RawMutation],
+    ) -> Result<AppliedPosition> {
+        self.ensure_serving()?;
+        if let Some(group) = mutations
+            .first()
+            .and_then(|anchor| self.raw_directory.get_for(ctx.keyspace, anchor.key()))
+        {
+            return group.raw_batch(ctx, mutations);
+        }
+        let fence = self.validated_context(ctx, KeySpan::BatchMutations(mutations))?;
+        let plan = RawExecutor.plan_batch(ctx.keyspace, mutations, RawWriteOptions::default())?;
+        self.commit_batch(fence, plan)
+    }
+
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
         self.ensure_serving()?;
         if let Some(group) = self.raw_directory.get_for(ctx.keyspace, key) {
@@ -4416,108 +4677,6 @@ impl RawApi for RuntimeBackend {
     }
 }
 
-impl TxnApi for RuntimeBackend {
-    fn kv_begin(
-        &self,
-        ctx: &RequestContext,
-        primary: kv9_txn::QualifiedKey,
-    ) -> Result<kv9_txn::TxnDescriptor> {
-        self.ensure_serving()?;
-        self.node.kv_begin(ctx, primary)
-    }
-
-    fn kv_get(
-        &self,
-        ctx: &RequestContext,
-        key: &[u8],
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<Option<Value>> {
-        self.ensure_serving()?;
-        self.node.kv_get(ctx, key, transaction)
-    }
-    fn kv_batch_get(
-        &self,
-        ctx: &RequestContext,
-        keys: &[UserKey],
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<Vec<Option<Value>>> {
-        self.ensure_serving()?;
-        self.node.kv_batch_get(ctx, keys, transaction)
-    }
-    fn kv_scan(
-        &self,
-        ctx: &RequestContext,
-        start: &[u8],
-        end: &[u8],
-        limit: usize,
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<Vec<(UserKey, Value)>> {
-        self.ensure_serving()?;
-        self.node.kv_scan(ctx, start, end, limit, transaction)
-    }
-    fn kv_prewrite(
-        &self,
-        ctx: &RequestContext,
-        mutations: &[(UserKey, Option<Value>)],
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<()> {
-        self.ensure_serving()?;
-        self.node.kv_prewrite(ctx, mutations, transaction)
-    }
-    fn kv_commit(
-        &self,
-        ctx: &RequestContext,
-        keys: &[UserKey],
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<()> {
-        self.ensure_serving()?;
-        self.node.kv_commit(ctx, keys, transaction)
-    }
-    fn kv_pessimistic_lock(
-        &self,
-        ctx: &RequestContext,
-        keys: &[UserKey],
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<()> {
-        self.ensure_serving()?;
-        self.node.kv_pessimistic_lock(ctx, keys, transaction)
-    }
-    fn kv_pessimistic_rollback(
-        &self,
-        ctx: &RequestContext,
-        keys: &[UserKey],
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<()> {
-        self.ensure_serving()?;
-        self.node.kv_pessimistic_rollback(ctx, keys, transaction)
-    }
-    fn kv_resolve_lock(
-        &self,
-        ctx: &RequestContext,
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<()> {
-        self.ensure_serving()?;
-        self.node.kv_resolve_lock(ctx, transaction)
-    }
-    fn kv_cleanup(
-        &self,
-        ctx: &RequestContext,
-        key: &[u8],
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<()> {
-        self.ensure_serving()?;
-        self.node.kv_cleanup(ctx, key, transaction)
-    }
-    fn kv_check_txn_status(
-        &self,
-        ctx: &RequestContext,
-        transaction: &kv9_txn::TxnDescriptor,
-    ) -> Result<kv9_txn::TxnStatus> {
-        self.ensure_serving()?;
-        self.node.kv_check_txn_status(ctx, transaction)
-    }
-}
-
 /// Startup-only substitutions for tests and explicit experimental installation.
 ///
 /// `Default` is ordinary production. The experimental lease entry point supplies
@@ -4590,20 +4749,28 @@ type RouteSnapshotGate = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver
 
 /// A running real-process metadata member.
 pub struct NodeRuntime {
+    maintenance_control: crate::maintenance::Controls,
+    raw_ttl_clock: Option<Arc<dyn crate::ttl_clock::TtlClock>>,
+    ttl_maintenance: Option<ttl_maintenance::Maintenance>,
+    split_maintenance: Option<split_maintenance::Maintenance>,
+    checkpoint_sweep: Option<checkpoint_sweep::Maintenance>,
+    data_checkpoint: Option<data_checkpoint::Maintenance>,
+    replica_pressure: Option<replica_pressure::Maintenance>,
     data_groups: crate::region_manager::RegionManager,
-    /// The same backend the gRPC surface serves; the auto-split reconcile
-    /// drives the proven manual pipeline through it, step-locally.
+    /// The same backend the gRPC surface and maintenance workers serve.
     rpc_backend: Arc<RuntimeBackend>,
     /// KV9_AUTO_SPLIT_BYTES: local replica WAL bytes that trigger an
-    /// automatic split of a bound, unsealed range. 0 disables (default).
+    /// automatic split of a bound, unsealed range. 0 disables new triggers
+    /// (default); committed intents continue independently.
     auto_split_bytes: u64,
     /// KV9_AUTO_COMPACT_ENTRIES: retained raft-log length (last-first) that
-    /// triggers an automatic compaction floor for a bound group. 0 disables
-    /// (default). The floor is the local replica's applied position; a
+    /// triggers an automatic floor for a bound group or checkpointed TTL import.
+    /// 0 disables (default). The local applied position is capped by checkpoint
+    /// history; a
     /// too-aggressive floor simply fails the all-matched gate and retries.
     auto_compact_entries: u64,
     /// KV9_AUTO_COMPACT_BYTES: retained committed-log PAYLOAD bytes that
-    /// trigger an automatic compaction floor for a bound group. 0 disables
+    /// trigger an automatic floor for a bound group or checkpointed TTL import. 0 disables
     /// (default). Complements the entries trigger: entries are a poor proxy
     /// when value sizes vary, so a group of large values bounds its log by
     /// bytes. Same floor (the replica's applied position) and same gated
@@ -4614,7 +4781,8 @@ pub struct NodeRuntime {
     /// the entries and bytes thresholds are never reached. 0 disables
     /// (default). This bounds a LOW-TRAFFIC group's recovery-replay staleness:
     /// a quiet group whose log never grows past a size threshold still
-    /// compacts at least every T. Measured locally as how long this replica's
+    /// becomes eligible after T (history and peer gates can delay execution).
+    /// Measured locally as how long this replica's
     /// `first_index` has stayed put (a compaction is the only thing that
     /// advances it), so no per-entry timestamp is stored.
     auto_compact_age: Duration,
@@ -4643,10 +4811,6 @@ pub struct NodeRuntime {
     driver_thread: Option<std::thread::JoinHandle<()>>,
     remote_storage: Option<crate::remote_storage::RemoteStorage>,
     grpc_runtime: tokio::runtime::Runtime,
-    #[cfg(feature = "rpc-experiment")]
-    experimental_rpc: Option<crate::rpc_experiment::ExperimentalServer>,
-    #[cfg(feature = "rpc-experiment")]
-    streaming_rpc: Option<crate::point_stream::StreamServer>,
     grpc_shutdown: Option<tokio::sync::oneshot::Sender<()>>,
     point_shutdown: tokio_util::sync::CancellationToken,
     grpc_server: Option<tokio::task::JoinHandle<std::result::Result<(), tonic::transport::Error>>>,
@@ -4767,10 +4931,17 @@ impl NodeRuntime {
         overrides: StartOverrides,
     ) -> Result<Self> {
         let public_limits = crate::admission::PublicApiLimits::from_env()?;
+        let max_write_log_entries = crate::write_pressure::from_env()?;
+        let log_bytes_limit = crate::log_budget::limit_from_env()?;
+        let minimum_free_disk_bytes = crate::log_budget::headroom_from_env()?;
+        let rewrite_bytes_limit = crate::log_budget::rewrite_from_env()?;
         let data_workers = config.data_workers;
         root.validate()?;
         store_identity.verify(&root, id)?;
         config.validate()?;
+        let raw_ttl_clock = crate::ttl_clock::configured(config.raw_ttl_clock)?;
+        let ttl_maintenance_enabled = ttl_maintenance::enabled_from_env()?;
+        let data_checkpoint_publish = data_checkpoint::publish_from_env()?;
         let advertised_override = config
             .advertise_addr
             .as_deref()
@@ -4839,21 +5010,60 @@ impl NodeRuntime {
                 .collect::<Vec<_>>(),
         );
         let voter_ids: Vec<u64> = voters.iter().map(|node| node.0).collect();
+        let log_budget = crate::log_budget::recover(
+            &data_dir,
+            log_bytes_limit,
+            minimum_free_disk_bytes,
+            rewrite_bytes_limit,
+        )?;
         let mut storage = if recover_only {
             DiskRaftStorage::recover(&data_dir.join("raft"))?
         } else {
             DiskRaftStorage::open(&data_dir.join("raft"), &voter_ids)?.0
         };
         let raft_io_metrics = storage.io_metrics();
+        let log_debt = storage.attach_log_budget(&log_budget)?;
         let remote = crate::remote_storage::prepare_remote(&data_dir, &root, &storage)?;
+        let grpc_runtime = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(2)
+            // Poll socket readiness while public handlers keep workers busy.
+            // Peer messages share this executor with the public RPC service.
+            .event_interval(8)
+            .enable_all()
+            .build()
+            .map_err(|error| Error::Config(format!("create gRPC runtime: {error}")))?;
         let catalog_path = data_dir.join("catalog.wal");
-        let (engine, replay, recovered_anchor) =
-            kv9_meta::recovery::open_initial_checkpoint_engine(
+        let bootstrap_reader =
+            remote
+                .as_ref()
+                .map(|config| crate::bootstrap_retention::BootstrapReader {
+                    directory: &data_dir,
+                    root: &root,
+                    identity: store_identity,
+                    uploader: config.uploader.as_ref(),
+                });
+        let (engine, replay, recovered_anchor) = match &bootstrap_reader {
+            Some(reader) => crate::bootstrap_retention::startup::open_metadata(
+                &store_guard,
                 &mut storage,
                 &catalog_path,
-                remote.as_ref().map(|config| config.uploader.as_ref()),
+                reader,
+                || {
+                    crate::bootstrap_retention::startup::StartupLedger::new(
+                        &root,
+                        store_identity,
+                        auth.cluster_token.clone(),
+                        grpc_runtime.handle().clone(),
+                    )
+                },
+            )?,
+            None => kv9_meta::recovery::open_initial_checkpoint_engine_with_reader(
+                &mut storage,
+                &catalog_path,
+                None,
                 &root,
-            )?;
+            )?,
+        };
         if let Some(anchor) = recovered_anchor {
             let checkpoint = anchor.descriptor();
             eprintln!(
@@ -4865,6 +5075,7 @@ impl NodeRuntime {
                 anchor.digest()
             );
         }
+        engine.attach_log_budget(&log_budget)?;
         // Upgrade the old in-band index exactly once, using the durable Raft log
         // for its term. Atomically rewrite legacy state into ONE v2 record.
         let legacy_key = b"\x00kv9\x00applied_index";
@@ -4980,26 +5191,21 @@ impl NodeRuntime {
         }
         node.meta.lock().expect("meta poisoned").bootstrap = bootstrap;
 
-        let discovery = Arc::new(RuntimeDiscovery::new(
-            id,
-            marker_initialized || local_identity.is_some(),
-            voter_fp,
-            RootWireIdentity {
-                bootstrap_generation: root.bootstrap_generation,
-                root_digest: root.digest(),
-            },
-        ));
+        let discovery = Arc::new(
+            RuntimeDiscovery::new(
+                id,
+                marker_initialized || local_identity.is_some(),
+                voter_fp,
+                RootWireIdentity {
+                    bootstrap_generation: root.bootstrap_generation,
+                    root_digest: root.digest(),
+                },
+            )
+            .with_raw_ttl_format(store_guard.raw_ttl_format_fence(&root, &store_identity)?)?,
+        );
         if let Some(idty) = local_identity {
             discovery.set_cluster_id(idty);
         }
-        let grpc_runtime = tokio::runtime::Builder::new_multi_thread()
-            .worker_threads(2)
-            // Poll socket readiness while public handlers keep workers busy.
-            // Peer messages share this executor with the public RPC service.
-            .event_interval(8)
-            .enable_all()
-            .build()
-            .map_err(|error| Error::Config(format!("create gRPC runtime: {error}")))?;
         let transport = GrpcTransport::new(
             id,
             Some(auth.cluster_token.clone()),
@@ -5023,6 +5229,7 @@ impl NodeRuntime {
             None => Arc::new(CatalogFenceAdjudicator::new(node.clone())),
         });
         let driver = NodeDriver::new(peer, transport.clone(), state_machine)?;
+        driver.attach_log_debt(log_debt)?;
         // Initial root voters retain the existing first-formation/stable-log
         // contract. A dynamic member must carry an exact local incarnation
         // binding or obtain its own registration receipt before Raft runs.
@@ -5033,7 +5240,16 @@ impl NodeRuntime {
         let status_path = data_dir.join("status");
 
         let backend = Arc::new(RuntimeBackend {
-            raw_directory: Arc::default(),
+            maintenance: Arc::default(),
+            ttl_activation: Some(Arc::new(
+                ttl_activation::ActivationContext::new(
+                    root.clone(),
+                    store_guard.raw_ttl_format_fence(&root, &store_identity)?,
+                    auth.cluster_token.clone(),
+                )?
+                .with_drain_outbox(&data_dir)?,
+            )),
+            raw_directory: Arc::new(range_api::RawDirectory::with_clock(raw_ttl_clock.clone())),
             group_handles: Arc::default(),
             adoption_receipts: Arc::default(),
             node: node.clone(),
@@ -5046,52 +5262,6 @@ impl NodeRuntime {
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
         let public_api = Kv9Grpc::with_limits(backend.clone(), public_limits)?;
         let public_admission = public_api.admission();
-        #[cfg(feature = "rpc-experiment")]
-        let experimental_rpc = match std::env::var("KV9_RPC_EXPERIMENT_ADDR") {
-            Ok(address) => {
-                let address = address
-                    .parse()
-                    .map_err(|_| Error::Config("invalid experimental RPC address".into()))?;
-                Some(
-                    grpc_runtime
-                        .block_on(crate::rpc_experiment::start(
-                            address,
-                            public_api.clone(),
-                            client_authenticator.clone(),
-                        ))
-                        .map_err(|error| {
-                            Error::Config(format!("start experimental RPC listener: {error}"))
-                        })?,
-                )
-            }
-            Err(std::env::VarError::NotPresent) => None,
-            Err(_) => {
-                return Err(Error::Config(
-                    "experimental RPC address is not Unicode".into(),
-                ))
-            }
-        };
-        #[cfg(feature = "rpc-experiment")]
-        let streaming_rpc = match std::env::var("KV9_GRPC_STREAM_EXPERIMENT_ADDR") {
-            Ok(address) => {
-                let address = address
-                    .parse()
-                    .map_err(|_| Error::Config("invalid streaming RPC address".into()))?;
-                Some(
-                    grpc_runtime
-                        .block_on(crate::point_stream::start(
-                            address,
-                            public_api.clone(),
-                            client_authenticator.clone(),
-                        ))
-                        .map_err(|error| {
-                            Error::Config(format!("start streaming RPC listener: {error}"))
-                        })?,
-                )
-            }
-            Err(std::env::VarError::NotPresent) => None,
-            Err(_) => return Err(Error::Config("streaming RPC address is not Unicode".into())),
-        };
         let point_shutdown = tokio_util::sync::CancellationToken::new();
         let point_service = crate::point_stream::service(
             public_api.clone(),
@@ -5109,6 +5279,7 @@ impl NodeRuntime {
             catchup: catchup_capability.clone(),
         });
         let raft_service = RaftGrpcService::new(id, transport.inbound_router(), discovery.clone())
+            .with_log_budget(log_budget.clone())
             .with_registration(backend.clone() as Arc<dyn RegistrationBackend>);
         let raft_service = tonic::service::interceptor::InterceptedService::new(
             Kv9RaftServer::new(raft_service),
@@ -5182,23 +5353,50 @@ impl NodeRuntime {
             false,
         ));
 
+        let data_checkpoint_interval = remote.as_ref().map(|r| r.interval());
         let remote_storage = remote
             .map(|uploader| {
                 crate::remote_storage::RemoteStorage::start(
                     node.clone(),
                     driver.clone(),
                     uploader,
-                    backend.clone(),
+                    backend.maintenance.clone(),
+                    Arc::new(checkpoint_retention::RoutedLedger::new(
+                        &backend,
+                        grpc_runtime.handle().clone(),
+                    )),
                 )
             })
             .transpose()?;
 
         let mut data_groups =
             crate::region_manager::RegionManager::new(&data_dir, store_identity, data_workers);
+        data_groups.max_write_log_entries = max_write_log_entries;
+        data_groups.log_budget = log_budget;
         data_groups.raw_directory = backend.raw_directory.clone();
         data_groups.group_handles = backend.group_handles.clone();
+        data_groups.uploader = backend.uploader.clone();
+        data_groups.data_read_fences = Some(backend.ttl_context()?.data_read_fences.clone());
+        data_groups.recovery_retention =
+            Some(Arc::new(crate::recovery_retention::RecoveryRetention::new(
+                root.clone(),
+                store_identity,
+                Arc::new(checkpoint_retention::RoutedLedger::new(
+                    &backend,
+                    grpc_runtime.handle().clone(),
+                )),
+            )));
         data_groups.adoption_receipts = backend.adoption_receipts.clone();
         data_groups.recover(&node.meta_raft.store)?;
+        // Remote observations gate data groups. Do not attach them to the
+        // metadata peer: catalog writes must still repair an unreachable
+        // pressured member's endpoint/membership. Its local byte/headroom
+        // admission remains in force.
+
+        let auto_split_bytes = std::env::var("KV9_AUTO_SPLIT_BYTES")
+            .ok()
+            .and_then(|v| v.parse().ok())
+            .unwrap_or(0);
 
         // No fallible startup work may follow owner creation. In particular,
         // a bind/auth/checkpoint setup failure must drop every store reference
@@ -5218,12 +5416,38 @@ impl NodeRuntime {
             None
         };
         Ok(Self {
+            maintenance_control: crate::maintenance::Controls::new(&backend.maintenance),
+            replica_pressure: Some(replica_pressure::Maintenance::start(
+                backend.clone(),
+                data_groups.replica_pressure.clone(),
+                grpc_runtime.handle(),
+            )),
+            data_checkpoint: backend.uploader.clone().zip(data_checkpoint_interval).map(
+                |(uploader, interval)| {
+                    data_checkpoint::Maintenance::start(
+                        backend.clone(),
+                        uploader,
+                        data_checkpoint_publish,
+                        interval,
+                        grpc_runtime.handle(),
+                    )
+                },
+            ),
+            ttl_maintenance: ttl_maintenance_enabled.then(|| {
+                ttl_maintenance::Maintenance::start(backend.clone(), grpc_runtime.handle())
+            }),
+            split_maintenance: Some(split_maintenance::Maintenance::start(
+                backend.clone(),
+                auto_split_bytes,
+                grpc_runtime.handle(),
+            )),
+            checkpoint_sweep: Some(checkpoint_sweep::Maintenance::start(
+                backend.clone(),
+                grpc_runtime.handle(),
+            )),
             data_groups,
             rpc_backend: backend.clone(),
-            auto_split_bytes: std::env::var("KV9_AUTO_SPLIT_BYTES")
-                .ok()
-                .and_then(|v| v.parse().ok())
-                .unwrap_or(0),
+            auto_split_bytes,
             auto_compact_entries: std::env::var("KV9_AUTO_COMPACT_ENTRIES")
                 .ok()
                 .and_then(|v| v.parse().ok())
@@ -5246,6 +5470,7 @@ impl NodeRuntime {
             reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
+            raw_ttl_clock,
             node,
             driver,
             transport,
@@ -5256,10 +5481,6 @@ impl NodeRuntime {
             public_admission,
             raft_io_metrics,
             metrics_exporter: crate::observability::MetricsExporter::new(&data_dir, id.0),
-            #[cfg(feature = "rpc-experiment")]
-            experimental_rpc,
-            #[cfg(feature = "rpc-experiment")]
-            streaming_rpc,
             grpc_shutdown: Some(grpc_shutdown_tx),
             grpc_server: Some(grpc_server),
             point_shutdown,
@@ -5305,6 +5526,8 @@ impl NodeRuntime {
         voters: &[NodeId],
     ) -> Result<kv9_meta::data_groups::CreationIntent> {
         let backend = RuntimeBackend {
+            maintenance: self.rpc_backend.maintenance.clone(),
+            ttl_activation: None,
             raw_directory: Arc::default(),
             group_handles: Arc::default(),
             adoption_receipts: Arc::default(),
@@ -5347,12 +5570,16 @@ impl NodeRuntime {
     /// decision is processed each turn — retirement confirms idempotently,
     /// and stopping after the first would starve every later decision
     /// forever behind its no-op confirmation.
-    fn reconcile_retirement(&mut self) {
+    fn reconcile_retirement(&mut self) -> bool {
         let removals =
             match kv9_meta::data_groups::removal::committed_removals(&self.node.meta_raft.store) {
                 Ok(removals) => removals,
-                Err(_) => return, // metadata not ready; not-yet, never fatal
+                Err(error) => {
+                    self.group_control_error = Some(error.to_string());
+                    return false;
+                }
             };
+        let mut ready = true;
         for decision in removals {
             if decision.source().node != self.store_identity.node_id
                 || decision.source().incarnation != self.store_identity.store_incarnation
@@ -5361,8 +5588,10 @@ impl NodeRuntime {
             }
             if let Err(error) = self.data_groups.retire_removed(&decision) {
                 self.group_control_error = Some(error.to_string());
+                ready = false;
             }
         }
+        ready
     }
 
     /// A PUBLISHED split — the sealed parent binding with covering children
@@ -5371,14 +5600,17 @@ impl NodeRuntime {
     /// retirement confirms idempotently, and breaking after the first
     /// starved every later cascade parent forever behind the earliest
     /// intent's no-op confirmation (part of the cascade hang).
-    fn reconcile_split_retirement(&mut self) {
+    fn reconcile_split_retirement(&mut self) -> bool {
         let store = &self.node.meta_raft.store;
         let Ok(intents) = kv9_meta::data_groups::split::committed_splits(store) else {
-            return; // metadata not ready; not-yet, never fatal
+            self.group_control_error = Some("split retirement catalog unavailable".into());
+            return false;
         };
         let Ok(bindings) = kv9_meta::data_groups::ranges::committed_ranges(store) else {
-            return;
+            self.group_control_error = Some("split retirement ranges unavailable".into());
+            return false;
         };
+        let mut ready = true;
         for intent in intents {
             let published = bindings
                 .iter()
@@ -5391,8 +5623,10 @@ impl NodeRuntime {
                 .retire_published_parent(intent.parent_region())
             {
                 self.group_control_error = Some(error.to_string());
+                ready = false;
             }
         }
+        ready
     }
 
     /// Physical reclamation of RETIRED local group payloads, off unless
@@ -5402,11 +5636,16 @@ impl NodeRuntime {
     /// region — its children's bindings are the permanent evidence) or a
     /// committed removal decision naming this exact store. A retired group
     /// with neither is left untouched — refusal in the safe direction.
-    /// Every candidate is processed each turn; errors surface and retry.
+    /// Rotate through at most 32 candidates and delete at most one payload per
+    /// admitted pass. A failed group cannot indefinitely head the next pass.
     fn reconcile_reclamation(&mut self) {
         if !self.reclaim_retired {
+            self.maintenance_control.retired_reclaim.withdraw();
             return;
         }
+        let Some(_permit) = self.maintenance_control.retired_reclaim.try_acquire() else {
+            return;
+        };
         let store = &self.node.meta_raft.store;
         let Ok(bindings) = kv9_meta::data_groups::ranges::committed_ranges(store) else {
             return; // metadata not ready; not-yet, never fatal
@@ -5414,7 +5653,18 @@ impl NodeRuntime {
         let Ok(removals) = kv9_meta::data_groups::removal::committed_removals(store) else {
             return;
         };
-        for region in self.data_groups.retired_regions() {
+        let regions = self.data_groups.retired_regions();
+        let start = regions.partition_point(|r| {
+            self.maintenance_control
+                .retired_reclaim_after
+                .is_some_and(|after| r.0 <= after)
+        });
+        for &region in regions[start..]
+            .iter()
+            .chain(regions[..start].iter())
+            .take(32)
+        {
+            self.maintenance_control.retired_reclaim_after = Some(region.0);
             let sealed = bindings
                 .iter()
                 .any(|b| b.range().region == region && b.range().sealed);
@@ -5429,6 +5679,7 @@ impl NodeRuntime {
             if let Err(error) = self.data_groups.reclaim_retired(region) {
                 self.group_control_error = Some(format!("reclamation: {error}"));
             }
+            break;
         }
     }
 
@@ -5436,451 +5687,70 @@ impl NodeRuntime {
     /// replica discards its OWN log prefix once its applied position has
     /// reached the floor (committed entries are permanent, so a voter that
     /// once contained the floor never re-fetches below it), behind its own
-    /// deferred-sync barrier. Every candidate processes each turn; errors
-    /// surface and retry. The committed decision is the only coordination.
+    /// deferred-sync barrier. Rotate through at most 32 candidates and execute
+    /// at most one group per admitted pass. The decision remains the authority.
     fn reconcile_compaction(&mut self) {
-        let store = &self.node.meta_raft.store;
-        let floors = match kv9_meta::data_groups::compaction::committed_compaction_floors(store) {
-            Ok(floors) => floors,
-            Err(error) => {
-                // Never silent: an invalid committed row freezing this
-                // reconcile must be observable (the cascade lesson).
-                self.group_control_error = Some(format!("compaction readback: {error}"));
-                return;
-            }
+        let Some(_permit) = self.maintenance_control.compaction.try_acquire() else {
+            return;
         };
-        for decision in &floors {
-            let handle = {
-                let handles = self.rpc_backend.group_handles.lock().expect("handles");
-                handles.get(&decision.region()).cloned()
-            };
-            let Some((engine, driver)) = handle else {
-                continue;
-            };
-            let status = driver.status();
-            if status.fatal.is_some() || status.applied_index < decision.floor().index {
-                continue;
-            }
-            // STAGE 1 — the group LEADER truncates its own log under the
-            // all-matched gate, then publishes the confirmation THROUGH THE
-            // GROUP'S OWN RAFT LOG (an ordered `Command::CompactionConfirmed`),
-            // which replicates to every voter. No cross-node catalog RPC and no
-            // all-matched knowledge is needed by followers.
-            if status.role == kv9_raft::Role::Leader {
-                let step = (|| -> Result<()> {
-                    engine.sync_applied_now()?;
-                    driver
-                        .peer()
-                        .truncate_retained_log(decision.floor(), &decision.encode())?;
-                    // All-matched held (truncation succeeded): publish the
-                    // confirmation once, if not already at or above this floor.
-                    let published = Self::confirmed_compaction_floor(engine.as_ref())?;
-                    if published.is_none_or(|p| p.index < decision.floor().index) {
-                        self.publish_compaction_confirmation(
-                            decision.region().0,
-                            &driver,
-                            decision.floor(),
-                        )?;
-                    }
-                    Ok(())
-                })();
-                if let Err(error) = step {
-                    // All-matched refusals are EXPECTED while a voter catches
-                    // up; they surface here and the next turn retries.
-                    self.group_control_error = Some(format!("compaction: {error}"));
-                }
-            }
-            // STAGE 2 — ANY replica (follower or leader) compacts its own
-            // prefix at the CONFIRMED floor once its applied position has
-            // reached it. The replicated confirmation proves every voter
-            // matched the floor, so a committed entry at or below it is held
-            // by all — no strand, no leadership or peer-progress gate.
-            let confirmed = match Self::confirmed_compaction_floor(engine.as_ref()) {
-                Ok(Some(floor)) => floor,
-                Ok(None) => continue,
-                Err(error) => {
-                    self.group_control_error = Some(format!("confirmation read: {error}"));
-                    continue;
-                }
-            };
-            if status.applied_index < confirmed.index {
-                continue;
-            }
-            let step = (|| -> Result<()> {
-                engine.sync_applied_now()?;
-                let mut decision = b"kv9-compaction-confirmed".to_vec();
-                decision.extend_from_slice(&confirmed.term.to_be_bytes());
-                decision.extend_from_slice(&confirmed.index.to_be_bytes());
-                driver
-                    .peer()
-                    .compact_confirmed_prefix(confirmed, &decision)?;
-                Ok(())
-            })();
-            if let Err(error) = step {
-                self.group_control_error = Some(format!("follower compaction: {error}"));
-            }
+        if let Err(error) = group_compaction::execute(
+            &self.rpc_backend,
+            &mut self.maintenance_control.compaction_after,
+        ) {
+            self.group_control_error = Some(format!("compaction: {error}"));
         }
     }
 
-    /// The confirmed compaction floor published in a group's own replicated
-    /// state (reserved key), or None. Read from the local engine snapshot.
-    fn confirmed_compaction_floor(engine: &WalEngine) -> Result<Option<AppliedPosition>> {
-        let view = engine.snapshot()?;
-        let Some(bytes) = view.get(
-            kv9_engine::ColumnFamily::Default,
-            kv9_common::data_range::COMPACTION_CONFIRMED_KEY,
-        )?
-        else {
-            return Ok(None);
-        };
-        if bytes.len() != 16 {
-            return Err(Error::Config("compaction confirmation is malformed".into()));
-        }
-        Ok(Some(AppliedPosition {
-            term: u64::from_be_bytes(bytes[0..8].try_into().unwrap()),
-            index: u64::from_be_bytes(bytes[8..16].try_into().unwrap()),
-        }))
-    }
-
-    /// The group leader publishes the all-matched-confirmed floor into the
-    /// group's OWN raft log via `Command::CompactionConfirmed`, replicating it
-    /// to every voter, each of which applies it monotonically to the reserved
-    /// key. A dedicated ordered command — NOT a fenced write — because the
-    /// reserved key is a system key (the RangeFence permits only Raw user
-    /// keys) and the floor authorizes prefix discard (it must not be
-    /// client-forgeable).
-    fn publish_compaction_confirmation(
-        &self,
-        region: u64,
-        driver: &NodeDriver<DiskRaftStorage, WalEngine>,
-        floor: AppliedPosition,
-    ) -> Result<()> {
-        let command = kv9_raft::Command::CompactionConfirmed { region, floor };
-        let proposed = driver.propose(&command)?;
-        driver
-            .wait_applied(proposed, Duration::from_secs(10))
-            .map_err(|e| Error::Raft(format!("confirmation publish: {e:?}")))?;
-        Ok(())
-    }
-
-    /// Automatic splits: the SAME committed manual pipeline, driven
-    /// step-locally by whichever node holds the needed role — the committed
-    /// state is the only coordination, so any coordinator loss resumes.
-    /// Metadata leader: observe local replica WAL bytes for bound unsealed
-    /// ranges, derive one DETERMINISTIC operation per region, create and
-    /// activate children, commit the intent, publish when both children
-    /// verify. Parent-group leader: seal. Child-group leaders: populate.
-    /// Disabled unless KV9_AUTO_SPLIT_BYTES > 0; best-effort per turn with
-    /// errors surfaced in the control status.
-    /// Automatically propose a compaction floor for a bound group whose
-    /// retained raft log has grown past KV9_AUTO_COMPACT_ENTRIES entries OR
-    /// KV9_AUTO_COMPACT_BYTES retained payload bytes (each 0 = off).
-    /// Metadata-leader-driven, observing the LOCAL replica (any replica's
-    /// applied position is a committed position). The floor is that applied
-    /// position; plan_compaction enforces strictly increasing floors and the
-    /// gated reconcile_compaction executes it — a too-aggressive floor just
-    /// fails the all-matched gate and retries, never strands a voter. One
-    /// automatic floor per group per turn.
+    /// One automatic floor per pass for a bound group or a verified TTL import
+    /// with a selected checkpoint. Execution rechecks history and all peers.
     fn reconcile_auto_compaction(&mut self) {
-        if (self.auto_compact_entries == 0
-            && self.auto_compact_bytes == 0
-            && self.auto_compact_age == Duration::ZERO)
-            || self.driver.status().role != kv9_raft::Role::Leader
-        {
+        let thresholds = group_compaction::Thresholds {
+            entries: self.auto_compact_entries,
+            bytes: self.auto_compact_bytes,
+            age: self.auto_compact_age,
+        };
+        if thresholds.disabled() || self.driver.status().role != Role::Leader {
+            self.maintenance_control.compaction_plan.withdraw();
             return;
         }
-        let store = &self.node.meta_raft.store;
-        let Ok(Some(certified)) = store
-            .begin()
-            .and_then(|txn| kv9_meta::root::certified_root(&txn))
-        else {
+        let Some(_permit) = self.maintenance_control.compaction_plan.try_acquire() else {
             return;
         };
-        let root = certified.digest();
-        let bindings = match kv9_meta::data_groups::ranges::committed_ranges(store) {
-            Ok(bindings) => bindings,
-            Err(error) => {
-                self.group_control_error = Some(format!("auto-compact directory: {error}"));
-                return;
-            }
-        };
-        let floors = match kv9_meta::data_groups::compaction::committed_compaction_floors(store) {
-            Ok(floors) => floors,
-            Err(error) => {
-                self.group_control_error = Some(format!("auto-compact floors: {error}"));
-                return;
-            }
-        };
-        let backend = self.rpc_backend.clone();
-        for binding in &bindings {
-            let region = binding.range().region;
-            let handle = {
-                let handles = self.rpc_backend.group_handles.lock().expect("handles");
-                handles.get(&region).cloned()
-            };
-            let Some((_, driver)) = handle else { continue };
-            let status = driver.status();
-            if status.fatal.is_some() {
-                continue;
-            }
-            let retained = status.raft_committed.saturating_sub(status.log_first_index);
-            let last_floor = floors
-                .iter()
-                .find(|d| d.region() == region)
-                .map(|d| d.floor().index)
-                .unwrap_or(0);
-            if status.applied_index == 0 || status.applied_term == 0 {
-                continue;
-            }
-            // ENTRIES trigger: the retained window past the threshold AND the
-            // applied position advanced a full threshold past the last floor
-            // (rate-limits proposals, guarantees meaningful progress).
-            let entries_triggered = self.auto_compact_entries > 0
-                && retained >= self.auto_compact_entries
-                && status.applied_index >= last_floor.saturating_add(self.auto_compact_entries);
-            // BYTES trigger: the retained committed PAYLOAD past the threshold.
-            // Churn guard is EXECUTION-based: only once the last floor has been
-            // executed here (`log_first_index > last_floor`, or none yet) does
-            // `retained_committed_bytes` measure growth SINCE that floor, so a
-            // reading past the threshold is genuine post-floor accumulation —
-            // never a re-proposal while an earlier floor still awaits its
-            // all-matched execution. The byte sum is computed only in this
-            // opt-in branch.
-            let bytes_triggered = self.auto_compact_bytes > 0
-                && status.log_first_index > last_floor
-                && status.applied_index > last_floor
-                && match driver.peer().retained_log_bytes() {
-                    Ok(bytes) => bytes >= self.auto_compact_bytes,
-                    Err(error) => {
-                        self.group_control_error = Some(format!("auto-compact bytes: {error}"));
-                        false
-                    }
-                };
-            // AGE trigger: the oldest retained committed entry has lingered
-            // past the threshold. Measured as how long first_index has stayed
-            // put (a compaction is the only thing that advances it): the mark
-            // resets each time first_index moves, so the clock times the CURRENT
-            // retained window. Fires only with something to compact
-            // (`retained > 0`) and a floor that strictly advances. This bounds a
-            // quiet group that never trips the size thresholds.
-            let now = Instant::now();
-            let mark = self
-                .compact_age_marks
-                .entry(region.0)
-                .or_insert((status.log_first_index, now));
-            if mark.0 != status.log_first_index {
-                *mark = (status.log_first_index, now);
-            }
-            let age_triggered = self.auto_compact_age > Duration::ZERO
-                && retained > 0
-                && now.duration_since(mark.1) >= self.auto_compact_age
-                && status.applied_index > last_floor;
-            if !(entries_triggered || bytes_triggered || age_triggered) {
-                continue;
-            }
-            let floor = kv9_common::AppliedPosition {
-                term: status.applied_term,
-                index: status.applied_index,
-            };
-            if let Err(error) = backend.record_group_compaction("auto-compact", root, region, floor)
-            {
-                self.group_control_error = Some(format!("auto-compact: {error}"));
-            }
-            break; // one automatic floor per turn
+        if let Err(error) = group_compaction::plan(
+            &self.rpc_backend,
+            thresholds,
+            &mut self.maintenance_control.plan_after,
+            &mut self.compact_age_marks,
+        ) {
+            self.group_control_error = Some(format!("auto-compact: {error}"));
         }
     }
 
-    /// Physically reclaim the on-disk `raft.log` of any local COMPACTED group
-    /// whose file has grown past `KV9_RECLAIM_RAFT_LOG_BYTES` (0 = off). The
-    /// append-only log never shrinks under compaction, so this crash-safe
-    /// rewrite drops the compacted-away prefix from disk. LOCAL per-replica
-    /// maintenance — runs on every serving node for its own groups, gated on
-    /// the file size AND on the group actually being compacted
-    /// (`log_first_index > 1`, so there is waste to reclaim). One reclamation
-    /// per turn: the rewrite briefly holds the group's lock.
+    /// One crash-safe physical Raft log rewrite per admitted pass.
     fn reconcile_auto_reclaim(&mut self) {
         if self.auto_reclaim_bytes == 0 {
+            self.maintenance_control.raft_reclaim.withdraw();
             return;
         }
-        let regions: Vec<kv9_common::RegionId> = {
-            let handles = self.rpc_backend.group_handles.lock().expect("handles");
-            handles.keys().copied().collect()
+        let Some(_permit) = self.maintenance_control.raft_reclaim.try_acquire() else {
+            return;
         };
-        for region in regions {
-            let handle = {
-                let handles = self.rpc_backend.group_handles.lock().expect("handles");
-                handles.get(&region).cloned()
-            };
-            let Some((_, driver)) = handle else { continue };
-            let status = driver.status();
-            // Only a compacted group has a discarded prefix wasting disk.
-            if status.fatal.is_some() || status.log_first_index <= 1 {
-                continue;
-            }
-            if driver.peer().log_file_bytes() < self.auto_reclaim_bytes {
-                continue;
-            }
-            // Ok(false) = out of scope (snapshot/lease); not an error.
-            if let Err(error) = driver.peer().reclaim_log() {
-                self.group_control_error = Some(format!("raft-log reclamation: {error}"));
-            }
-            break; // one reclamation per turn (each briefly holds the group lock)
+        if let Err(error) = group_compaction::reclaim(
+            &self.rpc_backend,
+            self.auto_reclaim_bytes,
+            &mut self.maintenance_control.raft_reclaim_after,
+        ) {
+            self.group_control_error = Some(format!("raft-log reclamation: {error}"));
         }
     }
 
-    fn reconcile_auto_split(&mut self) {
-        if self.auto_split_bytes == 0 {
-            return;
-        }
-        let store = &self.node.meta_raft.store;
-        let Ok(Some(certified)) = store
-            .begin()
-            .and_then(|txn| kv9_meta::root::certified_root(&txn))
-        else {
-            return;
-        };
-        let root = certified.digest();
-        // Catalog read failures are observations, never silent: the cascade
-        // hang hid for a whole increment behind a bare `else return` here.
-        let bindings = match kv9_meta::data_groups::ranges::committed_ranges(store) {
-            Ok(bindings) => bindings,
-            Err(error) => {
-                self.group_control_error = Some(format!("auto-split directory: {error}"));
-                return;
-            }
-        };
-        let intents = match kv9_meta::data_groups::split::committed_splits(store) {
-            Ok(intents) => intents,
-            Err(error) => {
-                self.group_control_error = Some(format!("auto-split intents: {error}"));
-                return;
-            }
-        };
-        let meta_leader = self.driver.status().role == kv9_raft::Role::Leader;
-        let backend = self.rpc_backend.clone();
-        let derive = |operation: [u8; 16], salt: &[u8]| -> [u8; 16] {
-            let mut bytes = b"kv9-auto-split-v1".to_vec();
-            bytes.extend_from_slice(root.as_bytes());
-            bytes.extend_from_slice(&operation);
-            bytes.extend_from_slice(salt);
-            RootDigest::sha256(&bytes).as_bytes()[..16]
-                .try_into()
-                .expect("16 bytes")
-        };
-        // Trigger + children + intent: metadata-leader steps.
-        if meta_leader {
-            for binding in &bindings {
-                let range = binding.range();
-                if range.sealed || intents.iter().any(|i| i.parent_region() == range.region) {
-                    continue;
-                }
-                let handle = {
-                    let handles = self.rpc_backend.group_handles.lock().expect("handles");
-                    handles.get(&range.region).cloned()
-                };
-                let Some((engine, _)) = handle else { continue };
-                let bytes = Self::engine_disk_bytes(&engine.path());
-                if bytes < self.auto_split_bytes {
-                    continue;
-                }
-                let Some(split_key) = Self::sampled_median_key(engine.as_ref(), range) else {
-                    continue; // too few keys to split yet
-                };
-                let operation = derive([0; 16], &range.region.0.to_be_bytes());
-                let low_op = derive(operation, b"low");
-                let high_op = derive(operation, b"high");
-                let voters: Vec<NodeId> = binding
-                    .creation()
-                    .intent()
-                    .replicas()
-                    .iter()
-                    .map(|r| r.node)
-                    .collect();
-                let step = (|| -> Result<()> {
-                    let low = backend.create_data_group("auto-split", root, low_op, &voters)?;
-                    let high = backend.create_data_group("auto-split", root, high_op, &voters)?;
-                    backend.record_split_intent(
-                        "auto-split",
-                        root,
-                        operation,
-                        range.region,
-                        &split_key,
-                        low.intent.task(),
-                        high.intent.task(),
-                    )?;
-                    Ok(())
-                })();
-                if let Err(error) = step {
-                    self.group_control_error = Some(error.to_string());
-                }
-                break; // at most one trigger per turn
-            }
-        }
-        // Seal / populate / publish: role-local steps per committed intent.
-        for intent in &intents {
-            let parent_binding = bindings
-                .iter()
-                .find(|b| b.range().region == intent.parent_region());
-            let published = parent_binding.is_some_and(|b| b.range().sealed);
-            if published {
-                continue; // retirement and serving reconciles take over
-            }
-            let handle = {
-                let handles = self.rpc_backend.group_handles.lock().expect("handles");
-                handles.get(&intent.parent_region()).cloned()
-            };
-            let Some((parent_engine, parent_driver)) = handle else {
-                continue;
-            };
-            let sealed_row = parent_engine
-                .get(
-                    kv9_engine::ColumnFamily::Default,
-                    kv9_common::data_range::RANGE_KEY,
-                )
-                .ok()
-                .flatten()
-                .and_then(|b| kv9_common::data_range::DataRange::decode(&b).ok())
-                .is_some_and(|r| r.sealed);
-            if !sealed_row {
-                if parent_driver.status().role == kv9_raft::Role::Leader {
-                    if let Err(error) =
-                        backend.seal_split_parent("auto-split", root, intent.operation())
-                    {
-                        self.group_control_error = Some(error.to_string());
-                    }
-                }
-                continue;
-            }
-            // Populate whichever child this node leads; then try publishing.
-            for (high, task) in [(false, intent.child_low()), (true, intent.child_high())] {
-                let Ok(Some(creation)) = kv9_meta::data_groups::committed_creation(store, task)
-                else {
-                    continue;
-                };
-                let child = {
-                    let handles = self.rpc_backend.group_handles.lock().expect("handles");
-                    handles.get(&creation.intent().region()).cloned()
-                };
-                let Some((_, child_driver)) = child else {
-                    continue;
-                };
-                if child_driver.status().role == kv9_raft::Role::Leader {
-                    if let Err(error) =
-                        backend.populate_split_child("auto-split", root, intent.operation(), high)
-                    {
-                        self.group_control_error = Some(error.to_string());
-                    }
-                }
-            }
-            if meta_leader {
-                // Refuses until both children verify; commits exactly then.
-                // The refusal is EXPECTED while population converges, but it
-                // must stay observable — a silent swallow here cost real
-                // diagnosis time in the cascade experiments.
-                if let Err(error) = backend.publish_split("auto-split", root, intent.operation()) {
-                    self.group_control_error = Some(format!("auto-split publish: {error}"));
-                }
-            }
+    fn observe_split_maintenance(&mut self) {
+        if let Some(error) = self
+            .split_maintenance
+            .as_ref()
+            .and_then(|task| task.snapshot().last_error)
+        {
+            self.group_control_error = Some(format!("split maintenance: {error}"));
         }
     }
 
@@ -5949,7 +5819,7 @@ impl NodeRuntime {
         inside.then_some(candidate)
     }
 
-    fn reconcile_adoption(&mut self) {
+    fn reconcile_adoption(&mut self, decisions: crate::region_manager::RecoveryDecisions<'_>) {
         let Some(uploader) = self.uploader.clone() else {
             return;
         };
@@ -5962,38 +5832,47 @@ impl NodeRuntime {
         else {
             return;
         };
-        for migration in migrations {
+        let identity = self.store_identity;
+        // Installed records can be quarantined before adoption recognizes
+        // their layout. That is not permission to resurrect a removed replica.
+        let Ok(removals) =
+            kv9_meta::data_groups::removal::committed_removals(&self.node.meta_raft.store)
+        else {
+            return;
+        };
+        let Ok(ranges) =
+            kv9_meta::data_groups::ranges::committed_ranges(&self.node.meta_raft.store)
+        else {
+            return;
+        };
+        let candidates = migrations.into_iter().filter(|migration| {
             let destination = migration.intent().destination();
-            if destination.node != self.store_identity.node_id
-                || destination.incarnation != self.store_identity.store_incarnation
-            {
-                continue;
-            }
-            // A committed abort abandons the operation permanently: an
-            // alive-but-slow destination must never adopt it afterward —
-            // evidence recording would refuse anyway, and the safe direction
-            // is to never start serving an abandoned image.
-            if aborts
-                .iter()
-                .any(|a| a.operation() == migration.intent().operation())
-            {
-                continue;
-            }
-            match self.data_groups.adopt_installed(
-                &self._store_guard,
-                &migration,
-                &self.transport,
-                TICK,
-                &uploader,
-            ) {
-                Ok(()) => {}
-                Err(error) => {
-                    // Not-yet-installed destinations refuse inside the
-                    // adoption path; retain the last message for status.
-                    self.group_control_error = Some(error.to_string());
-                }
-            }
-            break;
+            destination.node == identity.node_id
+                && destination.incarnation == identity.store_incarnation
+                && !aborts
+                    .iter()
+                    .any(|a| a.operation() == migration.intent().operation())
+                && !removals.iter().any(|r| {
+                    r.region() == migration.intent().region()
+                        && r.source().node == identity.node_id
+                        && r.source().incarnation == identity.store_incarnation
+                })
+                && !ranges
+                    .iter()
+                    .any(|b| b.range().region == migration.intent().region() && b.range().sealed)
+        });
+        let Some(migration) = self.data_groups.next_adoption(candidates) else {
+            return;
+        };
+        if let Err(error) = self.data_groups.adopt_installed(
+            &self._store_guard,
+            &migration,
+            &self.transport,
+            TICK,
+            &uploader,
+            decisions,
+        ) {
+            self.group_control_error = Some(error.to_string());
         }
     }
 
@@ -6014,6 +5893,13 @@ impl NodeRuntime {
 
     pub fn data_group_status(&self, region: RegionId) -> Result<kv9_raft::driver::NodeStatus> {
         self.data_groups.status(region)
+    }
+
+    /// The actual local group's completed-open dependencies, plus an on-demand
+    /// healthy selection comparison. This is not object-release or portable
+    /// recovery authority; a changed selection requires independent validation.
+    pub fn data_group_recovery(&self, region: RegionId) -> Result<crate::GroupRecoveryStatus> {
+        self.data_groups.recovery_status(region)
     }
 
     /// Stay resident and advance bootstrap. Normal OS termination signals use
@@ -6086,6 +5972,7 @@ impl NodeRuntime {
                 "nodes catalog reached Phase-1 limit {MAX_PHASE1_NODES}"
             )));
         }
+        let mut pressure_routes = Vec::new();
         for row in rows {
             let node = match row.value.get(ColumnId(1)) {
                 Some(ColumnValue::Uint(id)) if *id != 0 => NodeId(*id),
@@ -6098,7 +5985,22 @@ impl NodeRuntime {
                 .ok_or_else(|| Error::Config("scanned endpoint row disappeared".into()))?;
             self.transport
                 .register_catalog_peer(node, endpoint.address, endpoint.generation)?;
+            if endpoint.active {
+                pressure_routes.push(kv9_raft::replica_pressure::PressureRoute {
+                    identity: StoreIdentity {
+                        cluster_id: self.root.cluster_id,
+                        root_digest: self.root.digest(),
+                        node_id: node,
+                        store_incarnation: endpoint.incarnation,
+                    },
+                    address: endpoint.address,
+                    generation: endpoint.generation,
+                });
+            }
         }
+        self.data_groups
+            .replica_pressure
+            .set_routes(pressure_routes)?;
         Ok(())
     }
 
@@ -6122,21 +6024,50 @@ impl NodeRuntime {
     }
 
     fn check_grpc_server(&mut self) -> Result<()> {
-        #[cfg(feature = "rpc-experiment")]
         if self
-            .streaming_rpc
+            .replica_pressure
             .as_ref()
-            .is_some_and(|server| server.task.is_finished())
+            .is_some_and(|task| task.stopped_unexpectedly())
         {
-            return Err(Error::Raft("streaming RPC listener stopped".into()));
+            return Err(Error::Raft(
+                "replica pressure observer stopped unexpectedly".into(),
+            ));
         }
-        #[cfg(feature = "rpc-experiment")]
         if self
-            .experimental_rpc
+            .checkpoint_sweep
             .as_ref()
-            .is_some_and(|server| server.task.is_finished())
+            .is_some_and(|task| task.stopped_unexpectedly())
         {
-            return Err(Error::Raft("experimental RPC listener stopped".into()));
+            return Err(Error::Raft(
+                "checkpoint retention owner stopped unexpectedly".into(),
+            ));
+        }
+        if self
+            .data_checkpoint
+            .as_ref()
+            .is_some_and(|task| task.stopped_unexpectedly())
+        {
+            return Err(Error::Raft(
+                "data checkpoint owner stopped unexpectedly".into(),
+            ));
+        }
+        if self
+            .ttl_maintenance
+            .as_ref()
+            .is_some_and(|task| task.stopped_unexpectedly())
+        {
+            return Err(Error::Raft(
+                "TTL maintenance owner stopped unexpectedly".into(),
+            ));
+        }
+        if self
+            .split_maintenance
+            .as_ref()
+            .is_some_and(|task| task.stopped_unexpectedly())
+        {
+            return Err(Error::Raft(
+                "split maintenance owner stopped unexpectedly".into(),
+            ));
         }
 
         let finished = self
@@ -6166,7 +6097,17 @@ impl NodeRuntime {
         let ready = self.advance_endpoint_recovery()?;
         self.endpoint_ready
             .store(serving && ready, Ordering::Release);
-        if serving && ready && self.discovery.raft_receive_allowed() {
+        let maintenance_allowed = serving && ready && self.discovery.raft_receive_allowed();
+        if let Some(task) = &self.split_maintenance {
+            task.configure(maintenance_allowed, self.auto_split_bytes);
+        }
+        if !maintenance_allowed {
+            self.maintenance_control.withdraw();
+            if let Some(task) = &self.checkpoint_sweep {
+                task.cancel();
+            }
+        }
+        if maintenance_allowed {
             let truncations = kv9_meta::data_groups::truncation::committed_truncations(
                 &self.node.meta_raft.store,
             )
@@ -6177,8 +6118,6 @@ impl NodeRuntime {
                 &self.node.meta_raft.store,
             )
             .unwrap_or_default();
-            self.data_groups
-                .resume_active(&self.transport, TICK, &truncations, &compactions);
             if Instant::now() >= self.next_group_reconcile {
                 self.next_group_reconcile = Instant::now() + Duration::from_millis(100);
                 // Each reconcile below records its own failure; a turn where
@@ -6187,20 +6126,31 @@ impl NodeRuntime {
                 // reconciles' errors every turn — the cascade-split
                 // publish refusal was invisible exactly that way.
                 self.group_control_error = None;
+                // Fence committed removals before any deferred engine read or
+                // driver restart; retirement of an unopened group needs no GET.
+                let retirement_ready =
+                    self.reconcile_retirement() & self.reconcile_split_retirement();
+                if !retirement_ready {
+                    return Ok(());
+                }
+                self.data_groups.resume_recovery_one();
+                self.data_groups
+                    .resume_active(&self.transport, TICK, &truncations, &compactions);
                 match kv9_meta::data_groups::activation::committed_activations(
                     &self.node.meta_raft.store,
                 ) {
                     Ok(requests) => {
                         self.data_groups
                             .reconcile_activation(&requests, &self.transport, TICK);
-                        self.reconcile_adoption();
-                        self.reconcile_retirement();
-                        self.reconcile_split_retirement();
+                        self.reconcile_adoption(crate::region_manager::RecoveryDecisions {
+                            truncations: &truncations,
+                            compactions: &compactions,
+                        });
                         self.reconcile_reclamation();
                         self.reconcile_compaction();
                         self.reconcile_auto_compaction();
                         self.reconcile_auto_reclaim();
-                        self.reconcile_auto_split();
+                        self.observe_split_maintenance();
                         if let Err(error) = kv9_meta::data_groups::ranges::committed_ranges(
                             &self.node.meta_raft.store,
                         )
@@ -6452,6 +6402,10 @@ impl NodeRuntime {
         }
         let (proposal, cluster_id) = self.initial_proposal.expect("set above");
         match self.driver.wait_applied(proposal, Duration::from_millis(1)) {
+            Ok(ApplyWaitOutcome::RawTtlRejected { at, .. }) => Err(Error::Raft(format!(
+                "initial-metadata proposal received a TTL verdict at term {} index {}",
+                at.term, at.index
+            ))),
             Ok(ApplyWaitOutcome::Manifest { at, .. }) => Err(Error::Raft(format!(
                 "initial-metadata proposal received a manifest verdict at term {} \
                  index {} — receipt correlation broke",
@@ -6677,6 +6631,12 @@ impl NodeRuntime {
             index: kv9_raft::LogIndex(receipt.applied_index),
         };
         match self.driver.wait_applied(exact, Duration::from_millis(1)) {
+            Ok(ApplyWaitOutcome::RawTtlRejected { at, .. }) => {
+                return Err(Error::Raft(format!(
+                    "registration receipt at term {} index {} carries a TTL verdict",
+                    at.term, at.index
+                )))
+            }
             Ok(ApplyWaitOutcome::Applied(_)) => {}
             Ok(ApplyWaitOutcome::Manifest { at, .. }) => {
                 return Err(Error::Raft(format!(
@@ -6834,7 +6794,135 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        body.push_str("raw_ttl_clock=");
+        body.push_str(
+            &serde_json::to_string(&self.raw_ttl_clock_status())
+                .expect("serialize TTL clock observation"),
+        );
+        body.push('\n');
         // Observations only: status output never grants routing or voter authority.
+        body.push_str("maintenance_budget=");
+        body.push_str(
+            &serde_json::to_string(&self.rpc_backend.maintenance.snapshot())
+                .expect("maintenance stats"),
+        );
+        body.push('\n');
+        body.push_str("object_io_budget=");
+        body.push_str(
+            &serde_json::to_string(
+                &self
+                    .rpc_backend
+                    .uploader
+                    .as_ref()
+                    .and_then(|u| u.object_io_snapshot()),
+            )
+            .expect("object I/O stats"),
+        );
+        body.push('\n');
+        body.push_str("object_buffer_memory=");
+        body.push_str(
+            &serde_json::to_string(
+                &self
+                    .rpc_backend
+                    .uploader
+                    .as_ref()
+                    .and_then(|u| u.object_memory_snapshot()),
+            )
+            .expect("object buffer memory stats"),
+        );
+        body.push('\n');
+        body.push_str("checkpoint_image_memory=");
+        body.push_str(
+            &serde_json::to_string(
+                &self
+                    .rpc_backend
+                    .uploader
+                    .as_ref()
+                    .map(|u| u.image_memory_snapshot()),
+            )
+            .expect("checkpoint image memory stats"),
+        );
+        body.push('\n');
+        body.push_str("checkpoint_spool_disk=");
+        body.push_str(
+            &serde_json::to_string(
+                &self
+                    .rpc_backend
+                    .uploader
+                    .as_ref()
+                    .map(|u| u.spool_disk_snapshot()),
+            )
+            .expect("spool stats serialize"),
+        );
+        body.push('\n');
+        body.push_str("wal_raft_budget=");
+        body.push_str(
+            &serde_json::to_string(&self.data_groups.log_budget.snapshot())
+                .expect("log budget snapshot serializes"),
+        );
+        body.push('\n');
+        body.push_str("replica_pressure=");
+        body.push_str(
+            &serde_json::to_string(&replica_pressure::status(
+                &self.data_groups.replica_pressure,
+            ))
+            .expect("pressure status"),
+        );
+        body.push('\n');
+        body.push_str("replica_pressure_worker=");
+        body.push_str(
+            &serde_json::to_string(&self.replica_pressure.as_ref().map(|task| task.snapshot()))
+                .expect("pressure worker stats"),
+        );
+        body.push('\n');
+        body.push_str("checkpoint_pending_disk=");
+        body.push_str(
+            &serde_json::to_string(
+                &self
+                    .rpc_backend
+                    .uploader
+                    .as_ref()
+                    .map(|u| u.pending_disk_snapshot()),
+            )
+            .expect("pending disk stats serialize"),
+        );
+        body.push('\n');
+        body.push_str("data_checkpoint=");
+        match &self.data_checkpoint {
+            Some(task) => body
+                .push_str(&serde_json::to_string(&task.snapshot()).expect("checkpoint stats JSON")),
+            None => body.push_str("disabled"),
+        }
+        body.push('\n');
+        body.push_str("checkpoint_retention=");
+        body.push_str(
+            &serde_json::to_string(&self.checkpoint_sweep.as_ref().map(|task| task.snapshot()))
+                .expect("serialize checkpoint retention observation"),
+        );
+        body.push('\n');
+        body.push_str("checkpoint_drain_outbox=");
+        body.push_str(
+            &serde_json::to_string(&self.rpc_backend.ttl_context().ok().and_then(|context| {
+                context
+                    .drain_outbox
+                    .as_ref()
+                    .map(|outbox| outbox.snapshot())
+            }))
+            .expect("serialize drain outbox observation"),
+        );
+        body.push('\n');
+        body.push_str("raw_ttl_maintenance=");
+        body.push_str(
+            &serde_json::to_string(&self.ttl_maintenance.as_ref().map(|task| task.snapshot()))
+                .expect("serialize TTL maintenance observation"),
+        );
+        body.push('\n');
+        body.push_str("split_maintenance=");
+        body.push_str(
+            &serde_json::to_string(&self.split_maintenance.as_ref().map(|task| task.snapshot()))
+                .expect("serialize split maintenance observation"),
+        );
+        body.push('\n');
         body.push_str("data_groups=");
         body.push_str(&self.data_groups.status_json());
         body.push('\n');
@@ -6868,24 +6956,6 @@ impl NodeRuntime {
             body.push_str(&format!(
                 "data_engine_io={{\"record_write_success\":{record_writes},\"record_sync_success\":{record_syncs}}}\n"
             ));
-        }
-        #[cfg(feature = "write-stage-tracing")]
-        {
-            if let Ok(trace) = serde_json::to_string(&self.driver.write_stage_trace()) {
-                body.push_str("write_stage_trace=");
-                body.push_str(&trace);
-                body.push('\n');
-            }
-        }
-        #[cfg(feature = "write-path-diagnostics")]
-        {
-            // Diagnostic JSON has a fixed metric inventory and no request/key
-            // labels. Encoding failure cannot change database service behavior.
-            if let Ok(diagnostics) = serde_json::to_string(&self.driver.write_diagnostics()) {
-                body.push_str("write_path_diagnostics=");
-                body.push_str(&diagnostics);
-                body.push('\n');
-            }
         }
         let applies = self.driver.async_apply_snapshot();
         body.push_str(&format!("raft_async_apply_limit={}\nraft_async_apply_queued={}\nraft_async_apply_in_flight={}\nraft_async_apply_peak={}\nraft_async_apply_stopped={}\n",
@@ -7007,12 +7077,37 @@ fn validate_discovery_answer(
 
 impl Drop for NodeRuntime {
     fn drop(&mut self) {
+        if let Some(task) = self.replica_pressure.take() {
+            task.cancel();
+            self.grpc_runtime.block_on(task.drain());
+        }
+        self.maintenance_control.withdraw();
+        if let Some(task) = &self.ttl_maintenance {
+            task.cancel();
+        }
+        if let Some(task) = &self.data_checkpoint {
+            task.cancel();
+        }
+        if let Some(task) = &self.split_maintenance {
+            task.cancel();
+        }
+        self.data_groups.stop_owners();
+        if let Some(task) = self.split_maintenance.take() {
+            self.grpc_runtime.block_on(task.drain());
+        }
+        if let Some(task) = self.data_checkpoint.take() {
+            self.grpc_runtime.block_on(task.drain());
+        }
+        // Stop wakes pending consensus waits. Actual blocking jobs still own
+        // their snapshots/store references, so drain them before the store guard.
+        if let Some(task) = self.ttl_maintenance.take() {
+            self.grpc_runtime.block_on(task.drain());
+        }
+        if let Some(task) = self.checkpoint_sweep.take() {
+            self.grpc_runtime.block_on(task.drain());
+        }
         self.data_groups.shutdown();
         self.point_shutdown.cancel();
-        #[cfg(feature = "rpc-experiment")]
-        self.experimental_rpc.take();
-        #[cfg(feature = "rpc-experiment")]
-        self.streaming_rpc.take();
         self.remote_storage.take();
         self.driver.stop();
         if let Some(handle) = self.driver_thread.take() {
@@ -7225,6 +7320,16 @@ mod tests {
         use kv9_common::metrics::Outcome;
         let position = AppliedPosition { term: 1, index: 5 };
         let cases = [
+            (
+                Ok(ApplyWaitOutcome::RawTtlRejected {
+                    at: position,
+                    region: RegionId(100),
+                    reason: kv9_common::raw_ttl::TtlRejection::NotEnabled,
+                }),
+                false,
+                Outcome::Rejected,
+                "Raw TTL command refused",
+            ),
             (
                 Err(ApplyWaitError::Unconfirmed {
                     index: 5,
@@ -8321,6 +8426,8 @@ mod tests {
         .expect("drain token minted once per peer");
         (
             RuntimeBackend {
+                maintenance: Arc::default(),
+                ttl_activation: None,
                 raw_directory: Arc::default(),
                 group_handles: Arc::default(),
                 adoption_receipts: Arc::default(),
@@ -8439,20 +8546,6 @@ mod tests {
             region_epoch: epoch(1, 1),
             origin: crate::api::RequestOrigin::from_transport("test-client"),
         };
-        let transaction = kv9_txn::TxnDescriptor {
-            keyspace: ctx.keyspace,
-            id: kv9_txn::TxnId {
-                txn_group: TxnGroupId(0),
-                timeline: kv9_common::TimelineId(0),
-                timeline_generation: kv9_txn::TimelineGeneration(1),
-                start_ts: kv9_common::TimeStamp(1),
-            },
-            primary: kv9_txn::QualifiedKey {
-                keyspace: ctx.keyspace,
-                user_key: b"k".to_vec(),
-            },
-        };
-
         // Admin: CreateKeyspace used to reach catalog planning here and leak an FK
         // violation for the bootstrap-owned default tenant. The other calls are listed
         // explicitly so a newly added/rewired public method cannot quietly skip the gate.
@@ -8461,7 +8554,6 @@ mod tests {
             "too-early",
             TenantId::DEFAULT,
             ApiType::Raw,
-            TxnGroupId(0),
         ));
         assert_meta_not_ready(backend.list_keyspaces("test-client"));
         assert_meta_not_ready(backend.get_region("test-client", KeyspaceId(100), b"k"));
@@ -8477,26 +8569,6 @@ mod tests {
         assert_meta_not_ready(backend.raw_delete(&ctx, b"k"));
         assert_meta_not_ready(backend.raw_scan(&ctx, b"", b"", 10));
         assert_meta_not_ready(backend.raw_delete_range(&ctx, b"", b""));
-
-        assert_meta_not_ready(backend.kv_begin(&ctx, transaction.primary.clone()));
-        assert_meta_not_ready(backend.kv_get(&ctx, b"k", &transaction));
-        assert_meta_not_ready(backend.kv_batch_get(&ctx, &[b"k".to_vec()], &transaction));
-        assert_meta_not_ready(backend.kv_scan(&ctx, b"", b"", 10, &transaction));
-        assert_meta_not_ready(backend.kv_prewrite(
-            &ctx,
-            &[(b"k".to_vec(), Some(b"v".to_vec()))],
-            &transaction,
-        ));
-        assert_meta_not_ready(backend.kv_commit(&ctx, &[b"k".to_vec()], &transaction));
-        assert_meta_not_ready(backend.kv_pessimistic_lock(&ctx, &[b"k".to_vec()], &transaction));
-        assert_meta_not_ready(backend.kv_pessimistic_rollback(
-            &ctx,
-            &[b"k".to_vec()],
-            &transaction,
-        ));
-        assert_meta_not_ready(backend.kv_resolve_lock(&ctx, &transaction));
-        assert_meta_not_ready(backend.kv_cleanup(&ctx, b"k", &transaction));
-        assert_meta_not_ready(backend.kv_check_txn_status(&ctx, &transaction));
 
         drop(backend);
         drop(runtime);
@@ -9618,6 +9690,8 @@ mod tests {
 
     fn backend_view(rt: &NodeRuntime, root: &RootDescriptor) -> RuntimeBackend {
         RuntimeBackend {
+            maintenance: rt.rpc_backend.maintenance.clone(),
+            ttl_activation: None,
             raw_directory: rt.data_groups.raw_directory.clone(),
             group_handles: rt.data_groups.group_handles.clone(),
             adoption_receipts: rt.data_groups.adoption_receipts.clone(),
@@ -9744,6 +9818,7 @@ mod tests {
             join: Vec::new(),
             wal_streams: 1,
             data_workers: 2,
+            raw_ttl_clock: None,
             replication_factor: 3,
         };
 
@@ -10036,6 +10111,7 @@ mod tests {
             join: Vec::new(),
             wal_streams: 1,
             data_workers: 2,
+            raw_ttl_clock: None,
             replication_factor: 3,
         };
         let auth = || RuntimeAuth {
@@ -10281,6 +10357,7 @@ mod tests {
                 join: Vec::new(),
                 wal_streams: 1,
                 data_workers: 2,
+                raw_ttl_clock: None,
                 replication_factor: 3,
             },
             RuntimeAuth {
@@ -10995,6 +11072,7 @@ mod tests {
             join: Vec::new(),
             wal_streams: 1,
             data_workers: 2,
+            raw_ttl_clock: None,
             replication_factor: 3,
         };
         let replacement = base.join("replacement");
@@ -11170,6 +11248,7 @@ mod tests {
                         join: Vec::new(),
                         wal_streams: 1,
                         data_workers: 2,
+                        raw_ttl_clock: None,
                         replication_factor: 3,
                     },
                     RuntimeAuth {
@@ -11253,6 +11332,7 @@ mod tests {
                             join: Vec::new(),
                             wal_streams: 1,
                             data_workers: 2,
+                            raw_ttl_clock: None,
                             replication_factor: 3,
                         },
                         RuntimeAuth {
@@ -11360,7 +11440,6 @@ mod tests {
                     "formation-survives",
                     TenantId::DEFAULT,
                     ApiType::Raw,
-                    TxnGroupId(0),
                 )
                 .unwrap();
             wait_driver(&rts, |rts| {
@@ -11414,7 +11493,6 @@ mod tests {
                     "formation-next",
                     TenantId::DEFAULT,
                     ApiType::Raw,
-                    TxnGroupId(0),
                 )
                 .unwrap();
             assert!(
@@ -11469,13 +11547,7 @@ mod tests {
         let leader = cluster_leader(&rts).expect("a serving trio has a leader");
         let backend = backend_view(&rts[leader], &root);
         let created = backend
-            .create_keyspace(
-                "acceptance",
-                "lin",
-                TenantId::DEFAULT,
-                ApiType::Raw,
-                TxnGroupId(0),
-            )
+            .create_keyspace("acceptance", "lin", TenantId::DEFAULT, ApiType::Raw)
             .unwrap();
         let location = backend
             .get_region("acceptance", created.keyspace, b"k")
@@ -11612,13 +11684,7 @@ mod tests {
             .unwrap();
         for (column, name) in [(5, "async-conf-epoch"), (6, "async-version-epoch")] {
             let created = backend
-                .create_keyspace(
-                    "acceptance",
-                    name,
-                    TenantId::DEFAULT,
-                    ApiType::Raw,
-                    TxnGroupId(0),
-                )
+                .create_keyspace("acceptance", name, TenantId::DEFAULT, ApiType::Raw)
                 .unwrap();
             let location = backend
                 .get_region("acceptance", created.keyspace, b"k")
@@ -11886,6 +11952,8 @@ mod tests {
             Arc::new(Node::with_raft_and_engine(NodeId(1), Config::default(), p1, wal1).unwrap());
         let tokio_rt = tokio::runtime::Runtime::new().unwrap();
         let backend = RuntimeBackend {
+            maintenance: Arc::default(),
+            ttl_activation: None,
             raw_directory: Arc::default(),
             group_handles: Arc::default(),
             adoption_receipts: Arc::default(),
@@ -12271,6 +12339,8 @@ mod fence_firing_tests {
 
     fn backend_of(runtime: &NodeRuntime) -> RuntimeBackend {
         RuntimeBackend {
+            maintenance: runtime.rpc_backend.maintenance.clone(),
+            ttl_activation: None,
             raw_directory: Arc::default(),
             group_handles: Arc::default(),
             adoption_receipts: Arc::default(),
@@ -12295,13 +12365,7 @@ mod fence_firing_tests {
         anchor: &[u8],
     ) -> (KeyspaceId, RequestContext, kv9_meta::tables::Region) {
         let keyspace = backend
-            .create_keyspace(
-                "t",
-                "fenced",
-                TenantId::DEFAULT,
-                ApiType::Raw,
-                TxnGroupId(0),
-            )
+            .create_keyspace("t", "fenced", TenantId::DEFAULT, ApiType::Raw)
             .expect("create_keyspace on a Serving node")
             .keyspace;
         let region = Tables::new(&runtime.node.meta_raft.store)
@@ -12407,6 +12471,13 @@ mod fence_firing_tests {
                     (b"k".to_vec(), b"v2".to_vec()),
                     (b"b".to_vec(), b"v3".to_vec()),
                 ]),
+                crate::api::RawWrite::Batch(vec![
+                    RawMutation::Put {
+                        key: b"b".to_vec(),
+                        value: b"v4".to_vec(),
+                    },
+                    RawMutation::Delete { key: b"k".to_vec() },
+                ]),
                 crate::api::RawWrite::Delete { key: b"k".to_vec() },
             ] {
                 let preparation = backend.clone().prepare_raw_write(ctx.clone(), operation);
@@ -12428,7 +12499,7 @@ mod fence_firing_tests {
             let fences = seen.lock().unwrap().clone();
             assert_eq!(
                 fences.len(),
-                3,
+                4,
                 "prepared writes bypassed or retried the fence gate"
             );
             for fence in fences {
@@ -12444,7 +12515,8 @@ mod fence_firing_tests {
             assert_eq!(backend.raw_get(&ctx, b"k").unwrap(), None);
             assert_eq!(
                 backend.raw_get(&ctx, b"b").unwrap(),
-                accepted.then(|| b"v3".to_vec())
+                accepted.then(|| b"v4".to_vec()),
+                "the mixed batch must overwrite b and delete k as one entry"
             );
             assert_eq!(backend.driver.async_apply_snapshot().in_flight, 0);
             assert!(

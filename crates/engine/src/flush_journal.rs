@@ -2,27 +2,54 @@
 //! local scheduling state; it NEVER authorizes WAL reclamation. Only ordered
 //! manifest apply can do that. A valid pending file is always reconciled first.
 use std::fs::{self, File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::BufReader;
+use std::io::Seek;
 use std::path::{Path, PathBuf};
 
 use kv9_common::{Error, Result};
-use sha2::{Digest, Sha256};
 
 use crate::checkpoint::{
-    checked_sst_bytes, CheckpointManifest, PlannedFlush, PreparedFlush, RemoteUploader,
-    MAX_CHECKPOINT_BYTES,
+    CheckpointManifest, DiskObjects, PlannedFlush, PreparedFlush, RemoteUploader, SpooledFlush,
+    MAX_CHECKPOINT_BYTES, MAX_STREAMED_CHECKPOINT_BYTES,
 };
+
+mod codec;
+mod spool;
+mod transfer;
+use crate::checkpoint_pending_budget::{PendingDiskBudget, TrackedFile};
+use codec::PendingRef;
+pub use transfer::{PendingTransfer, TransferJournal, TransferLock, TransferReader};
 
 const MAGIC: &[u8] = b"KV9PENDING\x01";
 const PLANNED_MAGIC: &[u8] = b"KV9PENDING\x02";
 const HASH_LEN: usize = 32;
-const MAX_FILE_BYTES: u64 = MAX_CHECKPOINT_BYTES as u64 + 1024 * 1024 + 128;
+const MAX_FILE_BYTES: u64 = MAX_STREAMED_CHECKPOINT_BYTES + 1024 * 1024 + 128;
+const MAX_RESIDENT_FILE_BYTES: u64 = MAX_CHECKPOINT_BYTES as u64 + 1024 * 1024 + 128;
 
 /// One local prepared slot. The runtime gives it one owner per Raft group.
 /// The file is atomically published and directory-synced before first propose.
 #[derive(Debug)]
 pub struct FlushJournal {
     path: PathBuf,
+    image_budget: Option<std::sync::Arc<crate::checkpoint_memory::ImageBudget>>,
+    streaming: bool,
+    pending_budget: Option<std::sync::Arc<PendingDiskBudget>>,
+}
+
+/// Both outcomes retain the exact durable recovery identity. Keeping a plan
+/// under disk pressure may repeat verified uploads after restart, never a write.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UploadedJournal {
+    Prepared,
+    PlannedRetained,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum PublicationStep {
+    Written,
+    FileSynced,
+    Renamed,
+    DirectorySynced,
 }
 
 /// Only `FlushJournal::load` can recover this value from a checksummed file.
@@ -33,6 +60,8 @@ pub struct PendingFlush {
     generation: u64,
     manifest: CheckpointManifest,
     objects: Option<Vec<Vec<u8>>>,
+    disk_objects: Option<DiskObjects>,
+    reservation: Option<crate::checkpoint_memory::Reservation>,
 }
 impl PendingFlush {
     pub fn manifest(&self) -> &CheckpointManifest {
@@ -42,104 +71,59 @@ impl PendingFlush {
         self.generation
     }
     pub fn requires_upload(&self) -> bool {
-        self.objects.is_some()
+        self.objects.is_some() || self.disk_objects.is_some()
     }
     pub fn recover(self, uploader: &RemoteUploader) -> Result<(PreparedFlush, u64)> {
-        let prepared = match self.objects {
-            Some(objects) => uploader.upload_planned(PlannedFlush {
+        let prepared = match (self.objects, self.disk_objects) {
+            (Some(objects), None) => uploader.upload_planned(PlannedFlush {
                 manifest: self.manifest,
                 objects,
+                reservation: self.reservation,
             })?,
-            None => uploader.recover_prepared(&self.manifest)?,
+            (None, Some(objects)) => uploader.upload_disk(self.manifest, objects)?,
+            (None, None) => uploader.recover_prepared(&self.manifest)?,
+            (Some(_), Some(_)) => {
+                return Err(Error::Engine("duplicate pending object source".into()))
+            }
         };
         Ok((prepared, self.generation))
-    }
-
-    fn encode(&self) -> Result<Vec<u8>> {
-        let mut bytes = if self.objects.is_some() {
-            PLANNED_MAGIC
-        } else {
-            MAGIC
-        }
-        .to_vec();
-        bytes.extend(self.generation.to_le_bytes());
-        let manifest = self.manifest.encode()?;
-        if self.objects.is_some() {
-            bytes.extend((manifest.len() as u32).to_le_bytes());
-        }
-        bytes.extend(manifest);
-        if let Some(objects) = &self.objects {
-            for object in objects {
-                bytes.extend(object);
-            }
-        }
-        let hash = Sha256::digest(&bytes);
-        bytes.extend(hash);
-        Ok(bytes)
-    }
-    fn decode(bytes: &[u8]) -> Result<Self> {
-        let planned = bytes.starts_with(PLANNED_MAGIC);
-        if bytes.len() <= MAGIC.len() + 8 + HASH_LEN
-            || bytes.len() as u64 > MAX_FILE_BYTES
-            || (!planned && !bytes.starts_with(MAGIC))
-        {
-            return Err(Error::Engine(
-                "invalid pending flush version or length".into(),
-            ));
-        }
-        let end = bytes.len() - HASH_LEN;
-        if Sha256::digest(&bytes[..end]).as_slice() != &bytes[end..] {
-            return Err(Error::Engine("pending flush checksum mismatch".into()));
-        }
-        let generation = u64::from_le_bytes(
-            bytes[MAGIC.len()..MAGIC.len() + 8]
-                .try_into()
-                .expect("length checked"),
-        );
-        if generation == u64::MAX {
-            return Err(Error::Engine("pending flush generation exhausted".into()));
-        }
-        let start = MAGIC.len() + 8;
-        let (manifest, objects) = if planned {
-            let size_bytes = bytes
-                .get(start..start + 4)
-                .ok_or_else(|| Error::Engine("planned manifest length missing".into()))?;
-            let size = u32::from_le_bytes(size_bytes.try_into().unwrap()) as usize;
-            let body_start = start + 4;
-            if size > 1024 * 1024 || body_start + size > end {
-                return Err(Error::Engine("planned manifest length invalid".into()));
-            }
-            let manifest = CheckpointManifest::decode(&bytes[body_start..body_start + size])?;
-            let mut offset = body_start + size;
-            let mut objects = Vec::with_capacity(manifest.files.len());
-            for file in &manifest.files {
-                let size = usize::try_from(file.size)
-                    .map_err(|_| Error::Engine("planned object size invalid".into()))?;
-                if size > end - offset {
-                    return Err(Error::Engine("planned object is truncated".into()));
-                }
-                let object = &bytes[offset..offset + size];
-                checked_sst_bytes(file, object)?;
-                objects.push(object.to_vec());
-                offset += size;
-            }
-            if offset != end {
-                return Err(Error::Engine("planned journal has trailing bytes".into()));
-            }
-            (manifest, Some(objects))
-        } else {
-            (CheckpointManifest::decode(&bytes[start..end])?, None)
-        };
-        Ok(Self {
-            generation,
-            manifest,
-            objects,
-        })
     }
 }
 impl FlushJournal {
     pub fn new(path: impl Into<PathBuf>) -> Self {
-        Self { path: path.into() }
+        Self {
+            path: path.into(),
+            image_budget: None,
+            streaming: false,
+            pending_budget: None,
+        }
+    }
+
+    pub fn with_image_budget(
+        mut self,
+        budget: std::sync::Arc<crate::checkpoint_memory::ImageBudget>,
+    ) -> Self {
+        self.image_budget = Some(budget);
+        self
+    }
+
+    /// Validate complete journal/SST checksums while retaining only its opened
+    /// inode and descriptor. Upload admits and verifies each SST again.
+    pub fn with_streaming_objects(mut self) -> Self {
+        self.streaming = true;
+        self
+    }
+
+    pub fn with_pending_budget(mut self, budget: std::sync::Arc<PendingDiskBudget>) -> Self {
+        self.pending_budget = Some(budget);
+        self
+    }
+
+    fn tracked(&self, file: File) -> Result<TrackedFile> {
+        match &self.pending_budget {
+            Some(budget) => budget.read(&self.path, file),
+            None => Ok(TrackedFile::untracked(file)),
+        }
     }
 
     /// Recover a durable slot. Partial temporary files are never authoritative.
@@ -151,15 +135,18 @@ impl FlushJournal {
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
             Err(e) => return Err(io(e)),
         };
-        let mut bytes = Vec::new();
-        (&file)
-            .take(MAX_FILE_BYTES + 1)
-            .read_to_end(&mut bytes)
-            .map_err(io)?;
-        if bytes.len() as u64 > MAX_FILE_BYTES {
-            return Err(Error::Engine("pending flush file too large".into()));
+        // Allocate each bounded object directly; do not retain an additional
+        // whole-file buffer alongside all decoded objects.
+        if self.streaming {
+            return self.load_streamed(file).map(Some);
         }
-        let pending = PendingFlush::decode(&bytes)?;
+        let mut file = self.tracked(file)?;
+        let len = file.metadata().map_err(io)?.len();
+        let pending = PendingFlush::read_with_budget(
+            BufReader::new(&mut file),
+            len,
+            self.image_budget.as_ref(),
+        )?;
         file.sync_all().map_err(io)?;
         sync_parent(&self.path)?;
         Ok(Some(pending))
@@ -169,31 +156,61 @@ impl FlushJournal {
     /// Repeating the exact save is safe, but a different pending attempt cannot
     /// replace an unresolved one. No caller may propose after a save error.
     pub fn stage(&mut self, prepared: &PreparedFlush, expected_generation: u64) -> Result<()> {
-        let pending = PendingFlush {
+        self.stage_prepared(prepared, expected_generation, false)
+            .map(|_| ())
+    }
+
+    /// Allow settlement to free an existing plan even with zero publication
+    /// space. Only a quota refusal before creating a temporary file may retain
+    /// the already validated exact durable plan; all I/O errors still fail.
+    pub fn record_uploaded(
+        &mut self,
+        prepared: &PreparedFlush,
+        expected_generation: u64,
+    ) -> Result<UploadedJournal> {
+        self.stage_prepared(prepared, expected_generation, true)
+    }
+
+    fn stage_prepared(
+        &mut self,
+        prepared: &PreparedFlush,
+        expected_generation: u64,
+        allow_plan: bool,
+    ) -> Result<UploadedJournal> {
+        let manifest = prepared.descriptor();
+        let pending = PendingRef {
             generation: expected_generation,
-            manifest: prepared.descriptor(),
+            manifest: &manifest,
             objects: None,
         };
-        let bytes = pending.encode()?;
-        // Validate what recovery will accept before publishing any file.
-        PendingFlush::decode(&bytes)?;
+        let encoded_manifest = pending.validate()?;
+        let mut exact_plan = false;
         if let Some(old) = self.load()? {
-            if old.encode()? == bytes {
-                return Ok(());
+            if pending.matches(&old) {
+                return Ok(UploadedJournal::Prepared);
             }
             // A sealed remotely verified capability may replace the exact local
             // upload plan. No new identity or generation may cross this boundary.
-            if old.objects.is_some()
-                && old.generation == pending.generation
-                && old.manifest == pending.manifest
+            if !old.requires_upload()
+                || old.generation != pending.generation
+                || old.manifest != *pending.manifest
             {
-                return self.publish(&bytes);
+                return Err(Error::Engine(
+                    "pending flush must settle before staging another".into(),
+                ));
             }
-            return Err(Error::Engine(
-                "pending flush must settle before staging another".into(),
-            ));
+            exact_plan = true;
         }
-        self.publish(&bytes)
+        if self.publish(&pending, &encoded_manifest)? {
+            Ok(UploadedJournal::Prepared)
+        } else if allow_plan && exact_plan {
+            if let Some(budget) = &self.pending_budget {
+                budget.deferred_prepared();
+            }
+            Ok(UploadedJournal::PlannedRetained)
+        } else {
+            Err(disk_full())
+        }
     }
 
     /// Persist the exact bounded upload bytes before acquiring the remote owner
@@ -203,50 +220,147 @@ impl FlushJournal {
         planned: &PlannedFlush,
         expected_generation: u64,
     ) -> Result<()> {
-        let pending = PendingFlush {
+        let pending = PendingRef {
             generation: expected_generation,
-            manifest: planned.manifest.clone(),
-            objects: Some(planned.objects.clone()),
+            manifest: &planned.manifest,
+            objects: Some(&planned.objects),
         };
-        let bytes = pending.encode()?;
-        PendingFlush::decode(&bytes)?;
+        let encoded_manifest = pending.validate()?;
         if let Some(old) = self.load()? {
-            if old.encode()? == bytes {
+            if pending.matches(&old) {
                 return Ok(());
             }
             return Err(Error::Engine(
                 "pending flush must settle before staging another".into(),
             ));
         }
-        self.publish(&bytes)
+        if self.publish(&pending, &encoded_manifest)? {
+            Ok(())
+        } else {
+            Err(disk_full())
+        }
     }
 
-    fn publish(&self, bytes: &[u8]) -> Result<()> {
+    fn publish(&self, pending: &PendingRef<'_>, manifest: &[u8]) -> Result<bool> {
+        let bytes = journal_bytes(
+            manifest.len(),
+            pending
+                .objects
+                .map(|objects| objects.iter().map(|o| o.len() as u64).sum()),
+        );
+        self.publish_with(bytes, |file| pending.write_to(file, manifest))
+    }
+
+    fn clear_temporary(&self) -> Result<()> {
         let tmp = self.path.with_extension("pending.tmp");
-        let mut file = OpenOptions::new()
+        if let Some(budget) = &self.pending_budget {
+            budget.check_no_writer(&tmp)?;
+        }
+        remove_if_present(&tmp)?;
+        sync_parent(&tmp)?;
+        if let Some(budget) = &self.pending_budget {
+            budget.forgotten(&tmp);
+        }
+        Ok(())
+    }
+
+    /// Reserve old+new bytes before opening or writing a replacement. Failure
+    /// leaves named debt charged until verified cleanup or startup inventory.
+    fn publish_with(
+        &self,
+        bytes: u64,
+        write: impl FnOnce(&mut TrackedFile) -> Result<()>,
+    ) -> Result<bool> {
+        self.publish_observed(bytes, write, &mut |_| Ok(()))
+    }
+    fn publish_observed(
+        &self,
+        bytes: u64,
+        write: impl FnOnce(&mut TrackedFile) -> Result<()>,
+        observe: &mut impl FnMut(PublicationStep) -> Result<()>,
+    ) -> Result<bool> {
+        self.clear_temporary()?;
+        let tmp = self.path.with_extension("pending.tmp");
+        let lease = match &self.pending_budget {
+            Some(budget) => match budget.reserve(&tmp, bytes)? {
+                Some(lease) => Some(lease),
+                None => return Ok(false),
+            },
+            None => None,
+        };
+        let file = OpenOptions::new()
             .write(true)
-            .create(true)
-            .truncate(true)
+            .create_new(true)
             .open(&tmp)
             .map_err(io)?;
-        file.write_all(bytes).map_err(io)?;
+        let mut file = match lease {
+            Some(lease) => lease.opened(file)?,
+            None => TrackedFile::untracked(file),
+        };
+        write(&mut file)?;
+        if file.stream_position().map_err(io)? != bytes {
+            return Err(Error::Engine(
+                "pending journal length differs from reservation".into(),
+            ));
+        }
+        observe(PublicationStep::Written)?;
         file.sync_all().map_err(io)?;
+        observe(PublicationStep::FileSynced)?;
         fs::rename(&tmp, &self.path).map_err(io)?;
-        sync_parent(&self.path)
+        observe(PublicationStep::Renamed)?;
+        sync_parent(&self.path)?;
+        observe(PublicationStep::DirectorySynced)?;
+        if let Some(budget) = &self.pending_budget {
+            budget.published(&tmp, &self.path)?;
+        }
+        Ok(true)
     }
 
     /// Call only after a typed settlement. If deletion's durability is unknown,
     /// retrying or recovering the old slot is safe: history is still retained.
     pub fn clear_settled(&mut self) -> Result<()> {
-        match fs::remove_file(&self.path) {
-            Ok(()) => {}
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-            Err(e) => return Err(io(e)),
+        self.clear_observed(&mut || Ok(()))
+    }
+    fn clear_observed(&mut self, after_remove: &mut impl FnMut() -> Result<()>) -> Result<()> {
+        let tmp = self.path.with_extension("pending.tmp");
+        if let Some(budget) = &self.pending_budget {
+            budget.check_no_writer(&tmp)?;
         }
-        sync_parent(&self.path)
+        remove_if_present(&self.path)?;
+        // A wrong-type directory was never a publication file. Leave it for
+        // diagnosis, while allowing an absent candidate's history pin to clear.
+        let temporary_file = !fs::symlink_metadata(&tmp).is_ok_and(|m| m.is_dir());
+        if temporary_file {
+            remove_if_present(&tmp)?;
+        }
+        after_remove()?;
+        sync_parent(&self.path)?;
+        if let Some(budget) = &self.pending_budget {
+            budget.forgotten(&self.path);
+            if temporary_file {
+                budget.forgotten(&tmp);
+            }
+        }
+        Ok(())
     }
 }
-fn sync_parent(path: &Path) -> Result<()> {
+
+#[cfg(test)]
+mod disk_tests;
+fn journal_bytes(manifest: usize, objects: Option<u64>) -> u64 {
+    (MAGIC.len() + 8 + HASH_LEN + manifest) as u64 + objects.map_or(0, |bytes| bytes + 4)
+}
+fn remove_if_present(path: &Path) -> Result<()> {
+    match fs::remove_file(path) {
+        Ok(()) => Ok(()),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(e) => Err(io(e)),
+    }
+}
+fn disk_full() -> Error {
+    Error::Engine("pending journal disk budget exhausted".into())
+}
+pub(crate) fn sync_parent(path: &Path) -> Result<()> {
     File::open(
         path.parent()
             .filter(|p| !p.as_os_str().is_empty())
@@ -268,9 +382,10 @@ mod tests {
         WriteBatch,
     };
     use kv9_common::AppliedPosition;
+    use sha2::{Digest, Sha256};
     use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
-    fn fixture() -> (PathBuf, WalEngine, PlannedFlush) {
+    pub(super) fn fixture() -> (PathBuf, WalEngine, PlannedFlush) {
         static NEXT: AtomicU64 = AtomicU64::new(0);
         let dir = std::env::temp_dir().join(format!(
             "kv9-planned-journal-{}-{}",
@@ -299,10 +414,11 @@ mod tests {
         .unwrap();
         (dir, engine, plan)
     }
-    fn recovered_plan(pending: PendingFlush) -> PlannedFlush {
+    pub(super) fn recovered_plan(pending: PendingFlush) -> PlannedFlush {
         PlannedFlush {
             manifest: pending.manifest,
             objects: pending.objects.unwrap(),
+            reservation: pending.reservation,
         }
     }
     #[test]
@@ -429,3 +545,6 @@ mod tests {
         fs::remove_dir_all(dir).unwrap();
     }
 }
+
+#[cfg(test)]
+mod codec_tests;

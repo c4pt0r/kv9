@@ -29,15 +29,12 @@ impl CommittedRange {
     }
 }
 
-fn read_in<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<CommittedRange>> {
+pub(super) fn read_in<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<CommittedRange>> {
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("range binding requires a certified root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded range task scan exceeded"));
-    }
     let mut bindings: Vec<CommittedRange> = Vec::new();
-    for row in rows {
+    for row in task_rows(txn) {
+        let row = row?;
         if row.value.get(ColumnId(2)) != Some(&ColumnValue::Uint(BIND_RANGE)) {
             continue;
         }
@@ -177,9 +174,6 @@ pub fn plan_keyspace<E: Engine>(
         .flatten()
         .ok_or_else(|| invalid("data group creation missing"))?;
     activation::plan_activation(txn, &creation)?;
-    if txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?.len() >= MAX_CREATION_TASKS {
-        return Err(invalid("range task capacity reached"));
-    }
     let id = txn.allocate_id(SequenceKind::Keyspace)?;
     if id > u64::from(KeyspaceId::MAX) {
         return Err(invalid("keyspace sequence exhausted"));

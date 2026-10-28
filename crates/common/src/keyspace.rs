@@ -1,19 +1,22 @@
-//! Tenant, keyspace, and API-type model (DESIGN §3.1–§3.2, §3.6).
+//! Tenant, keyspace, and API-type model (DESIGN §3.1–§3.2).
 
 use serde::{Deserialize, Serialize};
 
-use crate::ids::{KeyspaceId, TenantId, TxnGroupId};
+use crate::ids::{KeyspaceId, TenantId};
 
-/// The API surface a keyspace exposes (DESIGN §3.2). A keyspace cannot mix the two.
+/// The API surface a keyspace exposes (DESIGN §3.2).
+///
+/// kv9 is a raw key-value store: there is exactly one user-facing API type. The enum is
+/// kept so the catalog row and the wire keep an explicit, validated field instead of an
+/// implicit default, and so a stored code that is not `raw` (for example the retired
+/// transactional type) is rejected loudly rather than silently reinterpreted.
 ///
 /// The mode byte in the physical key encoding is derived from this (DESIGN §3.4):
-/// `Txn` → `'t'`, `Raw` → `'r'`. The reserved system keyspace uses `'s'` (see
+/// `Raw` → `'r'`. The reserved system keyspace uses `'s'` (see
 /// [`crate::codec::KeyMode::System`]).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ApiType {
-    /// MVCC + Percolator 2PC + Snapshot Isolation (DESIGN §3.2, §9.1).
-    Txn,
-    /// Direct KV, optional TTL / causal timestamps, no transactions (DESIGN §3.2, §9.2).
+    /// Direct KV with atomic range batches and optional TTL (DESIGN §3.2, §9).
     Raw,
 }
 
@@ -42,19 +45,14 @@ pub struct Keyspace {
     pub name: String,
     /// Owning tenant (DESIGN §3.1).
     pub tenant: TenantId,
-    /// `txn` or `raw` (DESIGN §3.2).
+    /// Always `raw` (DESIGN §3.2).
     pub api_type: ApiType,
-    /// The txn group this keyspace belongs to (DESIGN §3.6). Ignored for `raw`
-    /// keyspaces; every `txn` keyspace belongs to exactly one group, defaulting to
-    /// [`TxnGroupId::DEFAULT`].
-    pub txn_group: TxnGroupId,
 }
 
 impl Keyspace {
     /// The key mode byte for this keyspace's api type (DESIGN §3.4).
     pub fn key_mode(&self) -> crate::codec::KeyMode {
         match self.api_type {
-            ApiType::Txn => crate::codec::KeyMode::Txn,
             ApiType::Raw => crate::codec::KeyMode::Raw,
         }
     }

@@ -13,6 +13,7 @@
 mod async_apply;
 mod async_read;
 pub mod command;
+pub mod configuration_origin;
 pub mod driver;
 pub mod grpc;
 #[cfg(any(test, feature = "experimental-leader-lease"))]
@@ -21,24 +22,23 @@ pub mod lease;
 pub mod lease_clock;
 pub mod lease_policy;
 pub mod rawnode;
-#[cfg(feature = "read-stage-timing")]
-mod read_stage_timing;
+pub mod replica_pressure;
+
 pub mod snapshot_install;
 pub mod state_machine;
 pub mod storage;
+#[cfg(test)]
+mod test_alloc;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
 pub mod transport;
 pub mod work;
-#[cfg(feature = "write-path-diagnostics")]
-pub mod write_diagnostics;
-#[cfg(feature = "write-stage-tracing")]
-pub mod write_stage_trace;
 pub use async_apply::AsyncApplySnapshot;
 pub use async_read::AsyncReadSnapshot;
 
 pub use command::{
-    cf_code, cf_from_code, Command, FencedInner, KvOp, ManifestChangePayload, RegionFence,
+    cf_code, cf_from_code, Command, FencedInner, KvOp, ManifestChangePayload, RawPopulation,
+    RegionFence,
 };
 #[cfg(any(test, feature = "testing"))]
 pub use rawnode::HarnessPump;
@@ -47,8 +47,8 @@ pub use rawnode::InProcessCluster;
 pub use rawnode::{DrainToken, ProposedAt, RaftPeer};
 pub use state_machine::{
     classify_reconciliation, drive_apply, ApplyOutcome, ApplyResult, ApplyStore, FenceAdjudicator,
-    ManifestInvalidReason, ManifestPair, ManifestVerdict, MemStateMachine, ReconcileObservation,
-    StateMachine,
+    ManifestEffectPage, ManifestInvalidReason, ManifestPair, ManifestVerdict, MemStateMachine,
+    ReconcileObservation, StateMachine, MAX_MANIFEST_EFFECT_ROWS,
 };
 
 use kv9_common::{NodeId, RegionId, Result};
@@ -285,6 +285,7 @@ impl RaftGroup for SingleNodeRaft {
     }
 
     fn propose(&self, cmd: &Command) -> Result<LogIndex> {
+        cmd.require_ordinary_proposal()?;
         let data = cmd.encode();
         let mut log = self.log.lock().expect("raft log poisoned");
         let idx = LogIndex(log.next_index);

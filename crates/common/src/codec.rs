@@ -4,7 +4,7 @@
 //!
 //! ```text
 //! mode_byte (1)  keyspace_id (3 bytes, big-endian)  user_key...
-//! mode_byte ∈ { 't' = txn, 'r' = raw, 's' = system }
+//! mode_byte ∈ { 'r' = raw, 's' = system }   ('t' was the retired txn mode; it decodes as an error)
 //! ```
 //!
 //! The 3-byte keyspace id gives up to 2^24 keyspaces. kv9 **validates** the id range at
@@ -20,8 +20,6 @@ use crate::ids::KeyspaceId;
 /// The mode byte of a physical key (DESIGN §3.4).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum KeyMode {
-    /// `'t'` — a `txn` keyspace key.
-    Txn,
     /// `'r'` — a `raw` keyspace key.
     Raw,
     /// `'s'` — the reserved system keyspace (DESIGN §5).
@@ -32,7 +30,6 @@ impl KeyMode {
     #[inline]
     pub fn as_byte(self) -> u8 {
         match self {
-            KeyMode::Txn => b't',
             KeyMode::Raw => b'r',
             KeyMode::System => b's',
         }
@@ -41,7 +38,6 @@ impl KeyMode {
     #[inline]
     pub fn from_byte(b: u8) -> Result<KeyMode> {
         match b {
-            b't' => Ok(KeyMode::Txn),
             b'r' => Ok(KeyMode::Raw),
             b's' => Ok(KeyMode::System),
             other => Err(Error::InvalidKeyMode(other)),
@@ -135,7 +131,7 @@ pub fn keyspace_of(raw: &[u8]) -> Result<KeyspaceId> {
 mod tests {
     use super::*;
 
-    const MODES: [KeyMode; 3] = [KeyMode::Txn, KeyMode::Raw, KeyMode::System];
+    const MODES: [KeyMode; 2] = [KeyMode::Raw, KeyMode::System];
 
     /// Interesting user keys: empty, boundary bytes, and prefix relationships.
     fn sample_user_keys() -> Vec<Vec<u8>> {
@@ -174,10 +170,10 @@ mod tests {
         // A value whose low 3 bytes collide with a *valid* id is the dangerous case: if
         // encoding truncated, id 0x01_00_00_2A would land in tenant 0x00_00_2A's range.
         let colliding = KeyspaceId(0x0100_002A);
-        assert!(encode_key(KeyMode::Txn, colliding, b"k").is_err());
+        assert!(encode_key(KeyMode::Raw, colliding, b"k").is_err());
 
         // The largest valid id still encodes.
-        assert!(encode_key(KeyMode::Txn, KeyspaceId(KeyspaceId::MAX), b"k").is_ok());
+        assert!(encode_key(KeyMode::Raw, KeyspaceId(KeyspaceId::MAX), b"k").is_ok());
     }
 
     #[test]
@@ -270,17 +266,17 @@ mod tests {
     /// wrong answer (DESIGN §13 principle 12: never panic on the unknown).
     #[test]
     fn decode_rejects_malformed_keys() {
-        for short in [&b""[..], b"t", b"t\x00", b"t\x00\x00"] {
+        for short in [&b""[..], b"r", b"r\x00", b"r\x00\x00"] {
             assert!(
                 matches!(decode_key(short), Err(Error::MalformedKey(_))),
                 "decode accepted a key shorter than the prefix: {short:?}"
             );
         }
         // A prefix-length key with no user key is valid (empty user key).
-        assert!(decode_key(b"t\x00\x00\x00").is_ok());
+        assert!(decode_key(b"r\x00\x00\x00").is_ok());
 
         // Unknown mode bytes are rejected rather than guessed at.
-        for bad in [0x00u8, b'a', b'q', b'u', 0xFF] {
+        for bad in [0x00u8, b'a', b'q', b't', b'u', 0xFF] {
             let raw = [bad, 0, 0, 1];
             assert!(
                 matches!(decode_key(&raw), Err(Error::InvalidKeyMode(b)) if b == bad),
@@ -294,7 +290,8 @@ mod tests {
         for mode in MODES {
             assert_eq!(KeyMode::from_byte(mode.as_byte()).unwrap(), mode);
         }
-        assert_eq!(KeyMode::Txn.as_byte(), b't');
+        // The retired transactional mode byte is no longer a valid mode.
+        assert!(KeyMode::from_byte(b't').is_err());
         assert_eq!(KeyMode::Raw.as_byte(), b'r');
         assert_eq!(KeyMode::System.as_byte(), b's');
     }

@@ -11,6 +11,10 @@ use super::{manifest_gen_key, manifest_pair_key};
 use crate::storage::{CommittedConfiguration, ConfigurationLookup, DiskRaftStorage};
 use crate::{Command, ManifestPair};
 
+pub mod data_group;
+mod preflight;
+pub use preflight::{inspect_checkpoint_read, CheckpointReadPlan};
+
 /// Open a local engine and validate the exact selected checkpoint before the
 /// caller can publish it. Observations cannot be supplied by the caller, and a
 /// partial/failed open cannot mint a recovered publication.
@@ -44,15 +48,45 @@ pub fn open_checkpoint_engine_with_base(
     kv9_engine::EngineReplay,
     Option<RecoveredCheckpointPublication>,
 )> {
-    let recovery = std::cell::RefCell::new(CheckpointRecovery::new(storage, cluster, region));
-    let (engine, report) = WalEngine::open_with_base_observer(
+    open_checkpoint_engine_with_reader(
+        storage,
         path,
-        uploader,
-        |base| recovery.borrow_mut().checkpoint(base),
+        uploader.map(|u| u as &dyn kv9_engine::checkpoint::CheckpointRestore),
+        cluster,
+        region,
+        base_observer,
+    )
+}
+
+/// Full publication/base/tail validation with an enclosing runtime's retained
+/// GET-only reader. The dependency cannot replace any recovery observation.
+pub fn open_checkpoint_engine_with_reader(
+    storage: &mut DiskRaftStorage,
+    path: impl AsRef<std::path::Path>,
+    reader: Option<&dyn kv9_engine::checkpoint::CheckpointRestore>,
+    cluster: String,
+    region: u64,
+    base_observer: impl FnMut(&CheckpointManifest, &dyn kv9_engine::ReadView) -> Result<()>,
+) -> Result<(
+    WalEngine,
+    kv9_engine::EngineReplay,
+    Option<RecoveredCheckpointPublication>,
+)> {
+    let path = path.as_ref();
+    let read_plan = inspect_checkpoint_read(storage, path, cluster.clone(), region)?;
+    let recovery = std::cell::RefCell::new(CheckpointRecovery::new(storage, cluster, region));
+    let (engine, report) = WalEngine::open_with_checkpoint_reader(
+        path,
+        reader,
+        |base| {
+            read_plan.check_selection(base)?;
+            recovery.borrow_mut().checkpoint(base)
+        },
         base_observer,
         |batch, at| recovery.borrow_mut().batch(batch, at),
     )?;
     let publication = recovery.into_inner().finish(&engine)?;
+    read_plan.check_publication(publication.as_ref())?;
     Ok((engine, report, publication))
 }
 
@@ -230,9 +264,14 @@ impl<'a> CheckpointRecovery<'a> {
                         && entry.entry_type == raft::eraftpb::EntryType::EntryNormal
                 })
                 .ok_or_else(|| bad("manifest publication has no exact normal Raft entry"))?;
-            let Command::ManifestChange(payload) = Command::decode(&entry.data)? else {
+            let command = Command::decode(&entry.data)?;
+            let (Command::ManifestChange(ref payload)
+            | Command::StagingManifestChange(ref payload)
+            | Command::LargeManifestChange(ref payload)) = command
+            else {
                 return Err(bad("winning WAL batch does not name a manifest command"));
             };
+            command.decode_checkpoint_manifest(payload.changeset())?;
             if payload.region() != self.region
                 || payload.expected_generation() != predecessor
                 || payload.change_id() != change_id
@@ -307,6 +346,7 @@ fn bad(message: &str) -> Error {
 
 #[cfg(test)]
 mod tests {
+    mod preflight;
     use super::*;
     use crate::rawnode::PersistentRaftStorage;
     use crate::{ApplyOutcome, FenceAdjudicator, ManifestVerdict, MemStateMachine, RegionFence};

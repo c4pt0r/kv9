@@ -61,6 +61,7 @@ impl ActiveCluster {
                 join: vec![],
                 wal_streams: 1,
                 data_workers: 2,
+                raw_ttl_clock: None,
                 replication_factor: 3,
             },
             RuntimeAuth {
@@ -203,12 +204,9 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
         "public data bindings applied",
         |rts| {
             bindings.iter().all(|r| {
-                rts.iter().all(|rt| {
-                    rt.data_groups
-                        .raw_directory
-                        .any_unsealed(r.keyspace)
-                        .is_some()
-                }) && data_leader(rts, r.region).is_some()
+                rts.iter()
+                    .all(|rt| rt.data_groups.raw_directory.by_region(r.region).is_some())
+                    && data_leader(rts, r.region).is_some()
             })
         },
     );
@@ -343,12 +341,9 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
         "public routes recovered",
         |rts| {
             bindings.iter().all(|r| {
-                rts.iter().all(|rt| {
-                    rt.data_groups
-                        .raw_directory
-                        .any_unsealed(r.keyspace)
-                        .is_some()
-                }) && data_leader(rts, r.region).is_some()
+                rts.iter()
+                    .all(|rt| rt.data_groups.raw_directory.by_region(r.region).is_some())
+                    && data_leader(rts, r.region).is_some()
             })
         },
     );
@@ -624,6 +619,17 @@ fn group_activation_runs_independent_durable_groups_and_recovers_all_voters() {
     let listener = std::net::TcpListener::bind(cluster.addrs[0]).unwrap();
     cluster.runtimes.push(cluster.open(NodeId(1), listener));
     cluster.wait_serving();
+    // Durable groups reopen one per maintenance turn after metadata serves;
+    // the failed group must not hold the healthy one in that queue.
+    wait_for(
+        &mut cluster.runtimes,
+        20,
+        "bad group prevented healthy group recovery",
+        |rts| {
+            let recovered = rts.iter().find(|r| r.node.id == NodeId(1)).unwrap();
+            has_data(recovered, groups[1], b"after-loss", b"committed")
+        },
+    );
     let recovered = cluster
         .runtimes
         .iter()
@@ -633,10 +639,6 @@ fn group_activation_runs_independent_durable_groups_and_recovers_all_voters() {
     assert!(
         !missing.exists(),
         "missing voting log must not be recreated"
-    );
-    assert!(
-        has_data(recovered, groups[1], b"after-loss", b"committed"),
-        "bad group prevented healthy group recovery"
     );
     cluster.create(74); // A failed data store must not prevent metadata work.
 }
@@ -677,6 +679,7 @@ fn group_preparation_real_metadata_quorum_survives_leader_loss_and_store_restart
         join: vec![],
         wal_streams: 1,
         data_workers: 2,
+        raw_ttl_clock: None,
         replication_factor: 3,
     };
     let mut rts: Vec<_> = listeners
@@ -819,7 +822,7 @@ fn routed_client_keeps_its_lifetime_across_each_endpoint_loss() {
         rts.iter().all(|r| {
             r.data_groups
                 .raw_directory
-                .any_unsealed(binding.keyspace)
+                .by_region(binding.region)
                 .is_some()
         }) && data_leader(rts, binding.region).is_some()
     });
@@ -910,7 +913,7 @@ fn routed_client_keeps_its_lifetime_across_each_endpoint_loss() {
             rts.iter().all(|r| {
                 r.data_groups
                     .raw_directory
-                    .any_unsealed(binding.keyspace)
+                    .by_region(binding.region)
                     .is_some()
             })
         });
@@ -967,11 +970,9 @@ fn routed_client_keeps_its_lifetime_across_each_endpoint_loss() {
 }
 
 #[test]
-fn migration_intents_bind_committed_image_owners_only() {
+fn migration_intents_require_capture_catalog_before_binding_and_attach_learners() {
     use crate::data_groups::DataGroupClient;
-    use kv9_common::retention::PinPhase;
     use kv9_engine::checkpoint::{CheckpointManifest, FlushScope, SstReference};
-    use kv9_meta::retention::OwnerKind;
 
     let mut cluster = ActiveCluster::start();
     let root = cluster.root.digest();
@@ -1003,6 +1004,7 @@ fn migration_intents_bind_committed_image_owners_only() {
             join: vec![],
             wal_streams: 1,
             data_workers: 2,
+            raw_ttl_clock: None,
             replication_factor: 3,
         },
         RuntimeAuth {
@@ -1109,76 +1111,13 @@ fn migration_intents_bind_committed_image_owners_only() {
         admin.bind_image(root, [9; 16], &image).is_err(),
         "an uncommitted operation cannot bind owners"
     );
-    let bound = admin.bind_image(root, [7; 16], &image).unwrap();
-    let owner = |id| {
-        let leader = cluster_leader(&cluster.runtimes).unwrap();
-        let txn = cluster.runtimes[leader]
-            .node
-            .meta_raft
-            .store
-            .begin()
-            .unwrap();
-        kv9_meta::retention::retention_owner(txn.into_view().as_ref(), &cluster.root, id)
-            .unwrap()
-            .expect("bound owner must be committed")
-    };
-    let source = owner(bound.source_owner);
-    let destination = owner(bound.destination_owner);
-    assert_eq!(source.phase, PinPhase::Published);
-    assert_eq!(destination.phase, PinPhase::Published);
-    assert_eq!(source.binding.descriptor.kind, OwnerKind::Snapshot);
-    assert_eq!(destination.binding.descriptor.kind, OwnerKind::Migration);
-    assert_eq!(
-        source.binding.descriptor.subject,
-        *RootDigest::sha256(&image).as_bytes()
-    );
-    assert_eq!(
-        source.binding.descriptor.subject,
-        destination.binding.descriptor.subject
-    );
-    assert_eq!(source.binding.resources, destination.binding.resources);
-    assert_eq!(source.binding.resources.len(), 1);
-
-    // Rebinding the same image is idempotent; a different image, a foreign
-    // scope or release-without-settlement must refuse.
-    let again = admin.bind_image(root, [7; 16], &image).unwrap();
-    assert_eq!(again, bound);
     assert!(
-        admin
-            .bind_image(
-                root,
-                [7; 16],
-                &manifest(11, keyspace.range.conf_ver, keyspace.range.version)
-            )
-            .is_err(),
-        "the same operation can never name a second image"
+        admin.bind_image(root, [7; 16], &image).is_err(),
+        "a synthetic manifest cannot bind without an independently registered capture"
     );
-    assert!(
-        admin
-            .bind_image(root, [7; 16], &manifest(10, 7, 7))
-            .is_err(),
-        "a manifest scope differing from the committed range must refuse"
-    );
-    for request in [
-        kv9_meta::retention::LedgerRequest::QuiesceAfterTransfer {
-            from: source.binding.token(),
-            to: destination.binding.token(),
-        },
-        kv9_meta::retention::LedgerRequest::Release(source.binding.token()),
-    ] {
-        let encoded = kv9_meta::retention::encode_request(root, &request).unwrap();
-        assert!(
-            backend_view(
-                &cluster.runtimes[cluster_leader(&cluster.runtimes).unwrap()],
-                &cluster.root
-            )
-            .apply_retention("active-test", encoded)
-            .is_err(),
-            "no admin path quiesces or releases a migration pin in this increment"
-        );
-    }
-    assert_eq!(owner(bound.source_owner).phase, PinPhase::Published);
-    assert_eq!(owner(bound.destination_owner).phase, PinPhase::Published);
+    // This fixture has no object uploader or durable capture. Positive binding,
+    // exact retry, conflicting-image refusal and pin protection are exercised
+    // by ttl_activation::integration::migration_capture through actual capture.
 
     // Attach: uncommitted operation refuses; the committed one turns the
     // destination into a LEARNER (never a voter) idempotently; a voter

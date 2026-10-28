@@ -37,8 +37,6 @@ pub enum TransportKind {
     TonicUnary,
     #[default]
     TonicStream,
-    #[cfg(feature = "rpc-experiment")]
-    TarpcTcp,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -259,8 +257,6 @@ pub struct CallReport {
 struct Inner {
     config: ClientConfig,
     clients: Vec<Kv9Client<Channel>>,
-    #[cfg(feature = "rpc-experiment")]
-    experimental: Option<Vec<crate::rpc_experiment::ExperimentClient>>,
     streaming: Option<Vec<crate::point_stream::StreamClient>>,
     authorization: MetadataValue<Ascii>,
     capacity: Arc<Semaphore>,
@@ -312,8 +308,6 @@ impl PersistentRawClient {
             capacity: Arc::new(Semaphore::new(config.max_in_flight)),
             config,
             clients,
-            #[cfg(feature = "rpc-experiment")]
-            experimental: None,
             streaming: None,
             authorization,
             preferred: AtomicUsize::new(0),
@@ -327,23 +321,6 @@ impl PersistentRawClient {
         transport: TransportKind,
     ) -> Result<Self, &'static str> {
         let mut client = Self::new_base(config, token)?;
-        #[cfg(feature = "rpc-experiment")]
-        if transport == TransportKind::TarpcTcp {
-            let inner = Arc::get_mut(&mut client.0).ok_or("new client unexpectedly shared")?;
-            inner.experimental = Some(
-                inner
-                    .config
-                    .peers
-                    .iter()
-                    .map(|peer| {
-                        crate::rpc_experiment::ExperimentClient::new(
-                            peer.address,
-                            inner.config.max_in_flight,
-                        )
-                    })
-                    .collect(),
-            );
-        }
         if transport == TransportKind::TonicStream {
             let inner = Arc::get_mut(&mut client.0).ok_or("new client unexpectedly shared")?;
             inner.streaming = Some(
@@ -500,10 +477,6 @@ impl PersistentRawClient {
         request: Request<proto::RawGetRequest>,
         _deadline: Instant,
     ) -> Result<tonic::Response<proto::RawGetResponse>, Status> {
-        #[cfg(feature = "rpc-experiment")]
-        if let Some(clients) = &self.0.experimental {
-            return clients[peer].raw_get(request, _deadline).await;
-        }
         if let Some(clients) = &self.0.streaming {
             return clients[peer].raw_get(request, _deadline).await;
         }
@@ -516,10 +489,6 @@ impl PersistentRawClient {
         request: Request<proto::RawPutRequest>,
         _deadline: Instant,
     ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
-        #[cfg(feature = "rpc-experiment")]
-        if let Some(clients) = &self.0.experimental {
-            return clients[peer].raw_put(request, _deadline).await;
-        }
         if let Some(clients) = &self.0.streaming {
             return clients[peer].raw_put(request, _deadline).await;
         }
@@ -532,10 +501,6 @@ impl PersistentRawClient {
         request: Request<proto::RawDeleteRequest>,
         _deadline: Instant,
     ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
-        #[cfg(feature = "rpc-experiment")]
-        if let Some(clients) = &self.0.experimental {
-            return clients[peer].raw_delete(request, _deadline).await;
-        }
         if let Some(clients) = &self.0.streaming {
             return clients[peer].raw_delete(request, _deadline).await;
         }
@@ -548,10 +513,6 @@ impl PersistentRawClient {
         request: Request<proto::RawBatchGetRequest>,
         deadline: Instant,
     ) -> Result<tonic::Response<proto::RawBatchGetResponse>, Status> {
-        #[cfg(feature = "rpc-experiment")]
-        if let Some(clients) = &self.0.experimental {
-            return clients[peer].raw_batch_get(request, deadline).await;
-        }
         if let Some(clients) = &self.0.streaming {
             return clients[peer].raw_batch_get(request, deadline).await;
         }
@@ -564,10 +525,6 @@ impl PersistentRawClient {
         request: Request<proto::RawBatchPutRequest>,
         deadline: Instant,
     ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
-        #[cfg(feature = "rpc-experiment")]
-        if let Some(clients) = &self.0.experimental {
-            return clients[peer].raw_batch_put(request, deadline).await;
-        }
         if let Some(clients) = &self.0.streaming {
             return clients[peer].raw_batch_put(request, deadline).await;
         }
@@ -802,3 +759,6 @@ mod batch_tests;
 
 /// Root-pinned discovery and scoped dynamic data-group routing.
 pub mod routed;
+
+/// Explicit-scope TTL protocol, including capability confirmation.
+pub mod ttl;

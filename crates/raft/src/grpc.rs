@@ -33,14 +33,29 @@ use crate::transport::RaftTransport;
 
 /// Generated protobuf/tonic types for `proto/kv9_raft.proto`.
 pub mod pb {
-    tonic::include_proto!("kv9.raft.v3");
+    tonic::include_proto!("kv9.raft.v11");
 }
 
 use pb::kv9_raft_client::Kv9RaftClient;
 use pb::kv9_raft_server::Kv9Raft;
 
+pub mod checkpoint_history;
+pub mod checkpoint_retention;
+pub mod configuration_origins;
+pub mod configuration_timeline;
+pub mod data_membership;
+pub mod data_read_fence;
 mod endpoint;
 mod groups;
+pub mod log_pressure;
+pub mod migration_capture;
+pub mod migration_payload;
+pub mod ttl_directory;
+mod ttl_format;
+pub use ttl_format::{
+    confirm_on_channel as confirm_raw_ttl_format_on_channel, grpc_confirm_raw_ttl_format,
+    ConfirmedRawTtlFormat,
+};
 #[cfg(test)]
 mod wire_tests;
 pub use endpoint::{
@@ -183,6 +198,12 @@ pub trait GrpcDiscoveryState: Send + Sync + 'static {
     /// process must not inherit a previous process's volatile permission.
     fn raft_receive_allowed(&self) -> bool;
 
+    /// Absent unless an active local store durably excludes pre-TTL owners.
+    /// Mere binary support or an operator setting is not this evidence.
+    fn raw_ttl_format_fence(&self) -> Option<kv9_common::store_lifecycle::RawTtlFormatFence> {
+        None
+    }
+
     /// Pre-provisioned root identity. Unlike the old voter fingerprint this
     /// remains authoritative before and after catalog initialization.
     fn root_identity(&self) -> RootWireIdentity {
@@ -298,6 +319,122 @@ fn invalid_join_ticket_status() -> Status {
 /// path only; a follower returns `RegistrationError::NotLeader` so the
 /// handler can emit the machine-readable redirect.
 pub trait RegistrationBackend: Send + Sync + 'static {
+    fn configuration_timeline(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _creation: RootDigest,
+        _cursor: Option<crate::storage::configuration_timeline::TimelineCursor>,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<Option<crate::storage::configuration_timeline::TimelinePage>> {
+        Err(Error::NotImplemented(
+            "local DATA configuration timeline observation",
+        ))
+    }
+    fn configuration_origins(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _creation: RootDigest,
+        _cursor: Option<crate::storage::configuration_origins::OriginCursor>,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<Option<crate::storage::configuration_origins::OriginPage>> {
+        Err(Error::NotImplemented(
+            "local DATA configuration origin observation",
+        ))
+    }
+    fn data_membership(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _creation: RootDigest,
+        _cursor: Option<crate::storage::membership_history::MembershipCursor>,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<Option<crate::storage::membership_history::MembershipPage>> {
+        Err(Error::NotImplemented("local DATA membership observation"))
+    }
+    fn data_read_fence(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _creation: RootDigest,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<Option<kv9_common::data_read_fence::ReadFloor>> {
+        Err(Error::NotImplemented("durable DATA read fence"))
+    }
+    fn export_migration_capture(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _operation: [u8; 16],
+        _digest: RootDigest,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<migration_payload::PayloadExport> {
+        Err(Error::NotImplemented("migration payload export"))
+    }
+    fn replicate_migration_capture(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _operation: [u8; 16],
+        _digest: RootDigest,
+        _source: kv9_common::StoreIdentity,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<()> {
+        Err(Error::NotImplemented("migration payload replication"))
+    }
+
+    fn migration_capture(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _operation: [u8; 16],
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<Option<[u8; 32]>> {
+        Err(Error::NotImplemented("migration capture observation"))
+    }
+    fn checkpoint_selection(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _predecessor: u64,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<Option<[u8; 32]>> {
+        Err(Error::NotImplemented("checkpoint selection"))
+    }
+    fn bootstrap_read_fence(
+        &self,
+        _root: RootDigest,
+        _predecessor: u64,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<Option<[u8; 32]>> {
+        Err(Error::NotImplemented("bootstrap read fence"))
+    }
+    fn checkpoint_history(
+        &self,
+        _root: RootDigest,
+        _region: kv9_common::RegionId,
+        _predecessor: u64,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<Option<[u8; 32]>> {
+        Err(Error::NotImplemented("checkpoint history"))
+    }
+    fn checkpoint_retention(
+        &self,
+        _root: RootDigest,
+        _query: &checkpoint_retention::LedgerQuery,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<checkpoint_retention::LedgerReply> {
+        Err(Error::NotImplemented("checkpoint retention"))
+    }
+    fn raw_ttl_directory(
+        &self,
+        _binding: &kv9_common::data_range::DataRange,
+        _replicas: &[NodeId],
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<ttl_directory::RawTtlDirectory> {
+        Err(Error::NotImplemented("Raw TTL replica directory"))
+    }
     fn confirm_endpoint(
         &self,
         _node: NodeId,
@@ -369,6 +506,11 @@ pub struct RaftGrpcService {
     /// Admit at most one queued/running blocking call per service, including
     /// calls whose RPC future was cancelled before their backend completed.
     registration_capacity: Arc<tokio::sync::Semaphore>,
+    ttl_directory_capacity: Arc<tokio::sync::Semaphore>,
+    checkpoint_retention_capacity: Arc<tokio::sync::Semaphore>,
+    log_budget: Option<Arc<kv9_common::log_budget::LogBudget>>,
+    log_pressure_capacity: Arc<tokio::sync::Semaphore>,
+    checkpoint_history_capacity: Arc<tokio::sync::Semaphore>,
     /// Envelopes rejected for a wrong destination (diagnostic mirror of the
     /// TCP transport's step-error counter: growth = misconfiguration).
     misrouted: AtomicU64,
@@ -387,6 +529,11 @@ impl RaftGrpcService {
             discovery,
             registration: None,
             registration_capacity: Arc::new(tokio::sync::Semaphore::new(1)),
+            ttl_directory_capacity: Arc::new(tokio::sync::Semaphore::new(4)),
+            checkpoint_retention_capacity: Arc::new(tokio::sync::Semaphore::new(2)),
+            log_budget: None,
+            log_pressure_capacity: Arc::new(tokio::sync::Semaphore::new(1)),
+            checkpoint_history_capacity: Arc::new(tokio::sync::Semaphore::new(1)),
             misrouted: AtomicU64::new(0),
             dropped: AtomicU64::new(0),
         }
@@ -484,6 +631,91 @@ impl RaftGrpcService {
 
 #[tonic::async_trait]
 impl Kv9Raft for RaftGrpcService {
+    async fn inspect_configuration_timeline(
+        &self,
+        request: Request<pb::ConfigurationTimelineRequest>,
+    ) -> std::result::Result<Response<pb::ConfigurationTimelineResponse>, Status> {
+        self.inspect_configuration_timeline_request(request).await
+    }
+    async fn inspect_configuration_origins(
+        &self,
+        request: Request<pb::ConfigurationOriginsRequest>,
+    ) -> std::result::Result<Response<pb::ConfigurationOriginsResponse>, Status> {
+        self.inspect_configuration_origins_request(request).await
+    }
+    async fn inspect_data_membership(
+        &self,
+        request: Request<pb::DataMembershipRequest>,
+    ) -> std::result::Result<Response<pb::DataMembershipResponse>, Status> {
+        self.inspect_data_membership_request(request).await
+    }
+    type FetchMigrationCaptureStream = crate::grpc::migration_payload::PayloadStream;
+    async fn fetch_migration_capture(
+        &self,
+        request: Request<pb::MigrationCaptureTransferRequest>,
+    ) -> std::result::Result<Response<Self::FetchMigrationCaptureStream>, Status> {
+        self.fetch_migration_payload(request).await
+    }
+    async fn replicate_migration_capture(
+        &self,
+        request: Request<pb::MigrationCaptureTransferRequest>,
+    ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
+        self.replicate_migration_payload(request).await
+    }
+    async fn inspect_migration_capture(
+        &self,
+        request: Request<pb::MigrationCaptureRequest>,
+    ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
+        self.inspect_migration_capture_request(request).await
+    }
+    async fn inspect_checkpoint_selection(
+        &self,
+        request: Request<pb::CheckpointHistoryRequest>,
+    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+        self.inspect_checkpoint_selection_request(request).await
+    }
+    async fn inspect_bootstrap_read_fence(
+        &self,
+        request: Request<pb::CheckpointHistoryRequest>,
+    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+        self.inspect_bootstrap_read_fence_request(request).await
+    }
+    async fn inspect_data_read_fence(
+        &self,
+        request: Request<pb::DataReadFenceRequest>,
+    ) -> std::result::Result<Response<pb::DataReadFenceResponse>, Status> {
+        self.inspect_data_read_fence_request(request).await
+    }
+    async fn inspect_checkpoint_history(
+        &self,
+        request: Request<pb::CheckpointHistoryRequest>,
+    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+        self.inspect_checkpoint_history_request(request).await
+    }
+    async fn inspect_log_pressure(
+        &self,
+        request: Request<pb::LogPressureRequest>,
+    ) -> std::result::Result<Response<pb::LogPressureResponse>, Status> {
+        self.inspect_log_pressure_request(request).await
+    }
+    async fn checkpoint_retention(
+        &self,
+        request: Request<pb::CheckpointRetentionRequest>,
+    ) -> std::result::Result<Response<pb::CheckpointRetentionResponse>, Status> {
+        self.checkpoint_retention_request(request).await
+    }
+    async fn resolve_raw_ttl_stores(
+        &self,
+        request: Request<pb::RawTtlStoresRequest>,
+    ) -> std::result::Result<Response<pb::RawTtlStoresResponse>, Status> {
+        self.resolve_raw_ttl_stores_request(request).await
+    }
+    async fn confirm_raw_ttl_format(
+        &self,
+        request: Request<pb::RawTtlFormatRequest>,
+    ) -> std::result::Result<Response<pb::RawTtlFormatReceipt>, Status> {
+        self.confirm_raw_ttl_format_request(request)
+    }
     async fn confirm_endpoint(
         &self,
         request: Request<pb::ConfirmEndpointRequest>,
@@ -1036,6 +1268,11 @@ pub struct GrpcTransport {
 }
 
 impl GrpcTransport {
+    /// Runtime used by this node's internal control RPCs. Synchronous control
+    /// callers can schedule bounded read-only format collection on it.
+    pub fn runtime_handle(&self) -> tokio::runtime::Handle {
+        self.handle.clone()
+    }
     /// Build the transport. `handle` is the runtime the per-peer workers run
     /// on (the server's runtime in production; a test runtime in tests).
     pub fn new(
@@ -2372,6 +2609,97 @@ mod tests {
         struct FrozenRaft;
         #[tonic::async_trait]
         impl Kv9Raft for FrozenRaft {
+            async fn inspect_configuration_timeline(
+                &self,
+                _: Request<pb::ConfigurationTimelineRequest>,
+            ) -> std::result::Result<Response<pb::ConfigurationTimelineResponse>, Status>
+            {
+                Err(Status::unimplemented("frozen membership"))
+            }
+            async fn inspect_configuration_origins(
+                &self,
+                _: Request<pb::ConfigurationOriginsRequest>,
+            ) -> std::result::Result<Response<pb::ConfigurationOriginsResponse>, Status>
+            {
+                Err(Status::unimplemented("frozen membership"))
+            }
+            async fn inspect_data_membership(
+                &self,
+                _: Request<pb::DataMembershipRequest>,
+            ) -> std::result::Result<Response<pb::DataMembershipResponse>, Status> {
+                Err(Status::unimplemented("frozen membership"))
+            }
+            async fn inspect_data_read_fence(
+                &self,
+                request: Request<pb::DataReadFenceRequest>,
+            ) -> std::result::Result<Response<pb::DataReadFenceResponse>, Status> {
+                let _ = request;
+                Err(Status::unimplemented("frozen DATA read fence"))
+            }
+
+            type FetchMigrationCaptureStream = crate::grpc::migration_payload::PayloadStream;
+            async fn fetch_migration_capture(
+                &self,
+                _request: Request<pb::MigrationCaptureTransferRequest>,
+            ) -> std::result::Result<Response<Self::FetchMigrationCaptureStream>, Status>
+            {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn replicate_migration_capture(
+                &self,
+                _request: Request<pb::MigrationCaptureTransferRequest>,
+            ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn inspect_migration_capture(
+                &self,
+                _: Request<pb::MigrationCaptureRequest>,
+            ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn inspect_checkpoint_selection(
+                &self,
+                _: Request<pb::CheckpointHistoryRequest>,
+            ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn inspect_checkpoint_history(
+                &self,
+                _: Request<pb::CheckpointHistoryRequest>,
+            ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn inspect_bootstrap_read_fence(
+                &self,
+                _: Request<pb::CheckpointHistoryRequest>,
+            ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn inspect_log_pressure(
+                &self,
+                _: Request<pb::LogPressureRequest>,
+            ) -> std::result::Result<Response<pb::LogPressureResponse>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn checkpoint_retention(
+                &self,
+                _: Request<pb::CheckpointRetentionRequest>,
+            ) -> std::result::Result<Response<pb::CheckpointRetentionResponse>, Status>
+            {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn resolve_raw_ttl_stores(
+                &self,
+                _: Request<pb::RawTtlStoresRequest>,
+            ) -> std::result::Result<Response<pb::RawTtlStoresResponse>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            async fn confirm_raw_ttl_format(
+                &self,
+                _: Request<pb::RawTtlFormatRequest>,
+            ) -> std::result::Result<Response<pb::RawTtlFormatReceipt>, Status> {
+                Err(Status::unimplemented("frozen test endpoint"))
+            }
             async fn confirm_endpoint(
                 &self,
                 _: Request<pb::ConfirmEndpointRequest>,
@@ -3360,6 +3688,107 @@ mod tests {
                 struct Fwd(Arc<RaftGrpcService>);
                 #[tonic::async_trait]
                 impl Kv9Raft for Fwd {
+                    async fn inspect_configuration_timeline(
+                        &self,
+                        request: Request<pb::ConfigurationTimelineRequest>,
+                    ) -> std::result::Result<Response<pb::ConfigurationTimelineResponse>, Status>
+                    {
+                        self.0.inspect_configuration_timeline(request).await
+                    }
+                    async fn inspect_configuration_origins(
+                        &self,
+                        request: Request<pb::ConfigurationOriginsRequest>,
+                    ) -> std::result::Result<Response<pb::ConfigurationOriginsResponse>, Status>
+                    {
+                        self.0.inspect_configuration_origins(request).await
+                    }
+                    async fn inspect_data_membership(
+                        &self,
+                        request: Request<pb::DataMembershipRequest>,
+                    ) -> std::result::Result<Response<pb::DataMembershipResponse>, Status>
+                    {
+                        self.0.inspect_data_membership(request).await
+                    }
+                    async fn inspect_data_read_fence(
+                        &self,
+                        request: Request<pb::DataReadFenceRequest>,
+                    ) -> std::result::Result<Response<pb::DataReadFenceResponse>, Status>
+                    {
+                        self.0.inspect_data_read_fence(request).await
+                    }
+
+                    type FetchMigrationCaptureStream =
+                        crate::grpc::migration_payload::PayloadStream;
+                    async fn fetch_migration_capture(
+                        &self,
+                        request: Request<pb::MigrationCaptureTransferRequest>,
+                    ) -> std::result::Result<Response<Self::FetchMigrationCaptureStream>, Status>
+                    {
+                        self.0.fetch_migration_capture(request).await
+                    }
+                    async fn replicate_migration_capture(
+                        &self,
+                        request: Request<pb::MigrationCaptureTransferRequest>,
+                    ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status>
+                    {
+                        self.0.replicate_migration_capture(request).await
+                    }
+                    async fn inspect_migration_capture(
+                        &self,
+                        request: Request<pb::MigrationCaptureRequest>,
+                    ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status>
+                    {
+                        self.0.inspect_migration_capture(request).await
+                    }
+                    async fn inspect_checkpoint_selection(
+                        &self,
+                        request: Request<pb::CheckpointHistoryRequest>,
+                    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status>
+                    {
+                        self.0.inspect_checkpoint_selection(request).await
+                    }
+                    async fn inspect_checkpoint_history(
+                        &self,
+                        request: Request<pb::CheckpointHistoryRequest>,
+                    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status>
+                    {
+                        self.0.inspect_checkpoint_history(request).await
+                    }
+                    async fn inspect_bootstrap_read_fence(
+                        &self,
+                        request: Request<pb::CheckpointHistoryRequest>,
+                    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status>
+                    {
+                        self.0.inspect_bootstrap_read_fence(request).await
+                    }
+                    async fn inspect_log_pressure(
+                        &self,
+                        r: Request<pb::LogPressureRequest>,
+                    ) -> std::result::Result<Response<pb::LogPressureResponse>, Status>
+                    {
+                        self.0.inspect_log_pressure(r).await
+                    }
+                    async fn checkpoint_retention(
+                        &self,
+                        r: Request<pb::CheckpointRetentionRequest>,
+                    ) -> std::result::Result<Response<pb::CheckpointRetentionResponse>, Status>
+                    {
+                        self.0.checkpoint_retention(r).await
+                    }
+                    async fn resolve_raw_ttl_stores(
+                        &self,
+                        r: Request<pb::RawTtlStoresRequest>,
+                    ) -> std::result::Result<Response<pb::RawTtlStoresResponse>, Status>
+                    {
+                        self.0.resolve_raw_ttl_stores(r).await
+                    }
+                    async fn confirm_raw_ttl_format(
+                        &self,
+                        r: Request<pb::RawTtlFormatRequest>,
+                    ) -> std::result::Result<Response<pb::RawTtlFormatReceipt>, Status>
+                    {
+                        self.0.confirm_raw_ttl_format(r).await
+                    }
                     async fn confirm_endpoint(
                         &self,
                         r: Request<pb::ConfirmEndpointRequest>,

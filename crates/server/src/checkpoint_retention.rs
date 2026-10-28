@@ -1,16 +1,115 @@
-//! Automatic ownership for the current whole-engine checkpoint worker.
+//! Automatic ownership for metadata and data-group whole-engine checkpoints.
 //! These records do not certify legacy backfill, receiver admission or GC.
 use std::num::NonZeroU64;
 
-use kv9_common::retention::{OwnerId, PinPhase, ResourceIdentity, ResourceKind};
+use kv9_common::retention::{OwnerId, PinPhase, ResourceIdentity};
 use kv9_common::{Error, Result, RootDescriptor, RootDigest};
 use kv9_engine::checkpoint::CheckpointManifest;
 use kv9_meta::retention::{
-    decode_owner_observation, encode_request, LedgerRequest, OwnerBinding, OwnerDescriptor,
-    OwnerKind,
+    decode_owner_observation, encode_request, LedgerRequest, OwnerBinding, OwnerKind,
 };
 
 use crate::api::AdminApi;
+
+use kv9_meta::retention::checkpoint_intent::CheckpointIntent;
+
+pub(crate) mod drain_outbox;
+mod execution;
+mod reader;
+mod retirement;
+pub(crate) use execution::CheckpointExecution;
+pub(crate) use reader::CheckpointRead;
+
+/// Narrow checkpoint dependency, implemented by local admin fixtures and the
+/// production metadata-leader router. Each call requires an exact receipt.
+pub(crate) trait CheckpointLedger: Send + Sync {
+    /// Real runtime and offline readers supply the exclusively owned store's
+    /// shared provider. Only unit-test ledger harnesses may omit one.
+    fn data_read_fences(
+        &self,
+    ) -> Result<Option<std::sync::Arc<kv9_common::data_read_fence::DataReadFences>>> {
+        #[cfg(test)]
+        {
+            Ok(None)
+        }
+        #[cfg(not(test))]
+        {
+            Err(Error::Engine("DATA read floor provider unavailable".into()))
+        }
+    }
+    fn check_data_read(
+        &self,
+        root: RootDigest,
+        image: Option<&kv9_common::data_read_fence::ReadImage>,
+    ) -> Result<()> {
+        let Some(image) = image else { return Ok(()) };
+        if let Some(fences) = self.data_read_fences()? {
+            if fences.identity().root_digest != root {
+                return Err(Error::Config("DATA read floor root differs".into()));
+            }
+            fences.check_read(image)?;
+        }
+        Ok(())
+    }
+    fn check_data_recovery(
+        &self,
+        identity: kv9_raft::state_machine::checkpoint_recovery::data_group::DataCheckpointIdentity,
+        manifest: Option<&CheckpointManifest>,
+    ) -> Result<()> {
+        if let Some(fences) = self.data_read_fences()? {
+            kv9_raft::state_machine::checkpoint_recovery::data_group::check_local_read_floor(
+                &fences, identity, manifest,
+            )?;
+        }
+        Ok(())
+    }
+    fn apply(&self, request: Vec<u8>) -> Result<()>;
+    fn owner(&self, root: RootDigest, owner: OwnerId) -> Result<Option<Vec<u8>>>;
+    fn drain_outbox(&self) -> Result<Option<std::sync::Arc<drain_outbox::DrainOutbox>>> {
+        Ok(None)
+    }
+    fn executors(
+        &self,
+        _root: RootDigest,
+        _pending: OwnerId,
+        _after: Option<OwnerId>,
+        _limit: usize,
+    ) -> Result<kv9_meta::retention::checkpoint_admission::ExecutorPage> {
+        Err(Error::Engine(
+            "checkpoint executor query unavailable".into(),
+        ))
+    }
+    fn local_lifetime(&self) -> Result<kv9_meta::retention::LocalLifetime> {
+        Err(Error::Engine(
+            "checkpoint executor requires an exact runtime lifetime".into(),
+        ))
+    }
+}
+impl<T: AdminApi + Send + Sync + ?Sized> CheckpointLedger for T {
+    fn apply(&self, request: Vec<u8>) -> Result<()> {
+        self.apply_retention("checkpoint-worker", request)
+            .map(|_| ())
+    }
+    fn owner(&self, root: RootDigest, owner: OwnerId) -> Result<Option<Vec<u8>>> {
+        self.get_retention_owner("checkpoint-worker", root, owner)
+    }
+}
+
+/// Small identity carried by a Reader; never retain a second manifest copy.
+pub(crate) fn data_read_image(
+    manifest: &CheckpointManifest,
+) -> Result<Option<kv9_common::data_read_fence::ReadImage>> {
+    if manifest.scope.region < 100 {
+        return Ok(None);
+    }
+    Ok(Some(kv9_common::data_read_fence::ReadImage {
+        region: kv9_common::RegionId(manifest.scope.region),
+        digest: RootDigest::sha256(&manifest.encode()?),
+        cut: manifest.position(),
+        conf_ver: manifest.scope.conf_ver,
+        version: manifest.scope.version,
+    }))
+}
 
 /// The exact sorted SST closure of one canonical manifest, as ledger
 /// resources. Derivation is deterministic; it grants nothing by itself.
@@ -18,36 +117,14 @@ pub(crate) fn manifest_resources(
     root: RootDigest,
     manifest: &CheckpointManifest,
 ) -> Result<Vec<ResourceIdentity>> {
-    let mut resources = Vec::with_capacity(manifest.files.len());
-    for file in &manifest.files {
-        let mut content = [0; 32];
-        for (n, pair) in file.sha256.as_bytes().chunks_exact(2).enumerate() {
-            // Canonical lowercase hexadecimal was validated by the codec.
-            let nibble = |c: u8| {
-                if c.is_ascii_digit() {
-                    c - b'0'
-                } else {
-                    c - b'a' + 10
-                }
-            };
-            content[n] = nibble(pair[0]) * 16 + nibble(pair[1]);
-        }
-        let instance = RootDigest::sha256(file.key.as_bytes()).as_bytes()[..16]
-            .try_into()
-            .unwrap();
-        resources.push(
-            ResourceIdentity::new(root, ResourceKind::Sst, instance, content)
-                .map_err(|e| Error::Engine(e.to_string()))?,
-        );
-    }
-    resources.sort_by_key(|r| *r.instance());
-    Ok(resources)
+    kv9_meta::retention::checkpoint_intent::manifest_resources(root, manifest)
 }
 
 pub(crate) struct CheckpointOwners {
     root: RootDigest,
     pending: OwnerBinding,
     version: OwnerBinding,
+    intent: CheckpointIntent,
 }
 impl CheckpointOwners {
     pub(crate) fn pending_id(&self) -> OwnerId {
@@ -61,60 +138,25 @@ impl CheckpointOwners {
         manifest: &CheckpointManifest,
         generation: u64,
     ) -> Result<Self> {
-        let manifest = CheckpointManifest::decode(&manifest.encode()?)?;
-        if manifest.scope.cluster != root.cluster_id.to_string()
-            || manifest.scope.region != kv9_common::META_REGION_0.0
-        {
-            return Err(Error::Engine("checkpoint owner root/scope differs".into()));
-        }
-        let root = root.digest();
-        let operation: [u8; 32] = manifest.change_id(generation)?.try_into().unwrap();
-        let subject = *RootDigest::sha256(&manifest.encode()?).as_bytes();
-        let resources = manifest_resources(root, &manifest)?;
-        let binding = |kind: OwnerKind, label: &[u8]| -> Result<OwnerBinding> {
-            let mut identity = label.to_vec();
-            identity.extend(root.as_bytes());
-            identity.extend(operation);
-            let id = OwnerId::new(
-                RootDigest::sha256(&identity).as_bytes()[..16]
-                    .try_into()
-                    .unwrap(),
-            )
-            .map_err(|e| Error::Engine(e.to_string()))?;
-            let binding = OwnerBinding {
-                descriptor: OwnerDescriptor {
-                    root,
-                    id,
-                    kind,
-                    region: manifest.scope.region,
-                    conf_ver: manifest.scope.conf_ver,
-                    version: manifest.scope.version,
-                    operation,
-                    subject,
-                    subject_is_anchor: false,
-                    local: None,
-                },
-                generation: NonZeroU64::new(1).unwrap(),
-                resources: resources.clone(),
-            };
-            // Run the exact production semantic/closure bounds before any I/O.
-            encode_request(root, &LedgerRequest::Acquire(binding.clone()))?;
-            Ok(binding)
-        };
+        let intent = CheckpointIntent::new(root, manifest, generation)?;
         Ok(Self {
-            root,
-            pending: binding(OwnerKind::Pending, b"kv9-checkpoint-pending-v1")?,
-            version: binding(OwnerKind::Version, b"kv9-checkpoint-version-v1")?,
+            root: root.digest(),
+            pending: intent.binding(OwnerKind::Pending)?,
+            version: intent.binding(OwnerKind::Version)?,
+            intent,
         })
     }
-    fn apply(&self, api: &dyn AdminApi, request: LedgerRequest) -> Result<()> {
-        api.apply_retention("checkpoint-worker", encode_request(self.root, &request)?)?;
+
+    fn apply(&self, api: &(impl CheckpointLedger + ?Sized), request: LedgerRequest) -> Result<()> {
+        api.apply(encode_request(self.root, &request)?)?;
         Ok(())
     }
-    fn phase(&self, api: &dyn AdminApi, binding: &OwnerBinding) -> Result<Option<PinPhase>> {
-        let Some(bytes) =
-            api.get_retention_owner("checkpoint-worker", self.root, binding.descriptor.id)?
-        else {
+    fn phase(
+        &self,
+        api: &(impl CheckpointLedger + ?Sized),
+        binding: &OwnerBinding,
+    ) -> Result<Option<PinPhase>> {
+        let Some(bytes) = api.owner(self.root, binding.descriptor.id)? else {
             return Ok(None);
         };
         let owner = decode_owner_observation(&bytes, self.root, binding.descriptor.id)?;
@@ -123,7 +165,7 @@ impl CheckpointOwners {
         }
         Ok(Some(owner.phase))
     }
-    fn published_version(&self, api: &dyn AdminApi) -> Result<()> {
+    fn published_version(&self, api: &(impl CheckpointLedger + ?Sized)) -> Result<()> {
         if self.phase(api, &self.version)? != Some(PinPhase::Published) {
             return Err(Error::Engine(
                 "checkpoint handoff lacks exact published successor".into(),
@@ -131,25 +173,32 @@ impl CheckpointOwners {
         }
         Ok(())
     }
+    /// Called after authoritative settlement, before discarding the journal.
+    /// The gate stops new entry; admitted work and global coverage remain.
+    pub(crate) fn close_admission(&self, api: &(impl CheckpointLedger + ?Sized)) -> Result<()> {
+        self.apply(
+            api,
+            LedgerRequest::CloseCheckpointAdmission(self.pending.token()),
+        )
+    }
     /// The local plan is already durable. Only exact applied ledger receipts
     /// permit external PUT/GET. A partially finished transfer never reacquires a
     /// released generation: its immutable published successor supplies coverage.
-    pub(crate) fn before_io(&self, api: &dyn AdminApi) -> Result<()> {
-        self.apply(api, LedgerRequest::Initialize)?;
-        self.apply(api, LedgerRequest::Register(self.pending.resources.clone()))?;
-        match self.phase(api, &self.pending)? {
-            None => {
-                self.apply(api, LedgerRequest::Acquire(self.pending.clone()))?;
-                self.apply(api, LedgerRequest::Publish(self.pending.token()))
-            }
-            Some(PinPhase::Held) => self.apply(api, LedgerRequest::Publish(self.pending.token())),
-            Some(PinPhase::Published) => Ok(()),
-            Some(PinPhase::Quiesced | PinPhase::Released) => self.published_version(api),
-        }
+    pub(crate) fn before_io(&self, api: &(impl CheckpointLedger + ?Sized)) -> Result<()> {
+        self.apply(api, LedgerRequest::BeginCheckpoint(self.intent.clone()))
     }
+
     /// Called only after the existing seam supplies positive typed settlement.
     /// Errors retain the journal; restart repeats this exact transfer prefix.
-    pub(crate) fn after_positive_settlement(&self, api: &dyn AdminApi) -> Result<()> {
+    pub(crate) fn after_positive_settlement(
+        &self,
+        api: &(impl CheckpointLedger + ?Sized),
+    ) -> Result<()> {
+        self.apply(api, LedgerRequest::BeginCheckpoint(self.intent.clone()))?;
+        // Successful publication also ends this attempt's upload admission.
+        // Close before handoff or any Released fast path so retrying a partial
+        // transfer cannot leave the old attempt open indefinitely.
+        self.close_admission(api)?;
         match self.phase(api, &self.pending)? {
             Some(PinPhase::Released) => return self.published_version(api),
             Some(PinPhase::Quiesced) => self.published_version(api)?,

@@ -1,14 +1,18 @@
 //! Crate-wide error type (DESIGN §11). `thiserror`-based, shared across all kv9 crates.
 
-use crate::ids::{KeyspaceId, NodeId, RegionId, TxnGroupId};
+use crate::ids::{KeyspaceId, NodeId, RegionId};
 
 /// The unified kv9 result alias.
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// All error conditions kv9 surfaces. Variants map to the design's invariants so
-/// callers can react (retry after routing refresh, reject cross-group txn, etc.).
+/// callers can react (retry after routing refresh, re-route a cross-range batch, etc.).
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Raw TTL clock refused: {reason}")]
+    RawTtlClock {
+        reason: crate::raw_ttl::clock::ClockRefusal,
+    },
     /// A keyspace id was outside the encodable 3-byte range (DESIGN §3.4, §13 principle 4).
     #[error("keyspace id {0} exceeds max {max} (3-byte width)", max = crate::ids::KeyspaceId::MAX)]
     KeyspaceIdOutOfRange(u32),
@@ -38,26 +42,20 @@ pub enum Error {
     #[error("stale region epoch for region {region:?}")]
     StaleEpoch { region: RegionId },
 
+    /// The ordered TTL format/scope check refused without modifying user data.
+    #[error("Raw TTL command refused for region {region:?}: {reason:?}")]
+    RawTtlRejected {
+        region: RegionId,
+        reason: crate::raw_ttl::TtlRejection,
+    },
+
     /// A split point would cross a keyspace boundary (DESIGN §3.3, §13 principle 3 invariant).
     #[error("split key crosses keyspace boundary")]
     SplitCrossesKeyspace,
 
-    /// A transaction's keys resolved to more than one txn group; rejected at begin
-    /// time by the confinement invariant (DESIGN §3.6, §9.1).
-    #[error("transaction crosses txn groups {a:?} and {b:?}")]
-    CrossTxnGroup { a: TxnGroupId, b: TxnGroupId },
-
-    /// A Percolator write conflict / lock conflict (DESIGN §9.1).
+    /// A catalog write conflicted with a concurrent or constraint-violating mutation.
     #[error("write conflict: {0}")]
     WriteConflict(String),
-
-    /// A key was locked by another transaction (DESIGN §9.1).
-    #[error("key is locked")]
-    KeyIsLocked,
-
-    /// The TSO refused to serve (lease not confirmed, clock regression, etc.) — DESIGN §8.1.
-    #[error("timestamp oracle unavailable: {0}")]
-    TsoUnavailable(String),
 
     /// The metadata plane is not yet ready to serve (bootstrap / freshness watermark)
     /// — DESIGN §5.2, §5.4.
@@ -68,13 +66,12 @@ pub enum Error {
     #[error("raft error: {0}")]
     Raft(String),
 
-    /// End-to-end write backpressure (#20): the target region's retained raft
-    /// log has reached its absolute bound (`KV9_MAX_RAFT_LOG_ENTRIES`), so a new
-    /// write is refused until compaction drains it. Retryable with backoff — the
-    /// data is NOT written and nothing has happened; unlike `StaleEpoch` no
-    /// routing refresh is needed. Bounds live resource usage when writes outrun
-    /// commit+compaction.
-    #[error("write backpressure: region {region:?} raft log is at its bound")]
+    /// New data proposal refused before append at the local retained-entry
+    /// threshold (`KV9_MAX_RAFT_LOG_ENTRIES`), including uncommitted entries,
+    /// or the shared local WAL/Raft file-and-reservation byte allowance.
+    /// Retryable with backoff; this attempt was not submitted. Control entries
+    /// and follower replication continue, so this is not a total disk quota.
+    #[error("write backpressure: region {region:?} local log admission capacity exhausted")]
     WriteBackpressure { region: RegionId },
 
     /// A range or batch spans more than one region, so a single `RequestContext` (which

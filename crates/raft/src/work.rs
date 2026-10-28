@@ -210,6 +210,7 @@ struct InboxState {
     messages: VecDeque<(Message, usize)>,
     bytes: usize,
     signal: Option<Arc<WorkSignal>>,
+    closed: bool,
 }
 
 /// A shared best-effort transport inbox. Limits count queued messages and their
@@ -228,7 +229,8 @@ impl RaftInbox {
         let bytes = message.compute_size() as usize;
         let signal = {
             let mut state = self.0.lock().expect("raft inbox poisoned");
-            if state.messages.len() >= MAX_INBOX_MESSAGES
+            if state.closed
+                || state.messages.len() >= MAX_INBOX_MESSAGES
                 || bytes > MAX_INBOX_BYTES.saturating_sub(state.bytes)
             {
                 return Err(InboxFull);
@@ -250,6 +252,16 @@ impl RaftInbox {
         }
         // Covers messages admitted before driver assembly.
         signal.notify();
+    }
+
+    /// Permanently detach a retired queue, including sender clones that
+    /// raced with router removal. Queued traffic grants no durable authority.
+    pub(crate) fn close(&self) {
+        let mut state = self.0.lock().expect("raft inbox poisoned");
+        state.closed = true;
+        state.messages = VecDeque::new();
+        state.bytes = 0;
+        state.signal = None;
     }
 
     pub(crate) fn drain(&self) -> Vec<Message> {

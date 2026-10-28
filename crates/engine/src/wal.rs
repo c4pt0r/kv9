@@ -21,6 +21,7 @@
 //! Versioned so an unknown version is rejected rather than misparsed (DESIGN §13
 //! principle 12, "forward-compatible formats, never panic on the unknown").
 
+use kv9_common::log_budget::{BudgetWriter, LogDebt};
 use kv9_common::metrics::WalIoMetrics;
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, Read, Seek, SeekFrom, Write};
@@ -130,15 +131,7 @@ fn cf_from_code(code: u8) -> Result<ColumnFamily> {
 
 /// Serialize a batch's mutations: `count(4)` then `tag(1) cf(1) klen(4) k vlen(4) v`.
 pub(crate) fn encode_batch(batch: &WriteBatch) -> Vec<u8> {
-    encode_batch_with_capacity(batch, 0)
-}
-
-/// Capacity is an allocation hint only. Both callers use the same byte encoder.
-/// The segmented writer supplies its already checked payload size; legacy and
-/// default callers retain zero initial capacity. No frame or I/O policy changes.
-#[inline]
-pub(crate) fn encode_batch_with_capacity(batch: &WriteBatch, capacity: usize) -> Vec<u8> {
-    let mut out = Vec::with_capacity(capacity);
+    let mut out = Vec::new();
     put_u32(&mut out, batch.mutations().len() as u32);
     for m in batch.mutations() {
         match m {
@@ -160,9 +153,6 @@ pub(crate) fn encode_batch_with_capacity(batch: &WriteBatch, capacity: usize) ->
     }
     out
 }
-
-#[cfg(test)]
-mod preallocation_tests;
 
 /// Cursor-based reader over a record payload; every read is bounds-checked so malformed
 /// input yields a typed error rather than a panic.
@@ -277,6 +267,7 @@ pub struct Wal {
     applied: Option<AppliedPosition>,
     poisoned: bool,
     io_metrics: Arc<WalIoMetrics>,
+    log_debt: Option<LogDebt>,
 }
 
 impl Wal {
@@ -347,6 +338,7 @@ impl Wal {
                 applied,
                 poisoned: false,
                 io_metrics,
+                log_debt: None,
             },
             replay,
         ))
@@ -384,6 +376,16 @@ impl Wal {
             ));
         }
         Ok(())
+    }
+
+    /// Inspect the recoverable prefix without creating, synchronizing or
+    /// repairing the file. Complete corrupt records still fail strict parsing.
+    pub(crate) fn inspect(
+        path: &Path,
+        visitor: impl FnMut(WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    ) -> Result<u64> {
+        let mut file = File::open(path).map_err(io)?;
+        Self::visit_file(&mut file, true, visitor)
     }
 
     fn visit_file(
@@ -494,12 +496,17 @@ impl Wal {
         self.append_record(batch, Some(at))
     }
 
-    fn append_record(&mut self, batch: &WriteBatch, at: Option<AppliedPosition>) -> Result<()> {
+    pub(crate) fn ensure_healthy(&self) -> Result<()> {
         if self.poisoned {
             return Err(Error::Engine(
                 "wal: previous append failed; reopen required".into(),
             ));
         }
+        Ok(())
+    }
+
+    fn append_record(&mut self, batch: &WriteBatch, at: Option<AppliedPosition>) -> Result<()> {
+        self.ensure_healthy()?;
         let payload = encode_batch(batch);
         let len = u32::try_from(payload.len())
             .map_err(|_| Error::Engine("wal: batch exceeds u32 length".into()))?;
@@ -530,7 +537,9 @@ impl Wal {
         if let Err(e) = self
             .io_metrics
             .write
-            .measure(|| self.file.write_all(&record))
+            .measure(|| {
+                BudgetWriter::new(&mut self.file, self.log_debt.as_ref()).write_all(&record)
+            })
             .and_then(|_| self.io_metrics.sync.measure(|| self.file.sync_all()))
         {
             self.poisoned = true;
@@ -544,6 +553,9 @@ impl Wal {
 
     pub fn io_metrics(&self) -> Arc<WalIoMetrics> {
         self.io_metrics.clone()
+    }
+    pub(crate) fn set_log_debt(&mut self, debt: Option<LogDebt>) {
+        self.log_debt = debt;
     }
 
     pub(crate) fn relocated(&mut self, path: PathBuf) {
@@ -973,6 +985,7 @@ mod positioned_tests {
         let (mut wal, _) = Wal::open(&source).unwrap();
         wal.file = File::open(&source).unwrap(); // force a real EBADF on write
         assert!(wal.append(&batch(b"fails")).is_err());
+        assert!(wal.ensure_healthy().is_err());
         let metrics = wal.io_metrics();
         assert_eq!(
             metrics.write.snapshot().outcomes[kv9_common::metrics::Outcome::Error as usize].count,

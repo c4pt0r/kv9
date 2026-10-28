@@ -26,6 +26,7 @@ use crate::{Command, EntryKind, MemStateMachine, Role, StateMachine};
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 mod lease_read;
 mod pool;
+pub mod ttl_split;
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 pub use lease_read::{LeaseReadView, ReadPreparation};
 pub use pool::DriverPool;
@@ -48,6 +49,9 @@ pub struct NodeStatus {
     /// Raft-log first retained index; advances past a committed compaction
     /// floor once this replica executes it.
     pub log_first_index: u64,
+    /// Last retained index, including unstable and uncommitted proposals.
+    pub log_last_index: u64,
+    pub max_write_log_entries: u64,
     /// Highest log index applied to the state machine (empty/no-op entries
     /// are consumed by raft but never reach the state machine — see
     /// `raft_committed`'s warning before comparing the two).
@@ -147,16 +151,10 @@ pub struct DriverMetrics {
     pub pump_service: Latency,
     pub pump_idle_wait: Latency,
     pub pump_iteration_spacing: Latency,
-    #[cfg(feature = "read-stage-timing")]
-    read_stages: Arc<crate::read_stage_timing::ReadStageMetrics>,
 }
 
 impl DriverMetrics {
-    pub const COUNT: usize = 8 + if cfg!(feature = "read-stage-timing") {
-        6
-    } else {
-        0
-    };
+    pub const COUNT: usize = 8;
 
     pub fn snapshots(&self) -> Vec<NamedLatency> {
         let metrics = vec![
@@ -169,12 +167,6 @@ impl DriverMetrics {
             NamedLatency::new("raft_pump_idle_wait", &self.pump_idle_wait),
             NamedLatency::new("raft_pump_iteration_spacing", &self.pump_iteration_spacing),
         ];
-        #[cfg(feature = "read-stage-timing")]
-        let metrics = {
-            let mut metrics = metrics;
-            metrics.extend(self.read_stages.snapshots());
-            metrics
-        };
         metrics
     }
 }
@@ -284,10 +276,6 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     pump_gate: Mutex<()>,
     completion: crate::work::CompletionSignal,
     metrics: Arc<DriverMetrics>,
-    #[cfg(feature = "write-path-diagnostics")]
-    write_diagnostics: crate::write_diagnostics::WriteDiagnostics,
-    #[cfg(feature = "write-stage-tracing")]
-    write_stage_trace: crate::write_stage_trace::WriteStageTrace,
     #[cfg(any(test, feature = "experimental-leader-lease"))]
     lease_read_hits: std::sync::atomic::AtomicU64,
 }
@@ -337,14 +325,13 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         installed_base: Option<kv9_common::AppliedPosition>,
     ) -> Result<Arc<NodeDriver<S, E>>> {
         let drain = crate::DrainToken::mint(&peer)?;
+        peer.bind_checkpoint_history(sm.engine().checkpoint_history())?;
         transport.bind_driver(
             crate::RaftGroup::region_id(&*peer),
             peer.work_signal.clone(),
         )?;
         let async_reads = crate::async_read::AsyncReads::new(peer.work_signal.clone());
         let metrics = Arc::new(DriverMetrics {
-            #[cfg(feature = "read-stage-timing")]
-            read_stages: async_reads.timing(),
             ..Default::default()
         });
         Ok(Arc::new(NodeDriver {
@@ -387,10 +374,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             pump_gate: Mutex::new(()),
             completion: crate::work::CompletionSignal::default(),
             metrics,
-            #[cfg(feature = "write-path-diagnostics")]
-            write_diagnostics: Default::default(),
-            #[cfg(feature = "write-stage-tracing")]
-            write_stage_trace: Default::default(),
             #[cfg(any(test, feature = "experimental-leader-lease"))]
             lease_read_hits: std::sync::atomic::AtomicU64::new(0),
         }))
@@ -425,6 +408,12 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     pub fn peer(&self) -> &Arc<RaftPeer<S>> {
         &self.peer
     }
+    /// Configure before starting the owner. Recovery reconstructs unresolved
+    /// obligations from the exact log tail and this actual engine watermark.
+    pub fn attach_log_debt(&self, debt: kv9_common::log_budget::LogDebt) -> Result<()> {
+        let applied = self.sm.lock().expect("sm poisoned").applied_index().0;
+        self.peer.attach_log_debt(debt, applied)
+    }
 
     /// One pump iteration WITHOUT a tick: deliver inbound, persist+send
     /// outbound, apply committed entries.
@@ -442,15 +431,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     }
 
     fn step_observed(&self) -> Result<()> {
-        #[cfg(feature = "write-path-diagnostics")]
-        let mut observation = crate::write_diagnostics::PumpObservation::default();
         let result = self.metrics.pump_service.observe(
-            || {
-                self.step_inner(
-                    #[cfg(feature = "write-path-diagnostics")]
-                    &mut observation,
-                )
-            },
+            || self.step_inner(),
             |result| {
                 if result.is_ok() {
                     Outcome::Success
@@ -464,8 +446,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         if let Err(cause) = self.completion.publish() {
             if result.is_ok() {
                 self.drain.abort_lease();
-                #[cfg(feature = "write-path-diagnostics")]
-                self.write_diagnostics.record_pump(&observation, None);
                 return Err(self.poison_persistence(&cause));
             }
         }
@@ -480,42 +460,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             Ok(())
         });
         if result.is_ok() {
-            let inspect = |at: ProposedAt, waited| {
-                #[cfg(feature = "write-stage-tracing")]
-                let started = self.write_stage_trace.now();
-                let result = self.inspect_applied(at, waited);
-                #[cfg(feature = "write-stage-tracing")]
-                if let Some(ref terminal) = result {
-                    use crate::write_stage_trace::InspectionOutcome as O;
-                    let finished = self.write_stage_trace.now();
-                    let outcome = match terminal {
-                        Ok(ApplyWaitOutcome::Applied(_)) => O::Applied,
-                        Ok(ApplyWaitOutcome::Manifest { .. }) => O::Manifest,
-                        Ok(ApplyWaitOutcome::FenceRejected { .. }) => O::FenceRejected,
-                        Ok(ApplyWaitOutcome::Replaced) => O::Replaced,
-                        Err(ApplyWaitError::Failed(_)) => O::Failed,
-                        Err(ApplyWaitError::Unconfirmed { .. }) => O::Unconfirmed,
-                    };
-                    self.write_stage_trace.record_inspection(
-                        kv9_common::AppliedPosition {
-                            term: at.term,
-                            index: at.index.0,
-                        },
-                        started,
-                        finished,
-                        waited,
-                        outcome,
-                    );
-                }
-                result
-            };
-            #[cfg(feature = "write-path-diagnostics")]
-            let _service = self.async_applies.service(inspect);
-            #[cfg(not(feature = "write-path-diagnostics"))]
+            let inspect = |at: ProposedAt, waited| self.inspect_applied(at, waited);
             self.async_applies.service(inspect);
-            #[cfg(feature = "write-path-diagnostics")]
-            self.write_diagnostics
-                .record_pump(&observation, Some(&_service));
             self.async_reads
                 .complete(self.driver_applied().map(|at| at.index));
             // A pump can commit this leader's election no-op after this turn's
@@ -525,8 +471,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 self.peer.work_signal.notify();
             }
         } else {
-            #[cfg(feature = "write-path-diagnostics")]
-            self.write_diagnostics.record_pump(&observation, None);
             self.drain.abort_lease();
             self.async_applies.close();
             self.async_reads.close();
@@ -534,11 +478,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         result
     }
 
-    fn step_inner(
-        &self,
-        #[cfg(feature = "write-path-diagnostics")]
-        observation: &mut crate::write_diagnostics::PumpObservation,
-    ) -> Result<crate::rawnode::PumpPublication> {
+    fn step_inner(&self) -> Result<crate::rawnode::PumpPublication> {
         if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
             return Err(Error::Raft(f.clone()));
         }
@@ -583,10 +523,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .drain
             .take_ready()
             .map_err(|cause| self.poison_persistence(&cause))?;
-        #[cfg(feature = "write-path-diagnostics")]
-        {
-            observation.committed_taken = entries.len();
-        }
         if entries.is_empty() {
             return Ok(publication);
         }
@@ -607,8 +543,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 // current-term barrier's liveness anchor).
                 EntryKind::Noop => {}
                 EntryKind::Command => {
-                    #[cfg(feature = "write-stage-tracing")]
-                    let prepare_started_ns = self.write_stage_trace.now();
                     let cmd = match Command::decode(&entry.data) {
                         Ok(c) => c,
                         Err(e) => return Err(self.poison(entry.term, entry.index.0, &e)),
@@ -627,8 +561,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     }
                     let mut applied = self.applied.lock().expect("applied poisoned");
                     let mut sm = self.sm.lock().expect("sm poisoned");
-                    #[cfg(feature = "write-stage-tracing")]
-                    let locks_acquired_ns = self.write_stage_trace.now();
                     let mut bytes = entry.data.len();
                     let mut commands = vec![(
                         kv9_common::AppliedPosition {
@@ -681,22 +613,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                         .iter()
                         .map(|_| self.metrics.command_apply.start())
                         .collect();
-                    #[cfg(feature = "write-stage-tracing")]
-                    let apply_started_ns = self.write_stage_trace.now();
                     let outcome = if commands.len() == 1 {
                         sm.apply_at(commands[0].0, &commands[0].1).map(|r| vec![r])
                     } else {
                         sm.apply_raw_group(&commands)
-                    };
-                    #[cfg(feature = "write-stage-tracing")]
-                    let mut timing = crate::write_stage_trace::GroupTiming {
-                        commands: commands.len() as u64,
-                        encoded_bytes: bytes as u64,
-                        prepare_started_ns,
-                        locks_acquired_ns,
-                        apply_started_ns,
-                        apply_finished_ns: self.write_stage_trace.now(),
-                        receipts_inserted_ns: None,
                     };
                     let results = match outcome {
                         Ok(r) => {
@@ -706,9 +626,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                             r
                         }
                         Err(e) => {
-                            #[cfg(feature = "write-stage-tracing")]
-                            self.write_stage_trace
-                                .record_group(timing, commands.iter().map(|(at, _)| *at));
                             for timer in apply_timers {
                                 timer.finish(Outcome::Error);
                             }
@@ -717,20 +634,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                             return Err(self.poison(last_term, last_seen, &e));
                         }
                     };
-                    #[cfg(feature = "write-path-diagnostics")]
-                    {
-                        observation.applied_commands += commands.len();
-                        observation.group_commands.record(commands.len() as u64);
-                        observation.group_bytes.record(bytes as u64);
-                    }
                     for ((at, _), result) in commands.iter().zip(results) {
                         push_ring(&mut applied, at.index, at.term, result.outcome);
-                    }
-                    #[cfg(feature = "write-stage-tracing")]
-                    {
-                        timing.receipts_inserted_ns = Some(self.write_stage_trace.now());
-                        self.write_stage_trace
-                            .record_group(timing, commands.iter().map(|(at, _)| *at));
                     }
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
@@ -859,6 +764,18 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .propose_conf_change_traced(single_change(node, ConfChangeType::AddLearnerNode))
     }
 
+    /// Retain the exact committed catalog source selected by the runtime.
+    /// Authorization remains with the caller; this verifies the group and
+    /// binds the store observation to the actual proposed configuration entry.
+    pub fn change_data_member(
+        &self,
+        origin: crate::configuration_origin::ConfigurationOrigin,
+    ) -> Result<ProposedAt> {
+        let mut cc = single_change(origin.node, origin.action.change_type());
+        cc.context = origin.encode()?.into();
+        self.peer.propose_conf_change_traced(cc)
+    }
+
     /// Propose promoting `node` (a caught-up learner) to **voter**. One change
     /// at a time; raft refuses a new conf change until the previous one is
     /// applied — which is why apply progress must be reported truthfully.
@@ -939,9 +856,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 
     /// Propose a command on this node (must currently be leader).
     pub fn propose(&self, cmd: &Command) -> Result<ProposedAt> {
-        self.metrics
-            .proposal_submission
-            .observe(|| self.peer.propose_traced(cmd.encode()), classify_proposal)
+        self.metrics.proposal_submission.observe(
+            || self.peer.propose_command_in_term(cmd, None),
+            classify_proposal,
+        )
     }
 
     /// Synchronous submission with a bounded asynchronous exact-apply wait.
@@ -971,10 +889,105 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         self.async_applies.snapshot()
     }
 
+    /// Capture the actual applied range and full leader configuration for a
+    /// bounded all-replica confirmation pass. Never holds sm and peer together.
+    pub fn begin_raw_ttl_activation(
+        &self,
+        deadline: Instant,
+    ) -> Result<crate::rawnode::ttl_activation::RawTtlActivationProbe> {
+        if self.async_applies.snapshot().stopped {
+            return Err(Error::Raft("Raw TTL activation owner is stopped".into()));
+        }
+        let range = self
+            .sm
+            .lock()
+            .expect("sm poisoned")
+            .raw_ttl_activation_range()?;
+        self.peer.begin_raw_ttl_activation(range, deadline)
+    }
+
+    /// Consume one all-replica confirmation set. Reserve an exact apply wait
+    /// before appending and keep the collection's original absolute deadline.
+    /// Replaced/unknown results must never auto-retry an ordinary Enable command.
+    pub fn propose_raw_ttl_activation(
+        &self,
+        prepared: crate::rawnode::ttl_activation::PreparedRawTtlActivation,
+    ) -> Result<RawTtlActivationSubmission> {
+        let reservation = self.async_applies.reserve(prepared.deadline())?;
+        let current = self
+            .sm
+            .lock()
+            .expect("sm poisoned")
+            .raw_ttl_activation_range()?;
+        if &current != prepared.range() {
+            return Err(kv9_common::Error::StaleEpoch {
+                region: current.region,
+            });
+        }
+        let at = self.metrics.proposal_submission.observe(
+            || self.peer.propose_raw_ttl_activation(prepared),
+            classify_proposal,
+        )?;
+        Ok(self.raw_ttl_submission(at, reservation))
+    }
+
+    pub fn raw_ttl_state(
+        &self,
+    ) -> Result<(
+        kv9_common::data_range::DataRange,
+        kv9_common::raw_ttl::ClockWatermark,
+    )> {
+        self.sm.lock().expect("sm poisoned").raw_ttl_state()
+    }
+
+    /// A fixed observation prepared outside apply. No clock read occurs here;
+    /// stale range commands remain fenced by ordered apply. No implicit retry.
+    pub fn propose_raw_ttl_observation(
+        &self,
+        range: &kv9_common::data_range::DataRange,
+        observed: kv9_common::raw_ttl::ClockWatermark,
+        deadline: Instant,
+    ) -> Result<RawTtlSubmission> {
+        let command = crate::command::RawTtlCommand::new(
+            range,
+            crate::command::RawTtlAction::Observe { observed },
+        )?;
+        self.propose_raw_ttl_command(command, deadline)
+    }
+
+    /// Preserve an accepted position even if wait registration races shutdown.
+    /// Enable still requires the all-replica gate in `propose_raw_ttl_activation`.
+    pub fn propose_raw_ttl_command(
+        &self,
+        command: crate::command::RawTtlCommand,
+        deadline: Instant,
+    ) -> Result<RawTtlSubmission> {
+        let command = Command::RawTtl(command);
+        let reservation = self.async_applies.reserve(deadline)?;
+        let at = self.propose(&command)?;
+        Ok(self.raw_ttl_submission(at, reservation))
+    }
+
+    fn raw_ttl_submission(
+        &self,
+        at: ProposedAt,
+        reservation: crate::async_apply::Reservation,
+    ) -> RawTtlSubmission {
+        let started = Instant::now();
+        // After append, even a racing stop that prevents wait registration
+        // must retain the accepted position. It is not a pre-proposal refusal.
+        let wait = reservation.register(at).map(|ticket| AsyncApplyWait {
+            ticket,
+            metrics: self.metrics.clone(),
+            started,
+        });
+        RawTtlSubmission { at, wait }
+    }
+
     /// Catalog plans are valid only in the term whose ordered barrier they read.
     pub fn propose_in_term(&self, cmd: &Command, term: u64) -> Result<ProposedAt> {
         self.metrics.proposal_submission.observe(
-            || self.peer.propose_in_term(cmd.encode(), Some(term)),
+            || self.peer.propose_command_in_term(cmd, Some(term)),
             classify_proposal,
         )
     }
@@ -1063,19 +1076,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .is_some_and(|wm| wm.index >= at.index.0);
         {
             let applied = self.applied.lock().expect("applied poisoned");
-            #[cfg(not(feature = "write-path-diagnostics"))]
             let entry = applied.iter().find(|e| e.index == at.index.0);
-            #[cfg(feature = "write-path-diagnostics")]
-            let entry = {
-                let slot = applied.iter().position(|e| e.index == at.index.0);
-                self.write_diagnostics.record_linear_lookup(
-                    applied.len(),
-                    slot,
-                    applied.last().map(|entry| entry.index),
-                    at.index.0,
-                );
-                slot.map(|slot| &applied[slot])
-            };
             if let Some(entry) = entry {
                 return Some(if entry.term == at.term {
                     // The receipt is the RING's recorded values — position
@@ -1098,6 +1099,13 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                         }),
                         crate::ApplyOutcome::FenceRejected(region) => {
                             Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
+                        }
+                        crate::ApplyOutcome::RawTtlRejected { region, reason } => {
+                            Ok(ApplyWaitOutcome::RawTtlRejected {
+                                at: at_pos,
+                                region,
+                                reason,
+                            })
                         }
                         crate::ApplyOutcome::Plain => Ok(ApplyWaitOutcome::Applied(at_pos)),
                     }
@@ -1311,24 +1319,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         &self.metrics
     }
 
-    #[cfg(feature = "write-stage-tracing")]
-    pub fn write_stage_trace(&self) -> crate::write_stage_trace::TraceSnapshot {
-        self.write_stage_trace
-            .snapshot_between_pumps(&self.pump_gate)
-    }
-
-    #[cfg(feature = "write-path-diagnostics")]
-    pub fn write_diagnostics(&self) -> crate::write_diagnostics::WriteDiagnosticsSnapshot {
-        crate::write_diagnostics::WriteDiagnosticsSnapshot {
-            schema_version: 1,
-            snapshot_consistency: "coherent_per_component_independent_between_components",
-            bucket_rule: "0=[0,0]; i>0=[2^(i-1),2^i-1]",
-            joint_bucket_rule: "0=[0,0]; 1..7=[2^(i-1),2^i-1]; 8=[128,infinity)",
-            driver: self.write_diagnostics.snapshot(),
-            ready: self.peer.write_ready_diagnostics(),
-        }
-    }
-
     pub fn apply_lag_observation(&self) -> ApplyLagObservation {
         let before = self.peer.status_snapshot();
         let driver_applied = self.driver_applied();
@@ -1370,6 +1360,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             term: p.term,
             raft_committed: p.committed,
             log_first_index: p.log_first_index,
+            log_last_index: p.log_last_index,
+            max_write_log_entries: p.max_write_log_entries,
             applied_index: self.sm.lock().expect("sm poisoned").applied_index().0,
             applied_term: applied.last().map_or(0, |e| e.term),
             fatal: self.fatal.lock().expect("fatal poisoned").clone(),
@@ -1379,6 +1371,14 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             learners: p.learners,
             driver_applied: self.driver_applied(),
         }
+    }
+
+    /// Bind capture to the engine actually owned by this state machine.
+    pub(crate) fn owns_engine(&self, engine: &E) -> bool {
+        std::ptr::eq(
+            self.sm.lock().expect("sm poisoned").engine().as_ref(),
+            engine,
+        )
     }
 
     /// Read a key from this node's applied state machine (harness verification).
@@ -1465,9 +1465,11 @@ fn classify_apply_wait(result: &std::result::Result<ApplyWaitOutcome, ApplyWaitE
         }) => Outcome::Success,
         Ok(ApplyWaitOutcome::Replaced) => Outcome::Replaced,
         // AlreadyApplied is not a newly accepted manifest transition.
-        Ok(ApplyWaitOutcome::FenceRejected { .. } | ApplyWaitOutcome::Manifest { .. }) => {
-            Outcome::Rejected
-        }
+        Ok(
+            ApplyWaitOutcome::FenceRejected { .. }
+            | ApplyWaitOutcome::RawTtlRejected { .. }
+            | ApplyWaitOutcome::Manifest { .. },
+        ) => Outcome::Rejected,
         Err(ApplyWaitError::Unconfirmed { .. }) => Outcome::Unconfirmed,
         Err(ApplyWaitError::Failed(_)) => Outcome::Error,
     }
@@ -1488,6 +1490,25 @@ pub struct AsyncApplyWait {
     ticket: crate::async_apply::ApplyTicket,
     metrics: Arc<DriverMetrics>,
     started: Instant,
+}
+
+/// Submission is not an apply receipt. Even loss of the apply owner after
+/// append retains the position; only `wait` can report the committed effect.
+pub struct RawTtlSubmission {
+    at: ProposedAt,
+    wait: std::result::Result<AsyncApplyWait, ApplyWaitError>,
+}
+
+pub type RawTtlActivationSubmission = RawTtlSubmission;
+
+impl RawTtlSubmission {
+    pub fn proposed_at(&self) -> ProposedAt {
+        self.at
+    }
+
+    pub async fn wait(self) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
+        self.wait?.wait().await
+    }
 }
 
 impl AsyncApplyWait {
@@ -1525,6 +1546,12 @@ pub enum ApplyWaitOutcome {
     FenceRejected {
         at: kv9_common::AppliedPosition,
         region: kv9_common::RegionId,
+    },
+    /// Exact applied entry was refused by the TTL format/scope guard.
+    RawTtlRejected {
+        at: kv9_common::AppliedPosition,
+        region: kv9_common::RegionId,
+        reason: kv9_common::raw_ttl::TtlRejection,
     },
     /// The exact proposal applied — as a manifest change; the discriminator's
     /// verdict rides the receipt (task #9). A manifest entry NEVER surfaces
@@ -1668,8 +1695,13 @@ impl SeamHandle {
         self.node.manifest_pair(region)
     }
 
-    pub fn manifest_effect(&self, region: u64, intended: &[u8]) -> Result<bool> {
-        self.node.manifest_effect(region, intended)
+    pub fn manifest_effect_page(
+        &self,
+        region: u64,
+        intended: &[u8],
+        next: Option<u64>,
+    ) -> Result<crate::ManifestEffectPage> {
+        self.node.manifest_effect_page(region, intended, next)
     }
 
     pub fn manifest_transition(
@@ -1734,8 +1766,13 @@ pub trait ManifestNode: Send + Sync {
         deadline: Duration,
     ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError>;
     fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair>;
-    fn manifest_effect(&self, _region: u64, _intended: &[u8]) -> Result<bool> {
-        Ok(false)
+    fn manifest_effect_page(
+        &self,
+        _region: u64,
+        _intended: &[u8],
+        _next: Option<u64>,
+    ) -> Result<crate::ManifestEffectPage> {
+        Ok(crate::ManifestEffectPage::default())
     }
     fn manifest_transition(
         &self,
@@ -1751,17 +1788,52 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for 
         // propose_traced verifies leadership and appends under ONE peer
         // lock, and raft-rs `propose` returns error without appending — an
         // Err here is a certain pre-append refusal, never ambiguous.
-        match self.propose(cmd) {
+        // Select the explicit large/import command at the actual driver. A Finish
+        // racing this observation is rechecked by apply; legacy tags keep their meaning.
+        let staging = (|| -> Result<Option<Command>> {
+            let Command::ManifestChange(payload) = cmd else {
+                return Ok(None);
+            };
+            if !kv9_engine::checkpoint::CheckpointManifest::is_checkpoint(payload.changeset()) {
+                return Ok(None);
+            }
+            let manifest = kv9_engine::checkpoint::CheckpointManifest::decode(payload.changeset())?;
+            if manifest.requires_large_format()? {
+                return Ok(Some(Command::LargeManifestChange(payload.clone())));
+            }
+            let fence = crate::RegionFence {
+                region_id: payload.region(),
+                conf_ver: manifest.scope.conf_ver,
+                version: manifest.scope.version,
+            };
+            let eligible = self
+                .sm
+                .lock()
+                .expect("sm poisoned")
+                .staging_checkpoint_epoch(&fence)?
+                == Some(true);
+            Ok(eligible.then(|| Command::StagingManifestChange(payload.clone())))
+        })();
+        let staging = match staging {
+            Ok(command) => command,
+            Err(error) => return Ok(ProposeOutcome::RefusedPreAppend(error)),
+        };
+        match self.propose(staging.as_ref().unwrap_or(cmd)) {
             Ok(at) => Ok(ProposeOutcome::Accepted(at)),
             Err(e) => Ok(ProposeOutcome::RefusedPreAppend(e)),
         }
     }
 
-    fn manifest_effect(&self, region: u64, intended: &[u8]) -> Result<bool> {
+    fn manifest_effect_page(
+        &self,
+        region: u64,
+        intended: &[u8],
+        next: Option<u64>,
+    ) -> Result<crate::ManifestEffectPage> {
         self.sm
             .lock()
             .expect("sm poisoned")
-            .manifest_effect(region, intended)
+            .manifest_effect_page(region, intended, next)
     }
 
     fn manifest_transition(
@@ -1900,6 +1972,25 @@ fn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {
 
 #[cfg(test)]
 mod tests {
+
+    #[tokio::test]
+    async fn ttl_submission_keeps_the_accepted_position_when_wait_registration_loses_its_owner() {
+        let driver = single_node_driver();
+        let reservation = driver
+            .async_applies
+            .reserve(Instant::now() + Duration::from_secs(5))
+            .unwrap();
+        let at = driver.propose(&Command::Noop).unwrap();
+        // Exact critical interval: accepted append, then close, then register.
+        driver.stop();
+        let submission = driver.raw_ttl_submission(at, reservation);
+        assert_eq!(submission.proposed_at(), at);
+        assert!(matches!(
+            submission.wait().await,
+            Err(ApplyWaitError::Failed(_))
+        ));
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+    }
 
     #[test]
     fn apply_lag_requires_stable_commit_and_term_and_a_compatible_watermark() {
@@ -2138,127 +2229,6 @@ mod tests {
             Some(b"applied".to_vec())
         );
         assert_eq!(driver.async_apply_snapshot().in_flight, 0);
-        #[cfg(feature = "write-path-diagnostics")]
-        {
-            let observation = driver.write_diagnostics();
-            let value = |name| {
-                observation
-                    .driver
-                    .distributions
-                    .iter()
-                    .find(|m| m.name == name)
-                    .unwrap()
-                    .sum
-            };
-            assert!(observation.driver.valid);
-            assert_eq!(value("applied_commands_per_pump"), 1);
-            assert_eq!(value("successful_apply_group_commands"), 1);
-            assert_eq!(value("async_requests_resolved_per_service"), 1);
-            assert!(value("async_requests_requeued_per_service") >= 1);
-            assert_eq!(observation.driver.lookup_hits, 1);
-            assert!(observation.driver.lookup_misses >= 1);
-            assert_eq!(
-                value("async_requests_inspected_per_service"),
-                observation.driver.lookup_hits + observation.driver.lookup_misses
-            );
-        }
-    }
-
-    #[cfg(feature = "write-stage-tracing")]
-    #[tokio::test]
-    async fn write_stage_trace_joins_actual_groups_to_terminal_receipt_inspections() {
-        let driver = single_node_driver();
-        driver.pause_apply(true);
-        let mut requests = Vec::new();
-        for n in 0..64u8 {
-            requests.push(
-                driver
-                    .propose_with_async_wait(
-                        &Command::Put {
-                            cf: 0,
-                            key: vec![n],
-                            value: vec![n + 1],
-                        },
-                        Instant::now() + Duration::from_secs(5),
-                    )
-                    .unwrap(),
-            );
-        }
-        driver.step().unwrap();
-        assert!(driver.status().raft_committed >= requests.last().unwrap().0.index.0);
-        let before = driver.write_stage_trace();
-        assert_eq!(before.groups.total_recorded, 0);
-        assert_eq!(
-            before.inspections.total_recorded, 0,
-            "commit without application produced a terminal trace"
-        );
-        driver.pause_apply(false);
-        driver.step().unwrap();
-        let expected: Vec<_> = requests
-            .iter()
-            .filter(|(at, _)| at.index.0.is_multiple_of(16))
-            .map(|(at, _)| (at.term, at.index.0))
-            .collect();
-        for (at, wait) in requests {
-            assert_eq!(
-                wait.wait().await.unwrap(),
-                ApplyWaitOutcome::Applied(kv9_common::AppliedPosition {
-                    term: at.term,
-                    index: at.index.0
-                })
-            );
-        }
-        let trace = driver.write_stage_trace();
-        assert!(trace.valid && trace.rows_available);
-        assert_eq!(trace.dropped_recording_calls, 0);
-        assert_eq!(trace.group_commands_seen, 64);
-        assert_eq!(trace.terminal_inspections_seen, 64);
-        assert_eq!(
-            trace
-                .groups
-                .rows
-                .iter()
-                .map(|r| (r.term, r.index))
-                .collect::<Vec<_>>(),
-            expected
-        );
-        assert_eq!(
-            trace
-                .inspections
-                .rows
-                .iter()
-                .map(|r| (r.term, r.index))
-                .collect::<Vec<_>>(),
-            expected
-        );
-        for (g, i) in trace.groups.rows.iter().zip(&trace.inspections.rows) {
-            assert!(g.prepare_started_ns <= g.locks_acquired_ns);
-            assert!(g.locks_acquired_ns <= g.apply_started_ns);
-            assert!(g.apply_started_ns <= g.apply_finished_ns);
-            assert!(g.apply_finished_ns <= g.receipts_inserted_ns.unwrap());
-            assert!(g.receipts_inserted_ns.unwrap() <= i.inspect_started_ns);
-            assert!(i.inspect_started_ns <= i.inspect_finished_ns);
-            assert!(i.inspect_finished_ns <= trace.capture_finished_ns);
-            assert!(trace.capture_started_ns <= trace.capture_finished_ns);
-            assert_eq!(
-                i.outcome,
-                crate::write_stage_trace::InspectionOutcome::Applied
-            );
-        }
-    }
-
-    #[cfg(feature = "write-stage-tracing")]
-    #[test]
-    fn write_stage_snapshot_yields_to_the_actual_driver_owner() {
-        let driver = single_node_driver();
-        let owner = driver.pump_gate.lock().unwrap();
-        let busy = driver.write_stage_trace();
-        assert!(!busy.rows_available && !busy.valid);
-        drop(owner);
-        let quiet = driver.write_stage_trace();
-        assert!(quiet.rows_available && quiet.valid);
-        assert_eq!(quiet.dropped_recording_calls, 0);
-        assert!(driver.pump_gate.try_lock().is_ok());
     }
 
     #[tokio::test]
@@ -2301,6 +2271,26 @@ mod tests {
         let position = kv9_common::AppliedPosition { term: 7, index: 19 };
         for (recorded_term, recorded, expected) in [
             (8, crate::ApplyOutcome::Plain, ApplyWaitOutcome::Replaced),
+            (
+                8,
+                crate::ApplyOutcome::RawTtlRejected {
+                    region,
+                    reason: kv9_common::raw_ttl::TtlRejection::NotEnabled,
+                },
+                ApplyWaitOutcome::Replaced,
+            ),
+            (
+                7,
+                crate::ApplyOutcome::RawTtlRejected {
+                    region,
+                    reason: kv9_common::raw_ttl::TtlRejection::LegacyCommand,
+                },
+                ApplyWaitOutcome::RawTtlRejected {
+                    at: position,
+                    region,
+                    reason: kv9_common::raw_ttl::TtlRejection::LegacyCommand,
+                },
+            ),
             (
                 7,
                 crate::ApplyOutcome::FenceRejected(region),

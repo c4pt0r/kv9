@@ -1,14 +1,14 @@
 //! Instrumented point backend shared by unary/stream transport controls.
 use crate::api::{
     AdminApi, ClusterInfo, CreateKeyspaceResult, DeleteRangeReceipt, RawApi, RawReadJob,
-    RawReadPreparation, RawWrite, RawWritePreparation, RegionLocation, RequestContext, TxnApi,
+    RawReadPreparation, RawWrite, RawWritePreparation, RegionLocation, RequestContext,
 };
 use crate::grpc::{proto, Authenticator, TokenAuthenticator};
 use kv9_common::{
     AppliedPosition, Error, Keyspace, KeyspaceId, NodeId, RegionId, Result as ApiResult, TenantId,
-    TxnGroupId, UserKey, Value,
+    UserKey, Value,
 };
-use kv9_txn::{QualifiedKey, TxnDescriptor, TxnStatus};
+use kv9_raw::RawMutation;
 use std::{
     collections::HashMap,
     sync::{Arc, Mutex},
@@ -57,11 +57,31 @@ impl Drop for ReadWaitGuard {
 
 #[derive(Default)]
 pub(crate) struct Backend {
+    pub(crate) route_lookup: Option<Arc<RouteLookup>>,
+    pub(crate) route_target: Option<Arc<RouteTarget>>,
+    pub(crate) activate_prepare: Option<Arc<ActivationPrepare>>,
+    pub(crate) ttl_prepare: Option<Arc<TtlPrepare>>,
+    pub(crate) scoped: Option<(kv9_common::data_range::DataRange, Arc<dyn RawApi>)>,
     pub(crate) values: Mutex<HashMap<UserKey, Value>>,
     pub(crate) calls: Mutex<Vec<RequestContext>>,
     pub(crate) write_gate: Option<WriteGate>,
     pub(crate) read_gates: HashMap<UserKey, Arc<ReadGate>>,
 }
+pub(crate) type RouteLookup = dyn Fn(kv9_common::RootDigest, TenantId, KeyspaceId, &[u8]) -> ApiResult<crate::api::RawRouteLookup>
+    + Send
+    + Sync;
+pub(crate) type RouteTarget =
+    dyn Fn(&kv9_common::data_range::DataRange) -> ApiResult<Arc<dyn RawApi>> + Send + Sync;
+pub(crate) type TtlPrepare = dyn Fn(RequestContext, crate::raw_ttl::Operation, std::time::Instant) -> crate::raw_ttl::Preparation
+    + Send
+    + Sync;
+pub(crate) type ActivationPrepare = dyn Fn(
+        String,
+        kv9_common::data_range::DataRange,
+        std::time::Instant,
+    ) -> crate::api::OperationPreparation<AppliedPosition>
+    + Send
+    + Sync;
 
 impl Backend {
     fn observe(&self, ctx: &RequestContext, key: &[u8]) -> ApiResult<()> {
@@ -79,6 +99,7 @@ impl Backend {
             RawWrite::Put { key, value } => self.raw_put(ctx, key, value),
             RawWrite::Delete { key } => self.raw_delete(ctx, &key),
             RawWrite::BatchPut(pairs) => self.raw_batch_put(ctx, &pairs),
+            RawWrite::Batch(mutations) => self.raw_batch(ctx, &mutations),
         }
     }
 }
@@ -95,6 +116,32 @@ macro_rules! unsupported {
 }
 
 impl RawApi for Backend {
+    fn prepare_raw_ttl(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        op: crate::raw_ttl::Operation,
+        deadline: std::time::Instant,
+    ) -> crate::raw_ttl::Preparation {
+        match &self.ttl_prepare {
+            Some(prepare) => prepare(ctx, op, deadline),
+            None => Box::new(|| Err(Error::NotImplemented("Raw TTL protocol"))),
+        }
+    }
+    fn routed_target(
+        &self,
+        scope: &kv9_common::data_range::DataRange,
+    ) -> ApiResult<Arc<dyn RawApi>> {
+        if let Some(resolve) = &self.route_target {
+            return resolve(scope);
+        }
+        self.scoped
+            .as_ref()
+            .filter(|(r, _)| r == scope)
+            .map(|(_, target)| target.clone())
+            .ok_or(Error::StaleEpoch {
+                region: scope.region,
+            })
+    }
     fn prepare_raw_get(
         self: Arc<Self>,
         ctx: RequestContext,
@@ -185,30 +232,59 @@ impl RawApi for Backend {
         }
         Ok(APPLIED)
     }
+    fn raw_batch(
+        &self,
+        ctx: &RequestContext,
+        mutations: &[RawMutation],
+    ) -> ApiResult<AppliedPosition> {
+        self.observe(
+            ctx,
+            mutations.first().map(RawMutation::key).unwrap_or_default(),
+        )?;
+        let mut values = self.values.lock().unwrap();
+        for mutation in mutations {
+            match mutation {
+                RawMutation::Put { key, value } => {
+                    values.insert(key.clone(), value.clone());
+                }
+                RawMutation::Delete { key } => {
+                    values.remove(key);
+                }
+            }
+        }
+        Ok(APPLIED)
+    }
     unsupported! {
         raw_scan(ctx: &RequestContext, start: &[u8], end: &[u8], limit: usize) -> Vec<(UserKey, Value)>;
         raw_delete_range(ctx: &RequestContext, start: &[u8], end: &[u8]) -> DeleteRangeReceipt;
     }
 }
 
-impl TxnApi for Backend {
-    unsupported! {
-        kv_begin(ctx: &RequestContext, primary: QualifiedKey) -> TxnDescriptor;
-        kv_get(ctx: &RequestContext, key: &[u8], transaction: &TxnDescriptor) -> Option<Value>;
-        kv_batch_get(ctx: &RequestContext, keys: &[UserKey], transaction: &TxnDescriptor) -> Vec<Option<Value>>;
-        kv_scan(ctx: &RequestContext, start: &[u8], end: &[u8], limit: usize, transaction: &TxnDescriptor) -> Vec<(UserKey, Value)>;
-        kv_prewrite(ctx: &RequestContext, mutations: &[(UserKey, Option<Value>)], transaction: &TxnDescriptor) -> ();
-        kv_commit(ctx: &RequestContext, keys: &[UserKey], transaction: &TxnDescriptor) -> ();
-        kv_pessimistic_lock(ctx: &RequestContext, keys: &[UserKey], transaction: &TxnDescriptor) -> ();
-        kv_pessimistic_rollback(ctx: &RequestContext, keys: &[UserKey], transaction: &TxnDescriptor) -> ();
-        kv_resolve_lock(ctx: &RequestContext, transaction: &TxnDescriptor) -> ();
-        kv_cleanup(ctx: &RequestContext, key: &[u8], transaction: &TxnDescriptor) -> ();
-        kv_check_txn_status(ctx: &RequestContext, transaction: &TxnDescriptor) -> TxnStatus;
-    }
-}
 impl AdminApi for Backend {
+    fn lookup_raw_route(
+        &self,
+        root: kv9_common::RootDigest,
+        tenant: TenantId,
+        keyspace: KeyspaceId,
+        key: &[u8],
+    ) -> ApiResult<crate::api::RawRouteLookup> {
+        self.route_lookup
+            .as_ref()
+            .ok_or(Error::NotImplemented("test route lookup"))?(root, tenant, keyspace, key)
+    }
+    fn prepare_raw_ttl_activation(
+        self: Arc<Self>,
+        caller: String,
+        binding: kv9_common::data_range::DataRange,
+        deadline: std::time::Instant,
+    ) -> crate::api::OperationPreparation<AppliedPosition> {
+        match &self.activate_prepare {
+            Some(prepare) => prepare(caller, binding, deadline),
+            None => Box::new(|| Err(Error::NotImplemented("Raw TTL activation"))),
+        }
+    }
     unsupported! {
-        create_keyspace(caller: &str, name: &str, tenant: TenantId, api_type: kv9_common::ApiType, txn_group: TxnGroupId) -> CreateKeyspaceResult;
+        create_keyspace(caller: &str, name: &str, tenant: TenantId, api_type: kv9_common::ApiType) -> CreateKeyspaceResult;
         list_keyspaces(caller: &str) -> Vec<Keyspace>;
         get_region(caller: &str, keyspace: KeyspaceId, key: &[u8]) -> RegionLocation;
         split_region(caller: &str, region: RegionId, split_key: UserKey) -> ();
@@ -250,4 +326,42 @@ pub(crate) fn request<T>(message: T) -> Request<T> {
 }
 pub(crate) fn deadline() -> Instant {
     Instant::now() + Duration::from_secs(5)
+}
+
+/// Actual tonic HTTP/2 framing over Tokio duplex I/O. No socket bind, TCP,
+/// network failure simulation or deployment acceptance is implied.
+pub(crate) async fn memory_channel(
+    api: crate::grpc::Kv9Grpc,
+) -> (tonic::transport::Channel, tokio::task::JoinHandle<()>) {
+    let (incoming, receive) = mpsc::channel(8);
+    let auth = authenticator();
+    let service = proto::kv9_server::Kv9Server::with_interceptor(
+        api.clone(),
+        crate::grpc::AuthInterceptor::new(auth.clone()),
+    );
+    let stream =
+        crate::point_stream::service(api, auth, tokio_util::sync::CancellationToken::new());
+    let server = tokio::spawn(async move {
+        tonic::transport::Server::builder()
+            .add_service(service)
+            .add_service(stream)
+            .serve_with_incoming(tokio_stream::wrappers::ReceiverStream::new(receive))
+            .await
+            .unwrap();
+    });
+    let channel = tonic::transport::Endpoint::from_static("http://memory.test")
+        .connect_with_connector(tower::service_fn(move |_| {
+            let incoming = incoming.clone();
+            async move {
+                let (client, server) = tokio::io::duplex(64 * 1024);
+                incoming
+                    .send(Ok::<_, std::io::Error>(server))
+                    .await
+                    .map_err(|_| std::io::Error::from(std::io::ErrorKind::BrokenPipe))?;
+                Ok::<_, std::io::Error>(hyper_util::rt::TokioIo::new(client))
+            }
+        }))
+        .await
+        .unwrap();
+    (channel, server)
 }

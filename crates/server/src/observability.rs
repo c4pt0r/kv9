@@ -9,7 +9,9 @@ use serde::Serialize;
 
 const INTERVAL: Duration = Duration::from_secs(1);
 pub(crate) const MAX_EXPORT_BYTES: usize = 512 * 1024;
-pub(crate) const METRIC_COUNT: usize = 18 + kv9_raft::driver::DriverMetrics::COUNT;
+// Two admission timings per work class, eight WAL timings, then the driver inventory.
+pub(crate) const METRIC_COUNT: usize =
+    crate::admission::CLASS_COUNT * 2 + 8 + kv9_raft::driver::DriverMetrics::COUNT;
 
 #[derive(Serialize)]
 struct ApplyLag {
@@ -367,98 +369,6 @@ mod tests {
         )
     }
 
-    #[cfg(feature = "write-path-diagnostics")]
-    #[test]
-    fn write_diagnostic_snapshot_has_fixed_inventory_and_bounded_json() {
-        let (_, driver) = fixture();
-        let mut snapshot = driver.write_diagnostics();
-        assert_eq!(snapshot.schema_version, 1);
-        assert_eq!(snapshot.driver.distributions.len(), 17);
-        assert_eq!(snapshot.ready.len(), 3);
-        let mut names = std::collections::BTreeSet::new();
-        for metric in snapshot
-            .driver
-            .distributions
-            .iter_mut()
-            .chain(&mut snapshot.ready)
-        {
-            assert!(names.insert(metric.name));
-            assert_eq!(metric.buckets.len(), 65);
-            metric.buckets.fill(u64::MAX);
-            metric.count = u64::MAX;
-            metric.sum = u64::MAX;
-            metric.max = Some(u64::MAX);
-            // False is one byte longer than true in the JSON encoding.
-            metric.saturated = false;
-        }
-        snapshot.driver.successful_pumps = u64::MAX;
-        snapshot.driver.failed_pumps = u64::MAX;
-        snapshot.driver.lookup_hits = u64::MAX;
-        snapshot.driver.lookup_misses = u64::MAX;
-        snapshot.driver.valid = false;
-        snapshot.driver.applied_vs_resolved = [[u64::MAX; 9]; 9];
-        let bytes = serde_json::to_vec(&snapshot).unwrap();
-        assert!(bytes.len() < 40 * 1024);
-        let value: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
-        assert_eq!(
-            value["driver"]["lookup_algorithm"],
-            "first_match_linear_scan"
-        );
-        assert_eq!(value["driver"]["lookup_hits"].as_u64(), Some(u64::MAX));
-    }
-
-    #[cfg(feature = "write-stage-tracing")]
-    #[test]
-    fn write_stage_trace_worst_case_json_is_bounded() {
-        use kv9_raft::write_stage_trace::{
-            GroupRecord, InspectionOutcome, InspectionRecord, CAPACITY,
-        };
-        let (_, driver) = fixture();
-        let mut trace = driver.write_stage_trace();
-        trace.trace_instance = u64::MAX;
-        trace.capture_started_ns = u64::MAX;
-        trace.capture_finished_ns = u64::MAX;
-        trace.valid = false;
-        trace.rows_available = false;
-        trace.dropped_recording_calls = u64::MAX;
-        trace.groups_seen = u64::MAX;
-        trace.group_commands_seen = u64::MAX;
-        trace.terminal_inspections_seen = u64::MAX;
-        trace.groups.total_recorded = u64::MAX;
-        trace.groups.overwritten = u64::MAX;
-        trace.groups.rows = vec![
-            GroupRecord {
-                sequence: u64::MAX,
-                group_sequence: u64::MAX,
-                term: u64::MAX,
-                index: u64::MAX,
-                commands: u64::MAX,
-                encoded_bytes: u64::MAX,
-                prepare_started_ns: u64::MAX,
-                locks_acquired_ns: u64::MAX,
-                apply_started_ns: u64::MAX,
-                apply_finished_ns: u64::MAX,
-                receipts_inserted_ns: Some(u64::MAX),
-            };
-            CAPACITY
-        ];
-        trace.inspections.total_recorded = u64::MAX;
-        trace.inspections.overwritten = u64::MAX;
-        trace.inspections.rows = vec![
-            InspectionRecord {
-                sequence: u64::MAX,
-                term: u64::MAX,
-                index: u64::MAX,
-                inspect_started_ns: u64::MAX,
-                inspect_finished_ns: u64::MAX,
-                registration_age_ns: u64::MAX,
-                outcome: InspectionOutcome::FenceRejected,
-            };
-            CAPACITY
-        ];
-        assert!(serde_json::to_vec(&trace).unwrap().len() < 384 * 1024);
-    }
-
     #[test]
     fn export_inventory_is_fixed_and_worst_case_document_fits_the_cap() {
         let (admission, driver) = fixture();
@@ -467,7 +377,6 @@ mod tests {
         assert_eq!(metrics.len(), METRIC_COUNT);
         let names: std::collections::BTreeSet<_> = metrics.iter().map(|m| m.name).collect();
         assert_eq!(names.len(), METRIC_COUNT);
-        assert!(names.contains("public_transaction_backend"));
         assert!(names.contains("raft_application_wait"));
         assert!(names.contains("raft_pump_service"));
         assert!(names.contains("raft_pump_idle_wait"));

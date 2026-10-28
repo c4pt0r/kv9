@@ -119,22 +119,14 @@ impl CommittedMigration {
     }
 }
 
-fn rows<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<Row>> {
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded migration task scan exceeded"));
-    }
-    Ok(rows)
-}
-
 fn decode<E: Engine>(
     txn: &MetaTxn<'_, E>,
-    rows: &[Row],
     root: RootDigest,
 ) -> Result<Vec<(MigrationIntent, CreationIntent)>> {
-    let activations = activation::decode(txn, rows, root)?;
+    let activations = activation::decode(txn, root)?;
     let mut intents: Vec<(MigrationIntent, CreationIntent)> = Vec::new();
-    for row in rows {
+    for row in task_rows(txn) {
+        let row = row?;
         if row.value.get(ColumnId(2)) != Some(&ColumnValue::Uint(MIGRATE_REPLICA)) {
             continue;
         }
@@ -179,8 +171,9 @@ fn decode<E: Engine>(
                 .collect();
             region_ops.push(intent.operation);
             let mut aborted = 0usize;
-            for row in rows {
-                if let Some(abort) = super::abort::from_abort_row(row, root)? {
+            for row in task_rows(txn) {
+                let row = row?;
+                if let Some(abort) = super::abort::from_abort_row(&row, root)? {
                     if region_ops.contains(&abort.operation()) {
                         aborted += 1;
                     }
@@ -215,8 +208,7 @@ pub fn plan_migration<E: Engine>(
         .ok_or_else(|| invalid("migration creation is missing"))?;
     let creation = from_row(&creation_row, root.digest())?
         .ok_or_else(|| invalid("migration creation row differs"))?;
-    let rows = rows(txn)?;
-    if !activation::decode(txn, &rows, root.digest())?.contains(&creation) {
+    if !activation::decode(txn, root.digest())?.contains(&creation) {
         return Err(invalid("migration requires the committed activation"));
     }
     let endpoint = crate::endpoint::node_endpoint(txn, destination)?
@@ -234,7 +226,7 @@ pub fn plan_migration<E: Engine>(
         },
     };
     intent.matches_creation(&creation)?;
-    for (previous, _) in decode(txn, &rows, root.digest())? {
+    for (previous, _) in decode(txn, root.digest())? {
         if previous.operation == operation {
             let expected = MigrationIntent {
                 task: previous.task,
@@ -249,19 +241,18 @@ pub fn plan_migration<E: Engine>(
             // A committed ABORT settles the previous operation permanently:
             // the region is re-migratable — that is the recovery. An
             // unsettled or evidenced predecessor keeps refusing.
-            let aborted = rows.iter().any(|row| {
-                super::abort::from_abort_row(row, root.digest())
-                    .ok()
-                    .flatten()
+            let mut aborted = false;
+            for row in task_rows(txn) {
+                if super::abort::from_abort_row(&row?, root.digest())?
                     .is_some_and(|a| a.operation() == previous.operation)
-            });
+                {
+                    aborted = true;
+                }
+            }
             if !aborted {
                 return Err(invalid("a committed migration already binds this group"));
             }
         }
-    }
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("migration task capacity reached"));
     }
     let intent = MigrationIntent {
         task: txn.allocate_id(SequenceKind::Task)?,
@@ -287,10 +278,9 @@ pub fn plan_migration<E: Engine>(
 /// planner so both readers apply identical committed-authority rules.
 pub(crate) fn committed_migrations_in_txn<E: Engine>(
     txn: &MetaTxn<'_, E>,
-    rows: &[Row],
     root: RootDigest,
 ) -> Result<Vec<MigrationIntent>> {
-    Ok(decode(txn, rows, root)?
+    Ok(decode(txn, root)?
         .into_iter()
         .map(|(intent, _)| intent)
         .collect())
@@ -303,7 +293,7 @@ pub fn committed_migrations<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Commi
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("migration readback requires a certified metadata root"))?;
-    Ok(decode(&txn, &rows(&txn)?, root.digest())?
+    Ok(decode(&txn, root.digest())?
         .into_iter()
         .map(|(intent, creation)| CommittedMigration {
             intent,
@@ -513,22 +503,23 @@ mod tests {
     }
 
     #[test]
-    fn migration_respects_shared_task_capacity() {
+    fn migration_continues_after_historical_task_boundary() {
         let store = super::super::tests::fixture();
         register_node(&store, 4, [40; 16]);
         let creation = committed_group(&store, 1);
         let mut txn = store.begin().unwrap();
-        // Two committed rows exist; fill to exactly the shared budget.
+        // Fill past a page and to the former total-history ceiling.
         for id in 2..=254 {
             plan_empty_group(&mut txn, [id; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
         }
         txn.commit().unwrap();
         let mut txn = store.begin().unwrap();
-        assert!(
-            plan_migration(&mut txn, [255; 16], creation.task(), NodeId(4)).is_err(),
-            "the shared 255-row budget bounds migration rows"
-        );
-        drop(txn);
-        assert!(committed_migrations(&store).unwrap().is_empty());
+        let (migration, fresh) =
+            plan_migration(&mut txn, [255; 16], creation.task(), NodeId(4)).unwrap();
+        assert!(fresh);
+        txn.commit().unwrap();
+        let committed = committed_migrations(&store).unwrap();
+        assert_eq!(committed.len(), 1);
+        assert_eq!(committed[0].intent(), &migration);
     }
 }

@@ -229,24 +229,18 @@ grep -q "keyspace KeyspaceId(${unknown_keyspace}) not found" <<<"$unknown_output
   echo "      full reply: $unknown_output" >&2
   exit 1; }
 
-# A txn keyspace must refuse raw writes: Percolator expects its own lock/write structure
-# there, and raw bytes would corrupt that silently.
-leader_client create-keyspace --name raw-e2e-txn --api-type txn
-txn_out="$leader_reply"
-txn_keyspace="$(awk -F= '$1 == "keyspace_id" { print $2 }' <<<"$txn_out")"
-test -n "$txn_keyspace" || { echo "FAIL: could not create the txn keyspace" >&2; exit 1; }
+# Transactional keyspaces were removed: asking for one must be refused by the CLI's
+# argument gate, never silently downgraded to a raw keyspace.
 set +e
-leader_client raw-put --keyspace "$txn_keyspace" --key-hex "$key_hex" --value-hex "$value_hex"
-mismatch_rc=$?
+leader_client create-keyspace --name raw-e2e-txn --api-type txn
+txn_rc=$?
 set -e
-mismatch_output="$leader_reply"
-test "$mismatch_rc" -ne 0 || {
-  echo "FAIL: raw write accepted into a txn keyspace: $mismatch_output" >&2; exit 1; }
-# Same rule as above, and pinned to the txn keyspace we actually created.
-grep -q "api type mismatch for keyspace KeyspaceId(${txn_keyspace})" <<<"$mismatch_output" || {
-  echo "FAIL: txn-mismatch refusal did not come from the api-type gate." >&2
-  echo "      wanted substring: api type mismatch for keyspace KeyspaceId(${txn_keyspace})" >&2
-  echo "      full reply: $mismatch_output" >&2
+txn_output="$leader_reply"
+test "$txn_rc" -ne 0 || {
+  echo "FAIL: a txn keyspace was created: $txn_output" >&2; exit 1; }
+grep -q -- "--api-type must be raw" <<<"$txn_output" || {
+  echo "FAIL: txn refusal did not come from the api-type gate." >&2
+  echo "      full reply: $txn_output" >&2
   exit 1; }
 
 # Control: a valid context on the same path answers normally (the key is not written
@@ -279,6 +273,42 @@ leader_client raw-scan --keyspace "$keyspace"
 scan_output="$leader_reply"
 grep -q "key_hex=${key_hex} value_hex=${value_hex}" <<<"$scan_output" || { echo "FAIL: scan missing the row: $scan_output" >&2; exit 1; }
 grep -q "^count=1$" <<<"$scan_output" || { echo "FAIL: scan count wrong: $scan_output" >&2; exit 1; }
+
+# ---------------------------------------------------------------- atomic range batch
+# One RawBatch = one Raft entry: the two puts and the delete of the key written above land
+# together at ONE applied position, and the read-back reflects all of them.
+batch_a_hex="$(printf 'batch-a' | od -An -tx1 | tr -d ' \n')"
+batch_b_hex="$(printf 'batch-b' | od -An -tx1 | tr -d ' \n')"
+batch_v_hex="$(printf 'batch-v' | od -An -tx1 | tr -d ' \n')"
+leader_client raw-batch --keyspace "$keyspace" \
+  --mutation "put:${batch_a_hex}:${batch_v_hex}" \
+  --mutation "put:${batch_b_hex}:${batch_v_hex}" \
+  --mutation "delete:${key_hex}"
+batch_output="$leader_reply"
+batch_index="$(awk -F= '$1 == "applied_index" { print $2 }' <<<"$batch_output")"
+test -n "$batch_index" && test "$batch_index" -gt "$write_index" || {
+  echo "FAIL: raw-batch did not report an applied position after the put: $batch_output" >&2; exit 1; }
+leader_client raw-get --keyspace "$keyspace" --key-hex "$key_hex"
+test "$leader_reply" = "found=false" || { echo "FAIL: batched delete not applied: $leader_reply" >&2; exit 1; }
+leader_client raw-get --keyspace "$keyspace" --key-hex "$batch_b_hex"
+test "$leader_reply" = "value_hex=${batch_v_hex}" || { echo "FAIL: batched put not applied: $leader_reply" >&2; exit 1; }
+leader_client raw-scan --keyspace "$keyspace"
+grep -q "^count=2$" <<<"$leader_reply" || { echo "FAIL: scan after batch count wrong: $leader_reply" >&2; exit 1; }
+echo "Atomic range batch applied at index ${batch_index}."
+# Restore the original state with a second batch (two deletes + the put back) so the
+# follower/partition/delete-range checks below see exactly the rows they expect. This is
+# now the last pre-failover write, so the failover checks below fence on ITS position.
+leader_client raw-batch --keyspace "$keyspace" \
+  --mutation "delete:${batch_a_hex}" \
+  --mutation "delete:${batch_b_hex}" \
+  --mutation "put:${key_hex}:${value_hex}"
+restore_output="$leader_reply"
+leader_client raw-scan --keyspace "$keyspace"
+grep -q "^count=1$" <<<"$leader_reply" || { echo "FAIL: restore batch left the wrong rows: $leader_reply" >&2; exit 1; }
+write_term="$(awk -F= '$1 == "applied_term" { print $2 }' <<<"$restore_output")"
+write_index="$(awk -F= '$1 == "applied_index" { print $2 }' <<<"$restore_output")"
+test "$write_index" -gt "$batch_index" || { echo "FAIL: restore put did not advance past the batch: $restore_output" >&2; exit 1; }
+echo "Restored the row at (term=${write_term}, index=${write_index})."
 
 # A follower must refuse, and say so in a form a script can branch on. Role is sampled
 # both before and after the RPC: if an election overlaps the request, a successful read

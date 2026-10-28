@@ -8,28 +8,22 @@ service Kv9 {
   // Scoped methods are distinct: an older service cannot ignore routing identity.
   rpc LookupRawRoute(LookupRawRouteRequest) returns (LookupRawRouteResponse);
   rpc RoutedRaw(RoutedRawRequest) returns (RoutedRawResponse);
+  // Distinct method: old peers must never silently discard TTL presence.
+  rpc RawTtl(RawTtlRequest) returns (RawTtlResponse);
+  // Explicit one-way format activation. Every success carries a NEW receipt.
+  rpc ActivateRawTtl(ActivateRawTtlRequest) returns (RawTtlResponse);
 
   // Direct/raw KV.
   rpc RawGet(RawGetRequest) returns (RawGetResponse);
   rpc RawBatchGet(RawBatchGetRequest) returns (RawBatchGetResponse);
   rpc RawPut(RawPutRequest) returns (RawWriteResponse);
   rpc RawBatchPut(RawBatchPutRequest) returns (RawWriteResponse);
+  // Atomic range batch: mixed puts/deletes applied as ONE Raft entry. Every key
+  // must lie in one range; a batch that crosses a range is refused, never split.
+  rpc RawBatch(RawBatchRequest) returns (RawWriteResponse);
   rpc RawDelete(RawDeleteRequest) returns (RawWriteResponse);
   rpc RawScan(RawScanRequest) returns (ScanResponse);
   rpc RawDeleteRange(RawDeleteRangeRequest) returns (RawDeleteRangeResponse);
-
-  // Snapshot-Isolation transactions.
-  rpc KvBegin(KvBeginRequest) returns (KvBeginResponse);
-  rpc KvGet(KvGetRequest) returns (KvGetResponse);
-  rpc KvBatchGet(KvBatchGetRequest) returns (KvBatchGetResponse);
-  rpc KvScan(KvScanRequest) returns (ScanResponse);
-  rpc KvPrewrite(KvPrewriteRequest) returns (Empty);
-  rpc KvCommit(KvCommitRequest) returns (Empty);
-  rpc KvPessimisticLock(KvPessimisticLockRequest) returns (Empty);
-  rpc KvPessimisticRollback(KvPessimisticRollbackRequest) returns (Empty);
-  rpc KvResolveLock(KvResolveLockRequest) returns (Empty);
-  rpc KvCleanup(KvCleanupRequest) returns (Empty);
-  rpc KvCheckTxnStatus(KvCheckTxnStatusRequest) returns (KvCheckTxnStatusResponse);
 
   // Metadata / administration.
   rpc CreateDataGroup(CreateDataGroupRequest) returns (CreateDataGroupResponse);
@@ -72,6 +66,54 @@ service Kv9 {
 }
 
 message Empty {}
+
+// Exact range identity and protocol generation are mandatory. A capabilities
+// request confirms this contract on the target; it does not activate a group.
+message RawTtlRequest {
+  bytes binding = 1;
+  uint32 protocol_version = 2;
+  uint64 budget_micros = 3; // 1..30_000_000, shared by all server stages.
+  oneof operation {
+    Empty capabilities = 4;
+    RoutedKeys get = 5;
+    RawTtlPut put = 6;
+    bytes delete_key = 7;
+    RawTtlScan scan = 8;
+    RawTtlScan delete_range = 9; // V2: at most one bounded chunk, not a whole-range transaction.
+  }
+}
+message ActivateRawTtlRequest {
+  bytes binding = 1;
+  uint32 protocol_version = 2;
+  uint64 budget_micros = 3;
+}
+message RawTtlPut {
+  repeated KeyValue pairs = 1;
+  // Absent clears expiry, present zero expires at apply. Seconds, not ms.
+  optional uint64 ttl_secs = 2;
+}
+message RawTtlScan { bytes start = 1; bytes end = 2; uint32 limit = 3; }
+message RawTtlPage {
+  repeated KeyValue pairs = 1;
+  optional bytes next = 2; // Continue even if pairs is empty.
+  uint32 examined = 3;
+}
+message RawTtlDeleted {
+  uint32 processed_keys = 1;
+  RawWriteResponse applied = 2; // Present iff processed_keys > 0.
+  optional bytes next = 3; // Inclusive next position; no replay after an unknown result.
+}
+message RawTtlResponse {
+  bytes binding_digest = 1;
+  uint32 protocol_version = 2;
+  oneof result {
+    Empty capabilities = 3;
+    RawBatchGetResponse values = 4;
+    RawWriteResponse applied = 5;
+    RawTtlPage page = 6;
+    RawTtlDeleted deleted = 7;
+  }
+}
 
 message CreateDataKeyspaceRequest {
   bytes root_digest = 1;
@@ -142,8 +184,8 @@ message AttachMigrationLearnerResponse {
   uint64 cut_index = 4;
 }
 
-// Plan (only) the group leader's current durable cut manifest so the caller
-// can bind image owners through the metadata leader before capturing.
+// Durably select and independently register a fixed capture plan through
+// metadata Raft, then return its manifest for owner binding. No object I/O.
 message PlanMigrationImageRequest {
   bytes root_digest = 1;
   bytes operation_id = 2;
@@ -155,7 +197,7 @@ message PlanMigrationImageResponse {
 }
 
 // Capture one committed migration's source image at the group leader's
-// exact durable applied cut. Pins the closure before uploading; the record
+// registered immutable cut. Verifies Published pins before upload/readback; the record
 // grants no serving, voting, install or release capability.
 message CaptureMigrationImageRequest {
   bytes root_digest = 1;
@@ -557,6 +599,20 @@ message RawBatchPutRequest {
   repeated KeyValue pairs = 2;
 }
 
+// One mutation of an atomic range batch. Mutations apply in order (a later
+// entry for the same key wins); deleting an absent key is a no-op.
+message RawMutation {
+  oneof op {
+    KeyValue put = 1;
+    bytes delete = 2;
+  }
+}
+
+message RawBatchRequest {
+  RequestContext context = 1;
+  repeated RawMutation mutations = 2;
+}
+
 message RawDeleteRequest {
   RequestContext context = 1;
   bytes key = 2;
@@ -575,124 +631,9 @@ message RawDeleteRangeRequest {
   bytes end = 3;
 }
 
-message TransactionId {
-  uint64 txn_group_id = 1;
-  uint64 timeline_id = 2;
-  uint64 timeline_generation = 3;
-  uint64 start_ts = 4;
-}
-
-message QualifiedKey {
-  uint32 keyspace_id = 1;
-  bytes user_key = 2;
-}
-
-message TransactionDescriptor {
-  uint32 keyspace_id = 1;
-  TransactionId id = 2;
-  QualifiedKey primary = 3;
-}
-
-message KvBeginRequest {
-  RequestContext context = 1;
-  QualifiedKey primary = 2;
-}
-
-message KvBeginResponse {
-  TransactionDescriptor transaction = 1;
-}
-
-message KvGetRequest {
-  RequestContext context = 1;
-  bytes key = 2;
-  TransactionDescriptor transaction = 3;
-}
-
-message KvGetResponse {
-  OptionalValue value = 1;
-}
-
-message KvBatchGetRequest {
-  RequestContext context = 1;
-  repeated bytes keys = 2;
-  TransactionDescriptor transaction = 3;
-}
-
-message KvBatchGetResponse {
-  // Positionally aligned with the request keys.
-  repeated OptionalValue values = 1;
-}
-
-message KvScanRequest {
-  RequestContext context = 1;
-  bytes start = 2;
-  bytes end = 3;
-  uint32 limit = 4;
-  TransactionDescriptor transaction = 5;
-}
-
-message Mutation {
-  bytes key = 1;
-  oneof operation {
-    bytes put_value = 2;
-    bool delete = 3;
-  }
-}
-
-message KvPrewriteRequest {
-  RequestContext context = 1;
-  repeated Mutation mutations = 2;
-  TransactionDescriptor transaction = 3;
-}
-
-message KvCommitRequest {
-  RequestContext context = 1;
-  repeated bytes keys = 2;
-  TransactionDescriptor transaction = 3;
-}
-
-message KvPessimisticLockRequest {
-  RequestContext context = 1;
-  repeated bytes keys = 2;
-  TransactionDescriptor transaction = 3;
-}
-
-message KvPessimisticRollbackRequest {
-  RequestContext context = 1;
-  repeated bytes keys = 2;
-  TransactionDescriptor transaction = 3;
-}
-
-message KvResolveLockRequest {
-  RequestContext context = 1;
-  TransactionDescriptor transaction = 2;
-}
-
-message KvCleanupRequest {
-  RequestContext context = 1;
-  bytes key = 2;
-  TransactionDescriptor transaction = 3;
-}
-
-message KvCheckTxnStatusRequest {
-  RequestContext context = 1;
-  TransactionDescriptor transaction = 2;
-}
-
-message KvCheckTxnStatusResponse {
-  oneof decision {
-    TxnLocked locked = 1;
-    uint64 committed_ts = 2;
-    TxnRolledBack rolled_back = 3;
-  }
-}
-
-message TxnLocked {}
-
-message TxnRolledBack {}
-
 enum ApiType {
   API_TYPE_UNSPECIFIED = 0;
+  // Retired: transactional keyspaces were removed. A request carrying it is refused.
   API_TYPE_TXN = 1;
   API_TYPE_RAW = 2;
 }
@@ -718,8 +659,8 @@ message Keyspace {
   string name = 2;
   uint64 tenant_id = 3;
   ApiType api_type = 4;
-  // Absent for raw keyspaces.
-  optional uint64 txn_group_id = 5;
+  // 5 was txn_group_id (retired with transactional keyspaces).
+  reserved 5;
 }
 
 message ListKeyspacesResponse {

@@ -39,28 +39,6 @@ impl TenantId {
     pub const DEFAULT: TenantId = TenantId(0);
 }
 
-/// Identifies a transaction/consistency domain = timestamp shard (DESIGN §3.6, §8.1).
-///
-/// Every `txn` keyspace belongs to exactly one txn group; a transaction never crosses
-/// a group boundary (the confinement invariant), which is what lets each group own an
-/// independent, sharded TSO timeline.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-pub struct TxnGroupId(pub u64);
-
-impl TxnGroupId {
-    /// The `default` txn group — one timeline, behaves like a single classic TSO
-    /// (DESIGN §3.6, §8.1).
-    pub const DEFAULT: TxnGroupId = TxnGroupId(0);
-}
-
-/// Identifies one TSO timeline (1:1 with a txn group) — DESIGN §8.1.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-pub struct TimelineId(pub u64);
-
-/// Identifies a TSO provider (pool member) hosting one or more timelines — DESIGN §8.1.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-pub struct TsoProviderId(pub u64);
-
 /// The immutable identity of one bootstrapped cluster (task #24, three-gate
 /// membership contract, gate 2).
 ///

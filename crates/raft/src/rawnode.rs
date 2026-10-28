@@ -32,6 +32,11 @@ use kv9_common::{Error, NodeId, RegionId, Result};
 use crate::lease_policy::{LeaseEpoch, LeasePolicy};
 use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 
+mod log_bytes;
+pub mod ttl_activation;
+pub mod ttl_split;
+mod write_pressure;
+
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 mod lease_gate;
 #[cfg(any(test, feature = "experimental-leader-lease"))]
@@ -138,6 +143,10 @@ pub struct PeerSnapshot {
     pub committed: u64,
     /// Raft-log first retained index (advances past a compaction floor).
     pub log_first_index: u64,
+    /// Includes unstable and uncommitted entries, unlike `committed`.
+    pub log_last_index: u64,
+    /// Local data-entry admission threshold; zero disables it.
+    pub max_write_log_entries: u64,
     pub step_errors: u64,
     pub promotable: bool,
     /// Highest conf-change index applied (0 = still on the seeded config).
@@ -169,6 +178,13 @@ pub struct RaftPeer<S: PersistentRaftStorage = MemStorage> {
 
 struct PeerInner<S: PersistentRaftStorage> {
     raw: RawNode<S>,
+    max_write_log_entries: u64,
+    log_debt: Option<kv9_common::log_budget::LogDebt>,
+    replica_pressure: Option<Arc<crate::replica_pressure::ReplicaPressure>>,
+    /// Bound once by the driver to its actual apply engine. This owns no
+    /// engine/FD; retirement is unaffected. Every prefix-deletion entry point
+    /// shares it, including callers holding only a cloned peer handle.
+    checkpoint_history: Option<Arc<kv9_engine::checkpoint_history::CheckpointHistory>>,
     #[cfg(any(test, feature = "experimental-leader-lease"))]
     lease: Option<lease_gate::InstalledLease>,
     /// Committed, non-empty entries not yet drained via [`DrainToken`].
@@ -196,8 +212,6 @@ struct PeerInner<S: PersistentRaftStorage> {
     /// invisible. Observability only; never fatal — a stale message from a
     /// removed peer must not be able to kill a healthy node.
     step_errors: u64,
-    #[cfg(feature = "write-path-diagnostics")]
-    write_diagnostics: crate::write_diagnostics::ReadyDiagnostics,
     /// Persistence failure is terminal for this incarnation. Never resume a
     /// RawNode whose Ready may have been only partly written or advanced.
     fatal: Option<String>,
@@ -429,6 +443,10 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             work_signal: Arc::new(crate::work::WorkSignal::default()),
             inner: Mutex::new(PeerInner {
                 raw,
+                max_write_log_entries: 0,
+                log_debt: None,
+                replica_pressure: None,
+                checkpoint_history: None,
                 #[cfg(any(test, feature = "experimental-leader-lease"))]
                 lease,
                 ready: Vec::new(),
@@ -438,8 +456,6 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 applied_reported: 0,
                 conf_applied,
                 step_errors: 0,
-                #[cfg(feature = "write-path-diagnostics")]
-                write_diagnostics: Default::default(),
                 fatal: None,
             }),
         })
@@ -459,6 +475,28 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         self.inner.lock().expect("raft peer poisoned")
     }
 
+    /// Called only by the unique driver's construction, before it can pump.
+    /// Restore the restriction from actual local protocol storage; an engine
+    /// that depends on an already erased cut cannot be attached.
+    pub(crate) fn bind_checkpoint_history(
+        &self,
+        history: Option<Arc<kv9_engine::checkpoint_history::CheckpointHistory>>,
+    ) -> Result<()> {
+        let mut g = self.lock();
+        g.check_fatal()?;
+        if let Some(history) = &history {
+            let first = g.raw.store().first_index().map_err(raft_err)?;
+            if first > 1 {
+                history.observe_compacted_base(kv9_common::AppliedPosition {
+                    term: g.raw.store().term(first - 1).map_err(raft_err)?,
+                    index: first - 1,
+                })?;
+            }
+        }
+        g.checkpoint_history = history;
+        Ok(())
+    }
+
     /// Durable committed configuration at-or-before one exact applied cut.
     /// Read-only under the peer lock; every refusal is typed, never guessed.
     /// The generic bound stays on the concrete durable storage: a volatile
@@ -472,6 +510,60 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     {
         let g = self.lock();
         g.raw.store().borrow().configuration_at_committed(cut)
+    }
+
+    /// One exact persisted DATA configuration source, serialized with the peer
+    /// owner. Absence is unknown, never an empty historical store set.
+    pub fn configuration_origin_at(
+        &self,
+        at: kv9_common::AppliedPosition,
+    ) -> Result<Option<crate::storage::configuration_origins::AppliedConfigurationOrigin>>
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        let g = self.lock();
+        g.check_fatal()?;
+        g.raw.store().borrow().configuration_origin_at(at)
+    }
+
+    /// Bounded exact-origin observations with independent ancestry gaps.
+    pub fn configuration_origins_page(
+        &self,
+        cursor: Option<crate::storage::configuration_origins::OriginCursor>,
+    ) -> Result<crate::storage::configuration_origins::OriginPage>
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        let g = self.lock();
+        g.check_fatal()?;
+        g.raw.store().borrow().configuration_origins_page(cursor)
+    }
+
+    /// Actual local configuration history; imported ancestry remains unknown.
+    pub fn configuration_timeline_page(
+        &self,
+        cursor: Option<crate::storage::configuration_timeline::TimelineCursor>,
+    ) -> Result<crate::storage::configuration_timeline::TimelinePage>
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        let g = self.lock();
+        g.check_fatal()?;
+        g.raw.store().borrow().configuration_timeline_page(cursor)
+    }
+
+    /// Bounded local observations of historical node roles. The result retains
+    /// gaps and is not store-incarnation or global membership authority.
+    pub fn membership_history_page(
+        &self,
+        cursor: Option<crate::storage::membership_history::MembershipCursor>,
+    ) -> Result<crate::storage::membership_history::MembershipPage>
+    where
+        S: std::borrow::Borrow<crate::storage::DiskRaftStorage>,
+    {
+        let g = self.lock();
+        g.check_fatal()?;
+        g.raw.store().borrow().membership_history_page(cursor)
     }
 
     /// Compact this replica's own retained log below one committed
@@ -541,7 +633,11 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 )))
             }
         };
-        store.compact_retained_prefix(floor, &configuration, decision)
+        let compact = || store.compact_retained_prefix(floor, &configuration, decision);
+        match &g.checkpoint_history {
+            Some(history) => history.with_compaction(floor, compact),
+            None => compact(),
+        }
     }
 
     /// Compact THIS replica's local log prefix at a floor whose all-matched
@@ -589,7 +685,11 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 )))
             }
         };
-        store.compact_retained_prefix(floor, &configuration, decision)
+        let compact = || store.compact_retained_prefix(floor, &configuration, decision);
+        match &g.checkpoint_history {
+            Some(history) => history.with_compaction(floor, compact),
+            None => compact(),
+        }
     }
 
     /// Retained committed-log payload bytes on THIS replica — the honest
@@ -683,15 +783,28 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// Propose on the leader, returning the locally assigned [`ProposedAt`].
     /// `propose` and the `last_index` read happen under one lock, so the pair is
     /// exact; it is still only a position claim (see [`ProposedAt`]).
+    #[cfg(any(test, feature = "testing"))]
     pub(crate) fn propose_traced(&self, data: Vec<u8>) -> Result<ProposedAt> {
-        self.propose_in_term(data, None)
+        self.propose_in_term(data, None, false)
+    }
+
+    /// All ordinary typed proposal faces share the activation bypass guard.
+    /// Committed replay and the explicit test-only byte injector are separate.
+    pub(crate) fn propose_command_in_term(
+        &self,
+        cmd: &crate::Command,
+        term: Option<u64>,
+    ) -> Result<ProposedAt> {
+        cmd.require_ordinary_proposal()?;
+        self.propose_in_term(cmd.encode(), term, cmd.requires_write_capacity())
     }
 
     /// Compare leadership and the planning term under the same lock as append.
-    pub(crate) fn propose_in_term(
+    fn propose_in_term(
         &self,
         data: Vec<u8>,
         expected: Option<u64>,
+        requires_write_capacity: bool,
     ) -> Result<ProposedAt> {
         let mut g = self.lock();
         g.check_fatal()?;
@@ -707,8 +820,21 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             ));
         }
         let term = g.raw.raft.term;
+        if requires_write_capacity {
+            g.check_write_pressure(self.region)?;
+        }
+        let bytes = data.len();
+        let claim = g.reserve_log_bytes(self.region, bytes, requires_write_capacity)?;
         g.raw.propose(Vec::new(), data).map_err(raft_err)?;
         let index = g.raw.raft.raft_log.last_index();
+        g.retain_proposed_bytes(
+            ProposedAt {
+                term,
+                index: LogIndex(index),
+            },
+            bytes,
+            claim,
+        )?;
         drop(g);
         self.work_signal.notify();
         Ok(ProposedAt {
@@ -816,14 +942,6 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         self.lock().step_errors
     }
 
-    #[cfg(feature = "write-path-diagnostics")]
-    pub(crate) fn write_ready_diagnostics(
-        &self,
-    ) -> Vec<crate::write_diagnostics::DistributionSnapshot> {
-        let observation = self.lock().write_diagnostics.clone();
-        observation.snapshots()
-    }
-
     /// Persist `Ready` and any commit advance from `LightReady` before publishing
     /// messages, committed entries or read states. Application is reported later.
     #[cfg(any(test, feature = "testing"))]
@@ -844,8 +962,6 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 Error::Raft("uncoordinated engine snapshot installation".into()),
             ));
         }
-        #[cfg(feature = "write-path-diagnostics")]
-        let ready_entry_count = ready.entries().len();
         // Quorum-confirmed read states (task #28): drained HERE because this
         // is the single Ready consumer — a second consumer would steal them
         // exactly like it would steal committed entries.
@@ -855,8 +971,14 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         //    BEFORE any message leaves this node — a vote must never outrun its
         //    own persistence).
         if !ready.entries().is_empty() || ready.hs().is_some() {
+            if let Err(cause) = g.retain_ready_bytes(ready.entries()) {
+                return Err(g.fail_storage("log obligation", cause));
+            }
             if let Err(cause) = g.raw.store().persist_ready(ready.entries(), ready.hs()) {
                 return Err(g.fail_storage("ready", cause));
+            }
+            if let Err(cause) = g.persisted_log_suffix(ready.entries()) {
+                return Err(g.fail_storage("log obligation suffix", cause));
             }
         }
         // 2. Collect messages locally; publish only after LightReady persistence.
@@ -870,8 +992,6 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         for e in ready.take_committed_entries() {
             committed.push(classify_entry(e));
         }
-        #[cfg(feature = "write-path-diagnostics")]
-        let ready_committed_count = committed.len();
         // `advance_append`, NOT `advance`: `advance()` internally marks apply
         // progress as caught up, but our apply happens later, when the driver
         // drains `take_ready`. raft-rs gates one-at-a-time conf-change safety
@@ -893,16 +1013,6 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         for e in light.take_committed_entries() {
             committed.push(classify_entry(e));
         }
-        #[cfg(feature = "write-path-diagnostics")]
-        {
-            g.write_diagnostics.entries.record(ready_entry_count as u64);
-            g.write_diagnostics
-                .committed
-                .record(ready_committed_count as u64);
-            g.write_diagnostics
-                .light_committed
-                .record((committed.len() - ready_committed_count) as u64);
-        }
         g.ready.extend(committed);
         g.outbox.extend(msgs);
         g.read_states.extend(read_states);
@@ -922,6 +1032,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         if g.fatal.is_none() && idx > g.applied_reported {
             g.applied_reported = idx;
             g.raw.advance_apply_to(idx);
+            if let Some(debt) = &g.log_debt {
+                debt.applied_through(idx);
+            }
         }
     }
 
@@ -936,6 +1049,13 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     }
 
     pub fn propose_conf_change_traced(&self, cc: ConfChangeV2) -> Result<ProposedAt> {
+        if crate::configuration_origin::ConfigurationOrigin::from_change(&cc)?
+            .is_some_and(|origin| origin.region != self.region)
+        {
+            return Err(Error::Raft(
+                "configuration origin belongs to another group".into(),
+            ));
+        }
         let mut g = self.lock();
         g.check_fatal()?;
         #[cfg(any(test, feature = "experimental-leader-lease"))]
@@ -999,6 +1119,13 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             EntryKind::ConfChangeV2 => {
                 let cc = ConfChangeV2::parse_from_bytes(data)
                     .map_err(|e| Error::Raft(format!("undecodable ConfChangeV2: {e}")))?;
+                if crate::configuration_origin::ConfigurationOrigin::from_change(&cc)?
+                    .is_some_and(|origin| origin.region != self.region)
+                {
+                    return Err(Error::Raft(
+                        "configuration origin belongs to another group".into(),
+                    ));
+                }
                 g.raw.apply_conf_change(&cc).map_err(raft_err)?
             }
             other => {
@@ -1049,6 +1176,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             term: g.raw.raft.term,
             committed: g.raw.raft.raft_log.committed,
             log_first_index: g.raw.raft.raft_log.first_index(),
+            log_last_index: g.raw.raft.raft_log.last_index(),
+            max_write_log_entries: g.max_write_log_entries,
             step_errors: g.step_errors,
             promotable: g.raw.raft.promotable(),
             conf_applied: g.conf_applied,
@@ -1129,8 +1258,7 @@ impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
     }
 
     fn propose(&self, cmd: &crate::Command) -> Result<LogIndex> {
-        let data = cmd.encode();
-        Ok(self.propose_traced(data)?.index)
+        Ok(self.propose_command_in_term(cmd, None)?.index)
     }
 
     fn committed_index(&self) -> LogIndex {
@@ -1540,7 +1668,7 @@ mod tests {
         let peer = RaftPeer::new(N1, R, &[N1]).unwrap();
         let empty = peer.lock().raw.raft.raft_log.last_index();
         assert!(matches!(
-            peer.propose_in_term(put(b"not-leader", b"v"), Some(1)),
+            peer.propose_in_term(put(b"not-leader", b"v"), Some(1), true),
             Err(Error::NotLeader { leader: None })
         ));
         assert_eq!(peer.lock().raw.raft.raft_log.last_index(), empty);
@@ -1550,7 +1678,7 @@ mod tests {
         let term = peer.term();
         let before = peer.lock().raw.raft.raft_log.last_index();
         assert!(matches!(
-            peer.propose_in_term(put(b"stale", b"v"), Some(term + 1)),
+            peer.propose_in_term(put(b"stale", b"v"), Some(term + 1), true),
             Err(Error::WriteConflict(_))
         ));
         assert_eq!(
@@ -1559,7 +1687,7 @@ mod tests {
             "stale plan never enters log"
         );
         assert_eq!(
-            peer.propose_in_term(put(b"fresh", b"v"), Some(term))
+            peer.propose_in_term(put(b"fresh", b"v"), Some(term), true)
                 .unwrap()
                 .index
                 .0,

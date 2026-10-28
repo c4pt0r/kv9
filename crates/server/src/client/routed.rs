@@ -8,6 +8,8 @@ use std::sync::Mutex;
 const ROUTE_REFUSED: &str = "kv9-route-refused";
 pub const MAX_CACHED_ROUTES: usize = 128;
 
+pub mod ttl;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RoutedConfig {
@@ -143,6 +145,21 @@ struct RoutedInner {
 pub struct RoutedRawClient(Arc<RoutedInner>);
 
 impl RoutedRawClient {
+    #[cfg(test)]
+    pub(crate) fn inject_test_channel(&self, address: SocketAddr, channel: Channel) {
+        self.0.connections.lock().unwrap().insert(
+            address,
+            Arc::new(Connection {
+                unary: Kv9Client::new(channel.clone())
+                    .max_encoding_message_size(MAX_MESSAGE_BYTES)
+                    .max_decoding_message_size(MAX_MESSAGE_BYTES),
+                stream: crate::point_stream::StreamClient::with_test_transport(
+                    channel,
+                    self.0.config.max_in_flight,
+                ),
+            }),
+        );
+    }
     pub fn new(config: RoutedConfig, token: &str) -> Result<Self, &'static str> {
         Self::new_with_transport(config, token, TransportKind::TonicStream)
     }

@@ -222,25 +222,22 @@ pub fn plan_install_evidence<E: Engine>(
     if receipt.root != root.digest() {
         return Err(invalid("evidence root differs from the certified root"));
     }
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded evidence task scan exceeded"));
-    }
-    let migration = super::migration::committed_migrations_in_txn(txn, &rows, root.digest())?
+    let migration = super::migration::committed_migrations_in_txn(txn, root.digest())?
         .into_iter()
         .find(|m| m.operation() == receipt.operation)
         .ok_or_else(|| invalid("evidence requires the committed migration"))?;
     matches_migration(&receipt, &migration)?;
     let mut existing = None;
-    for row in &rows {
-        if super::abort::from_abort_row(row, root.digest())?
+    for row in task_rows(txn) {
+        let row = row?;
+        if super::abort::from_abort_row(&row, root.digest())?
             .is_some_and(|a| a.operation() == receipt.operation)
         {
             return Err(invalid(
                 "a committed abort forbids evidencing an abandoned operation",
             ));
         }
-        if let Some(previous) = from_evidence_row(row, root.digest())? {
+        if let Some(previous) = from_evidence_row(&row, root.digest())? {
             if previous.operation == receipt.operation {
                 let expected = InstallEvidence {
                     task: previous.task,
@@ -257,9 +254,6 @@ pub fn plan_install_evidence<E: Engine>(
     }
     if let Some(previous) = existing {
         return Ok((previous, false));
-    }
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("evidence task capacity reached"));
     }
     let evidence = InstallEvidence {
         task: txn.allocate_id(SequenceKind::Task)?,
@@ -286,14 +280,11 @@ pub fn committed_install_evidence<E: Engine>(store: &MetaStore<E>) -> Result<Vec
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("evidence readback requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded evidence task scan exceeded"));
-    }
-    let migrations = super::migration::committed_migrations_in_txn(&txn, &rows, root.digest())?;
+    let migrations = super::migration::committed_migrations_in_txn(&txn, root.digest())?;
     let mut out: Vec<InstallEvidence> = Vec::new();
-    for row in &rows {
-        if let Some(evidence) = from_evidence_row(row, root.digest())? {
+    for row in task_rows(&txn) {
+        let row = row?;
+        if let Some(evidence) = from_evidence_row(&row, root.digest())? {
             let migration = migrations
                 .iter()
                 .find(|m| m.operation() == evidence.operation)
@@ -338,11 +329,10 @@ pub fn evidence_matches_owner_pair(
 ) -> Result<bool> {
     use kv9_engine::ColumnFamily;
     let (start, end) = crate::codec::row_range(TASKS_DESC.id)?;
-    let entries = view.scan(ColumnFamily::Default, &start, &end, MAX_CREATION_TASKS + 1)?;
-    if entries.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded evidence task scan exceeded"));
-    }
-    for (key, value) in entries {
+    let entries = view.iter(ColumnFamily::Default, &start, &end)?;
+    let mut matched = false;
+    for entry in entries {
+        let (key, value) = entry?;
         let row_value = RowValue::decode(&value)?;
         if row_value.get(ColumnId(2)) != Some(&ColumnValue::Uint(INSTALL_EVIDENCE)) {
             continue;
@@ -360,10 +350,10 @@ pub fn evidence_matches_owner_pair(
         if migration_operation_digest(root, evidence.operation) == operation_digest
             && evidence.subject == subject
         {
-            return Ok(true);
+            matched = true;
         }
     }
-    Ok(false)
+    Ok(matched)
 }
 
 #[cfg(test)]
@@ -414,6 +404,7 @@ mod tests {
     #[test]
     fn evidence_requires_the_committed_migration_and_matches_it_exactly() {
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         let migration = committed_migration(&store);
         let receipt = receipt_bytes(&migration);
         {
@@ -525,6 +516,7 @@ mod tests {
     #[test]
     fn the_view_probe_matches_only_the_exact_owner_pair_derivation() {
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         let migration = committed_migration(&store);
         let root = migration.root();
         let digest = migration_operation_digest(root, migration.operation());
@@ -533,6 +525,7 @@ mod tests {
         let mut txn = store.begin().unwrap();
         plan_install_evidence(&mut txn, &receipt_bytes(&migration)).unwrap();
         txn.commit().unwrap();
+        assert!(!evidence_matches_owner_pair(view.as_ref(), root, digest, [42; 32]).unwrap());
         let view = store.engine().snapshot().unwrap();
         assert!(evidence_matches_owner_pair(view.as_ref(), root, digest, [42; 32]).unwrap());
         assert!(!evidence_matches_owner_pair(view.as_ref(), root, digest, [43; 32]).unwrap());
@@ -543,5 +536,17 @@ mod tests {
             [42; 32]
         )
         .unwrap());
+        // A retained snapshot remains valid; a new snapshot must surface
+        // malformed tail rows even after an earlier matching authority.
+        let mut batch = kv9_engine::WriteBatch::new();
+        batch.put(
+            kv9_engine::ColumnFamily::Default,
+            crate::codec::encode_row_key(TASKS_DESC.id, &[memcmp_uint(u64::MAX)]).unwrap(),
+            vec![255],
+        );
+        store.engine().write(batch).unwrap();
+        assert!(evidence_matches_owner_pair(view.as_ref(), root, digest, [42; 32]).unwrap());
+        let corrupt = store.engine().snapshot().unwrap();
+        assert!(evidence_matches_owner_pair(corrupt.as_ref(), root, digest, [42; 32]).is_err());
     }
 }

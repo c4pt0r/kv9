@@ -17,7 +17,9 @@ fn bounded(count: usize, bytes: usize) -> Kv9Grpc {
 
 #[tokio::test(flavor = "current_thread")]
 async fn retention_requests_enforce_auth_identity_byte_bounds_and_admission() {
-    let service = bounded(1, 64 * 1024);
+    // The byte budget must admit the oversized ledger request so that the
+    // ledger bound, not admission, is what refuses it.
+    let service = bounded(1, 2 * kv9_meta::retention::MAX_LEDGER_REQUEST_BYTES);
     let oversized = proto::ApplyRetentionRequest {
         command: vec![0; kv9_meta::retention::MAX_LEDGER_REQUEST_BYTES + 1],
     };
@@ -214,20 +216,10 @@ async fn admission_covers_every_public_handler_before_preparation() {
     refused!(raw_batch_get, RawBatchGetRequest);
     refused!(raw_put, RawPutRequest);
     refused!(raw_batch_put, RawBatchPutRequest);
+    refused!(raw_batch, RawBatchRequest);
     refused!(raw_delete, RawDeleteRequest);
     refused!(raw_scan, RawScanRequest);
     refused!(raw_delete_range, RawDeleteRangeRequest);
-    refused!(kv_begin, KvBeginRequest);
-    refused!(kv_get, KvGetRequest);
-    refused!(kv_batch_get, KvBatchGetRequest);
-    refused!(kv_scan, KvScanRequest);
-    refused!(kv_prewrite, KvPrewriteRequest);
-    refused!(kv_commit, KvCommitRequest);
-    refused!(kv_pessimistic_lock, KvPessimisticLockRequest);
-    refused!(kv_pessimistic_rollback, KvPessimisticRollbackRequest);
-    refused!(kv_resolve_lock, KvResolveLockRequest);
-    refused!(kv_cleanup, KvCleanupRequest);
-    refused!(kv_check_txn_status, KvCheckTxnStatusRequest);
     refused!(create_keyspace, CreateKeyspaceRequest);
     refused!(list_keyspaces, ListKeyspacesRequest);
     refused!(get_region, GetRegionRequest);
@@ -259,7 +251,7 @@ async fn admission_covers_every_public_handler_before_preparation() {
             .iter()
             .map(|c| c.refused_count)
             .sum::<u64>(),
-        25
+        15
     );
     drop(held);
     assert!(service

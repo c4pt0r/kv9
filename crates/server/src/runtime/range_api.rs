@@ -8,29 +8,33 @@ use kv9_common::data_range::{DataRange, RANGE_KEY};
 use kv9_engine::ColumnFamily;
 
 #[derive(Default)]
-pub(crate) struct RawDirectory(Mutex<BTreeMap<RegionId, Arc<RawGroup>>>);
+pub(crate) struct RawDirectory {
+    groups: Mutex<BTreeMap<RegionId, Arc<RawGroup>>>,
+    clock: Option<Arc<dyn crate::ttl_clock::TtlClock>>,
+}
 impl RawDirectory {
+    pub(crate) fn with_clock(clock: Option<Arc<dyn crate::ttl_clock::TtlClock>>) -> Self {
+        Self {
+            groups: Mutex::default(),
+            clock,
+        }
+    }
+    pub(crate) fn clock(&self) -> Option<Arc<dyn crate::ttl_clock::TtlClock>> {
+        self.clock.clone()
+    }
     /// Key-aware resolution for a possibly split keyspace: the ONE unsealed
     /// group whose range contains `key`. Sealed parents never resolve; the
     /// per-request `authorize` still re-checks containment and the epoch.
     pub(crate) fn get_for(&self, keyspace: KeyspaceId, key: &[u8]) -> Option<Arc<RawGroup>> {
-        let groups = self.0.lock().expect("raw directory poisoned");
+        let groups = self.groups.lock().expect("raw directory poisoned");
         let mut matches = groups.values().filter(|g| {
             g.binding.keyspace == keyspace && !g.binding.sealed && g.binding.contains(key)
         });
         let only = matches.next()?.clone();
         matches.next().is_none().then_some(only)
     }
-    /// Any unsealed group of the keyspace, for keyless leader hints.
-    pub(crate) fn any_unsealed(&self, keyspace: KeyspaceId) -> Option<Arc<RawGroup>> {
-        let groups = self.0.lock().expect("raw directory poisoned");
-        groups
-            .values()
-            .find(|g| g.binding.keyspace == keyspace && !g.binding.sealed)
-            .cloned()
-    }
     pub(crate) fn scoped(&self, scope: &DataRange) -> Result<Arc<dyn RawApi>> {
-        let groups = self.0.lock().expect("raw directory poisoned");
+        let groups = self.groups.lock().expect("raw directory poisoned");
         let group = groups
             .get(&scope.region)
             .filter(|g| g.binding == *scope)
@@ -40,7 +44,7 @@ impl RawDirectory {
         Ok(group.clone())
     }
     pub(crate) fn remove(&self, region: kv9_common::RegionId) {
-        self.0
+        self.groups
             .lock()
             .expect("raw directory poisoned")
             .remove(&region);
@@ -50,184 +54,48 @@ impl RawDirectory {
         // directory advances (a parent sealing, a version bump). Serving
         // authorization re-reads the engine row per request either way; a
         // stale cached binding must never keep resolving a sealed range.
-        self.0
+        self.groups
             .lock()
             .expect("raw directory poisoned")
             .insert(group.binding.region, group);
     }
     pub(crate) fn clear(&self) {
-        self.0.lock().expect("raw directory poisoned").clear();
+        self.groups.lock().expect("raw directory poisoned").clear();
     }
     pub(crate) fn by_region(&self, region: RegionId) -> Option<Arc<RawGroup>> {
-        self.0
+        self.groups
             .lock()
             .expect("raw directory poisoned")
             .get(&region)
             .cloned()
     }
+    /// One round-robin candidate; never copy the complete directory or retain
+    /// its lock while a maintenance job reads storage or waits on consensus.
+    pub(crate) fn next_after(&self, after: Option<RegionId>) -> Option<Arc<RawGroup>> {
+        use std::ops::Bound::{Excluded, Unbounded};
+        let groups = self.groups.lock().expect("raw directory poisoned");
+        after
+            .and_then(|id| groups.range((Excluded(id), Unbounded)).next())
+            .or_else(|| groups.first_key_value())
+            .map(|(_, group)| group.clone())
+    }
 }
 
 pub(crate) struct RawGroup {
+    clock: Option<Arc<dyn crate::ttl_clock::TtlClock>>,
     binding: DataRange,
     engine: Arc<WalEngine>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
-    aggregator: WriteAggregator,
-    /// KV9_MAX_RAFT_LOG_ENTRIES: end-to-end write backpressure (#20). When the
-    /// group's retained committed log (`raft_committed - log_first_index`)
-    /// reaches this bound, raw WRITES are refused with a retryable
-    /// backpressure error until compaction drains it — bounding absolute log
-    /// growth when writes outrun commit+compaction (a lagging voter blocking
-    /// truncation, a client faster than fsync). 0 disables (default). Reads are
-    /// never gated.
-    max_log_entries: u64,
 }
 impl RawGroup {
+    pub(crate) fn same_owner(&self, other: &Self) -> bool {
+        self.binding == other.binding
+            && Arc::ptr_eq(&self.driver, &other.driver)
+            && Arc::ptr_eq(&self.engine, &other.engine)
+    }
     pub(crate) fn range_binding(&self) -> &DataRange {
         &self.binding
     }
-}
-
-/// Bounded proposal aggregation for PUBLIC raw writes (#20 slice): in-flight
-/// SAME-EPOCH fenced writes of one group coalesce into ONE raft entry —
-/// applied atomically at one exact position that every participant receives
-/// as its receipt. Disabled unless KV9_PROPOSAL_BATCH_OPS > 0; the delay
-/// window (KV9_PROPOSAL_BATCH_DELAY_MS, clamped to 50ms) bounds the latency
-/// cost, and byte/op caps bound the entry. Catalog transactions, migration
-/// verbs and every non-raw path are untouched: they keep their own
-/// term-fenced one-command semantics.
-pub(crate) struct WriteAggregator {
-    ops_cap: usize,
-    bytes_cap: usize,
-    delay: Duration,
-    open: Mutex<Option<Arc<OpenBatch>>>,
-}
-
-struct OpenBatch {
-    inner: Mutex<Option<OpenInner>>,
-    flush: tokio::sync::Notify,
-}
-
-struct OpenInner {
-    fence: kv9_raft::RegionFence,
-    batch: kv9_engine::WriteBatch,
-    bytes: usize,
-    waiters: Vec<tokio::sync::oneshot::Sender<std::result::Result<AppliedPosition, SharedError>>>,
-}
-
-/// A fan-out-safe error image: routing-critical variants stay typed so a
-/// batched writer still receives its NotLeader hint or StaleEpoch signal.
-#[derive(Clone)]
-enum SharedError {
-    NotLeader { leader: Option<NodeId> },
-    StaleEpoch { region: RegionId },
-    Other(String),
-}
-
-impl SharedError {
-    fn capture(error: &Error) -> Self {
-        match error {
-            Error::NotLeader { leader } => SharedError::NotLeader { leader: *leader },
-            Error::StaleEpoch { region } => SharedError::StaleEpoch { region: *region },
-            other => SharedError::Other(other.to_string()),
-        }
-    }
-    fn into_error(self) -> Error {
-        match self {
-            SharedError::NotLeader { leader } => Error::NotLeader { leader },
-            SharedError::StaleEpoch { region } => Error::StaleEpoch { region },
-            SharedError::Other(message) => Error::Raft(message),
-        }
-    }
-}
-
-fn batch_bytes(batch: &kv9_engine::WriteBatch) -> usize {
-    batch
-        .mutations()
-        .iter()
-        .map(|m| match m {
-            kv9_engine::Mutation::Put { key, value, .. } => key.len() + value.len(),
-            kv9_engine::Mutation::Delete { key, .. } => key.len(),
-        })
-        .sum()
-}
-
-impl WriteAggregator {
-    fn from_env() -> Self {
-        let ops_cap = std::env::var("KV9_PROPOSAL_BATCH_OPS")
-            .ok()
-            .and_then(|v| v.parse().ok())
-            .unwrap_or(0);
-        let delay_ms: u64 = std::env::var("KV9_PROPOSAL_BATCH_DELAY_MS")
-            .ok()
-            .and_then(|v| v.parse().ok())
-            .unwrap_or(2)
-            .min(50);
-        Self {
-            ops_cap,
-            bytes_cap: 1 << 20,
-            delay: Duration::from_millis(delay_ms),
-            open: Mutex::new(None),
-        }
-    }
-
-    fn enabled(&self) -> bool {
-        self.ops_cap > 0
-    }
-
-    /// Stage one fenced write. Returns either a follower's wait on an open
-    /// batch, or the leadership of a NEW batch (the caller must flush it
-    /// after the delay window). Only equal-fence writes merge; a mismatch
-    /// closes the open batch immediately so its leader proposes without
-    /// waiting out the window.
-    fn stage(&self, fence: kv9_raft::RegionFence, batch: kv9_engine::WriteBatch) -> Staged {
-        let bytes = batch_bytes(&batch);
-        let mut open = self.open.lock().expect("aggregator poisoned");
-        if let Some(state) = open.as_ref() {
-            let mut inner = state.inner.lock().expect("open batch poisoned");
-            match inner.as_mut() {
-                Some(current)
-                    if current.fence == fence
-                        && current.batch.len() + batch.len() <= self.ops_cap
-                        && current.bytes + bytes <= self.bytes_cap =>
-                {
-                    current.batch.append(batch);
-                    current.bytes += bytes;
-                    let (tx, rx) = tokio::sync::oneshot::channel();
-                    current.waiters.push(tx);
-                    let full = current.batch.len() >= self.ops_cap;
-                    drop(inner);
-                    if full {
-                        state.flush.notify_waiters();
-                    }
-                    return Staged::Joined(rx);
-                }
-                Some(_) => {
-                    // Fence or capacity mismatch: close the open batch now.
-                    drop(inner);
-                    state.flush.notify_waiters();
-                }
-                None => {}
-            }
-        }
-        let state = Arc::new(OpenBatch {
-            inner: Mutex::new(Some(OpenInner {
-                fence,
-                batch,
-                bytes,
-                waiters: Vec::new(),
-            })),
-            flush: tokio::sync::Notify::new(),
-        });
-        *open = Some(state.clone());
-        Staged::Leader(state)
-    }
-}
-
-enum Staged {
-    /// This write joined an open batch; await the shared receipt.
-    Joined(tokio::sync::oneshot::Receiver<std::result::Result<AppliedPosition, SharedError>>),
-    /// This write opened the batch and owns its flush.
-    Leader(Arc<OpenBatch>),
 }
 
 struct RangePermit(kv9_raft::RegionFence);
@@ -237,16 +105,13 @@ impl RawGroup {
         binding: DataRange,
         engine: Arc<WalEngine>,
         driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
+        clock: Option<Arc<dyn crate::ttl_clock::TtlClock>>,
     ) -> Arc<Self> {
         Arc::new(Self {
+            clock,
             binding,
             engine,
             driver,
-            aggregator: WriteAggregator::from_env(),
-            max_log_entries: std::env::var("KV9_MAX_RAFT_LOG_ENTRIES")
-                .ok()
-                .and_then(|v| v.parse().ok())
-                .unwrap_or(0),
         })
     }
     /// Read-only handles for driver-owned source capture. This grants no
@@ -265,6 +130,23 @@ impl RawGroup {
         self.driver.status().leader_id
     }
     fn authorize(
+        &self,
+        view: &dyn ReadView,
+        ctx: &RequestContext,
+        span: KeySpan<'_>,
+    ) -> Result<RangePermit> {
+        // Legacy reads never inherit TTL capabilities: the distinct TTL path
+        // commits time before reading. Check this reader's actual snapshot.
+        if let Some(bytes) = view.get(ColumnFamily::Default, kv9_common::raw_ttl::CLOCK_KEY)? {
+            kv9_common::raw_ttl::ClockWatermark::decode(&bytes)?;
+            return Err(Error::RawTtlRejected {
+                region: self.binding.region,
+                reason: kv9_common::raw_ttl::TtlRejection::LegacyCommand,
+            });
+        }
+        self.authorize_range(view, ctx, span)
+    }
+    fn authorize_range(
         &self,
         view: &dyn ReadView,
         ctx: &RequestContext,
@@ -307,6 +189,7 @@ impl RawGroup {
             KeySpan::Point(key) => range.contains(key),
             KeySpan::BatchKeys(keys) => keys.iter().all(|k| range.contains(k)),
             KeySpan::BatchPairs(pairs) => pairs.iter().all(|(k, _)| range.contains(k)),
+            KeySpan::BatchMutations(mutations) => mutations.iter().all(|m| range.contains(m.key())),
             KeySpan::Range { start, end } => {
                 range.contains(start) && range_end_within_region(end, &range.end)
             }
@@ -322,20 +205,13 @@ impl RawGroup {
     }
     fn permit(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<RangePermit> {
         let permit = self.authorize(self.engine.snapshot()?.as_ref(), ctx, span)?;
-        // End-to-end write backpressure: refuse (retryably) when the retained
-        // committed log has reached the absolute bound, so it cannot grow
-        // further until compaction drains it. Applies ONLY to writes (reads go
-        // through `view`, never `permit`); disabled when the bound is 0.
-        if self.max_log_entries > 0 {
-            let status = self.driver.status();
-            let retained = status.raft_committed.saturating_sub(status.log_first_index);
-            if retained >= self.max_log_entries {
-                return Err(Error::WriteBackpressure {
-                    region: self.binding.region,
-                });
-            }
-        }
+        self.write_pressure()?;
         Ok(permit)
+    }
+    pub(super) fn write_pressure(&self) -> Result<()> {
+        // Early refusal avoids preparation work but reserves no capacity.
+        // The peer repeats it atomically with the actual typed data append.
+        self.driver.peer().check_write_pressure()
     }
     fn view(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<Box<dyn ReadView + '_>> {
         let barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
@@ -358,81 +234,6 @@ impl RawGroup {
             RAW_APPLY_DEADLINE,
         )
     }
-    /// The batching completion. A JOINED write awaits the shared receipt; the
-    /// batch LEADER waits out the bounded window (or an early close), takes
-    /// the merged batch, proposes it as ONE fenced command through the exact
-    /// unchanged submission/retry path, and fans the one applied position —
-    /// or the typed failure — out to every participant.
-    fn batched_write(
-        self: Arc<Self>,
-        fence: kv9_raft::RegionFence,
-        batch: kv9_engine::WriteBatch,
-    ) -> RawWriteCompletion {
-        match self.aggregator.stage(fence, batch) {
-            Staged::Joined(rx) => Box::pin(async move {
-                match rx.await {
-                    Ok(Ok(position)) => Ok(position),
-                    Ok(Err(shared)) => Err(shared.into_error()),
-                    Err(_) => Err(Error::Raft(
-                        "batched write leader dropped before completion".into(),
-                    )),
-                }
-            }),
-            Staged::Leader(state) => Box::pin(async move {
-                let delay = self.aggregator.delay;
-                tokio::select! {
-                    _ = tokio::time::sleep(delay) => {}
-                    _ = state.flush.notified() => {}
-                }
-                let taken = state
-                    .inner
-                    .lock()
-                    .expect("open batch poisoned")
-                    .take()
-                    .expect("only the leader takes its batch");
-                {
-                    // Retire the slot if it still points at this batch, so a
-                    // later write opens a fresh one instead of joining a
-                    // taken batch.
-                    let mut open = self.aggregator.open.lock().expect("aggregator poisoned");
-                    if open
-                        .as_ref()
-                        .is_some_and(|current| Arc::ptr_eq(current, &state))
-                    {
-                        *open = None;
-                    }
-                }
-                let command = Arc::new(Command::fenced_write_from_batch(taken.fence, &taken.batch));
-                let deadline = Instant::now() + RAW_APPLY_DEADLINE;
-                let driver = self.driver.clone();
-                let submit = command.clone();
-                let first = tokio::task::spawn_blocking(move || {
-                    driver.propose_with_async_wait(&submit, deadline)
-                })
-                .await
-                .map_err(|error| {
-                    Error::Raft(format!("batched submission worker failed: {error}"))
-                })?;
-                let outcome = match first {
-                    Ok(first) => {
-                        finish_async_proposal(self.driver.clone(), command, first, deadline)
-                            .await
-                            .0
-                    }
-                    Err(error) => Err(error),
-                };
-                let shared = match &outcome {
-                    Ok(position) => Ok(*position),
-                    Err(error) => Err(SharedError::capture(error)),
-                };
-                for waiter in taken.waiters {
-                    let _ = waiter.send(shared.clone());
-                }
-                outcome
-            }),
-        }
-    }
-
     fn prepared<T: Send + 'static>(
         self: Arc<Self>,
         ctx: RequestContext,
@@ -455,6 +256,15 @@ impl RawGroup {
 }
 
 impl RawApi for RawGroup {
+    fn prepare_raw_ttl(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        operation: crate::raw_ttl::Operation,
+        deadline: Instant,
+    ) -> crate::raw_ttl::Preparation {
+        self.prepare_ttl(ctx, operation, deadline)
+    }
+
     fn prepare_raw_get(
         self: Arc<Self>,
         ctx: RequestContext,
@@ -492,15 +302,16 @@ impl RawApi for RawGroup {
                     self.permit(&ctx, KeySpan::BatchPairs(&pairs))?,
                     RawExecutor.plan_batch_put(ctx.keyspace, &pairs, RawWriteOptions::default())?,
                 ),
+                RawWrite::Batch(mutations) => (
+                    self.permit(&ctx, KeySpan::BatchMutations(&mutations))?,
+                    RawExecutor.plan_batch(ctx.keyspace, &mutations, RawWriteOptions::default())?,
+                ),
             };
             if batch.is_empty() {
                 return Ok(
                     Box::pin(async { Ok(AppliedPosition { term: 0, index: 0 }) })
                         as RawWriteCompletion,
                 );
-            }
-            if self.aggregator.enabled() {
-                return Ok(self.clone().batched_write(permit.0, batch));
             }
             let command = Arc::new(Command::fenced_write_from_batch(permit.0, &batch));
             let deadline = Instant::now() + RAW_APPLY_DEADLINE;
@@ -542,6 +353,18 @@ impl RawApi for RawGroup {
         self.commit(
             self.permit(ctx, KeySpan::BatchPairs(pairs))?,
             RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?,
+        )
+    }
+    fn raw_batch(
+        &self,
+        ctx: &RequestContext,
+        mutations: &[RawMutation],
+    ) -> Result<AppliedPosition> {
+        // One permit covers every key, so a batch that straddles a range boundary is
+        // refused before anything is proposed; the apply-time fence re-checks every key.
+        self.commit(
+            self.permit(ctx, KeySpan::BatchMutations(mutations))?,
+            RawExecutor.plan_batch(ctx.keyspace, mutations, RawWriteOptions::default())?,
         )
     }
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
@@ -608,116 +431,253 @@ impl RawApi for RawGroup {
 }
 
 #[cfg(test)]
-mod aggregator_tests {
+mod ttl_tests {
     use super::*;
+    use kv9_common::raw_ttl::{ClockWatermark, TtlRejection};
+    use kv9_common::{RootDigest, StoreIncarnation, TenantId};
+    use kv9_raft::command::{RawTtlAction, RawTtlCommand};
+    use kv9_raft::transport::{InProcHub, RaftTransport};
+    use kv9_raft::{MemStateMachine, RaftGroup, RaftPeer};
 
-    fn aggregator(ops: usize, bytes: usize) -> WriteAggregator {
-        WriteAggregator {
-            ops_cap: ops,
-            bytes_cap: bytes,
-            delay: Duration::from_millis(1),
-            open: Mutex::new(None),
-        }
-    }
-    fn fence(version: u64) -> kv9_raft::RegionFence {
-        kv9_raft::RegionFence {
-            region_id: 7,
+    #[test]
+    fn legacy_raw_authorization_checks_the_actual_snapshot_after_ttl_activation() {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-ttl-reader-{}",
+            StoreIncarnation::mint().unwrap()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+        let range = DataRange {
+            root: RootDigest::from_bytes([1; 32]),
+            creation: RootDigest::from_bytes([2; 32]),
+            region: RegionId(100),
+            keyspace: KeyspaceId(100),
+            tenant: TenantId(1),
             conf_ver: 1,
-            version,
+            version: 1,
+            start: Vec::new(),
+            end: Vec::new(),
+            sealed: false,
+        };
+        let engine = Arc::new(WalEngine::open(dir.join("engine.wal")).unwrap().0);
+        let storage = DiskRaftStorage::open(&dir.join("raft"), &[1]).unwrap().0;
+        let mut sm = MemStateMachine::with_engine(engine.clone()).unwrap();
+        sm.set_data_group(range.root, range.region, range.creation)
+            .unwrap();
+        let hub = InProcHub::new();
+        let driver = NodeDriver::new(
+            Arc::new(RaftPeer::with_storage(NodeId(1), range.region, storage).unwrap()),
+            Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
+            sm,
+        )
+        .unwrap();
+        driver.peer().campaign().unwrap();
+        for _ in 0..10 {
+            driver.step().unwrap();
         }
-    }
-    fn put(key: &[u8]) -> kv9_engine::WriteBatch {
-        let mut batch = kv9_engine::WriteBatch::new();
-        batch.put(ColumnFamily::Default, key.to_vec(), b"v".to_vec());
-        batch
-    }
-
-    #[test]
-    fn same_fence_writes_merge_in_arrival_order_and_share_the_receipt() {
-        let agg = aggregator(8, 1 << 20);
-        let Staged::Leader(state) = agg.stage(fence(1), put(b"a")) else {
-            panic!("first write must lead");
-        };
-        assert!(matches!(agg.stage(fence(1), put(b"b")), Staged::Joined(_)));
-        assert!(matches!(agg.stage(fence(1), put(b"c")), Staged::Joined(_)));
-        let inner = state.inner.lock().unwrap();
-        let open = inner.as_ref().unwrap();
-        assert_eq!(open.batch.len(), 3, "all three merged into one entry");
-        assert_eq!(open.waiters.len(), 2, "two joiners await the fan-out");
-        let keys: Vec<&[u8]> = open
-            .batch
-            .mutations()
-            .iter()
-            .map(|m| match m {
-                kv9_engine::Mutation::Put { key, .. } => key.as_slice(),
-                kv9_engine::Mutation::Delete { key, .. } => key.as_slice(),
+        driver
+            .propose(&Command::DataRange {
+                expected: None,
+                next: range.clone(),
             })
-            .collect();
-        assert_eq!(keys, vec![b"a".as_slice(), b"b", b"c"], "arrival order");
-    }
-
-    #[test]
-    fn a_fence_mismatch_never_merges_and_closes_the_open_batch() {
-        let agg = aggregator(8, 1 << 20);
-        let Staged::Leader(first) = agg.stage(fence(1), put(b"a")) else {
-            panic!("first write must lead");
+            .unwrap();
+        for _ in 0..10 {
+            driver.step().unwrap();
+        }
+        let group = RawGroup::new(range.clone(), engine.clone(), driver.clone(), None);
+        let ctx = RequestContext {
+            keyspace: range.keyspace,
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: 1,
+                version: 1,
+            },
+            origin: crate::api::RequestOrigin::from_transport("ttl-guard-test"),
         };
-        // An epoch change (split/seal bumps the version) opens a NEW batch.
-        let Staged::Leader(second) = agg.stage(fence(2), put(b"b")) else {
-            panic!("a mismatched fence must open its own batch");
-        };
-        assert!(!Arc::ptr_eq(&first, &second));
-        assert_eq!(first.inner.lock().unwrap().as_ref().unwrap().batch.len(), 1);
-        assert_eq!(
-            second.inner.lock().unwrap().as_ref().unwrap().batch.len(),
-            1
-        );
-    }
-
-    #[test]
-    fn caps_bound_the_entry_and_a_taken_batch_never_admits_joiners() {
-        let agg = aggregator(2, 1 << 20);
-        let Staged::Leader(state) = agg.stage(fence(1), put(b"a")) else {
-            panic!("first write must lead");
-        };
-        assert!(matches!(agg.stage(fence(1), put(b"b")), Staged::Joined(_)));
-        // ops cap reached: the next write opens a new batch.
-        let Staged::Leader(next) = agg.stage(fence(1), put(b"c")) else {
-            panic!("a full batch must not admit more writes");
-        };
-        assert!(!Arc::ptr_eq(&state, &next));
-        // The leader takes its batch exactly once; a joiner arriving after
-        // the take must lead a fresh batch, never write into a proposed one.
-        let taken = next.inner.lock().unwrap().take().unwrap();
-        assert_eq!(taken.batch.len(), 1);
-        assert!(matches!(agg.stage(fence(1), put(b"d")), Staged::Leader(_)));
-    }
-
-    #[test]
-    fn byte_caps_close_batches_and_shared_errors_stay_typed() {
-        let agg = aggregator(100, 4);
-        let Staged::Leader(_) = agg.stage(fence(1), put(b"ab")) else {
-            panic!("first write must lead");
-        };
-        // 2+1 value bytes staged; the next 3 bytes exceed the 4-byte cap.
-        assert!(matches!(agg.stage(fence(1), put(b"cd")), Staged::Leader(_)));
-        let not_leader = SharedError::capture(&Error::NotLeader {
-            leader: Some(NodeId(3)),
-        });
+        let before = engine.snapshot().unwrap();
+        assert!(group
+            .authorize(before.as_ref(), &ctx, KeySpan::Point(b"b"))
+            .is_ok());
+        driver
+            .peer()
+            .propose_raw_for_harness(
+                Command::RawTtl(
+                    RawTtlCommand::new(
+                        &range,
+                        RawTtlAction::Enable {
+                            observed: ClockWatermark::default(),
+                        },
+                    )
+                    .unwrap(),
+                )
+                .encode(),
+            )
+            .unwrap();
+        for _ in 0..10 {
+            driver.step().unwrap();
+        }
+        let after = engine.snapshot().unwrap();
         assert!(matches!(
-            not_leader.into_error(),
-            Error::NotLeader {
-                leader: Some(NodeId(3))
-            }
+            group.authorize(after.as_ref(), &ctx, KeySpan::Point(b"b")),
+            Err(Error::RawTtlRejected {
+                reason: TtlRejection::LegacyCommand,
+                ..
+            })
         ));
-        let stale = SharedError::capture(&Error::StaleEpoch {
-            region: RegionId(9),
-        });
-        assert!(matches!(
-            stale.into_error(),
-            Error::StaleEpoch {
-                region: RegionId(9)
-            }
-        ));
+        assert!(group
+            .authorize(before.as_ref(), &ctx, KeySpan::Point(b"b"))
+            .is_ok());
+        drop(after);
+        drop(before);
+        drop(group);
+        drop(driver);
+        drop(engine);
+        std::fs::remove_dir_all(dir).unwrap();
     }
 }
+
+#[cfg(test)]
+mod range_batch_tests {
+    //! The atomic range batch contract (DESIGN §9.1): one permit covers every key, so a
+    //! batch either lands whole inside its range or is refused before any proposal.
+    use super::*;
+    use kv9_common::{RootDigest, StoreIncarnation, TenantId};
+    use kv9_raft::transport::{InProcHub, RaftTransport};
+    use kv9_raft::{MemStateMachine, RaftGroup, RaftPeer};
+
+    fn put(key: &[u8], value: &[u8]) -> RawMutation {
+        RawMutation::Put {
+            key: key.to_vec(),
+            value: value.to_vec(),
+        }
+    }
+    fn delete(key: &[u8]) -> RawMutation {
+        RawMutation::Delete { key: key.to_vec() }
+    }
+
+    #[test]
+    fn a_range_batch_is_atomic_ordered_and_confined_to_its_range() {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-range-batch-{}",
+            StoreIncarnation::mint().unwrap()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+        // A bounded range: keys in [a, m) belong here, everything else is foreign.
+        let range = DataRange {
+            root: RootDigest::from_bytes([1; 32]),
+            creation: RootDigest::from_bytes([2; 32]),
+            region: RegionId(100),
+            keyspace: KeyspaceId(100),
+            tenant: TenantId(1),
+            conf_ver: 1,
+            version: 1,
+            start: b"a".to_vec(),
+            end: b"m".to_vec(),
+            sealed: false,
+        };
+        let engine = Arc::new(WalEngine::open(dir.join("engine.wal")).unwrap().0);
+        let storage = DiskRaftStorage::open(&dir.join("raft"), &[1]).unwrap().0;
+        let mut sm = MemStateMachine::with_engine(engine.clone()).unwrap();
+        sm.set_data_group(range.root, range.region, range.creation)
+            .unwrap();
+        let hub = InProcHub::new();
+        let driver = NodeDriver::new(
+            Arc::new(RaftPeer::with_storage(NodeId(1), range.region, storage).unwrap()),
+            Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
+            sm,
+        )
+        .unwrap();
+        driver.peer().campaign().unwrap();
+        for _ in 0..10 {
+            driver.step().unwrap();
+        }
+        driver
+            .propose(&Command::DataRange {
+                expected: None,
+                next: range.clone(),
+            })
+            .unwrap();
+        for _ in 0..10 {
+            driver.step().unwrap();
+        }
+        let group = RawGroup::new(range.clone(), engine.clone(), driver.clone(), None);
+        let ctx = RequestContext {
+            keyspace: range.keyspace,
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: 1,
+                version: 1,
+            },
+            origin: crate::api::RequestOrigin::from_transport("range-batch-test"),
+        };
+        let owner = driver.spawn(Duration::from_millis(2)).unwrap();
+
+        // Mixed puts and deletes apply in order as ONE entry: the later entry for `a`
+        // (a delete) wins over the earlier put, and `b` lands in the same position.
+        let applied = group
+            .raw_batch(
+                &ctx,
+                &[
+                    put(b"a", b"1"),
+                    put(b"b", b"2"),
+                    delete(b"a"),
+                    put(b"c", b"3"),
+                ],
+            )
+            .unwrap();
+        assert!(
+            applied.index > 0,
+            "a non-empty batch reaches a real position"
+        );
+        assert_eq!(group.raw_get(&ctx, b"a").unwrap(), None);
+        assert_eq!(group.raw_get(&ctx, b"b").unwrap(), Some(b"2".to_vec()));
+        assert_eq!(group.raw_get(&ctx, b"c").unwrap(), Some(b"3".to_vec()));
+        let after_first = driver.status().log_last_index;
+
+        // A batch that straddles the range end is refused as a whole: the in-range
+        // key `b` is NOT written, and nothing was proposed.
+        assert!(matches!(
+            group.raw_batch(&ctx, &[put(b"b", b"9"), put(b"z", b"9")]),
+            Err(Error::RangeCrossesRegion)
+        ));
+        assert_eq!(group.raw_get(&ctx, b"b").unwrap(), Some(b"2".to_vec()));
+        assert_eq!(driver.status().log_last_index, after_first);
+
+        // A key below the range start is foreign too, even as the first (anchor) key.
+        assert!(matches!(
+            group.raw_batch(&ctx, &[put(b"0", b"9"), put(b"b", b"9")]),
+            Err(Error::RangeCrossesRegion)
+        ));
+
+        // A stale epoch (a split or seal bumped the version) refuses the whole batch
+        // before planning: the client must refresh its route and retry.
+        let stale = RequestContext {
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: 1,
+                version: 2,
+            },
+            ..ctx.clone()
+        };
+        assert!(matches!(
+            group.raw_batch(&stale, &[put(b"b", b"9")]),
+            Err(Error::StaleEpoch { .. })
+        ));
+        assert_eq!(group.raw_get(&ctx, b"b").unwrap(), Some(b"2".to_vec()));
+
+        // Deleting an absent key is a no-op, not an error; the batch still applies.
+        group
+            .raw_batch(&ctx, &[delete(b"gone"), put(b"d", b"4")])
+            .unwrap();
+        assert_eq!(group.raw_get(&ctx, b"d").unwrap(), Some(b"4".to_vec()));
+
+        // An empty batch proposes nothing.
+        let empty = group.raw_batch(&ctx, &[]).unwrap();
+        assert_eq!((empty.term, empty.index), (0, 0));
+
+        driver.stop();
+        owner.join().unwrap();
+        drop(group);
+        drop(driver);
+        drop(engine);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+}
+
+mod ttl;

@@ -117,13 +117,10 @@ pub fn plan_compaction<E: Engine>(
     }
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("compaction requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded compaction task scan exceeded"));
-    }
     let mut creation_task = None;
-    for row in &rows {
-        if let Some(intent) = super::from_row(row, root.digest())? {
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(intent) = super::from_row(&row, root.digest())? {
             if intent.region() == region {
                 creation_task = Some(intent.task());
             }
@@ -139,8 +136,9 @@ pub fn plan_compaction<E: Engine>(
         floor,
     };
     let mut highest: Option<GroupCompaction> = None;
-    for row in &rows {
-        if let Some(previous) = from_compaction_row(row, root.digest())? {
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(previous) = from_compaction_row(&row, root.digest())? {
             if previous.region != region {
                 continue;
             }
@@ -174,9 +172,6 @@ pub fn plan_compaction<E: Engine>(
         ..decision
     };
     GroupCompaction::decode(&decision.encode())?;
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("compaction task capacity reached"));
-    }
     let mut row = RowValue::new();
     for (column, value) in [
         (ColumnId(1), ColumnValue::Uint(decision.task)),
@@ -199,20 +194,19 @@ pub fn committed_compaction_floors<E: Engine>(
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("compaction readback requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded compaction task scan exceeded"));
-    }
     let mut highest: std::collections::BTreeMap<u64, GroupCompaction> =
         std::collections::BTreeMap::new();
-    for row in &rows {
-        if let Some(decision) = from_compaction_row(row, root.digest())? {
-            let creation = rows
-                .iter()
-                .filter_map(|other| super::from_row(other, root.digest()).ok().flatten())
-                .find(|intent| intent.region() == decision.region)
+    for row in task_rows(&txn) {
+        let row = row?;
+        if let Some(decision) = from_compaction_row(&row, root.digest())? {
+            let creation = txn
+                .get(&TASKS_DESC, &[memcmp_uint(decision.creation_task)])?
+                .as_ref()
+                .map(|row| super::from_row(row, root.digest()))
+                .transpose()?
+                .flatten()
                 .ok_or_else(|| invalid("compaction requires the region's committed creation"))?;
-            if creation.task() != decision.creation_task {
+            if creation.region() != decision.region {
                 return Err(invalid("compaction names a different creation"));
             }
             match highest.get(&decision.region.0) {

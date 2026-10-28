@@ -233,7 +233,7 @@ def main():
         command('bind-b', 'client', 'bind-migration-image', '--addr', addresses[owner_node],
                 '--root-digest', root, '--operation-id', f'{8:032x}',
                 '--manifest-file', output / 'control.manifest')
-        capture_with_retry('capture-b', node_b, f'{8:032x}', output / 'control.record')
+        control_capture = capture_with_retry('capture-b', node_b, f'{8:032x}', output / 'control.record')
 
         # Offline installation at the destination's REAL store: the learner
         # image installs; the control image fails the membership gate; the
@@ -241,11 +241,13 @@ def main():
         stop(4)
         refused = command('install-control', 'install-migration-image',
                           '--data-dir', output / 'n4', '--record-file', output / 'control.record',
+                          '--addr', addresses[owner_node], '--owners', control_capture['destination_owner'],
                           success=False)
         require('membership' in open(output / 'install-control.log').read(),
                 'control record must fail the membership gate')
         installed = command('install-learner-image', 'install-migration-image',
-                            '--data-dir', output / 'n4', '--record-file', output / 'image.record')
+                            '--data-dir', output / 'n4', '--record-file', output / 'image.record',
+                            '--addr', addresses[owner_node], '--owners', captured['destination_owner'])
         require(installed['install_outcome'] == 'selected'
                 and installed['serving'] == 'false'
                 and int(installed['records']) == 2,

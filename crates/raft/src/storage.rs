@@ -24,13 +24,15 @@
 //!   HardState/ConfState records are last-write-wins; Entry records append (a
 //!   re-appended index overwrites the suffix, mirroring raft log truncation).
 //!
-//! Scope honesty: no physical compaction — the log grows until
-//! Phase 2's real log store (DESIGN "6.4 Raft log vs. WAL stream") replaces
-//! this. `persisted()`-style flush watermarks live in the engine (Ren's lane);
-//! this file is only the raft-protocol state.
+//! Authorized prefix compaction and atomic streamed rewrite reclaim old
+//! records. Protocol state still resides in an in-memory mirror; streaming a
+//! rewrite does not make that resident index bounded.
 
+use kv9_common::log_budget::{BudgetWriter, LogBudget, LogDebt};
 use kv9_common::metrics::WalIoMetrics;
-use std::io::{Read, Seek, SeekFrom, Write};
+#[cfg(test)]
+use std::io::Write;
+use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
@@ -46,9 +48,15 @@ use crate::lease_policy::{LeaseEpoch, LeasePolicy};
 use crate::rawnode::PersistentRaftStorage;
 
 mod configuration;
+pub mod configuration_origins;
+pub mod configuration_timeline;
+pub mod membership_history;
+#[cfg(test)]
+mod rewrite_tests;
 pub(crate) mod snapshot;
 use configuration::ConfigurationHistory;
 pub use configuration::{CommittedConfiguration, ConfigurationLookup, ConfigurationUnavailable};
+use membership_history::MembershipHistory;
 pub use snapshot::MAX_PROTOCOL_SNAPSHOT_BYTES;
 
 const REC_CONF_STATE: u8 = 1;
@@ -104,12 +112,29 @@ pub struct DiskRaftStorage<F: FileSystem = OsFileSystem> {
     /// Recovery metadata only. Indexed full configurations remain retained with
     /// the protocol log; they do not change Ready or ordinary write admission.
     conf_history: Mutex<ConfigurationHistory>,
+    configuration_origins: Mutex<configuration_origins::Origins>,
+    /// Bounded node-role observations survive protocol snapshot replacement;
+    /// imported prefixes remain explicitly unknown.
+    membership_history: Mutex<MembershipHistory>,
+    /// Exact configuration encoded at the durable compacted/installed cut.
+    /// MemStorage::snapshot synthesizes LATEST membership, so it must never
+    /// stand in for this historical base during lookup or physical rewrite.
+    configuration_base: Mutex<Option<(kv9_common::AppliedPosition, ConfState)>>,
     lease_epoch: Mutex<Option<LeaseEpoch>>,
     snapshot: Mutex<Option<raft::prelude::Snapshot>>,
     io_metrics: Arc<WalIoMetrics>,
+    log_debt: Mutex<Option<LogDebt>>,
 }
 
 impl DiskRaftStorage<OsFileSystem> {
+    /// Attach while the store is exclusively owned, before its driver starts.
+    pub fn attach_log_budget(&self, budget: &Arc<LogBudget>) -> Result<LogDebt> {
+        let _writer = self.file.lock().expect("raft log file poisoned");
+        let directory = self.path.parent().expect("raft directory");
+        let debt = budget.track(directory, budget.tree_bytes(directory)?)?;
+        *self.log_debt.lock().expect("raft log accounting") = Some(debt.clone());
+        Ok(debt)
+    }
     /// Open (or create) the raft state under `data_dir`. Replays any surviving
     /// records into the runtime view; a fresh directory starts pristine with
     /// `voters` as the initial configuration (persisted immediately, so a
@@ -129,8 +154,8 @@ impl DiskRaftStorage<OsFileSystem> {
     }
 
     /// The current ON-DISK size of the append-only `raft.log`. The file only
-    /// grows — compaction advances `first_index` (shrinking the LIVE retained
-    /// bytes) but never rewrites the file — so the gap between this and
+    /// grows until explicit physical rewrite — logical compaction advances
+    /// `first_index` without rewriting the file — so the gap between this and
     /// [`Self::retained_committed_bytes`] is the compacted-away waste still
     /// occupying disk. A plain stat (no writer lock, safe concurrent with
     /// appends); a missing/failed file reads as 0.
@@ -149,7 +174,7 @@ impl DiskRaftStorage<OsFileSystem> {
     }
 
     /// Physically reclaim the append-only `raft.log`: rewrite it to contain only
-    /// the live state (`reclamation_records`), dropping the compacted-away prefix
+    /// the live state (`visit_reclamation_records`), dropping the compacted-away prefix
     /// that only wastes disk. Crash-safe: the new image is built in `raft.log.tmp`,
     /// fsync'd, then atomically renamed over `raft.log` (the single commit point)
     /// and the directory fsync'd. A crash BEFORE the rename leaves the original
@@ -161,8 +186,16 @@ impl DiskRaftStorage<OsFileSystem> {
     /// cannot rebuild) — both refuse here rather than reclaim unsafely.
     pub fn rewrite_log(&self) -> Result<bool> {
         let io = |e: std::io::Error| Error::Raft(format!("raft log reclamation: {e}"));
+        let mut writer = self.file.lock().expect("raft log file poisoned");
+        if writer.is_none() {
+            return Err(Error::Raft(
+                "reclamation requires recovered durable storage".into(),
+            ));
+        }
         // Out-of-scope groups are SKIPPED (Ok(false)), not errored, so the
         // periodic trigger does not spam a permanent exclusion every turn.
+        // Check under the writer lock: a lease/snapshot published while we
+        // waited for that lock must never be erased by a stale exclusion check.
         if self.snapshot.lock().expect("snapshot poisoned").is_some()
             || self
                 .lease_epoch
@@ -172,13 +205,32 @@ impl DiskRaftStorage<OsFileSystem> {
         {
             return Ok(false);
         }
-        let mut writer = self.file.lock().expect("raft log file poisoned");
-        if writer.is_none() {
-            return Err(Error::Raft(
-                "reclamation requires recovered durable storage".into(),
-            ));
-        }
-        let records = self.reclamation_records()?;
+        // Both passes run under the same actual writer lock. Measure exact
+        // framed output before creating a temporary file, then stream it.
+        let mut output_bytes = 0u64;
+        self.visit_reclamation_records(|_, payload| {
+            if payload.len() >= MAX_RECORD_LEN as usize {
+                return Err(Error::Raft(
+                    "reclamation record exceeds replay limit".into(),
+                ));
+            }
+            output_bytes = output_bytes
+                .checked_add(9 + payload.len() as u64)
+                .ok_or_else(|| Error::Raft("reclamation output size overflow".into()))?;
+            Ok(())
+        })?;
+        let debt = self.log_debt.lock().expect("raft log accounting").clone();
+        let _workspace = match &debt {
+            Some(debt) => match debt.reserve_rewrite(output_bytes) {
+                Some(claim) => Some(claim),
+                None => return Ok(false),
+            },
+            None => None,
+        };
+        let directory = self.path.parent().expect("raft directory").to_path_buf();
+        let mut reconciliation = debt
+            .as_ref()
+            .map(|d| d.reconciliation(move || kv9_common::log_budget::tree_bytes(&directory)));
         let tmp = self.path.with_extension("log.tmp");
         // Build the fresh image in the temp file and make it durable.
         let built = (|| -> Result<()> {
@@ -189,8 +241,25 @@ impl DiskRaftStorage<OsFileSystem> {
                 .truncate(true)
                 .open(&tmp)
                 .map_err(io)?;
-            for (kind, payload) in &records {
-                Self::write_record_unsynced(&self.io_metrics, &mut file, *kind, payload)?;
+            let mut written = 0u64;
+            self.visit_reclamation_records(|kind, payload| {
+                written = written
+                    .checked_add(9 + payload.len() as u64)
+                    .ok_or_else(|| Error::Raft("reclamation output size overflow".into()))?;
+                if written > output_bytes {
+                    return Err(Error::Raft("reclamation exceeded reserved output".into()));
+                }
+                Self::write_record_unsynced(
+                    &self.io_metrics,
+                    &mut BudgetWriter::new(&mut file, debt.as_ref()),
+                    kind,
+                    payload,
+                )
+            })?;
+            if written != output_bytes {
+                return Err(Error::Raft(
+                    "reclamation output changed after measurement".into(),
+                ));
             }
             file.sync_data().map_err(io)
         })();
@@ -231,6 +300,9 @@ impl DiskRaftStorage<OsFileSystem> {
         match finish {
             Ok(reopened) => {
                 *writer = Some(reopened);
+                if let Some(guard) = &mut reconciliation {
+                    guard.completed();
+                }
                 Ok(true)
             }
             Err(error) => {
@@ -345,6 +417,9 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         let mut saw_any = false;
         let mut conf_idx: u64 = 0;
         let mut conf_history = ConfigurationHistory::default();
+        let mut configuration_origins = configuration_origins::Origins::new();
+        let mut membership_history = MembershipHistory::default();
+        let mut configuration_base = None;
         let mut lease_epoch: Option<LeaseEpoch> = None;
         let mut snapshot = None;
         let mut cursor: usize = 0;
@@ -371,6 +446,20 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                     // Earlier membership history no longer describes the selected
                     // base. Historical lookups refuse compacted protocol history.
                     conf_history = ConfigurationHistory::default();
+                    membership_history.installed(
+                        kv9_common::AppliedPosition {
+                            term: image.get_metadata().term,
+                            index: image.get_metadata().index,
+                        },
+                        image.get_metadata().get_conf_state(),
+                    );
+                    configuration_base = Some((
+                        kv9_common::AppliedPosition {
+                            term: image.get_metadata().term,
+                            index: image.get_metadata().index,
+                        },
+                        image.get_metadata().get_conf_state().clone(),
+                    ));
                     snapshot = Some(image);
                 }
                 REC_LEASE_EPOCH => {
@@ -392,9 +481,20 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                         Error::Raft(format!("checksum-valid ConfState undecodable: {e}"))
                     })?;
                     conf_history.initial(&cs);
+                    membership_history.initial(&cs);
                     mem.wl().set_conf_state(cs);
                 }
+                configuration_origins::RECORD => {
+                    let (record, cs) =
+                        configuration_origins::AppliedConfigurationOrigin::decode(payload)?;
+                    configuration_origins::insert(&mut configuration_origins, record)?;
+                    conf_history.applied(record.at.index, &cs);
+                    membership_history.applied_origin(record.at.index, &cs, Some(record));
+                    mem.wl().set_conf_state(cs);
+                    conf_idx = record.at.index;
+                }
                 REC_CONF_STATE_AT => {
+                    configuration_origins.observe_legacy();
                     if payload.len() < 8 {
                         return Err(Error::Raft(
                             "checksum-valid ConfStateAt record shorter than its index".into(),
@@ -405,6 +505,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                         Error::Raft(format!("checksum-valid ConfStateAt undecodable: {e}"))
                     })?;
                     conf_history.applied(idx, &cs);
+                    membership_history.applied(idx, &cs);
                     mem.wl().set_conf_state(cs);
                     conf_idx = idx; // last write wins, in file order
                 }
@@ -424,6 +525,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                         .map_err(|err| Error::Raft(format!("replay append: {err}")))?;
                 }
                 REC_COMPACTION => {
+                    use raft::Storage as _;
                     if payload.len() < 48 {
                         return Err(Error::Raft(
                             "checksum-valid compaction record shorter than its floor".into(),
@@ -438,7 +540,13 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                             "checksum-valid compaction ConfState undecodable: {e}"
                         ))
                     })?;
+                    let advances =
+                        mem.first_index().map_err(|e| Error::Raft(e.to_string()))? <= floor.index;
                     Self::compact_memory(&mem, floor, &cs)?;
+                    membership_history.retained_base(&cs);
+                    if advances {
+                        configuration_base = Some((floor, cs));
+                    }
                 }
                 REC_RETAINED_BASE => {
                     // A compacted base re-serialized by log reclamation. Install
@@ -467,10 +575,12 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                     let mut image = raft::prelude::Snapshot::default();
                     image.mut_metadata().index = index;
                     image.mut_metadata().term = term;
-                    image.mut_metadata().set_conf_state(cs);
+                    image.mut_metadata().set_conf_state(cs.clone());
                     mem.wl()
                         .apply_snapshot(image)
                         .map_err(|e| Error::Raft(format!("replay retained base: {e}")))?;
+                    membership_history.retained_base(&cs);
+                    configuration_base = Some((kv9_common::AppliedPosition { term, index }, cs));
                 }
                 other => {
                     return Err(Error::Raft(format!(
@@ -508,9 +618,13 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             path,
             conf_index: Mutex::new(conf_idx),
             conf_history: Mutex::new(conf_history),
+            configuration_origins: Mutex::new(configuration_origins),
+            membership_history: Mutex::new(membership_history),
+            configuration_base: Mutex::new(configuration_base),
             lease_epoch: Mutex::new(lease_epoch),
             snapshot: Mutex::new(snapshot),
             io_metrics,
+            log_debt: Mutex::new(None),
         };
         let was_pristine = !saw_any;
         if was_pristine {
@@ -527,6 +641,11 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                     .conf_history
                     .lock()
                     .expect("conf history poisoned")
+                    .initial(&cs);
+                storage
+                    .membership_history
+                    .lock()
+                    .expect("membership history poisoned")
                     .initial(&cs);
                 storage.mem.wl().set_conf_state(cs);
                 Ok(())
@@ -577,15 +696,45 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         if committed < first {
             return Ok(0);
         }
-        let entries = self
-            .entries(
-                first,
-                committed + 1,
-                None,
-                raft::GetEntriesContext::empty(false),
-            )
-            .map_err(|e| Error::Raft(e.to_string()))?;
-        Ok(entries.iter().map(|e| e.data.len() as u64).sum())
+        let mut bytes = 0u64;
+        self.visit_retained_entries(first, committed, |entry| {
+            bytes = bytes
+                .checked_add(entry.data.len() as u64)
+                .ok_or_else(|| Error::Raft("retained log byte count overflow".into()))?;
+            Ok(())
+        })?;
+        Ok(bytes)
+    }
+
+    /// raft-rs MemStorage clones the entire requested index interval BEFORE
+    /// applying max_size. Restrict the interval itself to one entry; a byte
+    /// page hint over the full tail would still allocate the whole tail.
+    fn visit_retained_entries(
+        &self,
+        first: u64,
+        last: u64,
+        mut visit: impl FnMut(&Entry) -> Result<()>,
+    ) -> Result<()> {
+        use raft::Storage as _;
+        if last < first {
+            return Ok(());
+        }
+        if last > self.last_index().map_err(|e| Error::Raft(e.to_string()))? {
+            return Err(Error::Raft("retained entry range exceeds log tail".into()));
+        }
+        let high = last
+            .checked_add(1)
+            .ok_or_else(|| Error::Raft("retained log index exhausted".into()))?;
+        for index in first..high {
+            let entries = self
+                .entries(index, index + 1, None, GetEntriesContext::empty(false))
+                .map_err(|e| Error::Raft(e.to_string()))?;
+            let entry = entries
+                .first()
+                .ok_or_else(|| Error::Raft("missing retained log entry".into()))?;
+            visit(entry)?;
+        }
+        Ok(())
     }
 
     /// The minimal record sequence that re-serializes the CURRENT durable state
@@ -595,61 +744,87 @@ impl<F: FileSystem> DiskRaftStorage<F> {
     /// Caller holds the writer lock, so the mem/conf view is stable. v1 refuses
     /// a protocol-snapshot or lease group (checked by the caller) and an
     /// ambiguous configuration history (checked here).
-    fn reclamation_records(&self) -> Result<Vec<(u8, Vec<u8>)>> {
+    fn visit_reclamation_records(
+        &self,
+        mut visit: impl FnMut(u8, &[u8]) -> Result<()>,
+    ) -> Result<()> {
         use raft::Storage as _;
         let raft_err = |e: raft::Error| Error::Raft(e.to_string());
         let enc = |e: protobuf::ProtobufError| Error::Raft(format!("reclamation encode: {e}"));
-        let mut records: Vec<(u8, Vec<u8>)> = Vec::new();
         let first = self.first_index().map_err(raft_err)?;
         let last = self.last_index().map_err(raft_err)?;
+        let history = self.conf_history.lock().expect("conf history poisoned");
+        let mut membership = MembershipHistory::default();
         // 1. The compacted base, installed directly on replay (its underlying
-        //    entries are gone). base_conf comes from the mem base image.
+        //    entries are gone). Preserve its actual historical configuration.
         if first > 1 {
             let base = self
                 .compacted_base()?
                 .ok_or_else(|| Error::Raft("first_index>1 without a durable base".into()))?;
-            let snap = self.mem.snapshot(0, 0).map_err(raft_err)?;
-            let conf = snap
-                .get_metadata()
-                .get_conf_state()
-                .write_to_bytes()
-                .map_err(enc)?;
+            let base_configuration = self.configuration_at_base(base, &history)?;
+            membership.retained_base(&base_configuration);
+            let conf = base_configuration.write_to_bytes().map_err(enc)?;
             let mut payload = Vec::with_capacity(16 + conf.len());
             payload.extend_from_slice(&base.term.to_be_bytes());
             payload.extend_from_slice(&base.index.to_be_bytes());
             payload.extend_from_slice(&conf);
-            records.push((REC_RETAINED_BASE, payload));
+            visit(REC_RETAINED_BASE, &payload)?;
         }
         // 2. Configuration history verbatim: initial, then applied in order.
-        let (initial, applied) = self
-            .conf_history
-            .lock()
-            .expect("conf history poisoned")
-            .reserialize()?;
+        let (initial, applied) = history.reserialize()?;
         if let Some(initial) = initial {
-            records.push((REC_CONF_STATE, initial.write_to_bytes().map_err(enc)?));
+            membership.initial(initial);
+            visit(REC_CONF_STATE, &initial.write_to_bytes().map_err(enc)?)?;
         }
+        let origins = self
+            .configuration_origins
+            .lock()
+            .expect("configuration origins poisoned");
+        let mut origins_written = 0;
+        let mut legacy_origin_unknown = false;
         for (index, state) in applied {
+            let origin = origins.get(index).copied();
+            membership.applied_origin(*index, state, origin);
+            if let Some(record) = origin {
+                visit(configuration_origins::RECORD, &record.encode(state)?)?;
+                origins_written += 1;
+                continue;
+            }
             let pb = state.write_to_bytes().map_err(enc)?;
+            legacy_origin_unknown = true;
             let mut bytes = Vec::with_capacity(8 + pb.len());
             bytes.extend_from_slice(&index.to_be_bytes());
             bytes.extend_from_slice(&pb);
-            records.push((REC_CONF_STATE_AT, bytes));
+            visit(REC_CONF_STATE_AT, &bytes)?;
+        }
+        if origins_written != origins.len() || legacy_origin_unknown != origins.legacy_unknown() {
+            return Err(Error::Raft(
+                "reclamation would lose configuration origins".into(),
+            ));
+        }
+        drop(origins);
+        drop(history);
+        // A later valid base cannot erase observations which existed only in
+        // earlier base records. The first measuring pass checks this before
+        // creating or replacing any file; uncertainty is not rewritten away.
+        if !self
+            .membership_history
+            .lock()
+            .expect("membership history poisoned")
+            .same_observations(&membership)
+        {
+            return Err(Error::Raft(
+                "reclamation would lose local membership observations".into(),
+            ));
         }
         // 3. The retained tail [first, last].
-        if last >= first {
-            let entries = self
-                .entries(first, last + 1, None, GetEntriesContext::empty(false))
-                .map_err(raft_err)?;
-            for entry in &entries {
-                records.push((REC_ENTRY, entry.write_to_bytes().map_err(enc)?));
-            }
-        }
+        self.visit_retained_entries(first, last, |entry| {
+            visit(REC_ENTRY, &entry.write_to_bytes().map_err(enc)?)
+        })?;
         // 4. The current HardState LAST — replay is last-write-wins, so the
         //    committed watermark and vote are preserved exactly.
         let hs = self.mem.initial_state().map_err(raft_err)?.hard_state;
-        records.push((REC_HARD_STATE, hs.write_to_bytes().map_err(enc)?));
-        Ok(records)
+        visit(REC_HARD_STATE, &hs.write_to_bytes().map_err(enc)?)
     }
 
     /// The durable compacted/installed base, when the retained log no longer
@@ -764,7 +939,16 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         payload.extend_from_slice(&conf);
         self.with_writer(|file| {
             Self::write_record(&self.io_metrics, file, REC_COMPACTION, &payload)?;
-            Self::compact_memory(&self.mem, floor, conf_at_floor)
+            Self::compact_memory(&self.mem, floor, conf_at_floor)?;
+            self.membership_history
+                .lock()
+                .expect("membership history poisoned")
+                .retained_base(conf_at_floor);
+            *self
+                .configuration_base
+                .lock()
+                .expect("configuration base poisoned") = Some((floor, conf_at_floor.clone()));
+            Ok(())
         })?;
         self.mem.first_index().map_err(raft_err)
     }
@@ -798,10 +982,13 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                 if entry.entry_type == raft::eraftpb::EntryType::EntryNormal
                     && !entry.data.is_empty()
                 {
-                    if let crate::Command::ManifestChange(payload) =
-                        crate::Command::decode(&entry.data)?
+                    let command = crate::Command::decode(&entry.data)?;
+                    if let crate::Command::ManifestChange(ref payload)
+                    | crate::Command::StagingManifestChange(ref payload)
+                    | crate::Command::LargeManifestChange(ref payload) = command
                     {
                         if payload.changeset() == bytes {
+                            command.decode_checkpoint_manifest(bytes)?;
                             return Ok(true);
                         }
                     }
@@ -819,14 +1006,18 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         &self.path
     }
 
-    fn with_writer(&self, action: impl FnOnce(&mut F::File) -> Result<()>) -> Result<()> {
+    fn with_writer(
+        &self,
+        action: impl FnOnce(&mut BudgetWriter<'_, F::File>) -> Result<()>,
+    ) -> Result<()> {
         let mut writer = self.file.lock().expect("raft log file poisoned");
         let file = writer.as_mut().ok_or_else(|| {
             Error::Raft(
                 "raft log writer unavailable after persistence failure; reopen required".into(),
             )
         })?;
-        let result = action(file);
+        let debt = self.log_debt.lock().expect("raft log accounting").clone();
+        let result = action(&mut BudgetWriter::new(file, debt.as_ref()));
         if result.is_err() {
             *writer = None;
         }
@@ -835,7 +1026,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
 
     fn write_record(
         metrics: &WalIoMetrics,
-        file: &mut F::File,
+        file: &mut impl DurableFile,
         kind: u8,
         payload: &[u8],
     ) -> Result<()> {
@@ -845,7 +1036,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
 
     fn write_entries_unsynced(
         metrics: &WalIoMetrics,
-        file: &mut F::File,
+        file: &mut impl DurableFile,
         entries: &[Entry],
     ) -> Result<()> {
         for entry in entries {
@@ -861,7 +1052,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
     /// Keep the existing frame format and one-frame temporary allocation bound.
     fn write_record_unsynced(
         metrics: &WalIoMetrics,
-        file: &mut F::File,
+        file: &mut impl DurableFile,
         kind: u8,
         payload: &[u8],
     ) -> Result<()> {
@@ -870,20 +1061,20 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                 "raft log record exceeds the replay format limit".into(),
             ));
         }
-        let mut body = Vec::with_capacity(1 + payload.len());
-        body.push(kind);
-        body.extend_from_slice(payload);
-        let mut rec = Vec::with_capacity(8 + body.len());
-        rec.extend_from_slice(&(body.len() as u32).to_be_bytes());
-        rec.extend_from_slice(&fnv1a(&body).to_be_bytes());
-        rec.extend_from_slice(&body);
+        let mut rec = Vec::with_capacity(9 + payload.len());
+        rec.extend_from_slice(&[0; 8]);
+        rec.push(kind);
+        rec.extend_from_slice(payload);
+        let sum = fnv1a(&rec[8..]);
+        rec[..4].copy_from_slice(&(payload.len() as u32 + 1).to_be_bytes());
+        rec[4..8].copy_from_slice(&sum.to_be_bytes());
         metrics
             .write
             .measure(|| file.write_all(&rec))
             .map_err(|e| Error::Raft(format!("raft log append: {e}")))
     }
 
-    fn sync_records(metrics: &WalIoMetrics, file: &mut F::File) -> Result<()> {
+    fn sync_records(metrics: &WalIoMetrics, file: &mut impl DurableFile) -> Result<()> {
         let result = metrics.sync.measure(|| file.sync_data());
         result.map_err(|e| Error::Raft(format!("raft log append: {e}")))
     }
@@ -1045,13 +1236,41 @@ impl<F: FileSystem> PersistentRaftStorage for DiskRaftStorage<F> {
         bytes.extend_from_slice(&at_index.to_be_bytes());
         bytes.extend_from_slice(&pb);
         self.with_writer(|file| {
-            Self::write_record(&self.io_metrics, file, REC_CONF_STATE_AT, &bytes)?;
+            let origin = self.origin_from_entry(at_index)?;
+            let mut origins = self
+                .configuration_origins
+                .lock()
+                .expect("configuration origins poisoned");
+            if origins
+                .get(&at_index)
+                .is_some_and(|old| Some(*old) != origin)
+            {
+                return Err(Error::Raft("cannot replace a configuration origin".into()));
+            }
+            if let Some(record) = origin {
+                origins.validate_insert(record)?;
+                Self::write_record(
+                    &self.io_metrics,
+                    file,
+                    configuration_origins::RECORD,
+                    &record.encode(cs)?,
+                )?;
+                configuration_origins::insert(&mut origins, record)?;
+            } else {
+                Self::write_record(&self.io_metrics, file, REC_CONF_STATE_AT, &bytes)?;
+                origins.observe_legacy();
+            }
+            drop(origins);
             self.mem.wl().set_conf_state(cs.clone());
             *self.conf_index.lock().expect("conf index poisoned") = at_index;
             self.conf_history
                 .lock()
                 .expect("conf history poisoned")
                 .applied(at_index, cs);
+            self.membership_history
+                .lock()
+                .expect("membership history poisoned")
+                .applied_origin(at_index, cs, origin);
             Ok(())
         })
     }

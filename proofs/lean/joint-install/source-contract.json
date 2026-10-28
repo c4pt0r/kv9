@@ -17,14 +17,14 @@
     "recovery_preserves_same_term_vote"
   ],
   "source_sha256": {
-    "crates/raft/src/snapshot_install.rs": "8cbf9186c980fa9341331565ff378b0dd9a1bc4f11a3e19450ebf75067acdf37",
-    "crates/raft/src/snapshot_install/tests.rs": "0733d4068fc717e541ac1fb9242adf356abf907b3e1582110a98aa4e104724d9",
+    "crates/raft/src/snapshot_install.rs": "8e7146cbc3380500245ba9e5bf9fcb24e8d2a08ed15fe41fb25fb74e816b1a69",
+    "crates/raft/src/snapshot_install/tests.rs": "6bdae8ba434889d3e3a7e7febaca9a8e1b71cc918b17ed9af12e8f1055949599",
     "crates/raft/examples/joint-install-probe.rs": "0cf89987b8c2b92dd9d49a1b131187a446d269e67680f23e93d3bc0fe04b018b",
-    "crates/common/src/store_lifecycle.rs": "a01462d0c6ac63e2fc3f6d5edc24d1dac3e494785efddd969ebcacfda7653d12",
-    "crates/raft/src/storage/snapshot.rs": "abf9eff13c2599cd25f65fcaef6a034548c3215220352c62515e5bf0207e3ce6",
-    "crates/raft/src/rawnode.rs": "452e243ce31772789e3710ade9490ae18b916f10b98345fac37934c8a7ece885",
-    "crates/engine/src/persist.rs": "a1b2b13ad0962aa0165d8ca2736eab81dde70e2a8528be19093db26e253a1534",
-    "crates/engine/src/checkpoint.rs": "c56c6b0419962d20e6cf98cfc609316b57c2627395d4f8cfea4eccdb8e34793e",
+    "crates/common/src/store_lifecycle.rs": "ec698d1812dec7d3ee4e3bae161accb4bf9b7e83c501c51569300e9ee79bb3fb",
+    "crates/raft/src/storage/snapshot.rs": "48c17c334b132a28269eff5db1cca6ce1002f4f57c88c0c86a25ebe3beaec82c",
+    "crates/raft/src/rawnode.rs": "a8918ba52bf6b8abc219a5568f2146a1608dcbdb513a7375ce40f0ed7ddc9ee1",
+    "crates/engine/src/persist.rs": "0d5726b850ad5e7ca955a5d5198743e7bc2f6806c3e0ec34a6a1f0857a126238",
+    "crates/engine/src/checkpoint.rs": "d6a7269fe8d20f6ac319393c2c4ce061617ee52b98dc445f726ff04320034460",
     "proofs/lean/joint-install/Installation.lean": "e9b5196e5d362b0633e339cc0b87e454e09e4790efe9196b910d3404f1d3e249",
     "proofs/lean/joint-install/README.md": "bb4a1c4698aa2eb7f29e9da0b25fd05a5472fe20977080ff3aa487c7076efc16"
   }

@@ -6,28 +6,32 @@
 
 pub mod admission;
 pub mod api;
+mod bootstrap_retention;
+mod catalog_lock;
 pub mod client;
 pub mod data_groups;
 pub mod endpoints;
 pub mod fence;
 pub mod grpc;
+pub mod installation_retention;
 pub mod node;
 mod point_stream;
 #[cfg(test)]
 mod point_test_support;
 mod point_wire;
+mod recovery_retention;
 mod region_manager;
 pub mod retention;
-pub use region_manager::GroupPreparation;
+pub use region_manager::{GroupPreparation, GroupRecoveryStatus, RecoverySelectionRelation};
+pub mod raw_ttl;
 pub mod routing;
-#[cfg(feature = "rpc-experiment")]
-pub mod rpc_experiment;
 pub mod runtime;
+pub mod ttl_clock;
 pub mod workload;
 
 pub use api::{
     AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, RawApi, RegionLocation,
-    RequestContext, RequestOrigin, RouterApi, TxnApi,
+    RequestContext, RequestOrigin, RouterApi,
 };
 pub use grpc::proto;
 pub use grpc::{
@@ -40,6 +44,9 @@ pub use routing::{route_request, Routed};
 pub use runtime::{NodeRuntime, RuntimeAuth};
 
 mod checkpoint_retention;
+mod log_budget;
+mod maintenance;
 mod migration_retention;
 mod observability;
 mod remote_storage;
+mod write_pressure;

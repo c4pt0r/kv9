@@ -6,17 +6,46 @@
 //! lifetime. File deletion/replacement by unrelated processes is outside that
 //! lock contract; malformed or missing records are not repaired by guessing.
 
+use crate::data_read_fence::{self, DataReadFences};
 use std::fs::{self, File, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, OnceLock};
 
 use crate::{Error, NodeId, Result, RootDescriptor, RootDigest, StoreIdentity, StoreIncarnation};
+
+#[cfg(test)]
+mod pre_capture_codec;
+#[cfg(test)]
+mod pre_data_reads_codec;
+#[cfg(test)]
+mod pre_large_codec;
+#[cfg(test)]
+mod pre_readers_codec;
+#[cfg(test)]
+mod pre_split_codec;
+#[cfg(test)]
+mod pre_staging_codec;
+#[cfg(test)]
+mod pre_store_history_codec;
+#[cfg(test)]
+mod pre_ttl_codec;
 
 pub const STORE_LIFECYCLE_FILE: &str = "kv9-store-lifecycle";
 const LOCK_FILE: &str = "kv9-store-lock";
 const LEGACY_MAGIC: &[u8; 8] = b"KV9LIFE1";
 const PRE_RANGE_MAGIC: &[u8; 8] = b"KV9LIFE2";
-const MAGIC: &[u8; 8] = b"KV9LIFE3";
+const PRE_TTL_MAGIC: &[u8; 8] = b"KV9LIFE3";
+const PRE_SPLIT_MAGIC: &[u8; 8] = b"KV9LIFE4";
+const PRE_STAGING_MAGIC: &[u8; 8] = b"KV9LIFE5";
+const PRE_LARGE_MAGIC: &[u8; 8] = b"KV9LIFE6";
+const PRE_CAPTURE_MAGIC: &[u8; 8] = b"KV9LIFE7";
+const PRE_READERS_MAGIC: &[u8; 8] = b"KV9LIFE8";
+const PRE_DATA_READS_MAGIC: &[u8; 8] = b"KV9LIFE9";
+const PRE_STORE_HISTORY_MAGIC: &[u8; 8] = b"KV9LIF10";
+const MAGIC: &[u8; 8] = b"KV9LIF11";
+/// V11 requires atomic task-catalog mutation tracking for DATA store census.
+pub const RAW_TTL_FORMAT_VERSION: u32 = 11;
 const PAYLOAD_LEN: usize = 8 + 8 + 16 + 1 + 32;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -54,7 +83,15 @@ impl StoreRecord {
         if bytes.len() != PAYLOAD_LEN + 32
             || (&bytes[..8] != MAGIC
                 && &bytes[..8] != LEGACY_MAGIC
-                && &bytes[..8] != PRE_RANGE_MAGIC)
+                && &bytes[..8] != PRE_RANGE_MAGIC
+                && &bytes[..8] != PRE_TTL_MAGIC
+                && &bytes[..8] != PRE_SPLIT_MAGIC
+                && &bytes[..8] != PRE_STAGING_MAGIC
+                && &bytes[..8] != PRE_LARGE_MAGIC
+                && &bytes[..8] != PRE_CAPTURE_MAGIC
+                && &bytes[..8] != PRE_READERS_MAGIC
+                && &bytes[..8] != PRE_DATA_READS_MAGIC
+                && &bytes[..8] != PRE_STORE_HISTORY_MAGIC)
         {
             return Err(Error::Config(
                 "invalid store lifecycle record format".into(),
@@ -87,11 +124,31 @@ impl StoreRecord {
 
 pub struct StoreGuard {
     // Keep this descriptor open until every user of the store has stopped.
-    _lock: File,
+    _lock: Arc<File>,
     directory: PathBuf,
     record: Option<StoreRecord>,
     legacy_format: bool,
     failed: bool,
+    data_read_fences: OnceLock<Arc<DataReadFences>>,
+}
+
+/// Evidence that this exact store durably excludes pre-V11 owners that can
+/// bypass the durable local DATA read floor. Only an
+/// active, healthy StoreGuard can mint it. It certifies a format floor, not
+/// group membership, serving readiness, clock health, or TTL activation.
+#[derive(Clone, Debug)]
+pub struct RawTtlFormatFence {
+    identity: StoreIdentity,
+    data_read_fences: Arc<DataReadFences>,
+}
+
+impl RawTtlFormatFence {
+    pub fn identity(&self) -> StoreIdentity {
+        self.identity
+    }
+    pub fn data_read_fences(&self) -> Arc<DataReadFences> {
+        self.data_read_fences.clone()
+    }
 }
 
 impl StoreGuard {
@@ -122,17 +179,28 @@ impl StoreGuard {
                 crate::fs::sync_ancestors(&crate::fs::OsFileSystem, directory).map_err(|e| {
                     Error::Config(format!("publish recovered store lifecycle: {e}"))
                 })?;
+                if matches!(record.phase, StorePhase::Active(_))
+                    && (&bytes[..8] == MAGIC || &bytes[..8] == PRE_STORE_HISTORY_MAGIC)
+                {
+                    // V10 already required this directory. An upgrade must not
+                    // erase its old durable DATA floors by rebuilding absence.
+                    data_read_fence::check_directory(directory)?;
+                }
                 (Some(record), &bytes[..8] != MAGIC)
             }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => (None, false),
             Err(e) => return Err(Error::Config(format!("read store lifecycle: {e}"))),
         };
+        if !legacy_format && matches!(record.map(|r| r.phase), Some(StorePhase::Active(_))) {
+            data_read_fence::check_directory(directory)?;
+        }
         Ok(Self {
-            _lock: lock,
+            _lock: Arc::new(lock),
             directory: directory.to_path_buf(),
             record,
             legacy_format,
             failed: false,
+            data_read_fences: OnceLock::new(),
         })
     }
 
@@ -146,13 +214,88 @@ impl StoreGuard {
         self.record
     }
 
-    /// Persist the V3 format before this process opens its Raft owner. V1/V2
-    /// readers reject this header; the V3 wire service rejects V1/V2 processes
+    /// Writers opened outside NodeRuntime (for example offline installation)
+    /// must establish the same durable downgrade fence before touching data.
+    pub fn require_current_writer_format(&self) -> Result<()> {
+        self.healthy()?;
+        if self.record.is_none() || self.legacy_format {
+            return Err(Error::Config(
+                "store writer requires the current durable lifecycle format".into(),
+            ));
+        }
+        if matches!(self.record.map(|r| r.phase), Some(StorePhase::Active(_))) {
+            data_read_fence::check_directory(&self.directory)?;
+        }
+        Ok(())
+    }
+
+    /// Persist the V11 format before this process opens its Raft owner. V1–V10
+    /// readers reject this header; the V11 wire service rejects V1–V10 processes
     /// that still own other stores. Preserve node, incarnation, phase and root.
     /// A failed publication poisons the guard, including a failed directory
     /// sync after rename, so no owner may start on a merely visible upgrade.
     pub fn fence_legacy_writers(&mut self) -> Result<()> {
         self.fence_legacy_writers_observed(&mut |_, _| Ok(()))
+    }
+
+    pub fn raw_ttl_format_fence(
+        &self,
+        root: &RootDescriptor,
+        identity: &StoreIdentity,
+    ) -> Result<RawTtlFormatFence> {
+        identity.verify(root, identity.node_id)?;
+        let record = self.verify(identity)?;
+        self.require_current_writer_format()?;
+        if record.phase != StorePhase::Active(root.digest()) {
+            return Err(Error::Config(
+                "Raw TTL format confirmation requires a durably fenced active store".into(),
+            ));
+        }
+        Ok(RawTtlFormatFence {
+            identity: *identity,
+            data_read_fences: self.data_read_fences(identity)?,
+        })
+    }
+
+    /// The provider shares the actual store lock until its last user stops.
+    /// Active V10 stores must already have the floor directory; losing it is
+    /// corruption, never an empty inventory that this method may reconstruct.
+    pub fn data_read_fences(&self, identity: &StoreIdentity) -> Result<Arc<DataReadFences>> {
+        let record = self.verify(identity)?;
+        self.require_current_writer_format()?;
+        match record.phase {
+            StorePhase::Bound(root) if root == identity.root_digest => {
+                data_read_fence::initialize_directory(&self.directory)?;
+            }
+            StorePhase::Active(root) if root == identity.root_digest => {}
+            _ => {
+                return Err(Error::Config(
+                    "DATA read floor requires bound store identity".into(),
+                ))
+            }
+        }
+        if let Some(provider) = self.data_read_fences.get() {
+            if provider.identity() != *identity {
+                return Err(Error::Config("DATA read floor identity differs".into()));
+            }
+            return Ok(provider.clone());
+        }
+        let provider = Arc::new(DataReadFences::open(
+            &self.directory,
+            *identity,
+            self._lock.clone(),
+        )?);
+        let _ = self.data_read_fences.set(provider);
+        let provider = self
+            .data_read_fences
+            .get()
+            .expect("initialized floor provider");
+        // A concurrent first caller may have initialized the cache. Check the
+        // returned identity as well as the argument used for our own candidate.
+        if provider.identity() != *identity {
+            return Err(Error::Config("DATA read floor identity differs".into()));
+        }
+        Ok(provider.clone())
     }
 
     fn fence_legacy_writers_observed(
@@ -310,7 +453,18 @@ impl StoreGuard {
         observe: &mut impl FnMut(PublicationStep, bool) -> Result<()>,
     ) -> Result<()> {
         self.healthy()?;
-        let result = publish_record(&self.directory, &record.encode(), observe);
+        let result = (|| {
+            if matches!(record.phase, StorePhase::Active(_)) {
+                if self.legacy_format
+                    || !matches!(self.record.map(|r| r.phase), Some(StorePhase::Active(_)))
+                {
+                    data_read_fence::initialize_directory(&self.directory)?;
+                } else {
+                    data_read_fence::check_directory(&self.directory)?;
+                }
+            }
+            publish_record(&self.directory, &record.encode(), observe)
+        })();
         match result {
             Ok(()) => {
                 self.record = Some(record);
@@ -409,10 +563,13 @@ mod tests {
         .unwrap()
     }
 
-    fn legacy_record(path: &Path, record: StoreRecord) {
+    fn legacy_record(path: &Path, record: StoreRecord, magic: &[u8; 8]) {
         fs::create_dir_all(path).unwrap();
+        if magic == PRE_STORE_HISTORY_MAGIC && matches!(record.phase, StorePhase::Active(_)) {
+            data_read_fence::initialize_directory(path).unwrap();
+        }
         let mut bytes = record.encode();
-        bytes[..8].copy_from_slice(LEGACY_MAGIC);
+        bytes[..8].copy_from_slice(magic);
         let digest = RootDigest::sha256(&bytes[..PAYLOAD_LEN]);
         bytes[PAYLOAD_LEN..].copy_from_slice(digest.as_bytes());
         fs::write(path.join(STORE_LIFECYCLE_FILE), bytes).unwrap();
@@ -431,7 +588,7 @@ mod tests {
                 incarnation: StoreIncarnation::mint().unwrap(),
                 phase,
             };
-            legacy_record(&path, record);
+            legacy_record(&path, record, LEGACY_MAGIC);
             let mut guard = StoreGuard::lock(&path).unwrap();
             assert!(guard.legacy_format);
             guard.fence_legacy_writers().unwrap();
@@ -491,58 +648,365 @@ mod tests {
     }
 
     #[test]
-    fn every_writer_format_publication_cut_refuses_owner_authority_until_reopen() {
-        let record = StoreRecord {
-            node_id: NodeId(4),
-            incarnation: StoreIncarnation::mint().unwrap(),
-            phase: StorePhase::Active(RootDigest::from_bytes([7; 32])),
-        };
-        let probe = directory();
-        legacy_record(&probe, record);
-        let mut guard = StoreGuard::lock(&probe).unwrap();
-        let mut events = Vec::new();
-        guard
-            .fence_legacy_writers_observed(&mut |step, after| {
-                events.push((step, after));
-                Ok(())
-            })
-            .unwrap();
-        assert!(events.len() >= 12);
-        drop(guard);
-        fs::remove_dir_all(probe).unwrap();
-        for cut in 0..events.len() {
+    fn large_format_upgrade_preserves_all_phases_and_fences_frozen_v6_reader() {
+        for phase in [
+            StorePhase::Prepared,
+            StorePhase::Bound(RootDigest::from_bytes([7; 32])),
+            StorePhase::Active(RootDigest::from_bytes([7; 32])),
+        ] {
+            for magic in [
+                LEGACY_MAGIC,
+                PRE_RANGE_MAGIC,
+                PRE_TTL_MAGIC,
+                PRE_SPLIT_MAGIC,
+                PRE_STAGING_MAGIC,
+                PRE_LARGE_MAGIC,
+            ] {
+                let path = directory();
+                let record = StoreRecord {
+                    node_id: NodeId(4),
+                    incarnation: StoreIncarnation::mint().unwrap(),
+                    phase,
+                };
+                legacy_record(&path, record, magic);
+                assert!(super::pre_large_codec::accepts(
+                    &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()
+                ));
+                let mut guard = StoreGuard::lock(&path).unwrap();
+                assert!(guard.require_current_writer_format().is_err());
+                guard.fence_legacy_writers().unwrap();
+                guard.require_current_writer_format().unwrap();
+                assert_eq!(guard.record(), Some(record));
+                let bytes = fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap();
+                assert_eq!(&bytes[..8], MAGIC);
+                assert!(!super::pre_large_codec::accepts(&bytes));
+                assert!(!super::pre_staging_codec::accepts(&bytes));
+                assert!(!super::pre_split_codec::accepts(&bytes));
+                assert_eq!(StoreRecord::decode(&bytes).unwrap(), record);
+                guard
+                    .fence_legacy_writers_observed(&mut |_, _| {
+                        panic!("current format must not be republished")
+                    })
+                    .unwrap();
+                drop(guard);
+                let recovered = StoreGuard::lock(&path).unwrap();
+                recovered.require_current_writer_format().unwrap();
+                assert_eq!(recovered.record(), Some(record));
+                drop(recovered);
+                fs::remove_dir_all(path).unwrap();
+            }
+        }
+    }
+
+    #[test]
+    fn capture_catalog_upgrade_preserves_identity_and_fences_frozen_v7_reader() {
+        for phase in [
+            StorePhase::Prepared,
+            StorePhase::Bound(RootDigest::from_bytes([8; 32])),
+            StorePhase::Active(RootDigest::from_bytes([8; 32])),
+        ] {
             let path = directory();
-            legacy_record(&path, record);
+            let record = StoreRecord {
+                node_id: NodeId(4),
+                incarnation: StoreIncarnation::mint().unwrap(),
+                phase,
+            };
+            legacy_record(&path, record, PRE_CAPTURE_MAGIC);
+            assert!(super::pre_capture_codec::accepts(
+                &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()
+            ));
             let mut guard = StoreGuard::lock(&path).unwrap();
-            let mut reached = 0;
-            assert!(guard
-                .fence_legacy_writers_observed(&mut |step, after| {
-                    assert_eq!((step, after), events[reached]);
-                    reached += 1;
-                    if reached == cut + 1 {
-                        Err(Error::Config("injected format publication error".into()))
-                    } else {
-                        Ok(())
-                    }
+            assert!(guard.require_current_writer_format().is_err());
+            guard.fence_legacy_writers().unwrap();
+            guard.require_current_writer_format().unwrap();
+            assert_eq!(guard.record(), Some(record));
+            let current = fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap();
+            assert_eq!(&current[..8], b"KV9LIF11");
+            assert!(!super::pre_capture_codec::accepts(&current));
+            assert_eq!(StoreRecord::decode(&current).unwrap(), record);
+            guard
+                .fence_legacy_writers_observed(&mut |_, _| {
+                    panic!("idempotent floor upgrade republished")
                 })
-                .is_err());
-            assert_eq!(reached, cut + 1);
-            assert!(
-                guard.fence_legacy_writers().is_err(),
-                "failed format publication permitted startup without reopen"
-            );
-            assert!(guard.prepare(record.node_id).is_err());
+                .unwrap();
             drop(guard);
-            let mut recovered = StoreGuard::lock(&path).unwrap();
-            recovered.fence_legacy_writers().unwrap();
+            let recovered = StoreGuard::lock(&path).unwrap();
+            recovered.require_current_writer_format().unwrap();
             assert_eq!(recovered.record(), Some(record));
-            assert_eq!(
-                &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()[..8],
-                MAGIC
-            );
             drop(recovered);
             fs::remove_dir_all(path).unwrap();
         }
+    }
+
+    #[test]
+    fn reader_format_upgrade_preserves_all_phases_and_fences_frozen_v8_reader() {
+        for phase in [
+            StorePhase::Prepared,
+            StorePhase::Bound(RootDigest::from_bytes([8; 32])),
+            StorePhase::Active(RootDigest::from_bytes([8; 32])),
+        ] {
+            let path = directory();
+            let record = StoreRecord {
+                node_id: NodeId(4),
+                incarnation: StoreIncarnation::mint().unwrap(),
+                phase,
+            };
+            legacy_record(&path, record, PRE_READERS_MAGIC);
+            assert!(super::pre_readers_codec::accepts(
+                &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()
+            ));
+            let mut guard = StoreGuard::lock(&path).unwrap();
+            assert!(guard.require_current_writer_format().is_err());
+            guard.fence_legacy_writers().unwrap();
+            guard.require_current_writer_format().unwrap();
+            assert_eq!(guard.record(), Some(record));
+            let current = fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap();
+            assert_eq!(&current[..8], b"KV9LIF11");
+            assert!(!super::pre_readers_codec::accepts(&current));
+            assert_eq!(StoreRecord::decode(&current).unwrap(), record);
+            guard
+                .fence_legacy_writers_observed(&mut |_, _| {
+                    panic!("idempotent floor upgrade republished")
+                })
+                .unwrap();
+            drop(guard);
+            let recovered = StoreGuard::lock(&path).unwrap();
+            recovered.require_current_writer_format().unwrap();
+            assert_eq!(recovered.record(), Some(record));
+            drop(recovered);
+            fs::remove_dir_all(path).unwrap();
+        }
+    }
+
+    #[test]
+    fn data_read_format_upgrade_preserves_all_phases_and_fences_frozen_v9_reader() {
+        for phase in [
+            StorePhase::Prepared,
+            StorePhase::Bound(RootDigest::from_bytes([8; 32])),
+            StorePhase::Active(RootDigest::from_bytes([8; 32])),
+        ] {
+            let path = directory();
+            let record = StoreRecord {
+                node_id: NodeId(4),
+                incarnation: StoreIncarnation::mint().unwrap(),
+                phase,
+            };
+            legacy_record(&path, record, PRE_DATA_READS_MAGIC);
+            assert!(super::pre_data_reads_codec::accepts(
+                &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()
+            ));
+            let mut guard = StoreGuard::lock(&path).unwrap();
+            assert!(guard.require_current_writer_format().is_err());
+            guard.fence_legacy_writers().unwrap();
+            guard.require_current_writer_format().unwrap();
+            assert_eq!(guard.record(), Some(record));
+            let current = fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap();
+            assert_eq!(&current[..8], b"KV9LIF11");
+            assert!(!super::pre_data_reads_codec::accepts(&current));
+            assert_eq!(StoreRecord::decode(&current).unwrap(), record);
+            guard
+                .fence_legacy_writers_observed(&mut |_, _| {
+                    panic!("idempotent floor upgrade republished")
+                })
+                .unwrap();
+            drop(guard);
+            let recovered = StoreGuard::lock(&path).unwrap();
+            recovered.require_current_writer_format().unwrap();
+            assert_eq!(recovered.record(), Some(record));
+            drop(recovered);
+            fs::remove_dir_all(path).unwrap();
+        }
+    }
+
+    #[test]
+    fn store_history_format_upgrade_preserves_all_phases_and_fences_frozen_v10_reader() {
+        for phase in [
+            StorePhase::Prepared,
+            StorePhase::Bound(RootDigest::from_bytes([8; 32])),
+            StorePhase::Active(RootDigest::from_bytes([8; 32])),
+        ] {
+            let path = directory();
+            let record = StoreRecord {
+                node_id: NodeId(4),
+                incarnation: StoreIncarnation::mint().unwrap(),
+                phase,
+            };
+            legacy_record(&path, record, PRE_STORE_HISTORY_MAGIC);
+            assert!(super::pre_store_history_codec::accepts(
+                &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()
+            ));
+            let mut guard = StoreGuard::lock(&path).unwrap();
+            assert!(guard.require_current_writer_format().is_err());
+            guard.fence_legacy_writers().unwrap();
+            guard.require_current_writer_format().unwrap();
+            assert_eq!(guard.record(), Some(record));
+            let current = fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap();
+            assert_eq!(&current[..8], b"KV9LIF11");
+            assert!(!super::pre_store_history_codec::accepts(&current));
+            assert_eq!(StoreRecord::decode(&current).unwrap(), record);
+            guard
+                .fence_legacy_writers_observed(&mut |_, _| {
+                    panic!("idempotent floor upgrade republished")
+                })
+                .unwrap();
+            drop(guard);
+            let recovered = StoreGuard::lock(&path).unwrap();
+            recovered.require_current_writer_format().unwrap();
+            assert_eq!(recovered.record(), Some(record));
+            drop(recovered);
+            fs::remove_dir_all(path).unwrap();
+        }
+    }
+
+    #[test]
+    fn v10_upgrade_refuses_missing_data_floor_directory() {
+        let path = directory();
+        let record = StoreRecord {
+            node_id: NodeId(4),
+            incarnation: StoreIncarnation::mint().unwrap(),
+            phase: StorePhase::Active(RootDigest::from_bytes([8; 32])),
+        };
+        legacy_record(&path, record, PRE_STORE_HISTORY_MAGIC);
+        fs::remove_dir(path.join(data_read_fence::DIRECTORY)).unwrap();
+        let before = fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap();
+        assert!(StoreGuard::lock(&path).is_err());
+        assert_eq!(fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap(), before);
+        assert!(!path.join(data_read_fence::DIRECTORY).exists());
+        fs::remove_dir_all(path).unwrap();
+    }
+
+    #[test]
+    fn every_writer_format_publication_cut_refuses_owner_authority_until_reopen() {
+        for previous in [
+            PRE_CAPTURE_MAGIC,
+            PRE_READERS_MAGIC,
+            PRE_DATA_READS_MAGIC,
+            PRE_STORE_HISTORY_MAGIC,
+        ] {
+            let record = StoreRecord {
+                node_id: NodeId(4),
+                incarnation: StoreIncarnation::mint().unwrap(),
+                phase: StorePhase::Active(RootDigest::from_bytes([7; 32])),
+            };
+            let root = root(record);
+            let record = StoreRecord {
+                phase: StorePhase::Active(root.digest()),
+                ..record
+            };
+            let identity = StoreIdentity::for_voter(&root, record.node_id).unwrap();
+            let probe = directory();
+            legacy_record(&probe, record, previous);
+            let mut guard = StoreGuard::lock(&probe).unwrap();
+            assert!(guard.raw_ttl_format_fence(&root, &identity).is_err());
+            let mut events = Vec::new();
+            guard
+                .fence_legacy_writers_observed(&mut |step, after| {
+                    events.push((step, after));
+                    Ok(())
+                })
+                .unwrap();
+            assert!(events.len() >= 12);
+            drop(guard);
+            fs::remove_dir_all(probe).unwrap();
+            for cut in 0..events.len() {
+                let path = directory();
+                legacy_record(&path, record, previous);
+                let mut guard = StoreGuard::lock(&path).unwrap();
+                let mut reached = 0;
+                assert!(guard
+                    .fence_legacy_writers_observed(&mut |step, after| {
+                        assert_eq!((step, after), events[reached]);
+                        reached += 1;
+                        if reached == cut + 1 {
+                            Err(Error::Config("injected format publication error".into()))
+                        } else {
+                            Ok(())
+                        }
+                    })
+                    .is_err());
+                assert_eq!(reached, cut + 1);
+                assert!(
+                    guard.fence_legacy_writers().is_err(),
+                    "failed format publication permitted startup without reopen"
+                );
+                assert!(guard.prepare(record.node_id).is_err());
+                assert!(guard.raw_ttl_format_fence(&root, &identity).is_err());
+                drop(guard);
+                let mut recovered = StoreGuard::lock(&path).unwrap();
+                recovered.fence_legacy_writers().unwrap();
+                assert_eq!(
+                    recovered
+                        .raw_ttl_format_fence(&root, &identity)
+                        .unwrap()
+                        .identity(),
+                    identity
+                );
+                assert_eq!(recovered.record(), Some(record));
+                assert_eq!(
+                    &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()[..8],
+                    MAGIC
+                );
+                drop(recovered);
+                fs::remove_dir_all(path).unwrap();
+            }
+        }
+    }
+
+    #[test]
+    fn ttl_format_confirmation_requires_current_durable_active_identity_and_fences_v3() {
+        let path = directory();
+        let mut guard = StoreGuard::lock(&path).unwrap();
+        let record = guard.prepare(NodeId(4)).unwrap();
+        let root = root(record);
+        let identity = StoreIdentity::for_voter(&root, record.node_id).unwrap();
+        assert!(guard.raw_ttl_format_fence(&root, &identity).is_err());
+        guard.bind(&root, &identity).unwrap();
+        assert!(guard.raw_ttl_format_fence(&root, &identity).is_err());
+        guard.activate(&identity).unwrap();
+        assert_eq!(
+            guard
+                .raw_ttl_format_fence(&root, &identity)
+                .unwrap()
+                .identity(),
+            identity
+        );
+        let mut foreign = identity;
+        foreign.store_incarnation = StoreIncarnation::mint().unwrap();
+        assert!(guard.raw_ttl_format_fence(&root, &foreign).is_err());
+        let record = guard.record().unwrap();
+        drop(guard);
+        // The frozen old codec accepts all historical generations, while the
+        // Current floor excludes that reader before it can open Raft/engine state.
+        for magic in [LEGACY_MAGIC, PRE_RANGE_MAGIC, PRE_TTL_MAGIC] {
+            legacy_record(&path, record, magic);
+            assert!(super::pre_ttl_codec::accepts(
+                &fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap()
+            ));
+            let mut guard = StoreGuard::lock(&path).unwrap();
+            assert!(guard.raw_ttl_format_fence(&root, &identity).is_err());
+            guard.fence_legacy_writers().unwrap();
+            assert_eq!(guard.record(), Some(record));
+            assert_eq!(
+                guard
+                    .raw_ttl_format_fence(&root, &identity)
+                    .unwrap()
+                    .identity(),
+                identity
+            );
+            let current = fs::read(path.join(STORE_LIFECYCLE_FILE)).unwrap();
+            assert!(!super::pre_ttl_codec::accepts(&current));
+            drop(guard);
+            let recovered = StoreGuard::lock(&path).unwrap();
+            assert_eq!(
+                recovered
+                    .raw_ttl_format_fence(&root, &identity)
+                    .unwrap()
+                    .identity(),
+                identity
+            );
+            drop(recovered);
+        }
+        fs::remove_dir_all(path).unwrap();
     }
 
     #[test]

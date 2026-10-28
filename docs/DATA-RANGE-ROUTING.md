@@ -64,6 +64,13 @@ groups. There are **no new performance measurements** for this implementation.
 
 ## Upgrade and bounds
 
+2026-10-04 update: the historical V3 gate below is superseded by the
+[TTL V4 store/wire fence](RAW-TTL-UPGRADE.md). Current binaries use
+`kv9.raft.v4` / `KV9LIFE4`; V3 binary/network acceptance must be rerun for V4.
+The historical 255-row bound below was separately removed by
+[task-history pagination](TASK-HISTORY-PAGINATION.md); this does not accept
+unbounded maintenance cost or production capacity.
+
 Pre-range metadata writers do not recognize the new namespace marker. To
 exclude them, node-to-node RPC paths now use `kv9.raft.v3`, with no fallback,
 and each store publishes `KV9LIFE3` durably before opening an owner. Previous

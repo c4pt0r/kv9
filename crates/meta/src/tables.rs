@@ -2,12 +2,9 @@
 //!
 //! These wrap the generic [`crate::store`] op API in table-specific types and the
 //! **known joins** the scheduler/router need (METADATA-CATALOG §4), hand-written as
-//! index-driven nested lookups. Respecting the corrected hierarchy:
-//! **tenant → keyspace → txn group → timeline**, where `txn_groups.keyspace_id`
-//! points *up* to `keyspaces` (a keyspace CONTAINS its txn groups; a `raw` keyspace has
-//! none) — there is no duplicated "which group" field to drift.
+//! index-driven nested lookups. The hierarchy is **tenant → keyspace → region**.
 
-use kv9_common::{ApiType, KeyspaceId, NodeId, RegionId, Result, TenantId, TimelineId, TxnGroupId};
+use kv9_common::{ApiType, KeyspaceId, NodeId, RegionId, Result, TenantId};
 use kv9_engine::Engine;
 
 use crate::codec::{memcmp_uint, ColumnValue, RowValue};
@@ -27,7 +24,7 @@ pub struct Tenant {
     pub state: u32,
 }
 
-/// A `keyspaces` row (METADATA-CATALOG §2). `api_type` selects `txn`/`raw`.
+/// A `keyspaces` row (METADATA-CATALOG §2). `api_type` is always `raw`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Keyspace {
     pub id: KeyspaceId,
@@ -38,27 +35,6 @@ pub struct Keyspace {
     pub end_key: Vec<u8>,
     pub state: u32,
     pub config: Vec<u8>,
-}
-
-/// A `txn_groups` row (METADATA-CATALOG §2). `keyspace_id` points **up** to the owning
-/// keyspace; groups merely subdivide a `txn` keyspace to shard its TSO. ONLY for
-/// `api_type = txn`.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TxnGroup {
-    pub id: TxnGroupId,
-    pub keyspace_id: KeyspaceId,
-    pub name: String,
-    pub sub_start: Vec<u8>,
-    pub sub_end: Vec<u8>,
-}
-
-/// A `tso_timelines` row (METADATA-CATALOG §2). 1:1 with a txn group.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TsoTimeline {
-    pub id: TimelineId,
-    pub txn_group_id: TxnGroupId,
-    pub provider_node: NodeId,
-    pub window_hi: u64,
 }
 
 /// A `nodes` (membership) row (METADATA-CATALOG §2).
@@ -136,37 +112,21 @@ impl Keyspace {
     }
 }
 
-impl TxnGroup {
-    /// Encode into a tag-length [`RowValue`] (METADATA-CATALOG §3).
-    pub fn to_row_value(&self) -> RowValue {
-        let mut r = RowValue::new();
-        r.set(ColumnId(1), ColumnValue::Uint(self.id.0));
-        r.set(ColumnId(2), ColumnValue::Uint(self.keyspace_id.0 as u64));
-        r.set(ColumnId(3), ColumnValue::Text(self.name.clone()));
-        r.set(ColumnId(4), ColumnValue::Bytes(self.sub_start.clone()));
-        r.set(ColumnId(5), ColumnValue::Bytes(self.sub_end.clone()));
-        r
-    }
-
-    /// The primary-key components for this txn group (id).
-    pub fn pk(&self) -> Vec<Vec<u8>> {
-        vec![memcmp_uint(self.id.0)]
-    }
-}
-
-/// Stable on-disk code for an [`ApiType`] (0 = txn, 1 = raw).
+/// Stable on-disk code for an [`ApiType`] (1 = raw; 0 was the retired txn type).
 pub fn api_type_code(api: ApiType) -> u64 {
     match api {
-        ApiType::Txn => 0,
         ApiType::Raw => 1,
     }
 }
 
-/// Inverse of [`api_type_code`].
+/// Inverse of [`api_type_code`]. Code 0 (the retired transactional type) is a typed
+/// error, never silently reinterpreted as raw.
 pub fn api_type_from_code(code: u64) -> Result<ApiType> {
     match code {
-        0 => Ok(ApiType::Txn),
         1 => Ok(ApiType::Raw),
+        0 => Err(kv9_common::Error::MalformedKey(
+            "catalog API type 0 (txn) is no longer supported".into(),
+        )),
         _ => Err(kv9_common::Error::MalformedKey(format!(
             "unknown catalog API type {code}"
         ))),
@@ -334,40 +294,6 @@ impl<'a, E: Engine> Tables<'a, E> {
             return Ok(None);
         };
         Ok(Some(decode_region(id, &row.value)?))
-    }
-
-    /// Join — *txn group for key K in keyspace KS* → `index_scan(txn_groups,
-    /// by_keyspace, KS)`, pick the sub-range ∋ K (METADATA-CATALOG §4).
-    ///
-    /// A `raw` keyspace has no groups (returns `None`); the default single group has
-    /// empty `sub_start`/`sub_end` = the whole keyspace.
-    pub fn txn_group_for_key(
-        &self,
-        keyspace: KeyspaceId,
-        key: &[u8],
-    ) -> Result<Option<TxnGroupId>> {
-        let txn = self.store.begin()?;
-        let group_pks = txn.index_scan(
-            &schema::TXN_GROUPS_DESC,
-            IndexId(1), // by_keyspace
-            &[memcmp_uint(keyspace.0 as u64)],
-            usize::MAX,
-        )?;
-        for pk in group_pks {
-            let Some(id_comp) = pk.first() else { continue };
-            let group_id = crate::codec::decode_uint_component(id_comp)?;
-            let Some(row) = txn.get(&schema::TXN_GROUPS_DESC, &[memcmp_uint(group_id)])? else {
-                continue;
-            };
-            let sub_start = bytes_or(&row.value, ColumnId(4));
-            let sub_end = bytes_or(&row.value, ColumnId(5));
-            let ge_start = sub_start.is_empty() || key >= sub_start.as_slice();
-            let lt_end = sub_end.is_empty() || key < sub_end.as_slice();
-            if ge_start && lt_end {
-                return Ok(Some(TxnGroupId(group_id)));
-            }
-        }
-        Ok(None)
     }
 }
 

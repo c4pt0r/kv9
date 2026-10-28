@@ -98,9 +98,9 @@ where
     }
 
     fn call(&mut self, mut request: http::Request<B>) -> Self::Future {
-        if !*self.modern.borrow() && request.uri().path() == "/kv9.raft.v3.Kv9Raft/BatchDataRaft" {
+        if !*self.modern.borrow() && request.uri().path() == "/kv9.raft.v11.Kv9Raft/BatchDataRaft" {
             self.rejected.fetch_add(1, Ordering::SeqCst);
-            *request.uri_mut() = "/kv9.raft.v3.Kv9Raft/UnknownLegacyMethod".parse().unwrap();
+            *request.uri_mut() = "/kv9.raft.v11.Kv9Raft/UnknownLegacyMethod".parse().unwrap();
         }
         self.service.call(request)
     }
@@ -114,6 +114,93 @@ struct Endpoint {
 
 #[tonic::async_trait]
 impl Kv9Raft for Endpoint {
+    async fn inspect_configuration_timeline(
+        &self,
+        request: Request<pb::ConfigurationTimelineRequest>,
+    ) -> std::result::Result<Response<pb::ConfigurationTimelineResponse>, Status> {
+        self.service.inspect_configuration_timeline(request).await
+    }
+    async fn inspect_configuration_origins(
+        &self,
+        request: Request<pb::ConfigurationOriginsRequest>,
+    ) -> std::result::Result<Response<pb::ConfigurationOriginsResponse>, Status> {
+        self.service.inspect_configuration_origins(request).await
+    }
+    async fn inspect_data_membership(
+        &self,
+        request: Request<pb::DataMembershipRequest>,
+    ) -> std::result::Result<Response<pb::DataMembershipResponse>, Status> {
+        self.service.inspect_data_membership(request).await
+    }
+    async fn inspect_data_read_fence(
+        &self,
+        request: Request<pb::DataReadFenceRequest>,
+    ) -> std::result::Result<Response<pb::DataReadFenceResponse>, Status> {
+        self.service.inspect_data_read_fence(request).await
+    }
+
+    async fn inspect_bootstrap_read_fence(
+        &self,
+        request: Request<pb::CheckpointHistoryRequest>,
+    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+        self.service.inspect_bootstrap_read_fence(request).await
+    }
+    type FetchMigrationCaptureStream = crate::grpc::migration_payload::PayloadStream;
+    async fn fetch_migration_capture(
+        &self,
+        request: Request<pb::MigrationCaptureTransferRequest>,
+    ) -> std::result::Result<Response<Self::FetchMigrationCaptureStream>, Status> {
+        self.service.fetch_migration_capture(request).await
+    }
+    async fn replicate_migration_capture(
+        &self,
+        request: Request<pb::MigrationCaptureTransferRequest>,
+    ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
+        self.service.replicate_migration_capture(request).await
+    }
+
+    async fn inspect_migration_capture(
+        &self,
+        request: Request<pb::MigrationCaptureRequest>,
+    ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
+        self.service.inspect_migration_capture(request).await
+    }
+    async fn inspect_checkpoint_selection(
+        &self,
+        request: Request<pb::CheckpointHistoryRequest>,
+    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+        self.service.inspect_checkpoint_selection(request).await
+    }
+    async fn inspect_checkpoint_history(
+        &self,
+        request: Request<pb::CheckpointHistoryRequest>,
+    ) -> std::result::Result<Response<pb::CheckpointHistoryResponse>, Status> {
+        self.service.inspect_checkpoint_history(request).await
+    }
+    async fn inspect_log_pressure(
+        &self,
+        request: Request<pb::LogPressureRequest>,
+    ) -> std::result::Result<Response<pb::LogPressureResponse>, Status> {
+        self.service.inspect_log_pressure(request).await
+    }
+    async fn checkpoint_retention(
+        &self,
+        request: Request<pb::CheckpointRetentionRequest>,
+    ) -> std::result::Result<Response<pb::CheckpointRetentionResponse>, Status> {
+        self.service.checkpoint_retention(request).await
+    }
+    async fn resolve_raw_ttl_stores(
+        &self,
+        _: Request<pb::RawTtlStoresRequest>,
+    ) -> std::result::Result<Response<pb::RawTtlStoresResponse>, Status> {
+        Err(Status::unimplemented("wire fixture"))
+    }
+    async fn confirm_raw_ttl_format(
+        &self,
+        request: Request<pb::RawTtlFormatRequest>,
+    ) -> std::result::Result<Response<pb::RawTtlFormatReceipt>, Status> {
+        self.service.confirm_raw_ttl_format(request).await
+    }
     async fn batch_raft(
         &self,
         request: Request<Streaming<pb::BatchRaftMessage>>,

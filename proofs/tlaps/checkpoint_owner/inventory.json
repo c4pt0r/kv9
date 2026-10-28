@@ -35,15 +35,15 @@
     "CheckpointOwnerProof"
   ],
   "source_pins": {
-    "crates/engine/src/checkpoint.rs": "c56c6b0419962d20e6cf98cfc609316b57c2627395d4f8cfea4eccdb8e34793e",
-    "crates/engine/src/flush_journal.rs": "17d5968e0af91e5c844fc89b79e2c324c1bbcfbb0594984e78f01eb735d9801b",
-    "crates/engine/src/mem.rs": "dbf2890ae53314b84ba558cbee6009aa874c1e493a41eb62f0e0123b4bed5408",
-    "crates/engine/src/persist.rs": "49b7c0af87c6606a0a64f188164708fcc8134170c12d3750a3db313d5b274f47",
-    "crates/server/src/checkpoint_retention.rs": "a42c1c5aeb781c053f94e0d553c8f41f0f7d89991bea4448355fffac9e206488",
-    "crates/server/src/remote_storage.rs": "471bbb2c7b183b36d8167b94e63fbfc6c81a93008dc22812eb35740c954271cd",
-    "crates/server/src/runtime.rs": "85be248e02d83df4862bb2c0616d24740df04cc82d92b1b5941dca284c3dcbe5",
-    "crates/server/src/runtime/tests/retention_tests.rs": "e3ecb530aa2e76448d48154c807751bf6be4a05013eef4e94d737a04a996cda6",
-    "crates/meta/src/retention.rs": "99475c99545f9c93a86de58fac6cb4c8a70a8bd93e5aaea1006838ec131927db",
-    "crates/region/src/manifest.rs": "ecbfb593fa561ec88fcadc2471c6f444416cbc3b0546f75fdfc4e46870076c96"
+    "crates/engine/src/checkpoint.rs": "d6a7269fe8d20f6ac319393c2c4ce061617ee52b98dc445f726ff04320034460",
+    "crates/engine/src/flush_journal.rs": "e46c15357a7e23840096e38750352472d28579d520f9b2c0699653307b214e9d",
+    "crates/engine/src/mem.rs": "001360310d73b0e542b85ba102ab786918b4ac51be2c7e5dd94914d5421d74fb",
+    "crates/engine/src/persist.rs": "0d5726b850ad5e7ca955a5d5198743e7bc2f6806c3e0ec34a6a1f0857a126238",
+    "crates/server/src/checkpoint_retention.rs": "fd711c8eb856a60a3d768b33875f46794ef2800793514c544f466e7fe83ba67d",
+    "crates/server/src/remote_storage.rs": "0f6ea528133442900893fca81b59055ea20a2ed1a3d38ec133c056ac48503314",
+    "crates/server/src/runtime.rs": "4b809dff28247ba64160f91f45e3e2531f55c7a10f0bfc5bce7db29532e08562",
+    "crates/server/src/runtime/tests/retention_tests.rs": "b85b661ab7d4addb43fdb8c71ba2f7a510b47b7ae78e8b8579f33ab7bb8a6a86",
+    "crates/meta/src/retention.rs": "15279c6d41b13bc39e052c97dc40e81cc3a07debf066cdf7e12cccd0e6742698",
+    "crates/region/src/manifest.rs": "56cff0a4f76d87b06aad30fc1da07c5eb3f34e46d4ab5cc337a4c240c6e0be5e"
   }
 }

@@ -9,13 +9,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.len() < 2 || args.len() > 3 {
         return Err(
-            "usage: check-wire-floor <old-address> <new-address> [previous-generation=1|2]".into(),
+            "usage: check-wire-floor <old-address> <new-address> [previous-generation=1|2|3|4|5|6|7|8|9|10]"
+                .into(),
         );
     }
     tokio::runtime::Runtime::new()?.block_on(async {
-        let old_path = match args.get(2).map(String::as_str).unwrap_or("1") {
+        let previous = args.get(2).map(String::as_str).unwrap_or("10");
+        let old_path = match previous {
             "1" => "/kv9.raft.Kv9Raft/Discover",
             "2" => "/kv9.raft.v2.Kv9Raft/Discover",
+            "3" => "/kv9.raft.v3.Kv9Raft/Discover",
+            "4" => "/kv9.raft.v4.Kv9Raft/Discover",
+            "5" => "/kv9.raft.v5.Kv9Raft/Discover",
+            "6" => "/kv9.raft.v6.Kv9Raft/Discover",
+            "7" => "/kv9.raft.v7.Kv9Raft/Discover",
+            "8" => "/kv9.raft.v8.Kv9Raft/Discover",
+            "9" => "/kv9.raft.v9.Kv9Raft/Discover",
+            "10" => "/kv9.raft.v10.Kv9Raft/Discover",
             _ => return Err("invalid previous generation".into()),
         };
         for (server, address) in args[..2].iter().enumerate() {
@@ -23,7 +33,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .connect_timeout(std::time::Duration::from_secs(3))
                 .timeout(std::time::Duration::from_secs(3));
             let channel = endpoint.connect().await?;
-            for (generation, path) in [old_path, "/kv9.raft.v3.Kv9Raft/Discover"].iter().enumerate() {
+            for (generation, path) in [old_path, "/kv9.raft.v11.Kv9Raft/Discover"].iter().enumerate() {
                 let mut client = Grpc::new(channel.clone());
                 client.ready().await?;
                 let result = client.unary(Request::new(DiscoverRequest::default()),
@@ -34,7 +44,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if status.code() != expected {
                     return Err(format!("wire floor mismatch: server={server} path={path} expected={expected:?} actual={status}").into());
                 }
-                println!("server_generation={} request_generation={} code={:?}", server+1, generation+1, status.code());
+                let versions = [previous, "10"];
+                println!("server_generation={} request_generation={} code={:?}", versions[server], versions[generation], status.code());
             }
         }
         Ok::<_, Box<dyn std::error::Error>>(())

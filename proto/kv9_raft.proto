@@ -4,9 +4,19 @@
 // channels — nothing in this service implies an async core.
 syntax = "proto3";
 // A distinct service path prevents either generation from silently accepting
-// the other's registration or Raft traffic. V3 additionally requires data-range
-// aware writers and the durable V3 lifecycle fence before an owner starts.
-package kv9.raft.v3;
+// the other's registration or Raft traffic. V5 additionally requires Raw
+// population and TTL split transfer/recovery support. V6 additionally permits
+// unfinished-import checkpoints. V7 additionally permits large V2 checkpoint
+// manifests and tag 14. V8 requires independently registered migration capture
+// plans and enforces their immutable owner bindings, with a durable V8 floor
+// before any owner starts. V9 additionally requires retained Reader/Bootstrap
+// admission, actual drain reporting and image-wide read gates/censuses; its
+// durable lifecycle floor excludes earlier V8 readers before any owner starts.
+// V10 additionally enforces durable local DATA read floors across checkpoint,
+// installation and recovery entry points. V11 requires atomic task-catalog
+// mutation tracking for retained DATA placement census; pre-V11 writers are fenced.
+// No legacy service fallback is provided.
+package kv9.raft.v11;
 
 service Kv9Raft {
   // Long-lived client-streaming raft transport: a peer opens one stream and
@@ -37,6 +47,190 @@ service Kv9Raft {
   // Confirms an operator-authorized address for the same existing store.
   // It never changes the address or membership and needs no old join ticket.
   rpc ConfirmEndpoint(ConfirmEndpointRequest) returns (EndpointConfirmationReceipt);
+  // Read-only format evidence for one exact store. TTL activation must obtain
+  // every required replica's confirmation, not merely a reachable quorum.
+  rpc ConfirmRawTtlFormat(RawTtlFormatRequest) returns (RawTtlFormatReceipt);
+  // One metadata-leader snapshot for the exact data configuration's stores.
+  rpc ResolveRawTtlStores(RawTtlStoresRequest) returns (RawTtlStoresResponse);
+  // Checkpoint ownership uses the metadata leader even when the data leader
+  // lives elsewhere. Opaque ledger bytes retain the catalog's canonical codec.
+  // An unknown reply never authorizes object I/O or an automatic write retry.
+  rpc CheckpointRetention(CheckpointRetentionRequest) returns (CheckpointRetentionResponse);
+  // Fresh, exact-store pressure evidence. This read-only report grants no
+  // capacity and acknowledges no Raft entry. Unsupported older services
+  // remain unknown; a failed request must never clear an earlier pressure report.
+  rpc InspectLogPressure(LogPressureRequest) returns (LogPressureResponse);
+  // Exact immutable checkpoint window from an actual local group replica.
+  // Missing history is Unknown, never a negative settlement or GC authority.
+  rpc InspectCheckpointHistory(CheckpointHistoryRequest) returns (CheckpointHistoryResponse);
+  // Same bounded identity envelope, distinct RPC: only return the winner if
+  // this live data replica has actually selected that exact checkpoint.
+  // Older services cannot confirm selection by answering a history query.
+  rpc InspectCheckpointSelection(CheckpointHistoryRequest) returns (CheckpointHistoryResponse);
+  // Separate authority: a durable metadata bootstrap read fence, not history/selection.
+  rpc InspectBootstrapReadFence(CheckpointHistoryRequest) returns (CheckpointHistoryResponse);
+  // Independent durable DATA-store read admission; selection/history is not a fence.
+  rpc InspectDataReadFence(DataReadFenceRequest) returns (DataReadFenceResponse);
+  rpc InspectDataMembership(DataMembershipRequest) returns (DataMembershipResponse);
+  // Separate method: old V11 services must refuse exact-origin inspection.
+  rpc InspectConfigurationOrigins(ConfigurationOriginsRequest) returns (ConfigurationOriginsResponse);
+  // Local ordered configuration states and explicit imported snapshot boundaries.
+  rpc InspectConfigurationTimeline(ConfigurationTimelineRequest) returns (ConfigurationTimelineResponse);
+  // Independently inspect an existing durable migration plan at an exact store.
+  rpc InspectMigrationCapture(MigrationCaptureRequest) returns (MigrationCaptureResponse);
+  // Stream one fixed, committed capture file from its original or replica slot.
+  rpc FetchMigrationCapture(MigrationCaptureTransferRequest) returns (stream MigrationCaptureChunk);
+  // Pull and atomically persist that same file at another existing data voter.
+  rpc ReplicateMigrationCapture(MigrationCaptureTransferRequest) returns (MigrationCaptureResponse);
+}
+
+message MigrationCaptureTransferRequest {
+  bytes store_identity = 1; // Exact endpoint being invoked.
+  uint64 region_id = 2;
+  bytes operation_id = 3;
+  bytes descriptor_digest = 4;
+  bytes challenge = 5;
+  uint64 budget_micros = 6;
+  bytes source_store_identity = 7; // Required for Replicate; empty for Fetch.
+}
+message MigrationCaptureChunk {
+  bytes challenge = 1;
+  bytes descriptor_digest = 2;
+  uint64 offset = 3;
+  uint64 total_bytes = 4;
+  bytes payload = 5; // At most 256 KiB. Exact ordered stream, no resumable holes.
+  bool last = 6;
+}
+
+message MigrationCaptureRequest {
+  bytes store_identity = 1;
+  uint64 region_id = 2;
+  bytes operation_id = 3;
+  bytes challenge = 4;
+  uint64 budget_micros = 5;
+}
+message MigrationCaptureResponse {
+  bytes store_identity = 1;
+  uint64 region_id = 2;
+  bytes operation_id = 3;
+  bytes challenge = 4;
+  optional bytes descriptor_digest = 5; // Absent means unknown, never confirmed.
+}
+
+message CheckpointHistoryRequest {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  uint64 region_id = 5;
+  uint64 predecessor = 6;
+  bytes challenge = 7;
+  uint64 budget_micros = 8;
+}
+message CheckpointHistoryResponse {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  uint64 region_id = 5;
+  uint64 predecessor = 6;
+  bytes challenge = 7;
+  oneof observation {
+    bytes winner_change_id = 8; // Exactly 32 bytes from canonical committed history.
+    bool unknown = 9; // Must be true. Missing/false is invalid.
+  }
+}
+
+message LogPressureRequest {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  bytes challenge = 5;
+  uint64 budget_micros = 6;
+}
+message LogPressureResponse {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  bytes challenge = 5;
+  oneof observation {
+    uint64 available_bytes = 6;
+    bool uncertain = 7; // Must be true. Missing/false is not a healthy report.
+  }
+}
+
+message CheckpointRetentionRequest {
+  bytes root_digest = 1;
+  uint64 budget_micros = 2;
+  oneof query {
+    bytes apply = 3;
+    bytes owner_id = 4;
+    // Pending owner ID; returns its exact canonical checkpoint intent.
+    bytes intent_owner_id = 5;
+    CheckpointExecutorsQuery executors = 6;
+    bytes capture_plan = 7; // Canonical durable capture descriptor; independently checked.
+  }
+}
+message CheckpointExecutorsQuery {
+  bytes pending_owner_id = 1;
+  optional bytes after_owner_id = 2;
+  uint32 limit = 3;
+}
+message CheckpointRetentionApplied {
+  uint64 revision = 1;
+  bool changed = 2;
+  uint64 term = 3;
+  uint64 index = 4;
+}
+message CheckpointRetentionOwner {
+  // Absent and an invalid empty observation are different wire values.
+  optional bytes observation = 1;
+}
+message CheckpointRetentionResponse {
+  bytes root_digest = 1;
+  // Binds the reply to root, query kind and exact command/owner bytes.
+  bytes query_digest = 2;
+  oneof reply {
+    CheckpointRetentionApplied applied = 3;
+    CheckpointRetentionOwner owner = 4;
+    CheckpointRetentionOwner intent = 5;
+    CheckpointRetentionOwner executors = 6;
+  }
+}
+
+message RawTtlStoresRequest {
+  bytes binding = 1;
+  repeated uint64 replicas = 2; // Sorted unique union of all four ConfState sets.
+  uint64 budget_micros = 3;
+}
+message RawTtlStore {
+  uint64 node_id = 1;
+  bytes store_incarnation = 2;
+  string address = 3;
+  uint64 generation = 4;
+  optional string previous_address = 5;
+}
+message RawTtlStoresResponse {
+  bytes cluster_id = 1;
+  bytes root_digest = 2;
+  bytes binding_digest = 3;
+  repeated RawTtlStore stores = 4;
+}
+
+message RawTtlFormatRequest {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+}
+message RawTtlFormatReceipt {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  uint32 format_version = 5;
 }
 
 message EndpointRoute {
@@ -152,4 +346,64 @@ message RegisterReceipt {
   // Membership as of that position (sorted node ids).
   repeated uint64 voters = 3;
   repeated uint64 learners = 4;
+}
+
+// Fixed-size scope with a fresh correlation challenge; at most two seconds.
+message DataReadFenceRequest {
+  bytes root_digest = 1;
+  bytes cluster_id = 2;
+  uint64 node_id = 3;
+  bytes store_incarnation = 4;
+  uint64 region_id = 5;
+  bytes creation = 6;
+  bytes challenge = 7;
+  uint64 budget_micros = 8;
+}
+message DataReadFenceResponse {
+  DataReadFenceRequest query = 1;
+  oneof observation {
+    bytes floor = 2; // Canonical 224-byte KV9DRF01, never a caller assertion.
+    bool unknown = 3;
+  }
+}
+
+// Separate method; older V11 services cannot substitute a floor/selection.
+message DataMembershipRequest {
+  DataReadFenceRequest scope = 1;
+  bytes cursor = 2; // Empty first page or canonical 48-byte KV9MHC01.
+  uint32 seen = 3;
+  uint32 version = 4; // Exactly 1.
+}
+message DataMembershipResponse {
+  DataMembershipRequest query = 1;
+  oneof observation {
+    bytes page = 2; // Canonical KV9MHP01, at most 112 bytes/four node roles.
+    bool unknown = 3;
+  }
+}
+
+message ConfigurationOriginsRequest {
+  DataReadFenceRequest scope = 1;
+  bytes cursor = 2; // Empty first page or canonical 56-byte KV9OCP01.
+  uint32 version = 3; // Exactly 2; includes the native initial configuration.
+}
+message ConfigurationOriginsResponse {
+  ConfigurationOriginsRequest query = 1;
+  oneof observation {
+    bytes page = 2; // KV9OPG02: four applied origins plus initial voters/gaps, at most 929 bytes.
+    bool unknown = 3;
+  }
+}
+
+message ConfigurationTimelineRequest {
+  DataReadFenceRequest scope = 1;
+  bytes cursor = 2; // Empty first page or canonical 48-byte KV9CTC01.
+  uint32 version = 3; // Exactly 1. No fallback to a node-role or origin-only query.
+}
+message ConfigurationTimelineResponse {
+  ConfigurationTimelineRequest query = 1;
+  oneof observation {
+    bytes page = 2; // KV9CTP01, at most four records and 144 KiB.
+    bool unknown = 3;
+  }
 }

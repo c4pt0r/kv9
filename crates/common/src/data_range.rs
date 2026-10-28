@@ -8,7 +8,8 @@ pub const RANGE_KEY: &[u8] = b"s\0\0\0kv9.data-range.v1";
 /// truncation; every voter reads it to bound its own log (follower-side
 /// compaction). A reserved `s\0\0\0` key, NOT a fenceable Raw user key.
 pub const COMPACTION_CONFIRMED_KEY: &[u8] = b"s\0\0\0kv9.compaction-confirmed.v1";
-const MAX_BOUND: usize = 65536;
+pub const MAX_BOUND: usize = 65536;
+pub const MAX_ENCODED_BYTES: usize = 117 + 2 * MAX_BOUND;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DataRange {
@@ -61,7 +62,7 @@ impl DataRange {
     }
     pub fn decode(b: &[u8]) -> Result<Self> {
         let bad = || Error::Config("invalid data range encoding".into());
-        if b.len() < 117 || b.len() > 117 + 2 * MAX_BOUND || &b[..8] != b"KV9RNG01" || b[108] > 1 {
+        if b.len() < 117 || b.len() > MAX_ENCODED_BYTES || &b[..8] != b"KV9RNG01" || b[108] > 1 {
             return Err(bad());
         }
         let mut offset = 109;

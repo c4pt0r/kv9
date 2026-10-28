@@ -39,8 +39,8 @@
     "ConfigurationCutProof"
   ],
   "source_pins": {
-    "crates/raft/src/storage.rs": "a432d886c875f3085c7e716023918d0a0f4b0611c1e4d910e0a59c87d5eb1cc1",
-    "crates/raft/src/storage/configuration.rs": "20993e8c20c43fc22b47f5883f184dd40b2fe70298840b11d3491fda31e26b4a",
-    "crates/raft/src/rawnode.rs": "1e27f55c05e936ee1630cf13c1ec67baaac54ff6753276bc4f6e25f79b95e936"
+    "crates/raft/src/storage.rs": "95a09aa526e65530754c409a1a35eb0bde96d807245e1a53631ad882c9ed2a56",
+    "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
+    "crates/raft/src/rawnode.rs": "a8918ba52bf6b8abc219a5568f2146a1608dcbdb513a7375ce40f0ed7ddc9ee1"
   }
 }

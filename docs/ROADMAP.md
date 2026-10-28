@@ -1,6 +1,248 @@
 # kv9 development roadmap
 
-> **Current priority (2026-09-16): horizontal scaling.** The user ended the
+> **Production scope (2026-09-26): Raw KV, TTL, range split and range merge.**
+> All four are required for the first production release. Close the shared
+> storage, backpressure, recovery and resource-lifecycle gaps; preserve TTL
+> through split/merge and recovery; qualify the features together before
+> performance promotion. See the [scope and acceptance contract](RAW-KV-PRODUCTION-SCOPE.md)
+> and [production review](PRODUCTION-READINESS-REVIEW-2026-09-26.md).
+> Existing proof, actual Chaos Mesh and cross-host scaling gates remain.
+
+> **TTL split state progress (2026-10-04):** [Durable transfer state](RAW-TTL-SPLIT-STATE.md)
+> preserves original expiry and inherited watermarks, resumes cursor-checked pages after
+> three-replica WAL reopen, and validates atomic transfer batches during recovery. Ordinary
+> proposals remain disabled pending the all-member format gate, source authority and runtime
+> copy/publication integration. Incomplete imports remain WAL-backed; production scope stays open.
+> The subsequent [V5 store and service fence](RAW-TTL-SPLIT-FORMAT.md) now excludes V4 owners,
+> paths and receipts; all-member TTL activation requires V5. Transfer submission and source
+> authority remain disconnected, and uninterrupted rolling upgrades are not qualified.
+> The subsequent [TTL split runtime integration](RAW-TTL-SPLIT-RUNTIME.md) now connects applied
+> catalog plans, real sealed source snapshots, all-member confirmation for each transfer command,
+> copy resumption and verified directory publication. A three-replica child resumes after WAL
+> reopen on a new leader. Staging checkpoints, large rows, bounded scheduling and full deployment
+> acceptance remain open; this does not complete the production scope.
+> The subsequent [split maintenance worker](RAW-TTL-SPLIT-MAINTENANCE.md) separates new triggers
+> from committed-intent resumption: threshold zero no longer freezes committed work. One shared
+> heavy job per node drives seal/populate/publish outside the control loop and drains before
+> store release. Three-replica automatic completion and admission tests pass. Catalog discovery
+> is still unpaged; staging checkpoints, WAL reclamation and full deployment gates remain open.
+> **2026-10-05:** [Staging checkpoints](RAW-TTL-STAGING-CHECKPOINT.md) now preserve unbound import
+> state through actual publication, worker settlement and recovery. Three replicas select an image
+> before Finish, reclaim engine WAL from 18.5 MB to 2.7 MB, reopen and finish on another leader.
+> Dedicated tag 13 preserves legacy tag 7 semantics; that step raised the store/service floor to V6.
+> Import Raft compaction, the full-image ceiling, sustained resource budgets and deployment gates
+> remain open.
+
+> **2026-10-05 follow-up:** [Import Raft compaction](RAW-TTL-IMPORT-COMPACTION.md) now discovers
+> unbound TTL children with verified import plans and selected checkpoints. Actual three-replica
+> planning, confirmation, physical reclamation and authorized recovery complete before Finish;
+> a lagging learner blocks truncation. The image ceiling, sustained budgets, merge and deployment
+> qualification remain open.
+
+> [Per-SST checkpoint spooling](RAW-TTL-SPOOLED-CHECKPOINT.md) subsequently removes whole-image
+> serialized buffers from both production checkpoint workers and journal recovery/upload. Actual
+> three-replica import checkpoints complete with a buffer budget below one image's size. The 48 MiB
+> format ceiling, resident indexes, sustained resource budgets and full production gates remain open.
+
+> [V2 large checkpoints](RAW-TTL-LARGE-CHECKPOINT.md) now extend actual metadata/data workers
+> beyond 48 MiB using tag 14 and a V7 store/service floor, preserving legacy tag 7/13 decoding.
+> Three-replica import reclamation/reopen and subsequent bound-image recovery pass. Shared
+> anonymous spool admission is present; durable disk debt, resident indexes, large-image
+> capture/migration, merge and full production qualification remain open.
+
+> [Persistent pending-file admission](RAW-TTL-PENDING-DISK.md) now accounts for named journals,
+> publication temporary files and open unlinked readers across runtime groups, including startup
+> inventory and authorized retirement. Exact durable plans can settle even above a lowered limit.
+> This does not yet bound WAL/Raft, the full filesystem, CPU/RSS or sustained workload debt.
+
+> [Atomic data admission](RAW-WRITE-ADMISSION.md) now counts unstable and uncommitted entries
+> under the Raft append lock, preserves typed batch refusal and gates TTL split import copies.
+> Runtime data groups default to 65,536 retained entries; control/recovery work can still advance.
+> This is a per-group admission threshold, not a node WAL/Raft byte quota or production capacity
+> qualification. Automatic compaction/reclamation still requires its existing configuration.
+
+> [Node WAL/Raft byte admission](RAW-WAL-RAFT-BUDGET.md) now shares actual file debt and
+> pending-position reservations across metadata/data groups, including recovery, temporary
+> rewrites and authorized retirement. Client/owner drop cannot free accepted work. The default
+> threshold is 4 GiB; follower/control persistence can exceed it. Filesystem headroom, remote
+> pressure coordination and sustained capacity qualification remain open.
+
+> [Local disk headroom admission](RAW-DISK-HEADROOM.md) now samples the owned Linux
+> filesystem before data append, preserves 256 MiB by default and deducts shared pending
+> claims plus overlapping writes. Probe failures/stale results refuse data; low-space
+> followers still apply accepted entries. This is not preallocation, remote pressure
+> coordination or a qualified guarantee of control/recovery space.
+
+> [Remote replica pressure feedback](RAW-REPLICA-PRESSURE.md) now combines authenticated
+> exact-store reports, bounded shared-maintenance polling and data-group append checks over
+> the actual full configuration. Errors and stale replies cannot clear known pressure.
+> Metadata keeps local admission so catalog repair can proceed. Reports reserve no remote
+> bytes; full control/recovery space and sustained multi-group capacity remain open.
+
+> [Streamed Raft rewrite workspace](RAW-RAFT-REWRITE-WORKSPACE.md) removes full-tail
+> encoding copies, reserves exact temporary output before mutation and shares future
+> space with data admission/remote reports. A separate 512 MiB default workspace permits
+> reclamation above the data-debt threshold; unavailable space defers the group. Resident
+> index size, full control/recovery space and remote shared reservations remain open.
+
+> **Raw split retry fix (2026-10-04):** [Dedicated population commands](RAW-SPLIT-POPULATION-FENCE.md)
+> refuse delayed copies after child ownership binds, preserving overwrites and deletes across
+> three-replica WAL reopen. Legacy log semantics are unchanged. TTL transfer, complete import
+> recovery, resource budgets and mixed-binary upgrade qualification remain open.
+
+> **TTL phase in progress (2026-10-04):** [time/format, snapshot reads, replicated apply
+> and bounded cleanup candidates](RAW-TTL-PHASE2.md) have component tests, including
+> three in-process voters across a leader change. Lean lemmas cover the time and
+> single-key cleanup core only. [V4 store/wire fencing and individual format confirmations](RAW-TTL-UPGRADE.md)
+> and [configuration-bound activation](RAW-TTL-ACTIVATION.md) have implementation and local
+> component coverage. Cross-node activation/topology acceptance, complete public routing, clock-provider
+> validation, background cleanup and group storage recovery remain open, as do earlier prerequisites.
+> [Linux TTL clock and replicated observations](RAW-TTL-CLOCK.md) now have local component
+> coverage and explicit configuration; deployment clock qualification remains open.
+> [Scoped public TTL RPC/stream, client/CLI and bounded scan](RAW-TTL-PUBLIC.md) now have
+> local Raft/WAL and HTTP/2 duplex coverage. [Public activation administration and remote
+> metadata directory lookup](RAW-TTL-ACTIVATION-API.md) now use the all-replica gate, with
+> three-voter HTTP/2 coverage and separate metadata/data leaders. [TTL discovery and cross-range
+> scan cursors](RAW-TTL-ROUTING.md) now have bounded client/CLI paths and local component coverage.
+> [Full catalog bounds and paged DeleteRange](RAW-TTL-DELETE-RANGE.md) are now supported by
+> public protocol v2, with exact per-page receipts and WAL reopen/three-replica coverage.
+> [Bounded background TTL observation and conditional cleanup](RAW-TTL-MAINTENANCE.md) now have
+> shared per-node TTL slots, round-robin scheduling, cancellation drain, unresolved-append fencing,
+> WAL reopen and three-replica component coverage. [Data-group checkpoint recovery](RAW-TTL-CHECKPOINT.md)
+> now validates the restored TTL image, exact publication and WAL tail; three real replicas reopen
+> after engine segment reclamation. [Checkpoint/compaction synchronization and historical configuration
+> preservation](RAW-TTL-CHECKPOINT-HISTORY.md) now protect recovery evidence across local prefix
+> deletion and physical Raft log rewrite, with three-replica dual-WAL recovery coverage.
+> [Cross-node checkpoint owner registration](RAW-TTL-CHECKPOINT-OWNERS.md) now has a bounded
+> internal RPC and metadata-leader routing, with eight applied-but-unconfirmed handoff prefixes
+> and actual data/metadata disk reopen tested with distinct leaders. [Automatic data checkpoints](RAW-TTL-DATA-CHECKPOINT.md)
+> now publish/adopt with bounded jobs, durable candidate history reservation, interrupted-plan recovery,
+> cancellation drain and three-replica segment reclamation coverage. Complete owner lifecycles, portable recovery anchors,
+> whole-node maintenance budgets, steady resource acceptance,
+> TTL split/migration, full NodeRuntime and network acceptance remain open;
+> the complete phase and production gates have not passed.
+
+> [Shared maintenance admission](RAW-TTL-SHARED-MAINTENANCE.md) now bounds seven maintenance
+> classes with four node jobs, two heavy-I/O jobs, dispatch rate and bounded class waiting.
+> Two blocked uploads leave TTL progress, and cancellation retains permits until actual I/O exits.
+> Remaining maintenance paths, byte/memory/CPU budgets, physical debt and full-runtime acceptance stay open.
+> [Object payload admission and bounded checkpoint GETs](RAW-TTL-OBJECT-IO.md) now add a shared
+> runtime byte budget, including conditional-PUT comparison reads and cancelled admission waits.
+> Local WAL bytes, temporary memory/CPU, physical debt and real MinIO acceptance remain open.
+
+> [Checkpoint planning and journal memory](RAW-TTL-CHECKPOINT-MEMORY.md) now check full SST
+> size before copying entries, stream the compatible pending format, and drop the original
+> plan before reload. Shared temporary-memory admission and sustained RSS acceptance remain open.
+
+> [Shared checkpoint image admission](RAW-TTL-IMAGE-BUDGET.md) now reserves exact serialized
+> plan/pending bytes across runtime groups and retains reservations through actual upload return.
+> Codec scratch, network copies, restored/resident indexes and whole-node RSS remain outside this budget.
+
+> [Object buffer admission](RAW-TTL-OBJECT-BUFFERS.md) now follows shared PUT/GET byte owners,
+> including references retained by queued jobs, SDK payloads and read results after caller return.
+> Checkpoint reads preserve these owners; legacy Vec copies, codec scratch and restored indexes remain outside the cap.
+
+> [Borrowed SST validation and direct restore](RAW-TTL-SST-VIEWS.md) now remove bulk parser
+> key/value copies and the full restore WriteBatch, retaining the remote owner through iteration.
+> A later SST failure drops all unpublished state; writer scratch, resident indexes and RSS acceptance remain open.
+
+> [Bounded manifest encoding](RAW-TTL-MANIFEST-ENCODING.md) now enforces the 1 MiB frame
+> limit before output growth, without a separate full JSON Vec or a format/change-ID change.
+> Input/decode allocations, history counts and whole-node memory admission remain open.
+
+> [Borrowed SST encoding](RAW-TTL-BORROWED-WRITER.md) now writes frozen rows directly into
+> final buffers after exact image admission, removing the production planner's owned-entry collection.
+> V1 bytes, partitioning and hashes are preserved; resident indexes, snapshot retention and full RSS remain open.
+
+> [TTL image installation and learner recovery](RAW-TTL-INSTALL.md) now accept validated
+> clock/expiry/history records and reject activation removal or watermark rollback on replacement.
+> A live voter/learner capture-install-tail-reopen component test passes; transfer authority,
+> full migration/topology qualification, split/merge and real network/MinIO acceptance remain open.
+
+> [Adopted-generation recovery](RAW-TTL-ADOPTED-RECOVERY.md) now validates committed WAL
+> positions, each range/TTL transition, later checkpoint publication and pending history protection.
+> Restart uses the actual compacted base under committed catalog authority. The original remote image
+> remains a recovery dependency; successor anchors, owner release and full transfer acceptance remain open.
+
+> [Durable adoption TTL facts](RAW-TTL-ADOPTION-FACTS.md) now remove that old-SST read dependency
+> for a later validated checkpoint. The V2 marker records the original image's verified TTL state;
+> V1 upgrades revalidate the original closure, and old V1 readers refuse V2. Real local restart tests
+> delete superseded objects before recovery. No retention owner is released; production GC, portable
+> successor authority and old-binary/rolling-upgrade acceptance remain open.
+
+> [Checkpoint settlement budgets](RAW-TTL-SETTLEMENT-BUDGET.md) now prioritize exact-window
+> history and limit fallback effect lookup to four rows per resumable page. Each slot permits one
+> active driver; old calls cannot clear or unlock replacement slots. A real three-voter test settles
+> an old losing pending while retaining its global pin. Executor drain, negative owner release,
+> GC, total history size and node-wide CPU/memory acceptance remain open.
+
+> [Checkpoint local object draining](RAW-TTL-OBJECT-EXECUTION.md) now keeps maintenance permits
+> and per-group execution state until actual queued object jobs exit, even after a synchronous
+> caller times out. Real data/metadata dispatchers and the object worker are tested together with
+> InMemory SDK transport. Local draining does not certify remote PUT cancellation or global
+> executor closure; durable negative-Pending release and GC remain open.
+
+> [Durable checkpoint executor owners](RAW-TTL-EXECUTOR-OWNERS.md) now register each actual
+> uploader's node/store/process lifetime before I/O. After local drain, the exact Build generation
+> transfers protection to its still-Published Pending/Version; an unconfirmed close blocks new
+> uploads by that worker. Lost receipts, generation fencing and metadata WAL reopen are tested.
+> Complete publisher registration/closure, crashed-owner retirement, history capacity and negative
+> Pending release/GC remain open; no global object protection is removed by this change.
+
+> [Per-owner retention rows](RAW-TTL-OWNER-ROWS.md) remove the production ledger's 4096-owner
+> lifetime ceiling per resource, preserving Released generation fences and an immutable bounded
+> base for legacy records. WAL tests retain 4097 released owners at constant per-operation point
+> work; remote metadata upgrade survives a lost receipt and WAL reopen. Legacy-base decoding,
+> physical history growth, safe history reclamation and full upgrade qualification remain open.
+
+> [Durable checkpoint intents](RAW-TTL-CHECKPOINT-INTENT.md) now retain canonical descriptors
+> and predecessor generations in metadata Raft before object I/O. A bounded authenticated lookup
+> survives local journal clearing and metadata WAL reopen, including losing attempts. Seven Lean
+> component lemmas and refusal controls pass; TLA+ parses but TLC/refinement remain open. This
+> supplies recovery information for publisher closure, not negative-release or deletion authority.
+
+> [Checkpoint admission closure](RAW-TTL-CHECKPOINT-ADMISSION.md) now durably rejects entry and
+> Publish after closure, indexes bounded executor pages, and fences unentered generations.
+> Lost receipts and metadata WAL reopen preserve closure; automatic data recovery resolves a
+> closed losing journal from committed history without object I/O. Eight Lean component lemmas
+> and refusal controls pass; complete legacy backfill, old-binary qualification, crashed executors,
+> global closure certificates, negative Pending release and GC remain open.
+
+> [Unpublished executor retirement](RAW-TTL-UNPUBLISHED-RETIREMENT.md) can now retire an exact
+> indexed Held generation behind a closed gate, atomically retaining independent evidence.
+> Recovery examines four executors per pass and survives lost receipts and data/metadata WAL
+> reopen; Published/Quiesced executors and global object coverage remain. Nine Lean component
+> lemmas cover delayed receipts and distinguish ordinary Release from retirement evidence.
+> Published crash leftovers, complete closure and physical reclamation stay open.
+
+> [Global checkpoint discovery and durable sweep progress](RAW-TTL-CHECKPOINT-SWEEP.md) now
+> find gated attempts without local journals. The metadata leader rotates one attempt/four owners
+> per pass through an eighth shared maintenance class. Lost retire/cursor receipts, leader transfer,
+> metadata WAL reopen and damaged-value isolation have real Raft/duplex coverage. Done only ends
+> the indexed Held sweep; Published executors and global protection remain. Legacy attempts without
+> gates, complete publisher termination, negative release and physical history capacity stay open.
+
+> Exact committed-window reconciliation now completes positive Pending-to-Version handoff and
+> closes negative admission. Missing local history can use an authenticated, bounded remote query;
+> the caller rechecks endpoint generation before owner mutations. Real Raft/duplex tests cover a
+> metadata leader without a target-group lookup handle and a remote follower holding the history.
+> Unknown replies retain protection; complete placement/deployment qualification and negative
+> Pending, old Version and Reader release remain open.
+
+> [Per-generation executor drain observations](RAW-TTL-EXECUTOR-DRAIN.md) now bind actual
+> object scopes to exact ledger tokens and retain immutable issued/resolved PUT counts after
+> local drain. Later successful generations cannot erase old unknown writes; an unconfirmed
+> report blocks the same worker even after Release. Real queue, Raft/duplex, three-generation
+> and WAL-reopen checks pass. Missing crash reports, unknown remote PUT fencing, backend
+> qualification, complete publisher closure and negative Pending release remain open.
+
+> **Local retirement update (2026-09-27):** [worker/inbox reuse and payload draining](GROUP-RETIREMENT.md)
+> have component coverage. The [2026-10-03 task-history update](TASK-HISTORY-PAGINATION.md)
+> removes the 255-row lifetime ceiling while preserving all receipts; local churn
+> now passes with the complete catalog. Indexed maintenance budgets, history GC
+> and full fault acceptance remain open; production capacity is not yet accepted.
+
+> **Prior development direction (2026-09-16): horizontal scaling.** The user ended the
 > current performance iteration at the validated CRC/rpds baseline. Redis parity
 > and radix completion are not prerequisites. Start dynamic multi-Raft (#22),
 > routing (#23), replica movement (#24), recoverable split (#25) and measured
@@ -224,10 +466,13 @@ and the distinction between replica failure and host-failure isolation.
   transition is appended, preserving the ability to reopen large old stores.
 
 This is a basic implementation, not an industrial capacity or performance claim. The entire dataset remains in RAM,
-and full checkpoints have a 48 MiB serialized ceiling. Normal catalog WAL reclamation now publishes a segmented
+and resident planning/capture has a 48 MiB ceiling; production workers now use
+[bounded V2 streamed checkpoints](RAW-TTL-LARGE-CHECKPOINT.md) for larger images.
+Normal catalog WAL reclamation now publishes a segmented
 topology and removes covered closed files; the legacy fallback still copies the surviving tail before rename.
-Raft logs, historical manifests and SSTs are retained. Incremental LSM, block cache, multiple running data groups,
-split/merge and usable transaction execution are still future work.
+Raft prefixes can be reclaimed through guarded compaction; complete historical manifest/SST GC remains open.
+Multiple running data groups and Raw/TTL split now have implementations and component evidence.
+Incremental LSM, block cache, TTL merge and full production qualification remain future work.
 
 Acknowledged unflushed writes depend on the replicas' local durable logs. A bucket alone cannot reconstruct cluster
 identity, protocol state or an unuploaded tail.
@@ -300,18 +545,18 @@ suite and publish reproducible before/after results.
 single ownership and complete coverage. Shared SST attachment transfers metadata and an unflushed tail, with
 object-store reads reported separately.
 
-## P3: transactions and tenant service quality
+## P3: tenant service quality
 
-Implement MVCC, durable TSO/timeline generations, Percolator SI, lock recovery and deadlock detection after
-Raw KV, recovery and multi-group ownership are stable. Start within one keyspace and transaction group,
-including multiple regions in that domain. Keep unknown commit outcomes explicit.
+Transactions (MVCC, TSO, Percolator SI, lock recovery, deadlock detection) were removed from the design on
+2026-10-28. The multi-key write primitive is the atomic range batch (`RawBatch`, DESIGN §9.1), which is already
+implemented on the raw path; what remains here is service quality, not a new consistency model.
 
 Add tenant admission, weighted fairness, cache quotas, background-work attribution, resource accounting and
 bounded tenant metrics. This work can overlap late P2 once the shared scheduling interfaces are stable.
 
-**Exit gate:** independent histories satisfy SI; uncertain results and retries cannot cause duplicate execution;
-hot tenants and slow uploads do not indefinitely starve others. MVCC GC, SST GC, snapshots and long transactions
-share an accountable retention protocol.
+**Exit gate:** hot tenants and slow uploads do not indefinitely starve others; SST GC, snapshots and long-running
+batch workloads share an accountable retention protocol; a range batch that crosses a boundary is refused with the
+typed signal under split and membership churn (chaos-verified).
 
 ## P4: operational completeness
 
@@ -332,5 +577,5 @@ The takeover checked [#5](https://github.com/c4pt0r/kv9/issues/5),
 [#8](https://github.com/c4pt0r/kv9/issues/8). Their implementation evidence is in
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Publishing code, observing CI and closing an issue are distinct steps.
 
-Bounded storage, recoverable log compaction, measurement and multi-group ownership precede transaction expansion.
+Bounded storage, recoverable log compaction, measurement and multi-group ownership precede tenant service quality.
 Complex private-network TLS configuration remains later work.

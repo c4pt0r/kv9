@@ -1,62 +1,89 @@
-# End-to-end write backpressure (bounded absolute log size)
+# Retained-log write admission
 
-Added 2026-09-24. Parent [#9](https://github.com/c4pt0r/kv9/issues/9),
-P1 storage [#20](https://github.com/c4pt0r/kv9/issues/20). Compaction
-([entries](../docs/AUTO-COMPACTION.md)/[bytes](../docs/BYTE-COMPACTION.md)/[age](../docs/AGE-COMPACTION.md))
-and [physical reclamation](../docs/LOG-RECLAMATION.md) bound the log *after the
-fact* — they advance `first_index` and shrink the file once the retained tail is
-large. But nothing stops a client from writing FASTER than commit and compaction
-can drain: the retained committed log (`raft_committed - log_first_index`) can
-still grow without limit between drains. This closes that gap with an ABSOLUTE
-bound and a typed refusal — the last core item of #20.
+Updated 2026-10-05. Parent [#9](https://github.com/c4pt0r/kv9/issues/9),
+storage [#20](https://github.com/c4pt0r/kv9/issues/20).
 
-## What this increment adds
+`KV9_MAX_RAFT_LOG_ENTRIES` sets a local admission threshold for each data group.
+The runtime default is **65,536 entries**; `0` explicitly disables it. Invalid,
+negative, non-decimal and overflowing values fail startup. The configuration is
+applied before a group's driver starts, including adopted groups and recovery.
 
-1. **`KV9_MAX_RAFT_LOG_ENTRIES`** (0 = off, the default): the absolute number of
-   retained committed raft-log entries a data group will hold before it stops
-   accepting new writes. When a group's `raft_committed - log_first_index`
-   reaches this bound, the group is at capacity until compaction drains it.
+The count is `last_index - first_index + 1`, saturated at zero, and includes
+unstable, uncommitted and committed entries. Typed data proposals check it under
+the **same peer lock as append**. At the threshold, the proposal returns
+`Error::WriteBackpressure { region }` before append. An early Raw API check is
+only an optimization: a successful preparation reserves no capacity. Replacing
+a `RawGroup` wrapper does not reset its peer's limit.
 
-2. **A pre-append, write-only gate** (`RawGroup::permit` in
-   `crates/server/src/runtime/range_api.rs`). Every write path
-   (`prepare_raw_write`, `raw_put`, `raw_batch_put`) passes through `permit`;
-   reads take `view` and are NEVER gated. When the bound is set and the retained
-   log has reached it, `permit` returns BEFORE anything is proposed — nothing is
-   appended, nothing is queued, no raft round-trip is spent.
+This applies to ordinary Raw writes, aggregated fenced batches, TTL Write,
+Observe and Cleanup, Raw population and the protected TTL split Append path.
+The all-member format gate still runs for split; capacity is an additional check.
+Batch participants retain the typed refusal. Raw gRPC maps it to
+`RESOURCE_EXHAUSTED`; TTL reports its explicit Backpressure refusal. This attempt
+has not been submitted and can be retried with backoff.
 
-3. **A typed, retryable refusal** (`Error::WriteBackpressure { region }` in
-   `crates/common/src/error.rs`), mapped to gRPC `RESOURCE_EXHAUSTED` in
-   `crates/server/src/grpc.rs`. It is deliberately distinct from `StaleEpoch`
-   (which asks the client to refresh routing) and from a transport error (which
-   reads as "unknown"): backpressure means the write definitively did NOT happen
-   and the correct client reaction is to back off and retry the SAME route. The
-   bound releases the moment compaction drains the retained log below it.
+Ordinary ReadIndex reads continue at capacity. TTL reads that append Observe can
+be refused; they must not silently use an older clock watermark or a local wall
+clock. Capability queries do not require an append.
 
-The retained log therefore never exceeds the bound: a write is admitted only
-while STRICTLY below it, and every entry adds at most one, so the ceiling is the
-bound itself. Reads are unaffected, and the gate is a pure no-op when the bound
-is 0 (the default), so existing deployments are unchanged.
+Already accepted entries continue through Ready persistence and apply. Followers
+still accept replication. Checkpoint publication, compaction confirmation,
+membership and other control operations remain available. Consequently **this is
+not an absolute cap on all log entries or disk bytes**: control entries and
+elections may increase the count past the threshold. Physical files also contain
+framing, obsolete records and independent engine WAL.
 
-## Known limits, deliberately out of scope
+Compaction advances the first retained index and restores admission capacity.
+Physical Raft-log rewrite and engine checkpoint adoption are separate operations.
+Automatic compaction/reclamation still use their existing explicit configuration;
+without a working drain, the finite default eventually stops new data proposals.
+Operators must configure and verify that drain. In addition, node-shared
+[`KV9_WAL_RAFT_BYTES`](RAW-WAL-RAFT-BUDGET.md) now defaults to 4 GiB (minimum 16 MiB).
+It checks actual file debt plus pending-position reservations under the append lock.
+Cancellation/owner drop does not refund accepted positions; recovery reconstructs them.
+Logical compaction does not refund file bytes; actual rewrite/reclamation does. This
+threshold also permits accepted apply and follower/control writes above capacity.
+Full disk-space guarantees, remote pressure and sustained multi-group qualification
+remain open.
 
-The gate bounds RETAINED committed entries, the quantity compaction drains; it is
-not a byte cap and not an admission-plane (per-node) limit — those are the
-[metadata admission floor](../docs/ADMISSION-FLOOR.md) and the compaction/reclaim
-triggers, which compose with it. It is per-group and local to the leader's
-`permit`. No chaos campaign and no performance claim: this is a correctness gate
-whose steady-state cost is one status read per write when the bound is enabled,
-and zero when it is not.
+[`KV9_MIN_FREE_DISK_BYTES`](RAW-DISK-HEADROOM.md) now adds a local filesystem gate:
+256 MiB by default, minimum 16 MiB. Each data proposal uses a fresh space sample,
+deducting pending claims and overlapping writes; failed or stale probes refuse
+before append. The node's log sources must use the monitored filesystem. Control
+and follower persistence continue. This is a headroom policy, not preallocation or
+a guarantee that replication/control cannot exhaust the disk.
 
-## Verification
+[Remote replica pressure feedback](RAW-REPLICA-PRESSURE.md) additionally gates runtime
+data groups using authenticated reports from their actual full Raft membership. Errors,
+stale replies and same-disk address changes cannot clear known pressure. Metadata keeps
+its local admission so catalog repair remains possible. Unknown reports preserve existing
+quorum availability; reports reserve no remote capacity. Cross-group remote reservations,
+full control/recovery space and sustained capacity qualification remain open.
 
-- Machine-checked Lean model (`proofs/lean/write-backpressure/`): ten theorems —
-  the retained log never exceeds the bound, writes are admitted only below it, no
-  write grows the log at the bound, the refusal is typed and changes nothing,
-  reads serve at any retention, draining always releases the bound, and the bound
-  is reachable (non-vacuous) — with five semantic defect controls and two
-  proof-policy controls.
-- Real-process five-node MinIO e2e (`scripts/write-backpressure-e2e.py`): with
-  auto-compaction off so nothing drains the log, sustained writes fill the
-  retained log to the bound; the next write is refused with typed
-  `RESOURCE_EXHAUSTED`; the log stays bounded under continued refused writes;
-  reads still serve; and a committed compaction floor drains it so writes resume.
+Status includes `log_first_index`, `log_last_index`, `retained_log_entries` and
+`max_write_log_entries` for each active group. These observations do not reserve
+capacity or authorize compaction.
+Node status additionally exposes `wal_raft_budget` with file/reserved/peak bytes,
+refusals, sources, pending positions and uncertain sources.
+`replica_pressure` reports peer identity, route, capacity/uncertainty, age and errors;
+`replica_pressure_worker` reports bounded polling activity.
+
+[Raft rewrite workspace](RAW-RAFT-REWRITE-WORKSPACE.md) now reserves exact streamed
+temporary output against `KV9_RAFT_REWRITE_BYTES` (512 MiB by default, minimum 16 MiB)
+and fresh disk headroom. Data proposals and remote capacity reports deduct this active
+reservation. Reclamation may run above the data-debt threshold; insufficient workspace
+defers before file mutation. Status exposes `wal_raft_budget.rewrite_workspace`.
+
+## Correction to the 2026-09-24 implementation
+
+The old gate checked `committed - first_index` in request preparation. It omitted
+the first retained entry and all uncommitted proposals; concurrent preparations
+could all pass before append. Its former claim of an absolute bound was incorrect.
+Invalid configuration also silently disabled it, and aggregation erased the error type.
+
+The old [Lean model](../proofs/lean/write-backpressure/) and historical process
+artifacts describe their original assumptions. They do not prove the corrected
+implementation, concurrency or physical disk capacity. Current component evidence
+is documented in [atomic data admission](RAW-WRITE-ADMISSION.md). The real-process
+runner [write-backpressure-e2e.py](../scripts/write-backpressure-e2e.py) now observes
+the inclusive retained count; this increment does not claim a fresh TCP/MinIO run.

@@ -19,14 +19,14 @@
     "a_truncation_lets_a_voter_adopt_its_base"
   ],
   "source_sha256": {
-    "crates/meta/src/data_groups/compaction.rs": "e1b894bff9e65cb1c579b9202da9ba8c0c12eef92c48f3ac00e1daf2f1513f39",
-    "crates/raft/src/command.rs": "7f79bb93a887da63b3542f169daea397cfe48ced4f9425b4946da0d436a82009",
-    "crates/raft/src/state_machine.rs": "3d02eacc89a280f0b3f799bcb32e1ba0c0025066f89e2b5cc62a378c84f64594",
-    "crates/raft/src/state_machine/data_range.rs": "18f59bcace69d768c12898b9303f3215a69d6725f57f3737d8a243678ebf079d",
-    "crates/raft/src/rawnode.rs": "452e243ce31772789e3710ade9490ae18b916f10b98345fac37934c8a7ece885",
-    "crates/common/src/data_range.rs": "9fba248684ecfa6fc811a8be98eb8e572c14f916e4337e61b1e83ac325894700",
-    "crates/server/src/runtime.rs": "e0ab076f61ea2d4568776d46d7894c990900bea9bf5d8b36e37d2edd31c64919",
-    "crates/server/src/region_manager.rs": "a0d5a80d69a74e814ff2f692d0ab55a899458ce18d1bec1badf995e55265a4cc",
+    "crates/meta/src/data_groups/compaction.rs": "1cad3713439dcf39e2430ca985612dd8fc1d420008180d9a3b87d8c9336f9f2d",
+    "crates/raft/src/command.rs": "ee888ed4138f1a3c3065ee4881b69a34b4c35eb85381fa9b87973a280b89c73d",
+    "crates/raft/src/state_machine.rs": "f9e9ff4f03934f5ac86954368f18601caac97bf2c6c3e4826b38bbbcc9ccf579",
+    "crates/raft/src/state_machine/data_range.rs": "96f1543fff9537c920bd98d24054c2cc92ef661112f13a2db029994ccc02d7cb",
+    "crates/raft/src/rawnode.rs": "a8918ba52bf6b8abc219a5568f2146a1608dcbdb513a7375ce40f0ed7ddc9ee1",
+    "crates/common/src/data_range.rs": "1c4c9b4abd34429443228683900ef622032574005f9642b5a3ea9afdba22f1cb",
+    "crates/server/src/runtime.rs": "4b809dff28247ba64160f91f45e3e2531f55c7a10f0bfc5bce7db29532e08562",
+    "crates/server/src/region_manager.rs": "4cab2ed990ec699ce47456cebb5b371870473bfdfdaa41aae8b75e9eff6dd102",
     "scripts/follower-compaction-e2e.py": "e3a8d1340bf577bda9863128d68b4c4c2f58e4c4b60ea0de9a79b3deb4ef7b15",
     "proofs/lean/follower-compaction/FollowerCompaction.lean": "83b73b1538b2462a1e63c7ea26c61e2d19850671efcda3129f86c1937b346eef",
     "proofs/lean/follower-compaction/README.md": "00a5ced54ef63702ae6499b17d99029b3404dc99a982dcf79bb30fd1ab3741b0"

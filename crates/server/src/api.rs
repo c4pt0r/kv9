@@ -8,8 +8,8 @@
 use std::sync::Arc;
 
 use kv9_common::{KeyspaceId, Result, UserKey, Value};
+use kv9_raw::RawMutation;
 use kv9_region::RegionEpoch;
-use kv9_txn::{QualifiedKey, TxnDescriptor, TxnStatus};
 
 /// Transport-established origin label for a request.
 ///
@@ -38,69 +38,19 @@ pub struct RequestContext {
     pub origin: RequestOrigin,
 }
 
-/// The transactional API for `txn` keyspaces (DESIGN §11 Txn surface).
-pub trait TxnApi {
-    fn kv_begin(&self, ctx: &RequestContext, primary: QualifiedKey) -> Result<TxnDescriptor>;
-    fn kv_get(
-        &self,
-        ctx: &RequestContext,
-        key: &[u8],
-        transaction: &TxnDescriptor,
-    ) -> Result<Option<Value>>;
-    fn kv_batch_get(
-        &self,
-        ctx: &RequestContext,
-        keys: &[UserKey],
-        transaction: &TxnDescriptor,
-    ) -> Result<Vec<Option<Value>>>;
-    fn kv_scan(
-        &self,
-        ctx: &RequestContext,
-        start: &[u8],
-        end: &[u8],
-        limit: usize,
-        transaction: &TxnDescriptor,
-    ) -> Result<Vec<(UserKey, Value)>>;
-    fn kv_prewrite(
-        &self,
-        ctx: &RequestContext,
-        mutations: &[(UserKey, Option<Value>)],
-        transaction: &TxnDescriptor,
-    ) -> Result<()>;
-    fn kv_commit(
-        &self,
-        ctx: &RequestContext,
-        keys: &[UserKey],
-        transaction: &TxnDescriptor,
-    ) -> Result<()>;
-    fn kv_pessimistic_lock(
-        &self,
-        ctx: &RequestContext,
-        keys: &[UserKey],
-        transaction: &TxnDescriptor,
-    ) -> Result<()>;
-    fn kv_pessimistic_rollback(
-        &self,
-        ctx: &RequestContext,
-        keys: &[UserKey],
-        transaction: &TxnDescriptor,
-    ) -> Result<()>;
-    fn kv_resolve_lock(&self, ctx: &RequestContext, transaction: &TxnDescriptor) -> Result<()>;
-    fn kv_cleanup(
-        &self,
-        ctx: &RequestContext,
-        key: &[u8],
-        transaction: &TxnDescriptor,
-    ) -> Result<()>;
-    fn kv_check_txn_status(
-        &self,
-        ctx: &RequestContext,
-        transaction: &TxnDescriptor,
-    ) -> Result<TxnStatus>;
-}
-
 /// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).
 pub trait RawApi: Send + Sync + 'static {
+    /// Distinct TTL contract: implementations must never lower this to legacy
+    /// Raw operations. One deadline includes preparation, apply and read fences.
+    fn prepare_raw_ttl(
+        self: Arc<Self>,
+        _ctx: RequestContext,
+        _operation: crate::raw_ttl::Operation,
+        _deadline: std::time::Instant,
+    ) -> crate::raw_ttl::Preparation {
+        Box::new(|| Err(kv9_common::Error::NotImplemented("Raw TTL protocol")))
+    }
+
     /// Resolve an exact scoped data group. Never delegates to a legacy backend.
     fn routed_target(&self, _scope: &kv9_common::data_range::DataRange) -> Result<Arc<dyn RawApi>> {
         Err(kv9_common::Error::NotImplemented("RawApi::routed_target"))
@@ -118,6 +68,7 @@ pub trait RawApi: Send + Sync + 'static {
             let at = match operation {
                 RawWrite::Put { key, value } => self.raw_put(&ctx, key, value),
                 RawWrite::BatchPut(pairs) => self.raw_batch_put(&ctx, &pairs),
+                RawWrite::Batch(mutations) => self.raw_batch(&ctx, &mutations),
                 RawWrite::Delete { key } => self.raw_delete(&ctx, &key),
             }?;
             Ok(Box::pin(async move { Ok(at) }))
@@ -162,6 +113,10 @@ pub trait RawApi: Send + Sync + 'static {
         ctx: &RequestContext,
         kvs: &[(UserKey, Value)],
     ) -> Result<AppliedPosition>;
+    /// Atomic range batch (DESIGN §9.1): mixed puts/deletes, ONE Raft entry, every key
+    /// inside one range or the whole batch is refused with `RangeCrossesRegion`.
+    fn raw_batch(&self, ctx: &RequestContext, mutations: &[RawMutation])
+        -> Result<AppliedPosition>;
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition>;
     fn raw_scan(
         &self,
@@ -202,14 +157,34 @@ pub enum RawReadJob<T> {
 
 /// Owned operations that preserve the existing point/batch RawKV wire APIs.
 pub enum RawWrite {
-    Put { key: UserKey, value: Value },
+    Put {
+        key: UserKey,
+        value: Value,
+    },
     BatchPut(Vec<(UserKey, Value)>),
-    Delete { key: UserKey },
+    /// Atomic range batch of mixed puts/deletes (DESIGN §9.1).
+    Batch(Vec<RawMutation>),
+    Delete {
+        key: UserKey,
+    },
 }
 
-pub type RawWriteCompletion =
-    std::pin::Pin<Box<dyn std::future::Future<Output = Result<AppliedPosition>> + Send>>;
-pub type RawWritePreparation = Box<dyn FnOnce() -> Result<RawWriteCompletion> + Send>;
+impl RawWrite {
+    /// The key that routes the write: the first key of a batch, the key of a point write.
+    pub fn anchor(&self) -> &[u8] {
+        match self {
+            RawWrite::Put { key, .. } | RawWrite::Delete { key } => key,
+            RawWrite::BatchPut(pairs) => pairs.first().map(|(k, _)| k.as_slice()).unwrap_or(&[]),
+            RawWrite::Batch(mutations) => mutations.first().map(RawMutation::key).unwrap_or(&[]),
+        }
+    }
+}
+
+pub type OperationCompletion<T> =
+    std::pin::Pin<Box<dyn std::future::Future<Output = Result<T>> + Send>>;
+pub type OperationPreparation<T> = Box<dyn FnOnce() -> Result<OperationCompletion<T>> + Send>;
+pub type RawWriteCompletion = OperationCompletion<AppliedPosition>;
+pub type RawWritePreparation = OperationPreparation<AppliedPosition>;
 
 impl<T> RawReadJob<T> {
     /// Execute from a synchronous caller. Async callers must dispatch the
@@ -287,8 +262,8 @@ pub struct AttachMigrationLearnerResult {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PlanMigrationImageResult {
-    /// Canonical checkpoint manifest for the group's current durable cut.
-    /// A description for owner binding; no object exists for it yet.
+    /// Canonical manifest of the operation's fixed, catalog-registered capture.
+    /// Planning itself performs no object I/O; earlier retries may have uploaded.
     pub manifest: Vec<u8>,
     pub cut: AppliedPosition,
 }
@@ -481,6 +456,16 @@ pub struct RetentionUpdateResult {
 
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
 pub trait AdminApi {
+    /// Enable the TTL format on an exact range through the all-replica gate.
+    /// Every success is this invocation's new applied confirmation receipt.
+    fn prepare_raw_ttl_activation(
+        self: Arc<Self>,
+        _caller: String,
+        _binding: kv9_common::data_range::DataRange,
+        _deadline: std::time::Instant,
+    ) -> OperationPreparation<AppliedPosition> {
+        Box::new(|| Err(kv9_common::Error::NotImplemented("Raw TTL activation")))
+    }
     fn lookup_raw_route(
         &self,
         _root: kv9_common::RootDigest,
@@ -737,7 +722,6 @@ pub trait AdminApi {
         name: &str,
         tenant: kv9_common::TenantId,
         api_type: kv9_common::ApiType,
-        txn_group: kv9_common::TxnGroupId,
     ) -> Result<CreateKeyspaceResult>;
     fn list_keyspaces(&self, caller: &str) -> Result<Vec<kv9_common::Keyspace>>;
     fn get_region(&self, caller: &str, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation>;

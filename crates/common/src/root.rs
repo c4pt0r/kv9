@@ -82,6 +82,7 @@ macro_rules! fixed_hex_id {
 
 fixed_hex_id!(BootstrapGeneration, 16, "bootstrap generation");
 fixed_hex_id!(StoreIncarnation, 16, "store incarnation");
+fixed_hex_id!(ProcessIncarnation, 16, "process incarnation");
 fixed_hex_id!(RootDigest, 32, "root digest");
 
 impl BootstrapGeneration {
@@ -93,6 +94,13 @@ impl BootstrapGeneration {
 impl StoreIncarnation {
     pub fn mint() -> Result<Self> {
         Ok(Self(random_16("store incarnation")?))
+    }
+}
+
+impl ProcessIncarnation {
+    /// Fresh for each runtime owner; never reconstructed from a PID or clock.
+    pub fn mint() -> Result<Self> {
+        Ok(Self(random_16("process incarnation")?))
     }
 }
 

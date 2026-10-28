@@ -126,6 +126,7 @@ impl Fixture {
                         join: Vec::new(),
                         wal_streams: 1,
                         data_workers: 2,
+                        raw_ttl_clock: None,
                         replication_factor: 3,
                     },
                     RuntimeAuth {
@@ -191,7 +192,6 @@ impl AdminApi for AfterCommitFailure {
         _: &str,
         _: TenantId,
         _: ApiType,
-        _: TxnGroupId,
     ) -> Result<crate::api::CreateKeyspaceResult> {
         unreachable!()
     }
@@ -225,7 +225,7 @@ fn retention_checkpoint_handoff_recovers_each_applied_but_unconfirmed_prefix() {
         })
         .unwrap();
     let plan = RemoteUploader::plan(frozen).unwrap();
-    for cut in 1..=8 {
+    for cut in 1..=7 {
         let owners = CheckpointOwners::new(&f.root, plan.manifest(), cut as u64).unwrap();
         let faulty = AfterCommitFailure {
             inner: backend_view(&f.rts[cluster_leader(&f.rts).unwrap()], &f.root),
@@ -269,7 +269,7 @@ fn retention_checkpoint_handoff_recovers_each_applied_but_unconfirmed_prefix() {
         "checkpoint handoff leader after reopen",
         |rts| cluster_leader(rts).is_some(),
     );
-    let owners = CheckpointOwners::new(&f.root, plan.manifest(), 8).unwrap();
+    let owners = CheckpointOwners::new(&f.root, plan.manifest(), 7).unwrap();
     let backend = backend_view(&f.rts[cluster_leader(&f.rts).unwrap()], &f.root);
     owners.before_io(&backend).unwrap();
     owners.after_positive_settlement(&backend).unwrap();

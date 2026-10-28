@@ -132,7 +132,6 @@ fn from_split_row(row: &Row, root: RootDigest) -> Result<Option<SplitIntent>> {
 /// set. Nothing here mints a publication or sealing capability.
 fn validate_against<E: Engine>(
     txn: &MetaTxn<'_, E>,
-    rows: &[Row],
     root: RootDigest,
     intent: &SplitIntent,
 ) -> Result<()> {
@@ -190,7 +189,7 @@ fn validate_against<E: Engine>(
     if !inside {
         return Err(invalid("split key must fall strictly inside the parent"));
     }
-    let activations = super::activation::decode(txn, rows, root)?;
+    let activations = super::activation::decode(txn, root)?;
     let bound: Vec<RegionId> = super::ranges::committed_ranges_in_txn(txn)?
         .iter()
         .map(|b| b.range().region)
@@ -234,10 +233,6 @@ pub fn plan_split<E: Engine>(
     }
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("split requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded split task scan exceeded"));
-    }
     let parent = super::ranges::committed_ranges_in_txn(txn)?
         .into_iter()
         .find(|b| b.range().region == parent_region)
@@ -252,8 +247,9 @@ pub fn plan_split<E: Engine>(
         child_high,
         split_key: split_key.to_vec(),
     };
-    for row in &rows {
-        if let Some(previous) = from_split_row(row, root.digest())? {
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(previous) = from_split_row(&row, root.digest())? {
             if previous.operation == operation {
                 let expected = SplitIntent {
                     task: previous.task,
@@ -274,10 +270,7 @@ pub fn plan_split<E: Engine>(
         ..intent
     };
     SplitIntent::decode(&intent.encode())?;
-    validate_against(txn, &rows, root.digest(), &intent)?;
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("split task capacity reached"));
-    }
+    validate_against(txn, root.digest(), &intent)?;
     let mut row = RowValue::new();
     for (column, value) in [
         (ColumnId(1), ColumnValue::Uint(intent.task)),
@@ -298,14 +291,11 @@ pub fn committed_splits<E: Engine>(store: &MetaStore<E>) -> Result<Vec<SplitInte
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("split readback requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded split task scan exceeded"));
-    }
     let mut out: Vec<SplitIntent> = Vec::new();
-    for row in &rows {
-        if let Some(intent) = from_split_row(row, root.digest())? {
-            validate_against(&txn, &rows, root.digest(), &intent)?;
+    for row in task_rows(&txn) {
+        let row = row?;
+        if let Some(intent) = from_split_row(&row, root.digest())? {
+            validate_against(&txn, root.digest(), &intent)?;
             if out.iter().any(|prior| {
                 prior.task == intent.task
                     || prior.operation == intent.operation
@@ -319,6 +309,96 @@ pub fn committed_splits<E: Engine>(store: &MetaStore<E>) -> Result<Vec<SplitInte
         }
     }
     Ok(out)
+}
+
+/// One fully cross-validated, applied catalog snapshot for the transfer
+/// coordinator. Decoding a SplitIntent or SplitPlan cannot mint this value.
+pub struct CommittedSplitPlan {
+    plan: kv9_common::raw_ttl::split::SplitPlan,
+    replicas: Vec<NodeId>,
+    published: bool,
+}
+impl CommittedSplitPlan {
+    pub fn plan(&self) -> &kv9_common::raw_ttl::split::SplitPlan {
+        &self.plan
+    }
+    pub fn replicas(&self) -> &[NodeId] {
+        &self.replicas
+    }
+    pub fn published(&self) -> bool {
+        self.published
+    }
+}
+
+pub fn committed_split_plan<E: Engine>(
+    store: &MetaStore<E>,
+    operation: [u8; 16],
+) -> Result<CommittedSplitPlan> {
+    let txn = store.begin()?;
+    let root = crate::root::certified_root(&txn)?
+        .ok_or_else(|| invalid("split requires certified metadata root"))?;
+    let mut found = None;
+    for row in task_rows(&txn) {
+        if let Some(intent) = from_split_row(&row?, root.digest())? {
+            if intent.operation == operation && found.replace(intent).is_some() {
+                return Err(invalid("duplicate split operation"));
+            }
+        }
+    }
+    let intent = found.ok_or_else(|| invalid("split intent is not committed locally"))?;
+    validate_against(&txn, root.digest(), &intent)?;
+    let binding = super::ranges::committed_ranges_in_txn(&txn)?
+        .into_iter()
+        .find(|b| b.range().region == intent.parent_region)
+        .ok_or_else(|| invalid("split parent binding missing"))?;
+    let replicas = binding
+        .creation()
+        .intent()
+        .replicas()
+        .iter()
+        .map(|r| r.node)
+        .collect();
+    let mut parent = binding.range().clone();
+    let published = parent.sealed;
+    if published {
+        parent.sealed = false;
+        parent.version = parent
+            .version
+            .checked_sub(1)
+            .ok_or_else(|| invalid("invalid sealed version"))?;
+    }
+    let child = |task, high| -> Result<DataRange> {
+        let creation = txn
+            .get(&TASKS_DESC, &[memcmp_uint(task)])?
+            .as_ref()
+            .map(|r| from_row(r, root.digest()))
+            .transpose()?
+            .flatten()
+            .ok_or_else(|| invalid("split child creation missing"))?;
+        let mut range = parent.clone();
+        range.region = creation.region();
+        range.creation = creation.digest();
+        range.conf_ver = 1;
+        range.version = 1;
+        if high {
+            range.start = intent.split_key.clone();
+        } else {
+            range.end = intent.split_key.clone();
+        }
+        Ok(range)
+    };
+    let plan = kv9_common::raw_ttl::split::SplitPlan {
+        operation,
+        low: child(intent.child_low, false)?,
+        high: child(intent.child_high, true)?,
+        parent,
+    };
+    plan.validate()?;
+    Ok(CommittedSplitPlan {
+        plan,
+        replicas,
+        published,
+    })
 }
 
 #[cfg(test)]
@@ -352,6 +432,31 @@ mod tests {
         super::super::activation::plan_activation(&mut txn, &high).unwrap();
         txn.commit().unwrap();
         (parent.region(), low, high)
+    }
+
+    #[test]
+    fn transfer_plan_is_minted_from_one_committed_snapshot_and_survives_publication() {
+        let store = super::super::tests::fixture();
+        let (parent, low, high) = bound_parent(&store);
+        let mut txn = store.begin().unwrap();
+        plan_split(&mut txn, [91; 16], parent, b"m", low.task(), high.task()).unwrap();
+        assert!(committed_split_plan(&store, [91; 16]).is_err());
+        txn.commit().unwrap();
+        let committed = committed_split_plan(&store, [91; 16]).unwrap();
+        assert!(!committed.published());
+        assert_eq!(committed.replicas(), &[NodeId(1), NodeId(2), NodeId(3)]);
+        assert_eq!(committed.plan().low.creation, low.digest());
+        assert_eq!(committed.plan().high.creation, high.digest());
+        assert_eq!(committed.plan().low.end, b"m");
+        assert!(committed_split_plan(&store, [92; 16]).is_err());
+        let mut txn = store.begin().unwrap();
+        publish_split(&mut txn, [91; 16]).unwrap();
+        assert!(!committed_split_plan(&store, [91; 16]).unwrap().published());
+        txn.commit().unwrap();
+        let after = committed_split_plan(&store, [91; 16]).unwrap();
+        assert!(after.published());
+        assert_eq!(after.plan(), committed.plan());
+        assert_eq!(after.replicas(), committed.replicas());
     }
 
     #[test]
@@ -443,6 +548,7 @@ mod tests {
     #[test]
     fn publication_is_atomic_idempotent_and_flips_routing_to_the_children() {
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         let (parent_region, low, high) = bound_parent(&store);
         let mut txn = store.begin().unwrap();
         assert!(
@@ -640,13 +746,10 @@ pub fn publish_split<E: Engine>(
 ) -> Result<(SplitPublication, bool)> {
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("publication requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS + 1 {
-        return Err(invalid("bounded publication task scan exceeded"));
-    }
     let mut intent = None;
-    for row in &rows {
-        if let Some(candidate) = from_split_row(row, root.digest())? {
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(candidate) = from_split_row(&row, root.digest())? {
             if candidate.operation() == operation {
                 intent = Some(candidate);
             }

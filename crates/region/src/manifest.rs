@@ -25,12 +25,14 @@
 //! reported as newly accepted), `WindowRefused` (exact-window non-mine — an
 //! authoritative negative from transition invariants), `ReceiptRefused` (the
 //! discriminator's stale verdict for THIS attempt). `Unknown` clears nothing:
-//! the slot stays occupied. [`ManifestSeam::converge`] queries positive effect
-//! and exact historical transition evidence, and may resend the SAME identity
+//! the slot stays occupied. [`ManifestSeam::converge`] queries exact historical
+//! transition evidence first, then a bounded, resumable positive-effect page,
+//! and may resend the SAME identity
 //! within its CAS window. Absence of evidence never authorizes a new attempt.
 
 use std::collections::HashMap;
-use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use kv9_common::Error;
@@ -152,9 +154,10 @@ pub enum ManifestProposalState {
 /// variant documents its slot consequence.
 #[derive(Debug)]
 pub enum ManifestSeamError {
-    /// The region's slot is occupied by an in-flight attempt. Nothing was
-    /// proposed; the caller retries after that attempt settles. Slot: held
-    /// by the OTHER attempt (this call never owned it).
+    /// The region's slot is occupied by an in-flight attempt, or another
+    /// call is already driving that slot. Nothing was proposed by this call.
+    /// Retry convergence after the active call returns; a new attempt must
+    /// wait for settlement. This call never owned the slot.
     Busy {
         region: u64,
         holder_expected_generation: u64,
@@ -210,10 +213,69 @@ impl std::error::Error for ManifestSeamError {}
 /// region 5's slot).
 pub struct ManifestSeam {
     handle: SeamHandle,
-    slots: Mutex<HashMap<u64, ManifestAttempt>>,
+    slots: Mutex<HashMap<u64, Arc<Slot>>>,
+}
+struct Slot {
+    attempt: ManifestAttempt,
+    effect_next: Mutex<Option<u64>>,
+    running: AtomicBool,
+}
+struct Running(Arc<Slot>);
+impl Drop for Running {
+    fn drop(&mut self) {
+        self.0.running.store(false, Ordering::Release);
+    }
 }
 
 impl ManifestSeam {
+    /// Read-only reconciliation of a durable descriptor. This never creates a
+    /// PreparedFlush, takes/clears a slot, or proposes a manifest. Exact committed
+    /// transition history can settle identity without repeating object uploads.
+    /// Missing history returns None; a current predecessor is not a negative.
+    pub fn inspect_checkpoint(
+        &self,
+        manifest: &kv9_engine::checkpoint::CheckpointManifest,
+        predecessor: u64,
+    ) -> Result<Option<SettledManifest>, ManifestSeamError> {
+        let manifest = kv9_engine::checkpoint::CheckpointManifest::decode(
+            &manifest.encode().map_err(ManifestSeamError::Node)?,
+        )
+        .map_err(ManifestSeamError::Node)?;
+        let region = manifest.scope.region;
+        if self.in_flight(region) {
+            return Ok(None);
+        }
+        let change = manifest
+            .change_id(predecessor)
+            .map_err(ManifestSeamError::Node)?;
+        let pair = self
+            .handle
+            .manifest_pair(region)
+            .map_err(ManifestSeamError::Node)?;
+        let result = match classify_reconciliation(&pair, predecessor, &change) {
+            ReconcileObservation::Unknown
+                if predecessor
+                    .checked_add(1)
+                    .is_some_and(|window| pair.generation > window) =>
+            {
+                self.handle
+                    .manifest_transition(region, predecessor + 1)
+                    .map_err(ManifestSeamError::Node)?
+                    .map(|pair| classify_reconciliation(&pair, predecessor, &change))
+                    .unwrap_or(ReconcileObservation::Unknown)
+            }
+            other => other,
+        };
+        Ok(match result {
+            ReconcileObservation::MyChangeApplied { generation } => {
+                Some(SettledManifest::AlreadyApplied { generation })
+            }
+            ReconcileObservation::KnownNotApplied { winner_change_id } => {
+                Some(SettledManifest::WindowRefused { winner_change_id })
+            }
+            ReconcileObservation::Unknown => None,
+        })
+    }
     /// Build THE seam from the node's once-minted, node-BOUND [`SeamHandle`]
     /// (round 4: the free-floating token could be minted from driver A and
     /// paired with node B — authority and object are now one value, and
@@ -223,6 +285,42 @@ impl ManifestSeam {
             handle,
             slots: Mutex::new(HashMap::new()),
         }
+    }
+
+    fn start(&self, attempt: ManifestAttempt) -> Result<Running, ManifestSeamError> {
+        let region = attempt.region();
+        let mut slots = self.slots.lock().expect("manifest slots poisoned");
+        if let Some(holder) = slots.get(&region) {
+            return Err(ManifestSeamError::Busy {
+                region,
+                holder_expected_generation: holder.attempt.expected_generation(),
+            });
+        }
+        let slot = Arc::new(Slot {
+            attempt,
+            effect_next: Mutex::new(None),
+            running: AtomicBool::new(true),
+        });
+        slots.insert(region, slot.clone());
+        Ok(Running(slot))
+    }
+
+    fn enter(&self, region: u64) -> Result<Running, ManifestSeamError> {
+        let slots = self.slots.lock().expect("manifest slots poisoned");
+        let slot = slots
+            .get(&region)
+            .ok_or(ManifestSeamError::NoInFlight { region })?;
+        if slot
+            .running
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .is_err()
+        {
+            return Err(ManifestSeamError::Busy {
+                region,
+                holder_expected_generation: slot.attempt.expected_generation(),
+            });
+        }
+        Ok(Running(slot.clone()))
     }
 
     /// Propose a manifest change for `region`. Refuses typed if the region's
@@ -245,18 +343,8 @@ impl ManifestSeam {
                 reason: "empty change id would match virgin regions' empty last_change_id",
             });
         }
-        let region = attempt.region();
-        {
-            let mut slots = self.slots.lock().expect("manifest slots poisoned");
-            if let Some(holder) = slots.get(&region) {
-                return Err(ManifestSeamError::Busy {
-                    region,
-                    holder_expected_generation: holder.expected_generation(),
-                });
-            }
-            slots.insert(region, attempt);
-        }
-        self.drive_attempt(region, deadline, true)
+        let running = self.start(attempt)?;
+        self.drive_attempt(&running, deadline, true)
     }
 
     /// Restart path: install a RECOVERED in-flight attempt (its identity
@@ -274,37 +362,32 @@ impl ManifestSeam {
                 reason: "a recovered manifest attempt needs its non-empty change id",
             });
         }
-        let region = attempt.region();
-        {
-            let mut slots = self.slots.lock().expect("manifest slots poisoned");
-            if let Some(holder) = slots.get(&region) {
-                return Err(ManifestSeamError::Busy {
-                    region,
-                    holder_expected_generation: holder.expected_generation(),
-                });
-            }
-            slots.insert(region, attempt);
-        }
-        self.converge(region, deadline)
+        let running = self.start(attempt)?;
+        self.converge_running(&running, deadline)
     }
 
     /// Converge an occupied slot: query the authoritative pair FIRST (the
     /// attempt may have settled while we were away), then — only from the
     /// pending row — re-send the SAME identity and wait for its receipt.
-    /// Superwindow observations stay Unknown (slot occupied): this coordinate
-    /// cannot decide them, and nothing here fabricates a decision.
+    /// For a later generation, retained exact-window history may settle the
+    /// identity; otherwise scan at most one positive-effect page. Without
+    /// proof the slot stays Unknown. Concurrent calls for this slot get Busy.
     pub fn converge(
         &self,
         region: u64,
         deadline: Duration,
     ) -> Result<ManifestProposalState, ManifestSeamError> {
-        let attempt = {
-            let slots = self.slots.lock().expect("manifest slots poisoned");
-            match slots.get(&region) {
-                Some(a) => a.clone(),
-                None => return Err(ManifestSeamError::NoInFlight { region }),
-            }
-        };
+        let running = self.enter(region)?;
+        self.converge_running(&running, deadline)
+    }
+
+    fn converge_running(
+        &self,
+        running: &Running,
+        deadline: Duration,
+    ) -> Result<ManifestProposalState, ManifestSeamError> {
+        let attempt = &running.0.attempt;
+        let region = attempt.region();
         // P1: one atomic pair read; the classifier is a pure function of it.
         let pair = self
             .handle
@@ -315,28 +398,20 @@ impl ManifestSeam {
                 // Applied while we were away — an earlier send landed. This is
                 // NOT a new acceptance (we did not observe the applying
                 // receipt); report it as the already-applied fact it is.
-                self.clear(region);
+                self.clear(running);
                 Ok(ManifestProposalState::Settled(
                     SettledManifest::AlreadyApplied { generation },
                 ))
             }
             ReconcileObservation::KnownNotApplied { winner_change_id } => {
-                self.clear(region);
+                self.clear(running);
                 Ok(ManifestProposalState::Settled(
                     SettledManifest::WindowRefused { winner_change_id },
                 ))
             }
             ReconcileObservation::Unknown => {
-                if self
-                    .handle
-                    .manifest_effect(region, attempt.payload.changeset())
-                    .map_err(ManifestSeamError::Node)?
-                {
-                    self.clear(region);
-                    return Ok(ManifestProposalState::Settled(
-                        SettledManifest::EffectSettled,
-                    ));
-                }
+                // An immutable exact-window outcome is stronger than incidental
+                // effect coverage. Consult it before scanning unrelated history.
                 if pair.generation != attempt.expected_generation() {
                     if let Some(window) = attempt.expected_generation().checked_add(1) {
                         if pair.generation > window {
@@ -359,21 +434,28 @@ impl ManifestSeam {
                                     ReconcileObservation::Unknown => None,
                                 };
                                 if let Some(settled) = settled {
-                                    self.clear(region);
+                                    self.clear(running);
                                     return Ok(ManifestProposalState::Settled(settled));
                                 }
                             }
                         }
                     }
-                    // Superwindow (or a behind-pair precondition break):
-                    // neither positive effect nor retained transition evidence
-                    // settled it. Absence still establishes nothing.
+                }
+                if self.effect_page(running)? {
+                    self.clear(running);
+                    return Ok(ManifestProposalState::Settled(
+                        SettledManifest::EffectSettled,
+                    ));
+                }
+                if pair.generation != attempt.expected_generation() {
+                    // Both a partial page and exhausted history remain Unknown.
+                    // Never drop the attempt or its journal from absence alone.
                     return Ok(ManifestProposalState::Unknown);
                 }
                 // Pending: my predecessor is unspent. Re-send the SAME
                 // identity — CAS + change-id idempotency make this harmless
                 // in every interleaving — and wait for its receipt.
-                self.drive_attempt(region, deadline, false)
+                self.drive_attempt(running, deadline, false)
             }
         }
     }
@@ -389,14 +471,11 @@ impl ManifestSeam {
     /// not settle the original: slot held, typed error, converge retries.
     fn drive_attempt(
         &self,
-        region: u64,
+        running: &Running,
         deadline: Duration,
         first_send: bool,
     ) -> Result<ManifestProposalState, ManifestSeamError> {
-        let attempt = {
-            let slots = self.slots.lock().expect("manifest slots poisoned");
-            slots.get(&region).expect("caller holds the slot").clone()
-        };
+        let attempt = &running.0.attempt;
         let cmd = Command::ManifestChange(attempt.payload.clone());
         let at = match self.handle.propose_command(&cmd) {
             Ok(ProposeOutcome::Accepted(at)) => at,
@@ -405,7 +484,7 @@ impl ManifestSeam {
                 // this attempt exists. Settled: not submitted; prepared
                 // state releasable; the caller retries later against a
                 // fresh expected generation.
-                self.clear(region);
+                self.clear(running);
                 return Ok(ManifestProposalState::Settled(
                     SettledManifest::NotSubmitted {
                         reason: e.to_string(),
@@ -435,7 +514,7 @@ impl ManifestSeam {
                         SettledManifest::InvalidRefused { reason }
                     }
                 };
-                self.clear(region);
+                self.clear(running);
                 Ok(ManifestProposalState::Settled(settled))
             }
             Ok(ApplyWaitOutcome::Applied(at)) => Err(ManifestSeamError::ReceiptCorrelationBroke {
@@ -450,6 +529,11 @@ impl ManifestSeam {
                     detail: format!("fence verdict at term {} index {}", at.term, at.index),
                 })
             }
+            Ok(ApplyWaitOutcome::RawTtlRejected { at, .. }) => {
+                Err(ManifestSeamError::ReceiptCorrelationBroke {
+                    detail: format!("TTL verdict at term {} index {}", at.term, at.index),
+                })
+            }
             // Replaced says OUR (term,index) claim was consumed by another
             // entry — it says nothing about whether an earlier/later send of
             // this identity lands. Unknown; converge re-queries and re-sends.
@@ -459,11 +543,32 @@ impl ManifestSeam {
         }
     }
 
-    fn clear(&self, region: u64) {
-        self.slots
+    fn effect_page(&self, running: &Running) -> Result<bool, ManifestSeamError> {
+        let attempt = &running.0.attempt;
+        let mut cursor = running
+            .0
+            .effect_next
             .lock()
-            .expect("manifest slots poisoned")
-            .remove(&region);
+            .expect("manifest cursor poisoned");
+        let page = self
+            .handle
+            .manifest_effect_page(attempt.region(), attempt.payload.changeset(), *cursor)
+            .map_err(ManifestSeamError::Node)?;
+        // Advance only after a complete successful page. Errors keep its cursor;
+        // an exhausted pass restarts at the new head on a future converge call.
+        *cursor = page.next;
+        Ok(page.found)
+    }
+
+    fn clear(&self, running: &Running) {
+        let mut slots = self.slots.lock().expect("manifest slots poisoned");
+        let region = running.0.attempt.region();
+        if slots
+            .get(&region)
+            .is_some_and(|slot| Arc::ptr_eq(slot, &running.0))
+        {
+            slots.remove(&region);
+        }
     }
 
     /// Whether a region currently holds an in-flight attempt (observability;
@@ -480,6 +585,8 @@ impl ManifestSeam {
 mod tests {
     use super::*;
     use std::sync::Arc;
+
+    mod pagination;
 
     use kv9_common::{NodeId, RegionId};
     use kv9_raft::driver::ManifestNode;
@@ -594,8 +701,17 @@ mod tests {
                     last_change_id: b"newer".to_vec(),
                 })
             }
-            fn manifest_effect(&self, _: u64, _: &[u8]) -> kv9_common::Result<bool> {
-                Ok(self.0)
+            fn manifest_effect_page(
+                &self,
+                _: u64,
+                _: &[u8],
+                _: Option<u64>,
+            ) -> kv9_common::Result<kv9_raft::ManifestEffectPage> {
+                Ok(kv9_raft::ManifestEffectPage {
+                    found: self.0,
+                    next: None,
+                    examined: 1,
+                })
             }
         }
         for proven in [false, true] {

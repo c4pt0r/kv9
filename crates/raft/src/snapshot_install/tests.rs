@@ -1,5 +1,5 @@
 use super::*;
-use kv9_common::codec::encode_key;
+use kv9_common::codec::{encode_key, KeyMode};
 use kv9_common::{
     BootstrapGeneration, ClusterId, KeyspaceId, NodeId, RegionId, RootDescriptor, RootVoter,
     TenantId,
@@ -9,6 +9,8 @@ use kv9_engine::minio::{MinioConfig, MinioObjectStore};
 use kv9_engine::{Engine, WriteBatch};
 use raft::prelude::ConfState;
 use std::sync::Arc;
+
+mod ttl;
 
 struct Fixture {
     directory: PathBuf,
@@ -139,6 +141,41 @@ fn remote() -> RemoteUploader {
 }
 
 #[test]
+fn ttl_writer_floor_is_required_before_offline_installation_opens_group_files() {
+    for magic in [b"KV9LIFE3", b"KV9LIFE7", b"KV9LIFE8"] {
+        let fixture = Fixture::new();
+        let directory = fixture.directory.clone();
+        let identity = fixture.identity;
+        let range = fixture.range.clone();
+        let mut lifecycle =
+            fs::read(directory.join(kv9_common::store_lifecycle::STORE_LIFECYCLE_FILE)).unwrap();
+        drop(fixture);
+        // Reconstruct an old, valid Bound lifecycle at a stopped fixture store.
+        lifecycle[..8].copy_from_slice(magic);
+        let payload = lifecycle.len() - 32;
+        let hash = RootDigest::sha256(&lifecycle[..payload]);
+        lifecycle[payload..].copy_from_slice(hash.as_bytes());
+        fs::create_dir_all(&directory).unwrap();
+        fs::write(
+            directory.join(kv9_common::store_lifecycle::STORE_LIFECYCLE_FILE),
+            lifecycle,
+        )
+        .unwrap();
+        let mut guard = StoreGuard::lock(&directory).unwrap();
+        assert!(JointInstaller::open(&guard, identity, range.clone()).is_err());
+        assert!(
+            !directory.join("data-groups").exists(),
+            "unfenced installer created group state"
+        );
+        guard.fence_legacy_writers().unwrap();
+        let installer = JointInstaller::open(&guard, identity, range).unwrap();
+        drop(installer);
+        drop(guard);
+        fs::remove_dir_all(directory).unwrap();
+    }
+}
+
+#[test]
 fn group_and_store_ownership_exclude_competing_installers_and_foreign_incarnations() {
     let fixture = Fixture::new();
     let installer = fixture.open();
@@ -210,7 +247,7 @@ fn range_image_validation_checks_all_rows_and_column_families() {
                 } else {
                     encode_key(
                         if mode == 4 {
-                            KeyMode::Txn
+                            KeyMode::System
                         } else {
                             KeyMode::Raw
                         },
@@ -241,9 +278,14 @@ fn range_image_validation_checks_all_rows_and_column_families() {
                 .unwrap(),
         )
         .unwrap();
-        let result = validate_view(view.as_ref(), &fixture.range, plan.manifest());
+        let result = validate_view(
+            view.as_ref(),
+            &fixture.range,
+            plan.manifest(),
+            fixture.identity,
+        );
         if mode == 0 {
-            assert_eq!(result.unwrap(), 600);
+            assert_eq!(result.unwrap().raw_values, 600);
         } else {
             assert!(result.is_err());
         }
@@ -532,7 +574,8 @@ fn real_minio_adoption_is_one_way_exact_and_survives_legitimate_growth() {
     assert_eq!(again.cut, installed.position);
     assert_eq!(again.generation.as_bytes(), {
         let marker = fs::read(generation_dir.parent().unwrap().join("runtime-adopted")).unwrap();
-        assert_eq!(marker.len(), 120);
+        assert_eq!(marker.len(), 137);
+        assert_eq!(&marker[..8], b"KV9ADP02");
         again.generation.as_bytes()
     });
     drop(again);

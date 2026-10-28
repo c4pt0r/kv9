@@ -161,10 +161,6 @@ pub fn plan_truncation<E: Engine>(
 ) -> Result<(TruncationDecision, bool)> {
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("truncation requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded truncation task scan exceeded"));
-    }
     // The committed SETTLEMENT is the authority: install evidence (the
     // transfer completed; the floor stays at or below its cut) or a
     // committed abort (the operation was abandoned and its learner
@@ -172,13 +168,14 @@ pub fn plan_truncation<E: Engine>(
     // exists per operation — evidence and abort are mutually exclusive.
     let mut evidence = None;
     let mut abort = None;
-    for row in &rows {
-        if let Some(committed) = super::evidence::from_row_for_siblings(row, root.digest())? {
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(committed) = super::evidence::from_row_for_siblings(&row, root.digest())? {
             if committed.operation() == operation {
                 evidence = Some(committed);
             }
         }
-        if let Some(committed) = super::abort::from_abort_row(row, root.digest())? {
+        if let Some(committed) = super::abort::from_abort_row(&row, root.digest())? {
             if committed.operation() == operation {
                 abort = Some(committed);
             }
@@ -204,8 +201,9 @@ pub fn plan_truncation<E: Engine>(
         region,
         floor,
     };
-    for row in &rows {
-        if let Some(previous) = from_truncation_row(row, root.digest())? {
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(previous) = from_truncation_row(&row, root.digest())? {
             if previous.operation == operation {
                 let expected = TruncationDecision {
                     task: previous.task,
@@ -231,9 +229,6 @@ pub fn plan_truncation<E: Engine>(
         _ => unreachable!("settlement resolved above"),
     }
     TruncationDecision::decode(&decision.encode())?;
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("truncation task capacity reached"));
-    }
     let mut row = RowValue::new();
     for (column, value) in [
         (ColumnId(1), ColumnValue::Uint(decision.task)),
@@ -254,24 +249,22 @@ pub fn committed_truncations<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Trun
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("truncation readback requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded truncation task scan exceeded"));
-    }
     let mut out: Vec<TruncationDecision> = Vec::new();
-    for row in &rows {
-        if let Some(decision) = from_truncation_row(row, root.digest())? {
+    for row in task_rows(&txn) {
+        let row = row?;
+        if let Some(decision) = from_truncation_row(&row, root.digest())? {
             let mut evidence = None;
             let mut abort = None;
-            for other in &rows {
+            for other in task_rows(&txn) {
+                let other = other?;
                 if let Some(committed) =
-                    super::evidence::from_row_for_siblings(other, root.digest())?
+                    super::evidence::from_row_for_siblings(&other, root.digest())?
                 {
                     if committed.operation() == decision.operation {
                         evidence = Some(committed);
                     }
                 }
-                if let Some(committed) = super::abort::from_abort_row(other, root.digest())? {
+                if let Some(committed) = super::abort::from_abort_row(&other, root.digest())? {
                     if committed.operation() == decision.operation {
                         abort = Some(committed);
                     }
@@ -347,6 +340,7 @@ mod tests {
     #[test]
     fn a_decision_requires_committed_evidence_and_stays_below_its_cut() {
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         {
             // No evidence at all: refuse.
             let mut txn = store.begin().unwrap();
@@ -452,6 +446,7 @@ mod tests {
     #[test]
     fn an_abort_settles_truncation_without_an_evidence_cut() {
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         register_node(&store, 4, [40; 16]);
         let mut txn = store.begin().unwrap();
         let creation =

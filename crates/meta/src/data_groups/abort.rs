@@ -149,11 +149,7 @@ pub fn plan_abort<E: Engine>(
     }
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("abort requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded abort task scan exceeded"));
-    }
-    let migration = super::migration::committed_migrations_in_txn(txn, &rows, root.digest())?
+    let migration = super::migration::committed_migrations_in_txn(txn, root.digest())?
         .into_iter()
         .find(|m| m.operation() == operation)
         .ok_or_else(|| invalid("abort requires the committed migration"))?;
@@ -167,15 +163,16 @@ pub fn plan_abort<E: Engine>(
         subject,
     };
     let mut existing = None;
-    for row in &rows {
-        if super::evidence::from_row_for_siblings(row, root.digest())?
+    for row in task_rows(txn) {
+        let row = row?;
+        if super::evidence::from_row_for_siblings(&row, root.digest())?
             .is_some_and(|e| e.operation() == operation)
         {
             return Err(invalid(
                 "committed install evidence forbids aborting a completed operation",
             ));
         }
-        if let Some(previous) = from_abort_row(row, root.digest())? {
+        if let Some(previous) = from_abort_row(&row, root.digest())? {
             if previous.operation == operation {
                 let expected = MigrationAbort {
                     task: previous.task,
@@ -190,9 +187,6 @@ pub fn plan_abort<E: Engine>(
     }
     if let Some(previous) = existing {
         return Ok((previous, false));
-    }
-    if rows.len() == MAX_CREATION_TASKS {
-        return Err(invalid("abort task capacity reached"));
     }
     let abort = MigrationAbort {
         task: txn.allocate_id(SequenceKind::Task)?,
@@ -221,26 +215,22 @@ pub fn committed_aborts<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Migration
     let txn = store.begin()?;
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("abort readback requires a certified metadata root"))?;
-    let rows = txn.scan(&TASKS_DESC, MAX_CREATION_TASKS + 1)?;
-    if rows.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded abort task scan exceeded"));
-    }
-    let migrations = super::migration::committed_migrations_in_txn(&txn, &rows, root.digest())?;
+    let migrations = super::migration::committed_migrations_in_txn(&txn, root.digest())?;
     let mut out: Vec<MigrationAbort> = Vec::new();
-    for row in &rows {
-        if let Some(abort) = from_abort_row(row, root.digest())? {
+    for row in task_rows(&txn) {
+        let row = row?;
+        if let Some(abort) = from_abort_row(&row, root.digest())? {
             let migration = migrations
                 .iter()
                 .find(|m| m.operation() == abort.operation)
                 .ok_or_else(|| invalid("abort requires the committed migration"))?;
             matches_migration(&abort, migration)?;
-            if rows.iter().any(|other| {
-                super::evidence::from_row_for_siblings(other, root.digest())
-                    .ok()
-                    .flatten()
+            for other in task_rows(&txn) {
+                if super::evidence::from_row_for_siblings(&other?, root.digest())?
                     .is_some_and(|e| e.operation() == abort.operation)
-            }) {
-                return Err(invalid("an operation carries both evidence and an abort"));
+                {
+                    return Err(invalid("an operation carries both evidence and an abort"));
+                }
             }
             if out
                 .iter()
@@ -266,11 +256,10 @@ pub fn abort_matches_owner_pair(
 ) -> Result<bool> {
     use kv9_engine::ColumnFamily;
     let (start, end) = crate::codec::row_range(TASKS_DESC.id)?;
-    let entries = view.scan(ColumnFamily::Default, &start, &end, MAX_CREATION_TASKS + 1)?;
-    if entries.len() > MAX_CREATION_TASKS {
-        return Err(invalid("bounded abort task scan exceeded"));
-    }
-    for (key, value) in entries {
+    let entries = view.iter(ColumnFamily::Default, &start, &end)?;
+    let mut matched = false;
+    for entry in entries {
+        let (key, value) = entry?;
         let row_value = RowValue::decode(&value)?;
         if row_value.get(ColumnId(2)) != Some(&ColumnValue::Uint(MIGRATION_ABORT)) {
             continue;
@@ -288,10 +277,10 @@ pub fn abort_matches_owner_pair(
         if super::evidence::migration_operation_digest(root, abort.operation) == operation_digest
             && abort.subject == subject
         {
-            return Ok(true);
+            matched = true;
         }
     }
-    Ok(false)
+    Ok(matched)
 }
 
 #[cfg(test)]
@@ -365,6 +354,7 @@ mod tests {
     fn evidence_and_abort_are_mutually_exclusive_permanently() {
         // Abort first: evidence must refuse forever.
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         let migration = committed_migration(&store);
         let mut txn = store.begin().unwrap();
         plan_abort(&mut txn, migration.operation(), [42; 32]).unwrap();
@@ -461,6 +451,7 @@ mod tests {
     #[test]
     fn an_abort_unblocks_a_new_migration_for_the_same_region() {
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         let migration = committed_migration(&store);
         register_node(&store, 5, [50; 16]);
         let mut txn = store.begin().unwrap();
@@ -512,6 +503,7 @@ mod tests {
     #[test]
     fn the_view_probe_matches_only_the_exact_owner_pair_derivation() {
         let store = super::super::tests::fixture();
+        super::super::tests::fill_task_history(&store, 260);
         let migration = committed_migration(&store);
         let root = migration.root();
         let digest =
@@ -521,6 +513,7 @@ mod tests {
         let mut txn = store.begin().unwrap();
         plan_abort(&mut txn, migration.operation(), [42; 32]).unwrap();
         txn.commit().unwrap();
+        assert!(!abort_matches_owner_pair(view.as_ref(), root, digest, [42; 32]).unwrap());
         let view = store.engine().snapshot().unwrap();
         assert!(abort_matches_owner_pair(view.as_ref(), root, digest, [42; 32]).unwrap());
         assert!(!abort_matches_owner_pair(view.as_ref(), root, digest, [43; 32]).unwrap());
@@ -531,5 +524,17 @@ mod tests {
             [42; 32]
         )
         .unwrap());
+        // A retained snapshot remains valid; a new snapshot must surface
+        // malformed tail rows even after an earlier matching authority.
+        let mut batch = kv9_engine::WriteBatch::new();
+        batch.put(
+            kv9_engine::ColumnFamily::Default,
+            crate::codec::encode_row_key(TASKS_DESC.id, &[memcmp_uint(u64::MAX)]).unwrap(),
+            vec![255],
+        );
+        store.engine().write(batch).unwrap();
+        assert!(abort_matches_owner_pair(view.as_ref(), root, digest, [42; 32]).unwrap());
+        let corrupt = store.engine().snapshot().unwrap();
+        assert!(abort_matches_owner_pair(corrupt.as_ref(), root, digest, [42; 32]).is_err());
     }
 }

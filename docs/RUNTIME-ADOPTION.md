@@ -5,6 +5,19 @@ D03 [#24](https://github.com/c4pt0r/kv9/issues/24). Builds directly on the
 [joint installer](JOINT-SNAPSHOT-INSTALL.md), [source capture](SOURCE-CAPTURE.md)
 and [learner attach](LEARNER-ATTACH.md).
 
+2026-10-04 update: [adopted recovery validation](RAW-TTL-ADOPTED-RECOVERY.md) now checks the
+actual committed WAL/publication history and starts from a catalog-authorized compacted base.
+[Adoption V2](RAW-TTL-ADOPTION-FACTS.md) durably records the original image's verified TTL
+state so a later validated checkpoint no longer reads the original SSTs. V1 receipts upgrade only
+after restoring their original closure; V1 readers refuse the new marker. Historical acceptance
+below does not constitute real-network, old-binary or full TTL lifecycle acceptance of these changes.
+
+2026-10-05 update: [runtime recovery Readers](RAW-TTL-RUNTIME-READERS.md) now protect initial
+adoption, legacy upgrades and selected-image recovery with exact retained sources and durable
+GET-drain reports. Later checkpoints use their verified local publication predecessor. Ordinary
+data startup waits for metadata readiness before admitting these reads; metadata bootstrap reads
+still need separate durable authority. Migration reconciliation rotates past unavailable candidates.
+
 ## What this increment adds
 
 A selected installed generation now becomes the destination's **live

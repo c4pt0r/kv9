@@ -1,6 +1,19 @@
 # Detailed development path
 
-> **Current priority (2026-09-16): horizontal scaling.** The user ended the
+> **Production scope (2026-09-26): Raw KV, TTL, range split and range merge.**
+> These four capabilities are required for the first production release.
+> [The scope contract](RAW-KV-PRODUCTION-SCOPE.md) adds TTL semantics and
+> TTL/split/merge recovery acceptance; D04 and D05 remain mandatory.
+> Shared storage/recovery/resource prerequisites and existing acceptance
+> obligations are preserved. No issue is closed by this scope update.
+
+> **2026-10-03 capacity follow-up:** [metadata task pagination](TASK-HISTORY-PAGINATION.md)
+> removes the 255-row lifetime cap without deleting history. Local group churn
+> now retains 522 task rows and preserves restart/retry behavior. Indexed access,
+> bounded maintenance, safe history compaction and distributed fault acceptance
+> remain open.
+
+> **Prior development direction (2026-09-16): horizontal scaling.** The user ended the
 > current performance iteration at the validated CRC/rpds baseline. Redis parity
 > and radix completion are not prerequisites. Start dynamic multi-Raft (#22),
 > routing (#23), replica movement (#24), recoverable split (#25) and measured
@@ -25,7 +38,7 @@ This is the execution tracker for evolving kv9 from its basic distributed Raw KV
 
 Implementation commit: [ec50678](https://github.com/c4pt0r/kv9/commit/ec506780f273663da9b1d37fe9357495d549bf7c). The baseline adds metadata repairs, atomic WAL v2 data/position recovery, real MinIO checkpoints and durable pending-flush reconciliation. Existing #5, #6, #7 and #8 retain their original scope; C00 owns integrated acceptance.
 
-Local evidence: 413 normal tests, 20 doctests, 21 real MinIO tests and eight E2E paths. These numbers do not assert hosted CI success. The full dataset still resides in memory, checkpoints have a 48 MiB serialized ceiling, Raft history is retained, and there is no incremental LSM or multi-group data runtime yet.
+Local evidence at that baseline: 413 normal tests, 20 doctests, 21 real MinIO tests and eight E2E paths. These numbers do not assert hosted CI success. At that commit, the full dataset resided in memory, checkpoints had a 48 MiB serialized ceiling, Raft history was retained, and there was no incremental LSM or multi-group data runtime. This is historical status: multi-group data execution now exists, as documented in the [multi-group baseline](MULTI-GROUP-THROUGHPUT.md); remaining production gaps are tracked in the [current production review](PRODUCTION-READINESS-REVIEW-2026-09-26.md).
 
 Hosted baseline acceptance: [GitHub Actions run 34274338807](https://github.com/c4pt0r/kv9/actions/runs/34274338807) completed successfully with all nine jobs passing. This is evidence for the published implementation, not completion of the future work packages.
 
@@ -119,12 +132,15 @@ Build the group runtime and routing before replica attachment, split/merge and a
 - [ ] [#26](https://github.com/c4pt0r/kv9/issues/26) **D05** - Implement adjacent region merges with crash recovery
 - [ ] [#27](https://github.com/c4pt0r/kv9/issues/27) **D06** - Add load-aware placement, hotspot control and scale-out acceptance
 
-### P3 - Transactions and tenant isolation
+### P3 - Tenant isolation (transactions retired)
 
-Land MVCC/TSO before Percolator SI and its independent checker. Tenant fairness may overlap late P2 once shared resource interfaces are stable. Exit with verified SI and bounded noisy-neighbor impact.
+**2026-10-28:** transactions (MVCC, TSO, Percolator SI) were removed from the design; the multi-key write
+primitive is the atomic range batch (`RawBatch`, DESIGN §9.1), already implemented. T01/T02 below are retired
+and their issues should be closed; the T02 specification is kept only as history. Tenant fairness may overlap
+late P2 once shared resource interfaces are stable. Exit with bounded noisy-neighbor impact.
 
-- [ ] [#28](https://github.com/c4pt0r/kv9/issues/28) **T01** - Implement MVCC storage and durable TSO/timeline authority
-- [ ] [#29](https://github.com/c4pt0r/kv9/issues/29) **T02** - Implement Percolator SI, lock recovery and transaction history checking
+- [x] ~~[#28](https://github.com/c4pt0r/kv9/issues/28) **T01** - Implement MVCC storage and durable TSO/timeline authority~~ retired 2026-10-28
+- [x] ~~[#29](https://github.com/c4pt0r/kv9/issues/29) **T02** - Implement Percolator SI, lock recovery and transaction history checking~~ retired 2026-10-28
 - [ ] [#30](https://github.com/c4pt0r/kv9/issues/30) **T03** - Implement tenant quotas, fair scheduling and resource accounting
 
 ### P4 - Operational delivery
@@ -576,7 +592,9 @@ Parent: [Roadmap tracker](https://github.com/c4pt0r/kv9/issues/9)
 
 #### Problem and outcome
 
-The current full-state checkpoint has a 48 MiB ceiling and never releases the full logical dataset from memory.
+The full-state checkpoint never releases the full logical dataset from memory.
+[V2 streamed checkpoints](RAW-TTL-LARGE-CHECKPOINT.md) now exceed 48 MiB under explicit
+format and resource limits; resident planning/capture still retains the 48 MiB ceiling.
 
 #### Implementation sequence
 
@@ -1083,9 +1101,9 @@ Issue: [#28](https://github.com/c4pt0r/kv9/issues/28)
 <!-- kv9-roadmap-20260908:T01 -->
 Parent: [Roadmap tracker](https://github.com/c4pt0r/kv9/issues/9)
 
-**Stage:** P3 - Transactions and tenant isolation
+**Stage:** P3 - retired on 2026-10-28 (transactions removed from the design; kept as history)
 **Depends on:** [#23](https://github.com/c4pt0r/kv9/issues/23), [#25](https://github.com/c4pt0r/kv9/issues/25), [#18](https://github.com/c4pt0r/kv9/issues/18), [#14](https://github.com/c4pt0r/kv9/issues/14)
-**Code entry points:** crates/txn; meta/tso; engine CF/iterator/compaction; common transaction identities
+**Code entry points (historical):** crates/txn (now crates/raw, raw executor only); meta/tso (deleted); engine CF/iterator/compaction
 
 #### Problem and outcome
 

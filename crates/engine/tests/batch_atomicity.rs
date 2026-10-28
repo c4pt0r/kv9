@@ -89,7 +89,7 @@ fn write_pair_two_batches(engine: &MemEngine, v: u8) {
     engine.write(b2).unwrap();
 }
 
-/// Writes across two column families in ONE batch (the Percolator commit shape).
+/// Writes across two column families in ONE batch (the catalog row + index shape).
 fn write_cross_cf_one_batch(engine: &MemEngine, v: u8) {
     let mut b = WriteBatch::new();
     b.put(ColumnFamily::Default, b"k".to_vec(), vec![v]);

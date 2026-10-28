@@ -16,7 +16,7 @@
 //! `key → L0 root (which L1 meta-region routes this key) → L1 (which L2 user-region
 //! owns the key) → L2 leader`.
 
-use kv9_common::{RegionId, TimeStamp, META_REGION_0};
+use kv9_common::{RegionId, META_REGION_0};
 
 /// The three levels of the metadata hierarchy (DESIGN §5.1.1).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -39,9 +39,6 @@ pub struct RootRecord {
     /// Locations of L1 meta-regions ("meta of meta"): the region ids that route ranges
     /// of the system keyspace's routing/catalog data.
     pub meta_regions: Vec<RegionId>,
-    /// The persisted upper bound of allocated timestamps — the TSO window (DESIGN §8).
-    /// Kept at L0 so it survives even before L1 exists.
-    pub tso_window_high: TimeStamp,
 }
 
 impl RootRecord {
@@ -50,7 +47,6 @@ impl RootRecord {
         RootRecord {
             root_region: Some(META_REGION_0),
             meta_regions: Vec::new(),
-            tso_window_high: TimeStamp::ZERO,
         }
     }
 
