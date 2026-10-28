@@ -362,7 +362,7 @@ fn adopted_advanced_base_requires_committed_catalog_floor_then_recovers_ttl() {
         json[0]["recovery_at_open"]["installed"]["engine_open_used_original_image"],
         false
     );
-    manager.retire_published_parent(f.range.region).unwrap();
+    manager.retire_locally(f.range.region).unwrap();
     assert!(manager.recovery_status(f.range.region).is_err());
 }
 

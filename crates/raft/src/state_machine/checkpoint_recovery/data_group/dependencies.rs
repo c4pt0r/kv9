@@ -24,8 +24,6 @@ pub struct RecoveryImage {
 pub enum RecoveryImageState {
     /// Hash of the exact DataRange encoding restored from the image.
     Bound(RootDigest),
-    /// Hash of the exact unfinished ImportState, including cursor/prefix hash.
-    Import(RootDigest),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -189,9 +187,6 @@ impl DataRecoveryDependencies {
                 state: match checkpoint.state() {
                     DataCheckpointState::Bound(range) => {
                         RecoveryImageState::Bound(RootDigest::sha256(&range.encode()))
-                    }
-                    DataCheckpointState::Import(state) => {
-                        RecoveryImageState::Import(RootDigest::sha256(&state.encode()))
                     }
                 },
                 watermark: checkpoint.watermark(),

@@ -703,17 +703,6 @@ impl<E: ReplicatedEngine> crate::api::AdminApi for Node<E> {
         })
     }
 
-    fn split_region(
-        &self,
-        _caller: &str,
-        _region: kv9_common::RegionId,
-        _split_key: Vec<u8>,
-    ) -> Result<()> {
-        Err(Error::NotImplemented(
-            "AdminApi::split_region (DESIGN §10, ROADMAP Phase 4)",
-        ))
-    }
-
     fn cluster_info(&self, _caller: &str) -> Result<crate::api::ClusterInfo> {
         let txn = self.meta_raft.store.begin()?;
         Ok(crate::api::ClusterInfo {
@@ -899,16 +888,6 @@ mod tests {
             created.leader, None,
             "v0 does not publish a stale leader hint"
         );
-    }
-
-    #[test]
-    fn later_phase_split_returns_typed_error() {
-        let node = Node::new(NodeId(1), Config::default()).unwrap();
-
-        assert!(matches!(
-            AdminApi::split_region(&node, "test", META_REGION_0, b"split".to_vec()),
-            Err(Error::NotImplemented(_))
-        ));
     }
 
     #[test]

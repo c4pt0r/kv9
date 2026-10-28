@@ -362,36 +362,6 @@ pub struct RemoveSourceReplicaResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct RecordSplitIntentResult {
-    pub intent: kv9_meta::data_groups::split::SplitIntent,
-    pub changed: bool,
-    pub applied: AppliedPosition,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SealSplitParentResult {
-    pub sealed_version: u64,
-    /// False confirms an existing seal; the receipt stays a NEW commit.
-    pub changed: bool,
-    /// The applied position of the seal (or of its confirmation).
-    pub cut: AppliedPosition,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PopulateSplitChildResult {
-    pub rows_copied: u64,
-    pub parent_half_digest: kv9_common::RootDigest,
-    pub child_digest: kv9_common::RootDigest,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PublishSplitResult {
-    pub publication: kv9_meta::data_groups::split::SplitPublication,
-    pub changed: bool,
-    pub applied: AppliedPosition,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindMigrationImageResult {
     /// Tracking-only published ledger owners; no transfer or release follows.
     pub source_owner: kv9_common::retention::OwnerId,
@@ -657,50 +627,6 @@ pub trait AdminApi {
             "AdminApi::remove_source_replica",
         ))
     }
-    #[allow(clippy::too_many_arguments)]
-    fn record_split_intent(
-        &self,
-        _caller: &str,
-        _root: kv9_common::RootDigest,
-        _operation: [u8; 16],
-        _parent_region: kv9_common::RegionId,
-        _split_key: &[u8],
-        _child_low: u64,
-        _child_high: u64,
-    ) -> Result<RecordSplitIntentResult> {
-        Err(kv9_common::Error::NotImplemented(
-            "AdminApi::record_split_intent",
-        ))
-    }
-    fn seal_split_parent(
-        &self,
-        _caller: &str,
-        _root: kv9_common::RootDigest,
-        _operation: [u8; 16],
-    ) -> Result<SealSplitParentResult> {
-        Err(kv9_common::Error::NotImplemented(
-            "AdminApi::seal_split_parent",
-        ))
-    }
-    fn populate_split_child(
-        &self,
-        _caller: &str,
-        _root: kv9_common::RootDigest,
-        _operation: [u8; 16],
-        _high: bool,
-    ) -> Result<PopulateSplitChildResult> {
-        Err(kv9_common::Error::NotImplemented(
-            "AdminApi::populate_split_child",
-        ))
-    }
-    fn publish_split(
-        &self,
-        _caller: &str,
-        _root: kv9_common::RootDigest,
-        _operation: [u8; 16],
-    ) -> Result<PublishSplitResult> {
-        Err(kv9_common::Error::NotImplemented("AdminApi::publish_split"))
-    }
     fn apply_retention(&self, _caller: &str, _request: Vec<u8>) -> Result<RetentionUpdateResult> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::apply_retention",
@@ -725,12 +651,6 @@ pub trait AdminApi {
     ) -> Result<CreateKeyspaceResult>;
     fn list_keyspaces(&self, caller: &str) -> Result<Vec<kv9_common::Keyspace>>;
     fn get_region(&self, caller: &str, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation>;
-    fn split_region(
-        &self,
-        caller: &str,
-        region: kv9_common::RegionId,
-        split_key: UserKey,
-    ) -> Result<()>;
     fn cluster_info(&self, caller: &str) -> Result<ClusterInfo>;
     fn admit_node(
         &self,

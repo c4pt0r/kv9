@@ -12,7 +12,6 @@ pub(crate) fn proposal_bytes(encoded: usize) -> Result<u64> {
     let layout = kv9_engine::wal_stream::MAX_TOPOLOGY_BYTES as u64
         + (crate::command::ttl::MAX_MUTATIONS * (kv9_common::raw_ttl::EXPIRY_RECORD_BYTES + 64))
             as u64
-        + kv9_common::raw_ttl::split::MAX_RECORD_BYTES as u64
         + 4096;
     (encoded as u64)
         .checked_mul(4)

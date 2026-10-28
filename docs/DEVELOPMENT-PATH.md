@@ -128,7 +128,7 @@ Build the group runtime and routing before replica attachment, split/merge and a
 - [ ] [#22](https://github.com/c4pt0r/kv9/issues/22) **D01** - Build RegionManager and a resource-bounded multi-Raft runtime
 - [ ] [#23](https://github.com/c4pt0r/kv9/issues/23) **D02** - Route requests to real regions with epoch fencing and bounded retries
 - [ ] [#24](https://github.com/c4pt0r/kv9/issues/24) **D03** - Implement remote learner attachment and recoverable replica migration
-- [ ] [#25](https://github.com/c4pt0r/kv9/issues/25) **D04** - Implement recoverable pre-sharding and region splits
+- [ ] [#25](https://github.com/c4pt0r/kv9/issues/25) **D04** - Implement recoverable pre-sharding and region splits (prototype parked on `experimental/range-split`, 2026-10-28)
 - [ ] [#26](https://github.com/c4pt0r/kv9/issues/26) **D05** - Implement adjacent region merges with crash recovery
 - [ ] [#27](https://github.com/c4pt0r/kv9/issues/27) **D06** - Add load-aware placement, hotspot control and scale-out acceptance
 
@@ -958,12 +958,17 @@ Implementation reference: [ec50678](https://github.com/c4pt0r/kv9/commit/ec50678
 
 Issue: [#25](https://github.com/c4pt0r/kv9/issues/25)
 
+> **Status (2026-10-28):** the increments delivered for this package (split intent, parent seal, child
+> population, atomic publication, automatic and cascade split, TTL split transfer) were removed from `master`
+> as a whole and preserved on the `experimental/range-split` branch. They were never production-qualified.
+> Any continuation branches from there; `master` retires the Raft tags and catalog kind they used.
+
 <!-- kv9-roadmap-20260908:D04 -->
 Parent: [Roadmap tracker](https://github.com/c4pt0r/kv9/issues/9)
 
 **Stage:** P2 - Multi-group ownership and scale-out
 **Depends on:** [#23](https://github.com/c4pt0r/kv9/issues/23), [#24](https://github.com/c4pt0r/kv9/issues/24), [#18](https://github.com/c4pt0r/kv9/issues/18), [#21](https://github.com/c4pt0r/kv9/issues/21), [#12](https://github.com/c4pt0r/kv9/issues/12)
-**Code entry points:** region/split_merge; meta/{routing,placement}; RegionManager
+**Code entry points:** `experimental/range-split` branch (meta/data_groups/split, runtime/split_maintenance, raft ttl_split); on master only RegionManager and the range directory
 
 #### Problem and outcome
 
@@ -1009,7 +1014,7 @@ Parent: [Roadmap tracker](https://github.com/c4pt0r/kv9/issues/9)
 
 **Stage:** P2 - Multi-group ownership and scale-out
 **Depends on:** [#25](https://github.com/c4pt0r/kv9/issues/25), [#24](https://github.com/c4pt0r/kv9/issues/24), [#21](https://github.com/c4pt0r/kv9/issues/21), [#12](https://github.com/c4pt0r/kv9/issues/12)
-**Code entry points:** region/split_merge; meta/routing; RegionManager
+**Code entry points:** RegionManager and the committed range directory (no merge code on master; the split prototype on `experimental/range-split` is the nearest precedent)
 
 #### Problem and outcome
 

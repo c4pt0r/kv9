@@ -49,10 +49,6 @@ pub enum Error {
         reason: crate::raw_ttl::TtlRejection,
     },
 
-    /// A split point would cross a keyspace boundary (DESIGN §3.3, §13 principle 3 invariant).
-    #[error("split key crosses keyspace boundary")]
-    SplitCrossesKeyspace,
-
     /// A catalog write conflicted with a concurrent or constraint-violating mutation.
     #[error("write conflict: {0}")]
     WriteConflict(String),
@@ -77,9 +73,9 @@ pub enum Error {
     /// A range or batch spans more than one region, so a single `RequestContext` (which
     /// authorises exactly one region at one epoch) cannot cover it.
     ///
-    /// Deliberately distinct from [`Error::StaleEpoch`] and `SplitCrossesKeyspace`: the
-    /// caller's epoch may be perfectly current, and nothing is crossing a keyspace. The
-    /// correct client reaction is to split the request by region, not to refresh an epoch.
+    /// Deliberately distinct from [`Error::StaleEpoch`]: the caller's epoch may be
+    /// perfectly current. The correct client reaction is to split the request by
+    /// region, not to refresh an epoch.
     #[error("range or batch crosses a region boundary")]
     RangeCrossesRegion,
 

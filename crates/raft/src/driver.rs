@@ -26,7 +26,6 @@ use crate::{Command, EntryKind, MemStateMachine, Role, StateMachine};
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 mod lease_read;
 mod pool;
-pub mod ttl_split;
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 pub use lease_read::{LeaseReadView, ReadPreparation};
 pub use pool::DriverPool;
@@ -1788,8 +1787,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for 
         // propose_traced verifies leadership and appends under ONE peer
         // lock, and raft-rs `propose` returns error without appending — an
         // Err here is a certain pre-append refusal, never ambiguous.
-        // Select the explicit large/import command at the actual driver. A Finish
-        // racing this observation is rechecked by apply; legacy tags keep their meaning.
+        // Select the explicit large-format command at the actual driver; legacy
+        // tags keep their meaning.
         let staging = (|| -> Result<Option<Command>> {
             let Command::ManifestChange(payload) = cmd else {
                 return Ok(None);
@@ -1798,21 +1797,9 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for 
                 return Ok(None);
             }
             let manifest = kv9_engine::checkpoint::CheckpointManifest::decode(payload.changeset())?;
-            if manifest.requires_large_format()? {
-                return Ok(Some(Command::LargeManifestChange(payload.clone())));
-            }
-            let fence = crate::RegionFence {
-                region_id: payload.region(),
-                conf_ver: manifest.scope.conf_ver,
-                version: manifest.scope.version,
-            };
-            let eligible = self
-                .sm
-                .lock()
-                .expect("sm poisoned")
-                .staging_checkpoint_epoch(&fence)?
-                == Some(true);
-            Ok(eligible.then(|| Command::StagingManifestChange(payload.clone())))
+            Ok(manifest
+                .requires_large_format()?
+                .then(|| Command::LargeManifestChange(payload.clone())))
         })();
         let staging = match staging {
             Ok(command) => command,

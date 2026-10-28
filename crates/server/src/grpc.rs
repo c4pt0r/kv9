@@ -7,7 +7,7 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use kv9_common::{ApiType, AppliedPosition, Error, KeyspaceId, NodeId, RegionId, TenantId};
+use kv9_common::{ApiType, AppliedPosition, Error, KeyspaceId, NodeId, TenantId};
 use kv9_region::RegionEpoch;
 use tonic::{metadata::MetadataMap, service::Interceptor, Request, Response, Status};
 
@@ -928,10 +928,9 @@ fn error_status(error: Error) -> Status {
         | Error::InvalidKeyMode(_)
         | Error::Config(_) => Status::invalid_argument(message),
         Error::KeyspaceNotFound(_) | Error::RegionNotFound => Status::not_found(message),
-        Error::ApiTypeMismatch { .. }
-        | Error::StaleEpoch { .. }
-        | Error::RawTtlRejected { .. }
-        | Error::SplitCrossesKeyspace => Status::failed_precondition(message),
+        Error::ApiTypeMismatch { .. } | Error::StaleEpoch { .. } | Error::RawTtlRejected { .. } => {
+            Status::failed_precondition(message)
+        }
         Error::WriteConflict(_) => Status::aborted(message),
         Error::RawTtlClock { .. } => Status::unavailable(message),
         // RESOURCE_EXHAUSTED: end-to-end write backpressure. The write did not
@@ -1939,167 +1938,6 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
-    async fn record_split_intent(
-        &self,
-        request: Request<proto::RecordSplitIntentRequest>,
-    ) -> Result<Response<proto::RecordSplitIntentResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
-        let request = request.into_inner();
-        let root = kv9_common::RootDigest::from_bytes(
-            request
-                .root_digest
-                .try_into()
-                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
-        );
-        let operation: [u8; 16] = request
-            .operation_id
-            .try_into()
-            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
-        if operation == [0; 16]
-            || root.as_bytes() == &[0; 32]
-            || request.parent_region == 0
-            || request.split_key.is_empty()
-            || request.split_key.len() > kv9_meta::data_groups::split::MAX_SPLIT_KEY_BYTES
-            || request.child_low_task == 0
-            || request.child_high_task == 0
-        {
-            return Err(Status::invalid_argument(
-                "nonzero root, operation, parent, children and a bounded split key required",
-            ));
-        }
-        let caller = auth.principal.to_string();
-        let result = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.record_split_intent(
-                    &caller,
-                    root,
-                    operation,
-                    kv9_common::RegionId(request.parent_region),
-                    &request.split_key,
-                    request.child_low_task,
-                    request.child_high_task,
-                )
-            })
-            .await?;
-        Ok(Response::new(proto::RecordSplitIntentResponse {
-            task: result.intent.task(),
-            changed: result.changed,
-        }))
-    }
-
-    async fn seal_split_parent(
-        &self,
-        request: Request<proto::SealSplitParentRequest>,
-    ) -> Result<Response<proto::SealSplitParentResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
-        let request = request.into_inner();
-        let root = kv9_common::RootDigest::from_bytes(
-            request
-                .root_digest
-                .try_into()
-                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
-        );
-        let operation: [u8; 16] = request
-            .operation_id
-            .try_into()
-            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
-        if operation == [0; 16] || root.as_bytes() == &[0; 32] {
-            return Err(Status::invalid_argument(
-                "nonzero root and operation required",
-            ));
-        }
-        let caller = auth.principal.to_string();
-        let result = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.seal_split_parent(&caller, root, operation)
-            })
-            .await?;
-        Ok(Response::new(proto::SealSplitParentResponse {
-            sealed_version: result.sealed_version,
-            changed: result.changed,
-            cut_term: result.cut.term,
-            cut_index: result.cut.index,
-        }))
-    }
-
-    async fn populate_split_child(
-        &self,
-        request: Request<proto::PopulateSplitChildRequest>,
-    ) -> Result<Response<proto::PopulateSplitChildResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
-        let request = request.into_inner();
-        let root = kv9_common::RootDigest::from_bytes(
-            request
-                .root_digest
-                .try_into()
-                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
-        );
-        let operation: [u8; 16] = request
-            .operation_id
-            .try_into()
-            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
-        if operation == [0; 16] || root.as_bytes() == &[0; 32] {
-            return Err(Status::invalid_argument(
-                "nonzero root and operation required",
-            ));
-        }
-        let caller = auth.principal.to_string();
-        let result = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.populate_split_child(&caller, root, operation, request.high)
-            })
-            .await?;
-        Ok(Response::new(proto::PopulateSplitChildResponse {
-            rows_copied: result.rows_copied,
-            parent_half_digest: result.parent_half_digest.as_bytes().to_vec(),
-            child_digest: result.child_digest.as_bytes().to_vec(),
-        }))
-    }
-
-    async fn publish_split(
-        &self,
-        request: Request<proto::PublishSplitRequest>,
-    ) -> Result<Response<proto::PublishSplitResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
-        let request = request.into_inner();
-        let root = kv9_common::RootDigest::from_bytes(
-            request
-                .root_digest
-                .try_into()
-                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
-        );
-        let operation: [u8; 16] = request
-            .operation_id
-            .try_into()
-            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
-        if operation == [0; 16] || root.as_bytes() == &[0; 32] {
-            return Err(Status::invalid_argument(
-                "nonzero root and operation required",
-            ));
-        }
-        let caller = auth.principal.to_string();
-        let result = self
-            .backend
-            .call(reservation, move |backend| {
-                backend.publish_split(&caller, root, operation)
-            })
-            .await?;
-        Ok(Response::new(proto::PublishSplitResponse {
-            parent_region: result.publication.parent_region.0,
-            sealed_version: result.publication.sealed_version,
-            low_region: result.publication.low_region.0,
-            high_region: result.publication.high_region.0,
-            changed: result.changed,
-        }))
-    }
-
     async fn bind_migration_image(
         &self,
         request: Request<proto::BindMigrationImageRequest>,
@@ -2219,22 +2057,6 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                 leader_node_id: region.leader.map(|node| node.0),
             }),
         }))
-    }
-
-    async fn split_region(
-        &self,
-        request: Request<proto::SplitRegionRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
-        let request = request.into_inner();
-        let caller = auth.principal.to_string();
-        self.backend
-            .call(reservation, move |backend| {
-                backend.split_region(&caller, RegionId(request.region_id), request.split_key)
-            })
-            .await?;
-        Ok(Response::new(proto::Empty {}))
     }
 
     async fn cluster_info(
@@ -2446,6 +2268,7 @@ mod tests {
 
     use super::*;
     use crate::api::{ClusterInfo, RegionLocation};
+    use kv9_common::RegionId;
 
     struct RawPreparationGate {
         entered: tokio::sync::mpsc::UnboundedSender<()>,
@@ -2628,9 +2451,6 @@ mod tests {
         }
         fn get_region(&self, _: &str, _: KeyspaceId, _: &[u8]) -> Result<RegionLocation> {
             Err(Error::NotImplemented("get_region"))
-        }
-        fn split_region(&self, _: &str, _: RegionId, _: UserKey) -> Result<()> {
-            Err(Error::NotImplemented("split_region"))
         }
         fn cluster_info(&self, caller: &str) -> Result<ClusterInfo> {
             self.callers.lock().unwrap().push(caller.to_owned());

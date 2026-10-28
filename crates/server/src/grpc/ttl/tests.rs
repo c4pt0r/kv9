@@ -2,6 +2,7 @@ use super::*;
 use crate::client::ttl::{classify, Failure};
 use crate::raw_ttl::Refusal;
 use kv9_common::raw_ttl::clock::ClockRefusal;
+use kv9_common::RegionId;
 
 #[test]
 fn definitive_refusals_are_typed_and_unknown_errors_are_not_marked() {

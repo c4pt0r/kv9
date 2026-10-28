@@ -201,20 +201,14 @@ pub fn project(
             }
             out.push(t.origin(&c, d.source()));
         }
+        // Kind 107 (range-split intent) is retired with the split experiment
+        // (branch `experimental/range-split`, 2026-10-28). A catalog that still
+        // carries one was written by that branch; this binary refuses it rather
+        // than walking history it cannot interpret.
         107 => {
-            let s = split::SplitIntent::decode(&t.payload)?;
-            if s.root() != root || s.task() != t.id || s.encode() != t.payload {
-                return Err(invalid("store-history split differs"));
-            }
-            let parent = Task::load(view, s.parent_bind_task(), 102)?.range(view, root)?;
-            let low = Task::load(view, s.child_low(), 100)?.creation(root)?;
-            let high = Task::load(view, s.child_high(), 100)?.creation(root)?;
-            if parent.region() != s.parent_region()
-                || low.replicas() != parent.replicas()
-                || high.replicas() != parent.replicas()
-            {
-                return Err(invalid("store-history split layout differs"));
-            }
+            return Err(invalid(
+                "store-history contains a retired range-split intent",
+            ))
         }
         108 => {
             let a = abort::MigrationAbort::decode(&t.payload)?;

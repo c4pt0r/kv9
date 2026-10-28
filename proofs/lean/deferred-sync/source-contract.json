@@ -21,8 +21,8 @@
     "crates/engine/src/wal_segment.rs": "392caf9d0b9a6cfc2f2b82e5831d875b8c99405653578adc52677601c654eec0",
     "crates/engine/src/wal_stream.rs": "74db29e84808a231d163ff6afa4e90ee55afb068b224e135886bd6dda727b301",
     "crates/engine/src/persist.rs": "0d5726b850ad5e7ca955a5d5198743e7bc2f6806c3e0ec34a6a1f0857a126238",
-    "crates/server/src/region_manager.rs": "4cab2ed990ec699ce47456cebb5b371870473bfdfdaa41aae8b75e9eff6dd102",
-    "crates/server/src/runtime.rs": "4b809dff28247ba64160f91f45e3e2531f55c7a10f0bfc5bce7db29532e08562",
+    "crates/server/src/region_manager.rs": "a711ed4da137bc96ca3b8e43f0936c7bf7ba5c8af2c06625c51e2827a250e83e",
+    "crates/server/src/runtime.rs": "55775d654db364415e6c68613b699e740308669a68ceb6bdabadc344e28ebf9e",
     "scripts/deferred-sync-e2e.py": "36602393960902bad805877e4798faaff4012e9123ffb007d0def6af5956e511",
     "proofs/lean/deferred-sync/DeferredSync.lean": "864eec740ef55bd691657ef028434d924f56e0eadd3c112be719f7cd7056eb88",
     "proofs/lean/deferred-sync/README.md": "0d2650180f5f32b7129697922e2e5853c57c0c161d9434ab8959f4b596ebce6e"

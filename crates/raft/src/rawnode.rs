@@ -34,7 +34,6 @@ use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 
 mod log_bytes;
 pub mod ttl_activation;
-pub mod ttl_split;
 mod write_pressure;
 
 #[cfg(any(test, feature = "experimental-leader-lease"))]

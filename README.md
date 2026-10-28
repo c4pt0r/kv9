@@ -13,9 +13,8 @@ of truth**.
 > - **Raw KV:** `RawPut/Get/Scan/Delete/DeleteRange/BatchGet/BatchPut`, optional TTL, and the **atomic range
 >   batch** `RawBatch` (mixed puts/deletes applied as one Raft entry inside one range — see below). Reads are
 >   linearizable through a quorum ReadIndex barrier; writes answer with the exact applied `(term, index)`.
-> - **Multiple data groups with automatic split.** User data lives in data groups (regions) separate from the
->   metadata group; a region splits automatically by WAL bytes (`KV9_AUTO_SPLIT_BYTES`), cascades, and preserves TTL
->   state through the split. Epoch fences and leader hints drive client re-routing.
+> - **Multiple data groups.** User data lives in data groups (regions) separate from the metadata group, each its
+>   own Raft group with its own range binding. Epoch fences and leader hints drive client re-routing.
 > - **Object storage backend.** With `KV9_STORAGE=minio`, leaders upload immutable SST checkpoints (streamed, no
 >   longer capped at 48 MiB), publish manifests by CAS, replicas adopt them after local ordered apply, the covered
 >   WAL is reclaimed, and cold recovery reads MinIO plus the surviving WAL tail. Raft logs are compacted by entry
@@ -25,7 +24,9 @@ of truth**.
 >   typed abort paths.
 >
 > **Limits:** the full dataset still resides in memory (SSTs are checkpoints, not a read path — no incremental LSM
-> and no block cache yet); range **merge** is not implemented; split is by size, not by consumed throughput;
+> and no block cache yet); range **split and merge are not in this tree** — the split prototype (manual pipeline,
+> WAL-bytes auto trigger, cascade, TTL-preserving transfer) was moved to the `experimental/range-split` branch on
+> 2026-10-28 and is not production-qualified;
 > metadata is one group (L0/L1 sharding is design only); tenant admission/fairness is partial; TLS is not
 > implemented. Acknowledged unflushed writes depend on the Raft replicas' local disks.
 >
@@ -67,8 +68,9 @@ The following are design goals; the status above describes what the current bina
 - **Self-hosted, layered metadata.** Cluster metadata is just data in a reserved *system keyspace*, replicated by the
   same Raft as user data, and **multi-level and sharded** (L0 root → L1 meta-regions → L2 user regions) so it scales
   like data. Today: one highly available metadata group; the L1 sharding is the next step.
-- **Automatic sharding.** Range-sharded **regions** with split (implemented, by size) and merge (planned), **split
-  by consumed throughput** (planned) and DynamoDB-style pre-sharding; regions never span a keyspace.
+- **Automatic sharding.** Range-sharded **regions** with split and merge, **split by consumed throughput** and
+  DynamoDB-style pre-sharding; regions never span a keyspace. A size-triggered split prototype exists on the
+  `experimental/range-split` branch; master carries only the range directory and epoch fences it needs.
 - **Atomic range batches instead of transactions.** The only multi-key write is one fenced Raft entry inside one
   region: no timestamps, no locks, no cross-region commit. (`DESIGN.md` §9.1)
 - **One token-based flow-control system.** Capacity, fairness and **backpressure** in a single token currency, so an
@@ -110,7 +112,7 @@ every mutation applies at one `(term, index)` or none does. The boundaries are e
   silently drop the atomicity you asked for — a client that needs several regions sends one batch per region.
 - **The region epoch is checked twice.** Once at admission against the request's `(conf_ver, version)`
   (`StaleEpoch` → refresh the route and retry), and again on every replica at apply time against the region row
-  current at that log position. A split that commits between the two makes the entry a typed no-op, never a partial
+  current at that log position. An epoch change that commits between the two makes the entry a typed no-op, never a partial
   write.
 - **Order matters, duplicates are allowed:** later mutations for the same key win; deleting an absent key is a no-op.
 - **The response is the applied position**, so what you read back is a committed fact.

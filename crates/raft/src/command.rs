@@ -12,10 +12,6 @@ use kv9_engine::{ColumnFamily, Mutation, WriteBatch};
 
 pub mod ttl;
 pub use ttl::{RawTtlAction, RawTtlCommand, RawTtlMutation};
-pub mod population;
-pub use population::RawPopulation;
-pub mod ttl_split;
-pub use ttl_split::{RawTtlSplit, RawTtlSplitAction};
 
 /// A single put/delete carried by a [`Command`] (mirrors [`kv9_engine::Mutation`] in a
 /// serialization-friendly, owned form).
@@ -183,12 +179,6 @@ impl ManifestChangePayload {
 /// The set of commands the metadata-plane raft group replicates (ROADMAP Phase 1).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
-    /// TTL range transfer. Submission remains disabled until the dedicated
-    /// all-replica format/source/empty-target gate is connected.
-    RawTtlSplit(RawTtlSplit),
-    /// Bounded ordinary Raw split copy. Ordered apply requires an unbound
-    /// target; it must never overwrite data after child ownership publication.
-    PopulateRaw(RawPopulation),
     /// TTL format activation, observed time, writes and conditional cleanup.
     /// These are ordered-apply barriers and never lower as ordinary KV ops.
     RawTtl(RawTtlCommand),
@@ -236,9 +226,6 @@ pub enum Command {
     /// advance the applied watermark like any entry (logical verdicts, not
     /// apply errors — the `Fenced` precedent).
     ManifestChange(ManifestChangePayload),
-    /// V6 checkpoint CAS for a TTL import, including a concurrent Finish.
-    /// Tag 7 retains its historical bound-range-only epoch interpretation.
-    StagingManifestChange(ManifestChangePayload),
     /// Explicit V2 large-image publication; old tags retain their V1 decoder.
     LargeManifestChange(ManifestChangePayload),
     /// A command wrapped with the proposer's expected region epoch (task #48 layer 2).
@@ -273,19 +260,13 @@ impl Command {
     /// retained history. Exhaustive matching makes new command kinds explicit.
     pub(crate) fn requires_write_capacity(&self) -> bool {
         match self {
-            Self::Put { .. } | Self::Write { .. } | Self::Fenced { .. } | Self::PopulateRaw(_) => {
-                true
-            }
+            Self::Put { .. } | Self::Write { .. } | Self::Fenced { .. } => true,
             Self::RawTtl(command) => !matches!(command.action(), RawTtlAction::Enable { .. }),
-            Self::RawTtlSplit(command) => {
-                matches!(command.action(), RawTtlSplitAction::Append { .. })
-            }
             Self::CatalogTxn { .. }
             | Self::DataRange { .. }
             | Self::ConfChange { .. }
             | Self::Noop
             | Self::ManifestChange(_)
-            | Self::StagingManifestChange(_)
             | Self::LargeManifestChange(_)
             | Self::CompactionConfirmed { .. } => false,
         }
@@ -309,11 +290,6 @@ impl Command {
         }
     }
     pub(crate) fn require_ordinary_proposal(&self) -> kv9_common::Result<()> {
-        if matches!(self, Command::RawTtlSplit(_)) {
-            return Err(kv9_common::Error::MetaNotReady(
-                "TTL split requires the protected transfer gate".into(),
-            ));
-        }
         if matches!(self, Command::RawTtl(ttl)
             if matches!(ttl.action(), RawTtlAction::Enable { .. }))
         {
@@ -394,16 +370,6 @@ impl Command {
     pub fn to_write_batch(&self) -> kv9_common::Result<WriteBatch> {
         let mut wb = WriteBatch::new();
         match self {
-            Command::RawTtlSplit(_) => {
-                return Err(kv9_common::Error::Raft(
-                    "TTL split requires ordered apply".into(),
-                ));
-            }
-            Command::PopulateRaw(_) => {
-                return Err(kv9_common::Error::Raft(
-                    "Raw population requires ordered ownership check".into(),
-                ));
-            }
             Command::RawTtl(_) => {
                 return Err(kv9_common::Error::Raft(
                     "Raw TTL requires ordered apply".into(),
@@ -426,9 +392,7 @@ impl Command {
                         .into(),
                 ));
             }
-            Command::ManifestChange { .. }
-            | Command::StagingManifestChange { .. }
-            | Command::LargeManifestChange { .. } => {
+            Command::ManifestChange { .. } | Command::LargeManifestChange { .. } => {
                 return Err(kv9_common::Error::Raft(
                     "a manifest change cannot be lowered without its generation CAS; \
                      the ordered-apply loop must run the discriminator and write the \
@@ -479,14 +443,6 @@ impl Command {
         let mut out = Vec::new();
         out.push(ENTRY_VERSION);
         match self {
-            Command::RawTtlSplit(command) => {
-                out.push(TAG_TTL_SPLIT);
-                command.encode_into(&mut out);
-            }
-            Command::PopulateRaw(population) => {
-                out.push(TAG_RAW_POPULATION);
-                population.encode_into(&mut out);
-            }
             Command::RawTtl(command) => {
                 out.push(TAG_RAW_TTL);
                 command.encode_into(&mut out);
@@ -515,13 +471,9 @@ impl Command {
                 put_bytes(&mut out, expected.as_ref().map_or(&[], |d| d.as_bytes()));
                 put_bytes(&mut out, &next.encode());
             }
-            Command::ManifestChange(p)
-            | Command::StagingManifestChange(p)
-            | Command::LargeManifestChange(p) => {
+            Command::ManifestChange(p) | Command::LargeManifestChange(p) => {
                 out.push(if matches!(self, Command::LargeManifestChange(_)) {
                     TAG_LARGE_MANIFEST_CHANGE
-                } else if matches!(self, Command::StagingManifestChange(_)) {
-                    TAG_STAGING_MANIFEST_CHANGE
                 } else {
                     TAG_MANIFEST_CHANGE
                 });
@@ -568,22 +520,6 @@ impl Command {
         }
         let tag = r.u8()?;
         let cmd = match tag {
-            TAG_TTL_SPLIT => {
-                if bytes.len() > ttl_split::MAX_COMMAND_BYTES {
-                    return Err(kv9_common::Error::Raft(
-                        "TTL split exceeds byte budget".into(),
-                    ));
-                }
-                Command::RawTtlSplit(RawTtlSplit::decode_from(&mut r)?)
-            }
-            TAG_RAW_POPULATION => {
-                if bytes.len() > population::MAX_COMMAND_BYTES {
-                    return Err(kv9_common::Error::Raft(
-                        "Raw population exceeds byte budget".into(),
-                    ));
-                }
-                Command::PopulateRaw(RawPopulation::decode_from(&mut r)?)
-            }
             TAG_RAW_TTL => {
                 if bytes.len() > ttl::MAX_COMMAND_BYTES {
                     return Err(kv9_common::Error::Raft(
@@ -624,7 +560,7 @@ impl Command {
                 node: r.u64()?,
             },
             TAG_NOOP => Command::Noop,
-            TAG_MANIFEST_CHANGE | TAG_STAGING_MANIFEST_CHANGE | TAG_LARGE_MANIFEST_CHANGE => {
+            TAG_MANIFEST_CHANGE | TAG_LARGE_MANIFEST_CHANGE => {
                 let payload = ManifestChangePayload {
                     region: r.u64()?,
                     change_id: r.bytes()?,
@@ -635,8 +571,6 @@ impl Command {
                 };
                 if tag == TAG_LARGE_MANIFEST_CHANGE {
                     Command::LargeManifestChange(payload)
-                } else if tag == TAG_STAGING_MANIFEST_CHANGE {
-                    Command::StagingManifestChange(payload)
                 } else {
                     Command::ManifestChange(payload)
                 }
@@ -705,9 +639,11 @@ const TAG_DATA_RANGE: u8 = 8;
 const TAG_MANIFEST_CHANGE: u8 = 7;
 const TAG_COMPACTION_CONFIRMED: u8 = 9;
 const TAG_RAW_TTL: u8 = 10;
-const TAG_RAW_POPULATION: u8 = 11;
-const TAG_TTL_SPLIT: u8 = 12;
-const TAG_STAGING_MANIFEST_CHANGE: u8 = 13;
+// Tags 11 (raw split population), 12 (TTL split transfer) and 13 (staging
+// checkpoint of a split child) belonged to the range-split experiment, which
+// lives on the `experimental/range-split` branch since 2026-10-28. They are
+// retired: a decoder that meets them reports an unknown tag, and no future
+// command may reuse the numbers.
 const TAG_LARGE_MANIFEST_CHANGE: u8 = 14;
 const OP_PUT: u8 = 1;
 const OP_DELETE: u8 = 2;

@@ -265,9 +265,8 @@ impl<'a> CheckpointRecovery<'a> {
                 })
                 .ok_or_else(|| bad("manifest publication has no exact normal Raft entry"))?;
             let command = Command::decode(&entry.data)?;
-            let (Command::ManifestChange(ref payload)
-            | Command::StagingManifestChange(ref payload)
-            | Command::LargeManifestChange(ref payload)) = command
+            let (Command::ManifestChange(ref payload) | Command::LargeManifestChange(ref payload)) =
+                command
             else {
                 return Err(bad("winning WAL batch does not name a manifest command"));
             };

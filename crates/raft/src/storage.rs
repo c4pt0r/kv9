@@ -984,7 +984,6 @@ impl<F: FileSystem> DiskRaftStorage<F> {
                 {
                     let command = crate::Command::decode(&entry.data)?;
                     if let crate::Command::ManifestChange(ref payload)
-                    | crate::Command::StagingManifestChange(ref payload)
                     | crate::Command::LargeManifestChange(ref payload) = command
                     {
                         if payload.changeset() == bytes {

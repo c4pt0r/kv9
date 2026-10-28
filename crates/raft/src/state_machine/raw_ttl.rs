@@ -170,10 +170,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
         command: &Command,
     ) -> Result<Option<ApplyResult>> {
         let reserved = |cf: u8, key: &[u8]| {
-            (cf == crate::cf_code(ColumnFamily::Default)
-                && (key == CLOCK_KEY
-                    || key == kv9_common::raw_ttl::split::SEAL_KEY
-                    || key == kv9_common::raw_ttl::split::IMPORT_KEY))
+            (cf == crate::cf_code(ColumnFamily::Default) && key == CLOCK_KEY)
                 || (cf == crate::cf_code(ColumnFamily::Write)
                     && decode_key(key).is_ok_and(|key| key.mode == KeyMode::Raw))
         };

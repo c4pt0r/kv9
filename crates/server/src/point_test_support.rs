@@ -5,8 +5,8 @@ use crate::api::{
 };
 use crate::grpc::{proto, Authenticator, TokenAuthenticator};
 use kv9_common::{
-    AppliedPosition, Error, Keyspace, KeyspaceId, NodeId, RegionId, Result as ApiResult, TenantId,
-    UserKey, Value,
+    AppliedPosition, Error, Keyspace, KeyspaceId, NodeId, Result as ApiResult, TenantId, UserKey,
+    Value,
 };
 use kv9_raw::RawMutation;
 use std::{
@@ -287,7 +287,6 @@ impl AdminApi for Backend {
         create_keyspace(caller: &str, name: &str, tenant: TenantId, api_type: kv9_common::ApiType) -> CreateKeyspaceResult;
         list_keyspaces(caller: &str) -> Vec<Keyspace>;
         get_region(caller: &str, keyspace: KeyspaceId, key: &[u8]) -> RegionLocation;
-        split_region(caller: &str, region: RegionId, split_key: UserKey) -> ();
         cluster_info(caller: &str) -> ClusterInfo;
     }
 }

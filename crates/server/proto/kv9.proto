@@ -32,7 +32,6 @@ service Kv9 {
   rpc CreateKeyspace(CreateKeyspaceRequest) returns (CreateKeyspaceResponse);
   rpc ListKeyspaces(ListKeyspacesRequest) returns (ListKeyspacesResponse);
   rpc GetRegion(GetRegionRequest) returns (GetRegionResponse);
-  rpc SplitRegion(SplitRegionRequest) returns (Empty);
   rpc ClusterInfo(ClusterInfoRequest) returns (ClusterInfoResponse);
   rpc AdmitNode(AdmitNodeRequest) returns (MembershipChangeResponse);
   rpc RevokeAdmission(RevokeAdmissionRequest) returns (MembershipChangeResponse);
@@ -59,10 +58,6 @@ service Kv9 {
   rpc PromoteMigrationVoter(PromoteMigrationVoterRequest) returns (PromoteMigrationVoterResponse);
   rpc RecordSourceRemoval(RecordSourceRemovalRequest) returns (RecordSourceRemovalResponse);
   rpc RemoveSourceReplica(RemoveSourceReplicaRequest) returns (RemoveSourceReplicaResponse);
-  rpc RecordSplitIntent(RecordSplitIntentRequest) returns (RecordSplitIntentResponse);
-  rpc SealSplitParent(SealSplitParentRequest) returns (SealSplitParentResponse);
-  rpc PopulateSplitChild(PopulateSplitChildRequest) returns (PopulateSplitChildResponse);
-  rpc PublishSplit(PublishSplitRequest) returns (PublishSplitResponse);
 }
 
 message Empty {}
@@ -350,72 +345,6 @@ message RemoveSourceReplicaResponse {
   repeated uint64 voters = 3; // Sorted post-apply voter set.
 }
 
-// Commit one split intent at the metadata leader: one bound unsealed
-// parent range, one exact key strictly inside it, and two activated,
-// unbound child groups on the parent's replica set. Nothing is sealed,
-// populated, republished or rerouted here.
-message RecordSplitIntentRequest {
-  bytes root_digest = 1;
-  bytes operation_id = 2;
-  uint64 parent_region = 3;
-  bytes split_key = 4; // 1..1024 bytes, strictly inside the parent range.
-  uint64 child_low_task = 5;  // creation task owning [start, split_key)
-  uint64 child_high_task = 6; // creation task owning [split_key, end)
-}
-message RecordSplitIntentResponse {
-  uint64 task = 1;
-  bool changed = 2;
-}
-
-// Seal the split parent's OWN range row through the group's log: writes
-// and reads at the parent refuse with a stale epoch from the applied seal
-// onward. The catalog directory stays unchanged until the atomic
-// publication; the group-side seal is the committed write fence.
-message SealSplitParentRequest {
-  bytes root_digest = 1;
-  bytes operation_id = 2;
-}
-message SealSplitParentResponse {
-  uint64 sealed_version = 1;
-  // False confirms an existing seal; the receipt is a NEW commit.
-  bool changed = 2;
-  uint64 cut_term = 3;
-  uint64 cut_index = 4;
-}
-
-// Copy the SEALED parent's half into one activated, unbound child group
-// through the child's OWN log, in bounded committed batches. Idempotent:
-// a rerun converges to the same rows. Verified: the response carries the
-// parent-half digest and the child digest recomputed after the copy.
-message PopulateSplitChildRequest {
-  bytes root_digest = 1;
-  bytes operation_id = 2;
-  // False populates [start, split_key); true populates [split_key, end).
-  bool high = 3;
-}
-message PopulateSplitChildResponse {
-  uint64 rows_copied = 1;
-  bytes parent_half_digest = 2; // sha256 over the ordered (key,value) stream
-  bytes child_digest = 3;       // equal on success, recomputed after the copy
-}
-
-// The ATOMIC one-to-two publication: after re-verifying both populated
-// children against the sealed parent's halves LOCALLY, one catalog
-// transaction seals the parent binding and inserts both child bindings.
-// Routing flips to the children from the committed directory onward.
-message PublishSplitRequest {
-  bytes root_digest = 1;
-  bytes operation_id = 2;
-}
-message PublishSplitResponse {
-  uint64 parent_region = 1;
-  uint64 sealed_version = 2;
-  uint64 low_region = 3;
-  uint64 high_region = 4;
-  // False confirms the identical committed publication.
-  bool changed = 5;
-}
-
 message BindMigrationImageResponse {
   bytes source_owner = 1; // 16-byte ledger owner IDs, both Published.
   bytes destination_owner = 2;
@@ -680,11 +609,6 @@ message RegionLocation {
 
 message GetRegionResponse {
   RegionLocation region = 1;
-}
-
-message SplitRegionRequest {
-  uint64 region_id = 1;
-  bytes split_key = 2;
 }
 
 message ClusterInfoRequest {}

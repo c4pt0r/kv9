@@ -88,7 +88,6 @@ fn position(at: AppliedPosition) -> serde_json::Value {
 fn image(image: &RecoveryImage) -> serde_json::Value {
     let (kind, digest) = match image.state() {
         RecoveryImageState::Bound(d) => ("bound", d),
-        RecoveryImageState::Import(d) => ("import", d),
     };
     serde_json::json!({
         "manifest": image.manifest().to_string(), "cut": position(image.cut()),

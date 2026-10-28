@@ -9,7 +9,6 @@ use crate::storage::DiskRaftStorage;
 use crate::ManifestPair;
 use kv9_common::codec::{decode_key, KeyMode};
 use kv9_common::data_range::{DataRange, COMPACTION_CONFIRMED_KEY, RANGE_KEY};
-use kv9_common::raw_ttl::split::{validate_local, ImportState, SplitSeal, IMPORT_KEY, SEAL_KEY};
 use kv9_common::raw_ttl::{ClockWatermark, ExpiryRecord, CLOCK_KEY};
 use kv9_common::{AppliedPosition, ClusterId, Error, RegionId, Result, RootDigest};
 use kv9_engine::checkpoint::{CheckpointManifest, CheckpointRestore, RemoteUploader};
@@ -144,9 +143,31 @@ pub fn check_local_read_floor(
     floors.check_recovery(identity.region, identity.creation, image.as_ref())
 }
 
+/// Local ownership/activation consistency of one image or engine state: a bound
+/// range must carry this group's identity, and TTL activation needs live (unsealed)
+/// bound ownership.
+pub(crate) fn validate_local(
+    identity: (
+        kv9_common::RootDigest,
+        kv9_common::RegionId,
+        kv9_common::RootDigest,
+    ),
+    range: Option<&DataRange>,
+    clock: Option<ClockWatermark>,
+) -> Result<()> {
+    if range.is_some_and(|r| (r.root, r.region, r.creation) != identity) {
+        return Err(invalid("stored range has a foreign group identity"));
+    }
+    if clock.is_some() && range.is_none_or(|r| r.sealed) {
+        return Err(invalid("TTL activation without live bound ownership"));
+    }
+    Ok(())
+}
+
 /// A local completed-open observation, never a transferable install/retention
-/// capability. The bound/import state and watermark belong to the restored IMAGE, before
+/// capability. The bound state and watermark belong to the restored IMAGE, before
 /// later WAL entries; publication comes from that same successful recovery.
+
 #[derive(Debug)]
 pub struct RecoveredDataCheckpoint {
     state: DataCheckpointState,
@@ -157,7 +178,6 @@ impl RecoveredDataCheckpoint {
     pub fn state(&self) -> &DataCheckpointState {
         &self.state
     }
-    /// None for an unfinished import; its target is not serving ownership.
     pub fn range(&self) -> Option<&DataRange> {
         self.state.bound_range()
     }
@@ -299,7 +319,6 @@ fn open_inner(
                 }
             }
             *tail.borrow_mut() = tail::TailState::from_image(
-                view,
                 image.state().bound_range().cloned(),
                 watermark,
                 identity,
@@ -316,7 +335,7 @@ fn open_inner(
                 None if batch.is_empty() => {}
                 _ => return Err(invalid("engine WAL lacks matching committed group history")),
             }
-            tail.borrow_mut().batch(batch, at, identity)?;
+            tail.borrow_mut().batch(batch, identity)?;
             recovery.batch(batch, at)
         },
     )?;

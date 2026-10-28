@@ -223,7 +223,6 @@ async fn admission_covers_every_public_handler_before_preparation() {
     refused!(create_keyspace, CreateKeyspaceRequest);
     refused!(list_keyspaces, ListKeyspacesRequest);
     refused!(get_region, GetRegionRequest);
-    refused!(split_region, SplitRegionRequest);
     refused!(cluster_info, ClusterInfoRequest);
     refused!(admit_node, AdmitNodeRequest);
     refused!(promote_node, PromoteNodeRequest);
@@ -251,7 +250,7 @@ async fn admission_covers_every_public_handler_before_preparation() {
             .iter()
             .map(|c| c.refused_count)
             .sum::<u64>(),
-        15
+        14
     );
     drop(held);
     assert!(service

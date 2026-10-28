@@ -5,7 +5,6 @@
 //! A cleanup decision must compare the exact observed record during ordered apply.
 
 use crate::{AppliedPosition, Error, Result, RootDigest};
-pub mod split;
 
 pub mod clock;
 

@@ -1,25 +1,21 @@
-//! A staging image records import progress without manufacturing ownership.
+//! Image inspection validates contents against the group's bound ownership.
 use super::*;
-use kv9_common::raw_ttl::split::ImportRow;
 
 /// Validated image descriptor, not publication or serving authority.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DataCheckpointState {
     Bound(DataRange),
-    Import(Box<ImportState>),
 }
 impl DataCheckpointState {
-    /// Scope descriptor only. For Import this is the future target, not a binding.
+    /// Scope descriptor only, never a binding by itself.
     pub fn target(&self) -> &DataRange {
         match self {
             Self::Bound(range) => range,
-            Self::Import(state) => state.spec.target(),
         }
     }
     pub fn bound_range(&self) -> Option<&DataRange> {
         match self {
             Self::Bound(range) => Some(range),
-            Self::Import(_) => None,
         }
     }
 }
@@ -44,11 +40,7 @@ impl InspectedCheckpoint {
 fn descriptor(
     view: &dyn ReadView,
     identity: DataCheckpointIdentity,
-) -> Result<(
-    DataCheckpointState,
-    Option<ClockWatermark>,
-    Option<SplitSeal>,
-)> {
+) -> Result<(DataCheckpointState, Option<ClockWatermark>)> {
     identity.validate()?;
     let range = view
         .get(ColumnFamily::Default, RANGE_KEY)?
@@ -58,32 +50,17 @@ fn descriptor(
         .get(ColumnFamily::Default, CLOCK_KEY)?
         .map(|b| ClockWatermark::decode(&b))
         .transpose()?;
-    let seal = view
-        .get(ColumnFamily::Default, SEAL_KEY)?
-        .map(|b| SplitSeal::decode(&b))
-        .transpose()?;
-    let import = view
-        .get(ColumnFamily::Default, IMPORT_KEY)?
-        .map(|b| ImportState::decode(&b))
-        .transpose()?;
     validate_local(
         (identity.root, identity.region, identity.creation),
         range.as_ref(),
         clock,
-        seal.as_ref(),
-        import.as_ref(),
     )?;
-    let state = match (range, import) {
-        (Some(range), _) => DataCheckpointState::Bound(range),
-        (None, Some(import)) if !import.complete => DataCheckpointState::Import(Box::new(import)),
-        _ => {
-            return Err(invalid(
-                "image has neither bound ownership nor an unfinished import",
-            ))
-        }
+    let Some(range) = range else {
+        return Err(invalid("image has no bound ownership"));
     };
+    let state = DataCheckpointState::Bound(range);
     identity.check_range(state.target())?;
-    Ok((state, clock, seal))
+    Ok((state, clock))
 }
 
 /// Descriptor validation from one actual snapshot. Counts/hash are verified by
@@ -92,7 +69,7 @@ pub fn checkpoint_state(
     view: &dyn ReadView,
     identity: DataCheckpointIdentity,
 ) -> Result<(DataCheckpointState, kv9_engine::checkpoint::FlushScope, u64)> {
-    let (state, _, _) = descriptor(view, identity)?;
+    let (state, _) = descriptor(view, identity)?;
     let range = state.target();
     let generation = view
         .get(ColumnFamily::Default, &manifest_pair_key(range.region.0))?
@@ -115,9 +92,7 @@ pub fn checkpoint_scope(
     identity: DataCheckpointIdentity,
 ) -> Result<(DataRange, kv9_engine::checkpoint::FlushScope, u64)> {
     let (state, scope, generation) = checkpoint_state(view, identity)?;
-    let DataCheckpointState::Bound(range) = state else {
-        return Err(invalid("staging image is not bound ownership"));
-    };
+    let DataCheckpointState::Bound(range) = state;
     Ok((range, scope, generation))
 }
 
@@ -149,9 +124,7 @@ pub(crate) fn inspect_image(
     identity: DataCheckpointIdentity,
 ) -> Result<InspectedDataImage> {
     let inspected = inspect_checkpoint(view, manifest, identity)?;
-    let DataCheckpointState::Bound(range) = inspected.state else {
-        return Err(invalid("staging image is not installable bound ownership"));
-    };
+    let DataCheckpointState::Bound(range) = inspected.state;
     Ok(InspectedDataImage {
         range,
         watermark: inspected.watermark,
@@ -160,14 +133,13 @@ pub(crate) fn inspect_image(
 }
 
 /// Inspect an entire image after RemoteUploader::restore has verified the
-/// manifest's complete SST closure and counts. Staging images additionally
-/// reconstruct the exact import prefix hash; this is not serving/install authority.
+/// manifest's complete SST closure and counts; this is not serving/install authority.
 pub fn inspect_checkpoint(
     view: &dyn ReadView,
     manifest: &CheckpointManifest,
     identity: DataCheckpointIdentity,
 ) -> Result<InspectedCheckpoint> {
-    let (state, watermark, seal) = descriptor(view, identity)?;
+    let (state, watermark) = descriptor(view, identity)?;
     let range = state.target();
     if manifest.scope.cluster != identity.cluster.to_string()
         || manifest.scope.region != range.region.0
@@ -175,12 +147,6 @@ pub fn inspect_checkpoint(
         || manifest.scope.version != range.version
     {
         return Err(invalid("manifest scope differs from its actual image"));
-    }
-    if seal
-        .as_ref()
-        .is_some_and(|s| s.cut.index > manifest.index || s.cut.term > manifest.term)
-    {
-        return Err(invalid("TTL source seal exceeds image cut"));
     }
     let pair_key = manifest_pair_key(range.region.0);
     let pair = view
@@ -192,12 +158,6 @@ pub fn inspect_checkpoint(
     let mut history_count = 0_u64;
     let mut last_change = None;
     let mut raw_values = 0_u64;
-    let import = match &state {
-        DataCheckpointState::Import(import) => Some(import.as_ref()),
-        _ => None,
-    };
-    let mut chain = import.map(|s| s.spec.seed());
-    let mut last_key = None;
 
     for file in &manifest.files {
         let cf = ColumnFamily::ALL[file.cf as usize];
@@ -208,12 +168,7 @@ pub fn inspect_checkpoint(
             let (encoded, bytes) = entry?;
             count += 1;
             if cf == ColumnFamily::Default {
-                if encoded == RANGE_KEY
-                    || encoded == CLOCK_KEY
-                    || encoded == pair_key
-                    || encoded == SEAL_KEY
-                    || encoded == IMPORT_KEY
-                {
+                if encoded == RANGE_KEY || encoded == CLOCK_KEY || encoded == pair_key {
                     continue;
                 }
                 if encoded == COMPACTION_CONFIRMED_KEY {
@@ -264,26 +219,7 @@ pub fn inspect_checkpoint(
                 return Err(invalid("image contains foreign user keys"));
             }
             match cf {
-                ColumnFamily::Default => {
-                    raw_values += 1;
-                    if let Some(prior) = chain {
-                        if last_key.as_ref().is_some_and(|last| last >= &encoded) {
-                            return Err(invalid("staging image keys are not strictly ordered"));
-                        }
-                        let expiry = view
-                            .get(ColumnFamily::Write, &encoded)?
-                            .map(|b| ExpiryRecord::decode(&b))
-                            .transpose()?;
-                        let row = ImportRow {
-                            key: encoded.clone(),
-                            value: bytes,
-                            expiry,
-                        };
-                        row.validate(range)?;
-                        chain = Some(row.fold(prior));
-                        last_key = Some(encoded);
-                    }
-                }
+                ColumnFamily::Default => raw_values += 1,
                 ColumnFamily::Write if watermark.is_some() => {
                     ExpiryRecord::decode(&bytes)?;
                     if view.get(ColumnFamily::Default, &encoded)?.is_none() {
@@ -302,13 +238,6 @@ pub fn inspect_checkpoint(
         (Some(pair), Some(change))
             if pair.generation == history_count && pair.last_change_id == change => {}
         _ => return Err(invalid("manifest pair differs from retained image history")),
-    }
-    if let Some(import) = import {
-        if raw_values != import.copied || last_key != import.last || chain != Some(import.chain) {
-            return Err(invalid(
-                "staging image differs from import count, cursor or digest",
-            ));
-        }
     }
     Ok(InspectedCheckpoint {
         state,

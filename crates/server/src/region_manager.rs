@@ -865,15 +865,7 @@ impl RegionManager {
         self.retire_locally(region)
     }
 
-    /// A PUBLISHED split retires the sealed parent everywhere it is hosted:
-    /// the committed directory (sealed parent binding with covering
-    /// children) is the authority, and every replica fences its local copy
-    /// through the same durable Retired machinery. Idempotent.
-    pub(crate) fn retire_published_parent(&mut self, region: RegionId) -> Result<()> {
-        self.retire_locally(region)
-    }
-
-    fn retire_locally(&mut self, region: RegionId) -> Result<()> {
+    pub(crate) fn retire_locally(&mut self, region: RegionId) -> Result<()> {
         self.retire_observed(region, &mut |_, _| Ok(()))
     }
 

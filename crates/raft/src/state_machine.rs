@@ -26,7 +26,6 @@ mod manifest_effect;
 pub use manifest_effect::{ManifestEffectPage, MAX_MANIFEST_EFFECT_ROWS};
 pub(crate) mod raw_group;
 mod raw_ttl;
-mod ttl_split;
 
 /// The apply-side storage capability (task #9, the capability-narrowing half
 /// of the apply-never-touches-the-object-store invariant): EXACTLY what ordered
@@ -543,14 +542,8 @@ impl<E: ApplyStore> MemStateMachine<E> {
         if let Command::RawTtl(command) = cmd {
             return self.apply_raw_ttl(at, command);
         }
-        if let Command::RawTtlSplit(command) = cmd {
-            return self.apply_ttl_split(at, command);
-        }
         if let Some(result) = self.guard_legacy_ttl(at, cmd)? {
             return Ok(result);
-        }
-        if let Command::PopulateRaw(population) = cmd {
-            return self.apply_raw_population(at, population);
         }
         if let Command::DataRange { expected, next } = cmd {
             return self.apply_data_range(at, *expected, next);
@@ -583,10 +576,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
         // (the pair itself is only ever written by earlier entries of this
         // same log), and all three outcomes are logical verdicts that advance
         // the watermark — the `Fenced` precedent, not a second apply channel.
-        if let Command::ManifestChange(p)
-        | Command::StagingManifestChange(p)
-        | Command::LargeManifestChange(p) = cmd
-        {
+        if let Command::ManifestChange(p) | Command::LargeManifestChange(p) = cmd {
             let ManifestChangePayload {
                 region,
                 change_id,
@@ -629,20 +619,10 @@ impl<E: ApplyStore> MemStateMachine<E> {
                             conf_ver: checkpoint.scope.conf_ver,
                             version: checkpoint.scope.version,
                         };
-                        let fresh = if matches!(cmd, Command::LargeManifestChange(_)) {
-                            self.staging_checkpoint_epoch(&fence)? == Some(true)
-                                || adjudicator.is_fresh(&fence)?
-                        } else if matches!(cmd, Command::StagingManifestChange(_)) {
-                            self.staging_checkpoint_epoch(&fence)? == Some(true)
-                        } else {
-                            adjudicator.is_fresh(&fence)?
-                        };
+                        let fresh = adjudicator.is_fresh(&fence)?;
                         (!fresh).then_some(ManifestInvalidReason::StaleEpoch)
                     }
-                } else if matches!(
-                    cmd,
-                    Command::StagingManifestChange(_) | Command::LargeManifestChange(_)
-                ) {
+                } else if matches!(cmd, Command::LargeManifestChange(_)) {
                     Some(ManifestInvalidReason::InvalidCheckpoint)
                 } else {
                     None

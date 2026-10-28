@@ -201,9 +201,6 @@ impl AdminApi for AfterCommitFailure {
     fn get_region(&self, _: &str, _: KeyspaceId, _: &[u8]) -> Result<crate::api::RegionLocation> {
         unreachable!()
     }
-    fn split_region(&self, _: &str, _: RegionId, _: UserKey) -> Result<()> {
-        unreachable!()
-    }
     fn cluster_info(&self, _: &str) -> Result<crate::api::ClusterInfo> {
         unreachable!()
     }

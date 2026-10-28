@@ -63,20 +63,6 @@ pub(super) fn endpoints<E: Engine>(
         .collect()
 }
 
-pub(super) fn verify_endpoints<E: Engine>(
-    txn: &kv9_meta::MetaTxn<'_, E>,
-    stores: &[(StoreIdentity, NodeEndpoint)],
-) -> Result<()> {
-    for (identity, expected) in stores {
-        if node_endpoint(txn, identity.node_id)? != Some(*expected) {
-            return Err(Error::MetaNotReady(
-                "Raw TTL replica directory changed during confirmation".into(),
-            ));
-        }
-    }
-    Ok(())
-}
-
 /// Local immutable root and format facts. The guard publishes this only after
 /// the durable floor is active; no configuration flag can fabricate it.
 pub(super) struct ActivationContext {
@@ -501,7 +487,7 @@ mod tests {
     }
 
     #[test]
-    fn directory_collection_uses_one_snapshot_and_detects_endpoint_or_incarnation_changes() {
+    fn directory_collection_uses_one_snapshot() {
         let (store, root, probe) = fixture();
         let snapshot = store.begin().unwrap();
         let original = endpoints(
@@ -512,7 +498,6 @@ mod tests {
         )
         .unwrap();
         assert_eq!(original.len(), 3); // Learners count even though they are not root voters.
-        assert!(verify_endpoints(&snapshot, &original).is_ok());
         let mut concurrent = store.begin().unwrap();
         concurrent
             .update(
@@ -535,28 +520,17 @@ mod tests {
             .unwrap(),
             original
         );
-        assert!(verify_endpoints(&store.begin().unwrap(), &original).is_err());
-        let current = endpoints(
-            &store.begin().unwrap(),
-            &root,
-            probe.range(),
-            &probe.replicas().collect::<Vec<_>>(),
-        )
-        .unwrap();
-        let mut concurrent = store.begin().unwrap();
-        concurrent
-            .update(
-                &NODES_DESC,
-                &[memcmp_uint(2)],
-                vec![
-                    (ColumnId(2), ColumnValue::Text("127.0.0.1:21202".into())),
-                    (ColumnId(6), ColumnValue::Uint(1)),
-                    (ColumnId(7), ColumnValue::Text("127.0.0.1:20202".into())),
-                ],
+        // The committed change is visible to a fresh snapshot.
+        assert_ne!(
+            endpoints(
+                &store.begin().unwrap(),
+                &root,
+                probe.range(),
+                &probe.replicas().collect::<Vec<_>>()
             )
-            .unwrap();
-        concurrent.commit().unwrap();
-        assert!(verify_endpoints(&store.begin().unwrap(), &current).is_err());
+            .unwrap(),
+            original
+        );
     }
 
     #[test]

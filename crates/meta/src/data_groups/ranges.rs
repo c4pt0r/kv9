@@ -135,13 +135,6 @@ pub fn committed_ranges<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Committed
     read_in(&store.begin()?)
 }
 
-/// Sibling planners (the split module) reuse the exact committed reader.
-pub(crate) fn committed_ranges_in_txn<E: Engine>(
-    txn: &MetaTxn<'_, E>,
-) -> Result<Vec<CommittedRange>> {
-    read_in(txn)
-}
-
 /// Caller holds the metadata planner lock through same-term committed apply.
 /// A failure drops ALL staged sequence, creation/desire and namespace changes.
 pub fn plan_keyspace<E: Engine>(

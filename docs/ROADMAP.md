@@ -1,5 +1,12 @@
 # kv9 development roadmap
 
+> **Range split moved out of master (2026-10-28).** Every split increment recorded below
+> (split intents, parent seal, child population, publication, auto/cascade split, TTL split
+> state/format/runtime/maintenance) now lives on the `experimental/range-split` branch; the
+> linked documents, proofs and scripts were moved with it. `master` carries no split protocol,
+> retires Raft tags 11/12/13 and task kind 107, and keeps the range directory and epoch fence.
+> Split and merge remain design goals (DESIGN §10); their re-entry starts from that branch.
+
 > **Production scope (2026-09-26): Raw KV, TTL, range split and range merge.**
 > All four are required for the first production release. Close the shared
 > storage, backpressure, recovery and resource-lifecycle gaps; preserve TTL
@@ -471,7 +478,8 @@ and resident planning/capture has a 48 MiB ceiling; production workers now use
 Normal catalog WAL reclamation now publishes a segmented
 topology and removes covered closed files; the legacy fallback still copies the surviving tail before rename.
 Raft prefixes can be reclaimed through guarded compaction; complete historical manifest/SST GC remains open.
-Multiple running data groups and Raw/TTL split now have implementations and component evidence.
+Multiple running data groups have implementations and component evidence; the Raw/TTL split
+prototype was moved to the `experimental/range-split` branch on 2026-10-28.
 Incremental LSM, block cache, TTL merge and full production qualification remain future work.
 
 Acknowledged unflushed writes depend on the replicas' local durable logs. A bucket alone cannot reconstruct cluster

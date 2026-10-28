@@ -1,8 +1,7 @@
 //! Shared runtime compaction passes. Discovery grants no truncation authority:
 //! the committed kind-110 floor, all-matched gate and checkpoint history still
-//! govern execution. Importing children never enter the public range directory.
+//! govern execution. Only groups bound in the committed directory are planned.
 use super::*;
-use kv9_common::raw_ttl::split::{ImportState, IMPORT_KEY};
 use kv9_engine::ColumnFamily;
 use std::ops::Bound::{Excluded, Unbounded};
 
@@ -29,42 +28,6 @@ fn next(backend: &RuntimeBackend, after: Option<u64>) -> Option<Handle> {
         .and_then(|r| handles.range((Excluded(RegionId(r)), Unbounded)).next())
         .or_else(|| handles.first_key_value())
         .map(|(region, (engine, driver))| (*region, engine.clone(), driver.clone()))
-}
-
-/// Imports require a real, locally selected image before automatic planning.
-/// Its cut is an additional scheduling ceiling, never permission to truncate.
-pub(super) fn import_cut(
-    backend: &RuntimeBackend,
-    region: RegionId,
-    engine: &WalEngine,
-    driver: &Driver,
-) -> Result<Option<AppliedPosition>> {
-    let Some(bytes) = engine.get(ColumnFamily::Default, IMPORT_KEY)? else {
-        return Ok(None);
-    };
-    let observed = ImportState::decode(&bytes)?;
-    let target = observed.spec.target();
-    if target.region != region {
-        return Err(Error::Config(
-            "compaction import belongs to another group".into(),
-        ));
-    }
-    let committed = kv9_meta::data_groups::split::committed_split_plan(
-        &backend.node.meta_raft.store,
-        observed.spec.seal.plan.operation,
-    )?;
-    if committed.plan() != &observed.spec.seal.plan {
-        return Err(Error::Config("compaction import split plan differs".into()));
-    }
-    // Reads validated state from the actual owner; a decoded engine row alone
-    // is not sufficient. Finish racing discovery is harmless for this ceiling.
-    if driver
-        .ttl_import_state(target)?
-        .is_none_or(|current| current.spec != observed.spec)
-    {
-        return Err(Error::Config("compaction import identity changed".into()));
-    }
-    Ok(engine.selected_checkpoint()?.map(|m| m.position()))
 }
 
 pub(super) fn plan(
@@ -104,14 +67,9 @@ pub(super) fn plan(
         if status.fatal.is_some() || status.applied_index == 0 || status.applied_term == 0 {
             continue;
         }
-        let import_ceiling = if bindings.contains(&region) {
-            None
-        } else {
-            let Some(cut) = import_cut(backend, region, &engine, &driver)? else {
-                continue;
-            };
-            Some(cut)
-        };
+        if !bindings.contains(&region) {
+            continue;
+        }
         let last_floor = floors.get(&region).copied().unwrap_or(0);
         let retained = status.raft_committed.saturating_sub(status.log_first_index);
         let entries = thresholds.entries > 0
@@ -144,11 +102,7 @@ pub(super) fn plan(
         let history = engine
             .checkpoint_history()
             .ok_or_else(|| Error::Config("compaction group has no checkpoint history".into()))?;
-        for ceiling in history
-            .compaction_ceiling()?
-            .into_iter()
-            .chain(import_ceiling)
-        {
+        if let Some(ceiling) = history.compaction_ceiling()? {
             if ceiling.index < floor.index {
                 floor = ceiling;
             }

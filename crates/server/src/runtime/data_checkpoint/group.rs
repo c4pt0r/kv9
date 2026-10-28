@@ -1,19 +1,13 @@
-//! Checkpoint ownership is separate from public Raw serving. An importing
-//! child is discovered through its actual driver and committed split plan.
+//! Checkpoint ownership is separate from public Raw serving: a group is
+//! checkpointed through the serving owner the directory names for its region.
 use super::*;
-use kv9_common::data_range::{DataRange, RANGE_KEY};
-use kv9_common::raw_ttl::split::{ImportSpec, ImportState, IMPORT_KEY};
-use kv9_engine::ColumnFamily;
+use kv9_common::data_range::DataRange;
 
 pub(super) struct Group {
     driver: Arc<Driver>,
     engine: Arc<WalEngine>,
     target: DataRange,
-    source: Source,
-}
-enum Source {
-    Serving(Arc<RawGroup>),
-    Transfer(Box<ImportSpec>),
+    source: Arc<RawGroup>,
 }
 impl Group {
     pub(super) fn capture_parts(&self) -> (&Arc<Driver>, &Arc<WalEngine>, &DataRange) {
@@ -28,34 +22,14 @@ impl Group {
                 region: self.target.region,
             });
         }
-        match &self.source {
-            Source::Serving(original) => {
-                if !backend
-                    .raw_directory
-                    .by_region(self.target.region)
-                    .is_some_and(|g| g.same_owner(original))
-                {
-                    return Err(Error::StaleEpoch {
-                        region: self.target.region,
-                    });
-                }
-            }
-            Source::Transfer(spec) => {
-                let committed = kv9_meta::data_groups::split::committed_split_plan(
-                    &backend.node.meta_raft.store,
-                    spec.seal.plan.operation,
-                )?;
-                if committed.plan() != &spec.seal.plan {
-                    return Err(invalid("staging checkpoint split plan differs"));
-                }
-                let state = self
-                    .driver
-                    .ttl_import_state(&self.target)?
-                    .ok_or_else(|| invalid("staging checkpoint import disappeared"))?;
-                if &state.spec != spec.as_ref() {
-                    return Err(invalid("staging checkpoint import identity changed"));
-                }
-            }
+        if !backend
+            .raw_directory
+            .by_region(self.target.region)
+            .is_some_and(|g| g.same_owner(&self.source))
+        {
+            return Err(Error::StaleEpoch {
+                region: self.target.region,
+            });
         }
         Ok(())
     }
@@ -86,7 +60,8 @@ pub(in crate::runtime) fn owner_matches(
 }
 
 /// Visit one region from the union without materializing either directory.
-/// A virgin/unavailable group still advances the dispatcher's visit cursor.
+/// A virgin/unavailable group, or a local handle the public directory does not
+/// (yet) name, still advances the dispatcher's visit cursor without a candidate.
 pub(super) fn next(
     backend: &RuntimeBackend,
     after: Option<RegionId>,
@@ -107,37 +82,16 @@ pub(super) fn next(
         .chain(handle.as_ref().map(|(r, _)| *r))
         .min_by_key(|r| (after.is_some_and(|a| *r <= a), *r));
     let region = region?;
-    let candidate = (|| -> Result<Option<Arc<Group>>> {
-        if let Some(raw) = raw.filter(|g| g.range_binding().region == region) {
+    let candidate = raw
+        .filter(|g| g.range_binding().region == region)
+        .map(|raw| {
             let (driver, engine, target) = raw.capture_parts();
-            return Ok(Some(Arc::new(Group {
+            Arc::new(Group {
                 driver: driver.clone(),
                 engine: engine.clone(),
                 target: target.clone(),
-                source: Source::Serving(raw),
-            })));
-        }
-        let (_, (engine, driver)) = handle.expect("selected handle");
-        let Some(bytes) = engine.get(ColumnFamily::Default, IMPORT_KEY)? else {
-            return Ok(None);
-        };
-        let import = ImportState::decode(&bytes)?;
-        let target = import.spec.target();
-        let range = engine
-            .get(ColumnFamily::Default, RANGE_KEY)?
-            .map(|b| DataRange::decode(&b))
-            .transpose()?;
-        // Finish may race discovery. The worker validates one actual frozen view;
-        // discovery grants neither checkpoint publication nor serving authority.
-        if target.region != region || range.as_ref().is_some_and(|r| r != target) {
-            return Ok(None);
-        }
-        Ok(Some(Arc::new(Group {
-            driver,
-            engine,
-            target: target.clone(),
-            source: Source::Transfer(Box::new(import.spec)),
-        })))
-    })();
-    Some((region, candidate))
+                source: raw,
+            })
+        });
+    Some((region, Ok(candidate)))
 }

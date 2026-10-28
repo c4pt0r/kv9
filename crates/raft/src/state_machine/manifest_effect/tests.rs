@@ -103,22 +103,18 @@ fn large_checkpoint_has_distinct_tag_and_legacy_apply_cannot_reinterpret_it() {
         image.index,
     );
     let at = AppliedPosition { term: 1, index: 3 };
-    for command in [
-        Command::ManifestChange(payload.clone()),
-        Command::StagingManifestChange(payload.clone()),
-    ] {
-        let (engine, mut sm) = fixture(0);
-        assert!(command
-            .decode_checkpoint_manifest(payload.changeset())
-            .is_err());
-        let before = ReplicatedEngine::applied_position(&engine.engine).unwrap();
-        assert!(sm.apply_at(at, &command).is_err());
-        assert_eq!(
-            ReplicatedEngine::applied_position(&engine.engine).unwrap(),
-            before
-        );
-        assert_eq!(sm.manifest_pair(100).unwrap().generation, 0);
-    }
+    let command = Command::ManifestChange(payload.clone());
+    let (engine, mut sm) = fixture(0);
+    assert!(command
+        .decode_checkpoint_manifest(payload.changeset())
+        .is_err());
+    let before = ReplicatedEngine::applied_position(&engine.engine).unwrap();
+    assert!(sm.apply_at(at, &command).is_err());
+    assert_eq!(
+        ReplicatedEngine::applied_position(&engine.engine).unwrap(),
+        before
+    );
+    assert_eq!(sm.manifest_pair(100).unwrap().generation, 0);
     let command = Command::LargeManifestChange(payload);
     assert_eq!(command.encode()[1], 14);
     assert_eq!(

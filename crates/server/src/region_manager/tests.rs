@@ -106,7 +106,7 @@ fn test_transport(runtime: &tokio::runtime::Runtime, f: &Fixture) -> Arc<GrpcTra
 fn drain_retirement(manager: &mut RegionManager, region: RegionId) {
     let deadline = std::time::Instant::now() + Duration::from_secs(3);
     loop {
-        manager.retire_published_parent(region).unwrap();
+        manager.retire_locally(region).unwrap();
         if matches!(
             manager.groups.get(&region),
             Some(LocalGroup::Retired { draining: None })
@@ -796,7 +796,7 @@ fn retirement_releases_driver_engine_and_transport_without_pool_shutdown() {
     drop((engine, driver));
     let deadline = std::time::Instant::now() + Duration::from_secs(3);
     loop {
-        manager.retire_published_parent(region).unwrap();
+        manager.retire_locally(region).unwrap();
         if weak_driver.upgrade().is_none() && weak_engine.upgrade().is_none() {
             break;
         }
@@ -830,7 +830,7 @@ fn retirement_waits_for_external_engine_and_peer_before_deleting_payload() {
     let (reader, driver) = manager.group_handles.lock().unwrap()[&region].clone();
     let peer = driver.peer().clone();
     drop(driver);
-    manager.retire_published_parent(region).unwrap();
+    manager.retire_locally(region).unwrap();
     assert_eq!(
         manager.reclaim_retired(region).unwrap(),
         0,
@@ -838,7 +838,7 @@ fn retirement_waits_for_external_engine_and_peer_before_deleting_payload() {
     );
     assert!(f.group_dir().join("data.wal").exists());
     drop(reader);
-    manager.retire_published_parent(region).unwrap();
+    manager.retire_locally(region).unwrap();
     assert_eq!(
         manager.reclaim_retired(region).unwrap(),
         0,
@@ -848,7 +848,7 @@ fn retirement_waits_for_external_engine_and_peer_before_deleting_payload() {
     drop(peer);
     let deadline = std::time::Instant::now() + Duration::from_secs(3);
     loop {
-        manager.retire_published_parent(region).unwrap();
+        manager.retire_locally(region).unwrap();
         if manager.reclaim_retired(region).unwrap() > 0 {
             break;
         }

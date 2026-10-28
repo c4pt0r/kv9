@@ -2,7 +2,6 @@
 //! store identity; the current endpoint must match it, never replace it.
 use super::*;
 use kv9_common::data_range::{DataRange, RANGE_KEY};
-use kv9_common::raw_ttl::split::{ImportState, IMPORT_KEY};
 use kv9_common::StoreIdentity;
 use kv9_engine::ColumnFamily;
 use kv9_meta::endpoint::{node_endpoint, NodeEndpoint};
@@ -32,11 +31,8 @@ impl ConfigurationTimelineObservation {
 }
 fn scope(engine: &WalEngine) -> Result<Option<DataRange>> {
     let view = engine.snapshot()?;
-    if let Some(bytes) = view.get(ColumnFamily::Default, RANGE_KEY)? {
-        return DataRange::decode(&bytes).map(Some);
-    }
-    view.get(ColumnFamily::Default, IMPORT_KEY)?
-        .map(|bytes| ImportState::decode(&bytes).map(|state| state.spec.target().clone()))
+    view.get(ColumnFamily::Default, RANGE_KEY)?
+        .map(|bytes| DataRange::decode(&bytes))
         .transpose()
 }
 impl RuntimeBackend {

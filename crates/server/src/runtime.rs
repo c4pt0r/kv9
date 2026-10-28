@@ -65,10 +65,8 @@ mod endpoint_recovery;
 mod group_compaction;
 mod migration_capture;
 mod replica_pressure;
-mod split_maintenance;
 mod ttl_activation;
 mod ttl_maintenance;
-mod ttl_split;
 mod ttl_time;
 use endpoint_recovery::EndpointRecovery;
 
@@ -1217,86 +1215,6 @@ impl RuntimeBackend {
             .scan(&read, ctx.keyspace, start, end, limit)
             .map(|pairs| (pairs, None))
     }
-
-    /// sha256 over the ordered (key, value) stream of one engine view range,
-    /// skipping the range-ownership row. Shared by population and the
-    /// pre-publication verification.
-    fn half_digest(
-        view: &dyn kv9_engine::ReadView,
-        start: &[u8],
-        end: &[u8],
-    ) -> Result<(u64, RootDigest)> {
-        use sha2::Digest as _;
-        let mut hash = sha2::Sha256::new();
-        let mut rows = 0u64;
-        let mut cursor = start.to_vec();
-        loop {
-            let batch = view.scan(kv9_engine::ColumnFamily::Default, &cursor, end, 256)?;
-            if batch.is_empty() {
-                break;
-            }
-            for (key, value) in &batch {
-                if key.as_slice() == kv9_common::data_range::RANGE_KEY {
-                    continue;
-                }
-                rows += 1;
-                hash.update((key.len() as u64).to_be_bytes());
-                hash.update(key);
-                hash.update((value.len() as u64).to_be_bytes());
-                hash.update(value);
-            }
-            cursor = batch.last().expect("nonempty batch").0.clone();
-            cursor.push(0);
-        }
-        Ok((rows, RootDigest::from_bytes(hash.finalize().into())))
-    }
-
-    /// The split halves' engine-key bounds for one sealed parent range.
-    fn split_bounds(
-        parent: &kv9_common::data_range::DataRange,
-        split_key: &[u8],
-    ) -> Result<(Vec<u8>, Vec<u8>, Vec<u8>)> {
-        parent.validate()?;
-        if split_key <= parent.start.as_slice() || !parent.contains(split_key) {
-            return Err(Error::Config(
-                "split key is outside the parent interior".into(),
-            ));
-        }
-        let low_bound = kv9_common::codec::encode_key(
-            kv9_common::codec::KeyMode::Raw,
-            parent.keyspace,
-            split_key,
-        )
-        .map_err(|e| Error::Config(e.to_string()))?;
-        let prefix = kv9_common::codec::encode_key(
-            kv9_common::codec::KeyMode::Raw,
-            parent.keyspace,
-            &parent.start,
-        )
-        .map_err(|e| Error::Config(e.to_string()))?;
-        let prefix_end = if parent.end.is_empty() {
-            kv9_common::codec::encode_key(
-                kv9_common::codec::KeyMode::Raw,
-                kv9_common::KeyspaceId(
-                    parent
-                        .keyspace
-                        .0
-                        .checked_add(1)
-                        .ok_or_else(|| Error::Config("keyspace id exhausted".into()))?,
-                ),
-                b"",
-            )
-            .map_err(|e| Error::Config(e.to_string()))?
-        } else {
-            kv9_common::codec::encode_key(
-                kv9_common::codec::KeyMode::Raw,
-                parent.keyspace,
-                &parent.end,
-            )
-            .map_err(|e| Error::Config(e.to_string()))?
-        };
-        Ok((prefix, low_bound, prefix_end))
-    }
 }
 
 impl AdminApi for RuntimeBackend {
@@ -1877,504 +1795,6 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
-    #[allow(clippy::too_many_arguments)]
-    fn record_split_intent(
-        &self,
-        _caller: &str,
-        root: RootDigest,
-        operation: [u8; 16],
-        parent_region: RegionId,
-        split_key: &[u8],
-        child_low: u64,
-        child_high: u64,
-    ) -> Result<crate::api::RecordSplitIntentResult> {
-        self.ensure_serving()?;
-        let _guard = self.node.meta_raft.lock_catalog_txn();
-        let term = self.prepare_catalog()?;
-        let mut txn = self.node.meta_raft.store.begin()?;
-        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
-            return Err(Error::Config("split request root differs".into()));
-        }
-        let (intent, changed) = kv9_meta::data_groups::split::plan_split(
-            &mut txn,
-            operation,
-            parent_region,
-            split_key,
-            child_low,
-            child_high,
-        )?;
-        let command = if changed {
-            Command::from_batch(&txn.into_batch())
-        } else {
-            Command::Noop
-        };
-        let applied = self.commit_catalog(&command, term)?;
-        Ok(crate::api::RecordSplitIntentResult {
-            intent,
-            changed,
-            applied,
-        })
-    }
-
-    fn seal_split_parent(
-        &self,
-        _caller: &str,
-        root: RootDigest,
-        operation: [u8; 16],
-    ) -> Result<crate::api::SealSplitParentResult> {
-        self.ensure_serving()?;
-        {
-            let txn = self.node.meta_raft.store.begin()?;
-            let certified = kv9_meta::root::certified_root(&txn)?
-                .ok_or_else(|| Error::MetaNotReady("seal requires a certified root".into()))?;
-            if certified.digest() != root {
-                return Err(Error::Config("seal request root differs".into()));
-            }
-        }
-        // Committed split authority from LOCAL applied state; absence refuses
-        // in the safe direction and a client may retry after application.
-        let intent = kv9_meta::data_groups::split::committed_splits(&self.node.meta_raft.store)?
-            .into_iter()
-            .find(|i| i.operation() == operation)
-            .ok_or_else(|| Error::Config("split intent is not committed locally".into()))?;
-        let group = self
-            .raw_directory
-            .by_region(intent.parent_region())
-            .ok_or_else(|| Error::MetaNotReady("split parent is not active locally".into()))?;
-        let (driver, engine, _) = group.capture_parts();
-        let status = driver.status();
-        if status.fatal.is_some() {
-            return Err(Error::Raft("group driver is fatally stopped".into()));
-        }
-        if status.role != kv9_raft::Role::Leader {
-            return Err(Error::NotLeader {
-                leader: status.leader_id,
-            });
-        }
-        let current = engine
-            .get(
-                kv9_engine::ColumnFamily::Default,
-                kv9_common::data_range::RANGE_KEY,
-            )?
-            .map(|b| kv9_common::data_range::DataRange::decode(&b))
-            .transpose()?
-            .ok_or_else(|| Error::MetaNotReady("parent range row has not applied".into()))?;
-        if engine
-            .get(
-                kv9_engine::ColumnFamily::Default,
-                kv9_common::raw_ttl::CLOCK_KEY,
-            )?
-            .is_some()
-        {
-            return self.seal_ttl_split(root, operation);
-        }
-        if current.sealed {
-            // Idempotent: the fence is already durable; confirm its shape.
-            let advanced = driver.propose(&kv9_raft::Command::Noop)?;
-            settle_proposal(
-                advanced,
-                driver.wait_applied(advanced, Duration::from_secs(10)),
-                true,
-            )?;
-            return Ok(crate::api::SealSplitParentResult {
-                sealed_version: current.version,
-                changed: false,
-                cut: AppliedPosition {
-                    term: advanced.term,
-                    index: advanced.index.0,
-                },
-            });
-        }
-        let mut sealed = current.clone();
-        sealed.sealed = true;
-        sealed.version = current
-            .version
-            .checked_add(1)
-            .ok_or_else(|| Error::Config("range version exhausted".into()))?;
-        let proposed = driver.propose(&kv9_raft::Command::DataRange {
-            expected: Some(current.digest()),
-            next: sealed.clone(),
-        })?;
-        settle_proposal(
-            proposed,
-            driver.wait_applied(proposed, Duration::from_secs(10)),
-            true,
-        )?;
-        let now = engine
-            .get(
-                kv9_engine::ColumnFamily::Default,
-                kv9_common::data_range::RANGE_KEY,
-            )?
-            .map(|b| kv9_common::data_range::DataRange::decode(&b))
-            .transpose()?;
-        if now.as_ref() != Some(&sealed) {
-            return Err(Error::Raft(
-                "sealed range row did not apply as proposed".into(),
-            ));
-        }
-        Ok(crate::api::SealSplitParentResult {
-            sealed_version: sealed.version,
-            changed: true,
-            cut: AppliedPosition {
-                term: proposed.term,
-                index: proposed.index.0,
-            },
-        })
-    }
-
-    fn populate_split_child(
-        &self,
-        _caller: &str,
-        root: RootDigest,
-        operation: [u8; 16],
-        high: bool,
-    ) -> Result<crate::api::PopulateSplitChildResult> {
-        use sha2::Digest as _;
-        self.ensure_serving()?;
-        let store = &self.node.meta_raft.store;
-        {
-            let txn = store.begin()?;
-            let certified = kv9_meta::root::certified_root(&txn)?.ok_or_else(|| {
-                Error::MetaNotReady("population requires a certified root".into())
-            })?;
-            if certified.digest() != root {
-                return Err(Error::Config("population request root differs".into()));
-            }
-        }
-        let intent = kv9_meta::data_groups::split::committed_splits(store)?
-            .into_iter()
-            .find(|i| i.operation() == operation)
-            .ok_or_else(|| Error::Config("split intent is not committed locally".into()))?;
-        let child_task = if high {
-            intent.child_high()
-        } else {
-            intent.child_low()
-        };
-        let child_creation = kv9_meta::data_groups::committed_creation(store, child_task)?
-            .ok_or_else(|| Error::Config("split child creation is not committed".into()))?;
-        let child_region = child_creation.intent().region();
-        // A completed split is not a request to restore the parent's old values.
-        // This local preflight avoids needless work; the child log's range
-        // barrier below is what makes concurrent publication safe.
-        if kv9_meta::data_groups::ranges::committed_ranges(store)?
-            .iter()
-            .any(|binding| {
-                binding.range().region == intent.parent_region() && binding.range().sealed
-            })
-        {
-            return Err(Error::StaleEpoch {
-                region: child_region,
-            });
-        }
-        let (parent_engine, child_engine, child_driver) = {
-            let handles = self.group_handles.lock().expect("group handles poisoned");
-            let (parent_engine, _) = handles
-                .get(&intent.parent_region())
-                .ok_or_else(|| Error::MetaNotReady("split parent is not active locally".into()))?
-                .clone();
-            let (child_engine, child_driver) = handles
-                .get(&child_region)
-                .ok_or_else(|| Error::MetaNotReady("split child is not active locally".into()))?
-                .clone();
-            (parent_engine, child_engine, child_driver)
-        };
-        if parent_engine
-            .get(
-                kv9_engine::ColumnFamily::Default,
-                kv9_common::raw_ttl::CLOCK_KEY,
-            )?
-            .is_some()
-        {
-            return self.populate_ttl_split(root, operation, high);
-        }
-        if child_engine
-            .get(
-                kv9_engine::ColumnFamily::Default,
-                kv9_common::data_range::RANGE_KEY,
-            )?
-            .is_some()
-        {
-            return Err(Error::StaleEpoch {
-                region: child_region,
-            });
-        }
-        // Population happens ONLY under the durable fence: the parent's own
-        // range row must be sealed, so the copied half cannot move again.
-        let parent_range = parent_engine
-            .get(
-                kv9_engine::ColumnFamily::Default,
-                kv9_common::data_range::RANGE_KEY,
-            )?
-            .map(|b| kv9_common::data_range::DataRange::decode(&b))
-            .transpose()?
-            .ok_or_else(|| Error::MetaNotReady("parent range row has not applied".into()))?;
-        if !parent_range.sealed {
-            return Err(Error::Config(
-                "population requires the sealed parent fence".into(),
-            ));
-        }
-        let mut target = parent_range.clone();
-        target.region = child_region;
-        target.creation = child_creation.intent().digest();
-        target.conf_ver = 1;
-        target.version = 1;
-        target.sealed = false;
-        if high {
-            target.start = intent.split_key().to_vec();
-        } else {
-            target.end = intent.split_key().to_vec();
-        }
-        let status = child_driver.status();
-        if status.fatal.is_some() {
-            return Err(Error::Raft("child driver is fatally stopped".into()));
-        }
-        if status.role != kv9_raft::Role::Leader {
-            return Err(Error::NotLeader {
-                leader: status.leader_id,
-            });
-        }
-        // Half bounds in ENGINE key encoding. The split key is a user key;
-        // an empty upper bound means "to the end of this keyspace's prefix".
-        let (prefix, low_bound, prefix_end) =
-            Self::split_bounds(&parent_range, intent.split_key())?;
-        let (start, end) = if high {
-            (low_bound.clone(), prefix_end.clone())
-        } else {
-            (prefix.clone(), low_bound.clone())
-        };
-        let view = parent_engine.snapshot()?;
-        let mut parent_hash = sha2::Sha256::new();
-        let mut cursor = start.clone();
-        let mut rows_copied: u64 = 0;
-        let row_bytes = kv9_raft::RawPopulation::row_bytes_budget(&parent_range, &target)?;
-        loop {
-            let mut batch = view.scan(
-                kv9_engine::ColumnFamily::Default,
-                &cursor,
-                &end,
-                kv9_raft::command::population::MAX_ROWS,
-            )?;
-            if batch.is_empty() {
-                break;
-            }
-            let mut remaining = row_bytes;
-            let count = batch
-                .iter()
-                .take_while(|(key, value)| {
-                    let Some(size) = key
-                        .len()
-                        .checked_add(value.len())
-                        .and_then(|n| n.checked_add(8))
-                    else {
-                        return false;
-                    };
-                    if size > remaining {
-                        return false;
-                    }
-                    remaining -= size;
-                    true
-                })
-                .count();
-            if count == 0 {
-                return Err(Error::Config(
-                    "one Raw row exceeds the population frame budget".into(),
-                ));
-            }
-            batch.truncate(count);
-            for (key, value) in &batch {
-                if key.as_slice() == kv9_common::data_range::RANGE_KEY {
-                    continue;
-                }
-                parent_hash.update((key.len() as u64).to_be_bytes());
-                parent_hash.update(key);
-                parent_hash.update((value.len() as u64).to_be_bytes());
-                parent_hash.update(value);
-            }
-            let last = batch.last().expect("nonempty batch").0.clone();
-            rows_copied += batch.len() as u64;
-            let population = kv9_raft::RawPopulation::new(
-                parent_range.clone(),
-                target.clone(),
-                operation,
-                batch,
-            )?;
-            let proposed = child_driver.propose(&kv9_raft::Command::PopulateRaw(population))?;
-            settle_proposal(
-                proposed,
-                child_driver.wait_applied(proposed, Duration::from_secs(10)),
-                true,
-            )?;
-            cursor = last;
-            cursor.push(0); // strictly past the last copied key
-        }
-        let parent_half_digest = kv9_common::RootDigest::from_bytes(parent_hash.finalize().into());
-        // Recompute over the CHILD's durable state: what was actually copied.
-        let child_view = child_engine.snapshot()?;
-        let mut child_hash = sha2::Sha256::new();
-        let mut cursor = start;
-        loop {
-            let batch = child_view.scan(kv9_engine::ColumnFamily::Default, &cursor, &end, 256)?;
-            if batch.is_empty() {
-                break;
-            }
-            for (key, value) in &batch {
-                if key.as_slice() == kv9_common::data_range::RANGE_KEY {
-                    continue;
-                }
-                child_hash.update((key.len() as u64).to_be_bytes());
-                child_hash.update(key);
-                child_hash.update((value.len() as u64).to_be_bytes());
-                child_hash.update(value);
-            }
-            cursor = batch.last().expect("nonempty batch").0.clone();
-            cursor.push(0);
-        }
-        let child_digest = kv9_common::RootDigest::from_bytes(child_hash.finalize().into());
-        if child_digest != parent_half_digest {
-            return Err(Error::Raft(
-                "child contents differ from the sealed parent half".into(),
-            ));
-        }
-        Ok(crate::api::PopulateSplitChildResult {
-            rows_copied,
-            parent_half_digest,
-            child_digest,
-        })
-    }
-
-    fn publish_split(
-        &self,
-        _caller: &str,
-        root: RootDigest,
-        operation: [u8; 16],
-    ) -> Result<crate::api::PublishSplitResult> {
-        self.ensure_serving()?;
-        let store = &self.node.meta_raft.store;
-        let intent = kv9_meta::data_groups::split::committed_splits(store)?
-            .into_iter()
-            .find(|i| i.operation() == operation)
-            .ok_or_else(|| Error::Config("split intent is not committed locally".into()))?;
-        let low_region = kv9_meta::data_groups::committed_creation(store, intent.child_low())?
-            .ok_or_else(|| Error::Config("split child creation is not committed".into()))?
-            .intent()
-            .region();
-        let high_region = kv9_meta::data_groups::committed_creation(store, intent.child_high())?
-            .ok_or_else(|| Error::Config("split child creation is not committed".into()))?
-            .intent()
-            .region();
-        // An already-published directory confirms WITHOUT local verification:
-        // the atomic transaction happened, the read model validated it, and
-        // the retired parent may legitimately no longer be running here.
-        let already_published = kv9_meta::data_groups::ranges::committed_ranges(store)?
-            .iter()
-            .any(|b| b.range().region == intent.parent_region() && b.range().sealed);
-        if already_published {
-            let _guard = self.node.meta_raft.lock_catalog_txn();
-            let term = self.prepare_catalog()?;
-            let mut txn = self.node.meta_raft.store.begin()?;
-            if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
-                return Err(Error::Config("publication request root differs".into()));
-            }
-            let (publication, changed) =
-                kv9_meta::data_groups::split::publish_split(&mut txn, operation)?;
-            let command = if changed {
-                Command::from_batch(&txn.into_batch())
-            } else {
-                Command::Noop
-            };
-            let applied = self.commit_catalog(&command, term)?;
-            return Ok(crate::api::PublishSplitResult {
-                publication,
-                changed,
-                applied,
-            });
-        }
-        // LOCAL pre-publication verification: this metadata voter hosts the
-        // parent and both children (same replica set), so the sealed fence
-        // and both digest-exact populations are re-checked here, from
-        // durable local state, before any directory row moves.
-        let handles = {
-            let map = self.group_handles.lock().expect("group handles poisoned");
-            (
-                map.get(&intent.parent_region()).cloned(),
-                map.get(&low_region).cloned(),
-                map.get(&high_region).cloned(),
-            )
-        };
-        let (Some((parent_engine, _)), Some((low_engine, _)), Some((high_engine, _))) = handles
-        else {
-            return Err(Error::MetaNotReady(
-                "publication requires the parent and both children locally".into(),
-            ));
-        };
-        let parent_range = parent_engine
-            .get(
-                kv9_engine::ColumnFamily::Default,
-                kv9_common::data_range::RANGE_KEY,
-            )?
-            .map(|b| kv9_common::data_range::DataRange::decode(&b))
-            .transpose()?
-            .ok_or_else(|| Error::MetaNotReady("parent range row has not applied".into()))?;
-        if !parent_range.sealed {
-            return Err(Error::Config(
-                "publication requires the sealed parent fence".into(),
-            ));
-        }
-        let ttl_plan = if parent_engine
-            .get(
-                kv9_engine::ColumnFamily::Default,
-                kv9_common::raw_ttl::CLOCK_KEY,
-            )?
-            .is_some()
-        {
-            Some(self.verify_ttl_split_publication(root, operation)?)
-        } else {
-            let (prefix, low_bound, prefix_end) =
-                Self::split_bounds(&parent_range, intent.split_key())?;
-            let parent_view = parent_engine.snapshot()?;
-            let (_, low_expected) = Self::half_digest(parent_view.as_ref(), &prefix, &low_bound)?;
-            let (_, high_expected) =
-                Self::half_digest(parent_view.as_ref(), &low_bound, &prefix_end)?;
-            let (_, low_actual) =
-                Self::half_digest(low_engine.snapshot()?.as_ref(), &prefix, &low_bound)?;
-            let (_, high_actual) =
-                Self::half_digest(high_engine.snapshot()?.as_ref(), &low_bound, &prefix_end)?;
-            if low_actual != low_expected || high_actual != high_expected {
-                return Err(Error::Config(
-                    "publication requires both children populated exactly".into(),
-                ));
-            }
-            None
-        };
-        let _guard = self.node.meta_raft.lock_catalog_txn();
-        let term = self.prepare_catalog()?;
-        let mut txn = self.node.meta_raft.store.begin()?;
-        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
-            return Err(Error::Config("publication request root differs".into()));
-        }
-        if let Some(expected) = ttl_plan {
-            let now = kv9_meta::data_groups::split::committed_split_plan(store, operation)?;
-            if now.plan() != &expected || now.published() {
-                return Err(Error::StaleEpoch {
-                    region: expected.parent.region,
-                });
-            }
-        }
-        let (publication, changed) =
-            kv9_meta::data_groups::split::publish_split(&mut txn, operation)?;
-        let command = if changed {
-            Command::from_batch(&txn.into_batch())
-        } else {
-            Command::Noop
-        };
-        let applied = self.commit_catalog(&command, term)?;
-        Ok(crate::api::PublishSplitResult {
-            publication,
-            changed,
-            applied,
-        })
-    }
-
     fn record_source_truncation(
         &self,
         _caller: &str,
@@ -2857,11 +2277,6 @@ impl AdminApi for RuntimeBackend {
             location.leader = group.leader();
         }
         Ok(location)
-    }
-
-    fn split_region(&self, caller: &str, region: RegionId, split_key: UserKey) -> Result<()> {
-        self.ensure_serving()?;
-        self.node.split_region(caller, region, split_key)
     }
 
     fn cluster_info(&self, caller: &str) -> Result<ClusterInfo> {
@@ -4752,17 +4167,12 @@ pub struct NodeRuntime {
     maintenance_control: crate::maintenance::Controls,
     raw_ttl_clock: Option<Arc<dyn crate::ttl_clock::TtlClock>>,
     ttl_maintenance: Option<ttl_maintenance::Maintenance>,
-    split_maintenance: Option<split_maintenance::Maintenance>,
     checkpoint_sweep: Option<checkpoint_sweep::Maintenance>,
     data_checkpoint: Option<data_checkpoint::Maintenance>,
     replica_pressure: Option<replica_pressure::Maintenance>,
     data_groups: crate::region_manager::RegionManager,
     /// The same backend the gRPC surface and maintenance workers serve.
     rpc_backend: Arc<RuntimeBackend>,
-    /// KV9_AUTO_SPLIT_BYTES: local replica WAL bytes that trigger an
-    /// automatic split of a bound, unsealed range. 0 disables new triggers
-    /// (default); committed intents continue independently.
-    auto_split_bytes: u64,
     /// KV9_AUTO_COMPACT_ENTRIES: retained raft-log length (last-first) that
     /// triggers an automatic floor for a bound group or checkpointed TTL import.
     /// 0 disables (default). The local applied position is capped by checkpoint
@@ -5393,11 +4803,6 @@ impl NodeRuntime {
         // pressured member's endpoint/membership. Its local byte/headroom
         // admission remains in force.
 
-        let auto_split_bytes = std::env::var("KV9_AUTO_SPLIT_BYTES")
-            .ok()
-            .and_then(|v| v.parse().ok())
-            .unwrap_or(0);
-
         // No fallible startup work may follow owner creation. In particular,
         // a bind/auth/checkpoint setup failure must drop every store reference
         // before the local guard unlocks; dropping a JoinHandle detaches it.
@@ -5436,18 +4841,12 @@ impl NodeRuntime {
             ttl_maintenance: ttl_maintenance_enabled.then(|| {
                 ttl_maintenance::Maintenance::start(backend.clone(), grpc_runtime.handle())
             }),
-            split_maintenance: Some(split_maintenance::Maintenance::start(
-                backend.clone(),
-                auto_split_bytes,
-                grpc_runtime.handle(),
-            )),
             checkpoint_sweep: Some(checkpoint_sweep::Maintenance::start(
                 backend.clone(),
                 grpc_runtime.handle(),
             )),
             data_groups,
             rpc_backend: backend.clone(),
-            auto_split_bytes,
             auto_compact_entries: std::env::var("KV9_AUTO_COMPACT_ENTRIES")
                 .ok()
                 .and_then(|v| v.parse().ok())
@@ -5594,41 +4993,6 @@ impl NodeRuntime {
         ready
     }
 
-    /// A PUBLISHED split — the sealed parent binding with covering children
-    /// in the committed directory — retires the local parent replica on
-    /// every hosting node. EVERY published intent is processed each turn:
-    /// retirement confirms idempotently, and breaking after the first
-    /// starved every later cascade parent forever behind the earliest
-    /// intent's no-op confirmation (part of the cascade hang).
-    fn reconcile_split_retirement(&mut self) -> bool {
-        let store = &self.node.meta_raft.store;
-        let Ok(intents) = kv9_meta::data_groups::split::committed_splits(store) else {
-            self.group_control_error = Some("split retirement catalog unavailable".into());
-            return false;
-        };
-        let Ok(bindings) = kv9_meta::data_groups::ranges::committed_ranges(store) else {
-            self.group_control_error = Some("split retirement ranges unavailable".into());
-            return false;
-        };
-        let mut ready = true;
-        for intent in intents {
-            let published = bindings
-                .iter()
-                .any(|b| b.range().region == intent.parent_region() && b.range().sealed);
-            if !published {
-                continue;
-            }
-            if let Err(error) = self
-                .data_groups
-                .retire_published_parent(intent.parent_region())
-            {
-                self.group_control_error = Some(error.to_string());
-                ready = false;
-            }
-        }
-        ready
-    }
-
     /// Physical reclamation of RETIRED local group payloads, off unless
     /// KV9_RECLAIM_RETIRED=1. Deletion is local and irreversible, so each
     /// candidate's committed authority is re-verified from LOCAL applied
@@ -5742,81 +5106,6 @@ impl NodeRuntime {
         ) {
             self.group_control_error = Some(format!("raft-log reclamation: {error}"));
         }
-    }
-
-    fn observe_split_maintenance(&mut self) {
-        if let Some(error) = self
-            .split_maintenance
-            .as_ref()
-            .and_then(|task| task.snapshot().last_error)
-        {
-            self.group_control_error = Some(format!("split maintenance: {error}"));
-        }
-    }
-
-    /// The local replica's durable engine bytes: the active WAL plus its
-    /// segment directory. An observation, not an exact live-data size —
-    /// overwrites and tombstones count, which is the honest write-volume
-    /// trigger this threshold documents.
-    fn engine_disk_bytes(wal_path: &std::path::Path) -> u64 {
-        let mut total = std::fs::metadata(wal_path).map(|m| m.len()).unwrap_or(0);
-        if let Some(parent) = wal_path.parent() {
-            let segments = parent.join("data.segments");
-            let mut stack = vec![segments];
-            while let Some(dir) = stack.pop() {
-                let Ok(entries) = std::fs::read_dir(&dir) else {
-                    continue;
-                };
-                for entry in entries.flatten() {
-                    let path = entry.path();
-                    if path.is_dir() {
-                        stack.push(path);
-                    } else if let Ok(meta) = entry.metadata() {
-                        total += meta.len();
-                    }
-                }
-            }
-        }
-        total
-    }
-
-    /// An approximate median USER key of one bound range, sampled from the
-    /// local replica. `None` when fewer than two distinct interior keys
-    /// exist — a range that small has nothing to split.
-    fn sampled_median_key(
-        engine: &WalEngine,
-        range: &kv9_common::data_range::DataRange,
-    ) -> Option<Vec<u8>> {
-        let prefix =
-            kv9_common::codec::encode_key(kv9_common::codec::KeyMode::Raw, range.keyspace, b"")
-                .ok()?;
-        let end = kv9_common::codec::encode_key(
-            kv9_common::codec::KeyMode::Raw,
-            kv9_common::KeyspaceId(range.keyspace.0.checked_add(1)?),
-            b"",
-        )
-        .ok()?;
-        let view = engine.snapshot().ok()?;
-        let rows = view
-            .scan(kv9_engine::ColumnFamily::Default, &prefix, &end, 1024)
-            .ok()?;
-        let mut keys: Vec<Vec<u8>> = rows
-            .into_iter()
-            .filter(|(k, _)| k.as_slice() != kv9_common::data_range::RANGE_KEY)
-            .filter_map(|(k, _)| {
-                kv9_common::codec::decode_key(&k)
-                    .ok()
-                    .map(|d| d.user_key.to_vec())
-            })
-            .collect();
-        keys.dedup();
-        if keys.len() < 2 {
-            return None;
-        }
-        let candidate = keys[keys.len() / 2].clone();
-        let inside = (range.start.is_empty() || candidate.as_slice() > range.start.as_slice())
-            && (range.end.is_empty() || candidate.as_slice() < range.end.as_slice());
-        inside.then_some(candidate)
     }
 
     fn reconcile_adoption(&mut self, decisions: crate::region_manager::RecoveryDecisions<'_>) {
@@ -6060,15 +5349,6 @@ impl NodeRuntime {
                 "TTL maintenance owner stopped unexpectedly".into(),
             ));
         }
-        if self
-            .split_maintenance
-            .as_ref()
-            .is_some_and(|task| task.stopped_unexpectedly())
-        {
-            return Err(Error::Raft(
-                "split maintenance owner stopped unexpectedly".into(),
-            ));
-        }
 
         let finished = self
             .grpc_server
@@ -6098,9 +5378,6 @@ impl NodeRuntime {
         self.endpoint_ready
             .store(serving && ready, Ordering::Release);
         let maintenance_allowed = serving && ready && self.discovery.raft_receive_allowed();
-        if let Some(task) = &self.split_maintenance {
-            task.configure(maintenance_allowed, self.auto_split_bytes);
-        }
         if !maintenance_allowed {
             self.maintenance_control.withdraw();
             if let Some(task) = &self.checkpoint_sweep {
@@ -6128,8 +5405,7 @@ impl NodeRuntime {
                 self.group_control_error = None;
                 // Fence committed removals before any deferred engine read or
                 // driver restart; retirement of an unopened group needs no GET.
-                let retirement_ready =
-                    self.reconcile_retirement() & self.reconcile_split_retirement();
+                let retirement_ready = self.reconcile_retirement();
                 if !retirement_ready {
                     return Ok(());
                 }
@@ -6150,7 +5426,6 @@ impl NodeRuntime {
                         self.reconcile_compaction();
                         self.reconcile_auto_compaction();
                         self.reconcile_auto_reclaim();
-                        self.observe_split_maintenance();
                         if let Err(error) = kv9_meta::data_groups::ranges::committed_ranges(
                             &self.node.meta_raft.store,
                         )
@@ -6917,12 +6192,6 @@ impl NodeRuntime {
                 .expect("serialize TTL maintenance observation"),
         );
         body.push('\n');
-        body.push_str("split_maintenance=");
-        body.push_str(
-            &serde_json::to_string(&self.split_maintenance.as_ref().map(|task| task.snapshot()))
-                .expect("serialize split maintenance observation"),
-        );
-        body.push('\n');
         body.push_str("data_groups=");
         body.push_str(&self.data_groups.status_json());
         body.push('\n');
@@ -7088,13 +6357,7 @@ impl Drop for NodeRuntime {
         if let Some(task) = &self.data_checkpoint {
             task.cancel();
         }
-        if let Some(task) = &self.split_maintenance {
-            task.cancel();
-        }
         self.data_groups.stop_owners();
-        if let Some(task) = self.split_maintenance.take() {
-            self.grpc_runtime.block_on(task.drain());
-        }
         if let Some(task) = self.data_checkpoint.take() {
             self.grpc_runtime.block_on(task.drain());
         }
@@ -8557,7 +7820,6 @@ mod tests {
         ));
         assert_meta_not_ready(backend.list_keyspaces("test-client"));
         assert_meta_not_ready(backend.get_region("test-client", KeyspaceId(100), b"k"));
-        assert_meta_not_ready(backend.split_region("test-client", RegionId(1), b"m".to_vec()));
         assert_meta_not_ready(backend.cluster_info("test-client"));
         assert_meta_not_ready(backend.admit_node("test-client", NodeId(2), "127.0.0.1:20161", 60));
         assert_meta_not_ready(backend.promote_node("test-client", NodeId(2)));

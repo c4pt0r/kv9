@@ -672,9 +672,9 @@ is proposed. The rules, in the order the server checks them:
    (typed, FAILED_PRECONDITION on the wire); nothing is written, nothing is proposed. The same containment check
    runs again **at apply time** on every replica, against the region row that is current at that log position, so
    a batch admitted on a stale view is still refused where it would apply.
-3. **Epoch fence.** The context carries the region epoch `(conf_ver, version)`. A split, seal or membership change
-   bumps it; a batch carrying the old epoch is refused with `StaleEpoch` and the client refreshes its route. A
-   batch whose epoch matches at admission but not at apply (the split committed in between) is refused by the
+3. **Epoch fence.** The context carries the region epoch `(conf_ver, version)`. A membership change, a seal or a
+   split bumps it; a batch carrying the old epoch is refused with `StaleEpoch` and the client refreshes its route. A
+   batch whose epoch matches at admission but not at apply (the change committed in between) is refused by the
    apply-time fence the same way — a fenced entry that does not match is a no-op with a typed failure, never a
    partial write.
 4. **Order and duplicates.** Mutations apply in list order; a later mutation for the same key wins. Duplicate keys
@@ -762,6 +762,13 @@ run against a snapshot taken after this node's leadership was confirmed, never a
 
 Global throughput scaling (goal #4) and capacity isolation (goal #1) meet here.
 
+> **Status (2026-10-28).** Split and merge are design goals, not part of `master`. A size-triggered split prototype
+> (committed split intents, parent seal, verified child population, atomic one-to-two publication, cascade, and a
+> TTL-preserving transfer protocol) was built and then moved whole to the `experimental/range-split` branch; it is
+> not production-qualified, and its Raft command tags (11, 12, 13) and catalog task kind (107) are retired on
+> `master` so that nothing written by the branch can be misread here. `master` keeps what the rest of the system
+> needs from that work: the committed range directory, sealed-binding refusal and the region epoch fence.
+
 - **Pre-sharding at keyspace creation (DynamoDB-style).** Reactive split is not enough for a keyspace *known* to be
   hot — starting as one region and waiting for splits is a cold-start bottleneck. So a keyspace may be **pre-split**
   up front: `CREATE KEYSPACE … WITH pre_split = { by: hash|range, shards: N | split_keys: [...] }`. The MetaLeader
@@ -797,7 +804,8 @@ interceptors establish trusted request identities outside protobuf bodies.
 
 - **Raw:** `RawGet, RawBatchGet, RawPut, RawBatchPut, RawBatch (atomic range batch, §9.1), RawDelete, RawScan,
   RawDeleteRange`, plus the TTL and routed variants (`RawTtl`, `LookupRawRoute`, `RoutedRaw`).
-- **Admin/meta:** `CreateKeyspace, ListKeyspaces, GetRegion (routing), SplitRegion, ClusterInfo`.
+- **Admin/meta:** `CreateKeyspace, ListKeyspaces, GetRegion (routing), ClusterInfo`, plus the data-group,
+  membership, retention and migration verbs (`CreateDataGroup`, `AdmitNode`, `MigrateDataGroup`, …).
 - **Auth is in scope:** admin/meta and any destructive endpoint authenticate and authorize the caller from day one
   (not network/mTLS alone).
 
@@ -825,7 +833,7 @@ kv9/
 │   │               ObjectStore trait (S3/GCS/Azure/local) + disaggregated LsmEngine design (§6.5);
 │   │               Manifest (immutable-SST file refs, mutable via raft), local block cache
 │   ├── raft/     ← RaftGroup trait + single-node stub
-│   ├── region/   ← Region, RegionRouter, epoch, split/merge (throughput-aware), WalStream/WalPool (§6.4)
+│   ├── region/   ← Region, RegionRouter, epoch, manifest seam, WalStream/WalPool (§6.4)
 │   ├── raw/      ← raw executor: point / atomic range batch / range-delete / TTL plans
 │   └── server/   ← Node assembly, API traits (Raw/Admin/Router), request routing, range permits (§9.1)
 └── src/ (bin `kv9`) ← main.rs: single binary; node CLI (--node-id, --join, --data-dir, --addr)

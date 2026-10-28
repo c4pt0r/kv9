@@ -1558,9 +1558,7 @@ async fn route_lookup_does_not_borrow_a_leader_from_another_group_in_the_keyspac
 mod checkpoint_retention;
 mod checkpoint_sweep;
 mod executor_owners;
-mod split_population;
 
 mod data_checkpoint;
 
 mod migration_capture;
-mod ttl_split;

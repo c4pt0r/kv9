@@ -17,9 +17,8 @@
     "the_authorized_chain_completes"
   ],
   "source_sha256": {
-    "crates/server/src/region_manager.rs": "4cab2ed990ec699ce47456cebb5b371870473bfdfdaa41aae8b75e9eff6dd102",
-    "crates/server/src/runtime.rs": "4b809dff28247ba64160f91f45e3e2531f55c7a10f0bfc5bce7db29532e08562",
-    "scripts/reclamation-e2e.py": "57be18dccac8f1ac7bb1a974dfa395b15dc2fcea83114c2b4a751c086656692b",
+    "crates/server/src/region_manager.rs": "a711ed4da137bc96ca3b8e43f0936c7bf7ba5c8af2c06625c51e2827a250e83e",
+    "crates/server/src/runtime.rs": "55775d654db364415e6c68613b699e740308669a68ceb6bdabadc344e28ebf9e",
     "proofs/lean/storage-reclamation/StorageReclamation.lean": "345c8851edd9e08cbf65cd027cab30687e2f5c69279ff938b7d7f9a7c511eb45",
     "proofs/lean/storage-reclamation/README.md": "bf578d368b65e4cc62a3641121dfe03d5b28611724f0506e6ba756240929c6bf"
   }

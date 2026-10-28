@@ -19,13 +19,13 @@
     "due_tick_moves_deadline_forward"
   ],
   "source_sha256": {
-    "crates/server/src/region_manager.rs": "4cab2ed990ec699ce47456cebb5b371870473bfdfdaa41aae8b75e9eff6dd102",
-    "crates/server/src/region_manager/tests.rs": "e89dab6e77e113ad09e4fd464f7e06d60b44c461ba7ad008b891664f63c4b9c5",
-    "crates/server/src/runtime.rs": "4b809dff28247ba64160f91f45e3e2531f55c7a10f0bfc5bce7db29532e08562",
+    "crates/server/src/region_manager.rs": "a711ed4da137bc96ca3b8e43f0936c7bf7ba5c8af2c06625c51e2827a250e83e",
+    "crates/server/src/region_manager/tests.rs": "f33bca93756009e50c84e655fda3f94a24a386582ebdd5295965116ab72f60fb",
+    "crates/server/src/runtime.rs": "55775d654db364415e6c68613b699e740308669a68ceb6bdabadc344e28ebf9e",
     "crates/server/src/runtime/tests/data_group_tests.rs": "b5cabebed7cdcb293fc3041547de006689e6995d0cd984d916351f2d2db925cf",
-    "crates/raft/src/storage.rs": "95a09aa526e65530754c409a1a35eb0bde96d807245e1a53631ad882c9ed2a56",
+    "crates/raft/src/storage.rs": "d2ee607f012da79efe5321f0bb0f48e2a9a44ec697dd19adc8e96156b54388c4",
     "crates/raft/src/work.rs": "aa7f49dc798da1f24c0b8defd4354ee95a763f71ff7d4436ff31b847c10139d5",
-    "crates/raft/src/driver.rs": "ec5b527f2e5f91bf681e36473b58c452471afa346d5d5e606efbb63202585994",
+    "crates/raft/src/driver.rs": "e181228bd5ca277009041b768d239e1fe82273060c75a1f80b45ffc565a93fac",
     "crates/raft/src/driver/pool.rs": "7b2a96245cede619a3f18f99b5944c901ae34f38169940bb27e017ed6e59076e",
     "proofs/lean/group-activation/Activation.lean": "d37c3025cc8611630546a858989af0b6fa64ca7da06f6f79305ccf0f4e59ca15",
     "scripts/prove-group-activation.py": "0b3c1d8c001659ae32e50cf14e1dce703528fe0f9955c272d8469d6a9503b672",

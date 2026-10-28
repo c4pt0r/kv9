@@ -41,9 +41,9 @@
     "crates/meta/src/lib.rs": "29a63f2dfb17ff21d63db1f063cf74849fdd400fd73920ec91da9bf312abe003",
     "crates/meta/src/checkpoint.rs": "79697c1e933f83cc417fd30c12861fdffad9c16ee30fcae75668c652c473d4c4",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
-    "crates/raft/src/state_machine/checkpoint_recovery.rs": "da066d0c207a6757a30b4a06a00082e99b5d39f5d9a3413bc4d51a77a37edc33",
+    "crates/raft/src/state_machine/checkpoint_recovery.rs": "42232fb98a6f2d8c43313b832f3147a8deade58b24787f1b53264be7e90f5ac5",
     "crates/engine/src/persist.rs": "0d5726b850ad5e7ca955a5d5198743e7bc2f6806c3e0ec34a6a1f0857a126238",
-    "crates/server/src/runtime.rs": "4b809dff28247ba64160f91f45e3e2531f55c7a10f0bfc5bce7db29532e08562",
+    "crates/server/src/runtime.rs": "55775d654db364415e6c68613b699e740308669a68ceb6bdabadc344e28ebf9e",
     "crates/server/src/remote_storage.rs": "0f6ea528133442900893fca81b59055ea20a2ed1a3d38ec133c056ac48503314"
   }
 }

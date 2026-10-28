@@ -495,12 +495,6 @@ impl Context<'_> {
                 creation: range.creation,
             },
         )?;
-        if let data_group::DataCheckpointState::Import(import) = image.state() {
-            self.group
-                .capture_parts()
-                .0
-                .check_ttl_import_checkpoint(import)?;
-        }
         let image_range = image.state().target();
         if image_range != range && (image.watermark().is_some() || !range.may_follow(image_range)) {
             return Err(invalid("checkpoint image has incompatible range history"));

@@ -351,7 +351,7 @@ fn recover_replicas(retained: bool) {
                 "bootstrap must not wait for metadata"
             );
             recovered
-                .retire_published_parent(extras[1].intent().region())
+                .retire_locally(extras[1].intent().region())
                 .unwrap();
             assert!(matches!(
                 recovered.groups[&extras[1].intent().region()],

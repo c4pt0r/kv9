@@ -120,7 +120,6 @@ service! {
     routed_raw: RoutedRawRequest => RoutedRawResponse,
     list_keyspaces: ListKeyspacesRequest => ListKeyspacesResponse,
     get_region: GetRegionRequest => GetRegionResponse,
-    split_region: SplitRegionRequest => Empty,
     cluster_info: ClusterInfoRequest => ClusterInfoResponse,
     admit_node: AdmitNodeRequest => MembershipChangeResponse,
     revoke_admission: RevokeAdmissionRequest => MembershipChangeResponse,
@@ -142,10 +141,6 @@ service! {
     promote_migration_voter: PromoteMigrationVoterRequest => PromoteMigrationVoterResponse,
     record_source_removal: RecordSourceRemovalRequest => RecordSourceRemovalResponse,
     remove_source_replica: RemoveSourceReplicaRequest => RemoveSourceReplicaResponse,
-    record_split_intent: RecordSplitIntentRequest => RecordSplitIntentResponse,
-    seal_split_parent: SealSplitParentRequest => SealSplitParentResponse,
-    populate_split_child: PopulateSplitChildRequest => PopulateSplitChildResponse,
-    publish_split: PublishSplitRequest => PublishSplitResponse,
     plan_migration_image: PlanMigrationImageRequest => PlanMigrationImageResponse,
     attach_migration_learner: AttachMigrationLearnerRequest => AttachMigrationLearnerResponse,
 }
