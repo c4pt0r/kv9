@@ -24,7 +24,8 @@ of truth**.
 >   typed abort paths.
 >
 > **Limits:** the full dataset still resides in memory (SSTs are checkpoints, not a read path — no incremental LSM
-> and no block cache yet); range **split and merge are not in this tree** — the split prototype (manual pipeline,
+> and no block cache yet — see [BBTREE-EVALUATION](docs/BBTREE-EVALUATION.md) for the memtable direction); range
+> **split and merge are not in this tree** — the split prototype (manual pipeline,
 > WAL-bytes auto trigger, cascade, TTL-preserving transfer) was moved to the `experimental/range-split` branch on
 > 2026-10-28 and is not production-qualified;
 > metadata is one group (L0/L1 sharding is design only); tenant admission/fairness is partial; TLS is not
