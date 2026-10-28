@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kv9"
+version = "0.1.0"
+description = "Client SDK for the kv9 distributed raw key-value store (gRPC)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "grpcio>=1.60",
+    "protobuf>=4.25",
+]
+
+[project.optional-dependencies]
+dev = ["grpcio-tools>=1.60", "pytest>=8"]
+
+[tool.setuptools.packages.find]
+include = ["kv9", "kv9.*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

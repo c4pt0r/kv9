@@ -965,6 +965,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "kv9-client"
+version = "0.1.0"
+dependencies = [
+ "prost",
+ "thiserror 1.0.69",
+ "tokio",
+ "tonic",
+ "tonic-prost",
+ "tonic-prost-build",
+]
+
+[[package]]
 name = "kv9-common"
 version = "0.0.0"
 dependencies = [
@@ -1039,6 +1051,14 @@ dependencies = [
  "kv9-common",
  "kv9-engine",
  "kv9-raft",
+]
+
+[[package]]
+name = "kv9-repl"
+version = "0.1.0"
+dependencies = [
+ "kv9-client",
+ "tokio",
 ]
 
 [[package]]

@@ -1,0 +1,17 @@
+[package]
+name = "kv9-client"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Client SDK for the kv9 distributed raw key-value store (tonic)"
+publish = false
+
+[dependencies]
+prost.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tonic.workspace = true
+tonic-prost.workspace = true
+
+[build-dependencies]
+tonic-prost-build.workspace = true

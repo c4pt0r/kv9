@@ -1,0 +1,30 @@
+{
+  "name": "@kv9/client",
+  "version": "0.1.0",
+  "description": "Client SDK for the kv9 distributed raw key-value store (gRPC)",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "node --import tsx --test test/*.test.ts",
+    "smoke": "tsx test/smoke.ts"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.6",
+    "@grpc/proto-loader": "^0.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,15 @@
+[package]
+name = "kv9-repl"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Interactive shell for kv9, built on the kv9-client SDK"
+publish = false
+
+[[bin]]
+name = "kv9-repl"
+path = "src/main.rs"
+
+[dependencies]
+kv9-client = { path = "../kv9-client" }
+tokio.workspace = true
