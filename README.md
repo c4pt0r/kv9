@@ -47,6 +47,10 @@ KV9_CLIENT_TOKEN=... kv9 client raw-batch --addr 127.0.0.1:20161 --keyspace 100 
     --mutation put:6b31:7631 --mutation put:6b32:7632 --mutation delete:6b30
 ```
 
+Client SDKs for **Python, Rust, C++ and TypeScript** share one contract (`sdk/README.md`); `kv9-repl`
+(`cargo run -p kv9-repl -- --addr …`) is an interactive shell on the Rust SDK, and `scripts/sdk-e2e.sh` runs
+every SDK against a freshly booted cluster.
+
 See [QUICKSTART](docs/QUICKSTART.md) for prerequisites, MinIO configuration and a persistent cluster.
 Node-local queue, backend, Raft wait and WAL timing are described in [LATENCY-OBSERVABILITY](docs/LATENCY-OBSERVABILITY.md).
 
@@ -151,6 +155,7 @@ docs/ARCHITECTURE.md   ASCII architecture diagrams
 crates/
   common/  meta/  engine/  raft/  region/  raw/  server/
 src/                   the single `kv9` binary
+sdk/                   client SDKs: python/  rust/kv9-client  rust/kv9-repl  cpp/  typescript/  (sdk/README.md)
 proofs/                Lean / TLA+ models pinned to the sources they describe
 ```
 

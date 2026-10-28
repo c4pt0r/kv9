@@ -1,5 +1,11 @@
 # Horizontal scaling: implementation and benchmark acceptance
 
+> **Historical document.** It describes the tree as of its own date. Since 2026-10-28 transactions are
+> not part of the design, the range-split prototype lives on the `experimental/range-split` branch
+> rather than on `master`, and the performance experiments (tarpc RPC, proposal batching, write-stage
+> tracing, resident-index prototypes, WAL preallocation) were removed together with their documents, so
+> some links below no longer resolve. Current status: [README](../README.md), [ROADMAP](ROADMAP.md).
+
 Updated 2026-09-17. Parent [#9](https://github.com/c4pt0r/kv9/issues/9).
 
 ## Priority and performance closeout

@@ -836,6 +836,7 @@ kv9/
 │   ├── region/   ← Region, RegionRouter, epoch, manifest seam, WalStream/WalPool (§6.4)
 │   ├── raw/      ← raw executor: point / atomic range batch / range-delete / TTL plans
 │   └── server/   ← Node assembly, API traits (Raw/Admin/Router), request routing, range permits (§9.1)
+├── sdk/      ← client SDKs (python, rust/kv9-client, cpp, typescript) + kv9-repl; one wire contract (sdk/README.md)
 └── src/ (bin `kv9`) ← main.rs: single binary; node CLI (--node-id, --join, --data-dir, --addr)
 ```
 

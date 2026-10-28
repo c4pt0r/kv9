@@ -375,7 +375,7 @@ recording because the difference is not stylistic:
 
 - The rejected approach answered "manifest applied, WAL not yet reclaimed" with *replay must be
   idempotent — raw put naturally is*. **That is a property of the current operator set, not an
-  invariant.** `delete_range` already breaks it and MVCC will. It hangs correctness on a premise
+  invariant.** `delete_range` already breaks it, and any future versioned layout would. It hangs correctness on a premise
   later work would quietly overturn, and the symptom would be silent.
 - Segments skip by watermark instead of replaying and hoping the result matches. Whole-segment
   deletion makes "crash midway through reclaiming" **impossible rather than detectable**.
@@ -1191,6 +1191,6 @@ explicit and named so that it cannot later be mistaken for a default that was re
   under every ordering and depends on no storage decision. Rafa's lane, designable in parallel.
 - **`split`/`merge` manifest attach** waits until this seam is stable. Its data half is a
   raft-committed "child references the parent's SSTs, bounded by range" change.
-- **`fence` × 2PC interaction** is untestable today because Percolator is entirely
-  `NotImplemented`; the fence's protection of in-flight prewrite/commit/resolve is a design argument
-  and **not** test evidence. Recorded so that raw-fence evidence is never quietly substituted for it.
+- **`fence` × transaction interaction** is moot since 2026-10-28: transactions left the design
+  (DESIGN §1 non-goals). The fence now protects atomic range batches, and that protection is test
+  evidence (the fence-firing tests), not a design argument.

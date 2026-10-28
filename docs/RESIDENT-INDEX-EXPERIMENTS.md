@@ -1,5 +1,11 @@
 # Resident-index allocation experiments
 
+> **Historical document.** It describes the tree as of its own date. Since 2026-10-28 transactions are
+> not part of the design, the range-split prototype lives on the `experimental/range-split` branch
+> rather than on `master`, and the performance experiments (tarpc RPC, proposal batching, write-stage
+> tracing, resident-index prototypes, WAL preallocation) were removed together with their documents, so
+> some links below no longer resolve. Current status: [README](../README.md), [ROADMAP](ROADMAP.md).
+
 Updated 2026-09-15. **No runtime candidate is selected.** Sorting/coalescing and
 two-pass value reuse are rejected. A one-traversal borrowed upsert saves time on
 overwrites, but its pure-insert regression still prevents integration. The

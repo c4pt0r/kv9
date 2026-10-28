@@ -1,5 +1,11 @@
 # Write performance against three-copy Redis
 
+> **Historical document.** It describes the tree as of its own date. Since 2026-10-28 transactions are
+> not part of the design, the range-split prototype lives on the `experimental/range-split` branch
+> rather than on `master`, and the performance experiments (tarpc RPC, proposal batching, write-stage
+> tracing, resident-index prototypes, WAL preallocation) were removed together with their documents, so
+> some links below no longer resolve. Current status: [README](../README.md), [ROADMAP](ROADMAP.md).
+
 > **Current priority (2026-09-16): horizontal scaling.** The user ended the
 > current performance iteration at the validated CRC/rpds baseline. Redis parity
 > and radix completion are not prerequisites. Start dynamic multi-Raft (#22),

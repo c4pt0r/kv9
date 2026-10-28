@@ -46,7 +46,7 @@ data volume and both copies are hash-checked; the originals remain available.
 New Chaos preparation also uses a fresh data-volume directory, with existing
 Kind tools and private kubeconfig there. Reused compiler caches remain on NVMe.
 
-The first [loaded write-stage capture](WRITE-STAGE-CAPTURE.md) also follows this
+The write-stage capture experiment (removed with the other performance experiments on 2026-10-28) also followed this
 placement: matching release artifacts, preparation, runtime logs, 4,234,585,489
 bytes of retained database payload, independent audit and correction-validation
 logs all use `/mnt/data/kv9-work`. Its capture entry point requires an output

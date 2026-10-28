@@ -1154,9 +1154,9 @@ Issue: [#29](https://github.com/c4pt0r/kv9/issues/29)
 <!-- kv9-roadmap-20260908:T02 -->
 Parent: [Roadmap tracker](https://github.com/c4pt0r/kv9/issues/9)
 
-**Stage:** P3 - Transactions and tenant isolation
+**Stage:** P3 - retired on 2026-10-28 (transactions removed from the design; kept as history)
 **Depends on:** [#28](https://github.com/c4pt0r/kv9/issues/28), [#24](https://github.com/c4pt0r/kv9/issues/24), [#26](https://github.com/c4pt0r/kv9/issues/26), [#12](https://github.com/c4pt0r/kv9/issues/12)
-**Code entry points:** txn/percolator; server transaction APIs; meta/tso
+**Code entry points (historical):** txn/percolator (deleted); server transaction APIs (deleted); meta/tso (deleted)
 
 #### Problem and outcome
 

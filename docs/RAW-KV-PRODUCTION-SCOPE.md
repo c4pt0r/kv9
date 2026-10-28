@@ -1,5 +1,11 @@
 # Raw KV 首个生产版本范围
 
+> **Historical document.** It describes the tree as of its own date. Since 2026-10-28 transactions are
+> not part of the design, the range-split prototype lives on the `experimental/range-split` branch
+> rather than on `master`, and the performance experiments (tarpc RPC, proposal batching, write-stage
+> tracing, resident-index prototypes, WAL preallocation) were removed together with their documents, so
+> some links below no longer resolve. Current status: [README](../README.md), [ROADMAP](ROADMAP.md).
+
 2026-10-07：[实际配置到历史磁盘的区间映射](RAW-TTL-CONFIGURATION-INTERVALS.md)
 已持久化并接入后台续做。原建组与变更 task 独立核对，推导结果必须匹配实际配置；
 追加历史增量推进，补齐原生映射后分代重建，旧/joint/snapshot 缺口保持明确。

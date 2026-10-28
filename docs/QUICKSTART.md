@@ -137,6 +137,21 @@ A directory with a remote checkpoint needs MinIO configuration to reopen. Missin
 inconsistent with committed history refuse startup. Original cluster identity and Raft logs are still required;
 bucket-only cluster reconstruction is not supported.
 
+## Clients and SDKs
+
+The `kv9 client` subcommands (`raw-put`, `raw-get`, `raw-scan`, `raw-batch`, `create-keyspace`, …) are the
+reference client. For applications there are SDKs in `sdk/` for Python, Rust, C++ and TypeScript, all
+implementing the same contract (`sdk/README.md`: bearer-token auth, keyspace + region-epoch context, typed
+refusal markers, bounds, leader-hint redirects). An interactive shell:
+
+```bash
+cargo build -p kv9-repl
+KV9_CLIENT_TOKEN=<token> target/debug/kv9-repl --addr 127.0.0.1:20161 \
+    --peers 1=127.0.0.1:20161,2=127.0.0.1:20162,3=127.0.0.1:20163
+```
+
+`scripts/sdk-e2e.sh` boots a cluster and runs every SDK's smoke test plus a scripted REPL session.
+
 ## Implementation limits
 
 All data currently shares one Raft group and remains in memory. Checkpoints are full-state with a 48 MiB serialized
