@@ -20,7 +20,7 @@ use kv9_common::{
     StoreIncarnation, ROOT_DESCRIPTOR_FILE, STORE_IDENTITY_FILE,
 };
 use kv9_server::{
-    admit_node_blocking, create_keyspace_blocking, promote_node_blocking,
+    admit_node_blocking, create_keyspace_blocking, promote_node_blocking, remove_node_blocking,
     revoke_admission_blocking, NodeRuntime, RawClient, RawClientOutcome, RuntimeAuth,
 };
 
@@ -77,6 +77,7 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client remove-source-replica --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client remove-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client get-node-endpoint --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client retention-apply --addr <leader-ip:port> --root-digest <hex> --request-file <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client retention-owner --addr <leader-ip:port> --root-digest <hex> --owner-id <hex>\n\
@@ -990,6 +991,7 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         "admit-node" => run_admit_node(args),
         "revoke-admission" => run_revoke_admission(args),
         "promote-node" => run_promote_node(args),
+        "remove-node" => run_remove_node(args),
         "get-node-endpoint" => endpoint_cli::run(args, false),
         "retention-apply" => retention_cli::run(args, true),
         "retention-owner" => retention_cli::run(args, false),
@@ -1190,6 +1192,43 @@ fn run_promote_node(mut args: impl Iterator<Item = String>) -> ExitCode {
         return ExitCode::FAILURE;
     };
     match promote_node_blocking(&addr, &token, node_id) {
+        Ok(response) => print_membership_response(response),
+        Err(kv9_common::Error::NotLeader { leader }) => print_not_leader(leader),
+        Err(error) => {
+            eprintln!("client request failed: {error}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn run_remove_node(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut addr = None;
+    let mut node_id = None;
+    while let Some(flag) = args.next() {
+        let Some(value) = args.next() else {
+            eprintln!("error: {flag} needs a value");
+            return ExitCode::FAILURE;
+        };
+        match flag.as_str() {
+            "--addr" => addr = Some(value),
+            "--node-id" => node_id = parse_client_node_id(&value),
+            _ => {
+                eprintln!("error: unknown client flag {flag}");
+                return ExitCode::FAILURE;
+            }
+        }
+        if flag == "--node-id" && node_id.is_none() {
+            return ExitCode::FAILURE;
+        }
+    }
+    let Some((addr, node_id)) = addr.zip(node_id) else {
+        eprintln!("error: --addr and --node-id are required");
+        return ExitCode::FAILURE;
+    };
+    let Some(token) = client_token() else {
+        return ExitCode::FAILURE;
+    };
+    match remove_node_blocking(&addr, &token, node_id) {
         Ok(response) => print_membership_response(response),
         Err(kv9_common::Error::NotLeader { leader }) => print_not_leader(leader),
         Err(error) => {

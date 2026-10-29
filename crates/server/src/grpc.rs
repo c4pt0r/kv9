@@ -414,6 +414,32 @@ pub fn revoke_admission_blocking(
     })
 }
 
+pub fn remove_node_blocking(
+    address: &str,
+    token: &str,
+    node: NodeId,
+) -> Result<proto::MembershipChangeResponse, Error> {
+    let runtime = tokio::runtime::Runtime::new()
+        .map_err(|error| Error::Config(format!("create client runtime: {error}")))?;
+    runtime.block_on(async move {
+        let mut client = proto::kv9_client::Kv9Client::connect(format!("http://{address}"))
+            .await
+            .map_err(|error| Error::Raft(format!("connect public gRPC {address}: {error}")))?;
+        let mut request = Request::new(proto::RemoveNodeRequest { node_id: node.0 });
+        request.metadata_mut().insert(
+            "authorization",
+            format!("Bearer {token}")
+                .parse()
+                .map_err(|_| Error::Config("client token is not valid metadata".into()))?,
+        );
+        client
+            .remove_node(request)
+            .await
+            .map(Response::into_inner)
+            .map_err(|status| membership_rpc_error("RemoveNode", status))
+    })
+}
+
 pub fn promote_node_blocking(
     address: &str,
     token: &str,
@@ -2151,6 +2177,29 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn remove_node(
+        &self,
+        request: Request<proto::RemoveNodeRequest>,
+    ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.remove_node(&caller, NodeId(request.node_id))
+            })
+            .await?;
+        Ok(Response::new(proto::MembershipChangeResponse {
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+            voters: result.voters,
+            learners: result.learners,
+            join_ticket: String::new(),
+        }))
+    }
+
     async fn apply_retention(
         &self,
         request: Request<proto::ApplyRetentionRequest>,
@@ -2432,6 +2481,12 @@ mod tests {
         }
 
         fn promote_node(&self, _: &str, _: NodeId) -> Result<crate::api::MembershipChangeResult> {
+            Err(Error::NotLeader {
+                leader: self.membership_hint,
+            })
+        }
+
+        fn remove_node(&self, _: &str, _: NodeId) -> Result<crate::api::MembershipChangeResult> {
             Err(Error::NotLeader {
                 leader: self.membership_hint,
             })

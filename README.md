@@ -9,10 +9,11 @@ of truth**.
 > **Working today**
 > - **Self-hosted metadata.** The catalog (tenants, keyspaces, regions, peers, membership) is replicated by kv9's
 >   own `META_REGION_0` Raft group across three voters: elect first, then the winner initializes. Learner admission
->   and promotion, leader failover and full restart are covered by multi-process tests. **Fault envelope today:
->   one voter loss**, and recovery assumes the lost voter returns with its store — a dead voter is never replaced
->   automatically, so a second loss makes the group unavailable however many learners exist. The repair is
->   designed, not built: [VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md).
+>   and promotion, leader failover and full restart are covered by multi-process tests. With
+>   `KV9_AUTO_REPLACE_VOTER=1` the leader **replaces a lost voter with a caught-up learner** — promotion first,
+>   removal second, so the quorum is never at risk — and the e2e kills two of three original voters in turn while
+>   writes continue ([VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md)). Off by default; without it, or with no
+>   learners, the fault envelope is one voter loss and recovery assumes the lost voter returns with its store.
 > - **Raw KV:** `RawPut/Get/Scan/Delete/DeleteRange/BatchGet/BatchPut`, optional TTL, and the **atomic range
 >   batch** `RawBatch` (mixed puts/deletes applied as one Raft entry inside one range — see below). Reads are
 >   linearizable through a quorum ReadIndex barrier; writes answer with the exact applied `(term, index)`.

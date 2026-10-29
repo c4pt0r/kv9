@@ -16,7 +16,7 @@
     "the_trigger_chain_commits_a_backed_floor"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "55775d654db364415e6c68613b699e740308669a68ceb6bdabadc344e28ebf9e",
+    "crates/server/src/runtime.rs": "3a77007256ded9a3552937617da1cd62bdf9f14fe51b19ad8b2992cf9fc0e293",
     "crates/meta/src/data_groups/compaction.rs": "1cad3713439dcf39e2430ca985612dd8fc1d420008180d9a3b87d8c9336f9f2d",
     "scripts/auto-compaction-e2e.py": "a709a8f79156b5b6a7f53102d1b92f342f590252b485ed329d9df0dcc70353d0",
     "proofs/lean/auto-compaction/AutoCompaction.lean": "54108630bdc47d33ab1f5f098de1eced2025d92b9464ff4e4deb092b853ae7b0",

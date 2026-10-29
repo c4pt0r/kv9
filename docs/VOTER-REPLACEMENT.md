@@ -2,8 +2,18 @@
 
 Design packet, 2026-10-28. Parent [#9](https://github.com/c4pt0r/kv9/issues/9); belongs to the
 placement stage (D06, [#27](https://github.com/c4pt0r/kv9/issues/27)) and builds on the membership
-verbs of [voter promotion](VOTER-PROMOTION.md) and [replica removal](REPLICA-REMOVAL.md). Status:
-**proposed, not implemented.**
+verbs of [voter promotion](VOTER-PROMOTION.md) and [replica removal](REPLICA-REMOVAL.md).
+
+> **Status: phase 1 implemented for the metadata group (2026-10-28).**
+> `crates/server/src/runtime/voter_replacement.rs` holds the verdict and the promote-then-remove
+> driver; `RemoveNode` (RPC + `kv9 client remove-node`) is the new verb; `kv9_raft` exposes per-peer
+> `PeerProgress`. `scripts/voter-replacement-e2e.sh` (in the CI e2e matrix) kills two of three original
+> voters one after another with two credentialed learners present and checks that each loss is
+> repaired in the right order with service never lost. Deviations from the design below, deliberately:
+> the decision is **not yet a committed catalog row** (kind 109) — the Raft configuration is the
+> committed record and the leader re-derives the step from it after a crash, decisions and verdicts are
+> visible in the status line `voter_replacement=`, and the promotion cooldown is per process. Data
+> groups (§6) and the committed decision row are the next increments.
 
 ## The problem
 

@@ -791,6 +791,12 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .propose_conf_change_traced(single_change(node, ConfChangeType::RemoveNode))
     }
 
+    /// Every peer's replication progress as the local raft tracks it; see
+    /// [`crate::rawnode::PeerProgress`]. Decide on it only while leading.
+    pub fn peer_progress(&self) -> Vec<crate::rawnode::PeerProgress> {
+        self.peer.peer_progress()
+    }
+
     /// Wait until the conf change proposed at `at` is applied HERE, verified by
     /// exact `(term, index)`; returns the post-change membership actually
     /// produced by `apply_conf_change` (never the proposal-time expectation).

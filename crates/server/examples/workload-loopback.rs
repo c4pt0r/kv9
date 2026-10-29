@@ -124,6 +124,7 @@ service! {
     admit_node: AdmitNodeRequest => MembershipChangeResponse,
     revoke_admission: RevokeAdmissionRequest => MembershipChangeResponse,
     promote_node: PromoteNodeRequest => MembershipChangeResponse,
+    remove_node: RemoveNodeRequest => MembershipChangeResponse,
     get_node_endpoint: GetNodeEndpointRequest => GetNodeEndpointResponse,
     change_node_endpoint: ChangeNodeEndpointRequest => ChangeNodeEndpointResponse,
     apply_retention: ApplyRetentionRequest => ApplyRetentionResponse,

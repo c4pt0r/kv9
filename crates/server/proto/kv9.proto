@@ -36,6 +36,9 @@ service Kv9 {
   rpc AdmitNode(AdmitNodeRequest) returns (MembershipChangeResponse);
   rpc RevokeAdmission(RevokeAdmissionRequest) returns (MembershipChangeResponse);
   rpc PromoteNode(PromoteNodeRequest) returns (MembershipChangeResponse);
+  // Remove a metadata voter through the group's own log: leader-only, never
+  // self, three voters must remain (docs/VOTER-REPLACEMENT.md).
+  rpc RemoveNode(RemoveNodeRequest) returns (MembershipChangeResponse);
   rpc GetNodeEndpoint(GetNodeEndpointRequest) returns (GetNodeEndpointResponse);
   rpc ChangeNodeEndpoint(ChangeNodeEndpointRequest) returns (ChangeNodeEndpointResponse);
   // Tracking-only retention administration. No object deletion or installation.
@@ -430,6 +433,7 @@ message AdmitNodeRequest {
 }
 
 message PromoteNodeRequest { uint64 node_id = 1; }
+message RemoveNodeRequest { uint64 node_id = 1; }
 
 // Revoke a node's admission record (decommission / lost-store retry): a
 // revoked record may be replaced by a fresh AdmitNode. Raft membership is

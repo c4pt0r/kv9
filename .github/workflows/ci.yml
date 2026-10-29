@@ -824,6 +824,13 @@ jobs:
           - script: root-trust-e2e.sh
             base_port: 26100
             success_marker: "PASS: explicit root, durable incarnation, fenced discovery, credentialed learner, and promotion"
+          # Automatic voter replacement while quorum holds (docs/VOTER-REPLACEMENT.md):
+          # kill two of three original metadata voters one after another; each time a
+          # credentialed learner is promoted BEFORE the lost voter is removed and the
+          # group keeps serving.
+          - script: voter-replacement-e2e.sh
+            base_port: 27100
+            success_marker: "PASS: voter replacement"
           # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
           # isolated leader must refuse raw reads with the NAMED typed families
           # (read_unconfirmed / not_leader) — transport errors explicitly do not

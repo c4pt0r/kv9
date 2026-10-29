@@ -677,6 +677,16 @@ pub trait AdminApi {
     ) -> Result<MembershipChangeResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::promote_node"))
     }
+    /// Remove a voter from the metadata group through its own log. Leader-only; at
+    /// least three voters must remain and a leader never removes itself
+    /// (docs/VOTER-REPLACEMENT.md): promote the replacement first.
+    fn remove_node(
+        &self,
+        _caller: &str,
+        _node: kv9_common::NodeId,
+    ) -> Result<MembershipChangeResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::remove_node"))
+    }
     fn get_node_endpoint(
         &self,
         _caller: &str,

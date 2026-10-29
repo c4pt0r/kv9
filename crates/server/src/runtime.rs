@@ -68,6 +68,7 @@ mod replica_pressure;
 mod ttl_activation;
 mod ttl_maintenance;
 mod ttl_time;
+mod voter_replacement;
 use endpoint_recovery::EndpointRecovery;
 
 const TICK: Duration = Duration::from_millis(20);
@@ -2383,6 +2384,46 @@ impl AdminApi for RuntimeBackend {
             join_ticket: None,
         })
     }
+
+    /// The guards are the same as `RemoveSourceReplica`'s for a data group: leader-only,
+    /// never self, the node must vote today, and three voters must remain — so a lost
+    /// voter of a three-voter group can only go after its replacement was promoted.
+    fn remove_node(&self, _caller: &str, node: NodeId) -> Result<MembershipChangeResult> {
+        self.ensure_serving()?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        if node == self.node.id {
+            return Err(Error::Config("a leader never removes itself".into()));
+        }
+        if !status.voters.contains(&node.0) {
+            return Err(Error::Config(format!(
+                "node {} is not a voter of the metadata group",
+                node.0
+            )));
+        }
+        if status.voters.len() <= 3 {
+            return Err(Error::Config(
+                "removal would leave fewer than three voters; promote a replacement first".into(),
+            ));
+        }
+        let proposed = self.driver.remove_voter(node)?;
+        let receipt = self
+            .driver
+            .wait_conf_applied(proposed, Duration::from_secs(10))?;
+        Ok(MembershipChangeResult {
+            applied: AppliedPosition {
+                term: receipt.applied.term,
+                index: receipt.applied.index.0,
+            },
+            voters: receipt.voters,
+            learners: receipt.learners,
+            join_ticket: None,
+        })
+    }
 }
 
 fn unix_now() -> u64 {
@@ -4209,6 +4250,10 @@ pub struct NodeRuntime {
     /// KV9_RECLAIM_RETIRED=1: physically delete retired local group
     /// payloads once their committed authority re-verifies. Off by default.
     reclaim_retired: bool,
+    /// Leader-side voter verdicts and, with KV9_AUTO_REPLACE_VOTER=1, the
+    /// promote-then-remove repair of a lost metadata voter
+    /// (`runtime/voter_replacement.rs`, docs/VOTER-REPLACEMENT.md).
+    voter_replacement: voter_replacement::State,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -4867,6 +4912,7 @@ impl NodeRuntime {
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(0),
             reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
+            voter_replacement: voter_replacement::State::new(voter_replacement::Config::from_env()),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             raw_ttl_clock,
@@ -5403,6 +5449,10 @@ impl NodeRuntime {
                 // reconciles' errors every turn — the cascade-split
                 // publish refusal was invisible exactly that way.
                 self.group_control_error = None;
+                // Metadata-voter verdicts and the promote-then-remove repair; it
+                // proposes at most one configuration change per pass and never
+                // waits for its apply here.
+                self.reconcile_voter_replacement();
                 // Fence committed removals before any deferred engine read or
                 // driver restart; retirement of an unopened group needs no GET.
                 let retirement_ready = self.reconcile_retirement();
@@ -6135,6 +6185,9 @@ impl NodeRuntime {
             &serde_json::to_string(&self.data_groups.log_budget.snapshot())
                 .expect("log budget snapshot serializes"),
         );
+        body.push('\n');
+        body.push_str("voter_replacement=");
+        body.push_str(&self.voter_replacement_status());
         body.push('\n');
         body.push_str("replica_pressure=");
         body.push_str(

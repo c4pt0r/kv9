@@ -154,6 +154,17 @@ pub struct PeerSnapshot {
     pub learners: Vec<u64>,
 }
 
+/// The leader's view of one peer's replication progress (raft-rs `Progress`):
+/// how far it has matched, whether it answered within the current election
+/// timeout, and whether it votes. Meaningful on the leader only.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PeerProgress {
+    pub node: NodeId,
+    pub matched: u64,
+    pub recent_active: bool,
+    pub voter: bool,
+}
+
 fn role_of(state: StateRole) -> Role {
     match state {
         StateRole::Leader => Role::Leader,
@@ -1183,6 +1194,24 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             voters,
             learners,
         }
+    }
+
+    /// Every peer's replication progress as this node tracks it. On a follower the
+    /// entries are stale or absent; callers decide on the leader only.
+    pub fn peer_progress(&self) -> Vec<PeerProgress> {
+        let g = self.lock();
+        let voters = g.raw.raft.prs().conf().to_conf_state().voters;
+        g.raw
+            .raft
+            .prs()
+            .iter()
+            .map(|(id, p)| PeerProgress {
+                node: NodeId(*id),
+                matched: p.matched,
+                recent_active: p.recent_active,
+                voter: voters.contains(id),
+            })
+            .collect()
     }
 
     /// Whether this node may campaign (it is a voter in the current config and
