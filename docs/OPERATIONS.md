@@ -89,7 +89,13 @@ outputs, a stuck-operation checklist, and how to run and extend the drill).
 
 ## 8. What is not a primitive yet
 
-An automatic merge of small siblings, load- or time-based split triggers, atomic batches that
+**Backup and restore.** There is none today: replication and checkpoints survive node loss, not a
+logical error or the loss of the cluster's identity, and the bucket alone cannot rebuild a cluster
+(QUICKSTART §4). The design is [BACKUP-RESTORE](BACKUP-RESTORE.md): a backup is a committed set of
+per-range anchors pinned as a retention owner with a self-describing bundle in the bucket; a
+restore populates a new keyspace from it, in this cluster or another one.
+
+Also missing: an automatic merge of small siblings, load- or time-based split triggers, atomic batches that
 cross a range boundary (scans and delete-range do cross it, following `resume_from`), `node
 replace`, `node forget` (a drained-and-stopped or dead-and-replaced node stays in the directory and
 keeps `cluster health` at `fail` through its `unreachable` verdict) and retention verbs in
