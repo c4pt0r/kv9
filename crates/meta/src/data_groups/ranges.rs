@@ -136,6 +136,17 @@ pub fn committed_ranges<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Committed
 }
 
 /// [`committed_ranges`] on the caller's transaction (the same snapshot as its other reads).
+/// The regions whose binding is sealed: the retired parents of published splits and
+/// merges. Their replicas retire themselves, they have no leader, and they take no
+/// replica plan; a node's membership in one is not a membership to move or to wait for.
+pub fn retired_regions_in_txn<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<std::collections::BTreeSet<u64>> {
+    Ok(committed_ranges_in_txn(txn)?
+        .iter()
+        .filter(|b| b.range().sealed)
+        .map(|b| b.range().region.0)
+        .collect())
+}
+
 pub fn committed_ranges_in_txn<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<CommittedRange>> {
     read_in(txn)
 }

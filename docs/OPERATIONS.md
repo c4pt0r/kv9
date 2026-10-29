@@ -16,7 +16,7 @@ committed state on the node whose role it is, and observable in each node's `<da
 | Make it vote | `node promote <id> [--wait]` | Learner → voter of the metadata group. Repeating a membership verb whose state already holds answers `outcome: confirmed`. |
 | Retire a node | `node drain <id> [--wait [--wait-secs <n>]]` | One verb: the node hands away every leadership, the cluster moves every data-group replica off it (one plan at a time, `KV9_DRAIN_PARALLEL`), promotes a learner before removing it from a three-voter metadata group, reports `drained` in `node list`. Then stop the process ([DRAIN-NODE](DRAIN-NODE.md)). |
 | Remove a metadata voter by hand | `node remove <id> [--wait]` | Refuses below three voters and refuses the leader itself; promote a replacement first. |
-| Move metadata leadership | `node transfer-leader --to <id> [--wait]` | Planned maintenance; the transferee must be a caught-up voter ([LEADER-TRANSFER](LEADER-TRANSFER.md)). |
+| Move metadata leadership | `node transfer-leader --to <id> [--wait]` | Planned maintenance; the transferee must be a caught-up voter, one that holds every committed entry ([LEADER-TRANSFER](LEADER-TRANSFER.md)). |
 | Change a node's address | `kv9 client change-node-endpoint …` | Generation-fenced ([ENDPOINT-MIGRATION](ENDPOINT-MIGRATION.md)); not yet a `kv9-admin` verb. |
 
 ## 2. Data groups, keyspaces, placement
@@ -28,7 +28,7 @@ committed state on the node whose role it is, and observable in each node's `<da
 | Add a replica | `group add-replica <task> --to <node>` | One committed plan; the cluster attaches, captures, installs inside the destination, proves, promotes ([REPLICA-ADDITION](REPLICA-ADDITION.md)). Needs object storage (`KV9_STORAGE=minio`, `KV9_OBJECT_STORE_*`). |
 | Move a replica | `group move-replica <task> --from <a> --to <b>` | The same plan plus the source's removal after promotion; a group never shrinks first. |
 | Move a group's leadership | `group transfer-leader <task> --to <node> [--wait]` | |
-| Split a range | `group split <task> --at <key> \| --at-hex <hex>` | The cluster creates the two children on the same stores, seals the parent, copies and verifies both halves, publishes the new partition ([RANGE-SPLIT](RANGE-SPLIT.md)). The parent is unavailable between its seal and the publication; TTL-activated ranges cannot be sealed yet. |
+| Split a range | `group split <task> --at <key> \| --at-hex <hex>` | The cluster creates the two children on the same stores, seals the parent, copies and verifies both halves, publishes the new partition ([RANGE-SPLIT](RANGE-SPLIT.md)). The parent is unavailable between its seal and the publication; TTL-activated ranges cannot be sealed yet. The children take the parent's members, four included after an `add-replica`. |
 | Merge two ranges | `group merge <low-task> <high-task>` | Adjacent siblings on one store set; the same pipeline backwards. |
 | Watch any of the above | `group describe <task>` (`plans`, `splits`, `merges` with stages), `task list [--kind <n>]`, `task describe <id>` | Stages: plans `planned → captured → pinned → evidenced → decided \| aborted`; splits/merges `intended → populating → populated → published \| aborted`. `group list` exits 4 and names the family when a catalog readback fails. |
 | Abort any of the above | `task abort <task>` | A split/merge before its first seal, a drain any time, a replica plan (through its migration abort). Membership plans and range operations exclude each other while live: the refusal says which one holds the group ([RANGE-SPLIT](RANGE-SPLIT.md) §12). |
@@ -78,9 +78,17 @@ token's principal; application tokens keep the data plane only. Node-to-node con
 evidence, replica plans, split/merge evidence) travels over the node-authenticated internal
 service and is never reachable with a client token.
 
-## 7. What is not a primitive yet
+## 7. Rehearsed
+
+[OPERATIONS-DRILL-2026-10-29](OPERATIONS-DRILL-2026-10-29.md) walks every verb above on a seven-node
+cluster, with the transcript, the timings, what it found and what an operator should expect
+(a transfer refused once, an Add plan ending at `evidenced`, health `fail` while a node is down).
+
+## 8. What is not a primitive yet
 
 An automatic merge of small siblings, load- or time-based split triggers, atomic batches that
 cross a range boundary (scans and delete-range do cross it, following `resume_from`), `node
-replace` and retention verbs in `kv9-admin`, and any placement policy beyond "least-loaded
-active store" ([DEVELOPMENT-PATH](DEVELOPMENT-PATH.md)).
+replace`, `node forget` (a drained-and-stopped or dead-and-replaced node stays in the directory and
+keeps `cluster health` at `fail` through its `unreachable` verdict) and retention verbs in
+`kv9-admin`, and any placement policy beyond "least-loaded active store"
+([DEVELOPMENT-PATH](DEVELOPMENT-PATH.md)).

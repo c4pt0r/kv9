@@ -93,8 +93,10 @@ impl CreationIntent {
             return Err(invalid("invalid group intent encoding"));
         }
         let count = usize::from(bytes[72]);
-        if ![3, 5, 7].contains(&count) || bytes.len() != 73 + count * 24 {
-            return Err(invalid("group intent needs 3, 5 or 7 exact replicas"));
+        // Operators create 3, 5 or 7; a split or merge child inherits its parent's
+        // committed members, which an Add plan leaves at four (or six).
+        if !(3..=7).contains(&count) || bytes.len() != 73 + count * 24 {
+            return Err(invalid("group intent needs 3 to 7 exact replicas"));
         }
         let intent = Self {
             root: RootDigest::from_bytes(bytes[8..40].try_into().unwrap()),
@@ -200,7 +202,35 @@ pub fn plan_empty_group<E: Engine>(
     operation: [u8; 16],
     voters: &[NodeId],
 ) -> Result<CreationIntent> {
-    if operation == [0; 16] || ![3, 5, 7].contains(&voters.len()) {
+    if ![3, 5, 7].contains(&voters.len()) {
+        return Err(invalid(
+            "group creation needs a nonzero operation and 3, 5 or 7 voters",
+        ));
+    }
+    plan_group(txn, operation, voters)
+}
+
+/// The child of a split or a merge: an empty group on exactly the parent's
+/// committed members. A parent grown by one replica has four voters (a plan
+/// adds before it removes, and an Add never removes), so the operator's
+/// 3/5/7 rule does not apply here; a child needs only a majority-capable set.
+pub(crate) fn plan_child_group<E: Engine>(
+    txn: &mut MetaTxn<'_, E>,
+    operation: [u8; 16],
+    members: &[NodeId],
+) -> Result<CreationIntent> {
+    if members.len() < 3 {
+        return Err(invalid("a split or merge child needs at least three members"));
+    }
+    plan_group(txn, operation, members)
+}
+
+fn plan_group<E: Engine>(
+    txn: &mut MetaTxn<'_, E>,
+    operation: [u8; 16],
+    voters: &[NodeId],
+) -> Result<CreationIntent> {
+    if operation == [0; 16] {
         return Err(invalid(
             "group creation needs a nonzero operation and 3, 5 or 7 voters",
         ));
@@ -735,6 +765,27 @@ mod tests {
             planned.region().0 + 1,
             "retry must not consume a region ID"
         );
+    }
+
+    #[test]
+    fn child_groups_accept_the_parents_four_members_but_operators_do_not() {
+        let store = fixture();
+        let mut change = store.begin().unwrap();
+        // a fourth active registered store, as a joined node registers itself
+        let mut row = RowValue::new();
+        row.set(ColumnId(2), ColumnValue::Text("127.0.0.1:18004".into()));
+        row.set(ColumnId(3), ColumnValue::Uint(2));
+        row.set(ColumnId(4), ColumnValue::Uint(0));
+        row.set(ColumnId(5), ColumnValue::Bytes(vec![4; 16]));
+        change.insert(&NODES_DESC, &[memcmp_uint(4)], row).unwrap();
+        change.commit().unwrap();
+        let four = [NodeId(1), NodeId(2), NodeId(3), NodeId(4)];
+        assert!(plan_empty_group(&mut store.begin().unwrap(), [11; 16], &four).is_err());
+        let mut txn = store.begin().unwrap();
+        let child = plan_child_group(&mut txn, [11; 16], &four).unwrap();
+        assert_eq!(child.replicas().len(), 4);
+        assert!(plan_child_group(&mut txn, [12; 16], &[NodeId(1), NodeId(2)]).is_err());
+        assert!(plan_child_group(&mut txn, [0; 16], &four).is_err());
     }
 
     #[test]

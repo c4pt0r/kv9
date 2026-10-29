@@ -18,7 +18,9 @@ changed members or disk incarnations cannot reuse the operation ID.
 
 Creation uses the existing `tasks` table, stable kind 100 and a versioned binary
 payload. There is no new table/schema migration and no `regions` routing row.
-The first implementation admits 3, 5 or 7 distinct active registered voters and
+The first implementation admits 3, 5 or 7 distinct active registered voters for an
+operator's `group create` (a split or merge child inherits its parent's committed members,
+three to seven of them, since a replica plan adds before it removes) and
 at most 255 task rows in its bounded planning scan. That conservative shared
 table limit needs indexed/paged reconciliation before larger task populations.
 

@@ -283,6 +283,10 @@ impl NodeRuntime {
             .filter(|p| !settled(p.operation(), p.mode()))
             .map(|p| p.region().0)
             .collect();
+        // A sealed binding is the retired parent of a published split or merge: its
+        // replicas retire themselves and take no plan, so it is not a membership to
+        // move off the node.
+        let retired = dg::ranges::retired_regions_in_txn(&txn)?;
         let mut views = Vec::new();
         let mut step: Option<(u64, Step)> = None;
         let me = self.node.id;
@@ -291,6 +295,9 @@ impl NodeRuntime {
             let node = store_id.node;
             let mut memberships: Vec<(&dg::CommittedCreation, Vec<(InitialReplica, u64)>)> = Vec::new();
             for creation in &creations {
+                if retired.contains(&creation.intent().region().0) {
+                    continue;
+                }
                 let members = dg::committed_members(&txn, root, creation.intent())?;
                 if members.iter().any(|(m, _)| *m == store_id) {
                     memberships.push((creation, members));

@@ -7,7 +7,7 @@ data-group repair → drain a node → split/merge). Builds on the lease model
 [KV9-ADMIN](KV9-ADMIN.md).
 
 > **Status: implemented (2026-10-28).** `RaftPeer::transfer_leader` (guards: leader, voter,
-> `matched == last index`, not self, none in flight; lease revoked in the same critical section),
+> `matched >= committed`, not self, none in flight; lease revoked in the same critical section),
 > `NodeDriver::transfer_leader` (bounded wait for an observed new leader), `AdminApi::transfer_leader`
 > for the metadata group and data groups, gRPC `TransferLeader`, `kv9-admin node transfer-leader
 > --to [--wait]` and `group transfer-leader <creation-task> --to`. `scripts/leader-transfer-e2e.sh`
@@ -36,9 +36,12 @@ metadata group or a data group's region, and `kv9-admin node transfer-leader --t
 answers `NotLeader` with the hint, as every membership verb does) and refuses unless, at the leader:
 
 - the transferee is a **voter** of the group (never a learner, never a non-member);
-- the transferee is **caught up**: its `matched` index equals the leader's last log index at the
-  moment of the decision (raft-rs would otherwise append first and transfer later; the verb refuses
-  instead, so an operator never hands leadership to a lagging node under load);
+- the transferee is **caught up**: its `matched` index is at least the leader's commit index at the
+  moment of the decision, so it holds every committed entry (raft-rs ships the uncommitted tail and
+  transfers once it is matched; a node behind the commit index is refused, so an operator never
+  hands leadership to a lagging node under load). The first implementation demanded an exact match
+  with the leader's last index; the 2026-10-29 operations drill showed that a live metadata log
+  advances a few entries a second by itself, which made the verb fail several times in a row;
 - the group has no **fatal** driver state and no configuration change pending apply;
 - it is not already transferring.
 

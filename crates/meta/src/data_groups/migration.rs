@@ -214,6 +214,14 @@ pub fn plan_migration<E: Engine>(
             "a live {what} binds this group's membership until it is published"
         )));
     }
+    // A sealed binding is a published split's or merge's parent: the group retires
+    // itself and has no leader to drive a plan, so a plan on it would never settle
+    // (found by the 2026-10-29 operations drill: a drain waited on such a plan).
+    if super::ranges::retired_regions_in_txn(txn)?.contains(&creation.region().0) {
+        return Err(invalid(
+            "the group is retired: its range was sealed by a published split or merge",
+        ));
+    }
     let endpoint = crate::endpoint::node_endpoint(txn, destination)?
         .filter(|endpoint| endpoint.active)
         .ok_or_else(|| invalid("migration destination is not an active registered store"))?;

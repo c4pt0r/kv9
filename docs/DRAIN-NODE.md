@@ -54,7 +54,9 @@ of. It never removes itself from anything; the leaders do that.
 Per committed, unfinished drain of store `S` on node `N`, each reconcile pass, one step:
 
 1. **Move the replicas.** For each data group in which `S` is a committed member
-   (`committed_members`) and which has no unsettled plan: commit a **move plan** `S → D`
+   (`committed_members`), whose range binding is not sealed (a sealed binding is the retired
+   parent of a published split or merge: it has no leader, takes no plan, and the planner refuses
+   one) and which has no unsettled plan: commit a **move plan** `S → D`
    (REPLICA-ADDITION), `D` from placement (§4). At most `KV9_DRAIN_PARALLEL` (default 1) plans
    with source `S` may be unsettled at once, so a drain is a sequence, not a burst. The plan
    driver does the rest; the source's removal needs the group's leader not to be `N`, which §2

@@ -271,8 +271,8 @@ pub fn plan_split<E: Engine>(
         .map(|(m, _)| m.node)
         .collect();
     let (low_operation, high_operation) = child_operations(operation);
-    let low = super::plan_empty_group(txn, low_operation, &members)?;
-    let high = super::plan_empty_group(txn, high_operation, &members)?;
+    let low = super::plan_child_group(txn, low_operation, &members)?;
+    let high = super::plan_child_group(txn, high_operation, &members)?;
     super::activation::plan_activation(txn, &low)?;
     super::activation::plan_activation(txn, &high)?;
     let intent = SplitIntent {
@@ -629,5 +629,14 @@ mod tests {
         let splits = committed_splits(&store).unwrap();
         assert!(splits.iter().any(|s| s.task() == intent.task()), "the intent reads back as its published shape");
         assert_eq!(splits.iter().filter(|s| s.parent_region() == region).count(), 1);
+        drop(txn);
+        // The sealed parent is retired: no replica plan may bind it (a drain or a
+        // repair that planned one would wait forever on a group without a leader).
+        let mut txn = store.begin().unwrap();
+        assert!(
+            matches!(super::super::migration::plan_migration(&mut txn, [77; 16], parent.task(), NodeId(3)),
+                Err(Error::Config(s)) if s.contains("retired")),
+            "a published parent takes no plan"
+        );
     }
 }

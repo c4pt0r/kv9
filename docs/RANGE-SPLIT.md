@@ -36,7 +36,10 @@ atomic range batch (a batch that crosses a range is refused whole).
 
 A split of bound range `P = [s, e)` at key `k` produces children `L = [s, k)` and `H = [k, e)` on
 **the same stores as `P`** — a split moves no replica; movement is REPLICA-ADDITION's job and can
-run before or after. The parent is sealed (one-way, through its own log), both children are
+run before or after. The children take the parent's committed members whatever their number: a
+parent grown by one `add-replica` has four voters, and the operator's 3/5/7 rule for `group create`
+does not apply to children (found by the 2026-10-29 operations drill, which could not split such a
+group). The parent is sealed (one-way, through its own log), both children are
 populated from the sealed parent's state, and one catalog transaction publishes the new partition:
 the parent's binding sealed (version+1), two child bindings inserted. Readers see the old shape or
 the new, never a partial one (the partition rule refuses partial shapes at readback).
@@ -133,6 +136,11 @@ child. `kv9-admin group merge <low-task> <high-task>`; `ListDataGroups.merges` o
   accepting new writes afterwards; the children visible in `group list` with no keyspace.
 
 ## 9. As built (parts 2–3)
+
+- **A sealed parent takes no replica plan.** `plan_migration` refuses a group whose committed
+  range binding is sealed ("the group is retired"), and the drain's membership list skips such
+  groups. The 2026-10-29 operations drill found a drain planning a move off a published split's
+  parent and waiting on it forever: the retired group has no leader to drive the plan.
 
 - **One driver, three roles, one step in flight** (`runtime/range_split.rs`, after the drain pass).
   A child's leader proposes the child's half descriptor (initial `DataRange` publication through

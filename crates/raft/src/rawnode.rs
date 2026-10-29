@@ -1283,11 +1283,16 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 transferee.0
             )));
         }
+        // Caught up = holds every committed entry. The leader's last index moves a
+        // few entries a second on a live cluster (drivers, heartbeats), so an exact
+        // match with it is a race the operator loses (the 2026-10-29 drill needed
+        // four attempts); raft-rs ships the uncommitted tail before TimeoutNow.
+        let committed = g.raw.raft.raft_log.committed;
         let last = g.raw.raft.raft_log.last_index();
         let matched = g.raw.raft.prs().get(transferee.0).map(|p| p.matched);
-        if matched != Some(last) {
+        if matched.is_none_or(|m| m < committed) {
             return Err(Error::Config(format!(
-                "node {} is not caught up (matched {:?}, last index {last})",
+                "node {} is not caught up (matched {:?}, committed {committed}, last index {last})",
                 transferee.0, matched
             )));
         }

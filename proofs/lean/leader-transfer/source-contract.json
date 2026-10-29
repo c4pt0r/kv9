@@ -15,14 +15,14 @@
     "a_transfer_can_expire_and_the_leader_relearns_its_lease"
   ],
   "source_sha256": {
-    "crates/raft/src/rawnode.rs": "01148cc1c42208aa0204d3b901168ea1ef07cc773728e2e96ff499cabffc8eb0",
+    "crates/raft/src/rawnode.rs": "f45c8d85ca2e53843b1d8f81afc2c0e023ccfecd1b552c646beba8dc3d913a3a",
     "crates/raft/src/driver.rs": "f3d005b47748d6aecacdf9450070095f9b70361b5c7677e3af35c786e6a986eb",
-    "crates/server/src/runtime.rs": "c254d41ce1f8dba70cedaa3ea9ae8d126c85ef65314b9cb32cb12d0bbb32895d",
+    "crates/server/src/runtime.rs": "98ab40013cc84bbe0685d58732657516c600b38f1fb8ef4f919f5d44bf1b89e3",
     "crates/server/src/api.rs": "8c8db3f3aa1dda06cc530a5d40a3305a6e12b4d2a16cf15ce72ca6b981f541f1",
     "crates/server/src/grpc.rs": "6cd54f442ff97253e709ae6cc76bf6b9e2ee57aa91d0647b2f104f9292797505",
     "crates/server/proto/kv9.proto": "581f03fc2faf08a450b6aa4833ec33c4d034ed9422cc2ed6a5b2b362ca5b1283",
     "sdk/rust/kv9-admin/src/main.rs": "f083ec35634674a486b613148817266f12c231bd993e6f1fb617102d37416a71",
     "scripts/kv9-admin-e2e.sh": "973a70b9ffaabdcb99918d7ef30793c4fb99f67c6635451639652d00203909f6",
-    "docs/LEADER-TRANSFER.md": "1729a9cc2e10c5a7d53713781099e54e467ace965deb914d2644ff90229213b1"
+    "docs/LEADER-TRANSFER.md": "209244d9a127f364cbc20fe547d34a3c9363fb757a1f963f2176d5dcc074e8e9"
   }
 }

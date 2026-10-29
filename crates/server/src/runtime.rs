@@ -2526,10 +2526,15 @@ impl AdminApi for RuntimeBackend {
         let txn = self.node.meta_raft.store.begin()?;
         let drains = kv9_meta::data_groups::drain::committed_drains_in_txn(&txn).unwrap_or_default();
         let certified = kv9_meta::root::certified_root(&txn)?;
-        // Who still holds a data-group replica: committed members of every group.
+        // Who still holds a data-group replica: committed members of every group that
+        // is not retired (a sealed binding's replicas retire themselves; DRAIN-NODE §3).
         let mut hosting: std::collections::BTreeSet<(u64, Vec<u8>)> = std::collections::BTreeSet::new();
         if let Some(root) = &certified {
+            let retired = kv9_meta::data_groups::ranges::retired_regions_in_txn(&txn)?;
             for creation in kv9_meta::data_groups::committed_creations(&self.node.meta_raft.store)? {
+                if retired.contains(&creation.intent().region().0) {
+                    continue;
+                }
                 for (m, _) in kv9_meta::data_groups::committed_members(&txn, root.digest(), creation.intent())? {
                     hosting.insert((m.node.0, m.incarnation.as_bytes().to_vec()));
                 }

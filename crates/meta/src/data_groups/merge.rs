@@ -265,7 +265,7 @@ pub fn plan_merge<E: Engine>(
         .into_iter()
         .map(|(m, _)| m.node)
         .collect();
-    let child = super::plan_empty_group(txn, child_operation(operation), &members)?;
+    let child = super::plan_child_group(txn, child_operation(operation), &members)?;
     super::activation::plan_activation(txn, &child)?;
     let intent = MergeIntent {
         root: root.digest(),
