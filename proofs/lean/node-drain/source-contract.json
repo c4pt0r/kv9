@@ -18,10 +18,10 @@
   "source_sha256": {
     "crates/server/src/runtime/node_drain.rs": "c97e865e654d195b5db456bed42ce02ad2f7f28aec0e75a83fc74db146afdb9c",
     "crates/server/src/runtime/placement.rs": "c57bfaeed1cc0097eb4f9bc762774f0928d3f42acd60b8b920569e06ce2f854e",
-    "crates/meta/src/data_groups/drain.rs": "f6a10a19935b248a33825935f2012c7dfa15cbfe7c727289d75b28b74c3355c6",
-    "crates/server/src/runtime.rs": "7c108db6f6be5f825b6636f851b6cff4a67c23e5924bca67ab87fa9116384d5f",
-    "crates/server/proto/kv9.proto": "a3690989bc60121a30016bdca71460990c2a04f12f3157b220cf33ae06431d98",
+    "crates/meta/src/data_groups/drain.rs": "faee4d0e7213deed6bde11dbd6dfedab5371aac3d3782913db62d0f648514538",
+    "crates/server/src/runtime.rs": "33085af9b8d941ec71943d1f76880dfec753d634a997529fa6c4f92dbe33e70c",
+    "crates/server/proto/kv9.proto": "65ac1434dac1cffc610f00aaa5cf8b820d398765a5512cf267a09da1e5995cad",
     "scripts/node-drain-e2e.py": "875e4a6c57be0a6b2097a40dd538917959d08aa150be7154cc696650e242580c",
-    "docs/DRAIN-NODE.md": "4408733757278b73385ecb7386ac90f872931263b3d238b1d0bd4200de90d951"
+    "docs/DRAIN-NODE.md": "61d0f7e1956af22727f92ece3921733ec415f4907e0e8d216e00c340e882a32c"
   }
 }

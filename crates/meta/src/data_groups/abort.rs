@@ -133,6 +133,16 @@ fn matches_migration(
     Ok(())
 }
 
+/// The subject of an abort committed BEFORE any image exists (docs/RANGE-SPLIT.md
+/// §12): derived from the operation, nonzero, and never equal to a real image
+/// subject, so the ledger's owner-pair probe can never match it. The migration
+/// settles exactly as an abort after a pin would, with nothing to settle.
+pub fn no_image_subject(operation: [u8; 16]) -> [u8; 32] {
+    let mut bytes = b"kv9-abort/no-image".to_vec();
+    bytes.extend_from_slice(&operation);
+    *RootDigest::sha256(&bytes).as_bytes()
+}
+
 /// Stage one idempotent abort row in the serialized, term-fenced catalog
 /// transaction. `false` means the exact abort already exists and this commit
 /// is a confirmation receipt. The committed migration row is the authority

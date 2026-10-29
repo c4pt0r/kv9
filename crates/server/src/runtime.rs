@@ -2286,6 +2286,11 @@ impl AdminApi for RuntimeBackend {
         let mut location = self.node.get_region(caller, keyspace, key)?;
         if let Some(group) = self.raw_directory.get_for(keyspace, key) {
             location.leader = group.leader();
+        } else if location.leader.is_none() {
+            // Not hosted here: a committed member is the next hop; it answers with
+            // the group's actual leader.
+            let txn = self.node.meta_raft.store.begin()?;
+            location.leader = gate::data_range_member_hint(&txn, keyspace, key)?;
         }
         Ok(location)
     }
@@ -2570,8 +2575,18 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
-    fn list_data_groups(&self, _caller: &str) -> Result<Vec<crate::api::DataGroupSummary>> {
+    fn list_data_groups(&self, _caller: &str) -> Result<crate::api::DataGroupListing> {
         use crate::api::{DataGroupKeyspace, DataGroupMigration, DataGroupPlan, DataGroupReplica, DataGroupSummary};
+        let mut readback_errors: Vec<String> = Vec::new();
+        fn surface<T: Default>(errors: &mut Vec<String>, what: &str, r: Result<T>) -> T {
+            match r {
+                Ok(v) => v,
+                Err(e) => {
+                    errors.push(format!("{what}: {e}"));
+                    T::default()
+                }
+            }
+        }
         use kv9_meta::data_groups as dg;
         self.ensure_catalog_ready()?;
         let status = self.driver.status();
@@ -2598,10 +2613,11 @@ impl AdminApi for RuntimeBackend {
         let truncations = dg::truncation::committed_truncations(store)?;
         let floors = dg::compaction::committed_compaction_floors(store)?;
         let plans = dg::addition::committed_plans(store)?;
-        let splits = dg::split::committed_splits(store).unwrap_or_default();
-        let split_evidence = dg::split_evidence::committed_split_evidence(store).unwrap_or_default();
-        let merges = dg::merge::committed_merges(store).unwrap_or_default();
-        let merge_evidence = dg::merge::committed_merge_evidence(store).unwrap_or_default();
+        let splits = surface(&mut readback_errors, "split intents", dg::split::committed_splits(store));
+        let split_evidence = surface(&mut readback_errors, "split evidence", dg::split_evidence::committed_split_evidence(store));
+        let merges = surface(&mut readback_errors, "merge intents", dg::merge::committed_merges(store));
+        let merge_evidence = surface(&mut readback_errors, "merge evidence", dg::merge::committed_merge_evidence(store));
+        let effective_aborts = surface(&mut readback_errors, "aborts", dg::range_abort::effective_aborts(store));
         let certified = kv9_meta::root::certified_root(&store.begin()?)?;
         let view = store.begin()?.into_view();
         let mut groups = Vec::new();
@@ -2668,7 +2684,9 @@ impl AdminApi for RuntimeBackend {
                         child_high_task: s.child_high(),
                         child_low_region: region_of(s.child_low()),
                         child_high_region: region_of(s.child_high()),
-                        stage: if ranges
+                        stage: if effective_aborts.contains(&s.operation()) {
+                            "aborted"
+                        } else if ranges
                             .iter()
                             .any(|r| r.range().region == s.parent_region() && r.range().sealed)
                         {
@@ -2702,7 +2720,9 @@ impl AdminApi for RuntimeBackend {
                         high_region: m.high_region().0,
                         child_task: m.child(),
                         child_region: region_of(m.child()),
-                        stage: if sealed(m.low_region()) && sealed(m.high_region()) {
+                        stage: if effective_aborts.contains(&m.operation()) {
+                            "aborted"
+                        } else if sealed(m.low_region()) && sealed(m.high_region()) {
                             "published"
                         } else if evidence.is_some() {
                             "populated"
@@ -2798,7 +2818,7 @@ impl AdminApi for RuntimeBackend {
                     .collect(),
             });
         }
-        Ok(groups)
+        Ok(crate::api::DataGroupListing { groups, readback_errors })
     }
 
     fn transfer_leader(
@@ -2976,6 +2996,73 @@ impl AdminApi for RuntimeBackend {
         Ok(crate::api::MergeRangesResult { intent, child, changed, applied })
     }
 
+    fn abort_task(&self, caller: &str, task: u64) -> Result<crate::api::AbortResult> {
+        use kv9_meta::data_groups as dg;
+        self.ensure_serving()?;
+        let store = &self.node.meta_raft.store;
+        let certified = kv9_meta::root::certified_root(&store.begin()?)?
+            .ok_or_else(|| Error::MetaNotReady("abort requires a certified root".into()))?;
+        // A replica plan aborts through its migration abort (kind 108): once an image
+        // is planned the published pin supplies the subject and the ledger settles it;
+        // before that, a derived no-image subject that no pin can ever match.
+        if let Some(plan) = dg::addition::committed_plans(store)?.into_iter().find(|p| p.task() == task) {
+            let view = store.begin()?.into_view();
+            let planned_image = dg::capture::committed_capture(view.as_ref(), &certified, plan.operation())?.is_some();
+            let (abort, changed, applied) = if planned_image {
+                let r = AdminApi::record_migration_abort(self, caller, certified.digest(), plan.operation())?;
+                (r.abort, r.changed, r.applied)
+            } else {
+                let _guard = self.node.meta_raft.lock_catalog_txn();
+                let term = self.prepare_catalog()?;
+                let mut txn = store.begin()?;
+                let (abort, changed) = dg::abort::plan_abort(
+                    &mut txn,
+                    plan.operation(),
+                    dg::abort::no_image_subject(plan.operation()),
+                )?;
+                let command = if changed {
+                    Command::from_batch(&txn.into_batch())
+                } else {
+                    Command::Noop
+                };
+                let applied = self.commit_catalog(&command, term)?;
+                (abort, changed, applied)
+            };
+            return Ok(crate::api::AbortResult {
+                target: "plan",
+                target_task: task,
+                operation: plan.operation(),
+                abort_task: abort.task(),
+                changed,
+                applied,
+                path: if planned_image {
+                    "migration abort (image planned: the ledger settles the pins)"
+                } else {
+                    "migration abort (no image planned)"
+                },
+            });
+        }
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = store.begin()?;
+        let (abort, changed) = dg::range_abort::plan_range_abort(&mut txn, task)?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::AbortResult {
+            target: abort.target().label(),
+            target_task: task,
+            operation: abort.operation(),
+            abort_task: abort.task(),
+            changed,
+            applied,
+            path: "abort row",
+        })
+    }
+
     fn drain_node(&self, _caller: &str, node: NodeId) -> Result<crate::api::DrainResult> {
         self.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
@@ -3092,6 +3179,8 @@ fn task_kind_name(kind: u64) -> &'static str {
         114 => "split_evidence",
         115 => "merge_intent",
         116 => "merge_evidence",
+        117 => "operation_abort",
+        118 => "seal_evidence",
         _ => "unknown",
     }
 }
@@ -3756,6 +3845,20 @@ mod gate {
         check_context_in(store, &txn, keyspace_id, epoch, span)
     }
 
+    /// A committed member of the unsealed range covering `key` in a data keyspace,
+    /// preferring the region row's recorded leader, for redirecting a request that
+    /// landed on a node that does not host the range.
+    pub(super) fn data_range_member_hint<E: kv9_engine::Engine>(
+        txn: &kv9_meta::store::MetaTxn<'_, E>,
+        keyspace_id: KeyspaceId,
+        key: &[u8],
+    ) -> Result<Option<kv9_common::NodeId>> {
+        let Some((_, members)) = kv9_meta::data_groups::ranges::route_in(txn, keyspace_id, key)? else {
+            return Ok(None);
+        };
+        Ok(members.first().map(|m| m.node))
+    }
+
     /// The same gate over a CALLER-OWNED transaction — one body, two entry
     /// shapes. The establishing-read seam calls this with a txn built on the
     /// post-barrier view so context and data are judged on ONE state; with
@@ -3776,9 +3879,14 @@ mod gate {
         let keyspace = Tables::<E>::keyspace_in(txn, keyspace_id)?
             .ok_or(Error::KeyspaceNotFound(keyspace_id))?;
         if keyspace.config == kv9_meta::data_groups::ranges::DATA_KEYSPACE_CONFIG {
-            return Err(Error::MetaNotReady(
-                "data range is not available through the metadata group".into(),
-            ));
+            // A data keyspace whose covering range this node does not host: point the
+            // client at a committed member of that range (the typed NotLeader redirect
+            // it already follows); that member serves or redirects to the group's
+            // leader. A node that left the group (a move, a drain) answers the same way.
+            return Err(match data_range_member_hint(txn, keyspace_id, span.anchor())? {
+                Some(member) => Error::NotLeader { leader: Some(member) },
+                None => Error::RegionNotFound,
+            });
         }
         if keyspace.api_type != ApiType::Raw {
             return Err(Error::ApiTypeMismatch {
@@ -5794,6 +5902,19 @@ impl NodeRuntime {
                 ready = false;
             }
         }
+        // The children of an effectively aborted split or merge are abandoned empty
+        // groups: every node hosting one retires it (the abort row is the authority).
+        if let Ok(children) = self.aborted_children() {
+            for region in children {
+                if self.data_groups.local_parts(region).is_none() {
+                    continue;
+                }
+                if let Err(error) = self.data_groups.retire_locally(region) {
+                    self.group_control_error = Some(format!("retiring aborted child {}: {error}", region.0));
+                    ready = false;
+                }
+            }
+        }
         // A SEALED binding is written by a split or merge publication only, together
         // with the successors that now cover its keys, so it is the committed
         // authority that the whole group is history (docs/RANGE-SPLIT.md §9): every
@@ -5811,6 +5932,36 @@ impl NodeRuntime {
             }
         }
         ready
+    }
+
+    /// The child regions of every split or merge intent whose abort is effective:
+    /// empty groups nobody will ever bind (docs/RANGE-SPLIT.md §12).
+    fn aborted_children(&self) -> Result<Vec<RegionId>> {
+        use kv9_meta::data_groups as dg;
+        let store = &self.node.meta_raft.store;
+        let aborted = dg::range_abort::effective_aborts(store)?;
+        if aborted.is_empty() {
+            return Ok(Vec::new());
+        }
+        let mut tasks = Vec::new();
+        for s in dg::split::committed_splits(store)? {
+            if aborted.contains(&s.operation()) {
+                tasks.push(s.child_low());
+                tasks.push(s.child_high());
+            }
+        }
+        for m in dg::merge::committed_merges(store)? {
+            if aborted.contains(&m.operation()) {
+                tasks.push(m.child());
+            }
+        }
+        let mut regions = Vec::new();
+        for task in tasks {
+            if let Some(c) = dg::committed_creation(store, task)? {
+                regions.push(c.intent().region());
+            }
+        }
+        Ok(regions)
     }
 
     /// Physical reclamation of RETIRED local group payloads, off unless
@@ -5857,7 +6008,8 @@ impl NodeRuntime {
                     && d.source().node == self.store_identity.node_id
                     && d.source().incarnation == self.store_identity.store_incarnation
             });
-            if !sealed && !removed {
+            let abandoned = self.aborted_children().is_ok_and(|c| c.contains(&region));
+            if !sealed && !removed && !abandoned {
                 continue; // no committed authority locally applied yet
             }
             if let Err(error) = self.data_groups.reclaim_retired(region) {

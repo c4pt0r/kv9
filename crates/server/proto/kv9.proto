@@ -64,6 +64,9 @@ service Kv9 {
   // Commit a merge intent for two adjacent bound ranges on the same stores: the
   // merged child is created and activated in the same transaction (docs/RANGE-SPLIT.md §6).
   rpc MergeRanges(MergeRangesRequest) returns (MergeRangesResponse);
+  // Abort a split or merge intent (before any seal), a node drain, or a replica
+  // plan (docs/RANGE-SPLIT.md §12).
+  rpc AbortTask(AbortTaskRequest) returns (AbortTaskResponse);
   rpc ChangeNodeEndpoint(ChangeNodeEndpointRequest) returns (ChangeNodeEndpointResponse);
   // Tracking-only retention administration. No object deletion or installation.
   rpc ApplyRetention(ApplyRetentionRequest) returns (ApplyRetentionResponse);
@@ -533,6 +536,19 @@ message SplitRangeResponse {
   uint64 applied_term = 7;
   uint64 applied_index = 8;
 }
+message AbortTaskRequest {
+  uint64 task = 1;
+}
+message AbortTaskResponse {
+  string target = 1;        // split | merge | drain | plan
+  uint64 target_task = 2;
+  bytes operation = 3;
+  uint64 abort_task = 4;    // the kind-117 row, or the kind-108 migration abort
+  bool changed = 5;
+  uint64 applied_term = 6;
+  uint64 applied_index = 7;
+  string path = 8;
+}
 message MergeRangesRequest {
   bytes root_digest = 1;
   bytes operation_id = 2;
@@ -609,6 +625,9 @@ message AddReplicaResponse {
 
 message ListDataGroupsResponse {
   repeated DataGroupRow groups = 1;
+  // Catalog readbacks that failed while building the listing (a row family that
+  // no longer validates). Never silently an empty list.
+  repeated string readback_errors = 2;
 }
 message ListTasksRequest {
   uint64 after = 1;  // exclusive cursor (task id); 0 starts at the beginning

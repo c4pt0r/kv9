@@ -747,6 +747,32 @@ class SplitRangeResponse(_message.Message):
     applied_index: int
     def __init__(self, intent_task: _Optional[int] = ..., child_low_task: _Optional[int] = ..., child_high_task: _Optional[int] = ..., child_low_region: _Optional[int] = ..., child_high_region: _Optional[int] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
 
+class AbortTaskRequest(_message.Message):
+    __slots__ = ("task",)
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    def __init__(self, task: _Optional[int] = ...) -> None: ...
+
+class AbortTaskResponse(_message.Message):
+    __slots__ = ("target", "target_task", "operation", "abort_task", "changed", "applied_term", "applied_index", "path")
+    TARGET_FIELD_NUMBER: _ClassVar[int]
+    TARGET_TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    ABORT_TASK_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    target: str
+    target_task: int
+    operation: bytes
+    abort_task: int
+    changed: bool
+    applied_term: int
+    applied_index: int
+    path: str
+    def __init__(self, target: _Optional[str] = ..., target_task: _Optional[int] = ..., operation: _Optional[bytes] = ..., abort_task: _Optional[int] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., path: _Optional[str] = ...) -> None: ...
+
 class MergeRangesRequest(_message.Message):
     __slots__ = ("root_digest", "operation_id", "low_region", "high_region")
     ROOT_DIGEST_FIELD_NUMBER: _ClassVar[int]
@@ -890,10 +916,12 @@ class AddReplicaResponse(_message.Message):
     def __init__(self, plan_task: _Optional[int] = ..., migration_task: _Optional[int] = ..., region_id: _Optional[int] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
 
 class ListDataGroupsResponse(_message.Message):
-    __slots__ = ("groups",)
+    __slots__ = ("groups", "readback_errors")
     GROUPS_FIELD_NUMBER: _ClassVar[int]
+    READBACK_ERRORS_FIELD_NUMBER: _ClassVar[int]
     groups: _containers.RepeatedCompositeFieldContainer[DataGroupRow]
-    def __init__(self, groups: _Optional[_Iterable[_Union[DataGroupRow, _Mapping]]] = ...) -> None: ...
+    readback_errors: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, groups: _Optional[_Iterable[_Union[DataGroupRow, _Mapping]]] = ..., readback_errors: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ListTasksRequest(_message.Message):
     __slots__ = ("after", "limit", "kind")

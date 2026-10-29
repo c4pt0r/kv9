@@ -235,10 +235,15 @@ pub fn plan_split<E: Engine>(
         .into_iter()
         .find(|b| b.range().region == parent_region)
         .ok_or_else(|| invalid("split requires the parent's committed range binding"))?;
-    // An existing intent for this operation or parent decides before anything is staged.
+    // An existing intent for this operation or parent decides before anything is staged;
+    // an effectively aborted one is history and blocks nothing.
+    let aborted = super::range_abort::effective_aborts_in_txn(txn, root.digest())?;
     for row in task_rows(txn) {
         let row = row?;
         if let Some(previous) = from_split_row(&row, root.digest())? {
+            if aborted.contains(&previous.operation) {
+                continue;
+            }
             if previous.operation == operation {
                 if previous.parent_region != parent_region
                     || previous.parent_bind_task != parent.bind_task()
@@ -257,6 +262,9 @@ pub fn plan_split<E: Engine>(
     }
     if parent.range().sealed {
         return Err(invalid("split parent range is already sealed"));
+    }
+    if super::live_plan_on_region(txn, root.digest(), parent_region)? {
+        return Err(invalid("the parent has an unsettled replica plan; split after it settles"));
     }
     let members: Vec<NodeId> = super::committed_members(txn, root.digest(), parent.creation().intent())?
         .into_iter()
@@ -308,6 +316,9 @@ pub fn plan_split_publication<E: Engine>(txn: &mut MetaTxn<'_, E>, operation: [u
         .into_iter()
         .find(|s| s.operation() == operation)
         .ok_or_else(|| invalid("split publication requires the committed intent"))?;
+    if super::range_abort::effective_aborts_in_txn(txn, root.digest())?.contains(&operation) {
+        return Err(invalid("the split intent is aborted; nothing is published"));
+    }
     let bindings = super::ranges::read_in(txn)?;
     let parent = bindings
         .iter()
@@ -402,20 +413,35 @@ pub fn committed_splits<E: Engine>(store: &MetaStore<E>) -> Result<Vec<SplitInte
     committed_splits_in_txn(&txn)
 }
 
+/// The committed intents whose abort is effective (history, not work).
+pub fn aborted_split_operations<E: Engine>(store: &MetaStore<E>) -> Result<std::collections::BTreeSet<[u8; 16]>> {
+    let txn = store.begin()?;
+    let root = crate::root::certified_root(&txn)?
+        .ok_or_else(|| invalid("split readback requires a certified metadata root"))?;
+    super::range_abort::effective_aborts_in_txn(&txn, root.digest())
+}
+
 pub fn committed_splits_in_txn<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<SplitIntent>> {
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("split readback requires a certified metadata root"))?;
+    let aborted = super::range_abort::effective_aborts_in_txn(txn, root.digest())?;
     let mut out: Vec<SplitIntent> = Vec::new();
     for row in task_rows(txn) {
         let row = row?;
         if let Some(intent) = from_split_row(&row, root.digest())? {
-            validate_against(txn, root.digest(), &intent)?;
+            // An aborted intent is history: its children retire and the parent's
+            // membership may move on, so it is decoded, never re-validated.
+            if !aborted.contains(&intent.operation) {
+                validate_against(txn, root.digest(), &intent)?;
+            }
             if out.iter().any(|prior| {
                 prior.task == intent.task
                     || prior.operation == intent.operation
-                    || prior.parent_region == intent.parent_region
                     || prior.child_low == intent.child_low
                     || prior.child_high == intent.child_high
+                    || (prior.parent_region == intent.parent_region
+                        && !aborted.contains(&prior.operation)
+                        && !aborted.contains(&intent.operation))
             }) {
                 return Err(invalid("duplicate split identity"));
             }
@@ -494,11 +520,78 @@ mod tests {
         let mut txn = store.begin().unwrap();
         assert!(plan_split(&mut txn, [4; 16], low.region(), b"c").is_err());
         drop(txn);
+        // Membership and range operations exclude each other while live: a move on
+        // the parent is refused by the migration planner, and a split on a group
+        // with an unsettled plan is refused by this planner.
+        register_node(&store, 4, [40; 16]);
+        {
+            let mut txn = store.begin().unwrap();
+            assert!(
+                super::super::migration::plan_migration(&mut txn, [7; 16], parent.task(), NodeId(4)).is_err(),
+                "a live split binds the parent's membership"
+            );
+        }
+        {
+            let other = {
+                let mut txn = store.begin().unwrap();
+                let c = plan_empty_group(&mut txn, [8; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+                let root = crate::root::certified_root(&txn).unwrap().unwrap().digest();
+                super::super::ranges::plan_keyspace(&mut txn, root, c.task(), "busy", TenantId(1)).unwrap();
+                super::super::migration::plan_migration(&mut txn, [9; 16], c.task(), NodeId(4)).unwrap();
+                txn.commit().unwrap();
+                c
+            };
+            let mut txn = store.begin().unwrap();
+            assert!(plan_split(&mut txn, [10; 16], other.region(), b"q").is_err(), "an unsettled plan refuses a split");
+        }
+        // An abort before any seal is effective: the intent becomes history, the
+        // parent accepts a new split and a move again, and publication of the
+        // aborted one refuses. Seal evidence makes a live intent's abort refuse.
+        {
+            let g3 = {
+                let mut txn = store.begin().unwrap();
+                let c = plan_empty_group(&mut txn, [20; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+                let root = crate::root::certified_root(&txn).unwrap().unwrap().digest();
+                super::super::ranges::plan_keyspace(&mut txn, root, c.task(), "abortable", TenantId(1)).unwrap();
+                txn.commit().unwrap();
+                c
+            };
+            let mut txn = store.begin().unwrap();
+            let (doomed, dl, _, _) = plan_split(&mut txn, [21; 16], g3.region(), b"m").unwrap();
+            txn.commit().unwrap();
+            let mut txn = store.begin().unwrap();
+            let (a, changed) = super::super::range_abort::plan_range_abort(&mut txn, doomed.task()).unwrap();
+            assert!(changed && a.target() == super::super::range_abort::AbortTarget::Split);
+            txn.commit().unwrap();
+            assert!(super::super::split::aborted_split_operations(&store).unwrap().contains(&doomed.operation()));
+            assert!(committed_splits(&store).unwrap().iter().any(|s| s.task() == doomed.task()), "history still reads back");
+            let mut txn = store.begin().unwrap();
+            assert!(plan_split_publication(&mut txn, [21; 16]).is_err(), "an aborted intent never publishes");
+            let (again, l3, _, changed) = plan_split(&mut txn, [22; 16], g3.region(), b"n").unwrap();
+            assert!(changed && again.task() != doomed.task() && l3.task() != dl.task(), "the parent is free again");
+            txn.commit().unwrap();
+            let mut txn = store.begin().unwrap();
+            // The second intent is live, so a move still refuses; abort it too and the move is accepted.
+            assert!(super::super::migration::plan_migration(&mut txn, [23; 16], g3.task(), NodeId(4)).is_err());
+            super::super::range_abort::plan_range_abort(&mut txn, again.task()).unwrap();
+            txn.commit().unwrap();
+            let mut txn = store.begin().unwrap();
+            assert!(super::super::migration::plan_migration(&mut txn, [23; 16], g3.task(), NodeId(4)).is_ok(),
+                "the parent's membership is free again");
+            drop(txn);
+            // Seal evidence for the main intent makes its abort refuse.
+            let receipt = super::super::range_abort::SealEvidence::receipt(
+                intent.root(), intent.operation(), region, kv9_common::AppliedPosition { term: 1, index: 9 }).unwrap();
+            let mut txn = store.begin().unwrap();
+            super::super::range_abort::plan_seal_evidence(&mut txn, &receipt).unwrap();
+            txn.commit().unwrap();
+            let mut txn = store.begin().unwrap();
+            assert!(super::super::range_abort::plan_range_abort(&mut txn, intent.task()).is_err(), "sealed: irrevocable");
+        }
         // Decode refuses a tampered key length.
         let mut bytes = intent.encode();
         bytes[97] ^= 1;
         assert!(SplitIntent::decode(&bytes).is_err());
-        let _ = register_node;
 
         // Publication needs both evidence rows, then seals the parent in place and
         // binds the children as the exact partition; routing follows; a repeat confirms.
@@ -517,7 +610,8 @@ mod tests {
         assert!(published);
         txn.commit().unwrap();
         let bindings = super::super::ranges::committed_ranges(&store).unwrap();
-        assert_eq!(bindings.len(), 3);
+        let of_split = [region, low.region(), high.region()];
+        assert_eq!(bindings.iter().filter(|b| of_split.contains(&b.range().region)).count(), 3);
         let parent_row = bindings.iter().find(|b| b.range().region == region).unwrap();
         assert!(parent_row.range().sealed && parent_row.range().version == 2);
         let txn = store.begin().unwrap();
@@ -532,6 +626,8 @@ mod tests {
         let mut txn = store.begin().unwrap();
         let (_, again) = plan_split_publication(&mut txn, [2; 16]).unwrap();
         assert!(!again, "a published shape confirms");
-        assert_eq!(committed_splits(&store).unwrap().len(), 1, "the intent reads back as its published shape");
+        let splits = committed_splits(&store).unwrap();
+        assert!(splits.iter().any(|s| s.task() == intent.task()), "the intent reads back as its published shape");
+        assert_eq!(splits.iter().filter(|s| s.parent_region() == region).count(), 1);
     }
 }

@@ -893,6 +893,12 @@ jobs:
           - script: auto-split-e2e.sh
             base_port: 27650
             success_marker: "PASS: auto split"
+          # Aborts (docs/RANGE-SPLIT.md §12): a split intent, a replica plan and a drain
+          # aborted; children reclaimed, learner detached, store drainable again; a split
+          # refused while a plan is live.
+          - script: operation-abort-e2e.sh
+            base_port: 27750
+            success_marker: "PASS: operation abort"
           # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
           # isolated leader must refuse raw reads with the NAMED typed families
           # (read_unconfirmed / not_leader) — transport errors explicitly do not

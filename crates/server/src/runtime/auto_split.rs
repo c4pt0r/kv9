@@ -157,6 +157,9 @@ fn footprint(wal_path: &std::path::Path) -> u64 {
 
 impl NodeRuntime {
     pub(super) fn reconcile_auto_split(&mut self) {
+        if !super::range_split::range_driver_enabled() {
+            return;
+        }
         if let Some((region, bytes, handle)) = self.auto_split.in_flight.take() {
             if !handle.is_finished() {
                 self.auto_split.in_flight = Some((region, bytes, handle));

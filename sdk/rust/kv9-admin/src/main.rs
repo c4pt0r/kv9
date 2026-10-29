@@ -68,6 +68,7 @@ fn usage() -> String {
      \u{20}        merge <low-creation-task> <high-creation-task> [--operation <hex> | --label <text>]\n\
      task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history\n\
      \u{20}        describe <id>\n\
+     \u{20}        abort <id>                   abort a split/merge intent (before its seal), a drain or a replica plan\n\
      version\n\
      \n\
      The token comes from --token, KV9_ADMIN_TOKEN, KV9_CLIENT_TOKEN or the context's\n\
@@ -1672,7 +1673,8 @@ async fn group_merge(global: &Global, cluster: &mut Cluster, args: &VerbArgs, lo
 }
 
 async fn group_list(cluster: &mut Cluster) -> Outcome {
-    let groups = cluster.leader.list_data_groups().await?;
+    let listing = cluster.leader.list_data_groups_detailed().await?;
+    let groups = listing.groups;
     let rows: Vec<Vec<String>> = groups
         .iter()
         .map(|g| {
@@ -1696,7 +1698,7 @@ async fn group_list(cluster: &mut Cluster) -> Outcome {
         command: "group list".into(),
         result: json!(groups.iter().map(group_json).collect::<Vec<_>>()),
         table: table(&["TASK", "REGION", "MEMBERS", "ACTIVATED", "KEYSPACES", "MIGRATIONS", "COMPACTED", "PLANS"], &rows),
-        partial: Vec::new(),
+        partial: listing.readback_errors.iter().map(|e| format!("catalog readback failed: {e}")).collect(),
     })
 }
 
@@ -2023,6 +2025,21 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
             group_plan_replica(global, &mut cluster, &args, id, verb.trim_end_matches("-replica")).await?
         }
         ("task", "list") => task_list(&mut cluster, &args).await?,
+        ("task", "abort") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("task abort <id>".into()))?, "task id")?;
+            confirm(global, &format!("plan: AbortTask task={id} at leader node {}; the cluster stops the operation and retires what it created", cluster.leader_id), Some(&id.to_string()))?;
+            let r = cluster.leader.abort_task(id).await?;
+            Report {
+                command: "task abort".into(),
+                result: json!({
+                    "target": r.target, "target_task": r.target_task, "operation": hex(&r.operation),
+                    "abort_task": r.abort_task, "outcome": if r.changed { "committed" } else { "confirmed" },
+                    "path": r.path, "applied": {"term": r.applied.term, "index": r.applied.index},
+                }),
+                table: format!("{} {} aborted as task {} ({}; {})", r.target, r.target_task, r.abort_task, if r.changed { "committed" } else { "confirmed" }, r.path),
+                partial: Vec::new(),
+            }
+        }
         ("task", "describe") => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("task describe <id>".into()))?, "task id")?;
             task_describe(&mut cluster, id).await?

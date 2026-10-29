@@ -211,6 +211,22 @@ impl Client {
         })
     }
 
+    /// Abort the long-running intent `task` names (docs/RANGE-SPLIT.md §12).
+    pub async fn abort_task(&self, task: u64) -> Result<Aborted, Error> {
+        let r = self
+            .invoke(false, proto::AbortTaskRequest { task }, |mut c, r| async move { c.abort_task(r).await })
+            .await?;
+        Ok(Aborted {
+            target: r.target,
+            target_task: r.target_task,
+            operation: r.operation,
+            abort_task: r.abort_task,
+            changed: r.changed,
+            applied: Applied { term: r.applied_term, index: r.applied_index },
+            path: r.path,
+        })
+    }
+
     /// Commit a merge intent for the adjacent bound ranges `low` and `high` on the
     /// same stores (docs/RANGE-SPLIT.md §6); the merged child is created and
     /// activated in the same transaction and the cluster does the rest.
@@ -442,6 +458,19 @@ pub struct DataGroupMerge {
     pub evidence_rows: u64,
 }
 
+/// The receipt of [`Client::abort_task`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Aborted {
+    /// `split`, `merge`, `drain` or `plan`.
+    pub target: String,
+    pub target_task: u64,
+    pub operation: Vec<u8>,
+    pub abort_task: u64,
+    pub changed: bool,
+    pub applied: Applied,
+    pub path: String,
+}
+
 /// The receipt of [`Client::merge_ranges`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MergePlanned {
@@ -450,6 +479,13 @@ pub struct MergePlanned {
     pub child_region: u64,
     pub changed: bool,
     pub applied: Applied,
+}
+
+/// [`Client::list_data_groups_detailed`]: the groups and the leader's failed readbacks.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupListing {
+    pub groups: Vec<DataGroup>,
+    pub readback_errors: Vec<String>,
 }
 
 /// One committed split intent of a group.
@@ -619,14 +655,22 @@ impl Client {
         })
     }
 
-    /// Every committed data group, linearizably, from the metadata leader.
+    /// Every committed data group, linearizably, from the metadata leader. Readback
+    /// errors are dropped here; [`Client::list_data_groups_detailed`] keeps them.
     pub async fn list_data_groups(&self) -> Result<Vec<DataGroup>, Error> {
+        Ok(self.list_data_groups_detailed().await?.groups)
+    }
+
+    /// The listing plus every catalog readback that failed while the leader built
+    /// it (a row family that no longer validates): operators must see those.
+    pub async fn list_data_groups_detailed(&self) -> Result<DataGroupListing, Error> {
         let r = self
             .invoke(true, proto::ListDataGroupsRequest {}, |mut c, r| async move {
                 c.list_data_groups(r).await
             })
             .await?;
-        Ok(r.groups
+        let readback_errors = r.readback_errors;
+        let groups = r.groups
             .into_iter()
             .map(|g| DataGroup {
                 creation_task: g.creation_task,
@@ -720,7 +764,8 @@ impl Client {
                     })
                     .collect(),
             })
-            .collect())
+            .collect();
+        Ok(DataGroupListing { groups, readback_errors })
     }
 
     /// Commit one replica plan: `mode` is `"add"` (grow the group by `destination`) or

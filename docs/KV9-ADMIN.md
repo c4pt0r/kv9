@@ -32,7 +32,8 @@ status contract ([STATUS-PROCESS-IDENTITY](STATUS-PROCESS-IDENTITY.md)) and the 
 > `group merge <low-task> <high-task>` merges two adjacent siblings back: the cluster seals, copies, verifies
 > and publishes by itself ([RANGE-SPLIT](RANGE-SPLIT.md)); `group describe` lists `splits` and `merges` with
 > their stage (`intended` → `populating` → `populated` → `published`).
-> `node replace`, retention verbs and `group abort` remain open.
+> `task abort <id>` aborts a split/merge intent before its seal, a drain, or a replica plan
+> ([RANGE-SPLIT](RANGE-SPLIT.md) §12). `node replace` and retention verbs remain open.
 
 ## The problem
 

@@ -121,6 +121,11 @@ e2e and its CI step.
 
 ## 9. As built
 
+- **Abort.** `kv9-admin task abort <drain-task>` ([RANGE-SPLIT](RANGE-SPLIT.md) §12): the drain
+  becomes history, placement stops excluding the store, the node stops handing leadership away,
+  plans already committed complete, and the store can be drained again (the row carries a
+  sequence, `KV9DRN02`). A drain's move plans are refused while a split or merge names the group.
+
 - **Two roles, one reconcile pass.** `reconcile_node_drain` runs after the repair verdict. A
   node whose own store is named by a drain hands away one leadership per pass (data groups first,
   through `AdminApi::transfer_leader` on a worker thread, to the caught-up voter with the highest

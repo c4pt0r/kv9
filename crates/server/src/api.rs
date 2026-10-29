@@ -708,7 +708,7 @@ pub trait AdminApi {
     }
     /// Every committed data group with its activation, range bindings, migrations
     /// and newest compaction floor. Linearizable, leader-only.
-    fn list_data_groups(&self, _caller: &str) -> Result<Vec<DataGroupSummary>> {
+    fn list_data_groups(&self, _caller: &str) -> Result<DataGroupListing> {
         Err(kv9_common::Error::NotImplemented(
             "AdminApi::list_data_groups",
         ))
@@ -741,6 +741,12 @@ pub trait AdminApi {
         _source: Option<kv9_common::NodeId>,
     ) -> Result<AddReplicaResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::add_replica"))
+    }
+    /// Abort the long-running intent `task` names (docs/RANGE-SPLIT.md §12): a split or
+    /// merge before any seal, a node drain, or a replica plan (before its image is
+    /// planned through the abort row; afterwards through the migration abort).
+    fn abort_task(&self, _caller: &str, _task: u64) -> Result<AbortResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::abort_task"))
     }
     /// Commit the intent that `node`'s current store leaves the cluster
     /// (docs/DRAIN-NODE.md); the drained node hands away its leaderships and the
@@ -890,6 +896,15 @@ pub struct MergeRangesResult {
     pub applied: AppliedPosition,
 }
 
+/// Every committed data group plus the catalog readbacks that FAILED while building
+/// it: a row family that no longer validates (a frozen split, a tampered row) must be
+/// visible, never an empty list that looks like "nothing here".
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupListing {
+    pub groups: Vec<DataGroupSummary>,
+    pub readback_errors: Vec<String>,
+}
+
 /// One committed split intent of a group, with its catalog-only stage.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct DataGroupSplit {
@@ -963,6 +978,19 @@ pub struct NodeDirectoryRow {
     pub draining: bool,
     /// Draining, and already in no data group and out of the metadata group.
     pub drained: bool,
+}
+
+/// The receipt of [`AdminApi::abort_task`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AbortResult {
+    /// `split`, `merge`, `drain` or `plan`.
+    pub target: &'static str,
+    pub target_task: u64,
+    pub operation: [u8; 16],
+    pub abort_task: u64,
+    pub changed: bool,
+    pub applied: AppliedPosition,
+    pub path: &'static str,
 }
 
 /// The receipt of [`AdminApi::drain_node`].

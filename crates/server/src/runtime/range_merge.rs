@@ -23,7 +23,7 @@ use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::{Command, Role};
 
 use super::range_api::RawGroup;
-use super::range_split::{applied_descriptor, deliver, digest_into, printable, scan_page, successor, PAGE, SEAL_WAIT};
+use super::range_split::{applied_descriptor, deliver, digest_into, printable, range_driver_enabled, scan_page, seal_parent, successor, PAGE};
 use super::{NodeRuntime, RuntimeBackend};
 use crate::api::{RawApi, RequestContext, RequestOrigin};
 
@@ -98,7 +98,7 @@ enum Outcome {
 
 enum Step {
     Publish { low_region: RegionId, root: RootDigest, operation: [u8; 16] },
-    Seal { region: RegionId, driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>, current: DataRange },
+    Seal { region: RegionId, driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>, current: DataRange, root: RootDigest, operation: [u8; 16] },
     Populate(Box<Populate>),
 }
 
@@ -156,6 +156,9 @@ fn child_descriptor(low: &DataRange, high: &DataRange, child: &kv9_meta::data_gr
 
 impl NodeRuntime {
     pub(super) fn reconcile_range_merge(&mut self) {
+        if !range_driver_enabled() {
+            return;
+        }
         if let Some((region, step, label, handle)) = self.range_merge.in_flight.take() {
             if !handle.is_finished() {
                 self.range_merge.in_flight = Some((region, step, label, handle));
@@ -185,8 +188,12 @@ impl NodeRuntime {
             }
         }
         let store = &self.node.meta_raft.store;
-        let Ok(intents) = kv9_meta::data_groups::merge::committed_merges(store) else {
-            return;
+        let intents = match kv9_meta::data_groups::merge::committed_merges(store) {
+            Ok(intents) => intents,
+            Err(error) => {
+                self.range_merge.error = Some(format!("merge intents do not read back: {error}"));
+                return;
+            }
         };
         if intents.is_empty() {
             self.range_merge.views.clear();
@@ -208,9 +215,13 @@ impl NodeRuntime {
         let store = &self.node.meta_raft.store;
         let bindings = dg::ranges::committed_ranges(store)?;
         let evidence = dg::merge::committed_merge_evidence(store).unwrap_or_default();
+        let aborted = dg::range_abort::effective_aborts(store).unwrap_or_default();
         let mut views = Vec::new();
         let mut step: Option<Step> = None;
         for intent in intents {
+            if aborted.contains(&intent.operation()) {
+                continue;
+            }
             let binding = |region: RegionId| bindings.iter().find(|b| b.range().region == region).map(|b| b.range().clone());
             let (Some(low), Some(high)) = (binding(intent.low_region()), binding(intent.high_region())) else { continue };
             if low.sealed && high.sealed {
@@ -277,7 +288,7 @@ impl NodeRuntime {
                 match applied_descriptor(engine)? {
                     Some(current) if !current.sealed => {
                         if child_serves {
-                            step = Some(Step::Seal { region: RegionId(view.parents[i]), driver: driver.clone(), current });
+                            step = Some(Step::Seal { region: RegionId(view.parents[i]), driver: driver.clone(), current, root: intent.root(), operation: intent.operation() });
                             break;
                         }
                         view.waiting = Some("waiting for the merged child to serve behind a leader with its descriptor".into());
@@ -346,12 +357,11 @@ fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: 
             let (changed, applied) = backend.commit_merge_publication(root, operation)?;
             Ok(Outcome::Done(format!("{} at {}/{}", if changed { "published" } else { "confirmed" }, applied.term, applied.index)))
         }
-        Step::Seal { driver, current, .. } => {
-            let mut sealed = current.clone();
-            sealed.version = current.version.checked_add(1).ok_or_else(|| Error::Config("range version exhausted".into()))?;
-            sealed.sealed = true;
-            let applied = super::propose_and_wait(&driver, &Command::DataRange { expected: Some(current.digest()), next: sealed }, SEAL_WAIT)?;
-            Ok(Outcome::Done(format!("sealed at {}/{} (version {})", applied.term, applied.index, current.version + 1)))
+        Step::Seal { region, driver, current, root, operation } => {
+            match seal_parent(backend, &handle, region, &driver, &current, root, operation)? {
+                super::range_split::Outcome::Sealed(message) => Ok(Outcome::Done(message)),
+                _ => Err(Error::Config("unexpected seal outcome".into())),
+            }
         }
         Step::Populate(p) => {
             let Populate { intent, child, child_range, parents, cursor, .. } = *p;

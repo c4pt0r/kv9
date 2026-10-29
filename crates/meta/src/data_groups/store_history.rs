@@ -305,6 +305,20 @@ pub fn project(
             }
             Task::load(view, e.child_task(), 100)?.creation(root)?;
         }
+        // An abort of a split/merge/drain and the seal evidence that makes a split or
+        // merge irrevocable: neither introduces a store.
+        117 => {
+            let a = range_abort::RangeAbort::decode(&t.payload)?;
+            if a.task() != t.id || a.encode() != t.payload {
+                return Err(invalid("store-history range abort differs"));
+            }
+        }
+        118 => {
+            let e = range_abort::SealEvidence::decode(&t.payload)?;
+            if e.task() != t.id || e.encode() != t.payload {
+                return Err(invalid("store-history seal evidence differs"));
+            }
+        }
         _ => {
             return Err(invalid(
                 "unsupported task kind leaves DATA store history unknown",

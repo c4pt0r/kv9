@@ -20,6 +20,7 @@ pub mod drain;
 pub mod evidence;
 pub mod merge;
 pub mod migration;
+pub mod range_abort;
 pub mod ranges;
 pub mod removal;
 pub mod split;
@@ -261,6 +262,52 @@ pub fn plan_empty_group<E: Engine>(
     }
     txn.insert(&TASKS_DESC, &[memcmp_uint(intent.task)], row)?;
     Ok(intent)
+}
+
+/// A split or merge intent that names `region` as a parent and is not yet published
+/// (the parent's binding is unsealed). While one exists the group's membership must not
+/// change: the intent's children were created on the members of that moment and its
+/// readback compares against them (docs/RANGE-SPLIT.md §2, §6).
+pub(crate) fn live_range_operation<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    root: RootDigest,
+    region: RegionId,
+) -> Result<Option<&'static str>> {
+    let sealed = ranges::read_in(txn)?
+        .iter()
+        .any(|b| b.range().region == region && b.range().sealed);
+    if sealed {
+        return Ok(None);
+    }
+    let aborted = range_abort::effective_aborts_in_txn(txn, root)?;
+    for row in task_rows(txn) {
+        let row = row?;
+        if split::from_split_row(&row, root)?.is_some_and(|s| s.parent_region() == region && !aborted.contains(&s.operation())) {
+            return Ok(Some("split"));
+        }
+        if merge::from_merge_row(&row, root)?
+            .is_some_and(|m| (m.low_region() == region || m.high_region() == region) && !aborted.contains(&m.operation()))
+        {
+            return Ok(Some("merge"));
+        }
+    }
+    Ok(None)
+}
+
+/// An unsettled migration (an operator's, or one a replica plan drives) on `region`: a
+/// split or merge must not start while the group's membership is in motion, for the
+/// same reason.
+pub(crate) fn live_plan_on_region<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    root: RootDigest,
+    region: RegionId,
+) -> Result<bool> {
+    for (migration, _) in migration::decode(txn, root)? {
+        if migration.region() == region && !operation_settled(txn, root, migration.operation())? {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 /// Whether a migration operation is **settled** for the purpose of admitting the

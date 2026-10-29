@@ -11,8 +11,8 @@
 use super::*;
 
 const NODE_DRAIN: u64 = 112;
-const DRN_MAGIC: &[u8; 8] = b"KV9DRN01";
-pub const MAX_DRAIN_BYTES: usize = 8 + 32 + 16 + 8 + 8 + 16;
+const DRN_MAGIC: &[u8; 8] = b"KV9DRN02";
+pub const MAX_DRAIN_BYTES: usize = 8 + 32 + 16 + 8 + 8 + 16 + 8;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DrainIntent {
@@ -20,6 +20,8 @@ pub struct DrainIntent {
     operation: [u8; 16],
     task: u64,
     store: InitialReplica,
+    /// How many drains of this store came before (aborted ones): part of the identity.
+    sequence: u64,
 }
 
 impl DrainIntent {
@@ -39,6 +41,9 @@ impl DrainIntent {
     pub fn node(&self) -> NodeId {
         self.store.node
     }
+    pub fn sequence(&self) -> u64 {
+        self.sequence
+    }
 
     pub fn encode(&self) -> Vec<u8> {
         let mut bytes = Vec::with_capacity(MAX_DRAIN_BYTES);
@@ -48,6 +53,7 @@ impl DrainIntent {
         bytes.extend_from_slice(&self.task.to_be_bytes());
         bytes.extend_from_slice(&self.store.node.0.to_be_bytes());
         bytes.extend_from_slice(self.store.incarnation.as_bytes());
+        bytes.extend_from_slice(&self.sequence.to_be_bytes());
         bytes
     }
 
@@ -64,12 +70,13 @@ impl DrainIntent {
                 node: NodeId(u64::from_be_bytes(bytes[64..72].try_into().unwrap())),
                 incarnation: StoreIncarnation::from_bytes(bytes[72..88].try_into().unwrap()),
             },
+            sequence: u64::from_be_bytes(bytes[88..96].try_into().unwrap()),
         };
         if drain.root.as_bytes() == &[0; 32]
             || drain.task < FIRST_DYNAMIC_ID
             || drain.store.node.0 == 0
             || drain.store.incarnation.as_bytes() == &[0; 16]
-            || drain.operation != drain_operation(drain.root, drain.store)
+            || drain.operation != drain_operation(drain.root, drain.store, drain.sequence)
         {
             return Err(invalid("invalid drain identities"));
         }
@@ -77,12 +84,14 @@ impl DrainIntent {
     }
 }
 
-/// `sha16("kv9-drain/v1" ++ root ++ node ++ incarnation)`.
-pub fn drain_operation(root: RootDigest, store: InitialReplica) -> [u8; 16] {
-    let mut bytes = b"kv9-drain/v1".to_vec();
+/// `sha16("kv9-drain/v2" ++ root ++ node ++ incarnation ++ sequence)`: one identity per
+/// drain of a store; an aborted drain leaves the next sequence free.
+pub fn drain_operation(root: RootDigest, store: InitialReplica, sequence: u64) -> [u8; 16] {
+    let mut bytes = b"kv9-drain/v2".to_vec();
     bytes.extend_from_slice(root.as_bytes());
     bytes.extend_from_slice(&store.node.0.to_be_bytes());
     bytes.extend_from_slice(store.incarnation.as_bytes());
+    bytes.extend_from_slice(&sequence.to_be_bytes());
     let digest = RootDigest::sha256(&bytes);
     let mut out = [0u8; 16];
     out.copy_from_slice(&digest.as_bytes()[..16]);
@@ -121,22 +130,26 @@ pub fn plan_drain<E: Engine>(txn: &mut MetaTxn<'_, E>, node: NodeId) -> Result<(
         node,
         incarnation: endpoint.incarnation,
     };
-    let drain = DrainIntent {
-        root: root.digest(),
-        operation: drain_operation(root.digest(), store),
-        task: 0,
-        store,
-    };
+    // A live (unaborted) drain of this store confirms; aborted ones only count.
+    let aborted = super::range_abort::effective_aborts_in_txn(txn, root.digest())?;
+    let mut sequence = 0u64;
     for row in task_rows(txn) {
         if let Some(previous) = from_drain_row(&row?, root.digest())? {
-            if previous.operation == drain.operation {
+            if previous.store != store {
+                continue;
+            }
+            if !aborted.contains(&previous.operation) {
                 return Ok((previous, false));
             }
+            sequence = sequence.max(previous.sequence + 1);
         }
     }
     let drain = DrainIntent {
+        root: root.digest(),
+        operation: drain_operation(root.digest(), store, sequence),
         task: txn.allocate_id(SequenceKind::Task)?,
-        ..drain
+        store,
+        sequence,
     };
     DrainIntent::decode(&drain.encode())?;
     let mut row = RowValue::new();
@@ -153,9 +166,10 @@ pub fn plan_drain<E: Engine>(txn: &mut MetaTxn<'_, E>, node: NodeId) -> Result<(
     Ok((drain, true))
 }
 
-/// Every committed drain, from one applied snapshot. Drains are immutable; a
-/// drain is *finished* when its store is in no data group and its node is no
-/// member of the metadata group — derived by the caller, never recorded.
+/// Every committed, UNABORTED drain, from one applied snapshot. Drains are
+/// immutable; a drain is *finished* when its store is in no data group and its
+/// node is no member of the metadata group — derived by the caller, never
+/// recorded. An aborted drain is history and is left out here.
 pub fn committed_drains<E: Engine>(store: &MetaStore<E>) -> Result<Vec<DrainIntent>> {
     let txn = store.begin()?;
     committed_drains_in_txn(&txn)
@@ -164,9 +178,13 @@ pub fn committed_drains<E: Engine>(store: &MetaStore<E>) -> Result<Vec<DrainInte
 pub fn committed_drains_in_txn<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<DrainIntent>> {
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("drain readback requires a certified metadata root"))?;
+    let aborted = super::range_abort::effective_aborts_in_txn(txn, root.digest())?;
     let mut out: Vec<DrainIntent> = Vec::new();
     for row in task_rows(txn) {
         if let Some(drain) = from_drain_row(&row?, root.digest())? {
+            if aborted.contains(&drain.operation) {
+                continue;
+            }
             if out
                 .iter()
                 .any(|prior| prior.task == drain.task || prior.operation == drain.operation)
@@ -232,5 +250,16 @@ mod tests {
         let mut bytes = first.encode();
         bytes[40] ^= 1;
         assert!(DrainIntent::decode(&bytes).is_err());
+        // Abort it: it stops counting, and the next drain of the same store is a new row.
+        let mut txn = store.begin().unwrap();
+        let (abort, changed) = super::super::range_abort::plan_range_abort(&mut txn, first.task()).unwrap();
+        assert!(changed && abort.target() == super::super::range_abort::AbortTarget::Drain);
+        txn.commit().unwrap();
+        assert!(committed_drains(&store).unwrap().is_empty(), "an aborted drain is history");
+        let mut txn = store.begin().unwrap();
+        let (second, changed) = plan_drain(&mut txn, NodeId(7)).unwrap();
+        assert!(changed && second.sequence() == 1 && second.operation() != first.operation());
+        txn.commit().unwrap();
+        assert_eq!(committed_drains(&store).unwrap(), vec![second]);
     }
 }

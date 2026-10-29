@@ -119,7 +119,7 @@ impl CommittedMigration {
     }
 }
 
-fn decode<E: Engine>(
+pub(super) fn decode<E: Engine>(
     txn: &MetaTxn<'_, E>,
     root: RootDigest,
 ) -> Result<Vec<(MigrationIntent, CreationIntent)>> {
@@ -208,6 +208,11 @@ pub fn plan_migration<E: Engine>(
         .ok_or_else(|| invalid("migration creation row differs"))?;
     if !activation::decode(txn, root.digest())?.contains(&creation) {
         return Err(invalid("migration requires the committed activation"));
+    }
+    if let Some(what) = super::live_range_operation(txn, root.digest(), creation.region())? {
+        return Err(invalid(&format!(
+            "a live {what} binds this group's membership until it is published"
+        )));
     }
     let endpoint = crate::endpoint::node_endpoint(txn, destination)?
         .filter(|endpoint| endpoint.active)

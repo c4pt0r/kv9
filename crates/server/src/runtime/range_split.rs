@@ -36,6 +36,12 @@ use super::range_api::RawGroup;
 use super::{NodeRuntime, RuntimeBackend};
 use crate::api::{RawApi, RequestContext, RequestOrigin};
 
+/// `KV9_RANGE_DRIVER=0` pauses the split, merge and auto-split drivers on this node
+/// (an operator's brake and the e2e's way to abort before a seal deterministically).
+pub(super) fn range_driver_enabled() -> bool {
+    std::env::var("KV9_RANGE_DRIVER").as_deref() != Ok("0")
+}
+
 pub(super) const PAGE: usize = 512;
 pub(super) const SEAL_WAIT: Duration = Duration::from_secs(10);
 pub(super) const DELIVERY_BUDGET: Duration = Duration::from_secs(10);
@@ -104,7 +110,7 @@ impl State {
 }
 
 /// What a worker step produced.
-enum Outcome {
+pub(super) enum Outcome {
     Sealed(String),
     Published(String),
     Copied { rows: u64, last: Vec<u8> },
@@ -121,6 +127,8 @@ enum Step {
         region: RegionId,
         driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
         current: DataRange,
+        root: RootDigest,
+        operation: [u8; 16],
     },
     Populate {
         intent: SplitIntent,
@@ -190,6 +198,9 @@ pub(super) fn applied_descriptor(engine: &WalEngine) -> Result<Option<DataRange>
 
 impl NodeRuntime {
     pub(super) fn reconcile_range_split(&mut self) {
+        if !range_driver_enabled() {
+            return; // KV9_RANGE_DRIVER=0: committed intents wait; nothing is lost
+        }
         if let Some((region, step, label, handle)) = self.range_split.in_flight.take() {
             if !handle.is_finished() {
                 self.range_split.in_flight = Some((region, step, label, handle));
@@ -226,8 +237,13 @@ impl NodeRuntime {
             }
         }
         let store = &self.node.meta_raft.store;
-        let Ok(intents) = kv9_meta::data_groups::split::committed_splits(store) else {
-            return;
+        let intents = match kv9_meta::data_groups::split::committed_splits(store) {
+            Ok(intents) => intents,
+            Err(error) => {
+                // A row family that no longer validates freezes this driver; say so.
+                self.range_split.error = Some(format!("split intents do not read back: {error}"));
+                return;
+            }
         };
         if intents.is_empty() {
             self.range_split.views.clear();
@@ -249,10 +265,14 @@ impl NodeRuntime {
         let store = &self.node.meta_raft.store;
         let bindings = dg::ranges::committed_ranges(store)?;
         let evidence = dg::split_evidence::committed_split_evidence(store).unwrap_or_default();
+        let aborted = dg::range_abort::effective_aborts(store).unwrap_or_default();
         let me = self.node.id.0;
         let mut views = Vec::new();
         let mut step: Option<Step> = None;
         for intent in intents {
+            if aborted.contains(&intent.operation()) {
+                continue; // history: its children retire through the retirement pass
+            }
             let Some(parent_binding) = bindings.iter().find(|b| b.range().region == intent.parent_region()) else {
                 continue;
             };
@@ -350,6 +370,8 @@ impl NodeRuntime {
                                     region: intent.parent_region(),
                                     driver: driver.clone(),
                                     current,
+                                    root: intent.root(),
+                                    operation: intent.operation(),
                                 });
                                 views.push(view);
                                 continue;
@@ -432,6 +454,45 @@ impl NodeRuntime {
     }
 }
 
+/// Seal one parent: re-check the abort right before proposing (an abort that
+/// lands after this check is decided by the seal evidence below), propose the
+/// CAS, then commit the seal evidence that makes the operation irrevocable.
+pub(super) fn seal_parent(
+    backend: &Arc<RuntimeBackend>,
+    handle: &tokio::runtime::Handle,
+    region: RegionId,
+    driver: &Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
+    current: &DataRange,
+    root: RootDigest,
+    operation: [u8; 16],
+) -> Result<Outcome> {
+    if kv9_meta::data_groups::range_abort::effective_aborts(&backend.node.meta_raft.store)?.contains(&operation) {
+        return Err(Error::Config("the operation was aborted before its seal".into()));
+    }
+    let mut sealed = current.clone();
+    sealed.version = current
+        .version
+        .checked_add(1)
+        .ok_or_else(|| Error::Config("range version exhausted".into()))?;
+    sealed.sealed = true;
+    let applied = super::propose_and_wait(
+        driver,
+        &Command::DataRange {
+            expected: Some(current.digest()),
+            next: sealed,
+        },
+        SEAL_WAIT,
+    )?;
+    let receipt = kv9_meta::data_groups::range_abort::SealEvidence::receipt(root, operation, region, applied)?;
+    let evidence = deliver(backend, handle, root, &receipt)?;
+    Ok(Outcome::Sealed(format!(
+        "sealed at {}/{} (version {}); {evidence}",
+        applied.term,
+        applied.index,
+        current.version + 1
+    )))
+}
+
 /// The successor of `key` in scan order: the smallest key greater than it.
 pub(super) fn successor(key: &[u8]) -> Vec<u8> {
     let mut next = key.to_vec();
@@ -493,22 +554,8 @@ fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: 
                 applied.index
             )))
         }
-        Step::Seal { driver, current, .. } => {
-            let mut sealed = current.clone();
-            sealed.version = current
-                .version
-                .checked_add(1)
-                .ok_or_else(|| Error::Config("range version exhausted".into()))?;
-            sealed.sealed = true;
-            let applied = super::propose_and_wait(
-                &driver,
-                &Command::DataRange {
-                    expected: Some(current.digest()),
-                    next: sealed,
-                },
-                SEAL_WAIT,
-            )?;
-            Ok(Outcome::Sealed(format!("sealed at {}/{} (version {})", applied.term, applied.index, current.version + 1)))
+        Step::Seal { region, driver, current, root, operation } => {
+            seal_parent(backend, &handle, region, &driver, &current, root, operation)
         }
         Step::Populate { intent, child_task, child, parent_engine, half, cursor, .. } => {
             let ctx = RequestContext {
@@ -617,7 +664,10 @@ impl RuntimeBackend {
         if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
             return Err(Error::Config("split evidence root differs".into()));
         }
-        let (task, changed) = if kv9_meta::data_groups::merge::is_merge_receipt(receipt) {
+        let (task, changed) = if kv9_meta::data_groups::range_abort::is_seal_receipt(receipt) {
+            let (e, changed) = kv9_meta::data_groups::range_abort::plan_seal_evidence(&mut txn, receipt)?;
+            (e.task(), changed)
+        } else if kv9_meta::data_groups::merge::is_merge_receipt(receipt) {
             let (e, changed) = kv9_meta::data_groups::merge::plan_merge_evidence(&mut txn, receipt)?;
             (e.task(), changed)
         } else {

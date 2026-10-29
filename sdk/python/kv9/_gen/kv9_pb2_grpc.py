@@ -196,6 +196,11 @@ class Kv9Stub:
                 request_serializer=kv9__pb2.MergeRangesRequest.SerializeToString,
                 response_deserializer=kv9__pb2.MergeRangesResponse.FromString,
                 _registered_method=True)
+        self.AbortTask = channel.unary_unary(
+                '/kv9.v1.Kv9/AbortTask',
+                request_serializer=kv9__pb2.AbortTaskRequest.SerializeToString,
+                response_deserializer=kv9__pb2.AbortTaskResponse.FromString,
+                _registered_method=True)
         self.ChangeNodeEndpoint = channel.unary_unary(
                 '/kv9.v1.Kv9/ChangeNodeEndpoint',
                 request_serializer=kv9__pb2.ChangeNodeEndpointRequest.SerializeToString,
@@ -510,6 +515,14 @@ class Kv9Servicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def AbortTask(self, request, context):
+        """Abort a split or merge intent (before any seal), a node drain, or a replica
+        plan (docs/RANGE-SPLIT.md §12).
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ChangeNodeEndpoint(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -783,6 +796,11 @@ def add_Kv9Servicer_to_server(servicer, server):
                     servicer.MergeRanges,
                     request_deserializer=kv9__pb2.MergeRangesRequest.FromString,
                     response_serializer=kv9__pb2.MergeRangesResponse.SerializeToString,
+            ),
+            'AbortTask': grpc.unary_unary_rpc_method_handler(
+                    servicer.AbortTask,
+                    request_deserializer=kv9__pb2.AbortTaskRequest.FromString,
+                    response_serializer=kv9__pb2.AbortTaskResponse.SerializeToString,
             ),
             'ChangeNodeEndpoint': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeNodeEndpoint,
@@ -1741,6 +1759,33 @@ class Kv9:
             '/kv9.v1.Kv9/MergeRanges',
             kv9__pb2.MergeRangesRequest.SerializeToString,
             kv9__pb2.MergeRangesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AbortTask(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/AbortTask',
+            kv9__pb2.AbortTaskRequest.SerializeToString,
+            kv9__pb2.AbortTaskResponse.FromString,
             options,
             channel_credentials,
             insecure,

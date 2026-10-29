@@ -342,21 +342,27 @@ async fn run(session: &mut Session, tokens: &[String]) -> Result<(), String> {
                 tokens.get(1).ok_or("delrange <start> <end>")?,
                 tokens.get(2).ok_or("delrange <start> <end>")?,
             );
-            let r = ks()?
-                .delete_range(bytes(s)?, bytes(e)?)
-                .await
-                .map_err(rpc)?;
-            println!(
-                "deleted: {} chunk(s), last applied (term={}, index={}){}",
-                r.committed_chunks,
-                r.last_applied.term,
-                r.last_applied.index,
+            // A span may cross a range boundary whose next chunk is led elsewhere: the
+            // receipt then carries `resume_from`; each chunk is committed, so continuing
+            // from the cursor is idempotent and the REPL does it until the span is done.
+            let keyspace = ks()?;
+            let (mut start, end) = (bytes(s)?, bytes(e)?);
+            let mut chunks = 0u64;
+            loop {
+                let r = keyspace
+                    .delete_range(start, end.clone())
+                    .await
+                    .map_err(rpc)?;
+                chunks += r.committed_chunks;
                 if r.resume_from.is_empty() {
-                    String::new()
-                } else {
-                    format!("; continue from {}", show(&r.resume_from))
+                    println!(
+                        "deleted: {chunks} chunk(s), last applied (term={}, index={})",
+                        r.last_applied.term, r.last_applied.index
+                    );
+                    break;
                 }
-            );
+                start = r.resume_from;
+            }
         }
         other => return Err(format!("unknown command `{other}` (try `help`)")),
     }

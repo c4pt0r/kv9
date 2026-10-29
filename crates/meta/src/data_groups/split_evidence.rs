@@ -163,6 +163,9 @@ pub fn plan_split_evidence<E: Engine>(txn: &mut MetaTxn<'_, E>, receipt: &[u8]) 
         .into_iter()
         .find(|s| s.operation() == receipt.operation)
         .ok_or_else(|| invalid("split evidence requires the committed intent"))?;
+    if super::range_abort::effective_aborts_in_txn(txn, root.digest())?.contains(&receipt.operation) {
+        return Err(invalid("the split intent is aborted; its evidence is refused"));
+    }
     matches_intent(&receipt, &intent)?;
     for row in task_rows(txn) {
         if let Some(previous) = from_split_evidence_row(&row?, root.digest())? {

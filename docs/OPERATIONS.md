@@ -30,7 +30,9 @@ committed state on the node whose role it is, and observable in each node's `<da
 | Move a group's leadership | `group transfer-leader <task> --to <node> [--wait]` | |
 | Split a range | `group split <task> --at <key> \| --at-hex <hex>` | The cluster creates the two children on the same stores, seals the parent, copies and verifies both halves, publishes the new partition ([RANGE-SPLIT](RANGE-SPLIT.md)). The parent is unavailable between its seal and the publication; TTL-activated ranges cannot be sealed yet. |
 | Merge two ranges | `group merge <low-task> <high-task>` | Adjacent siblings on one store set; the same pipeline backwards. |
-| Watch any of the above | `group describe <task>` (`plans`, `splits`, `merges` with stages), `task list [--kind <n>]`, `task describe <id>` | Stages: plans `planned → captured → pinned → evidenced → decided`; splits/merges `intended → populating → populated → published`. |
+| Watch any of the above | `group describe <task>` (`plans`, `splits`, `merges` with stages), `task list [--kind <n>]`, `task describe <id>` | Stages: plans `planned → captured → pinned → evidenced → decided \| aborted`; splits/merges `intended → populating → populated → published \| aborted`. `group list` exits 4 and names the family when a catalog readback fails. |
+| Abort any of the above | `task abort <task>` | A split/merge before its first seal, a drain any time, a replica plan (through its migration abort). Membership plans and range operations exclude each other while live: the refusal says which one holds the group ([RANGE-SPLIT](RANGE-SPLIT.md) §12). |
+| Pause the range drivers | `KV9_RANGE_DRIVER=0` on a node | Split, merge and auto-split wait there; nothing is lost. `KV9_REPLICA_DRIVER=0` is the same brake for replica plans. |
 
 ## 3. Repair that the cluster does by itself
 
@@ -64,8 +66,9 @@ Without the switches the verdicts are still taken and shown (`voter_replacement=
   `range_split=`, `range_merge=`, `checkpoint_retention=`, `data_groups=`, … each with recent
   events and the last error. `<data-dir>/metrics.json` is the metrics export.
 - `task list --kind <n>`: 100 group creation, 101 activation, 102 range binding, 103 migration,
-  104 install evidence, 105 truncation, 106 removal, 108 abort, 110 compaction, 111 replica plan,
-  112 node drain, 113 split intent, 114 split evidence, 115 merge intent, 116 merge evidence.
+  104 install evidence, 105 truncation, 106 removal, 108 migration abort, 110 compaction,
+  111 replica plan, 112 node drain, 113 split intent, 114 split evidence, 115 merge intent,
+  116 merge evidence, 117 operation abort, 118 seal evidence.
 
 ## 6. Security of the control plane
 
@@ -78,5 +81,5 @@ service and is never reachable with a client token.
 
 An automatic merge of small siblings, load- or time-based split triggers, atomic batches that
 cross a range boundary (scans and delete-range do cross it, following `resume_from`), `node
-replace`, retention verbs and `group abort` in `kv9-admin`, and any placement policy beyond
-"least-loaded active store" ([DEVELOPMENT-PATH](DEVELOPMENT-PATH.md)).
+replace` and retention verbs in `kv9-admin`, and any placement policy beyond "least-loaded
+active store" ([DEVELOPMENT-PATH](DEVELOPMENT-PATH.md)).

@@ -2497,6 +2497,34 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn abort_task(
+        &self,
+        request: Request<proto::AbortTaskRequest>,
+    ) -> Result<Response<proto::AbortTaskResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        if request.task == 0 {
+            return Err(Status::invalid_argument("task required"));
+        }
+        let caller = auth.principal.to_string();
+        let r = self
+            .backend
+            .call(reservation, move |backend| backend.abort_task(&caller, request.task))
+            .await?;
+        Ok(Response::new(proto::AbortTaskResponse {
+            target: r.target.to_string(),
+            target_task: r.target_task,
+            operation: r.operation.to_vec(),
+            abort_task: r.abort_task,
+            changed: r.changed,
+            applied_term: r.applied.term,
+            applied_index: r.applied.index,
+            path: r.path.to_string(),
+        }))
+    }
+
     async fn merge_ranges(
         &self,
         request: Request<proto::MergeRangesRequest>,
@@ -2568,15 +2596,17 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
         let caller = auth.principal.to_string();
-        let groups = self
+        let listing = self
             .backend
             .call(reservation, move |backend| backend.list_data_groups(&caller))
             .await?;
+        let groups = listing.groups;
         let replica = |r: crate::api::DataGroupReplica| proto::DataGroupReplica {
             node_id: r.node_id,
             store_incarnation: r.store_incarnation,
         };
         Ok(Response::new(proto::ListDataGroupsResponse {
+            readback_errors: listing.readback_errors,
             groups: groups
                 .into_iter()
                 .map(|g| proto::DataGroupRow {

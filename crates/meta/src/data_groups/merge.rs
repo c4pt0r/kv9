@@ -223,9 +223,13 @@ pub fn plan_merge<E: Engine>(
             .ok_or_else(|| invalid("merge requires the parents' committed range bindings"))
     };
     let (low, high) = (binding(low_region)?, binding(high_region)?);
+    let aborted = super::range_abort::effective_aborts_in_txn(txn, root.digest())?;
     for row in task_rows(txn) {
         let row = row?;
         if let Some(previous) = from_merge_row(&row, root.digest())? {
+            if aborted.contains(&previous.operation) {
+                continue;
+            }
             if previous.operation == operation {
                 if previous.low_region != low_region || previous.high_region != high_region {
                     return Err(invalid("merge operation binding conflicts"));
@@ -241,6 +245,7 @@ pub fn plan_merge<E: Engine>(
         }
         if let Some(split) = super::split::from_split_row(&row, root.digest())? {
             if (split.parent_region() == low_region || split.parent_region() == high_region)
+                && !aborted.contains(&split.operation())
                 && !bindings.iter().any(|b| b.range().region == split.parent_region() && b.range().sealed)
             {
                 return Err(invalid("a parent has a live split intent"));
@@ -249,6 +254,9 @@ pub fn plan_merge<E: Engine>(
     }
     if low.range().sealed || high.range().sealed {
         return Err(invalid("a merge parent is already sealed"));
+    }
+    if super::live_plan_on_region(txn, root.digest(), low_region)? || super::live_plan_on_region(txn, root.digest(), high_region)? {
+        return Err(invalid("a parent has an unsettled replica plan; merge after it settles"));
     }
     if low.range().keyspace != high.range().keyspace || low.range().end.is_empty() || low.range().end != high.range().start {
         return Err(invalid("merge parents must be adjacent ranges of one keyspace"));
@@ -292,11 +300,14 @@ pub fn committed_merges<E: Engine>(store: &MetaStore<E>) -> Result<Vec<MergeInte
 pub fn committed_merges_in_txn<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<MergeIntent>> {
     let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("merge readback requires a certified metadata root"))?;
+    let aborted = super::range_abort::effective_aborts_in_txn(txn, root.digest())?;
     let mut out: Vec<MergeIntent> = Vec::new();
     for row in task_rows(txn) {
         let row = row?;
         if let Some(intent) = from_merge_row(&row, root.digest())? {
-            validate_against(txn, root.digest(), &intent)?;
+            if !aborted.contains(&intent.operation) {
+                validate_against(txn, root.digest(), &intent)?;
+            }
             if out.iter().any(|p| p.task == intent.task || p.operation == intent.operation || p.child == intent.child) {
                 return Err(invalid("duplicate merge identity"));
             }
@@ -439,6 +450,9 @@ pub fn plan_merge_evidence<E: Engine>(txn: &mut MetaTxn<'_, E>, receipt: &[u8]) 
         .into_iter()
         .find(|m| m.operation == receipt.operation)
         .ok_or_else(|| invalid("merge evidence requires the committed intent"))?;
+    if super::range_abort::effective_aborts_in_txn(txn, root.digest())?.contains(&receipt.operation) {
+        return Err(invalid("the merge intent is aborted; its evidence is refused"));
+    }
     if intent.task != receipt.intent_task || intent.child != receipt.child_task {
         return Err(invalid("merge evidence differs from the committed intent"));
     }
@@ -512,6 +526,9 @@ pub fn plan_merge_publication<E: Engine>(txn: &mut MetaTxn<'_, E>, operation: [u
         .into_iter()
         .find(|m| m.operation == operation)
         .ok_or_else(|| invalid("merge publication requires the committed intent"))?;
+    if super::range_abort::effective_aborts_in_txn(txn, root.digest())?.contains(&operation) {
+        return Err(invalid("the merge intent is aborted; nothing is published"));
+    }
     let bindings = super::ranges::read_in(txn)?;
     let low = bindings
         .iter()

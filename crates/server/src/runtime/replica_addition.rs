@@ -34,6 +34,7 @@ pub(super) enum Step {
     Bind,
     Capture,
     Install,
+    Detach,
     Record,
     Promote,
     Decide,
@@ -48,6 +49,7 @@ impl Step {
             Step::Bind => "bind",
             Step::Capture => "capture",
             Step::Install => "install",
+            Step::Detach => "detach",
             Step::Record => "record_evidence",
             Step::Promote => "promote",
             Step::Decide => "decide_removal",
@@ -182,9 +184,6 @@ impl NodeRuntime {
         };
         let now = Instant::now();
         for fact in facts {
-            if fact.aborted {
-                continue;
-            }
             let Some(step) = self.next_step(&fact) else { continue };
             let key = (fact.plan.operation(), step);
             if self.replica_plans.done.contains(&key) {
@@ -242,7 +241,11 @@ impl NodeRuntime {
                 operation,
                 &migration.intent().destination().incarnation,
             )?;
-            let pinned = kv9_meta::retention::retention_owner(view.as_ref(), &certified, source_owner)?
+            // Without object storage there is no retention ledger: nothing is pinned,
+            // and the steps that need none (attach, detach) must still run.
+            let pinned = kv9_meta::retention::retention_owner(view.as_ref(), &certified, source_owner)
+                .ok()
+                .flatten()
                 .is_some_and(|o| o.phase == kv9_common::retention::PinPhase::Published);
             out.push(Facts {
                 aborted: aborts.iter().any(|a| a.operation() == operation),
@@ -279,6 +282,14 @@ impl NodeRuntime {
             .contains_key(&region);
         let is_move = f.plan.mode() == PlanMode::Move;
 
+        if f.aborted {
+            // An aborted plan has one step left: the group leader detaches the
+            // learner it attached (a voter was never aborted: evidence refuses it).
+            return match &group {
+                Some(status) if status.learners.contains(&destination.node.0) => Some(Step::Detach),
+                _ => None,
+            };
+        }
         if let Some(status) = &group {
             let learner = status.learners.contains(&destination.node.0);
             let voter = status.voters.contains(&destination.node.0);
@@ -388,6 +399,15 @@ fn execute(
             ))
         }
         Step::Install => install(backend, guard, handle, &f),
+        Step::Detach => {
+            let r = AdminApi::detach_aborted_learner(backend.as_ref(), CALLER, root, operation)?;
+            Ok(format!(
+                "{} learner {}; voters {:?}",
+                if r.changed { "detached" } else { "already absent" },
+                r.detached.0,
+                r.voters
+            ))
+        }
         Step::Record => {
             let region = f.migration.intent().region();
             let emitted = backend.emit_install_evidence(CALLER, root, region)?;

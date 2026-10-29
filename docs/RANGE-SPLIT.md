@@ -179,6 +179,64 @@ child. `kv9-admin group merge <low-task> <high-task>`; `ListDataGroups.merges` o
 ## 10. What follows
 
 Load- or time-based triggers beyond the footprint, and an automatic merge of small siblings.
+
+## 12. Aborts, and the guards that keep intents honest (implemented)
+
+The review of 2026-10-29 found two defects in the increments above and this section is their
+fix.
+
+**Membership and range operations exclude each other while live.** A split or merge intent
+compares its children's replicas with the parent's *current* committed members on every
+readback, so a move on the parent after the intent would have broken that readback forever —
+the prototype's "one row froze the subsystem", re-created. Now `plan_migration` (every
+`add-replica`, `move-replica`, repair decision and drain plan) refuses while an unaborted,
+unpublished split or merge names the group (`live_range_operation`), and `plan_split` /
+`plan_merge` refuse while the parent has an unsettled migration (`live_plan_on_region`). The
+listing no longer hides a readback failure: `ListDataGroups` carries `readback_errors`,
+`kv9-admin group list` reports them as partial (exit 4), and the drivers' status lines say
+"intents do not read back" instead of going quiet.
+
+**Every long-running intent can be aborted: `kv9-admin task abort <task>`.**
+
+- A **split or merge intent** is abortable until its first seal. The parent's leader commits
+  **seal evidence** (kind 118, `KV9SLE01`) right after sealing, over the shared evidence RPC, and
+  the abort planner refuses once any exists. The one race left — an abort committed between the
+  seal and its evidence — is decided by the catalog alone: an abort row (kind 117, `KV9ROA01`)
+  is **effective iff no seal evidence names its operation**. Every reader applies that rule
+  (planners, drivers, listings); a late abort is visibly ignored (`stage` stays on its way to
+  `published`) and the split completes. An effective abort makes the intent history: its
+  children retire on every node and are reclaimed with `KV9_RECLAIM_RETIRED=1`, the parent is
+  free for a new split, a merge or a move, evidence and publication for it refuse, and readback
+  decodes it without re-validating it (its children's membership may legitimately diverge).
+- A **replica plan** aborts through the migration abort (kind 108) it already had: once an image
+  is planned, the published pin supplies the subject and the retention ledger settles it;
+  before that, a derived no-image subject that no pin can ever match. The driver's last step for
+  an aborted plan is `detach` (the group leader detaches the learner it attached); the plan's
+  stage reads `aborted`.
+- A **drain** aborts any time; placement stops excluding the store, the drained node stops
+  handing leadership away, and the same store can be drained again: the drain row (`KV9DRN02`)
+  now carries a sequence, so an aborted drain leaves the next identity free. Move plans the
+  drain already committed complete on their own.
+
+**A routing gap found by the same review's regression run.** A request for a data keyspace that
+landed on a node hosting none of its range (typically the metadata leader after a move or drain
+took its replica away) was refused with "not available through the metadata group". It now
+answers the typed `NotLeader` redirect with a committed member of the covering range as the
+hint, and `get_region` carries the same hint when the range is not local; the SDKs already
+follow both to the group's actual leader. The REPL's `delrange`, like its `scan`, follows
+`resume_from` across range boundaries.
+
+`KV9_RANGE_DRIVER=0` pauses the split, merge and auto-split drivers on a node without losing
+anything: committed intents wait. It is the operator's brake and what the abort e2e uses to
+abort deterministically before a seal.
+
+Evidence: `proofs/lean/operation-abort` (ten theorems: one abort per operation, a published
+operation's abort is ineffective, a move needs the abort, children retire only on abort, an
+abort is refused after a seal, a late seal makes the abort ineffective; five controls) and
+`scripts/operation-abort-e2e.sh` (CI): a split intent aborted with the drivers paused — children
+reclaimed, parent serving and free for a new split; a plan aborted after its learner was
+attached — learner detached; a drain aborted and the store drained again; a split refused while
+a plan is live; an unknown task a typed refusal; and no catalog family failing to read back.
 Cross-range **scans and delete-range** already work over the partition (the server walks the
 unsealed ranges in key order, clamps each chunk at its range end and serves it under that group's
 own authorization; when the next chunk's leader is another node the page carries `resume_from` and
