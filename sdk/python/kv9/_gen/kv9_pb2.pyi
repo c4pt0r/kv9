@@ -138,16 +138,20 @@ class CreateDataKeyspaceRequest(_message.Message):
     def __init__(self, root_digest: _Optional[bytes] = ..., creation_task: _Optional[int] = ..., name: _Optional[str] = ..., tenant_id: _Optional[int] = ...) -> None: ...
 
 class CreateDataKeyspaceResponse(_message.Message):
-    __slots__ = ("binding", "changed", "applied_term", "applied_index")
+    __slots__ = ("binding", "changed", "applied_term", "applied_index", "keyspace_id", "region_id")
     BINDING_FIELD_NUMBER: _ClassVar[int]
     CHANGED_FIELD_NUMBER: _ClassVar[int]
     APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
     APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    KEYSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REGION_ID_FIELD_NUMBER: _ClassVar[int]
     binding: bytes
     changed: bool
     applied_term: int
     applied_index: int
-    def __init__(self, binding: _Optional[bytes] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
+    keyspace_id: int
+    region_id: int
+    def __init__(self, binding: _Optional[bytes] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., keyspace_id: _Optional[int] = ..., region_id: _Optional[int] = ...) -> None: ...
 
 class CreateDataGroupRequest(_message.Message):
     __slots__ = ("root_digest", "operation_id", "voters")
@@ -160,16 +164,20 @@ class CreateDataGroupRequest(_message.Message):
     def __init__(self, root_digest: _Optional[bytes] = ..., operation_id: _Optional[bytes] = ..., voters: _Optional[_Iterable[int]] = ...) -> None: ...
 
 class CreateDataGroupResponse(_message.Message):
-    __slots__ = ("creation_intent", "changed", "applied_term", "applied_index")
+    __slots__ = ("creation_intent", "changed", "applied_term", "applied_index", "creation_task", "region_id")
     CREATION_INTENT_FIELD_NUMBER: _ClassVar[int]
     CHANGED_FIELD_NUMBER: _ClassVar[int]
     APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
     APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    CREATION_TASK_FIELD_NUMBER: _ClassVar[int]
+    REGION_ID_FIELD_NUMBER: _ClassVar[int]
     creation_intent: bytes
     changed: bool
     applied_term: int
     applied_index: int
-    def __init__(self, creation_intent: _Optional[bytes] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
+    creation_task: int
+    region_id: int
+    def __init__(self, creation_intent: _Optional[bytes] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., creation_task: _Optional[int] = ..., region_id: _Optional[int] = ...) -> None: ...
 
 class MigrateDataGroupRequest(_message.Message):
     __slots__ = ("root_digest", "operation_id", "creation_task", "destination_node")
@@ -588,6 +596,122 @@ class ListNodesResponse(_message.Message):
     raft_committed: int
     nodes: _containers.RepeatedCompositeFieldContainer[NodeRow]
     def __init__(self, leader_node_id: _Optional[int] = ..., raft_committed: _Optional[int] = ..., nodes: _Optional[_Iterable[_Union[NodeRow, _Mapping]]] = ...) -> None: ...
+
+class ListDataGroupsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class DataGroupReplica(_message.Message):
+    __slots__ = ("node_id", "store_incarnation")
+    NODE_ID_FIELD_NUMBER: _ClassVar[int]
+    STORE_INCARNATION_FIELD_NUMBER: _ClassVar[int]
+    node_id: int
+    store_incarnation: bytes
+    def __init__(self, node_id: _Optional[int] = ..., store_incarnation: _Optional[bytes] = ...) -> None: ...
+
+class DataGroupKeyspace(_message.Message):
+    __slots__ = ("keyspace_id", "tenant_id", "bind_task", "conf_ver", "version", "start", "end", "sealed")
+    KEYSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TENANT_ID_FIELD_NUMBER: _ClassVar[int]
+    BIND_TASK_FIELD_NUMBER: _ClassVar[int]
+    CONF_VER_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    START_FIELD_NUMBER: _ClassVar[int]
+    END_FIELD_NUMBER: _ClassVar[int]
+    SEALED_FIELD_NUMBER: _ClassVar[int]
+    keyspace_id: int
+    tenant_id: int
+    bind_task: int
+    conf_ver: int
+    version: int
+    start: bytes
+    end: bytes
+    sealed: bool
+    def __init__(self, keyspace_id: _Optional[int] = ..., tenant_id: _Optional[int] = ..., bind_task: _Optional[int] = ..., conf_ver: _Optional[int] = ..., version: _Optional[int] = ..., start: _Optional[bytes] = ..., end: _Optional[bytes] = ..., sealed: _Optional[bool] = ...) -> None: ...
+
+class DataGroupMigration(_message.Message):
+    __slots__ = ("task", "operation", "destination", "evidence_task", "abort_task", "removal_task", "truncation_task")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    DESTINATION_FIELD_NUMBER: _ClassVar[int]
+    EVIDENCE_TASK_FIELD_NUMBER: _ClassVar[int]
+    ABORT_TASK_FIELD_NUMBER: _ClassVar[int]
+    REMOVAL_TASK_FIELD_NUMBER: _ClassVar[int]
+    TRUNCATION_TASK_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    operation: bytes
+    destination: DataGroupReplica
+    evidence_task: int
+    abort_task: int
+    removal_task: int
+    truncation_task: int
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., destination: _Optional[_Union[DataGroupReplica, _Mapping]] = ..., evidence_task: _Optional[int] = ..., abort_task: _Optional[int] = ..., removal_task: _Optional[int] = ..., truncation_task: _Optional[int] = ...) -> None: ...
+
+class DataGroupRow(_message.Message):
+    __slots__ = ("creation_task", "region_id", "operation", "replicas", "activated", "keyspaces", "migrations", "compaction_floor_term", "compaction_floor_index")
+    CREATION_TASK_FIELD_NUMBER: _ClassVar[int]
+    REGION_ID_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    REPLICAS_FIELD_NUMBER: _ClassVar[int]
+    ACTIVATED_FIELD_NUMBER: _ClassVar[int]
+    KEYSPACES_FIELD_NUMBER: _ClassVar[int]
+    MIGRATIONS_FIELD_NUMBER: _ClassVar[int]
+    COMPACTION_FLOOR_TERM_FIELD_NUMBER: _ClassVar[int]
+    COMPACTION_FLOOR_INDEX_FIELD_NUMBER: _ClassVar[int]
+    creation_task: int
+    region_id: int
+    operation: bytes
+    replicas: _containers.RepeatedCompositeFieldContainer[DataGroupReplica]
+    activated: bool
+    keyspaces: _containers.RepeatedCompositeFieldContainer[DataGroupKeyspace]
+    migrations: _containers.RepeatedCompositeFieldContainer[DataGroupMigration]
+    compaction_floor_term: int
+    compaction_floor_index: int
+    def __init__(self, creation_task: _Optional[int] = ..., region_id: _Optional[int] = ..., operation: _Optional[bytes] = ..., replicas: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ..., activated: _Optional[bool] = ..., keyspaces: _Optional[_Iterable[_Union[DataGroupKeyspace, _Mapping]]] = ..., migrations: _Optional[_Iterable[_Union[DataGroupMigration, _Mapping]]] = ..., compaction_floor_term: _Optional[int] = ..., compaction_floor_index: _Optional[int] = ...) -> None: ...
+
+class ListDataGroupsResponse(_message.Message):
+    __slots__ = ("groups",)
+    GROUPS_FIELD_NUMBER: _ClassVar[int]
+    groups: _containers.RepeatedCompositeFieldContainer[DataGroupRow]
+    def __init__(self, groups: _Optional[_Iterable[_Union[DataGroupRow, _Mapping]]] = ...) -> None: ...
+
+class ListTasksRequest(_message.Message):
+    __slots__ = ("after", "limit", "kind")
+    AFTER_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    after: int
+    limit: int
+    kind: int
+    def __init__(self, after: _Optional[int] = ..., limit: _Optional[int] = ..., kind: _Optional[int] = ...) -> None: ...
+
+class TaskRow(_message.Message):
+    __slots__ = ("id", "kind", "kind_name", "state", "created_unix", "payload_bytes", "operation", "reference_task")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    KIND_NAME_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    CREATED_UNIX_FIELD_NUMBER: _ClassVar[int]
+    PAYLOAD_BYTES_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    REFERENCE_TASK_FIELD_NUMBER: _ClassVar[int]
+    id: int
+    kind: int
+    kind_name: str
+    state: int
+    created_unix: int
+    payload_bytes: int
+    operation: bytes
+    reference_task: int
+    def __init__(self, id: _Optional[int] = ..., kind: _Optional[int] = ..., kind_name: _Optional[str] = ..., state: _Optional[int] = ..., created_unix: _Optional[int] = ..., payload_bytes: _Optional[int] = ..., operation: _Optional[bytes] = ..., reference_task: _Optional[int] = ...) -> None: ...
+
+class ListTasksResponse(_message.Message):
+    __slots__ = ("tasks", "next_after")
+    TASKS_FIELD_NUMBER: _ClassVar[int]
+    NEXT_AFTER_FIELD_NUMBER: _ClassVar[int]
+    tasks: _containers.RepeatedCompositeFieldContainer[TaskRow]
+    next_after: int
+    def __init__(self, tasks: _Optional[_Iterable[_Union[TaskRow, _Mapping]]] = ..., next_after: _Optional[int] = ...) -> None: ...
 
 class GetNodeEndpointResponse(_message.Message):
     __slots__ = ("cluster_id", "endpoint")

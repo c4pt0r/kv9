@@ -161,6 +161,16 @@ class Kv9Stub:
                 request_serializer=kv9__pb2.ListNodesRequest.SerializeToString,
                 response_deserializer=kv9__pb2.ListNodesResponse.FromString,
                 _registered_method=True)
+        self.ListDataGroups = channel.unary_unary(
+                '/kv9.v1.Kv9/ListDataGroups',
+                request_serializer=kv9__pb2.ListDataGroupsRequest.SerializeToString,
+                response_deserializer=kv9__pb2.ListDataGroupsResponse.FromString,
+                _registered_method=True)
+        self.ListTasks = channel.unary_unary(
+                '/kv9.v1.Kv9/ListTasks',
+                request_serializer=kv9__pb2.ListTasksRequest.SerializeToString,
+                response_deserializer=kv9__pb2.ListTasksResponse.FromString,
+                _registered_method=True)
         self.ChangeNodeEndpoint = channel.unary_unary(
                 '/kv9.v1.Kv9/ChangeNodeEndpoint',
                 request_serializer=kv9__pb2.ChangeNodeEndpointRequest.SerializeToString,
@@ -421,6 +431,20 @@ class Kv9Servicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ListDataGroups(self, request, context):
+        """Committed data-group rows joined per group, and the TASKS history page by page
+        (docs/KV9-ADMIN.md §4, increment 2). Both are linearizable leader reads.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTasks(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ChangeNodeEndpoint(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -659,6 +683,16 @@ def add_Kv9Servicer_to_server(servicer, server):
                     servicer.ListNodes,
                     request_deserializer=kv9__pb2.ListNodesRequest.FromString,
                     response_serializer=kv9__pb2.ListNodesResponse.SerializeToString,
+            ),
+            'ListDataGroups': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDataGroups,
+                    request_deserializer=kv9__pb2.ListDataGroupsRequest.FromString,
+                    response_serializer=kv9__pb2.ListDataGroupsResponse.SerializeToString,
+            ),
+            'ListTasks': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTasks,
+                    request_deserializer=kv9__pb2.ListTasksRequest.FromString,
+                    response_serializer=kv9__pb2.ListTasksResponse.SerializeToString,
             ),
             'ChangeNodeEndpoint': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeNodeEndpoint,
@@ -1428,6 +1462,60 @@ class Kv9:
             '/kv9.v1.Kv9/ListNodes',
             kv9__pb2.ListNodesRequest.SerializeToString,
             kv9__pb2.ListNodesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListDataGroups(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/ListDataGroups',
+            kv9__pb2.ListDataGroupsRequest.SerializeToString,
+            kv9__pb2.ListDataGroupsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListTasks(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/ListTasks',
+            kv9__pb2.ListTasksRequest.SerializeToString,
+            kv9__pb2.ListTasksResponse.FromString,
             options,
             channel_credentials,
             insecure,
