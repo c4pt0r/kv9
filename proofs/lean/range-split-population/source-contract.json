@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "model": "Kv9.RangeSplitPopulation",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "evidence_means_a_verified_copy",
+    "one_evidence_per_child",
+    "the_sealed_parent_accepts_no_write",
+    "a_copy_reads_only_a_sealed_parent",
+    "the_seal_waits_for_the_children",
+    "nothing_is_published_or_routed_here",
+    "the_chain_reaches_evidence"
+  ],
+  "source_sha256": {
+    "crates/server/src/runtime/range_split.rs": "99773449fba8c9d05b53cd4db9f0bcf6b38d004d84c1b7d971b2a14f07a66236",
+    "crates/meta/src/data_groups/split_evidence.rs": "d5487ba912646ea0f074914441d691b27dd6fcd0801c558ae4249416d3fc0dba",
+    "crates/meta/src/data_groups/split.rs": "5f1b9a894022cd61b9eb0357075c53ec2bbe03b3e8c6ce078d3b0449fc2e3906",
+    "crates/server/src/runtime.rs": "0dc1134dbfdfbb66b739b3e2476a13fa8674721d51cba6cb16229f224bd15387",
+    "proto/kv9_raft.proto": "34c64f25060d953dcb9c1ff806bde42ed136dac0880e9ffd3311c441dc334157",
+    "crates/raft/src/grpc/split_evidence.rs": "5df9bb536b3e2a228f02f1deac34db4c97e9938cb7c2e8c18db92881d11f811d",
+    "scripts/range-split-population-e2e.py": "93b02beb3f10729fbfe3c816c9dfdfaab8c1dd009859271ec041802ba3df35e3",
+    "docs/RANGE-SPLIT.md": "a207fa5f307d5b0929a1b6041f5aaf9aecc50532e9d95321eadc1c01b1c3cb11"
+  }
+}

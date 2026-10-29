@@ -2603,6 +2603,16 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                             child_low_region: s.child_low_region,
                             child_high_region: s.child_high_region,
                             stage: s.stage.to_string(),
+                            evidence: s
+                                .evidence
+                                .into_iter()
+                                .map(|(task, child_task, digest, rows)| proto::DataGroupSplitEvidence {
+                                    task,
+                                    child_task,
+                                    digest: digest.to_vec(),
+                                    rows,
+                                })
+                                .collect(),
                         })
                         .collect(),
                 })

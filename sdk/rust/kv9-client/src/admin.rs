@@ -400,8 +400,18 @@ pub struct DataGroupSplit {
     pub child_high_task: u64,
     pub child_low_region: u64,
     pub child_high_region: u64,
-    /// `intended`, later `sealed`, `populated`, `published`.
+    /// `intended`, `populating`, `populated`, later `published`.
     pub stage: String,
+    pub evidence: Vec<DataGroupSplitEvidence>,
+}
+
+/// One child's verified copy of the sealed parent half (kind 114).
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupSplitEvidence {
+    pub task: u64,
+    pub child_task: u64,
+    pub digest: Vec<u8>,
+    pub rows: u64,
 }
 
 /// The receipt of [`Client::split_range`].
@@ -574,6 +584,16 @@ impl Client {
                         child_low_region: s.child_low_region,
                         child_high_region: s.child_high_region,
                         stage: s.stage,
+                        evidence: s
+                            .evidence
+                            .into_iter()
+                            .map(|e| DataGroupSplitEvidence {
+                                task: e.task,
+                                child_task: e.child_task,
+                                digest: e.digest,
+                                rows: e.rows,
+                            })
+                            .collect(),
                     })
                     .collect(),
                 activated: g.activated,

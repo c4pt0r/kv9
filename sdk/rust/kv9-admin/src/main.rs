@@ -1485,6 +1485,7 @@ fn group_json(g: &DataGroup) -> Value {
             "split_key_hex": hex(&s.split_key), "stage": s.stage,
             "child_low": {"creation_task": s.child_low_task, "region_id": s.child_low_region},
             "child_high": {"creation_task": s.child_high_task, "region_id": s.child_high_region},
+            "evidence": s.evidence.iter().map(|e| json!({"task": e.task, "child_task": e.child_task, "digest": hex(&e.digest), "rows": e.rows})).collect::<Vec<_>>(),
         })).collect::<Vec<_>>(),
         "keyspaces": g.keyspaces.iter().map(|k| json!({
             "keyspace_id": k.keyspace_id, "tenant_id": k.tenant_id, "bind_task": k.bind_task,

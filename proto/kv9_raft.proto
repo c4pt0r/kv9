@@ -89,6 +89,9 @@ service Kv9Raft {
   // A data-group leader commits a repair (a move plan) at the metadata leader
   // (docs/REPLICA-REPAIR.md §2); the same planner AddReplica uses.
   rpc PlanReplica(PlanReplicaRequest) returns (PlanReplicaReceipt);
+  // A child's leader reports its verified copy of the sealed parent half
+  // (docs/RANGE-SPLIT.md §4); the metadata leader commits the kind-114 row.
+  rpc RecordSplitEvidence(SplitEvidenceRequest) returns (SplitEvidenceReceipt);
 }
 
 message MigrationCaptureTransferRequest {
@@ -109,6 +112,16 @@ message MigrationCaptureChunk {
   bool last = 6;
 }
 
+message SplitEvidenceRequest {
+  bytes root_digest = 1;
+  bytes receipt = 2;        // KV9SPE01 receipt bytes, task zero
+}
+message SplitEvidenceReceipt {
+  uint64 evidence_task = 1;
+  bool changed = 2;
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
+}
 message PlanReplicaRequest {
   bytes root_digest = 1;
   bytes operation_id = 2;

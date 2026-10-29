@@ -863,6 +863,8 @@ pub struct DataGroupSplit {
     pub child_low_region: u64,
     pub child_high_region: u64,
     pub stage: &'static str,
+    /// `(evidence task, child task, digest, rows)` per evidenced child.
+    pub evidence: Vec<(u64, u64, [u8; 32], u64)>,
 }
 
 /// The receipt of [`AdminApi::split_range`].

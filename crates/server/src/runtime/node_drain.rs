@@ -201,7 +201,7 @@ impl NodeRuntime {
         // Part A — this store is draining: hand away every leadership it holds.
         if self.node_drain.this_store_draining {
             if let Some(step) = self.handoff_step() {
-                self.start(me.node.0, step);
+                self.start_drain_step(me.node.0, step);
                 return;
             }
         }
@@ -215,7 +215,7 @@ impl NodeRuntime {
             Ok((views, step)) => {
                 self.node_drain.views = views;
                 if let Some((node, step)) = step {
-                    self.start(node, step);
+                    self.start_drain_step(node, step);
                 }
             }
             Err(error) => self.node_drain.error = Some(error.to_string()),
@@ -393,7 +393,7 @@ impl NodeRuntime {
         Ok((views, step))
     }
 
-    fn start(&mut self, node: u64, step: Step) {
+    fn start_drain_step(&mut self, node: u64, step: Step) {
         let backend = self.rpc_backend.clone();
         let handle = self.grpc_runtime.handle().clone();
         let (name, label) = (step.name(), step.label());

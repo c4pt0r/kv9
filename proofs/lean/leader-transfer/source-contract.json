@@ -17,11 +17,11 @@
   "source_sha256": {
     "crates/raft/src/rawnode.rs": "01148cc1c42208aa0204d3b901168ea1ef07cc773728e2e96ff499cabffc8eb0",
     "crates/raft/src/driver.rs": "f3d005b47748d6aecacdf9450070095f9b70361b5c7677e3af35c786e6a986eb",
-    "crates/server/src/runtime.rs": "d6cbaf15e4f1000cc3aea5266079f86d5dea01cc778da8b4bde4760674b68665",
-    "crates/server/src/api.rs": "aa922d9139b3a81dc39d9921557c166e6b1a4198b004dcf6dee7e2a3cbc1a0b6",
-    "crates/server/src/grpc.rs": "6ddf84505e67a17fd9769524fbd0417808316692cd5468394544689ec3a9886e",
-    "crates/server/proto/kv9.proto": "70f2af011637795a6f9522cb30e19246d37b3f8b7c3c38c9a254a527d3de6fb7",
-    "sdk/rust/kv9-admin/src/main.rs": "374373eedd67f2f7fc53991f0539e315f305df7e7ecf80425340b407a9a9541c",
+    "crates/server/src/runtime.rs": "0dc1134dbfdfbb66b739b3e2476a13fa8674721d51cba6cb16229f224bd15387",
+    "crates/server/src/api.rs": "d35236529e2bb3a022292c175a35b2466ce6197c699e3b2e7aa1a41c6a0458d9",
+    "crates/server/src/grpc.rs": "8f700c3f064b50dab0b30a20311fe3358e303e6b90817dd6ef7dd7a63d795005",
+    "crates/server/proto/kv9.proto": "302418f3616b9035fabffff545d027550279cf78a0a0be03e07790ac61a85532",
+    "sdk/rust/kv9-admin/src/main.rs": "a746bdbb29ff6bbf23c5fde2765c1f0ea7b7729afd0e686e6e85929a0cfc5cea",
     "scripts/kv9-admin-e2e.sh": "1181d1adc7807c2c748823b63d6213dd380ad7227cfb1e986b8d6e8d0be94845",
     "docs/LEADER-TRANSFER.md": "1729a9cc2e10c5a7d53713781099e54e467ace965deb914d2644ff90229213b1"
   }

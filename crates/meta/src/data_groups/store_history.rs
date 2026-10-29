@@ -280,6 +280,15 @@ pub fn project(
                 Task::load(view, child, 100)?.creation(root)?;
             }
         }
+        // Split population evidence (RANGE-SPLIT §4): a child's verified copy;
+        // no store of its own.
+        114 => {
+            let e = split_evidence::SplitEvidence::decode(&t.payload)?;
+            if e.root() != root || e.task() != t.id || e.encode() != t.payload {
+                return Err(invalid("store-history split evidence differs"));
+            }
+            Task::load(view, e.child_task(), 100)?.creation(root)?;
+        }
         _ => {
             return Err(invalid(
                 "unsupported task kind leaves DATA store history unknown",

@@ -193,6 +193,9 @@ pub(crate) type GroupHandles = Arc<
     >,
 >;
 
+/// A locally served group's `(intent, engine, driver)`.
+pub(crate) type LocalParts = (CreationIntent, Arc<WalEngine>, Arc<NodeDriver<DiskRaftStorage, WalEngine>>);
+
 /// One data group this node leads: `(intent, driver status, peer progress)`.
 pub(crate) type LedGroup = (CreationIntent, kv9_raft::driver::NodeStatus, Vec<kv9_raft::rawnode::PeerProgress>);
 
@@ -1111,6 +1114,20 @@ impl RegionManager {
                 Some((p.intent.clone(), status, d.peer_progress()))
             })
             .collect()
+    }
+
+    /// A locally served data group's parts — creation intent, engine, driver —
+    /// whether or not the catalog binds it to a keyspace (a split child is served
+    /// before it is routable). The split driver reads this.
+    pub(crate) fn local_parts(&self, region: RegionId) -> Option<LocalParts> {
+        match self.groups.get(&region) {
+            Some(LocalGroup::Ready(p)) => p
+                .driver
+                .as_ref()
+                .filter(|d| d.status().fatal.is_none())
+                .map(|d| (p.intent.clone(), p.engine.clone(), d.clone())),
+            _ => None,
+        }
     }
 
     pub(crate) fn status_json(&self) -> String {

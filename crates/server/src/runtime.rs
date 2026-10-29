@@ -66,6 +66,7 @@ mod group_compaction;
 mod migration_capture;
 mod node_drain;
 mod placement;
+mod range_split;
 mod replica_addition;
 mod replica_pressure;
 mod replica_repair;
@@ -2596,6 +2597,7 @@ impl AdminApi for RuntimeBackend {
         let floors = dg::compaction::committed_compaction_floors(store)?;
         let plans = dg::addition::committed_plans(store)?;
         let splits = dg::split::committed_splits(store).unwrap_or_default();
+        let split_evidence = dg::split_evidence::committed_split_evidence(store).unwrap_or_default();
         let certified = kv9_meta::root::certified_root(&store.begin()?)?;
         let view = store.begin()?.into_view();
         let mut groups = Vec::new();
@@ -2648,15 +2650,27 @@ impl AdminApi for RuntimeBackend {
             let group_splits = splits
                 .iter()
                 .filter(|s| s.parent_region() == intent.region())
-                .map(|s| crate::api::DataGroupSplit {
-                    task: s.task(),
-                    operation: s.operation(),
-                    split_key: s.split_key().to_vec(),
-                    child_low_task: s.child_low(),
-                    child_high_task: s.child_high(),
-                    child_low_region: region_of(s.child_low()),
-                    child_high_region: region_of(s.child_high()),
-                    stage: "intended",
+                .map(|s| {
+                    let evidence: Vec<(u64, u64, [u8; 32], u64)> = split_evidence
+                        .iter()
+                        .filter(|e| e.operation() == s.operation())
+                        .map(|e| (e.task(), e.child_task(), *e.digest().as_bytes(), e.rows()))
+                        .collect();
+                    crate::api::DataGroupSplit {
+                        task: s.task(),
+                        operation: s.operation(),
+                        split_key: s.split_key().to_vec(),
+                        child_low_task: s.child_low(),
+                        child_high_task: s.child_high(),
+                        child_low_region: region_of(s.child_low()),
+                        child_high_region: region_of(s.child_high()),
+                        stage: match evidence.len() {
+                            0 => "intended",
+                            1 => "populating",
+                            _ => "populated",
+                        },
+                        evidence,
+                    }
                 })
                 .collect();
             groups.push(DataGroupSummary {
@@ -3008,6 +3022,7 @@ fn task_kind_name(kind: u64) -> &'static str {
         111 => "replica_plan",
         112 => "node_drain",
         113 => "split_intent",
+        114 => "split_evidence",
         _ => "unknown",
     }
 }
@@ -3117,6 +3132,20 @@ impl RegistrationBackend for RuntimeBackend {
         };
         let r = AdminApi::add_replica(self, "node", root, operation, creation_task, destination, mode, source)?;
         Ok((r.plan.task(), r.migration.task(), r.changed))
+    }
+    fn record_split_evidence(
+        &self,
+        root: RootDigest,
+        receipt: &[u8],
+        _deadline: Instant,
+    ) -> Result<(u64, bool, AppliedPosition)> {
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        self.commit_split_evidence(root, receipt)
     }
     fn record_install_evidence(
         &self,
@@ -4883,6 +4912,7 @@ pub struct NodeRuntime {
     replica_plans: replica_addition::State,
     replica_repair: replica_repair::State,
     node_drain: node_drain::State,
+    range_split: range_split::State,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -5548,6 +5578,7 @@ impl NodeRuntime {
             replica_plans: replica_addition::State::from_env(),
             replica_repair: replica_repair::State::new(replica_repair::Config::from_env()),
             node_drain: node_drain::State::new(node_drain::Config::from_env()),
+            range_split: range_split::State::default(),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             raw_ttl_clock,
@@ -6113,6 +6144,9 @@ impl NodeRuntime {
                 // Committed drains: hand away leaderships this store holds; the
                 // metadata leader moves its replicas and membership (DRAIN-NODE).
                 self.reconcile_node_drain();
+                // Committed split intents: child descriptors, the parent's seal and
+                // the children's population (RANGE-SPLIT §3–§4).
+                self.reconcile_range_split();
                 // Fence committed removals before any deferred engine read or
                 // driver restart; retirement of an unopened group needs no GET.
                 let retirement_ready = self.reconcile_retirement();
@@ -6857,6 +6891,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("node_drain=");
         body.push_str(&self.node_drain_status());
+        body.push('\n');
+        body.push_str("range_split=");
+        body.push_str(&self.range_split_status());
         body.push('\n');
         body.push_str("replica_pressure=");
         body.push_str(

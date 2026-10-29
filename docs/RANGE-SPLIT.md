@@ -8,8 +8,11 @@ Design packet, 2026-10-29. Parent [#9](https://github.com/c4pt0r/kv9/issues/9), 
 the plan driver, the admin tool — in the same committed-authority-first order the prototype proved:
 **intent → seal → population → publication**, each its own increment with its own proof and e2e.
 
-> **Status: part 1 implemented** (2026-10-29): the committed split intent, with the children
-> created and activated in the same transaction (§2). Parts 2–4 are designed here and open.
+> **Status: parts 1–3 implemented** (2026-10-29): the committed split intent with its children
+> (§2), the seal (§3) and the verified population with its evidence rows (§4), driven by
+> `runtime/range_split.rs`; `scripts/range-split-intent-e2e.sh` and
+> `scripts/range-split-population-e2e.sh` pass and run in CI. Part 4 (publication) is designed
+> here and open; until it lands a split stops at `populated` with the parent sealed (§10).
 
 ## What master kept, and what it did not
 
@@ -120,8 +123,35 @@ it is specified here so part 2–4's rows carry a parent *set*, not a single par
   a child as parent); exact idempotent confirmation; the parent still serving the same data and
   accepting new writes afterwards; the children visible in `group list` with no keyspace.
 
-## 9. What follows
+## 9. As built (parts 2–3)
 
-Part 2 (seal) and part 3 (population) are one increment: the seal is only useful with the copy.
-Part 4 (publication) is the second. Parent retirement, the auto-split trigger (prototype:
-`KV9_AUTO_SPLIT_BYTES`, median-key sampling, derived operations) and merges follow in that order.
+- **One driver, three roles, one step in flight** (`runtime/range_split.rs`, after the drain pass).
+  A child's leader proposes the child's half descriptor (initial `DataRange` publication through
+  the child's log, once per term); the parent's leader seals (`DataRange` CAS from the current
+  descriptor's digest to version+1 sealed, through `propose_and_wait`) once both children have a
+  leader and an applied descriptor; a child's leader copies its half from the LOCAL parent replica
+  once that replica shows the sealed descriptor — `RawExecutor::scan` pages of 512 rows from a
+  parent snapshot, written through the child's own `raw_batch_put` (the child's fence admits
+  exactly its half) — then digests parent half and child row for row and commits the kind-114
+  evidence (`KV9SPE01`: operation, intent, child, digest, rows) locally or over the internal
+  `RecordSplitEvidence`. `ListDataGroups.splits[].stage` is `intended` → `populating` →
+  `populated`, with the evidence rows attached.
+- **No new raft command.** Population is ordinary raw writes under the child's descriptor; the
+  catalog routes nothing to a child until part 4, so no client can reach one.
+- **The seal window.** `RawGroup::authorize` refuses reads and writes alike on a sealed range
+  (typed `stale region epoch`), so between the seal and the publication the parent's keyspace is
+  unavailable. Part 4 closes the window; until then `group split` is an operator's deliberate,
+  observable act, never automatic.
+- **TTL-activated ranges cannot be sealed** (the state machine refuses the seal as a legacy command
+  while TTL is enabled): the seal step fails loudly in the status line and the split waits; the
+  TTL-preserving split is future work, as the prototype left it.
+- **Restart.** The cursor is in memory; a child leader that restarts (or changes) copies again from
+  the first key — idempotent puts of an immutable source. Evidence already committed ends a child's
+  population for good; a differing digest for the same child is refused permanently.
+
+## 10. What follows
+
+Part 4 (publication) is the next increment: one catalog transaction with the parent binding's
+sealed successor and the two child bindings, the raw directory refresh, and the close of the seal
+window. Parent retirement, the auto-split trigger (prototype: `KV9_AUTO_SPLIT_BYTES`, median-key
+sampling, derived operations) and merges follow in that order.

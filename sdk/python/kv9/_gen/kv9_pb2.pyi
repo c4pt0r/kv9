@@ -746,7 +746,7 @@ class SplitRangeResponse(_message.Message):
     def __init__(self, intent_task: _Optional[int] = ..., child_low_task: _Optional[int] = ..., child_high_task: _Optional[int] = ..., child_low_region: _Optional[int] = ..., child_high_region: _Optional[int] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
 
 class DataGroupSplit(_message.Message):
-    __slots__ = ("task", "operation", "split_key", "child_low_task", "child_high_task", "child_low_region", "child_high_region", "stage")
+    __slots__ = ("task", "operation", "split_key", "child_low_task", "child_high_task", "child_low_region", "child_high_region", "stage", "evidence")
     TASK_FIELD_NUMBER: _ClassVar[int]
     OPERATION_FIELD_NUMBER: _ClassVar[int]
     SPLIT_KEY_FIELD_NUMBER: _ClassVar[int]
@@ -755,6 +755,7 @@ class DataGroupSplit(_message.Message):
     CHILD_LOW_REGION_FIELD_NUMBER: _ClassVar[int]
     CHILD_HIGH_REGION_FIELD_NUMBER: _ClassVar[int]
     STAGE_FIELD_NUMBER: _ClassVar[int]
+    EVIDENCE_FIELD_NUMBER: _ClassVar[int]
     task: int
     operation: bytes
     split_key: bytes
@@ -763,7 +764,20 @@ class DataGroupSplit(_message.Message):
     child_low_region: int
     child_high_region: int
     stage: str
-    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., split_key: _Optional[bytes] = ..., child_low_task: _Optional[int] = ..., child_high_task: _Optional[int] = ..., child_low_region: _Optional[int] = ..., child_high_region: _Optional[int] = ..., stage: _Optional[str] = ...) -> None: ...
+    evidence: _containers.RepeatedCompositeFieldContainer[DataGroupSplitEvidence]
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., split_key: _Optional[bytes] = ..., child_low_task: _Optional[int] = ..., child_high_task: _Optional[int] = ..., child_low_region: _Optional[int] = ..., child_high_region: _Optional[int] = ..., stage: _Optional[str] = ..., evidence: _Optional[_Iterable[_Union[DataGroupSplitEvidence, _Mapping]]] = ...) -> None: ...
+
+class DataGroupSplitEvidence(_message.Message):
+    __slots__ = ("task", "child_task", "digest", "rows")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    CHILD_TASK_FIELD_NUMBER: _ClassVar[int]
+    DIGEST_FIELD_NUMBER: _ClassVar[int]
+    ROWS_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    child_task: int
+    digest: bytes
+    rows: int
+    def __init__(self, task: _Optional[int] = ..., child_task: _Optional[int] = ..., digest: _Optional[bytes] = ..., rows: _Optional[int] = ...) -> None: ...
 
 class DrainNodeRequest(_message.Message):
     __slots__ = ("node_id",)

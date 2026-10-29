@@ -536,8 +536,16 @@ message DataGroupSplit {
   uint64 child_high_task = 5;
   uint64 child_low_region = 6;
   uint64 child_high_region = 7;
-  // Catalog-only progress: intended (sealed, populated, published as later parts land).
+  // Catalog-only progress: intended, populating (one child evidenced), populated
+  // (both), published (later part).
   string stage = 8;
+  repeated DataGroupSplitEvidence evidence = 9;
+}
+message DataGroupSplitEvidence {
+  uint64 task = 1;        // kind 114
+  uint64 child_task = 2;
+  bytes digest = 3;       // the child's rows == the sealed parent half
+  uint64 rows = 4;
 }
 message DrainNodeRequest {
   uint64 node_id = 1;

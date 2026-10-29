@@ -881,6 +881,12 @@ jobs:
           - script: range-split-intent-e2e.sh
             base_port: 27450
             success_marker: "PASS: range split intent"
+          # Range split parts 2–3 (docs/RANGE-SPLIT.md §3–§4): the cluster seals the
+          # parent and populates both children with verified copies; the parent refuses
+          # writes and serves reads; nothing is rerouted yet.
+          - script: range-split-population-e2e.sh
+            base_port: 27550
+            success_marker: "PASS: range split population"
           # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
           # isolated leader must refuse raw reads with the NAMED typed families
           # (read_unconfirmed / not_leader) — transport errors explicitly do not
