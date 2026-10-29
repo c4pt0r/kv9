@@ -224,7 +224,9 @@ deletes applied as one Raft entry.
 
 - The full dataset lives in memory on every replica; SSTs are checkpoints, not yet a read path (no
   incremental LSM, no block cache).
-- Range split and merge are design goals, not in this tree; metadata is one Raft group.
+- Range split is being re-entered in committed-authority-first parts ([RANGE-SPLIT](docs/RANGE-SPLIT.md): the
+  intent and its children are in this tree, `kv9-admin group split`; seal, population and publication follow);
+  merge is a design goal; metadata is one Raft group.
 - Tenant admission and fairness are partial; TLS is not implemented (use a private network).
 - Acknowledged writes that are not yet checkpointed depend on the Raft replicas' local disks.
 - There are no transactions by design: the multi-key write primitive is the atomic range batch

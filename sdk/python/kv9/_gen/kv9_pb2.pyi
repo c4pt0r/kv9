@@ -670,7 +670,7 @@ class DataGroupPlan(_message.Message):
     def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., migration_task: _Optional[int] = ..., mode: _Optional[str] = ..., destination: _Optional[_Union[DataGroupReplica, _Mapping]] = ..., source: _Optional[_Union[DataGroupReplica, _Mapping]] = ..., stage: _Optional[str] = ...) -> None: ...
 
 class DataGroupRow(_message.Message):
-    __slots__ = ("creation_task", "region_id", "operation", "replicas", "activated", "keyspaces", "migrations", "compaction_floor_term", "compaction_floor_index", "plans", "members")
+    __slots__ = ("creation_task", "region_id", "operation", "replicas", "activated", "keyspaces", "migrations", "compaction_floor_term", "compaction_floor_index", "plans", "members", "splits")
     CREATION_TASK_FIELD_NUMBER: _ClassVar[int]
     REGION_ID_FIELD_NUMBER: _ClassVar[int]
     OPERATION_FIELD_NUMBER: _ClassVar[int]
@@ -682,6 +682,7 @@ class DataGroupRow(_message.Message):
     COMPACTION_FLOOR_INDEX_FIELD_NUMBER: _ClassVar[int]
     PLANS_FIELD_NUMBER: _ClassVar[int]
     MEMBERS_FIELD_NUMBER: _ClassVar[int]
+    SPLITS_FIELD_NUMBER: _ClassVar[int]
     creation_task: int
     region_id: int
     operation: bytes
@@ -693,7 +694,8 @@ class DataGroupRow(_message.Message):
     compaction_floor_index: int
     plans: _containers.RepeatedCompositeFieldContainer[DataGroupPlan]
     members: _containers.RepeatedCompositeFieldContainer[DataGroupReplica]
-    def __init__(self, creation_task: _Optional[int] = ..., region_id: _Optional[int] = ..., operation: _Optional[bytes] = ..., replicas: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ..., activated: _Optional[bool] = ..., keyspaces: _Optional[_Iterable[_Union[DataGroupKeyspace, _Mapping]]] = ..., migrations: _Optional[_Iterable[_Union[DataGroupMigration, _Mapping]]] = ..., compaction_floor_term: _Optional[int] = ..., compaction_floor_index: _Optional[int] = ..., plans: _Optional[_Iterable[_Union[DataGroupPlan, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ...) -> None: ...
+    splits: _containers.RepeatedCompositeFieldContainer[DataGroupSplit]
+    def __init__(self, creation_task: _Optional[int] = ..., region_id: _Optional[int] = ..., operation: _Optional[bytes] = ..., replicas: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ..., activated: _Optional[bool] = ..., keyspaces: _Optional[_Iterable[_Union[DataGroupKeyspace, _Mapping]]] = ..., migrations: _Optional[_Iterable[_Union[DataGroupMigration, _Mapping]]] = ..., compaction_floor_term: _Optional[int] = ..., compaction_floor_index: _Optional[int] = ..., plans: _Optional[_Iterable[_Union[DataGroupPlan, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ..., splits: _Optional[_Iterable[_Union[DataGroupSplit, _Mapping]]] = ...) -> None: ...
 
 class AddReplicaRequest(_message.Message):
     __slots__ = ("root_digest", "operation_id", "creation_task", "destination_node", "mode", "source_node")
@@ -710,6 +712,58 @@ class AddReplicaRequest(_message.Message):
     mode: str
     source_node: int
     def __init__(self, root_digest: _Optional[bytes] = ..., operation_id: _Optional[bytes] = ..., creation_task: _Optional[int] = ..., destination_node: _Optional[int] = ..., mode: _Optional[str] = ..., source_node: _Optional[int] = ...) -> None: ...
+
+class SplitRangeRequest(_message.Message):
+    __slots__ = ("root_digest", "operation_id", "parent_region", "split_key")
+    ROOT_DIGEST_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_ID_FIELD_NUMBER: _ClassVar[int]
+    PARENT_REGION_FIELD_NUMBER: _ClassVar[int]
+    SPLIT_KEY_FIELD_NUMBER: _ClassVar[int]
+    root_digest: bytes
+    operation_id: bytes
+    parent_region: int
+    split_key: bytes
+    def __init__(self, root_digest: _Optional[bytes] = ..., operation_id: _Optional[bytes] = ..., parent_region: _Optional[int] = ..., split_key: _Optional[bytes] = ...) -> None: ...
+
+class SplitRangeResponse(_message.Message):
+    __slots__ = ("intent_task", "child_low_task", "child_high_task", "child_low_region", "child_high_region", "changed", "applied_term", "applied_index")
+    INTENT_TASK_FIELD_NUMBER: _ClassVar[int]
+    CHILD_LOW_TASK_FIELD_NUMBER: _ClassVar[int]
+    CHILD_HIGH_TASK_FIELD_NUMBER: _ClassVar[int]
+    CHILD_LOW_REGION_FIELD_NUMBER: _ClassVar[int]
+    CHILD_HIGH_REGION_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    intent_task: int
+    child_low_task: int
+    child_high_task: int
+    child_low_region: int
+    child_high_region: int
+    changed: bool
+    applied_term: int
+    applied_index: int
+    def __init__(self, intent_task: _Optional[int] = ..., child_low_task: _Optional[int] = ..., child_high_task: _Optional[int] = ..., child_low_region: _Optional[int] = ..., child_high_region: _Optional[int] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
+
+class DataGroupSplit(_message.Message):
+    __slots__ = ("task", "operation", "split_key", "child_low_task", "child_high_task", "child_low_region", "child_high_region", "stage")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    SPLIT_KEY_FIELD_NUMBER: _ClassVar[int]
+    CHILD_LOW_TASK_FIELD_NUMBER: _ClassVar[int]
+    CHILD_HIGH_TASK_FIELD_NUMBER: _ClassVar[int]
+    CHILD_LOW_REGION_FIELD_NUMBER: _ClassVar[int]
+    CHILD_HIGH_REGION_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    operation: bytes
+    split_key: bytes
+    child_low_task: int
+    child_high_task: int
+    child_low_region: int
+    child_high_region: int
+    stage: str
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., split_key: _Optional[bytes] = ..., child_low_task: _Optional[int] = ..., child_high_task: _Optional[int] = ..., child_low_region: _Optional[int] = ..., child_high_region: _Optional[int] = ..., stage: _Optional[str] = ...) -> None: ...
 
 class DrainNodeRequest(_message.Message):
     __slots__ = ("node_id",)

@@ -64,6 +64,7 @@ fn usage() -> String {
      \u{20}        add-replica <creation-task> --to <node> [--operation <hex> | --label <text>]\n\
      \u{20}        move-replica <creation-task> --from <node> --to <node> [--operation <hex> | --label <text>]\n\
      \u{20}        transfer-leader <creation-task> --to <node> [--wait]\n\
+     \u{20}        split <creation-task> --at <key> | --at-hex <hex> [--operation <hex> | --label <text>]\n\
      task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history\n\
      \u{20}        describe <id>\n\
      version\n\
@@ -1437,6 +1438,18 @@ async fn keyspace_create(global: &Global, cluster: &mut Cluster, args: &VerbArgs
 
 // ------------------------------------------------------------------ data groups
 
+/// Hex of any length (a split key given as bytes).
+fn parse_hex_bytes(text: &str, what: &str) -> Result<Vec<u8>, Fail> {
+    let text = text.trim();
+    if text.is_empty() || !text.len().is_multiple_of(2) {
+        return Err(Fail::Usage(format!("{what} must be an even number of hex digits")));
+    }
+    (0..text.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&text[i..i + 2], 16).map_err(|_| Fail::Usage(format!("{what} must be hex"))))
+        .collect()
+}
+
 fn parse_hex(text: &str, what: &str, len: usize) -> Result<Vec<u8>, Fail> {
     let text = text.trim();
     if text.len() != len * 2 || !text.chars().all(|c| c.is_ascii_hexdigit()) {
@@ -1467,6 +1480,12 @@ fn group_json(g: &DataGroup) -> Value {
         "activated": g.activated,
         "replicas": g.replicas.iter().map(|r| json!({"node_id": r.node_id, "store_incarnation": hex(&r.store_incarnation)})).collect::<Vec<_>>(),
         "members": g.current_members().iter().map(|r| json!({"node_id": r.node_id, "store_incarnation": hex(&r.store_incarnation)})).collect::<Vec<_>>(),
+        "splits": g.splits.iter().map(|s| json!({
+            "task": s.task, "operation": hex(&s.operation), "split_key": String::from_utf8_lossy(&s.split_key),
+            "split_key_hex": hex(&s.split_key), "stage": s.stage,
+            "child_low": {"creation_task": s.child_low_task, "region_id": s.child_low_region},
+            "child_high": {"creation_task": s.child_high_task, "region_id": s.child_high_region},
+        })).collect::<Vec<_>>(),
         "keyspaces": g.keyspaces.iter().map(|k| json!({
             "keyspace_id": k.keyspace_id, "tenant_id": k.tenant_id, "bind_task": k.bind_task,
             "epoch": {"conf_ver": k.conf_ver, "version": k.version},
@@ -1553,6 +1572,54 @@ async fn group_plan_replica(global: &Global, cluster: &mut Cluster, args: &VerbA
         table: format!(
             "plan_task={} migration_task={} region_id={} operation={} ({outcome})\nwatch: kv9-admin group describe {creation_task}",
             planned.plan_task, planned.migration_task, planned.region_id, hex(&operation)
+        ),
+        partial: Vec::new(),
+    })
+}
+
+async fn group_split(global: &Global, cluster: &mut Cluster, args: &VerbArgs, creation_task: u64) -> Outcome {
+    let key: Vec<u8> = match (args.flags.get("at"), args.flags.get("at-hex")) {
+        (Some(key), None) => key.as_bytes().to_vec(),
+        (None, Some(hex_key)) => parse_hex_bytes(hex_key, "--at-hex")?,
+        _ => return Err(Fail::Usage("group split <creation-task> --at <key> | --at-hex <hex>".into())),
+    };
+    if key.is_empty() || key.len() > 1024 {
+        return Err(Fail::Usage("the split key must contain 1..1024 bytes".into()));
+    }
+    let groups = cluster.leader.list_data_groups().await?;
+    let group = groups
+        .iter()
+        .find(|g| g.creation_task == creation_task)
+        .ok_or_else(|| Fail::Refused(format!("data group {creation_task} is not committed")))?;
+    let region = group.region_id;
+    let root = cluster.root_digest().await?;
+    let subject = format!("{region}/{}", hex(&key));
+    let (operation, origin) = operation_for(args, &root, "kv9-admin/split/v1", &subject)?;
+    confirm(
+        global,
+        &format!(
+            "plan: SplitRange group={creation_task} region={region} at={} operation={} ({origin}); two children are created and activated on the group's stores, nothing is sealed or rerouted yet",
+            String::from_utf8_lossy(&key),
+            hex(&operation)
+        ),
+        None,
+    )?;
+    let planned = cluster.leader.split_range(root, operation, region, &key).await?;
+    let outcome = if planned.changed { "committed" } else { "confirmed" };
+    Ok(Report {
+        command: "group split".into(),
+        result: json!({
+            "intent_task": planned.intent_task, "parent_region": region, "split_key": String::from_utf8_lossy(&key),
+            "split_key_hex": hex(&key), "operation": hex(&operation), "operation_origin": origin,
+            "child_low": {"creation_task": planned.child_low_task, "region_id": planned.child_low_region},
+            "child_high": {"creation_task": planned.child_high_task, "region_id": planned.child_high_region},
+            "outcome": outcome, "stage": "intended",
+            "applied": {"term": planned.applied.term, "index": planned.applied.index},
+        }),
+        table: format!(
+            "intent_task={} parent_region={region} split_key={} ({outcome})\nchild_low: task {} region {} [start, key)\nchild_high: task {} region {} [key, end)\nwatch: kv9-admin group describe {creation_task}",
+            planned.intent_task, String::from_utf8_lossy(&key), planned.child_low_task, planned.child_low_region,
+            planned.child_high_task, planned.child_high_region
         ),
         partial: Vec::new(),
     })
@@ -1896,6 +1963,10 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
             group_describe(&mut cluster, id).await?
         }
         ("group", "create") => group_create(global, &mut cluster, &args).await?,
+        ("group", "split") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("group split <creation-task> --at <key>".into()))?, "creation task")?;
+            group_split(global, &mut cluster, &args, id).await?
+        }
         ("group", verb @ ("add-replica" | "move-replica")) => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage(format!("group {verb} <creation-task> --to <node>")))?, "creation task")?;
             group_plan_replica(global, &mut cluster, &args, id, verb.trim_end_matches("-replica")).await?

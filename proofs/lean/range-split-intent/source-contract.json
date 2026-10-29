@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "model": "Kv9.RangeSplitIntent",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "one_intent_per_parent",
+    "a_repeated_intent_confirms",
+    "an_intent_is_permanent",
+    "an_intent_needs_a_bound_parent_a_key_inside_and_the_members",
+    "nothing_seals_publishes_or_reroutes_here",
+    "an_intent_readies_the_children",
+    "the_chain_reaches_an_intent"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups/split.rs": "5f1b9a894022cd61b9eb0357075c53ec2bbe03b3e8c6ce078d3b0449fc2e3906",
+    "crates/meta/src/data_groups/ranges.rs": "05f842066e8e70cce1976285099a758dc33fbc154e974ff33f0bb0846c59b45c",
+    "crates/server/src/runtime.rs": "d6cbaf15e4f1000cc3aea5266079f86d5dea01cc778da8b4bde4760674b68665",
+    "crates/server/proto/kv9.proto": "70f2af011637795a6f9522cb30e19246d37b3f8b7c3c38c9a254a527d3de6fb7",
+    "scripts/range-split-intent-e2e.py": "a6215850bef317e1927afe36f6d0fd4527b200687603df3a450cba5377e3f2f7",
+    "docs/RANGE-SPLIT.md": "d5411b20c3b3947614bb829de2906f622adb00c4a994def8abbe6ae2ae44e4df"
+  }
+}

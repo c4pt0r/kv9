@@ -748,6 +748,19 @@ pub trait AdminApi {
     fn drain_node(&self, _caller: &str, _node: kv9_common::NodeId) -> Result<DrainResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::drain_node"))
     }
+    /// Commit a split intent for the bound range of `parent_region` at `split_key`,
+    /// creating and activating both children on the parent's stores in the same
+    /// transaction (docs/RANGE-SPLIT.md §2). Nothing seals, copies or reroutes.
+    fn split_range(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _parent_region: kv9_common::RegionId,
+        _split_key: &[u8],
+    ) -> Result<SplitRangeResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::split_range"))
+    }
     fn change_node_endpoint(
         &self,
         _caller: &str,
@@ -835,6 +848,32 @@ pub struct DataGroupSummary {
     /// Committed membership now (`committed_members`): the nodes a describe
     /// should ask for the group's live view.
     pub members: Vec<DataGroupReplica>,
+    /// Committed split intents whose parent is this group (docs/RANGE-SPLIT.md §2).
+    pub splits: Vec<DataGroupSplit>,
+}
+
+/// One committed split intent of a group, with its catalog-only stage.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupSplit {
+    pub task: u64,
+    pub operation: [u8; 16],
+    pub split_key: Vec<u8>,
+    pub child_low_task: u64,
+    pub child_high_task: u64,
+    pub child_low_region: u64,
+    pub child_high_region: u64,
+    pub stage: &'static str,
+}
+
+/// The receipt of [`AdminApi::split_range`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SplitRangeResult {
+    pub intent: kv9_meta::data_groups::split::SplitIntent,
+    pub child_low: kv9_meta::data_groups::CreationIntent,
+    pub child_high: kv9_meta::data_groups::CreationIntent,
+    /// False confirms an identical committed intent.
+    pub changed: bool,
+    pub applied: AppliedPosition,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]

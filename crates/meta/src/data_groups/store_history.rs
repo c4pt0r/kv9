@@ -269,6 +269,17 @@ pub fn project(
                 return Err(invalid("store-history drain differs"));
             }
         }
+        // A split intent (RANGE-SPLIT §2) names two child creations that carry
+        // their own kind-100 origins; the intent itself introduces no store.
+        113 => {
+            let s = split::SplitIntent::decode(&t.payload)?;
+            if s.root() != root || s.task() != t.id || s.encode() != t.payload {
+                return Err(invalid("store-history split intent differs"));
+            }
+            for child in [s.child_low(), s.child_high()] {
+                Task::load(view, child, 100)?.creation(root)?;
+            }
+        }
         _ => {
             return Err(invalid(
                 "unsupported task kind leaves DATA store history unknown",

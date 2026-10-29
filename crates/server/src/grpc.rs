@@ -2453,6 +2453,50 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn split_range(
+        &self,
+        request: Request<proto::SplitRangeRequest>,
+    ) -> Result<Response<proto::SplitRangeResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16] || request.parent_region == 0 {
+            return Err(Status::invalid_argument("nonzero operation and parent region required"));
+        }
+        if request.split_key.is_empty() || request.split_key.len() > 1024 {
+            return Err(Status::invalid_argument("split_key must contain 1..1024 bytes"));
+        }
+        let parent = kv9_common::RegionId(request.parent_region);
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.split_range(&caller, root, operation, parent, &request.split_key)
+            })
+            .await?;
+        Ok(Response::new(proto::SplitRangeResponse {
+            intent_task: result.intent.task(),
+            child_low_task: result.child_low.task(),
+            child_high_task: result.child_high.task(),
+            child_low_region: result.child_low.region().0,
+            child_high_region: result.child_high.region().0,
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+        }))
+    }
+
     async fn drain_node(
         &self,
         request: Request<proto::DrainNodeRequest>,
@@ -2547,6 +2591,20 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                         })
                         .collect(),
                     members: g.members.into_iter().map(replica).collect(),
+                    splits: g
+                        .splits
+                        .into_iter()
+                        .map(|s| proto::DataGroupSplit {
+                            task: s.task,
+                            operation: s.operation.to_vec(),
+                            split_key: s.split_key,
+                            child_low_task: s.child_low_task,
+                            child_high_task: s.child_high_task,
+                            child_low_region: s.child_low_region,
+                            child_high_region: s.child_high_region,
+                            stage: s.stage.to_string(),
+                        })
+                        .collect(),
                 })
                 .collect(),
         }))

@@ -175,6 +175,42 @@ impl Client {
         })
     }
 
+    /// Commit a split intent for the bound range of `parent_region` at `split_key`
+    /// (docs/RANGE-SPLIT.md §2): the two children are created and activated on
+    /// the parent's stores in the same transaction. Nothing seals or reroutes yet.
+    pub async fn split_range(
+        &self,
+        root: [u8; 32],
+        operation: [u8; 16],
+        parent_region: u64,
+        split_key: &[u8],
+    ) -> Result<SplitPlanned, Error> {
+        let r = self
+            .invoke(
+                false,
+                proto::SplitRangeRequest {
+                    root_digest: root.to_vec(),
+                    operation_id: operation.to_vec(),
+                    parent_region,
+                    split_key: split_key.to_vec(),
+                },
+                |mut c, r| async move { c.split_range(r).await },
+            )
+            .await?;
+        Ok(SplitPlanned {
+            intent_task: r.intent_task,
+            child_low_task: r.child_low_task,
+            child_high_task: r.child_high_task,
+            child_low_region: r.child_low_region,
+            child_high_region: r.child_high_region,
+            changed: r.changed,
+            applied: Applied {
+                term: r.applied_term,
+                index: r.applied_index,
+            },
+        })
+    }
+
     /// Commit the intent that `node`'s current store leaves the cluster
     /// (docs/DRAIN-NODE.md). Idempotent per store incarnation; the cluster does
     /// the moves. Poll [`Client::list_nodes`] for `drained`.
@@ -350,6 +386,35 @@ pub struct DataGroup {
     /// Committed membership now: initial replicas plus evidenced destinations,
     /// minus retired sources. Empty only from a server older than this field.
     pub members: Vec<DataGroupReplica>,
+    /// Committed split intents whose parent is this group (docs/RANGE-SPLIT.md).
+    pub splits: Vec<DataGroupSplit>,
+}
+
+/// One committed split intent of a group.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupSplit {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    pub split_key: Vec<u8>,
+    pub child_low_task: u64,
+    pub child_high_task: u64,
+    pub child_low_region: u64,
+    pub child_high_region: u64,
+    /// `intended`, later `sealed`, `populated`, `published`.
+    pub stage: String,
+}
+
+/// The receipt of [`Client::split_range`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SplitPlanned {
+    pub intent_task: u64,
+    pub child_low_task: u64,
+    pub child_high_task: u64,
+    pub child_low_region: u64,
+    pub child_high_region: u64,
+    /// `false` confirms an identical committed intent.
+    pub changed: bool,
+    pub applied: Applied,
 }
 
 impl DataGroup {
@@ -497,6 +562,20 @@ impl Client {
                 operation: g.operation,
                 replicas: g.replicas.into_iter().map(|r| replica(Some(r))).collect(),
                 members: g.members.into_iter().map(|r| replica(Some(r))).collect(),
+                splits: g
+                    .splits
+                    .into_iter()
+                    .map(|s| DataGroupSplit {
+                        task: s.task,
+                        operation: s.operation,
+                        split_key: s.split_key,
+                        child_low_task: s.child_low_task,
+                        child_high_task: s.child_high_task,
+                        child_low_region: s.child_low_region,
+                        child_high_region: s.child_high_region,
+                        stage: s.stage,
+                    })
+                    .collect(),
                 activated: g.activated,
                 keyspaces: g
                     .keyspaces

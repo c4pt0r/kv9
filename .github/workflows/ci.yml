@@ -875,6 +875,12 @@ jobs:
           - script: leader-transfer-e2e.sh
             base_port: 27300
             success_marker: "PASS: leader transfer"
+          # Range split part 1 (docs/RANGE-SPLIT.md §2): one verb commits the intent and
+          # two activated unbound children on the parent's stores; refusals typed; the
+          # parent keeps serving.
+          - script: range-split-intent-e2e.sh
+            base_port: 27450
+            success_marker: "PASS: range split intent"
           # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
           # isolated leader must refuse raw reads with the NAMED typed families
           # (read_unconfirmed / not_leader) — transport errors explicitly do not

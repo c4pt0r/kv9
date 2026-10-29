@@ -41,7 +41,7 @@
     "crates/engine/src/persist.rs": "04481cb1dc1814140a31db1d3ce680de0a93d38fde1ff499c05e58c143e6e43f",
     "crates/server/src/checkpoint_retention.rs": "fd711c8eb856a60a3d768b33875f46794ef2800793514c544f466e7fe83ba67d",
     "crates/server/src/remote_storage.rs": "0f6ea528133442900893fca81b59055ea20a2ed1a3d38ec133c056ac48503314",
-    "crates/server/src/runtime.rs": "afa2c6318ef7fd26b4dbbd7df867961e71c85028f3f7884ca71552ade6bf9cd9",
+    "crates/server/src/runtime.rs": "d6cbaf15e4f1000cc3aea5266079f86d5dea01cc778da8b4bde4760674b68665",
     "crates/server/src/runtime/tests/retention_tests.rs": "cc0f0163893655add0a9c6ef7b7e9fb87b04a5ffcc5ca4f536b16a6772170773",
     "crates/meta/src/retention.rs": "15279c6d41b13bc39e052c97dc40e81cc3a07debf066cdf7e12cccd0e6742698",
     "crates/region/src/manifest.rs": "56cff0a4f76d87b06aad30fc1da07c5eb3f34e46d4ab5cc337a4c240c6e0be5e"

@@ -2595,10 +2595,14 @@ impl AdminApi for RuntimeBackend {
         let truncations = dg::truncation::committed_truncations(store)?;
         let floors = dg::compaction::committed_compaction_floors(store)?;
         let plans = dg::addition::committed_plans(store)?;
+        let splits = dg::split::committed_splits(store).unwrap_or_default();
         let certified = kv9_meta::root::certified_root(&store.begin()?)?;
         let view = store.begin()?.into_view();
         let mut groups = Vec::new();
-        for creation in dg::committed_creations(store)? {
+        let all_creations = dg::committed_creations(store)?;
+        let creations_by_task: std::collections::BTreeMap<u64, &dg::CreationIntent> =
+            all_creations.iter().map(|c| (c.intent().task(), c.intent())).collect();
+        for creation in &all_creations {
             let intent = creation.intent();
             let task = intent.task();
             let group_migrations = migrations
@@ -2638,12 +2642,30 @@ impl AdminApi for RuntimeBackend {
                     .collect(),
                 None => intent.replicas().iter().map(replica).collect(),
             };
+            let region_of = |creation_task: u64| {
+                creations_by_task.get(&creation_task).map_or(0, |c| c.region().0)
+            };
+            let group_splits = splits
+                .iter()
+                .filter(|s| s.parent_region() == intent.region())
+                .map(|s| crate::api::DataGroupSplit {
+                    task: s.task(),
+                    operation: s.operation(),
+                    split_key: s.split_key().to_vec(),
+                    child_low_task: s.child_low(),
+                    child_high_task: s.child_high(),
+                    child_low_region: region_of(s.child_low()),
+                    child_high_region: region_of(s.child_high()),
+                    stage: "intended",
+                })
+                .collect();
             groups.push(DataGroupSummary {
                 creation_task: task,
                 region_id: intent.region().0,
                 operation: intent.operation(),
                 replicas: intent.replicas().iter().map(replica).collect(),
                 members,
+                splits: group_splits,
                 activated: activated.contains(&task),
                 keyspaces: ranges
                     .iter()
@@ -2847,6 +2869,32 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn split_range(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        parent_region: RegionId,
+        split_key: &[u8],
+    ) -> Result<crate::api::SplitRangeResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("split request root differs".into()));
+        }
+        let (intent, child_low, child_high, changed) =
+            kv9_meta::data_groups::split::plan_split(&mut txn, operation, parent_region, split_key)?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::SplitRangeResult { intent, child_low, child_high, changed, applied })
+    }
+
     fn drain_node(&self, _caller: &str, node: NodeId) -> Result<crate::api::DrainResult> {
         self.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
@@ -2959,6 +3007,7 @@ fn task_kind_name(kind: u64) -> &'static str {
         110 => "group_compaction",
         111 => "replica_plan",
         112 => "node_drain",
+        113 => "split_intent",
         _ => "unknown",
     }
 }
