@@ -171,6 +171,16 @@ class Kv9Stub:
                 request_serializer=kv9__pb2.ListTasksRequest.SerializeToString,
                 response_deserializer=kv9__pb2.ListTasksResponse.FromString,
                 _registered_method=True)
+        self.AddReplica = channel.unary_unary(
+                '/kv9.v1.Kv9/AddReplica',
+                request_serializer=kv9__pb2.AddReplicaRequest.SerializeToString,
+                response_deserializer=kv9__pb2.AddReplicaResponse.FromString,
+                _registered_method=True)
+        self.TransferLeader = channel.unary_unary(
+                '/kv9.v1.Kv9/TransferLeader',
+                request_serializer=kv9__pb2.TransferLeaderRequest.SerializeToString,
+                response_deserializer=kv9__pb2.TransferLeaderResponse.FromString,
+                _registered_method=True)
         self.ChangeNodeEndpoint = channel.unary_unary(
                 '/kv9.v1.Kv9/ChangeNodeEndpoint',
                 request_serializer=kv9__pb2.ChangeNodeEndpointRequest.SerializeToString,
@@ -445,6 +455,22 @@ class Kv9Servicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def AddReplica(self, request, context):
+        """One committed replica plan (kind 111) with its migration intent; the cluster
+        drives the whole chain by itself from here (docs/REPLICA-ADDITION.md).
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def TransferLeader(self, request, context):
+        """Hand leadership of the metadata group (region 1) or a data group to a
+        caught-up voter; leader-only, nothing committed (docs/LEADER-TRANSFER.md).
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ChangeNodeEndpoint(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -693,6 +719,16 @@ def add_Kv9Servicer_to_server(servicer, server):
                     servicer.ListTasks,
                     request_deserializer=kv9__pb2.ListTasksRequest.FromString,
                     response_serializer=kv9__pb2.ListTasksResponse.SerializeToString,
+            ),
+            'AddReplica': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddReplica,
+                    request_deserializer=kv9__pb2.AddReplicaRequest.FromString,
+                    response_serializer=kv9__pb2.AddReplicaResponse.SerializeToString,
+            ),
+            'TransferLeader': grpc.unary_unary_rpc_method_handler(
+                    servicer.TransferLeader,
+                    request_deserializer=kv9__pb2.TransferLeaderRequest.FromString,
+                    response_serializer=kv9__pb2.TransferLeaderResponse.SerializeToString,
             ),
             'ChangeNodeEndpoint': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeNodeEndpoint,
@@ -1516,6 +1552,60 @@ class Kv9:
             '/kv9.v1.Kv9/ListTasks',
             kv9__pb2.ListTasksRequest.SerializeToString,
             kv9__pb2.ListTasksResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AddReplica(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/AddReplica',
+            kv9__pb2.AddReplicaRequest.SerializeToString,
+            kv9__pb2.AddReplicaResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def TransferLeader(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/TransferLeader',
+            kv9__pb2.TransferLeaderRequest.SerializeToString,
+            kv9__pb2.TransferLeaderResponse.FromString,
             options,
             channel_credentials,
             insecure,

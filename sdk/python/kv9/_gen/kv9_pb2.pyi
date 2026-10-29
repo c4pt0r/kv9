@@ -647,8 +647,26 @@ class DataGroupMigration(_message.Message):
     truncation_task: int
     def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., destination: _Optional[_Union[DataGroupReplica, _Mapping]] = ..., evidence_task: _Optional[int] = ..., abort_task: _Optional[int] = ..., removal_task: _Optional[int] = ..., truncation_task: _Optional[int] = ...) -> None: ...
 
+class DataGroupPlan(_message.Message):
+    __slots__ = ("task", "operation", "migration_task", "mode", "destination", "source", "stage")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    MIGRATION_TASK_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
+    DESTINATION_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    operation: bytes
+    migration_task: int
+    mode: str
+    destination: DataGroupReplica
+    source: DataGroupReplica
+    stage: str
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., migration_task: _Optional[int] = ..., mode: _Optional[str] = ..., destination: _Optional[_Union[DataGroupReplica, _Mapping]] = ..., source: _Optional[_Union[DataGroupReplica, _Mapping]] = ..., stage: _Optional[str] = ...) -> None: ...
+
 class DataGroupRow(_message.Message):
-    __slots__ = ("creation_task", "region_id", "operation", "replicas", "activated", "keyspaces", "migrations", "compaction_floor_term", "compaction_floor_index")
+    __slots__ = ("creation_task", "region_id", "operation", "replicas", "activated", "keyspaces", "migrations", "compaction_floor_term", "compaction_floor_index", "plans")
     CREATION_TASK_FIELD_NUMBER: _ClassVar[int]
     REGION_ID_FIELD_NUMBER: _ClassVar[int]
     OPERATION_FIELD_NUMBER: _ClassVar[int]
@@ -658,6 +676,7 @@ class DataGroupRow(_message.Message):
     MIGRATIONS_FIELD_NUMBER: _ClassVar[int]
     COMPACTION_FLOOR_TERM_FIELD_NUMBER: _ClassVar[int]
     COMPACTION_FLOOR_INDEX_FIELD_NUMBER: _ClassVar[int]
+    PLANS_FIELD_NUMBER: _ClassVar[int]
     creation_task: int
     region_id: int
     operation: bytes
@@ -667,7 +686,60 @@ class DataGroupRow(_message.Message):
     migrations: _containers.RepeatedCompositeFieldContainer[DataGroupMigration]
     compaction_floor_term: int
     compaction_floor_index: int
-    def __init__(self, creation_task: _Optional[int] = ..., region_id: _Optional[int] = ..., operation: _Optional[bytes] = ..., replicas: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ..., activated: _Optional[bool] = ..., keyspaces: _Optional[_Iterable[_Union[DataGroupKeyspace, _Mapping]]] = ..., migrations: _Optional[_Iterable[_Union[DataGroupMigration, _Mapping]]] = ..., compaction_floor_term: _Optional[int] = ..., compaction_floor_index: _Optional[int] = ...) -> None: ...
+    plans: _containers.RepeatedCompositeFieldContainer[DataGroupPlan]
+    def __init__(self, creation_task: _Optional[int] = ..., region_id: _Optional[int] = ..., operation: _Optional[bytes] = ..., replicas: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ..., activated: _Optional[bool] = ..., keyspaces: _Optional[_Iterable[_Union[DataGroupKeyspace, _Mapping]]] = ..., migrations: _Optional[_Iterable[_Union[DataGroupMigration, _Mapping]]] = ..., compaction_floor_term: _Optional[int] = ..., compaction_floor_index: _Optional[int] = ..., plans: _Optional[_Iterable[_Union[DataGroupPlan, _Mapping]]] = ...) -> None: ...
+
+class AddReplicaRequest(_message.Message):
+    __slots__ = ("root_digest", "operation_id", "creation_task", "destination_node", "mode", "source_node")
+    ROOT_DIGEST_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_ID_FIELD_NUMBER: _ClassVar[int]
+    CREATION_TASK_FIELD_NUMBER: _ClassVar[int]
+    DESTINATION_NODE_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_NODE_FIELD_NUMBER: _ClassVar[int]
+    root_digest: bytes
+    operation_id: bytes
+    creation_task: int
+    destination_node: int
+    mode: str
+    source_node: int
+    def __init__(self, root_digest: _Optional[bytes] = ..., operation_id: _Optional[bytes] = ..., creation_task: _Optional[int] = ..., destination_node: _Optional[int] = ..., mode: _Optional[str] = ..., source_node: _Optional[int] = ...) -> None: ...
+
+class TransferLeaderRequest(_message.Message):
+    __slots__ = ("region_id", "transferee")
+    REGION_ID_FIELD_NUMBER: _ClassVar[int]
+    TRANSFEREE_FIELD_NUMBER: _ClassVar[int]
+    region_id: int
+    transferee: int
+    def __init__(self, region_id: _Optional[int] = ..., transferee: _Optional[int] = ...) -> None: ...
+
+class TransferLeaderResponse(_message.Message):
+    __slots__ = ("previous_leader", "leader", "term", "completed")
+    PREVIOUS_LEADER_FIELD_NUMBER: _ClassVar[int]
+    LEADER_FIELD_NUMBER: _ClassVar[int]
+    TERM_FIELD_NUMBER: _ClassVar[int]
+    COMPLETED_FIELD_NUMBER: _ClassVar[int]
+    previous_leader: int
+    leader: int
+    term: int
+    completed: bool
+    def __init__(self, previous_leader: _Optional[int] = ..., leader: _Optional[int] = ..., term: _Optional[int] = ..., completed: _Optional[bool] = ...) -> None: ...
+
+class AddReplicaResponse(_message.Message):
+    __slots__ = ("plan_task", "migration_task", "region_id", "changed", "applied_term", "applied_index")
+    PLAN_TASK_FIELD_NUMBER: _ClassVar[int]
+    MIGRATION_TASK_FIELD_NUMBER: _ClassVar[int]
+    REGION_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    plan_task: int
+    migration_task: int
+    region_id: int
+    changed: bool
+    applied_term: int
+    applied_index: int
+    def __init__(self, plan_task: _Optional[int] = ..., migration_task: _Optional[int] = ..., region_id: _Optional[int] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
 
 class ListDataGroupsResponse(_message.Message):
     __slots__ = ("groups",)
