@@ -220,6 +220,17 @@ class Client:
     def keyspace(self, keyspace_id: int, epoch: Epoch = Epoch(), *, auto_refresh: bool = True) -> "Keyspace":
         return Keyspace(self, keyspace_id, epoch, auto_refresh=auto_refresh)
 
+    def keyspace_named(self, name: str, epoch: Epoch = Epoch(), *, auto_refresh: bool = True) -> "Keyspace":
+        """The keyspace called ``name``: one ``ListKeyspaces`` lookup, then :meth:`keyspace`.
+        Names are what people use; ids are what the wire carries. Raises ``RpcError`` with
+        ``NOT_FOUND`` when no keyspace has that name."""
+        for info in self.list_keyspaces():
+            if info.name == name:
+                ks = self.keyspace(info.id, epoch, auto_refresh=auto_refresh)
+                ks.name = info.name
+                return ks
+        raise errors.RpcError(grpc.StatusCode.NOT_FOUND, f"no keyspace named {name!r}")
+
 
 class Keyspace:
     """Raw operations on one keyspace under one region epoch."""
@@ -229,6 +240,7 @@ class Keyspace:
             raise errors.BoundsError("keyspace id must be a nonzero 3-byte value")
         self._client = client
         self.id = keyspace_id
+        self.name: str | None = None
         self.epoch = epoch
         self._auto_refresh = auto_refresh
 

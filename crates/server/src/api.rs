@@ -706,6 +706,17 @@ pub trait AdminApi {
     fn list_nodes(&self, _caller: &str) -> Result<NodeDirectory> {
         Err(kv9_common::Error::NotImplemented("AdminApi::list_nodes"))
     }
+    /// Every committed data group with its activation, range bindings, migrations
+    /// and newest compaction floor. Linearizable, leader-only.
+    fn list_data_groups(&self, _caller: &str) -> Result<Vec<DataGroupSummary>> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::list_data_groups",
+        ))
+    }
+    /// One page of the TASKS history after `after` (exclusive), optionally one kind.
+    fn list_tasks(&self, _caller: &str, _after: u64, _limit: usize, _kind: u64) -> Result<TaskPage> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::list_tasks"))
+    }
     fn change_node_endpoint(
         &self,
         _caller: &str,
@@ -715,6 +726,67 @@ pub trait AdminApi {
             "AdminApi::change_node_endpoint",
         ))
     }
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupReplica {
+    pub node_id: u64,
+    pub store_incarnation: Vec<u8>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupKeyspace {
+    pub keyspace_id: u32,
+    pub tenant_id: u64,
+    pub bind_task: u64,
+    pub conf_ver: u64,
+    pub version: u64,
+    pub start: Vec<u8>,
+    pub end: Vec<u8>,
+    pub sealed: bool,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupMigration {
+    pub task: u64,
+    pub operation: [u8; 16],
+    pub destination: DataGroupReplica,
+    pub evidence_task: u64,
+    pub abort_task: u64,
+    pub removal_task: u64,
+    pub truncation_task: u64,
+}
+
+/// One row of [`AdminApi::list_data_groups`].
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupSummary {
+    pub creation_task: u64,
+    pub region_id: u64,
+    pub operation: [u8; 16],
+    pub replicas: Vec<DataGroupReplica>,
+    pub activated: bool,
+    pub keyspaces: Vec<DataGroupKeyspace>,
+    pub migrations: Vec<DataGroupMigration>,
+    pub compaction_floor: Option<AppliedPosition>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct TaskRow {
+    pub id: u64,
+    pub kind: u64,
+    pub kind_name: &'static str,
+    pub state: u64,
+    pub created_unix: u64,
+    pub payload_bytes: u64,
+    pub operation: Vec<u8>,
+    pub reference_task: u64,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct TaskPage {
+    pub tasks: Vec<TaskRow>,
+    /// Cursor for the next page; 0 when exhausted.
+    pub next_after: u64,
 }
 
 /// [`AdminApi::node_status`]: the status document and the local directory view.

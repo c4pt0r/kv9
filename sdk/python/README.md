@@ -15,8 +15,8 @@ client = kv9.Client(
     peers={1: "127.0.0.1:20161", 2: "127.0.0.1:20162", 3: "127.0.0.1:20163"},  # follows NotLeader hints
     timeout=5.0,
 )
-ks_id = client.create_keyspace("app")          # served by the metadata group, epoch (1, 1)
-ks = client.keyspace(ks_id)
+client.create_keyspace("app")                  # once; served by the metadata group, epoch (1, 1)
+ks = client.keyspace_named("app")              # by name (client.keyspace(id) when you hold the id)
 
 applied = ks.put(b"user/1", b"alice")          # Applied(term, index): the exact applied position
 ks.get(b"user/1")                               # b"alice" | None

@@ -8,16 +8,19 @@ membership verbs ([VOTER-PROMOTION](VOTER-PROMOTION.md), [REPLICA-REMOVAL](REPLI
 status contract ([STATUS-PROCESS-IDENTITY](STATUS-PROCESS-IDENTITY.md)) and the Rust SDK
 (`sdk/README.md`, `sdk/rust/kv9-client`).
 
-> **Status: increment 1 implemented (2026-10-28).** `sdk/rust/kv9-admin` (binary `kv9-admin`,
-> [README](../sdk/rust/kv9-admin/README.md)) on the Rust SDK's new `admin` module; server side the
-> `NodeStatus` and `ListNodes` RPCs and `KV9_ADMIN_PRINCIPALS`; `scripts/kv9-admin-e2e.sh` in the CI
-> matrix. Implemented: contexts, leader resolution from one endpoint, `cluster info/status/health/
-> endpoints`, `node list/describe/admit/revoke/promote/remove [--wait]`, `keyspace list/describe/
-> create`, JSON output and the exit-code table. Deviations from the text below: `NodeStatus` also
-> carries the node's local view of the directory (one follower address must be enough to find the
-> leader, §3); JSON schemas are not yet frozen as files (§8); the `kv9 client` verbs still work as
-> before and are not yet delegations (§9). Increments 2 and 3 (data groups, tasks, the migration
-> driver, `node replace`, retention) are next.
+> **Status: increments 1 and 2 implemented (2026-10-28).** `sdk/rust/kv9-admin` (binary `kv9-admin`,
+> [README](../sdk/rust/kv9-admin/README.md)) on the Rust SDK's `admin` module; server side the
+> `NodeStatus`, `ListNodes`, `ListDataGroups` and `ListTasks` RPCs, typed ids on the creation
+> responses, and `KV9_ADMIN_PRINCIPALS`; `scripts/kv9-admin-e2e.sh` in the CI matrix. Implemented:
+> contexts, leader resolution from one endpoint, `cluster info/status/health/endpoints`,
+> `node list/describe/admit/revoke/promote/remove [--wait]`, `keyspace list/describe/create [--group]`,
+> `group list/describe/create`, `task list/describe`, JSON output and the exit-code table.
+> Deviations from the text below: `NodeStatus` also carries the node's local view of the directory
+> (one follower address must be enough to find the leader, §3); `group create` derives its operation
+> id from `--label` (or takes `--operation`, or mints one) because a group has no natural subject;
+> JSON schemas are not yet frozen as files (§8); the `kv9 client` verbs still work as before and are
+> not yet delegations (§9). Increment 3 (the migration driver, `node replace`, retention, `group
+> abort`) is next.
 
 ## The problem
 

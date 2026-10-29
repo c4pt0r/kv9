@@ -82,16 +82,18 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client retention-apply --addr <leader-ip:port> --root-digest <hex> --request-file <path>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client retention-owner --addr <leader-ip:port> --root-digest <hex> --owner-id <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client change-node-endpoint --addr <leader-ip:port> --cluster-id <hex> --node-id <id> --store-incarnation <hex> --expected-address <ip:port> --expected-generation <n> --new-address <ip:port>\n\
-           KV9_CLIENT_TOKEN=<token> kv9 client raw-put --addr <leader-ip:port> --keyspace <id> --key-hex <hex> --value-hex <hex>\n\\
-           KV9_CLIENT_TOKEN=<token> kv9 client raw-get --addr <leader-ip:port> --keyspace <id> --key-hex <hex>\n\\
-           KV9_CLIENT_TOKEN=<token> kv9 client raw-delete --addr <leader-ip:port> --keyspace <id> --key-hex <hex>\n\\
-           KV9_CLIENT_TOKEN=<token> kv9 client raw-batch --addr <leader-ip:port> --keyspace <id> --mutation put:<key-hex>:<value-hex> [--mutation delete:<key-hex> ...]\n\
-           KV9_CLIENT_TOKEN=<token> kv9 client raw-scan --addr <leader-ip:port> --keyspace <id> --start-hex <hex> --end-hex <hex> [--limit <n>]\n\\
-           KV9_CLIENT_TOKEN=<token> kv9 client raw-delete-range --addr <leader-ip:port> --keyspace <id> --start-hex <hex> --end-hex <hex>\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-put --addr <leader-ip:port> --keyspace <name> --key-hex <hex> --value-hex <hex>\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-get --addr <leader-ip:port> --keyspace <name> --key-hex <hex>\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-delete --addr <leader-ip:port> --keyspace <name> --key-hex <hex>\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-batch --addr <leader-ip:port> --keyspace <name> --mutation put:<key-hex>:<value-hex> [--mutation delete:<key-hex> ...]\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-scan --addr <leader-ip:port> --keyspace <name> --start-hex <hex> --end-hex <hex> [--limit <n>]\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-delete-range --addr <leader-ip:port> --keyspace <name> --start-hex <hex> --end-hex <hex>\n\\
          \n\
          RAW COMMANDS:\n\\
            Keys and values are hex (printf 'hello' | xxd -p): a binary key cannot be passed\n\\
            safely as a shell string. Empty --start-hex/--end-hex means unbounded on that side.\n\\
+           --keyspace takes the keyspace NAME (a bare number that names no keyspace is taken as\n\\
+           an id); --keyspace-id <id> is the explicit id form.\n\\
            Address them to the CURRENT LEADER: a follower answers NotLeader with a redirect\n\\
            hint, and the client does not follow it for you.\n\\
          \n\\
@@ -727,6 +729,35 @@ fn print_not_leader(leader: Option<kv9_common::NodeId>) -> ExitCode {
     ExitCode::FAILURE
 }
 
+/// How a `kv9 client` verb names its keyspace.
+enum KeyspaceSelector {
+    /// `--keyspace <name>`: resolved through `ListKeyspaces`; a bare number that names
+    /// no keyspace is taken as an id, so scripts written against ids keep working.
+    Name(String),
+    /// `--keyspace-id <id>`: explicit, no lookup.
+    Id(u32),
+}
+
+fn resolve_keyspace(addr: &str, token: &str, selector: KeyspaceSelector) -> Result<u32, String> {
+    let name = match selector {
+        KeyspaceSelector::Id(id) => return Ok(id),
+        KeyspaceSelector::Name(name) => name,
+    };
+    // The lookup needs the metadata leader; the raw verb itself may deliberately be
+    // aimed at a follower (to observe its typed refusal), so a numeric value falls back
+    // to being an id when the lookup cannot answer or names nothing.
+    let lookup = kv9_server::list_keyspaces_blocking(addr, token);
+    if let Ok(keyspaces) = &lookup {
+        if let Some(found) = keyspaces.iter().find(|k| k.name == name) {
+            return Ok(found.id);
+        }
+    }
+    name.parse::<u32>().map_err(|_| match lookup {
+        Ok(_) => format!("no keyspace named {name:?} (use --keyspace-id <id> for an id)"),
+        Err(e) => format!("cannot resolve keyspace name {name:?}: {e}"),
+    })
+}
+
 fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut addr = None;
     let mut keyspace = None;
@@ -745,10 +776,13 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
         let decoded = |v: &str| decode_hex(&flag, v);
         match flag.as_str() {
             "--addr" => addr = Some(raw),
-            "--keyspace" => match raw.parse::<u32>() {
-                Ok(v) => keyspace = Some(v),
+            // `--keyspace` is a NAME (numeric fallback for old scripts); `--keyspace-id`
+            // is the explicit id form.
+            "--keyspace" => keyspace = Some(KeyspaceSelector::Name(raw)),
+            "--keyspace-id" => match raw.parse::<u32>() {
+                Ok(v) => keyspace = Some(KeyspaceSelector::Id(v)),
                 Err(_) => {
-                    eprintln!("error: --keyspace must be an integer");
+                    eprintln!("error: --keyspace-id must be an integer");
                     return ExitCode::FAILURE;
                 }
             },
@@ -804,8 +838,8 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
         }
     }
 
-    let (Some(addr), Some(keyspace)) = (addr, keyspace) else {
-        eprintln!("error: --addr and --keyspace are required");
+    let (Some(addr), Some(selector)) = (addr, keyspace) else {
+        eprintln!("error: --addr and --keyspace <name> (or --keyspace-id <id>) are required");
         return ExitCode::FAILURE;
     };
     let token = std::env::var("KV9_CLIENT_TOKEN").unwrap_or_default();
@@ -813,6 +847,13 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
         eprintln!("error: KV9_CLIENT_TOKEN must be non-empty");
         return ExitCode::FAILURE;
     }
+    let keyspace = match resolve_keyspace(&addr, &token, selector) {
+        Ok(id) => id,
+        Err(e) => {
+            eprintln!("error: {e}");
+            return ExitCode::FAILURE;
+        }
+    };
     let client = match RawClient::connect(&addr, &token, keyspace) {
         Ok(client) => client,
         Err(e) => {

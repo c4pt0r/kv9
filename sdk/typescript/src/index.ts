@@ -277,11 +277,23 @@ export class Client {
   keyspace(keyspaceId: number, epoch: Epoch = { confVer: 1, version: 1 }, autoRefresh = true): Keyspace {
     return new Keyspace(this, keyspaceId, epoch, autoRefresh);
   }
+
+  /** The keyspace called `name`: one ListKeyspaces lookup, then `keyspace(id)`. Names are
+   *  what people use; ids are what the wire carries. Rejects with RpcError(NOT_FOUND). */
+  async keyspaceNamed(name: string, epoch: Epoch = { confVer: 1, version: 1 }, autoRefresh = true): Promise<Keyspace> {
+    const found = (await this.listKeyspaces()).find((k) => k.name === name);
+    if (!found) throw new RpcError(grpc.status.NOT_FOUND, `no keyspace named ${JSON.stringify(name)}`);
+    const ks = new Keyspace(this, found.id, epoch, autoRefresh);
+    ks.name = found.name;
+    return ks;
+  }
 }
 
 /** Raw operations on one keyspace under one region epoch. */
 export class Keyspace {
   epoch: Epoch;
+  /** Set when the handle was opened by name. */
+  name: string | null = null;
 
   constructor(
     private readonly client: Client,

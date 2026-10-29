@@ -263,6 +263,24 @@ kv9::Keyspace Client::Keyspace(std::uint32_t keyspace_id, Epoch epoch, bool auto
   return kv9::Keyspace(impl_, keyspace_id, epoch, auto_refresh);
 }
 
+Expected<kv9::Keyspace> Client::KeyspaceNamed(const std::string& name, Epoch epoch,
+                                              bool auto_refresh) {
+  auto keyspaces = ListKeyspaces();
+  if (!keyspaces) return keyspaces.error();
+  for (const auto& info : *keyspaces) {
+    if (info.name == name) {
+      kv9::Keyspace ks(impl_, info.id, epoch, auto_refresh);
+      ks.name_ = info.name;
+      return ks;
+    }
+  }
+  Error error;
+  error.kind = ErrorKind::kRpc;
+  error.code = grpc::StatusCode::NOT_FOUND;
+  error.message = "no keyspace named \"" + name + "\"";
+  return error;
+}
+
 // --------------------------------------------------------------------------- Keyspace
 
 namespace {

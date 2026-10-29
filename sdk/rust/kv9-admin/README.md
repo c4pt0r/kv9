@@ -26,9 +26,19 @@ kv9-admin [--context <name> | --endpoints <[id=]host:port,...>] [--token <t>]
            revoke <id>
            promote <id> [--wait [--wait-secs <n>]]   learner → voter
            remove <id>  [--wait [--wait-secs <n>]]   refused below three voters
-  keyspace list | describe <id|name> | create --name <n> [--tenant <id>]
+  keyspace list | describe <id|name> | create --name <n> [--tenant <id>] [--group <creation-task>]
+  group    list                      committed data groups: task, region, replicas, keyspaces, migrations
+           describe <creation-task>  the rows plus every replica's live view (state, role, term, applied)
+           create --voters <id,id,id> [--operation <hex> | --label <text>]
+  task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history, paged
+           describe <id>
   version
 ```
+
+**Identities.** `group create` needs a 16-byte operation id, the group's immutable retry identity:
+`--operation <hex>` passes one, `--label <text>` derives one from the certified root digest and the
+label (so repeating the command confirms the same group), and with neither the tool mints a random
+one and prints it. The root digest itself is read from the leader's status document.
 
 **Resolution.** Every node answers `NodeStatus` about itself, including its local view of the node
 directory, so the endpoints given become a peers map and name the metadata leader; directory reads
@@ -63,4 +73,5 @@ repeating one confirms the same configuration.
 RPCs to those principals (by the name in `KV9_CLIENT_TOKENS`); other tokens keep the data plane and
 get a typed `PermissionDenied`. Unset means every authenticated principal, as before.
 
-`scripts/kv9-admin-e2e.sh` runs all of this against a fresh five-node cluster.
+`scripts/kv9-admin-e2e.sh` runs all of this, including a data group and a keyspace bound to it,
+against a fresh five-node cluster.

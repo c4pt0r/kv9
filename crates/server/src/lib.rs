@@ -35,7 +35,7 @@ pub use api::{
 };
 pub use grpc::proto;
 pub use grpc::{
-    admit_node_blocking, create_keyspace_blocking, promote_node_blocking, remove_node_blocking,
+    admit_node_blocking, create_keyspace_blocking, list_keyspaces_blocking, promote_node_blocking, remove_node_blocking,
     revoke_admission_blocking, AuthContext, AuthKind, Authenticator, Kv9Grpc, PublicApiBackend,
     RawClient, RawClientOutcome, RawScanPage, TokenAuthenticator, LEADER_HINT_KEY, NOT_LEADER_KEY,
 };

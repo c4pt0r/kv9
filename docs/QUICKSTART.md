@@ -117,33 +117,41 @@ cargo build -p kv9-repl
 KV9_CLIENT_TOKEN=client-secret ./target/debug/kv9-repl --addr 127.0.0.1:20161 \
     --peers 1=127.0.0.1:20161,2=127.0.0.1:20162,3=127.0.0.1:20163
 kv9> create app
-keyspace 100 created; selected
-kv9[100]> put user/1 alice
+keyspace app (id 100) created; selected
+kv9[app]> put user/1 alice
 applied (term=1, index=5)
-kv9[100]> get user/1
+kv9[app]> get user/1
 alice
 ```
 
-The `kv9 client` CLI is the reference client for scripts. Keys and values are hex, and the command
-must be sent to the current leader (it reports `not_leader=true leader_node_id=N` otherwise):
+The `kv9 client` CLI is the reference client for scripts. Keys and values are hex, keyspaces are
+named (`--keyspace-id <n>` is the explicit id form), and the command must be sent to the current
+leader (it reports `not_leader=true leader_node_id=N` otherwise):
 
 ```bash
 export KV9_CLIENT_TOKEN=client-secret
 kv9_addr=127.0.0.1:20162
 ./target/debug/kv9 client create-keyspace --addr $kv9_addr --name demo --api-type raw   # → keyspace_id=101
-./target/debug/kv9 client raw-put   --addr $kv9_addr --keyspace 101 --key-hex 68656c6c6f --value-hex 776f726c64
-./target/debug/kv9 client raw-get   --addr $kv9_addr --keyspace 101 --key-hex 68656c6c6f     # value_hex=776f726c64
-./target/debug/kv9 client raw-batch --addr $kv9_addr --keyspace 101 --mutation put:6b31:7631 --mutation delete:68656c6c6f
-./target/debug/kv9 client raw-scan  --addr $kv9_addr --keyspace 101 --start-hex '' --end-hex '' --limit 10
-./target/debug/kv9 client raw-delete-range --addr $kv9_addr --keyspace 101 --start-hex '' --end-hex ''
+./target/debug/kv9 client raw-put   --addr $kv9_addr --keyspace demo --key-hex 68656c6c6f --value-hex 776f726c64
+./target/debug/kv9 client raw-get   --addr $kv9_addr --keyspace demo --key-hex 68656c6c6f     # value_hex=776f726c64
+./target/debug/kv9 client raw-batch --addr $kv9_addr --keyspace demo --mutation put:6b31:7631 --mutation delete:68656c6c6f
+./target/debug/kv9 client raw-scan  --addr $kv9_addr --keyspace demo --start-hex '' --end-hex '' --limit 10
+./target/debug/kv9 client raw-delete-range --addr $kv9_addr --keyspace demo --start-hex '' --end-hex ''
 ```
 
 A read that answers `read_unconfirmed=true` may be retried; a write that times out has an **unknown**
 outcome, not a failed one. Applications should use an SDK (§5), which encodes these rules.
 
 A keyspace created this way is served by the metadata group. Keyspaces on their own Raft group (a
-**data group**) are created with `kv9 client create-data-group` and `create-data-keyspace`; see
-[GROUP-CONTROL](GROUP-CONTROL.md) and `./target/debug/kv9 --help`.
+**data group**, [GROUP-CONTROL](GROUP-CONTROL.md)) are created with `kv9-admin`:
+
+```bash
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 group create --voters 1,2,3 --label orders
+#   → creation_task=<task> region_id=<region> (created; ...)
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 keyspace create --name orders --group <task>
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 group describe <task>   # wait for every replica to be active
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 task list                # the committed history behind it
+```
 
 ## 4. A persistent cluster on object storage
 

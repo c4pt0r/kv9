@@ -151,6 +151,45 @@ test "$(admin keyspace list | jq_py 'any(k["name"] == "admin-e2e" for k in d["re
 test "$(admin keyspace describe admin-e2e | jq_py 'd["result"]["id"]')" = "$ks"
 echo "keyspace create/list/describe: id $ks."
 
+# ---------------------------------------------------------------- data groups and the task history
+group="$(admin group create --voters 1,2,3 --label e2e-group)"
+gtask="$(echo "$group" | jq_py 'd["result"]["creation_task"]')"
+[[ "$gtask" =~ ^[0-9]+$ ]]
+test "$(echo "$group" | jq_py 'd["result"]["outcome"]')" = "created"
+# The label derives the operation id: the same request confirms the same group.
+again="$(admin group create --voters 1,2,3 --label e2e-group)"
+test "$(echo "$again" | jq_py 'd["result"]["outcome"]')" = "confirmed"
+test "$(echo "$again" | jq_py 'd["result"]["creation_task"]')" = "$gtask"
+listed="$(admin group list)"
+test "$(echo "$listed" | jq_py "[sorted(r['node_id'] for r in g['replicas']) for g in d['result'] if g['creation_task'] == $gtask][0]")" = "[1, 2, 3]"
+test "$(echo "$listed" | jq_py "[g['activated'] for g in d['result'] if g['creation_task'] == $gtask][0]")" = "True"
+grouped="$(admin keyspace create --name grouped --group "$gtask")"
+gks="$(echo "$grouped" | jq_py 'd["result"]["id"]')"
+[[ "$gks" =~ ^[0-9]+$ ]]
+test "$(echo "$grouped" | jq_py 'd["result"]["outcome"]')" = "created"
+test "$(admin keyspace create --name grouped --group "$gtask" | jq_py 'd["result"]["outcome"]')" = "confirmed"
+group_active() {
+  admin group describe "$gtask" | jq_py 'all(r["observed"] is not None and r["observed"]["state"] == "active" for r in d["result"]["replica_views"]) and len(d["result"]["replica_views"]) == 3 and sorted(r["observed"]["role"] for r in d["result"]["replica_views"]) == ["Follower", "Follower", "Leader"]' | grep -qx True
+}
+wait_until "data group $gtask active on all three replicas behind one leader" 60 group_active
+described="$(admin group describe "$gtask")"
+test "$(echo "$described" | jq_py "[k['keyspace_id'] for k in d['result']['keyspaces']]")" = "[$gks]"
+test "$(echo "$described" | jq_py 'sorted(r["observed"]["role"] for r in d["result"]["replica_views"])')" = "['Follower', 'Follower', 'Leader']"
+echo "group create/list/describe and keyspace create --group: group $gtask, keyspace $gks, three active replicas."
+# The grouped keyspace serves raw traffic through the SDK (epoch refresh + leader hint).
+printf 'use grouped\nput g/1 one\nget g/1\n' | KV9_CLIENT_TOKEN="$app_token" timeout 60 "$(dirname "$bin")/kv9-repl" \
+  --addr "$(follower_endpoint)" --peers "1=127.0.0.1:$((base_port + 1)),2=127.0.0.1:$((base_port + 2)),3=127.0.0.1:$((base_port + 3))" \
+  >"$artifact_dir/repl-group.out" 2>&1 || { cat "$artifact_dir/repl-group.out" >&2; exit 1; }
+grep -q '^one$' "$artifact_dir/repl-group.out"
+tasks="$(admin task list)"
+test "$(echo "$tasks" | jq_py 'sorted(set(t["kind"] for t in d["result"]["tasks"]))')" = "[100, 101, 102]"
+test "$(echo "$tasks" | jq_py 'd["result"]["next_after"]')" = "0"
+test "$(admin task list --kind 102 | jq_py "all(t['kind'] == 102 and t['reference_task'] == $gtask for t in d['result']['tasks']) and len(d['result']['tasks']) == 1")" = "True"
+test "$(admin task list --limit 1 | jq_py 'len(d["result"]["tasks"]) == 1 and d["result"]["next_after"] > 0')" = "True"
+test "$(admin task describe "$gtask" | jq_py 'd["result"]["kind_name"]')" = "group_creation"
+expect_exit 1 env KV9_ADMIN_TOKEN="$admin_token" "$admin_bin" --endpoints "$(follower_endpoint)" --output json task describe 999999
+echo "task list/describe: kinds 100/101/102 with cursor paging."
+
 # ---------------------------------------------------------------- the exit-code table
 expect_exit 2 env KV9_ADMIN_TOKEN="$admin_token" "$admin_bin" --endpoints "$(follower_endpoint)" --output json cluster bogus
 expect_exit 2 env KV9_ADMIN_TOKEN="$admin_token" "$admin_bin" --endpoints "$(follower_endpoint)" --output json node describe notanumber
@@ -162,7 +201,7 @@ expect_exit 1 env KV9_ADMIN_TOKEN="$app_token" "$admin_bin" --endpoints "$(follo
 grep -q '"kind": "refused"' "$artifact_dir/last.out"
 grep -qi "may not administer" "$artifact_dir/last.out"
 # ...while the same principal still uses the data plane.
-printf 'use %s\nput admin/e2e ok\nget admin/e2e\n' "$ks" | KV9_CLIENT_TOKEN="$app_token" timeout 30 "$(dirname "$bin")/kv9-repl" \
+printf 'use admin-e2e\nput admin/e2e ok\nget admin/e2e\n' | KV9_CLIENT_TOKEN="$app_token" timeout 30 "$(dirname "$bin")/kv9-repl" \
   --addr "$(follower_endpoint)" --peers "1=127.0.0.1:$((base_port + 1)),2=127.0.0.1:$((base_port + 2)),3=127.0.0.1:$((base_port + 3))" \
   >"$artifact_dir/repl.out" 2>&1
 grep -q '^ok$' "$artifact_dir/repl.out"
@@ -187,6 +226,9 @@ learners_listed() {
   admin node list | jq_py 'sorted(n["node_id"] for n in d["result"]["nodes"] if n["raft_role"] == "learner")' | grep -qx '\[4, 5\]'
 }
 wait_until "nodes 4 and 5 listed as learners" 60 learners_listed
+# The configuration lists them before their processes finish joining; promotion
+# needs a caught-up, Serving learner, so wait for the processes too.
+wait_until "learners 4 and 5 Serving" 60 all_agree
 # Admitting again confirms rather than changes: the ticket is not shown twice.
 again="$(admin node admit 4 --addr "127.0.0.1:$((base_port + 4))" --ttl 120 || true)"
 echo "learners 4 and 5 admitted through kv9-admin and joined."
@@ -219,4 +261,4 @@ test "$(admin cluster health | jq_py 'd["result"]["overall"]')" = "ok"
 # as a non-member until it re-registers.
 test "$(admin node list | jq_py "[n['raft_role'] for n in d['result']['nodes'] if n['node_id'] == $victim][0]")" = "none"
 
-echo "PASS: kv9-admin (resolution via follower, directory, status fan-out, health, keyspaces, admit/promote/remove --wait, exit codes, admin principals)"
+echo "PASS: kv9-admin (resolution via follower, directory, status fan-out, health, keyspaces, data groups, task history, admit/promote/remove --wait, exit codes, admin principals)"

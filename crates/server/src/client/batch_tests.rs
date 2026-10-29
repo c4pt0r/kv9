@@ -182,6 +182,8 @@ batch_service! {
     remove_node: RemoveNodeRequest => MembershipChangeResponse,
     node_status: NodeStatusRequest => NodeStatusResponse,
     list_nodes: ListNodesRequest => ListNodesResponse,
+    list_data_groups: ListDataGroupsRequest => ListDataGroupsResponse,
+    list_tasks: ListTasksRequest => ListTasksResponse,
     get_node_endpoint: GetNodeEndpointRequest => GetNodeEndpointResponse,
     change_node_endpoint: ChangeNodeEndpointRequest => ChangeNodeEndpointResponse,
     apply_retention: ApplyRetentionRequest => ApplyRetentionResponse,

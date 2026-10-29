@@ -2538,6 +2538,199 @@ impl AdminApi for RuntimeBackend {
             nodes,
         })
     }
+
+    fn list_data_groups(&self, _caller: &str) -> Result<Vec<crate::api::DataGroupSummary>> {
+        use crate::api::{DataGroupKeyspace, DataGroupMigration, DataGroupReplica, DataGroupSummary};
+        use kv9_meta::data_groups as dg;
+        self.ensure_catalog_ready()?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let store = &self.node.meta_raft.store;
+        let replica = |r: &dg::InitialReplica| DataGroupReplica {
+            node_id: r.node.0,
+            store_incarnation: r.incarnation.as_bytes().to_vec(),
+        };
+        let activated: std::collections::BTreeSet<u64> = dg::activation::committed_activations(store)?
+            .iter()
+            .map(|a| a.creation().intent().task())
+            .collect();
+        let ranges = dg::ranges::committed_ranges(store)?;
+        let migrations = dg::migration::committed_migrations(store)?;
+        let evidence = dg::evidence::committed_install_evidence(store)?;
+        let aborts = dg::abort::committed_aborts(store)?;
+        let removals = dg::removal::committed_removals(store)?;
+        let truncations = dg::truncation::committed_truncations(store)?;
+        let floors = dg::compaction::committed_compaction_floors(store)?;
+        let mut groups = Vec::new();
+        for creation in dg::committed_creations(store)? {
+            let intent = creation.intent();
+            let task = intent.task();
+            let group_migrations = migrations
+                .iter()
+                .filter(|m| m.intent().creation_task() == task)
+                .map(|m| {
+                    let migration = m.intent();
+                    let evidence_rows: Vec<u64> = evidence
+                        .iter()
+                        .filter(|e| e.migration_task() == migration.task())
+                        .map(|e| e.task())
+                        .collect();
+                    DataGroupMigration {
+                        task: migration.task(),
+                        operation: migration.operation(),
+                        destination: replica(&migration.destination()),
+                        evidence_task: evidence_rows.first().copied().unwrap_or(0),
+                        abort_task: aborts
+                            .iter()
+                            .find(|a| a.migration_task() == migration.task())
+                            .map_or(0, |a| a.task()),
+                        removal_task: removals
+                            .iter()
+                            .find(|r| evidence_rows.contains(&r.evidence_task()))
+                            .map_or(0, |r| r.task()),
+                        truncation_task: truncations
+                            .iter()
+                            .find(|t| evidence_rows.contains(&t.evidence_task()))
+                            .map_or(0, |t| t.task()),
+                    }
+                })
+                .collect();
+            groups.push(DataGroupSummary {
+                creation_task: task,
+                region_id: intent.region().0,
+                operation: intent.operation(),
+                replicas: intent.replicas().iter().map(replica).collect(),
+                activated: activated.contains(&task),
+                keyspaces: ranges
+                    .iter()
+                    .filter(|r| r.creation().intent().task() == task)
+                    .map(|r| {
+                        let range = r.range();
+                        DataGroupKeyspace {
+                            keyspace_id: range.keyspace.0,
+                            tenant_id: range.tenant.0,
+                            bind_task: r.bind_task(),
+                            conf_ver: range.conf_ver,
+                            version: range.version,
+                            start: range.start.clone(),
+                            end: range.end.clone(),
+                            sealed: range.sealed,
+                        }
+                    })
+                    .collect(),
+                migrations: group_migrations,
+                compaction_floor: floors
+                    .iter()
+                    .filter(|f| f.creation_task() == task)
+                    .map(|f| f.floor())
+                    .max_by_key(|f| f.index),
+            });
+        }
+        Ok(groups)
+    }
+
+    fn list_tasks(&self, _caller: &str, after: u64, limit: usize, kind: u64) -> Result<crate::api::TaskPage> {
+        use crate::api::{TaskPage, TaskRow};
+        use kv9_meta::schema::TASKS_DESC;
+        self.ensure_catalog_ready()?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let limit = limit.clamp(1, 256);
+        let txn = self.node.meta_raft.store.begin()?;
+        let mut cursor = (after > 0).then(|| vec![memcmp_uint(after)]);
+        let mut tasks = Vec::new();
+        let mut last_seen = 0u64;
+        let mut exhausted_all = false;
+        'pages: loop {
+            let rows = txn.scan_after(&TASKS_DESC, cursor.as_deref(), 128)?;
+            let exhausted = rows.len() < 128;
+            for row in &rows {
+                let column = |id: u16| row.value.get(ColumnId(id)).cloned();
+                let Some(ColumnValue::Uint(id)) = column(1) else { continue };
+                let row_kind = match column(2) {
+                    Some(ColumnValue::Uint(k)) => k,
+                    _ => 0,
+                };
+                last_seen = id;
+                if kind != 0 && row_kind != kind {
+                    continue;
+                }
+                let payload = match column(3) {
+                    Some(ColumnValue::Bytes(bytes)) => bytes,
+                    _ => Vec::new(),
+                };
+                let uint = |value: Option<ColumnValue>| match value {
+                    Some(ColumnValue::Uint(v)) => v,
+                    _ => 0,
+                };
+                // Payloads of the KV9xxx01 family carry root (32) then the 16-byte
+                // operation after the 8-byte magic; a range binding starts with the
+                // creation task it binds to.
+                let magic_family = payload.len() >= 56 && payload.starts_with(b"KV9");
+                let operation = if magic_family { payload[40..56].to_vec() } else { Vec::new() };
+                let be_u64 = |at: usize| {
+                    payload
+                        .get(at..at + 8)
+                        .and_then(|b| b.try_into().ok())
+                        .map_or(0, u64::from_be_bytes)
+                };
+                let reference_task = match row_kind {
+                    102 => be_u64(0),
+                    104 | 105 | 106 | 108 | 110 if payload.len() >= 72 => be_u64(64),
+                    _ => 0,
+                };
+                tasks.push(TaskRow {
+                    id,
+                    kind: row_kind,
+                    kind_name: task_kind_name(row_kind),
+                    state: uint(column(4)),
+                    created_unix: uint(column(5)),
+                    payload_bytes: payload.len() as u64,
+                    operation,
+                    reference_task,
+                });
+                if tasks.len() >= limit {
+                    break 'pages;
+                }
+            }
+            if exhausted {
+                exhausted_all = true;
+                break;
+            }
+            cursor = rows.last().map(|row| row.pk.clone());
+        }
+        Ok(TaskPage {
+            tasks,
+            next_after: if exhausted_all { 0 } else { last_seen },
+        })
+    }
+}
+
+/// Names for the committed task kinds (docs/GROUP-CONTROL.md and its successors).
+fn task_kind_name(kind: u64) -> &'static str {
+    match kind {
+        100 => "group_creation",
+        101 => "group_activation",
+        102 => "range_binding",
+        103 => "migration_intent",
+        104 => "install_evidence",
+        105 => "source_truncation",
+        106 => "source_removal",
+        107 => "retired_split",
+        108 => "migration_abort",
+        110 => "group_compaction",
+        _ => "unknown",
+    }
 }
 
 fn unix_now() -> u64 {

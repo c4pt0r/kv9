@@ -16,6 +16,10 @@ service `kv9.v1.Kv9`). Four languages share one contract; each directory has its
 yet; see README limits). Every request carries the metadata header `authorization: Bearer <client-token>`,
 where the token is one of the server's `KV9_CLIENT_TOKENS`.
 
+**Keyspaces by name.** People address a keyspace by its name; every SDK has a by-name constructor
+(`keyspace_named` / `keyspaceNamed` / `KeyspaceNamed`) that does one `ListKeyspaces` lookup and hands
+back the same handle as the by-id constructor, which stays for callers that already hold the id.
+
 **Request context.** Every raw operation names its keyspace and the region epoch it believes in:
 `RequestContext { keyspace_id, region_epoch { conf_ver, version } }`. A keyspace created with
 `CreateKeyspace` is served by the metadata group and uses epoch `(1, 1)`. A keyspace bound to its own data

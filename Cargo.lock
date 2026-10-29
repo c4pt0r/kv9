@@ -985,6 +985,7 @@ version = "0.1.0"
 dependencies = [
  "kv9-client",
  "serde_json",
+ "sha2",
  "tokio",
 ]
 

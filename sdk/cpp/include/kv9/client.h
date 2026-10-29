@@ -159,6 +159,10 @@ class Client {
 
   // A handle for raw operations, starting at epoch (1, 1) with one-shot auto refresh.
   kv9::Keyspace Keyspace(std::uint32_t keyspace_id, Epoch epoch = {}, bool auto_refresh = true);
+  // The keyspace called `name`: one ListKeyspaces lookup, then Keyspace(id). Names are
+  // what people use; ids are what the wire carries. kRpc with NOT_FOUND when absent.
+  Expected<kv9::Keyspace> KeyspaceNamed(const std::string& name, Epoch epoch = {},
+                                        bool auto_refresh = true);
 
   // The node currently addressed (moves with followed hints).
   std::string address() const;
@@ -174,6 +178,8 @@ class Client {
 class Keyspace {
  public:
   std::uint32_t id() const { return id_; }
+  // Empty unless the handle was opened with KeyspaceNamed.
+  const std::string& name() const { return name_; }
   Epoch epoch() const { return epoch_; }
   Expected<Epoch> RefreshEpoch(const std::string& key = "");
 
@@ -208,6 +214,7 @@ class Keyspace {
 
   std::shared_ptr<Client::Impl> impl_;
   std::uint32_t id_;
+  std::string name_;
   Epoch epoch_;
   bool auto_refresh_;
 };

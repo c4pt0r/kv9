@@ -110,8 +110,9 @@ for sdk in $sdks; do
       run_sdk rust cargo run -q --manifest-path "$repo_dir/Cargo.toml" -p kv9-client --example smoke ;;
     repl)
       # Scripted mode: one command per line on stdin; a non-zero exit means a command failed.
-      run_sdk repl bash -c "printf '%s\n' 'use $keyspace' 'put repl/a 1' 'batch put repl/b 2, del repl/a' \
-          'get repl/b' 'mget repl/a repl/b' 'scan repl/ repl0' 'delrange repl/ repl0' 'info' \
+      # `use sdk-e2e` selects by name, `use id:N` by id, and a bare id still works.
+      run_sdk repl bash -c "printf '%s\n' 'use sdk-e2e' 'put repl/a 1' 'use id:$keyspace' 'batch put repl/b 2, del repl/a' \
+          'use $keyspace' 'get repl/b' 'mget repl/a repl/b' 'scan repl/ repl0' 'delrange repl/ repl0' 'info' \
         | cargo run -q --manifest-path '$repo_dir/Cargo.toml' -p kv9-repl -- --addr \"\$KV9_ADDR\" --peers \"\$KV9_PEERS\" --token \"\$KV9_TOKEN\"" ;;
     cpp)
       if command -v cmake >/dev/null && pkg-config --exists grpc++ 2>/dev/null; then

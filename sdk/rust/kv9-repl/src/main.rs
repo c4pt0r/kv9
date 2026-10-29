@@ -1,13 +1,13 @@
 //! kv9-repl — an interactive shell for kv9 on the kv9-client SDK.
 //!
 //! ```text
-//! KV9_CLIENT_TOKEN=... kv9-repl --addr 127.0.0.1:20161 [--peers 1=host:port,2=...] [--keyspace 100]
+//! KV9_CLIENT_TOKEN=... kv9-repl --addr 127.0.0.1:20161 [--peers 1=host:port,2=...] [--keyspace app]
 //! kv9> keyspaces
-//! kv9> use 100
-//! kv9[100]> put user/1 alice
+//! kv9> use app
+//! kv9[app]> put user/1 alice
 //! applied (term=1, index=7)
-//! kv9[100]> batch put user/2 bob, del user/1
-//! kv9[100]> scan user/ user0
+//! kv9[app]> batch put user/2 bob, del user/1
+//! kv9[app]> scan user/ user0
 //! ```
 //!
 //! Keys and values are plain tokens; `"quoted strings"` may contain spaces and
@@ -26,7 +26,7 @@ struct Session {
 fn usage() -> ! {
     eprintln!(
         "usage: kv9-repl --addr <host:port> [--token <token>] [--peers <id=host:port,...>] \
-         [--keyspace <id>] [--timeout-ms <n>]\n       the token may also come from KV9_CLIENT_TOKEN"
+         [--keyspace <name|id:N>] [--timeout-ms <n>]\n       the token may also come from KV9_CLIENT_TOKEN"
     );
     std::process::exit(2)
 }
@@ -99,6 +99,28 @@ fn show(bytes: &[u8]) -> String {
     }
 }
 
+/// `use <name>` selects by name; `id:<n>` (or `--id <n>` on the command line) by id. A
+/// bare number that names no keyspace is taken as an id, so old scripts keep working.
+async fn select_keyspace(client: &Client, selector: &str) -> Result<Keyspace, String> {
+    if let Some(id) = selector.strip_prefix("id:") {
+        let id: u32 = id.parse().map_err(|e| format!("id:<n>: {e}"))?;
+        return Ok(client.keyspace(id));
+    }
+    match client.keyspace_named(selector).await {
+        Ok(keyspace) => Ok(keyspace),
+        Err(Error::Rpc {
+            code: kv9_client::Code::NotFound,
+            ..
+        }) => {
+            match selector.parse::<u32>() {
+                Ok(id) => Ok(client.keyspace(id)),
+                Err(_) => Err(format!("no keyspace named {selector:?} (see `keyspaces`)")),
+            }
+        }
+        Err(error) => Err(describe(&error)),
+    }
+}
+
 fn describe(error: &Error) -> String {
     match error {
         Error::NotLeader { leader } => format!(
@@ -129,7 +151,7 @@ const HELP: &str = "\
 commands:
   keyspaces                    list keyspaces
   create <name> [tenant]       create a raw keyspace and switch to it
-  use <id>                     select the keyspace for data commands
+  use <name>                   select the keyspace for data commands (use id:<n> for an id)
   info                         cluster counts
   region [key]                 region and epoch of the current keyspace
   refresh                      re-read the epoch of the current keyspace
@@ -149,7 +171,7 @@ async fn run(session: &mut Session, tokens: &[String]) -> Result<(), String> {
         session
             .keyspace
             .as_ref()
-            .ok_or_else(|| "no keyspace selected: `use <id>` or `create <name>`".to_owned())
+            .ok_or_else(|| "no keyspace selected: `use <name>` or `create <name>`".to_owned())
     };
     let rpc = |e: Error| describe(&e);
     let applied = |a: kv9_client::Applied| println!("applied (term={}, index={})", a.term, a.index);
@@ -181,17 +203,18 @@ async fn run(session: &mut Session, tokens: &[String]) -> Result<(), String> {
                 .create_keyspace(name, tenant)
                 .await
                 .map_err(rpc)?;
-            println!("keyspace {id} created; selected");
-            session.keyspace = Some(session.client.keyspace(id));
+            println!("keyspace {name} (id {id}) created; selected");
+            session.keyspace = Some(session.client.keyspace_named(name).await.map_err(rpc)?);
         }
         "use" => {
-            let id: u32 = tokens
-                .get(1)
-                .ok_or("use <id>")?
-                .parse()
-                .map_err(|e| format!("{e}"))?;
-            session.keyspace = Some(session.client.keyspace(id));
-            println!("keyspace {id} selected (epoch 1/1 until refreshed)");
+            let selector = tokens.get(1).ok_or("use <name> | use id:<n>")?;
+            let keyspace = select_keyspace(&session.client, selector).await?;
+            println!(
+                "keyspace {} (id {}) selected (epoch 1/1 until refreshed)",
+                keyspace.name().unwrap_or("?"),
+                keyspace.id()
+            );
+            session.keyspace = Some(keyspace);
         }
         "region" => {
             let ks = ks()?;
@@ -343,7 +366,7 @@ async fn main() {
             "--addr" => addr = Some(value),
             "--token" => token = Some(value),
             "--peers" => peers = parse_peers(&value),
-            "--keyspace" => keyspace = Some(value.parse::<u32>().unwrap_or_else(|_| usage())),
+            "--keyspace" => keyspace = Some(value),
             "--timeout-ms" => timeout_ms = value.parse().unwrap_or_else(|_| usage()),
             _ => usage(),
         }
@@ -359,8 +382,18 @@ async fn main() {
             std::process::exit(2);
         }
     };
+    let selected = match keyspace {
+        Some(selector) => match select_keyspace(&client, &selector).await {
+            Ok(keyspace) => Some(keyspace),
+            Err(error) => {
+                eprintln!("error: {error}");
+                std::process::exit(2);
+            }
+        },
+        None => None,
+    };
     let mut session = Session {
-        keyspace: keyspace.map(|id| client.keyspace(id)),
+        keyspace: selected,
         client,
     };
     let interactive = std::io::IsTerminal::is_terminal(&io::stdin());
@@ -375,7 +408,7 @@ async fn main() {
     loop {
         if interactive {
             match &session.keyspace {
-                Some(ks) => print!("kv9[{}]> ", ks.id()),
+                Some(ks) => print!("kv9[{}]> ", ks.name().map_or_else(|| ks.id().to_string(), str::to_owned)),
                 None => print!("kv9> "),
             }
             io::stdout().flush().ok();

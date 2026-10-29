@@ -21,9 +21,10 @@ kv9::ClientOptions options;
 options.peers = {{1, "127.0.0.1:20161"}, {2, "127.0.0.1:20162"}, {3, "127.0.0.1:20163"}};  // NotLeader hints
 kv9::Client client("127.0.0.1:20161", "my-client-token", options);
 
-auto id = client.CreateKeyspace("app");           // kv9::Expected<uint32_t>
-if (!id) { /* id.error().kind / .message */ }
-auto ks = client.Keyspace(*id);                   // epoch (1, 1), one-shot auto refresh
+client.CreateKeyspace("app");                     // once; kv9::Expected<uint32_t>
+auto opened = client.KeyspaceNamed("app");        // by name; Client::Keyspace(id) by id
+if (!opened) { /* opened.error().kind / .message */ }
+auto ks = *opened;                                // epoch (1, 1), one-shot auto refresh
 
 auto applied = ks.Put("user/1", "alice");         // Expected<Applied{term, index}>
 auto value = ks.Get("user/1");                    // Expected<std::optional<std::string>>

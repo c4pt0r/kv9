@@ -26,8 +26,9 @@ use std::io::{BufRead, IsTerminal, Write};
 use std::process::ExitCode;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
-use kv9_client::{Client, Error, NodeDirectory, NodeStatus};
+use kv9_client::{Client, DataGroup, Error, NodeDirectory, NodeStatus};
 use serde_json::{json, Value};
+use sha2::{Digest, Sha256};
 
 const SCHEMA_VERSION: u64 = 1;
 const DEFAULT_WAIT: Duration = Duration::from_secs(30);
@@ -52,7 +53,12 @@ fn usage() -> String {
      \u{20}        revoke <id>\n\
      \u{20}        promote <id> [--wait [--wait-secs <n>]]\n\
      \u{20}        remove <id>  [--wait [--wait-secs <n>]] refuses below three voters\n\
-     keyspace list | describe <id|name> | create --name <n> [--tenant <id>]\n\
+     keyspace list | describe <id|name> | create --name <n> [--tenant <id>] [--group <creation-task>]\n\
+     group    list                         committed data groups: task, region, replicas, keyspaces\n\
+     \u{20}        describe <creation-task>     rows + every replica's live view of the group\n\
+     \u{20}        create --voters <id,id,id> [--operation <hex> | --label <text>]\n\
+     task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history\n\
+     \u{20}        describe <id>\n\
      version\n\
      \n\
      The token comes from --token, KV9_ADMIN_TOKEN, KV9_CLIENT_TOKEN or the context's\n\
@@ -508,6 +514,16 @@ impl Cluster {
             verbose: global.verbose,
             unreachable,
         })
+    }
+
+    /// The certified metadata root digest, from the leader's status document.
+    async fn root_digest(&self) -> Result<[u8; 32], Fail> {
+        let status = self.leader.node_status().await?;
+        let text = status
+            .get("root_digest")
+            .ok_or_else(|| Fail::Refused("the leader reports no root_digest".into()))?;
+        let bytes = parse_hex(text, "root_digest", 32).map_err(|_| Fail::Refused(format!("unreadable root_digest {text:?}")))?;
+        Ok(bytes.try_into().expect("32 bytes"))
     }
 
     fn resolved(&self) -> Value {
@@ -1203,9 +1219,11 @@ async fn keyspace_list(cluster: &mut Cluster) -> Outcome {
 
 async fn keyspace_describe(cluster: &mut Cluster, which: &str) -> Outcome {
     let keyspaces = cluster.leader.list_keyspaces().await?;
+    // Name first; a bare number that names no keyspace is an id.
     let keyspace = keyspaces
         .iter()
-        .find(|k| k.id.to_string() == which || k.name == which)
+        .find(|k| k.name == which)
+        .or_else(|| keyspaces.iter().find(|k| k.id.to_string() == which))
         .ok_or_else(|| Fail::Refused(format!("keyspace {which:?} not found")))?;
     let region = cluster.leader.get_region(keyspace.id, b"").await?;
     Ok(Report {
@@ -1237,12 +1255,367 @@ async fn keyspace_create(global: &Global, cluster: &mut Cluster, args: &VerbArgs
         Some(t) => t.parse().map_err(|_| Fail::Usage("--tenant must be a number".into()))?,
         None => 0,
     };
+    if let Some(group) = args.flags.get("group") {
+        let creation_task = parse_id(group, "--group")?;
+        let root = cluster.root_digest().await?;
+        confirm(
+            global,
+            &format!("plan: CreateDataKeyspace name={name} tenant={tenant} on data group {creation_task} (root {})", hex(&root)),
+            None,
+        )?;
+        let created = cluster
+            .leader
+            .create_data_keyspace(root, creation_task, name, tenant)
+            .await?;
+        return Ok(Report {
+            command: "keyspace create".into(),
+            result: json!({
+                "id": created.keyspace_id, "name": name, "tenant_id": tenant,
+                "creation_task": creation_task, "region_id": created.region_id,
+                "outcome": if created.changed { "created" } else { "confirmed" },
+                "applied": { "term": created.applied.term, "index": created.applied.index },
+            }),
+            table: format!(
+                "keyspace_id={} region_id={} ({})",
+                created.keyspace_id,
+                created.region_id,
+                if created.changed { "created" } else { "confirmed" }
+            ),
+            partial: Vec::new(),
+        });
+    }
     confirm(global, &format!("plan: CreateKeyspace name={name} tenant={tenant} (raw, served by the metadata group)"), None)?;
     let id = cluster.leader.create_keyspace(name, tenant).await?;
     Ok(Report {
         command: "keyspace create".into(),
         result: json!({ "id": id, "name": name, "tenant_id": tenant }),
         table: format!("keyspace_id={id}"),
+        partial: Vec::new(),
+    })
+}
+
+// ------------------------------------------------------------------ data groups
+
+fn parse_hex(text: &str, what: &str, len: usize) -> Result<Vec<u8>, Fail> {
+    let text = text.trim();
+    if text.len() != len * 2 || !text.chars().all(|c| c.is_ascii_hexdigit()) {
+        return Err(Fail::Usage(format!("{what} must be {len} bytes of hex")));
+    }
+    Ok((0..len)
+        .map(|i| u8::from_str_radix(&text[2 * i..2 * i + 2], 16).expect("hex digits"))
+        .collect())
+}
+
+/// `sha16(domain ++ root ++ subject)`: the derived retry identity of docs/KV9-ADMIN.md §3.
+fn derived_operation(domain: &str, root: &[u8; 32], subject: &[u8]) -> [u8; 16] {
+    let mut hasher = Sha256::new();
+    hasher.update(domain.as_bytes());
+    hasher.update(root);
+    hasher.update(subject);
+    let digest = hasher.finalize();
+    let mut out = [0u8; 16];
+    out.copy_from_slice(&digest[..16]);
+    out
+}
+
+fn group_json(g: &DataGroup) -> Value {
+    json!({
+        "creation_task": g.creation_task,
+        "region_id": g.region_id,
+        "operation": hex(&g.operation),
+        "activated": g.activated,
+        "replicas": g.replicas.iter().map(|r| json!({"node_id": r.node_id, "store_incarnation": hex(&r.store_incarnation)})).collect::<Vec<_>>(),
+        "keyspaces": g.keyspaces.iter().map(|k| json!({
+            "keyspace_id": k.keyspace_id, "tenant_id": k.tenant_id, "bind_task": k.bind_task,
+            "epoch": {"conf_ver": k.conf_ver, "version": k.version},
+            "start": hex(&k.start), "end": hex(&k.end), "sealed": k.sealed,
+        })).collect::<Vec<_>>(),
+        "migrations": g.migrations.iter().map(|m| json!({
+            "task": m.task, "operation": hex(&m.operation),
+            "destination": {"node_id": m.destination.node_id, "store_incarnation": hex(&m.destination.store_incarnation)},
+            "evidence_task": m.evidence_task, "abort_task": m.abort_task,
+            "removal_task": m.removal_task, "truncation_task": m.truncation_task,
+        })).collect::<Vec<_>>(),
+        "compaction_floor": g.compaction_floor.map(|f| json!({"term": f.term, "index": f.index})),
+    })
+}
+
+async fn group_list(cluster: &mut Cluster) -> Outcome {
+    let groups = cluster.leader.list_data_groups().await?;
+    let rows: Vec<Vec<String>> = groups
+        .iter()
+        .map(|g| {
+            vec![
+                g.creation_task.to_string(),
+                g.region_id.to_string(),
+                ids(&g.replicas.iter().map(|r| r.node_id).collect::<Vec<_>>()),
+                if g.activated { "yes".into() } else { "no".into() },
+                ids(&g.keyspaces.iter().map(|k| k.keyspace_id as u64).collect::<Vec<_>>()),
+                g.migrations.len().to_string(),
+                g.compaction_floor.map_or("-".into(), |f| format!("{}/{}", f.term, f.index)),
+            ]
+        })
+        .collect();
+    Ok(Report {
+        command: "group list".into(),
+        result: json!(groups.iter().map(group_json).collect::<Vec<_>>()),
+        table: table(&["TASK", "REGION", "REPLICAS", "ACTIVATED", "KEYSPACES", "MIGRATIONS", "COMPACTED"], &rows),
+        partial: Vec::new(),
+    })
+}
+
+async fn group_describe(cluster: &mut Cluster, creation_task: u64) -> Outcome {
+    let groups = cluster.leader.list_data_groups().await?;
+    let group = groups
+        .iter()
+        .find(|g| g.creation_task == creation_task)
+        .ok_or_else(|| Fail::Refused(format!("data group {creation_task} is not committed")))?;
+    let _ = cluster.directory().await; // replica addresses
+    let keyspaces = cluster.leader.list_keyspaces().await.unwrap_or_default();
+    let mut lines = vec![
+        format!("creation task: {}", group.creation_task),
+        format!("region:        {}", group.region_id),
+        format!("operation:     {}", hex(&group.operation)),
+        format!("activated:     {}", group.activated),
+    ];
+    for k in &group.keyspaces {
+        let name = keyspaces
+            .iter()
+            .find(|ks| ks.id == k.keyspace_id)
+            .map(|ks| ks.name.clone())
+            .unwrap_or_default();
+        lines.push(format!(
+            "keyspace:      {} {} tenant {} epoch {}/{} bound by task {}{}",
+            k.keyspace_id, name, k.tenant_id, k.conf_ver, k.version, k.bind_task,
+            if k.sealed { " (sealed)" } else { "" }
+        ));
+    }
+    for m in &group.migrations {
+        lines.push(format!(
+            "migration:     task {} → node {} evidence {} removal {} truncation {} abort {}",
+            m.task, m.destination.node_id, m.evidence_task, m.removal_task, m.truncation_task, m.abort_task
+        ));
+    }
+    if let Some(f) = group.compaction_floor {
+        lines.push(format!("compacted:     through term {} index {}", f.term, f.index));
+    }
+    // Every replica's own view of the group, from its status document.
+    let mut partial = Vec::new();
+    let mut replicas = Vec::new();
+    let mut rows = Vec::new();
+    for replica in &group.replicas {
+        let address = cluster.peers.get(&replica.node_id).cloned();
+        let observed = match &address {
+            Some(address) => match cluster.client_at(address) {
+                Ok(client) => client.node_status().await.map_err(|e| e.to_string()),
+                Err(e) => Err(e.message().to_string()),
+            },
+            None => Err("address unknown".to_string()),
+        };
+        let view = observed.as_ref().ok().and_then(|status| {
+            status
+                .get("data_groups")
+                .and_then(|text| serde_json::from_str::<Value>(text).ok())
+                .and_then(|groups| {
+                    groups
+                        .as_array()?
+                        .iter()
+                        .find(|g| g["region"].as_u64() == Some(group.region_id))
+                        .cloned()
+                })
+        });
+        let cell = |key: &str| view.as_ref().map_or(String::new(), |v| match &v[key] {
+            Value::Null => String::new(),
+            Value::String(s) => s.clone(),
+            other => other.to_string(),
+        });
+        match (&observed, &view) {
+            (Ok(_), Some(_)) => rows.push(vec![
+                replica.node_id.to_string(),
+                address.clone().unwrap_or_default(),
+                cell("state"),
+                cell("role"),
+                cell("term"),
+                cell("leader"),
+                cell("committed"),
+                cell("engine_applied"),
+            ]),
+            (Ok(_), None) => rows.push(vec![
+                replica.node_id.to_string(),
+                address.clone().unwrap_or_default(),
+                "not local yet".into(),
+                String::new(), String::new(), String::new(), String::new(), String::new(),
+            ]),
+            (Err(error), _) => {
+                partial.push(format!("node {}: {error}", replica.node_id));
+                rows.push(vec![
+                    replica.node_id.to_string(),
+                    address.clone().unwrap_or_default(),
+                    "unreachable".into(),
+                    String::new(), String::new(), String::new(), String::new(), error.clone(),
+                ]);
+            }
+        }
+        replicas.push(json!({
+            "node_id": replica.node_id,
+            "store_incarnation": hex(&replica.store_incarnation),
+            "address": address,
+            "observed": view,
+            "error": observed.as_ref().err(),
+        }));
+    }
+    lines.push(String::new());
+    lines.push(table(&["REPLICA", "ADDRESS", "STATE", "ROLE", "TERM", "LEADER", "COMMITTED", "APPLIED"], &rows));
+    let mut result = group_json(group);
+    result["replica_views"] = json!(replicas);
+    Ok(Report {
+        command: "group describe".into(),
+        result,
+        table: lines.join("\n"),
+        partial,
+    })
+}
+
+async fn group_create(global: &Global, cluster: &mut Cluster, args: &VerbArgs) -> Outcome {
+    let voters: Vec<u64> = args
+        .flags
+        .get("voters")
+        .ok_or_else(|| Fail::Usage("group create needs --voters <id,id,id>".into()))?
+        .split(',')
+        .map(|v| parse_id(v.trim(), "voter id"))
+        .collect::<Result<_, _>>()?;
+    if ![3, 5, 7].contains(&voters.len()) {
+        return Err(Fail::Usage("a data group has exactly 3, 5 or 7 voters".into()));
+    }
+    let root = cluster.root_digest().await?;
+    let (operation, origin): ([u8; 16], &str) = match (args.flags.get("operation"), args.flags.get("label")) {
+        (Some(hex_text), _) => {
+            let bytes = parse_hex(hex_text, "--operation", 16)?;
+            (bytes.try_into().expect("16 bytes"), "given")
+        }
+        (None, Some(label)) => (
+            derived_operation("kv9-admin/group-create/v1", &root, label.as_bytes()),
+            "derived from --label",
+        ),
+        (None, None) => {
+            // No subject to derive from: mint one and print it, so that a retry can
+            // pass it back as --operation and confirm instead of creating twice.
+            let mut seed = [0u8; 16];
+            let nanos = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos();
+            seed[..16].copy_from_slice(&nanos.to_be_bytes());
+            (
+                derived_operation("kv9-admin/group-create/random", &root, &seed),
+                "random (pass it back as --operation to retry)",
+            )
+        }
+    };
+    confirm(
+        global,
+        &format!(
+            "plan: CreateDataGroup voters={} operation={} ({origin}) root={}",
+            ids(&voters),
+            hex(&operation),
+            hex(&root)
+        ),
+        None,
+    )?;
+    let created = cluster.leader.create_data_group(root, operation, voters.clone()).await?;
+    let outcome = if created.changed { "created" } else { "confirmed" };
+    Ok(Report {
+        command: "group create".into(),
+        result: json!({
+            "creation_task": created.creation_task,
+            "region_id": created.region_id,
+            "operation": hex(&operation),
+            "operation_origin": origin,
+            "voters": voters,
+            "outcome": outcome,
+            "applied": { "term": created.applied.term, "index": created.applied.index },
+        }),
+        table: format!(
+            "creation_task={} region_id={} operation={} ({outcome}; applied term={} index={})\nreadiness is not asserted: watch `group describe {}` until every replica is active",
+            created.creation_task,
+            created.region_id,
+            hex(&operation),
+            created.applied.term,
+            created.applied.index,
+            created.creation_task
+        ),
+        partial: Vec::new(),
+    })
+}
+
+fn task_row_json(t: &kv9_client::TaskRow) -> Value {
+    json!({
+        "id": t.id, "kind": t.kind, "kind_name": t.kind_name, "state": t.state,
+        "created_unix": t.created_unix, "payload_bytes": t.payload_bytes,
+        "operation": hex(&t.operation), "reference_task": t.reference_task,
+    })
+}
+
+async fn task_list(cluster: &mut Cluster, args: &VerbArgs) -> Outcome {
+    let after = match args.flags.get("after") {
+        Some(a) => parse_id(a, "--after")?,
+        None => 0,
+    };
+    let limit: u32 = match args.flags.get("limit") {
+        Some(l) => l.parse().ok().filter(|l| (1..=256).contains(l)).ok_or_else(|| Fail::Usage("--limit must be 1..=256".into()))?,
+        None => 64,
+    };
+    let kind = match args.flags.get("kind") {
+        Some(k) => k.parse().map_err(|_| Fail::Usage("--kind must be a number".into()))?,
+        None => 0,
+    };
+    let page = cluster.leader.list_tasks(after, limit, kind).await?;
+    let rows: Vec<Vec<String>> = page
+        .tasks
+        .iter()
+        .map(|t| {
+            vec![
+                t.id.to_string(),
+                format!("{} {}", t.kind, t.kind_name),
+                if t.reference_task == 0 { "-".into() } else { t.reference_task.to_string() },
+                if t.operation.is_empty() { "-".into() } else { hex(&t.operation) },
+                t.created_unix.to_string(),
+            ]
+        })
+        .collect();
+    let mut table_text = table(&["TASK", "KIND", "REFERS_TO", "OPERATION", "CREATED"], &rows);
+    if page.next_after != 0 {
+        table_text.push_str(&format!("\n(more: --after {})", page.next_after));
+    }
+    Ok(Report {
+        command: "task list".into(),
+        result: json!({ "tasks": page.tasks.iter().map(task_row_json).collect::<Vec<_>>(), "next_after": page.next_after }),
+        table: table_text,
+        partial: Vec::new(),
+    })
+}
+
+async fn task_describe(cluster: &mut Cluster, id: u64) -> Outcome {
+    let page = cluster.leader.list_tasks(id - 1, 1, 0).await?;
+    let task = page
+        .tasks
+        .into_iter()
+        .find(|t| t.id == id)
+        .ok_or_else(|| Fail::Refused(format!("task {id} is not in the history")))?;
+    Ok(Report {
+        command: "task describe".into(),
+        table: format!(
+            "task:       {}\nkind:       {} ({})\nrefers to:  {}\noperation:  {}\nstate:      {}\ncreated:    {}\npayload:    {} bytes",
+            task.id,
+            task.kind,
+            task.kind_name,
+            if task.reference_task == 0 { "-".into() } else { task.reference_task.to_string() },
+            if task.operation.is_empty() { "-".into() } else { hex(&task.operation) },
+            task.state,
+            task.created_unix,
+            task.payload_bytes
+        ),
+        result: task_row_json(&task),
         partial: Vec::new(),
     })
 }
@@ -1289,6 +1662,17 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
             keyspace_describe(&mut cluster, which).await?
         }
         ("keyspace", "create") => keyspace_create(global, &mut cluster, &args).await?,
+        ("group", "list") => group_list(&mut cluster).await?,
+        ("group", "describe") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("group describe <creation-task>".into()))?, "creation task")?;
+            group_describe(&mut cluster, id).await?
+        }
+        ("group", "create") => group_create(global, &mut cluster, &args).await?,
+        ("task", "list") => task_list(&mut cluster, &args).await?,
+        ("task", "describe") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("task describe <id>".into()))?, "task id")?;
+            task_describe(&mut cluster, id).await?
+        }
         _ => return Err(Fail::Usage(format!("unknown command {noun} {verb}\n\n{}", usage()))),
     };
     report.result = json!({

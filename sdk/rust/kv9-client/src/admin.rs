@@ -222,3 +222,234 @@ impl Client {
         Ok(membership(r))
     }
 }
+
+// ------------------------------------------------------------------ data groups and tasks
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupReplica {
+    pub node_id: u64,
+    pub store_incarnation: Vec<u8>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupKeyspace {
+    pub keyspace_id: u32,
+    pub tenant_id: u64,
+    pub bind_task: u64,
+    pub conf_ver: u64,
+    pub version: u64,
+    pub start: Vec<u8>,
+    pub end: Vec<u8>,
+    pub sealed: bool,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupMigration {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    pub destination: DataGroupReplica,
+    pub evidence_task: u64,
+    pub abort_task: u64,
+    pub removal_task: u64,
+    pub truncation_task: u64,
+}
+
+/// One committed data group as the metadata leader sees it.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroup {
+    pub creation_task: u64,
+    pub region_id: u64,
+    pub operation: Vec<u8>,
+    pub replicas: Vec<DataGroupReplica>,
+    pub activated: bool,
+    pub keyspaces: Vec<DataGroupKeyspace>,
+    pub migrations: Vec<DataGroupMigration>,
+    pub compaction_floor: Option<Applied>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DataGroupCreated {
+    pub creation_task: u64,
+    pub region_id: u64,
+    /// `false` is a confirmation of an identical earlier request.
+    pub changed: bool,
+    pub applied: Applied,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DataKeyspaceCreated {
+    pub keyspace_id: u32,
+    pub region_id: u64,
+    pub changed: bool,
+    pub applied: Applied,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct TaskRow {
+    pub id: u64,
+    pub kind: u64,
+    pub kind_name: String,
+    pub state: u64,
+    pub created_unix: u64,
+    pub payload_bytes: u64,
+    pub operation: Vec<u8>,
+    pub reference_task: u64,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct TaskPage {
+    pub tasks: Vec<TaskRow>,
+    /// Pass back as `after` for the next page; 0 means exhausted.
+    pub next_after: u64,
+}
+
+fn replica(r: Option<proto::DataGroupReplica>) -> DataGroupReplica {
+    r.map(|r| DataGroupReplica {
+        node_id: r.node_id,
+        store_incarnation: r.store_incarnation,
+    })
+    .unwrap_or_default()
+}
+
+impl Client {
+    /// Create (or confirm) an empty data group on exactly 3, 5 or 7 registered
+    /// stores. `root` is the certified metadata root digest (status `root_digest`),
+    /// `operation` the immutable 16-byte retry identity.
+    pub async fn create_data_group(
+        &self,
+        root: [u8; 32],
+        operation: [u8; 16],
+        voters: Vec<u64>,
+    ) -> Result<DataGroupCreated, Error> {
+        let r = self
+            .invoke(
+                false,
+                proto::CreateDataGroupRequest {
+                    root_digest: root.to_vec(),
+                    operation_id: operation.to_vec(),
+                    voters,
+                },
+                |mut c, r| async move { c.create_data_group(r).await },
+            )
+            .await?;
+        Ok(DataGroupCreated {
+            creation_task: r.creation_task,
+            region_id: r.region_id,
+            changed: r.changed,
+            applied: Applied {
+                term: r.applied_term,
+                index: r.applied_index,
+            },
+        })
+    }
+
+    /// Create (or confirm) a raw keyspace bound to the data group `creation_task`.
+    pub async fn create_data_keyspace(
+        &self,
+        root: [u8; 32],
+        creation_task: u64,
+        name: &str,
+        tenant_id: u64,
+    ) -> Result<DataKeyspaceCreated, Error> {
+        let r = self
+            .invoke(
+                false,
+                proto::CreateDataKeyspaceRequest {
+                    root_digest: root.to_vec(),
+                    creation_task,
+                    name: name.to_owned(),
+                    tenant_id,
+                },
+                |mut c, r| async move { c.create_data_keyspace(r).await },
+            )
+            .await?;
+        Ok(DataKeyspaceCreated {
+            keyspace_id: r.keyspace_id,
+            region_id: r.region_id,
+            changed: r.changed,
+            applied: Applied {
+                term: r.applied_term,
+                index: r.applied_index,
+            },
+        })
+    }
+
+    /// Every committed data group, linearizably, from the metadata leader.
+    pub async fn list_data_groups(&self) -> Result<Vec<DataGroup>, Error> {
+        let r = self
+            .invoke(true, proto::ListDataGroupsRequest {}, |mut c, r| async move {
+                c.list_data_groups(r).await
+            })
+            .await?;
+        Ok(r.groups
+            .into_iter()
+            .map(|g| DataGroup {
+                creation_task: g.creation_task,
+                region_id: g.region_id,
+                operation: g.operation,
+                replicas: g.replicas.into_iter().map(|r| replica(Some(r))).collect(),
+                activated: g.activated,
+                keyspaces: g
+                    .keyspaces
+                    .into_iter()
+                    .map(|k| DataGroupKeyspace {
+                        keyspace_id: k.keyspace_id,
+                        tenant_id: k.tenant_id,
+                        bind_task: k.bind_task,
+                        conf_ver: k.conf_ver,
+                        version: k.version,
+                        start: k.start,
+                        end: k.end,
+                        sealed: k.sealed,
+                    })
+                    .collect(),
+                migrations: g
+                    .migrations
+                    .into_iter()
+                    .map(|m| DataGroupMigration {
+                        task: m.task,
+                        operation: m.operation,
+                        destination: replica(m.destination),
+                        evidence_task: m.evidence_task,
+                        abort_task: m.abort_task,
+                        removal_task: m.removal_task,
+                        truncation_task: m.truncation_task,
+                    })
+                    .collect(),
+                compaction_floor: match (g.compaction_floor_term, g.compaction_floor_index) {
+                    (Some(term), Some(index)) => Some(Applied { term, index }),
+                    _ => None,
+                },
+            })
+            .collect())
+    }
+
+    /// One page of the committed task history after `after` (0 = start), at most
+    /// `limit` rows (1..=256), optionally one `kind` (0 = all).
+    pub async fn list_tasks(&self, after: u64, limit: u32, kind: u64) -> Result<TaskPage, Error> {
+        let r = self
+            .invoke(
+                true,
+                proto::ListTasksRequest { after, limit, kind },
+                |mut c, r| async move { c.list_tasks(r).await },
+            )
+            .await?;
+        Ok(TaskPage {
+            tasks: r
+                .tasks
+                .into_iter()
+                .map(|t| TaskRow {
+                    id: t.id,
+                    kind: t.kind,
+                    kind_name: t.kind_name,
+                    state: t.state,
+                    created_unix: t.created_unix,
+                    payload_bytes: t.payload_bytes,
+                    operation: t.operation,
+                    reference_task: t.reference_task,
+                })
+                .collect(),
+            next_after: r.next_after,
+        })
+    }
+}

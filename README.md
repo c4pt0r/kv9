@@ -56,24 +56,24 @@ KV9_CLIENT_TOKEN=client-secret ./target/debug/kv9-repl --addr 127.0.0.1:20161 \
 
 ```text
 kv9> create app
-keyspace 100 created; selected
-kv9[100]> put user/1 alice
+keyspace app (id 100) created; selected
+kv9[app]> put user/1 alice
 applied (term=1, index=5)
-kv9[100]> batch put user/2 bob, del user/1
+kv9[app]> batch put user/2 bob, del user/1
 applied (term=1, index=6)
-kv9[100]> mget user/1 user/2
+kv9[app]> mget user/1 user/2
 user/1 => (nil)
 user/2 => bob
-kv9[100]> scan user/ user0
+kv9[app]> scan user/ user0
 user/2 => bob
 (1 row(s))
-kv9[100]> delrange user/ user0
+kv9[app]> delrange user/ user0
 deleted: 1 chunk(s), last applied (term=1, index=7)
 ```
 
 | Command | Meaning |
 | --- | --- |
-| `keyspaces`, `info`, `create <name> [tenant]`, `use <id>` | catalog and selection |
+| `keyspaces`, `info`, `create <name> [tenant]`, `use <name>` (`use id:<n>` for an id) | catalog and selection |
 | `get <k>`, `mget <k>...` | point read; one quorum-confirmed multi-key read |
 | `put <k> <v>`, `del <k>`, `mput <k> <v>...` | single writes; put-only atomic batch |
 | `batch put <k> <v>, del <k>, ...` | the atomic range batch: one Raft entry, in order, all or nothing |
@@ -104,7 +104,8 @@ import kv9
 
 client = kv9.Client("127.0.0.1:20161", token="client-secret",
                     peers={1: "127.0.0.1:20161", 2: "127.0.0.1:20162", 3: "127.0.0.1:20163"})
-ks = client.keyspace(client.create_keyspace("app"))
+client.create_keyspace("app")                    # once; returns the id
+ks = client.keyspace_named("app")                # keyspaces are used by name
 
 ks.put(b"user/1", b"alice")                      # -> Applied(term, index)
 ks.get(b"user/1")                                # -> b"alice" | None
@@ -123,7 +124,8 @@ use kv9_client::{Client, Mutation};
 
 let client = Client::new("127.0.0.1:20161", "client-secret")?
     .with_peers([(1, "127.0.0.1:20161"), (2, "127.0.0.1:20162"), (3, "127.0.0.1:20163")]);
-let ks = client.keyspace(client.create_keyspace("app", 0).await?);
+client.create_keyspace("app", 0).await?;                              // once
+let ks = client.keyspace_named("app").await?;                         // by name
 
 let applied = ks.put(b"user/1".to_vec(), b"alice".to_vec()).await?;   // Applied { term, index }
 ks.batch(vec![
@@ -150,7 +152,9 @@ SDK's smoke test against it.
   stale value. A plain transport error carries neither marker, so "the cluster refused" and "no answer"
   stay distinguishable.
 - **Keyspaces are the tenant boundary.** Keys are encoded with the keyspace prefix and validated on every
-  request; a region never spans a keyspace.
+  request; a region never spans a keyspace. People address keyspaces by **name** (the REPL, the CLI and
+  every SDK resolve it once); the wire carries the numeric id, which the explicit forms (`use id:<n>`,
+  `--keyspace-id`, `client.keyspace(id)`) still accept.
 
 ## Administration
 
@@ -165,6 +169,9 @@ export KV9_ADMIN_TOKEN=client-secret
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node list
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 cluster health        # exit 0 only when every verdict is ok
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 keyspace create --name app
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 group create --voters 1,2,3 --label orders   # a data group
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 keyspace create --name orders --group <creation-task>
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 group describe <creation-task>              # every replica's view
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node admit 4 --addr 127.0.0.1:20164
 #   → join_ticket=…; on the new host: KV9_JOIN_TICKET=… kv9 join …, then kv9 start …
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node promote 4 --wait  # learner → voter
@@ -175,10 +182,10 @@ export KV9_ADMIN_TOKEN=client-secret
 application tokens keep the data plane. Each node also writes `<data-dir>/status` and
 `<data-dir>/metrics.json` once a second, and `cluster status` shows the same document over gRPC. With
 `KV9_AUTO_REPLACE_VOTER=1` the metadata leader replaces a lost voter with a caught-up learner on its
-own, promotion first and removal second ([VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md)). Data groups,
-their keyspaces and migrations are still driven with `kv9 client` verbs ([GROUP-CONTROL](docs/GROUP-CONTROL.md),
-[MIGRATION-AUTHORITY](docs/MIGRATION-AUTHORITY.md)); moving them into `kv9-admin` is the next increment
-of [KV9-ADMIN](docs/KV9-ADMIN.md).
+own, promotion first and removal second ([VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md)). Migrating a
+data group between stores is still driven step by step with `kv9 client` verbs
+([MIGRATION-AUTHORITY](docs/MIGRATION-AUTHORITY.md)); the `kv9-admin` driver for it is the next
+increment of [KV9-ADMIN](docs/KV9-ADMIN.md).
 
 ## Architecture
 

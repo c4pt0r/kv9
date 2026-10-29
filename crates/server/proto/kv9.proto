@@ -45,6 +45,10 @@ service Kv9 {
   // a linearizable read of the catalog's node directory at the metadata leader.
   rpc NodeStatus(NodeStatusRequest) returns (NodeStatusResponse);
   rpc ListNodes(ListNodesRequest) returns (ListNodesResponse);
+  // Committed data-group rows joined per group, and the TASKS history page by page
+  // (docs/KV9-ADMIN.md §4, increment 2). Both are linearizable leader reads.
+  rpc ListDataGroups(ListDataGroupsRequest) returns (ListDataGroupsResponse);
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse);
   rpc ChangeNodeEndpoint(ChangeNodeEndpointRequest) returns (ChangeNodeEndpointResponse);
   // Tracking-only retention administration. No object deletion or installation.
   rpc ApplyRetention(ApplyRetentionRequest) returns (ApplyRetentionResponse);
@@ -129,6 +133,8 @@ message CreateDataKeyspaceResponse {
   bool changed = 2;
   uint64 applied_term = 3;
   uint64 applied_index = 4;
+  uint32 keyspace_id = 5;
+  uint64 region_id = 6;
 }
 
 // Create an initially empty, fixed-voter group and request local activation.
@@ -145,6 +151,9 @@ message CreateDataGroupResponse {
   // Applied desire is not quorum readiness or proof that any replica started.
   uint64 applied_term = 3;
   uint64 applied_index = 4;
+  // The same identities decoded, for clients that do not parse KV9GRP01.
+  uint64 creation_task = 5;
+  uint64 region_id = 6;
 }
 
 // Commit one immutable replica-migration intent for an activated group. The
@@ -427,6 +436,63 @@ message ListNodesResponse {
   uint64 leader_node_id = 1;
   uint64 raft_committed = 2;
   repeated NodeRow nodes = 3;
+}
+message ListDataGroupsRequest {}
+message DataGroupReplica {
+  uint64 node_id = 1;
+  bytes store_incarnation = 2;
+}
+message DataGroupKeyspace {
+  uint32 keyspace_id = 1;
+  uint64 tenant_id = 2;
+  uint64 bind_task = 3;     // the kind-102 row
+  uint64 conf_ver = 4;
+  uint64 version = 5;
+  bytes start = 6;
+  bytes end = 7;
+  bool sealed = 8;
+}
+message DataGroupMigration {
+  uint64 task = 1;          // kind 103
+  bytes operation = 2;
+  DataGroupReplica destination = 3;
+  uint64 evidence_task = 4; // kind 104, 0 if none
+  uint64 abort_task = 5;    // kind 108, 0 if none
+  uint64 removal_task = 6;  // kind 106, 0 if none
+  uint64 truncation_task = 7; // kind 105, 0 if none
+}
+message DataGroupRow {
+  uint64 creation_task = 1; // kind 100
+  uint64 region_id = 2;
+  bytes operation = 3;
+  repeated DataGroupReplica replicas = 4;
+  bool activated = 5;       // a kind-101 row exists
+  repeated DataGroupKeyspace keyspaces = 6;
+  repeated DataGroupMigration migrations = 7;
+  optional uint64 compaction_floor_term = 8;  // newest kind-110 row
+  optional uint64 compaction_floor_index = 9;
+}
+message ListDataGroupsResponse {
+  repeated DataGroupRow groups = 1;
+}
+message ListTasksRequest {
+  uint64 after = 1;  // exclusive cursor (task id); 0 starts at the beginning
+  uint32 limit = 2;  // 1..=256, default 64
+  uint64 kind = 3;   // 0 = every kind
+}
+message TaskRow {
+  uint64 id = 1;
+  uint64 kind = 2;
+  string kind_name = 3;
+  uint64 state = 4;
+  uint64 created_unix = 5;
+  uint64 payload_bytes = 6;
+  bytes operation = 7;      // the 16-byte retry identity when the payload carries one
+  uint64 reference_task = 8; // the row this one points at (creation for 102/110, migration for 104/108, evidence for 105/106)
+}
+message ListTasksResponse {
+  repeated TaskRow tasks = 1;
+  uint64 next_after = 2;    // 0 when the history is exhausted
 }
 message GetNodeEndpointResponse {
   bytes cluster_id = 1;

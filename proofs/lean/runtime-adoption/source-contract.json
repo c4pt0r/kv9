@@ -24,7 +24,7 @@
     "crates/raft/src/snapshot_install/tests.rs": "6bdae8ba434889d3e3a7e7febaca9a8e1b71cc918b17ed9af12e8f1055949599",
     "crates/raft/src/storage/snapshot/tests.rs": "76a4b8f1a8e2683d4aa7c1a9f9ce41d5be4cfe139afa98895a44335552cc8ce6",
     "crates/server/src/region_manager.rs": "a711ed4da137bc96ca3b8e43f0936c7bf7ba5c8af2c06625c51e2827a250e83e",
-    "crates/server/src/runtime.rs": "f00067e0e0de97fa53002902a0d3161dfcb463c99c14c259717576619eb26031",
+    "crates/server/src/runtime.rs": "82d760f6905509010e7b7ceca5cb06325edb7231044b78b3d41b42fc577f4e61",
     "scripts/runtime-install-e2e.py": "f1bf6b7d63ce3389346827df681d212e75274afa3653dc66c36a0105aeb41642",
     "proofs/lean/runtime-adoption/Adoption.lean": "32677db1e04d5a90c5d45c8c96c15f2fef65fcd6de5530471fd489d5f0f29835",
     "proofs/lean/runtime-adoption/README.md": "d63902e2335e855ecd4c32429d1702d91e830af78b497273c9056eb17e73ed3c"

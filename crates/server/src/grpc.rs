@@ -368,6 +368,32 @@ impl Kv9Grpc {
     }
 }
 
+/// Blocking `ListKeyspaces`, used by the `kv9 client` verbs to resolve a keyspace name.
+pub fn list_keyspaces_blocking(
+    address: &str,
+    token: &str,
+) -> Result<Vec<proto::Keyspace>, Error> {
+    let runtime = tokio::runtime::Runtime::new()
+        .map_err(|error| Error::Config(format!("create client runtime: {error}")))?;
+    runtime.block_on(async move {
+        let mut client = proto::kv9_client::Kv9Client::connect(format!("http://{address}"))
+            .await
+            .map_err(|error| Error::Raft(format!("connect public gRPC {address}: {error}")))?;
+        let mut request = Request::new(proto::ListKeyspacesRequest {});
+        let authorization = format!("Bearer {token}")
+            .parse()
+            .map_err(|_| Error::Config("client token is not valid metadata".into()))?;
+        request
+            .metadata_mut()
+            .insert("authorization", authorization);
+        client
+            .list_keyspaces(request)
+            .await
+            .map(|response| response.into_inner().keyspaces)
+            .map_err(|status| Error::Raft(format!("ListKeyspaces RPC: {status}")))
+    })
+}
+
 /// Small blocking client used by the single `kv9` binary's administrative CLI
 /// and the external-process acceptance gate.
 pub fn create_keyspace_blocking(
@@ -1439,6 +1465,8 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             changed: result.changed,
             applied_term: result.applied.term,
             applied_index: result.applied.index,
+            keyspace_id: result.range.keyspace.0,
+            region_id: result.range.region.0,
         }))
     }
 
@@ -1481,6 +1509,8 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             changed: result.changed,
             applied_term: result.applied.term,
             applied_index: result.applied.index,
+            creation_task: result.intent.task(),
+            region_id: result.intent.region().0,
         }))
     }
 
@@ -2418,6 +2448,100 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                     admission_expires_unix: n.admission_expires_unix,
                 })
                 .collect(),
+        }))
+    }
+
+    async fn list_data_groups(
+        &self,
+        request: Request<proto::ListDataGroupsRequest>,
+    ) -> Result<Response<proto::ListDataGroupsResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let caller = auth.principal.to_string();
+        let groups = self
+            .backend
+            .call(reservation, move |backend| backend.list_data_groups(&caller))
+            .await?;
+        let replica = |r: crate::api::DataGroupReplica| proto::DataGroupReplica {
+            node_id: r.node_id,
+            store_incarnation: r.store_incarnation,
+        };
+        Ok(Response::new(proto::ListDataGroupsResponse {
+            groups: groups
+                .into_iter()
+                .map(|g| proto::DataGroupRow {
+                    creation_task: g.creation_task,
+                    region_id: g.region_id,
+                    operation: g.operation.to_vec(),
+                    replicas: g.replicas.into_iter().map(replica).collect(),
+                    activated: g.activated,
+                    keyspaces: g
+                        .keyspaces
+                        .into_iter()
+                        .map(|k| proto::DataGroupKeyspace {
+                            keyspace_id: k.keyspace_id,
+                            tenant_id: k.tenant_id,
+                            bind_task: k.bind_task,
+                            conf_ver: k.conf_ver,
+                            version: k.version,
+                            start: k.start,
+                            end: k.end,
+                            sealed: k.sealed,
+                        })
+                        .collect(),
+                    migrations: g
+                        .migrations
+                        .into_iter()
+                        .map(|m| proto::DataGroupMigration {
+                            task: m.task,
+                            operation: m.operation.to_vec(),
+                            destination: Some(replica(m.destination)),
+                            evidence_task: m.evidence_task,
+                            abort_task: m.abort_task,
+                            removal_task: m.removal_task,
+                            truncation_task: m.truncation_task,
+                        })
+                        .collect(),
+                    compaction_floor_term: g.compaction_floor.map(|f| f.term),
+                    compaction_floor_index: g.compaction_floor.map(|f| f.index),
+                })
+                .collect(),
+        }))
+    }
+
+    async fn list_tasks(
+        &self,
+        request: Request<proto::ListTasksRequest>,
+    ) -> Result<Response<proto::ListTasksResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let caller = auth.principal.to_string();
+        let request = request.into_inner();
+        let limit = if request.limit == 0 { 64 } else { request.limit as usize };
+        let page = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.list_tasks(&caller, request.after, limit, request.kind)
+            })
+            .await?;
+        Ok(Response::new(proto::ListTasksResponse {
+            tasks: page
+                .tasks
+                .into_iter()
+                .map(|t| proto::TaskRow {
+                    id: t.id,
+                    kind: t.kind,
+                    kind_name: t.kind_name.to_string(),
+                    state: t.state,
+                    created_unix: t.created_unix,
+                    payload_bytes: t.payload_bytes,
+                    operation: t.operation,
+                    reference_task: t.reference_task,
+                })
+                .collect(),
+            next_after: page.next_after,
         }))
     }
 

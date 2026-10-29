@@ -15,7 +15,8 @@ const client = new Client("127.0.0.1:20161", "my-client-token", {
   peers: { 1: "127.0.0.1:20161", 2: "127.0.0.1:20162", 3: "127.0.0.1:20163" }, // follows NotLeader hints
   timeoutMs: 5000,
 });
-const ks = client.keyspace(await client.createKeyspace("app"));   // epoch (1, 1)
+await client.createKeyspace("app");                               // once
+const ks = await client.keyspaceNamed("app");                     // by name; keyspace(id) by id
 
 const applied = await ks.put(Buffer.from("user/1"), Buffer.from("alice")); // { term, index }
 await ks.batch([                                                            // ONE Raft entry, in order

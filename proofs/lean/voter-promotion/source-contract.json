@@ -15,16 +15,16 @@
     "the_committed_chain_reaches_the_voter"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "f00067e0e0de97fa53002902a0d3161dfcb463c99c14c259717576619eb26031",
-    "crates/server/src/api.rs": "25d272fd12ba38a2f89fce43a8666b37b58d7744446365a61b3a66bbb33266d9",
-    "crates/server/src/grpc.rs": "53c4a79a9ff057eb156af7484f3a44a65e8b097604e6ff64668d733b084afe35",
+    "crates/server/src/runtime.rs": "82d760f6905509010e7b7ceca5cb06325edb7231044b78b3d41b42fc577f4e61",
+    "crates/server/src/api.rs": "45487c5ed425876165febf27854b2284f68f49fba07098ebb4a0cb6209f1800a",
+    "crates/server/src/grpc.rs": "d2fbf89e6f85e3ff19d5ee0d60e68fea50870cf63afba53e41f81400bc9ec850",
     "crates/server/src/data_groups.rs": "f33470b1af05476b4bf538870817f635469e26ea8f7d033fed5cfbf58c9c69fe",
-    "crates/server/proto/kv9.proto": "99fc4716a40135a7e8cf5544f1772741f8248a59ef2f5a1f64d88e3ff3e6ebe9",
+    "crates/server/proto/kv9.proto": "fe3b9fae1b6f038f227de86691ecd04d5f263e668def19eb1d357492a0c6d1be",
     "crates/raft/src/driver.rs": "017f48e208e1831d33058972ab13761fd0133444b9111481d335db1da74e37d8",
     "crates/raft/src/storage.rs": "d2ee607f012da79efe5321f0bb0f48e2a9a44ec697dd19adc8e96156b54388c4",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
     "src/data_group_cli.rs": "c06a2f0c99b89cfb2830c0b48c34d7b2c37a951fdd3e39580527b1362b79c075",
-    "src/main.rs": "91330d1ab27a50c553c1f22e7488d65d954b7b682b6301acc84be1562c5ec77a",
+    "src/main.rs": "5e86b001de05b6e8a7d76af49fcc7616a9fcb4ef77298476c991c168e2a9d7c8",
     "scripts/promotion-e2e.py": "e54b31b588163d83a5743ef29063db263c426dfd9d8abcaebf7b9e1580022164",
     "proofs/lean/voter-promotion/Promotion.lean": "a9e87ee9da4487955c500b3f531e929d8044131ad8bbd6703a48c4e8c923735b",
     "proofs/lean/voter-promotion/README.md": "6530cbbb157cf4b730597d70d3368ff7bf815d51887da3fd98cef0d431fff16a"

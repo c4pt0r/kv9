@@ -39,7 +39,11 @@ pub mod proto {
 }
 
 pub mod admin;
-pub use admin::{MembershipChange, NodeDirectory, NodeEndpoint, NodeRow, NodeStatus};
+pub use admin::{
+    DataGroup, DataGroupCreated, DataGroupKeyspace, DataGroupMigration, DataGroupReplica,
+    DataKeyspaceCreated, MembershipChange, NodeDirectory, NodeEndpoint, NodeRow, NodeStatus,
+    TaskPage, TaskRow,
+};
 
 use proto::kv9_client::Kv9Client;
 
@@ -544,9 +548,28 @@ impl Client {
         Keyspace {
             client: self.clone(),
             id: keyspace_id,
+            name: None,
             epoch: Arc::new(Mutex::new(Epoch::default())),
             auto_refresh: true,
         }
+    }
+
+    /// A handle for the keyspace called `name`: one `ListKeyspaces` lookup, then the
+    /// same handle [`Client::keyspace`] returns. Names are what people use; ids are what
+    /// the wire carries. `NotFound` when no keyspace has that name.
+    pub async fn keyspace_named(&self, name: &str) -> Result<Keyspace, Error> {
+        let found = self
+            .list_keyspaces()
+            .await?
+            .into_iter()
+            .find(|k| k.name == name)
+            .ok_or_else(|| Error::Rpc {
+                code: Code::NotFound,
+                message: format!("no keyspace named {name:?}"),
+            })?;
+        let mut keyspace = self.keyspace(found.id);
+        keyspace.name = Some(found.name);
+        Ok(keyspace)
     }
 }
 
@@ -555,11 +578,17 @@ impl Client {
 pub struct Keyspace {
     client: Client,
     id: u32,
+    name: Option<String>,
     epoch: Arc<Mutex<Epoch>>,
     auto_refresh: bool,
 }
 
 impl Keyspace {
+    /// The keyspace name, when the handle was opened by name.
+    pub fn name(&self) -> Option<&str> {
+        self.name.as_deref()
+    }
+
     pub fn with_epoch(self, epoch: Epoch) -> Self {
         *self.epoch.lock().expect("epoch") = epoch;
         self

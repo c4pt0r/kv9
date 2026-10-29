@@ -5,31 +5,34 @@ An interactive shell for kv9 built on the [Rust SDK](../kv9-client/). One binary
 ```bash
 cargo build -p kv9-repl
 KV9_CLIENT_TOKEN=my-client-token target/debug/kv9-repl --addr 127.0.0.1:20161 \
-    --peers 1=127.0.0.1:20161,2=127.0.0.1:20162,3=127.0.0.1:20163 [--keyspace 100] [--timeout-ms 5000]
+    --peers 1=127.0.0.1:20161,2=127.0.0.1:20162,3=127.0.0.1:20163 [--keyspace app] [--timeout-ms 5000]
 ```
 
 ```text
 kv9> keyspaces
      100  tenant=0  app
-kv9> use 100
-keyspace 100 selected (epoch 1/1 until refreshed)
-kv9[100]> put user/1 alice
+kv9> use app
+keyspace app (id 100) selected (epoch 1/1 until refreshed)
+kv9[app]> put user/1 alice
 applied (term=1, index=7)
-kv9[100]> batch put user/2 bob, del user/1
+kv9[app]> batch put user/2 bob, del user/1
 applied (term=1, index=8)
-kv9[100]> mget user/1 user/2
+kv9[app]> mget user/1 user/2
 user/1 => (nil)
 user/2 => bob
-kv9[100]> scan user/ user0
+kv9[app]> scan user/ user0
 user/2 => bob
 (1 row(s))
-kv9[100]> delrange user/ user0
+kv9[app]> delrange user/ user0
 deleted: 1 chunk(s), last applied (term=1, index=9)
 ```
 
+Keyspaces are selected by **name**; `use id:<n>` (or `--keyspace id:<n>`) selects by id, and a bare
+number that names no keyspace is taken as an id so older scripts keep working.
+
 | Command | Meaning |
 | --- | --- |
-| `keyspaces`, `info`, `create <name> [tenant]`, `use <id>` | catalog and selection |
+| `keyspaces`, `info`, `create <name> [tenant]`, `use <name>` | catalog and selection |
 | `region [key]`, `refresh` | region/epoch of the selected keyspace; re-read it |
 | `get <k>`, `mget <k>...` | point read; one quorum-confirmed multi-key read |
 | `put <k> <v>`, `del <k>`, `mput <k> <v>...` | single writes; put-only atomic batch |

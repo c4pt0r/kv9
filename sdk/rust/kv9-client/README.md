@@ -16,7 +16,8 @@ use kv9_client::{Client, Mutation};
 let client = Client::new("127.0.0.1:20161", "my-client-token")?
     .with_peers([(1, "127.0.0.1:20161"), (2, "127.0.0.1:20162"), (3, "127.0.0.1:20163")])
     .with_timeout(std::time::Duration::from_secs(5));
-let ks = client.keyspace(client.create_keyspace("app", 0).await?);   // epoch (1, 1)
+client.create_keyspace("app", 0).await?;                             // once
+let ks = client.keyspace_named("app").await?;                        // by name; keyspace(id) by id
 
 let applied = ks.put(b"user/1".to_vec(), b"alice".to_vec()).await?; // Applied { term, index }
 ks.batch(vec![                                                       // ONE Raft entry, in order
