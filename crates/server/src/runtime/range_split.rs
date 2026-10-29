@@ -123,6 +123,15 @@ enum Step {
         root: RootDigest,
         operation: [u8; 16],
     },
+    /// The parent is sealed (its descriptor says so) but the catalog carries no seal
+    /// evidence: a crash between the seal and its evidence. Commit it now, so the
+    /// abort rule sees the truth.
+    SealEvidence {
+        region: RegionId,
+        root: RootDigest,
+        operation: [u8; 16],
+        position: kv9_common::AppliedPosition,
+    },
     Seal {
         region: RegionId,
         driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
@@ -145,6 +154,7 @@ impl Step {
     fn name(&self) -> &'static str {
         match self {
             Step::Publish { .. } => "publish",
+            Step::SealEvidence { .. } => "seal_evidence",
             Step::Seal { .. } => "seal",
             Step::Populate { .. } => "populate",
         }
@@ -152,6 +162,7 @@ impl Step {
     fn region(&self) -> u64 {
         match self {
             Step::Publish { parent_region, .. } => parent_region.0,
+            Step::SealEvidence { region, .. } => region.0,
             Step::Seal { region, .. } => region.0,
             Step::Populate { child_region, .. } => child_region.0,
         }
@@ -159,6 +170,7 @@ impl Step {
     fn label(&self) -> String {
         match self {
             Step::Publish { parent_region, .. } => format!("split of region {}", parent_region.0),
+            Step::SealEvidence { region, .. } => format!("seal evidence for region {}", region.0),
             Step::Seal { region, .. } => format!("parent region {}", region.0),
             Step::Populate { child_region, cursor, .. } => format!(
                 "child region {} from {}",
@@ -266,6 +278,7 @@ impl NodeRuntime {
         let bindings = dg::ranges::committed_ranges(store)?;
         let evidence = dg::split_evidence::committed_split_evidence(store).unwrap_or_default();
         let aborted = dg::range_abort::effective_aborts(store).unwrap_or_default();
+        let seals = dg::range_abort::committed_seal_evidence(store).unwrap_or_default();
         let me = self.node.id.0;
         let mut views = Vec::new();
         let mut step: Option<Step> = None;
@@ -338,6 +351,7 @@ impl NodeRuntime {
                 if applied_descriptor(engine)?.is_none()
                     && self.range_split.descriptor_proposals.get(&region.0) != Some(&status.term)
                 {
+                    super::fault::point("split:child_descriptor:before");
                     match driver.propose(&Command::DataRange {
                         expected: None,
                         next: half.clone(),
@@ -355,10 +369,25 @@ impl NodeRuntime {
                     }
                 }
             }
-            // (2) This node leads the parent: seal it once both children serve.
+            // (2) This node leads the parent: seal it once both children serve; a seal
+            // without its evidence (a crash in between) gets the evidence first.
             if let Some((_, engine, driver)) = &parent_local {
                 if view.lead_parent {
                     match applied_descriptor(engine)? {
+                        Some(current)
+                            if current.sealed
+                                && !seals.iter().any(|e| e.operation() == intent.operation() && e.region() == intent.parent_region()) =>
+                        {
+                            let status = driver.status();
+                            step = Some(Step::SealEvidence {
+                                region: intent.parent_region(),
+                                root: intent.root(),
+                                operation: intent.operation(),
+                                position: kv9_common::AppliedPosition { term: status.term, index: status.applied_index },
+                            });
+                            views.push(view);
+                            continue;
+                        }
                         Some(current) if !current.sealed => {
                             let children_serve = child_parts
                                 .iter()
@@ -552,9 +581,25 @@ pub(super) fn digest_into(hasher: &mut Vec<u8>, mut page: impl FnMut(&[u8]) -> R
     Ok(rows)
 }
 
+/// Every step passes a fault point before and after it (docs/RANGE-SPLIT.md §14).
 fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: Step) -> Result<Outcome> {
+    let name = step.name();
+    super::fault::point(&format!("split:{name}:before"));
+    let out = execute_step(backend, handle, step);
+    if out.is_ok() {
+        super::fault::point(&format!("split:{name}:after"));
+    }
+    out
+}
+
+fn execute_step(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: Step) -> Result<Outcome> {
     let _runtime = handle.enter();
     match step {
+        Step::SealEvidence { region, root, operation, position } => {
+            let receipt = kv9_meta::data_groups::range_abort::SealEvidence::receipt(root, operation, region, position)?;
+            let message = deliver(backend, &handle, root, &receipt)?;
+            Ok(Outcome::Sealed(format!("seal evidence recovered: {message}")))
+        }
         Step::Publish { root, operation, .. } => {
             let (changed, applied) = backend.commit_split_publication(root, operation)?;
             Ok(Outcome::Published(format!(

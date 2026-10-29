@@ -28,7 +28,7 @@
     "crates/raft/src/state_machine.rs": "0b3c0e09996dc8a63cfc98d723795a292b063bda90daff63a27d93f3d12098cf",
     "crates/raft/src/state_machine/data_range.rs": "aa5782759406d2c7e412db24554e9c6cfe899d7ea0ec13c3a61dda2a3d583699",
     "crates/raft/src/state_machine/raw_group.rs": "72fc1c66732a33d4db79155b031b968b1733134da7f622ef5479e21f52e992e0",
-    "crates/server/src/runtime.rs": "a0472c9eff645e68ba6840afd54463baeebd4e870a5465a616ec4cf18276be34",
+    "crates/server/src/runtime.rs": "c254d41ce1f8dba70cedaa3ea9ae8d126c85ef65314b9cb32cb12d0bbb32895d",
     "crates/server/src/runtime/range_api.rs": "7255e63f017be12459fc1953356af4ea89a30e02dbe460b0174c5172a18788f3",
     "crates/server/src/runtime/tests/data_group_tests.rs": "4b118da94145878026e007e8e4194f74140f53ab7d5a34ad7ab6fbf2db418812",
     "crates/server/src/region_manager.rs": "3e02ef7fe700908c33a2069ddfaa892228017b38715e70da8908531311b85220",

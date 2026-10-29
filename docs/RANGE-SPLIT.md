@@ -249,6 +249,38 @@ do, all in CI:
   completes on the group's quorum without it; on return it leads nothing and leaves the metadata
   group as planned; `drained` is reached without the `--wait` ever being told.
 
+## 14. The fault matrix (deterministic)
+
+The three runs above are point checks with timing in them. The matrix replaces timing with
+**fault points**: every driver step (`runtime/replica_addition.rs`, `range_split.rs`,
+`range_merge.rs`, `node_drain.rs`) calls `fault::point("<driver>:<step>:before|after")`. With
+`KV9_FAULT_DIR` set, a node reads `armed.json` there at each point and, if the point is armed and
+not yet in `fired.log`, appends a line and acts: `crash` is `process::exit(137)` with no flushing
+(what a kill looks like), `pause:<ms>` sleeps so the harness can move leadership under the step.
+A point fires once cluster-wide, so a restarted node that reaches it again goes on. Production
+never sets the variable; an unarmed build pays one environment lookup per point.
+
+`scripts/fault-matrix-e2e.sh` (CI, MinIO) runs one cluster through seven cells and asserts for
+each that every armed point fired exactly once and that the committed outcome equals the
+fault-free one:
+
+| Cell | Operation | Faults |
+| --- | --- | --- |
+| A | add a replica | crash BEFORE each of the 7 steps (attach, plan_image, capture, bind, install, record_evidence, promote) |
+| B | move a replica | crash AFTER each of the 9 steps (the 7 above, decide_removal, remove) |
+| C | add a replica | `bind` (metadata-leader-only) paused 6 s while the harness moves metadata leadership |
+| D | split | crash before child_descriptor, seal, populate, publish |
+| E | split | crash after seal (before its evidence), populate, publish |
+| F | split | `publish` paused 6 s while metadata leadership moves |
+| G | drain | crash before every drain step the drain takes (move_plan, the leadership hand-offs, the metadata removal) |
+
+A watchdog in the harness restarts whatever exited. Two things the matrix forced into the code:
+the **seal-evidence recovery step** (a parent whose descriptor is sealed but whose operation has
+no seal evidence — a crash between the two — commits the evidence on the next pass, so the abort
+rule stays true), and **placement excluding every store that ever held the group** (initial
+replicas and removal sources, not only current members): cell G's drain had chosen the group's
+moved-away initial replica as destination and looped on the planner's refusal.
+
 Membership verbs confirm instead of refusing when their target state already holds
 (`node promote` of a voter, `node remove` of an absent node, `transfer-leader` to the current
 leader): `outcome: confirmed`, asserted by the kv9-admin e2e. `node promote` of a node that is

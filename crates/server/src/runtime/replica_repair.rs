@@ -274,7 +274,7 @@ impl NodeRuntime {
         }
         // Destination: the least-loaded active store outside the group that is
         // not draining and not the lost node (runtime/placement.rs).
-        let mut exclude: BTreeSet<u64> = members.iter().map(|(m, _)| m.node.0).collect();
+        let mut exclude = super::placement::never_again(&txn, store, root, creation)?;
         exclude.insert(lost_node);
         let Some(destination) = super::placement::choose_destination(&txn, store, root, &exclude)? else {
             self.replica_repair.error = Some(format!(

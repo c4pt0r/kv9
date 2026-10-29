@@ -16,12 +16,12 @@
     "a_drain_finishes"
   ],
   "source_sha256": {
-    "crates/server/src/runtime/node_drain.rs": "c97e865e654d195b5db456bed42ce02ad2f7f28aec0e75a83fc74db146afdb9c",
-    "crates/server/src/runtime/placement.rs": "c57bfaeed1cc0097eb4f9bc762774f0928d3f42acd60b8b920569e06ce2f854e",
+    "crates/server/src/runtime/node_drain.rs": "bd7d103e9eefeae1f8c29e8efc0ac671a2b6816542ef59d798a23f2fa5dccb07",
+    "crates/server/src/runtime/placement.rs": "db1a2d7c81a91f4fafdb6e04cef085c422cea0a23b8a4fa8ef5afcc4f7f8e893",
     "crates/meta/src/data_groups/drain.rs": "faee4d0e7213deed6bde11dbd6dfedab5371aac3d3782913db62d0f648514538",
-    "crates/server/src/runtime.rs": "a0472c9eff645e68ba6840afd54463baeebd4e870a5465a616ec4cf18276be34",
+    "crates/server/src/runtime.rs": "c254d41ce1f8dba70cedaa3ea9ae8d126c85ef65314b9cb32cb12d0bbb32895d",
     "crates/server/proto/kv9.proto": "581f03fc2faf08a450b6aa4833ec33c4d034ed9422cc2ed6a5b2b362ca5b1283",
     "scripts/node-drain-e2e.py": "a91d8885159bac8d1e048033fda5c1acc1c0b942bc3aa7616694e8b1efe12524",
-    "docs/DRAIN-NODE.md": "61d0f7e1956af22727f92ece3921733ec415f4907e0e8d216e00c340e882a32c"
+    "docs/DRAIN-NODE.md": "f7cd89a76ad4a9ba95e274ed80124c3631d432612513ac6eafa1f804983b1878"
   }
 }

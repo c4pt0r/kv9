@@ -697,6 +697,17 @@ jobs:
         env:
           KV9_MINIO_EXTERNAL: "1"
 
+      # Deterministic fault matrix (docs/RANGE-SPLIT.md §14): every driver step crashed
+      # before and after it, leader-only steps paused under a metadata leader switch;
+      # the committed outcome must equal the fault-free one.
+      - name: Run the fault matrix on MinIO
+        run: |
+          set -o pipefail
+          scripts/fault-matrix-e2e.sh 2>&1 | tee /tmp/fault-matrix-e2e.out
+          grep -q '^PASS: fault matrix' /tmp/fault-matrix-e2e.out
+        env:
+          KV9_MINIO_EXTERNAL: "1"
+
       - name: Run persistent workload executable against three replicas and MinIO
         run: |
           set -euo pipefail

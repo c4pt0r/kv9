@@ -13,11 +13,11 @@
     "a_lost_voter_gets_a_plan"
   ],
   "source_sha256": {
-    "crates/server/src/runtime/replica_repair.rs": "026e9a201873cd24cab8d7ebf558b90da2c176913f0b93bdf5e88ec38cd81402",
-    "crates/server/src/runtime/replica_addition.rs": "33ad31f729e0850dc674d5d919a012ea10ba03647d8f4e1be13ec7739da0c275",
+    "crates/server/src/runtime/replica_repair.rs": "90928a98b484e8d036db5994a5f10791ce02eb3b7ee2155c8a59caea83c0f803",
+    "crates/server/src/runtime/replica_addition.rs": "c337ca887b89caf0974cb04f9c0edc510b4021418c4a8285a3fd23e451f42086",
     "crates/meta/src/data_groups/addition.rs": "87de0de7f5e6722a873f067040a32cf091e60d51defcb07fbb598a17709f3219",
     "crates/raft/src/grpc/plan_replica.rs": "01bbbfefd8b4cc00fb17594af41ff284a945af5e3af50aa5749d140da7207a52",
-    "crates/server/src/runtime.rs": "a0472c9eff645e68ba6840afd54463baeebd4e870a5465a616ec4cf18276be34",
+    "crates/server/src/runtime.rs": "c254d41ce1f8dba70cedaa3ea9ae8d126c85ef65314b9cb32cb12d0bbb32895d",
     "proto/kv9_raft.proto": "68f320e9b0c7ef4447b872d11ab30e58f5c9be2af56f135831558491bcacd083",
     "scripts/replica-repair-e2e.py": "eedea90b3fc09173e9226d77cf30d5c884466d6497253b9c0f2cac44bbdbf2fd",
     "docs/REPLICA-REPAIR.md": "d8680588fe384497d7e3d3dc477ef751754fd56abf67301ec5fad925eff9c899"

@@ -330,7 +330,8 @@ impl NodeRuntime {
                     .find(|(c, _)| !unsettled_regions.contains(&c.intent().region().0))
                 {
                     let region = creation.intent().region();
-                    let mut exclude: BTreeSet<u64> = members.iter().map(|(m, _)| m.node.0).collect();
+                    let _ = members;
+                    let mut exclude = super::placement::never_again(&txn, store, root, creation.intent())?;
                     exclude.insert(node.0);
                     match super::placement::choose_destination(&txn, store, root, &exclude)? {
                         Some(destination) => {
@@ -424,6 +425,16 @@ fn hex(bytes: &[u8]) -> String {
 }
 
 fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: Step) -> Result<String> {
+    let name = step.name();
+    super::fault::point(&format!("drain:{name}:before"));
+    let out = execute_step(backend, handle, step);
+    if out.is_ok() {
+        super::fault::point(&format!("drain:{name}:after"));
+    }
+    out
+}
+
+fn execute_step(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: Step) -> Result<String> {
     let _runtime = handle.enter();
     const CALLER: &str = "drain";
     match step {

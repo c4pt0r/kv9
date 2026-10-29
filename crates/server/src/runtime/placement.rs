@@ -13,6 +13,28 @@ use kv9_meta::data_groups::{committed_creations, committed_members, InitialRepli
 use kv9_meta::schema::NODES_DESC;
 use kv9_meta::{ColumnValue, MetaStore, MetaTxn};
 
+/// The stores that must never receive a replica of `creation`'s group again: its
+/// current committed members, its INITIAL replicas and every source a removal
+/// decision retired. A store that once held the group keeps a retired directory
+/// the installer refuses, and the migration planner refuses an initial replica as
+/// destination outright — placement must not propose what the planner rejects
+/// (the fault matrix found a drain looping on exactly that).
+pub(super) fn never_again<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    store: &MetaStore<E>,
+    root: RootDigest,
+    creation: &kv9_meta::data_groups::CreationIntent,
+) -> Result<BTreeSet<u64>> {
+    let mut out: BTreeSet<u64> = committed_members(txn, root, creation)?.iter().map(|(m, _)| m.node.0).collect();
+    out.extend(creation.replicas().iter().map(|r| r.node.0));
+    for removal in kv9_meta::data_groups::removal::committed_removals(store)? {
+        if removal.region() == creation.region() {
+            out.insert(removal.source().node.0);
+        }
+    }
+    Ok(out)
+}
+
 /// The least-loaded placeable store outside `exclude`, or `None` when no active,
 /// non-draining registered store qualifies.
 pub(super) fn choose_destination<E: Engine>(

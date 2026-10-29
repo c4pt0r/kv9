@@ -33,6 +33,7 @@ committed state on the node whose role it is, and observable in each node's `<da
 | Watch any of the above | `group describe <task>` (`plans`, `splits`, `merges` with stages), `task list [--kind <n>]`, `task describe <id>` | Stages: plans `planned → captured → pinned → evidenced → decided \| aborted`; splits/merges `intended → populating → populated → published \| aborted`. `group list` exits 4 and names the family when a catalog readback fails. |
 | Abort any of the above | `task abort <task>` | A split/merge before its first seal, a drain any time, a replica plan (through its migration abort). Membership plans and range operations exclude each other while live: the refusal says which one holds the group ([RANGE-SPLIT](RANGE-SPLIT.md) §12). |
 | Pause the range drivers | `KV9_RANGE_DRIVER=0` on a node | Split, merge and auto-split wait there; nothing is lost. `KV9_REPLICA_DRIVER=0` is the same brake for replica plans. |
+| Fault points (test only) | `KV9_FAULT_DIR=<dir>` | Every driver step reads `armed.json` there and crashes or pauses once per armed point ([RANGE-SPLIT](RANGE-SPLIT.md) §14). Never set in production. |
 
 ## 3. Repair that the cluster does by itself
 

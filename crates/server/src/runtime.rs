@@ -65,6 +65,7 @@ mod endpoint_recovery;
 mod group_compaction;
 mod migration_capture;
 mod auto_split;
+mod fault;
 mod node_drain;
 mod placement;
 mod range_merge;
@@ -7238,6 +7239,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("auto_split=");
         body.push_str(&self.auto_split_status());
+        body.push('\n');
+        body.push_str("fault=");
+        body.push_str(&fault::status());
         body.push('\n');
         body.push_str("replica_pressure=");
         body.push_str(

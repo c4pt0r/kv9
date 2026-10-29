@@ -98,6 +98,7 @@ enum Outcome {
 
 enum Step {
     Publish { low_region: RegionId, root: RootDigest, operation: [u8; 16] },
+    SealEvidence { region: RegionId, root: RootDigest, operation: [u8; 16], position: kv9_common::AppliedPosition },
     Seal { region: RegionId, driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>, current: DataRange, root: RootDigest, operation: [u8; 16] },
     Populate(Box<Populate>),
 }
@@ -115,6 +116,7 @@ impl Step {
     fn name(&self) -> &'static str {
         match self {
             Step::Publish { .. } => "publish",
+            Step::SealEvidence { .. } => "seal_evidence",
             Step::Seal { .. } => "seal",
             Step::Populate { .. } => "populate",
         }
@@ -122,6 +124,7 @@ impl Step {
     fn region(&self) -> u64 {
         match self {
             Step::Publish { low_region, .. } => low_region.0,
+            Step::SealEvidence { region, .. } => region.0,
             Step::Seal { region, .. } => region.0,
             Step::Populate(p) => p.child_region.0,
         }
@@ -129,6 +132,7 @@ impl Step {
     fn label(&self) -> String {
         match self {
             Step::Publish { low_region, .. } => format!("merge of region {}", low_region.0),
+            Step::SealEvidence { region, .. } => format!("seal evidence for region {}", region.0),
             Step::Seal { region, .. } => format!("parent region {}", region.0),
             Step::Populate(p) => format!(
                 "child region {} from {}",
@@ -216,6 +220,7 @@ impl NodeRuntime {
         let bindings = dg::ranges::committed_ranges(store)?;
         let evidence = dg::merge::committed_merge_evidence(store).unwrap_or_default();
         let aborted = dg::range_abort::effective_aborts(store).unwrap_or_default();
+        let seals = dg::range_abort::committed_seal_evidence(store).unwrap_or_default();
         let mut views = Vec::new();
         let mut step: Option<Step> = None;
         for intent in intents {
@@ -286,6 +291,19 @@ impl NodeRuntime {
                     continue;
                 }
                 match applied_descriptor(engine)? {
+                    Some(current)
+                        if current.sealed
+                            && !seals.iter().any(|e| e.operation() == intent.operation() && e.region() == RegionId(view.parents[i])) =>
+                    {
+                        let status = driver.status();
+                        step = Some(Step::SealEvidence {
+                            region: RegionId(view.parents[i]),
+                            root: intent.root(),
+                            operation: intent.operation(),
+                            position: kv9_common::AppliedPosition { term: status.term, index: status.applied_index },
+                        });
+                        break;
+                    }
                     Some(current) if !current.sealed => {
                         if child_serves {
                             step = Some(Step::Seal { region: RegionId(view.parents[i]), driver: driver.clone(), current, root: intent.root(), operation: intent.operation() });
@@ -351,8 +369,23 @@ impl NodeRuntime {
 }
 
 fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: Step) -> Result<Outcome> {
+    let name = step.name();
+    super::fault::point(&format!("merge:{name}:before"));
+    let out = execute_step(backend, handle, step);
+    if out.is_ok() {
+        super::fault::point(&format!("merge:{name}:after"));
+    }
+    out
+}
+
+fn execute_step(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: Step) -> Result<Outcome> {
     let _runtime = handle.enter();
     match step {
+        Step::SealEvidence { region, root, operation, position } => {
+            let receipt = kv9_meta::data_groups::range_abort::SealEvidence::receipt(root, operation, region, position)?;
+            let message = deliver(backend, &handle, root, &receipt)?;
+            Ok(Outcome::Done(format!("seal evidence recovered: {message}")))
+        }
         Step::Publish { root, operation, .. } => {
             let (changed, applied) = backend.commit_merge_publication(root, operation)?;
             Ok(Outcome::Done(format!("{} at {}/{}", if changed { "published" } else { "confirmed" }, applied.term, applied.index)))

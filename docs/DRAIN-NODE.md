@@ -121,6 +121,10 @@ e2e and its CI step.
 
 ## 9. As built
 
+- **Placement never returns a group to a store that held it** (initial replicas and removed
+  sources: their retired directory would make the installer refuse). A drain therefore needs,
+  for each group on the drained store, one active store that never hosted that group; the status
+  line says `no active, non-draining store outside region N` until one is admitted.
 - **Abort.** `kv9-admin task abort <drain-task>` ([RANGE-SPLIT](RANGE-SPLIT.md) §12): the drain
   becomes history, placement stops excluding the store, the node stops handing leadership away,
   plans already committed complete, and the store can be drained again (the row carries a

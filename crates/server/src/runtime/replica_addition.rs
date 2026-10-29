@@ -351,7 +351,24 @@ impl NodeRuntime {
 const CALLER: &str = "replica-plan";
 
 /// Run one step with the existing verbs. Blocking; runs on the worker thread.
+/// Every step passes a fault point before and after it (docs/RANGE-SPLIT.md §14).
 fn execute(
+    step: Step,
+    backend: &Arc<RuntimeBackend>,
+    guard: &kv9_common::store_lifecycle::StoreGuard,
+    handle: tokio::runtime::Handle,
+    f: Facts,
+) -> Result<String> {
+    let label = step.label();
+    super::fault::point(&format!("plan:{label}:before"));
+    let out = execute_inner(step, backend, guard, handle, f);
+    if out.is_ok() {
+        super::fault::point(&format!("plan:{label}:after"));
+    }
+    out
+}
+
+fn execute_inner(
     step: Step,
     backend: &Arc<RuntimeBackend>,
     guard: &kv9_common::store_lifecycle::StoreGuard,
