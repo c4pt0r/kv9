@@ -158,7 +158,8 @@ SDK's smoke test against it.
 
 ## Administration
 
-`kv9-admin` ([`sdk/rust/kv9-admin`](sdk/rust/kv9-admin/README.md)) is the operator's tool. Give it any
+`kv9-admin` ([`sdk/rust/kv9-admin`](sdk/rust/kv9-admin/README.md)) is the operator's tool; [docs/OPERATIONS.md](docs/OPERATIONS.md)
+lists every operational primitive and when to use it. Give it any
 node's address: it finds the metadata leader, reads the catalog, drives membership changes and waits
 for them to be committed, and prints JSON for scripts.
 
