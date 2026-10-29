@@ -183,6 +183,12 @@ impl Kv9Raft for Endpoint {
     ) -> std::result::Result<Response<pb::SplitEvidenceReceipt>, Status> {
         self.service.record_split_evidence(request).await
     }
+    async fn plan_split(
+        &self,
+        request: Request<pb::PlanSplitRequest>,
+    ) -> std::result::Result<Response<pb::PlanSplitReceipt>, Status> {
+        self.service.plan_split(request).await
+    }
     async fn inspect_checkpoint_selection(
         &self,
         request: Request<pb::CheckpointHistoryRequest>,

@@ -48,6 +48,7 @@ pub mod data_read_fence;
 mod endpoint;
 pub mod install_evidence;
 pub mod plan_replica;
+pub mod plan_split;
 pub mod split_evidence;
 mod groups;
 pub mod log_pressure;
@@ -407,6 +408,18 @@ pub trait RegistrationBackend: Send + Sync + 'static {
     ) -> kv9_common::Result<(u64, bool, kv9_common::AppliedPosition)> {
         Err(Error::NotImplemented("install evidence delivery"))
     }
+    /// Commit a split intent (docs/RANGE-SPLIT.md §11) at the metadata leader; returns
+    /// `(intent_task, child_low_task, child_high_task, changed)`.
+    fn plan_split(
+        &self,
+        _root: RootDigest,
+        _operation: [u8; 16],
+        _parent_region: kv9_common::RegionId,
+        _split_key: &[u8],
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<(u64, u64, u64, bool)> {
+        Err(Error::NotImplemented("split intent delivery"))
+    }
     /// Commit split population evidence (docs/RANGE-SPLIT.md §4) at the metadata
     /// leader; returns `(evidence_task, changed, applied)`.
     fn record_split_evidence(
@@ -719,6 +732,12 @@ impl Kv9Raft for RaftGrpcService {
         request: Request<pb::SplitEvidenceRequest>,
     ) -> std::result::Result<Response<pb::SplitEvidenceReceipt>, Status> {
         self.record_split_evidence_request(request).await
+    }
+    async fn plan_split(
+        &self,
+        request: Request<pb::PlanSplitRequest>,
+    ) -> std::result::Result<Response<pb::PlanSplitReceipt>, Status> {
+        self.plan_split_request(request).await
     }
     async fn inspect_migration_capture(
         &self,
@@ -2733,6 +2752,12 @@ mod tests {
             ) -> std::result::Result<Response<pb::SplitEvidenceReceipt>, Status> {
                 Err(Status::unimplemented("frozen fixture"))
             }
+            async fn plan_split(
+                &self,
+                _: Request<pb::PlanSplitRequest>,
+            ) -> std::result::Result<Response<pb::PlanSplitReceipt>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
             async fn inspect_checkpoint_selection(
                 &self,
                 _: Request<pb::CheckpointHistoryRequest>,
@@ -3836,6 +3861,13 @@ mod tests {
                     ) -> std::result::Result<Response<pb::SplitEvidenceReceipt>, Status>
                     {
                         self.0.record_split_evidence(request).await
+                    }
+                    async fn plan_split(
+                        &self,
+                        request: Request<pb::PlanSplitRequest>,
+                    ) -> std::result::Result<Response<pb::PlanSplitReceipt>, Status>
+                    {
+                        self.0.plan_split(request).await
                     }
                     async fn inspect_checkpoint_selection(
                         &self,

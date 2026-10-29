@@ -64,6 +64,7 @@ mod data_checkpoint;
 mod endpoint_recovery;
 mod group_compaction;
 mod migration_capture;
+mod auto_split;
 mod node_drain;
 mod placement;
 mod range_merge;
@@ -3201,6 +3202,23 @@ impl RegistrationBackend for RuntimeBackend {
         let r = AdminApi::add_replica(self, "node", root, operation, creation_task, destination, mode, source)?;
         Ok((r.plan.task(), r.migration.task(), r.changed))
     }
+    fn plan_split(
+        &self,
+        root: RootDigest,
+        operation: [u8; 16],
+        parent_region: RegionId,
+        split_key: &[u8],
+        _deadline: Instant,
+    ) -> Result<(u64, u64, u64, bool)> {
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let r = AdminApi::split_range(self, "node", root, operation, parent_region, split_key)?;
+        Ok((r.intent.task(), r.child_low.task(), r.child_high.task(), r.changed))
+    }
     fn record_split_evidence(
         &self,
         root: RootDigest,
@@ -4982,6 +5000,7 @@ pub struct NodeRuntime {
     node_drain: node_drain::State,
     range_split: range_split::State,
     range_merge: range_merge::State,
+    auto_split: auto_split::State,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -5649,6 +5668,7 @@ impl NodeRuntime {
             node_drain: node_drain::State::new(node_drain::Config::from_env()),
             range_split: range_split::State::default(),
             range_merge: range_merge::State::default(),
+            auto_split: auto_split::State::new(auto_split::Config::from_env()),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             raw_ttl_clock,
@@ -6235,6 +6255,9 @@ impl NodeRuntime {
                 self.reconcile_range_split();
                 // Committed merge intents: the split pipeline backwards (RANGE-SPLIT §6).
                 self.reconcile_range_merge();
+                // The automatic split trigger (RANGE-SPLIT §11), off unless
+                // KV9_AUTO_SPLIT_BYTES > 0: a group leader's size verdict becomes an intent.
+                self.reconcile_auto_split();
                 // Fence committed removals before any deferred engine read or
                 // driver restart; retirement of an unopened group needs no GET.
                 let retirement_ready = self.reconcile_retirement();
@@ -6985,6 +7008,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("range_merge=");
         body.push_str(&self.range_merge_status());
+        body.push('\n');
+        body.push_str("auto_split=");
+        body.push_str(&self.auto_split_status());
         body.push('\n');
         body.push_str("replica_pressure=");
         body.push_str(

@@ -229,7 +229,8 @@ deletes applied as one Raft entry.
   `group merge <low> <high>`): the cluster creates the child groups, seals the parents, copies and verifies the
   data and publishes the new partition by itself ([RANGE-SPLIT](docs/RANGE-SPLIT.md)); a parent is
   unavailable between its seal and the publication, its replicas retire themselves once the new partition is
-  published, and nothing splits or merges automatically; metadata is one Raft group.
+  published, and `KV9_AUTO_SPLIT_BYTES` (off by default) lets a group's leader split on its own footprint;
+  metadata is one Raft group.
 - Tenant admission and fairness are partial; TLS is not implemented (use a private network).
 - Acknowledged writes that are not yet checkpointed depend on the Raft replicas' local disks.
 - There are no transactions by design: the multi-key write primitive is the atomic range batch

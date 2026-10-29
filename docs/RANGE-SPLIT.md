@@ -178,7 +178,31 @@ child. `kv9-admin group merge <low-task> <high-task>`; `ListDataGroups.merges` o
 
 ## 10. What follows
 
-The auto-split trigger (prototype: `KV9_AUTO_SPLIT_BYTES`, median-key sampling, derived
-operations — now with the seal window as a cost to weigh) and scans and batches that cross a child
-boundary (refused whole today, as before the split) follow in that order. Both split and merge are
-operator verbs; nothing is automatic yet.
+Scans and batches that cross a child boundary (refused whole today, as before the split), load-
+or time-based triggers beyond the footprint, and an automatic merge of small siblings.
+
+## 11. The automatic split trigger (implemented)
+
+`KV9_AUTO_SPLIT_BYTES` (0 = off, the default) on every node arms it. Every five seconds each data
+group's **leader** sizes its own replica — `data.wal` plus `data.segments/`, the same write-volume
+footprint the prototype used, honest about overwrites — for every bound, unsealed range it leads
+that has no live split, merge or unsettled replica plan. At or above the threshold it samples the
+median user key from one snapshot (strictly inside the range; fewer than two rows never split) and
+commits the intent: `SplitRange` locally when it leads the metadata group, otherwise the
+node-authenticated `PlanSplit` at a metadata candidate. The operation is
+`sha16("kv9-auto-split/v1" ++ root ++ region ++ bind task)`: a binding splits once and any repeated
+decision confirms. `KV9_AUTO_SPLIT_COOLDOWN_SECS` (600) spaces one node's decisions; the children
+are new regions and split again only when they reach the threshold themselves. The status line
+`auto_split=` shows every led group's footprint and eligibility and the decisions taken.
+
+**Its cost is §9's seal window.** Between the seal and the publication the parent refuses reads
+and writes with the typed stale-epoch error, for the time it takes to copy the half; clients with
+auto-refresh continue on the children once published. That is why the trigger is off by default
+and why the threshold should be sized to what an application tolerates. The e2e writes through a
+trigger that fires mid-fill: the batches that land in the window are refused and succeed on the
+children; every key is served afterwards.
+
+Evidence: `proofs/lean/auto-split` (nine theorems: one intent per binding, a decision needs every
+guard, a decision starts the cooldown, the key is inside; seven controls), `scripts/auto-split-e2e.sh`
+(zero verbs after the writes: the intent at a sampled median, published, children serving, the
+parent retired) in the CI e2e matrix.

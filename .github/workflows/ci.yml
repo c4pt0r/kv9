@@ -887,6 +887,12 @@ jobs:
           - script: range-split-population-e2e.sh
             base_port: 27550
             success_marker: "PASS: range split population"
+          # Automatic split trigger (docs/RANGE-SPLIT.md §11): a leader's footprint
+          # verdict commits the intent at the median key with zero verbs; the split
+          # publishes and the children serve every key.
+          - script: auto-split-e2e.sh
+            base_port: 27650
+            success_marker: "PASS: auto split"
           # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
           # isolated leader must refuse raw reads with the NAMED typed families
           # (read_unconfirmed / not_leader) — transport errors explicitly do not

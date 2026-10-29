@@ -39,6 +39,7 @@ committed state on the node whose role it is, and observable in each node's `<da
 | `KV9_AUTO_REPLACE_VOTER=1` | The metadata leader replaces a lost metadata voter: promote a caught-up learner, then remove the lost voter ([VOTER-REPLACEMENT](VOTER-REPLACEMENT.md)). | `KV9_VOTER_LOST_SECS` (300), `KV9_VOTER_REPLACE_COOLDOWN_SECS` (600); needs a joined learner to promote. |
 | `KV9_AUTO_REPAIR_REPLICA=1` | Each data group's leader replaces a lost voter of its group with a move plan to the least-loaded active store outside the group ([REPLICA-REPAIR](REPLICA-REPAIR.md)). | `KV9_REPLICA_LOST_SECS` (300), `KV9_REPLICA_REPAIR_COOLDOWN_SECS` (600); needs a spare registered store and object storage. |
 | `KV9_REPLICA_DRIVER=0` | Disables the plan driver on this node (plans stay committed and resume when it is on). | Default on. |
+| `KV9_AUTO_SPLIT_BYTES=<n>` | Each data group's leader splits a bound range at its median key once its replica footprint reaches `n` bytes ([RANGE-SPLIT](RANGE-SPLIT.md) §11). | `KV9_AUTO_SPLIT_COOLDOWN_SECS` (600). Off by default: a split makes the parent unavailable between its seal and the publication. |
 
 Without the switches the verdicts are still taken and shown (`voter_replacement=`,
 `replica_repair=` in the status document); only the decision is held back for the operator.
@@ -75,6 +76,6 @@ service and is never reachable with a client token.
 
 ## 7. What is not a primitive yet
 
-Automatic split/merge triggers, scans and batches that cross a range boundary, `node replace`, retention
+An automatic merge of small siblings, load- or time-based split triggers, scans and batches that cross a range boundary, `node replace`, retention
 verbs and `group abort` in `kv9-admin`, and any placement policy beyond "least-loaded active
 store" ([DEVELOPMENT-PATH](DEVELOPMENT-PATH.md)).

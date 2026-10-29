@@ -5,9 +5,9 @@ Three stores hold a data group with a bound keyspace under writes. `kv9-admin gr
 split <task> --at k/m` commits one intent and, in the same transaction, two
 activated unbound children on the group's members. The refusal matrix holds (a
 second intent for the parent, a divergent key under the same operation, a child as
-parent), the exact resubmission confirms, the parent keeps serving the same data and
-accepts new writes, and the children are visible with no keyspace. Nothing is
-sealed or rerouted.
+parent), the exact resubmission confirms, the children are visible with no keyspace, and the
+data stays readable throughout: the parent serves until the cluster, by itself,
+seals it and publishes the children (parts 2–4), which then serve it.
 """
 import argparse
 import hashlib
@@ -239,14 +239,22 @@ def main():
         described, _ = admin('task-describe', 'task', 'describe', str(intent_task))
         require(described['result']['kind_name'] == 'split_intent', f"task {intent_task}: {described['result'].get('kind_name')}")
 
-        # ------------------------------------------------------------ the parent serves on
-        out = repl('read-after-intent', ['use split-me', 'get k/a', 'get k/m', 'get k/z', 'put k/zz zz', 'get k/zz'])
-        require(all(f'{c}' in out for c in ('a', 'm', 'z', 'zz')), f'the parent serves the same data and new writes: {out}')
-        live = group_leader_view()
-        require(live is not None and sorted(live.get('voters', [])) == [1, 2, 3], f'parent voters unchanged: {live}')
+        # ------------------------------------------------------------ the data stays readable
+        # The pipeline proceeds by itself: the parent serves until its seal, refuses with
+        # the typed stale-epoch error during the window, and the children serve once
+        # published. A reader that retries sees every key throughout.
+        def readable():
+            out = repl('read-after-intent', ['use split-me', 'get k/a', 'get k/m', 'get k/z', 'put k/zz zz', 'get k/zz'], success=None)
+            if all(f'{c}' in out for c in ('a', 'm', 'z', 'zz')) and 'error' not in out.lower():
+                return out
+            require('stale region epoch' in out or 'error' not in out.lower(), f'unexpected refusal: {out[-300:]}')
+            return None
+        wait('the data is served through the parent or the children', readable, 300)
+        wait('the split the intent started is published', lambda: group_view()['splits'][0]['stage'] == 'published', 300)
+        wait('the data is served by the children', readable, 120)
         manifest_record['verdict'] = 'passed'
         print(f'PASS: range split intent (parent {task} region {region} split at k/m -> intent {intent_task}, children '
-              f'{low["creation_task"]}/{high["creation_task"]} activated unbound on {parent_members}; refusals typed; parent serving)', flush=True)
+              f'{low["creation_task"]}/{high["creation_task"]} activated unbound on {parent_members}; refusals typed; data served throughout)', flush=True)
     except Exception as error:
         manifest_record['verdict'] = f'failed: {error}'
         raise
