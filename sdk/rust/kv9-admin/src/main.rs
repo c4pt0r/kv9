@@ -32,6 +32,8 @@ use sha2::{Digest, Sha256};
 
 const SCHEMA_VERSION: u64 = 1;
 const DEFAULT_WAIT: Duration = Duration::from_secs(30);
+/// A drain moves whole replicas through object storage; give it minutes by default.
+const DEFAULT_DRAIN_WAIT: Duration = Duration::from_secs(900);
 /// Pending admissions that end within this many seconds are a health warning.
 const ADMISSION_EXPIRY_WARNING_SECS: u64 = 3600;
 /// Entries between the leader's commit index and a node's applied index that count
@@ -54,6 +56,7 @@ fn usage() -> String {
      \u{20}        promote <id> [--wait [--wait-secs <n>]]\n\
      \u{20}        remove <id>  [--wait [--wait-secs <n>]] refuses below three voters\n\
      \u{20}        transfer-leader --to <id> [--wait]     hand metadata leadership to a caught-up voter\n\
+     \u{20}        drain <id> [--wait [--wait-secs <n>]]  move every replica off the node, leave the metadata group\n\
      keyspace list | describe <id|name> | create --name <n> [--tenant <id>] [--group <creation-task>]\n\
      group    list                         committed data groups: task, region, replicas, keyspaces\n\
      \u{20}        describe <creation-task>     rows + every replica's live view of the group\n\
@@ -1062,6 +1065,80 @@ fn node_row_json(n: &kv9_client::NodeRow) -> Value {
         "recent_active": n.recent_active,
         "admission_state": n.admission_state,
         "admission_expires_unix": n.admission_expires_unix,
+        "draining": n.draining,
+        "drained": n.drained,
+    })
+}
+
+fn drain_cell(n: &kv9_client::NodeRow) -> String {
+    if n.drained {
+        "drained".into()
+    } else if n.draining {
+        "draining".into()
+    } else {
+        String::new()
+    }
+}
+
+async fn node_drain(global: &Global, cluster: &mut Cluster, args: &VerbArgs, node_id: u64) -> Outcome {
+    let wait = args.switches.iter().any(|s| s == "wait");
+    let wait_for = match args.flags.get("wait-secs") {
+        Some(secs) => Duration::from_secs(secs.parse().map_err(|_| Fail::Usage("--wait-secs must be seconds".into()))?),
+        None => DEFAULT_DRAIN_WAIT,
+    };
+    confirm(
+        global,
+        &format!(
+            "plan: DrainNode node={node_id} at leader node {}; the cluster moves every replica off it and takes it out of the metadata group",
+            cluster.leader_id
+        ),
+        Some(&node_id.to_string()),
+    )?;
+    let planned = cluster.leader.drain_node(node_id).await?;
+    let mut result = json!({
+        "node_id": node_id,
+        "task": planned.task,
+        "operation": hex(&planned.operation),
+        "outcome": if planned.changed { "committed" } else { "confirmed" },
+        "applied": {"term": planned.applied.term, "index": planned.applied.index},
+    });
+    let mut table = format!(
+        "drain of node {node_id} {} as task {} (operation {})",
+        if planned.changed { "committed" } else { "confirmed" },
+        planned.task,
+        hex(&planned.operation)
+    );
+    if wait {
+        // Drained = the directory row says so; the leader derives it from the
+        // committed memberships and its raft configuration. The leader may move
+        // during the drain (the drained node hands leadership away), so resolve
+        // it again on every poll.
+        let started = Instant::now();
+        loop {
+            if let Ok(directory) = cluster.directory().await {
+                if let Some(row) = directory.nodes.iter().find(|n| n.node_id == node_id) {
+                    if row.drained {
+                        result["waited"] = json!({
+                            "drained": true,
+                            "seconds": started.elapsed().as_secs(),
+                            "raft_role": row.raft_role,
+                        });
+                        table.push_str(&format!("\n--wait: node {node_id} drained after {} s", started.elapsed().as_secs()));
+                        break;
+                    }
+                }
+            }
+            if started.elapsed() >= wait_for {
+                return Err(Fail::WaitDeadline(format!("node {node_id} not drained after {} s", wait_for.as_secs())));
+            }
+            tokio::time::sleep(Duration::from_millis(500)).await;
+        }
+    }
+    Ok(Report {
+        command: "node drain".into(),
+        result,
+        table,
+        partial: Vec::new(),
     })
 }
 
@@ -1079,6 +1156,7 @@ async fn node_list(cluster: &mut Cluster) -> Outcome {
                 n.matched_index.to_string(),
                 if n.recent_active { "yes".into() } else { "no".into() },
                 n.admission_state.clone(),
+                drain_cell(n),
             ]
         })
         .collect();
@@ -1093,7 +1171,7 @@ async fn node_list(cluster: &mut Cluster) -> Outcome {
             "leader: node {}  committed: {}\n{}",
             directory.leader_node_id,
             directory.raft_committed,
-            table(&["NODE", "ADDRESS", "RAFT", "ACTIVE", "MATCHED", "RECENT", "ADMISSION"], &rows)
+            table(&["NODE", "ADDRESS", "RAFT", "ACTIVE", "MATCHED", "RECENT", "ADMISSION", "DRAIN"], &rows)
         ),
         partial: Vec::new(),
     })
@@ -1117,6 +1195,7 @@ async fn node_describe(cluster: &mut Cluster, node_id: u64) -> Outcome {
         format!("matched:     {} (leader committed {})", row.matched_index, directory.raft_committed),
         format!("admission:   {}", if row.admission_state.is_empty() { "none" } else { &row.admission_state }),
         format!("incarnation: {}", hex(&row.store_incarnation)),
+        format!("drain:       {}", if row.drained { "drained" } else if row.draining { "draining" } else { "no" }),
     ];
     let status_value = match &status {
         Some(Ok(status)) => {
@@ -1787,6 +1866,10 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
             node_admit(global, &mut cluster, &args, id).await?
         }
         ("node", "transfer-leader") => transfer_leader(global, &mut cluster, &args, kv9_client::META_REGION_ID, "node").await?,
+        ("node", "drain") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("node drain <id> [--wait]".into()))?, "node id")?;
+            node_drain(global, &mut cluster, &args, id).await?
+        }
         ("group", "transfer-leader") => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("group transfer-leader <creation-task> --to <node>".into()))?, "creation task")?;
             let groups = cluster.leader.list_data_groups().await?;

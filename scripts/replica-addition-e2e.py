@@ -229,13 +229,17 @@ def main():
         out = repl('read-after-move', ['use moved', 'get k/1', 'get k/2', 'get k/3', 'put k/4 four', 'get k/4'])
         require(all(v in out for v in ('one', 'two', 'three', 'four')), 'every key readable after the move')
 
-        # Each party recorded only its own steps.
-        steps = {}
-        for node in processes:
-            for event in json.loads(status(node).get('replica_plans', '{}')).get('events', []):
-                steps.setdefault(event['step'], set()).add(node)
-        require({'attach', 'plan_image', 'bind', 'capture', 'install', 'record_evidence', 'promote', 'decide_removal', 'remove'} <= set(steps),
-                f'every step of the table ran: {sorted(steps)}')
+        # Each party recorded only its own steps. Status documents are written once
+        # a second, so the last step (the removal just observed) may land a moment
+        # after the membership did.
+        expected = {'attach', 'plan_image', 'bind', 'capture', 'install', 'record_evidence', 'promote', 'decide_removal', 'remove'}
+        def recorded_steps():
+            steps = {}
+            for node in processes:
+                for event in json.loads(status(node).get('replica_plans', '{}')).get('events', []):
+                    steps.setdefault(event['step'], set()).add(node)
+            return steps if expected <= set(steps) else None
+        steps = wait('every step of the table recorded by its party', recorded_steps, 30)
         require(steps['install'] <= {4, 5} and steps['record_evidence'] <= {4, 5}, 'only destinations install and record')
         manifest_record['verdict'] = 'passed'
         print('PASS: replica addition and move driven by the cluster (add → voters 1,2,3,4; move 1→5 → voters 2,3,4,5; '

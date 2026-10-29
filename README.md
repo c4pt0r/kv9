@@ -191,7 +191,10 @@ pins the image in object storage, installs it inside the destination process, re
 promotes the voter and retires the source by itself ([REPLICA-ADDITION](docs/REPLICA-ADDITION.md)).
 With `KV9_AUTO_REPAIR_REPLICA=1` each data group's leader takes the same lost-voter verdict for its own
 group and commits that move plan itself, to the least-loaded active store outside the group
-([REPLICA-REPAIR](docs/REPLICA-REPAIR.md)).
+([REPLICA-REPAIR](docs/REPLICA-REPAIR.md)). `kv9-admin node drain <id> --wait` takes a store out of
+service in one verb: the cluster hands its leaderships away, moves every replica off it one plan at a
+time, promotes a learner before removing it from a three-voter metadata group, and reports `drained`
+([DRAIN-NODE](docs/DRAIN-NODE.md)).
 
 ## Architecture
 

@@ -562,7 +562,7 @@ class ListNodesRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class NodeRow(_message.Message):
-    __slots__ = ("node_id", "address", "store_incarnation", "endpoint_generation", "active", "last_heartbeat_unix", "raft_role", "matched_index", "recent_active", "admission_state", "admission_expires_unix")
+    __slots__ = ("node_id", "address", "store_incarnation", "endpoint_generation", "active", "last_heartbeat_unix", "raft_role", "matched_index", "recent_active", "admission_state", "admission_expires_unix", "draining", "drained")
     NODE_ID_FIELD_NUMBER: _ClassVar[int]
     ADDRESS_FIELD_NUMBER: _ClassVar[int]
     STORE_INCARNATION_FIELD_NUMBER: _ClassVar[int]
@@ -574,6 +574,8 @@ class NodeRow(_message.Message):
     RECENT_ACTIVE_FIELD_NUMBER: _ClassVar[int]
     ADMISSION_STATE_FIELD_NUMBER: _ClassVar[int]
     ADMISSION_EXPIRES_UNIX_FIELD_NUMBER: _ClassVar[int]
+    DRAINING_FIELD_NUMBER: _ClassVar[int]
+    DRAINED_FIELD_NUMBER: _ClassVar[int]
     node_id: int
     address: str
     store_incarnation: bytes
@@ -585,7 +587,9 @@ class NodeRow(_message.Message):
     recent_active: bool
     admission_state: str
     admission_expires_unix: int
-    def __init__(self, node_id: _Optional[int] = ..., address: _Optional[str] = ..., store_incarnation: _Optional[bytes] = ..., endpoint_generation: _Optional[int] = ..., active: _Optional[bool] = ..., last_heartbeat_unix: _Optional[int] = ..., raft_role: _Optional[str] = ..., matched_index: _Optional[int] = ..., recent_active: _Optional[bool] = ..., admission_state: _Optional[str] = ..., admission_expires_unix: _Optional[int] = ...) -> None: ...
+    draining: bool
+    drained: bool
+    def __init__(self, node_id: _Optional[int] = ..., address: _Optional[str] = ..., store_incarnation: _Optional[bytes] = ..., endpoint_generation: _Optional[int] = ..., active: _Optional[bool] = ..., last_heartbeat_unix: _Optional[int] = ..., raft_role: _Optional[str] = ..., matched_index: _Optional[int] = ..., recent_active: _Optional[bool] = ..., admission_state: _Optional[str] = ..., admission_expires_unix: _Optional[int] = ..., draining: _Optional[bool] = ..., drained: _Optional[bool] = ...) -> None: ...
 
 class ListNodesResponse(_message.Message):
     __slots__ = ("leader_node_id", "raft_committed", "nodes")
@@ -706,6 +710,26 @@ class AddReplicaRequest(_message.Message):
     mode: str
     source_node: int
     def __init__(self, root_digest: _Optional[bytes] = ..., operation_id: _Optional[bytes] = ..., creation_task: _Optional[int] = ..., destination_node: _Optional[int] = ..., mode: _Optional[str] = ..., source_node: _Optional[int] = ...) -> None: ...
+
+class DrainNodeRequest(_message.Message):
+    __slots__ = ("node_id",)
+    NODE_ID_FIELD_NUMBER: _ClassVar[int]
+    node_id: int
+    def __init__(self, node_id: _Optional[int] = ...) -> None: ...
+
+class DrainNodeResponse(_message.Message):
+    __slots__ = ("task", "operation", "changed", "applied_term", "applied_index")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    operation: bytes
+    changed: bool
+    applied_term: int
+    applied_index: int
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
 
 class TransferLeaderRequest(_message.Message):
     __slots__ = ("region_id", "transferee")

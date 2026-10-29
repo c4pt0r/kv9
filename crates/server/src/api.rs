@@ -742,6 +742,12 @@ pub trait AdminApi {
     ) -> Result<AddReplicaResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::add_replica"))
     }
+    /// Commit the intent that `node`'s current store leaves the cluster
+    /// (docs/DRAIN-NODE.md); the drained node hands away its leaderships and the
+    /// metadata leader moves its replicas and membership from there.
+    fn drain_node(&self, _caller: &str, _node: kv9_common::NodeId) -> Result<DrainResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::drain_node"))
+    }
     fn change_node_endpoint(
         &self,
         _caller: &str,
@@ -874,6 +880,19 @@ pub struct NodeDirectoryRow {
     /// `pending`, `consumed`, `revoked`, `superseded`, or empty when no admission row exists.
     pub admission_state: &'static str,
     pub admission_expires_unix: u64,
+    /// A committed drain names this node's current store (docs/DRAIN-NODE.md).
+    pub draining: bool,
+    /// Draining, and already in no data group and out of the metadata group.
+    pub drained: bool,
+}
+
+/// The receipt of [`AdminApi::drain_node`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DrainResult {
+    pub drain: kv9_meta::data_groups::drain::DrainIntent,
+    /// False confirms an identical committed drain.
+    pub changed: bool,
+    pub applied: AppliedPosition,
 }
 
 #[derive(Debug, Clone, Default)]

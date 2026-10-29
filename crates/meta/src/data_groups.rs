@@ -16,6 +16,7 @@ pub mod activation;
 pub mod addition;
 pub mod capture;
 pub mod compaction;
+pub mod drain;
 pub mod evidence;
 pub mod migration;
 pub mod ranges;

@@ -2446,8 +2446,36 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                     recent_active: n.recent_active,
                     admission_state: n.admission_state.to_string(),
                     admission_expires_unix: n.admission_expires_unix,
+                    draining: n.draining,
+                    drained: n.drained,
                 })
                 .collect(),
+        }))
+    }
+
+    async fn drain_node(
+        &self,
+        request: Request<proto::DrainNodeRequest>,
+    ) -> Result<Response<proto::DrainNodeResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        if request.node_id == 0 {
+            return Err(Status::invalid_argument("node_id required"));
+        }
+        let node = NodeId(request.node_id);
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| backend.drain_node(&caller, node))
+            .await?;
+        Ok(Response::new(proto::DrainNodeResponse {
+            task: result.drain.task(),
+            operation: result.drain.operation().to_vec(),
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
         }))
     }
 

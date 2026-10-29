@@ -55,6 +55,9 @@ service Kv9 {
   // Hand leadership of the metadata group (region 1) or a data group to a
   // caught-up voter; leader-only, nothing committed (docs/LEADER-TRANSFER.md).
   rpc TransferLeader(TransferLeaderRequest) returns (TransferLeaderResponse);
+  // Commit the intent that a node's current store leaves the cluster; the cluster
+  // moves its replicas and metadata membership by itself (docs/DRAIN-NODE.md).
+  rpc DrainNode(DrainNodeRequest) returns (DrainNodeResponse);
   rpc ChangeNodeEndpoint(ChangeNodeEndpointRequest) returns (ChangeNodeEndpointResponse);
   // Tracking-only retention administration. No object deletion or installation.
   rpc ApplyRetention(ApplyRetentionRequest) returns (ApplyRetentionResponse);
@@ -437,6 +440,10 @@ message NodeRow {
   // Pending admission, if any: "pending", "consumed", "revoked", "superseded" or "".
   string admission_state = 10;
   uint64 admission_expires_unix = 11;
+  // A committed drain names this node's current store (DRAIN-NODE); `drained`
+  // once it holds no data-group replica and is no member of the metadata group.
+  bool draining = 12;
+  bool drained = 13;
 }
 message ListNodesResponse {
   uint64 leader_node_id = 1;
@@ -499,6 +506,16 @@ message AddReplicaRequest {
   uint64 destination_node = 4;
   string mode = 5;          // "add" | "move"
   uint64 source_node = 6;   // move: the initial replica to retire (current incarnation)
+}
+message DrainNodeRequest {
+  uint64 node_id = 1;
+}
+message DrainNodeResponse {
+  uint64 task = 1;            // the kind-112 row
+  bytes operation = 2;        // derived from (root, node, store incarnation)
+  bool changed = 3;           // false: an identical drain was confirmed
+  uint64 applied_term = 4;
+  uint64 applied_index = 5;
 }
 message TransferLeaderRequest {
   uint64 region_id = 1;   // 1 = the metadata group

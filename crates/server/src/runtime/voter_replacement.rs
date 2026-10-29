@@ -321,6 +321,12 @@ impl NodeRuntime {
         }
     }
 
+    /// The catch-up window a learner must be within to be promoted (shared with
+    /// the drain's three-voter rule, docs/DRAIN-NODE.md §3).
+    pub(super) fn voter_replacement_catchup_lag(&self) -> u64 {
+        self.voter_replacement.config.catchup_lag
+    }
+
     /// The `voter_replacement=` status line: this leader's verdicts and decisions.
     pub(super) fn voter_replacement_status(&self) -> String {
         let state = &self.voter_replacement;

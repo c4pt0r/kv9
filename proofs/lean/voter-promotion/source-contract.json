@@ -15,11 +15,11 @@
     "the_committed_chain_reaches_the_voter"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "dd12eea3d0ea2a0a5daed225fc095034225a76b2c5350e2196ad690a02697aa0",
-    "crates/server/src/api.rs": "feb365fd5a64cffa11ac7caf6b27396ebe45766446deb82d55b64023cf699f5f",
-    "crates/server/src/grpc.rs": "16e49c5bf403c5b1bc612883a2fc05ff37167a8de942a613ad8b5b1178743dca",
+    "crates/server/src/runtime.rs": "afa2c6318ef7fd26b4dbbd7df867961e71c85028f3f7884ca71552ade6bf9cd9",
+    "crates/server/src/api.rs": "b59cfde81928d24d4c7b01d1cd2787d052e4051e84aea03e8e21a1ea57e71b0f",
+    "crates/server/src/grpc.rs": "458243513ef2e6671836cd69e48dbcb15f2301180c08a9461f77265deb78462e",
     "crates/server/src/data_groups.rs": "f33470b1af05476b4bf538870817f635469e26ea8f7d033fed5cfbf58c9c69fe",
-    "crates/server/proto/kv9.proto": "2a988b452d437b75a37066be6313ce720fb172c012ba1b21e92e9185d9c33046",
+    "crates/server/proto/kv9.proto": "fab64b34ce9c3d67c43ccf8511951c26290343f7b57abe770ae6a0417f54d272",
     "crates/raft/src/driver.rs": "f3d005b47748d6aecacdf9450070095f9b70361b5c7677e3af35c786e6a986eb",
     "crates/raft/src/storage.rs": "d2ee607f012da79efe5321f0bb0f48e2a9a44ec697dd19adc8e96156b54388c4",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",

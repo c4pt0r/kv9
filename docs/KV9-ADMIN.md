@@ -27,7 +27,9 @@ status contract ([STATUS-PROCESS-IDENTITY](STATUS-PROCESS-IDENTITY.md)) and the 
 > With `KV9_AUTO_REPAIR_REPLICA=1` a group leader commits the move plan for a lost voter by itself
 > ([REPLICA-REPAIR](REPLICA-REPAIR.md)); `group describe` shows that plan like any other, and
 > its live view covers the group's committed `members` (not only the creation's replicas).
-> `node replace`, retention verbs and `group abort` remain open.
+> `node drain <id> [--wait]` ([DRAIN-NODE](DRAIN-NODE.md)) is the one-verb way to take a store out of
+> service; `node list` shows `draining`/`drained`. `node replace`, retention verbs and `group abort`
+> remain open.
 
 ## The problem
 

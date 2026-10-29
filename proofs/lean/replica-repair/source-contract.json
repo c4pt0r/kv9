@@ -13,11 +13,11 @@
     "a_lost_voter_gets_a_plan"
   ],
   "source_sha256": {
-    "crates/server/src/runtime/replica_repair.rs": "a1b0665c062f4096215358ebc10e95e1448be766f8aafd11a90db80b8e1323ee",
+    "crates/server/src/runtime/replica_repair.rs": "026e9a201873cd24cab8d7ebf558b90da2c176913f0b93bdf5e88ec38cd81402",
     "crates/server/src/runtime/replica_addition.rs": "a974b2d684323079be9813f382909953cd86a545fedae5cb6ca0ffc521996d88",
     "crates/meta/src/data_groups/addition.rs": "87de0de7f5e6722a873f067040a32cf091e60d51defcb07fbb598a17709f3219",
     "crates/raft/src/grpc/plan_replica.rs": "01bbbfefd8b4cc00fb17594af41ff284a945af5e3af50aa5749d140da7207a52",
-    "crates/server/src/runtime.rs": "dd12eea3d0ea2a0a5daed225fc095034225a76b2c5350e2196ad690a02697aa0",
+    "crates/server/src/runtime.rs": "afa2c6318ef7fd26b4dbbd7df867961e71c85028f3f7884ca71552ade6bf9cd9",
     "proto/kv9_raft.proto": "56ce4e2f97a0aa69f2641e6dbe57be7b5db70183e0136d41914ac73b1186e9e9",
     "scripts/replica-repair-e2e.py": "eedea90b3fc09173e9226d77cf30d5c884466d6497253b9c0f2cac44bbdbf2fd",
     "docs/REPLICA-REPAIR.md": "d8680588fe384497d7e3d3dc477ef751754fd56abf67301ec5fad925eff9c899"

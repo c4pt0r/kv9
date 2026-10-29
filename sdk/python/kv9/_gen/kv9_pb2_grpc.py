@@ -181,6 +181,11 @@ class Kv9Stub:
                 request_serializer=kv9__pb2.TransferLeaderRequest.SerializeToString,
                 response_deserializer=kv9__pb2.TransferLeaderResponse.FromString,
                 _registered_method=True)
+        self.DrainNode = channel.unary_unary(
+                '/kv9.v1.Kv9/DrainNode',
+                request_serializer=kv9__pb2.DrainNodeRequest.SerializeToString,
+                response_deserializer=kv9__pb2.DrainNodeResponse.FromString,
+                _registered_method=True)
         self.ChangeNodeEndpoint = channel.unary_unary(
                 '/kv9.v1.Kv9/ChangeNodeEndpoint',
                 request_serializer=kv9__pb2.ChangeNodeEndpointRequest.SerializeToString,
@@ -471,6 +476,14 @@ class Kv9Servicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DrainNode(self, request, context):
+        """Commit the intent that a node's current store leaves the cluster; the cluster
+        moves its replicas and metadata membership by itself (docs/DRAIN-NODE.md).
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ChangeNodeEndpoint(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -729,6 +742,11 @@ def add_Kv9Servicer_to_server(servicer, server):
                     servicer.TransferLeader,
                     request_deserializer=kv9__pb2.TransferLeaderRequest.FromString,
                     response_serializer=kv9__pb2.TransferLeaderResponse.SerializeToString,
+            ),
+            'DrainNode': grpc.unary_unary_rpc_method_handler(
+                    servicer.DrainNode,
+                    request_deserializer=kv9__pb2.DrainNodeRequest.FromString,
+                    response_serializer=kv9__pb2.DrainNodeResponse.SerializeToString,
             ),
             'ChangeNodeEndpoint': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeNodeEndpoint,
@@ -1606,6 +1624,33 @@ class Kv9:
             '/kv9.v1.Kv9/TransferLeader',
             kv9__pb2.TransferLeaderRequest.SerializeToString,
             kv9__pb2.TransferLeaderResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DrainNode(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/DrainNode',
+            kv9__pb2.DrainNodeRequest.SerializeToString,
+            kv9__pb2.DrainNodeResponse.FromString,
             options,
             channel_credentials,
             insecure,

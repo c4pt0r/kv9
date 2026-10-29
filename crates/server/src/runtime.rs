@@ -64,6 +64,8 @@ mod data_checkpoint;
 mod endpoint_recovery;
 mod group_compaction;
 mod migration_capture;
+mod node_drain;
+mod placement;
 mod replica_addition;
 mod replica_pressure;
 mod replica_repair;
@@ -2482,6 +2484,17 @@ impl AdminApi for RuntimeBackend {
             .map(|p| (p.node.0, (p.matched, p.recent_active)))
             .collect();
         let txn = self.node.meta_raft.store.begin()?;
+        let drains = kv9_meta::data_groups::drain::committed_drains_in_txn(&txn).unwrap_or_default();
+        let certified = kv9_meta::root::certified_root(&txn)?;
+        // Who still holds a data-group replica: committed members of every group.
+        let mut hosting: std::collections::BTreeSet<(u64, Vec<u8>)> = std::collections::BTreeSet::new();
+        if let Some(root) = &certified {
+            for creation in kv9_meta::data_groups::committed_creations(&self.node.meta_raft.store)? {
+                for (m, _) in kv9_meta::data_groups::committed_members(&txn, root.digest(), creation.intent())? {
+                    hosting.insert((m.node.0, m.incarnation.as_bytes().to_vec()));
+                }
+            }
+        }
         let mut nodes = Vec::new();
         for row in txn.scan(&NODES_DESC, usize::MAX)? {
             let node_id = match row.value.get(ColumnId(1)) {
@@ -2532,6 +2545,19 @@ impl AdminApi for RuntimeBackend {
                     None => "",
                 },
                 admission_expires_unix: admission.map_or(0, |a| a.expires_unix),
+                draining: endpoint.is_some_and(|e| {
+                    kv9_meta::data_groups::drain::is_draining(
+                        &drains,
+                        kv9_meta::data_groups::InitialReplica { node: NodeId(node_id), incarnation: e.incarnation },
+                    )
+                }),
+                drained: endpoint.is_some_and(|e| {
+                    kv9_meta::data_groups::drain::is_draining(
+                        &drains,
+                        kv9_meta::data_groups::InitialReplica { node: NodeId(node_id), incarnation: e.incarnation },
+                    ) && !hosting.contains(&(node_id, e.incarnation.as_bytes().to_vec()))
+                        && raft_role == "none"
+                }),
             });
         }
         Ok(NodeDirectory {
@@ -2821,6 +2847,21 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn drain_node(&self, _caller: &str, node: NodeId) -> Result<crate::api::DrainResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        let (drain, changed) = kv9_meta::data_groups::drain::plan_drain(&mut txn, node)?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::DrainResult { drain, changed, applied })
+    }
+
     fn list_tasks(&self, _caller: &str, after: u64, limit: usize, kind: u64) -> Result<crate::api::TaskPage> {
         use crate::api::{TaskPage, TaskRow};
         use kv9_meta::schema::TASKS_DESC;
@@ -2917,6 +2958,7 @@ fn task_kind_name(kind: u64) -> &'static str {
         108 => "migration_abort",
         110 => "group_compaction",
         111 => "replica_plan",
+        112 => "node_drain",
         _ => "unknown",
     }
 }
@@ -4791,6 +4833,7 @@ pub struct NodeRuntime {
     voter_replacement: voter_replacement::State,
     replica_plans: replica_addition::State,
     replica_repair: replica_repair::State,
+    node_drain: node_drain::State,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -5455,6 +5498,7 @@ impl NodeRuntime {
             voter_replacement: voter_replacement::State::new(voter_replacement::Config::from_env()),
             replica_plans: replica_addition::State::from_env(),
             replica_repair: replica_repair::State::new(replica_repair::Config::from_env()),
+            node_drain: node_drain::State::new(node_drain::Config::from_env()),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             raw_ttl_clock,
@@ -6017,6 +6061,9 @@ impl NodeRuntime {
                 // Data-group voter verdicts; a lost voter becomes a move plan
                 // (REPLICA-REPAIR), committed on a worker thread.
                 self.reconcile_replica_repair();
+                // Committed drains: hand away leaderships this store holds; the
+                // metadata leader moves its replicas and membership (DRAIN-NODE).
+                self.reconcile_node_drain();
                 // Fence committed removals before any deferred engine read or
                 // driver restart; retirement of an unopened group needs no GET.
                 let retirement_ready = self.reconcile_retirement();
@@ -6758,6 +6805,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("replica_repair=");
         body.push_str(&self.replica_repair_status());
+        body.push('\n');
+        body.push_str("node_drain=");
+        body.push_str(&self.node_drain_status());
         body.push('\n');
         body.push_str("replica_pressure=");
         body.push_str(

@@ -261,6 +261,14 @@ pub fn project(
                 return Err(invalid("store-history replica plan migration differs"));
             }
         }
+        // A node drain (DRAIN-NODE) names a store that leaves; the move plans it
+        // causes carry their own history. Verify the row and move on.
+        112 => {
+            let d = drain::DrainIntent::decode(&t.payload)?;
+            if d.root() != root || d.task() != t.id || d.encode() != t.payload {
+                return Err(invalid("store-history drain differs"));
+            }
+        }
         _ => {
             return Err(invalid(
                 "unsupported task kind leaves DATA store history unknown",

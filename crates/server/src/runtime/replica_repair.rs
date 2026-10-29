@@ -253,7 +253,6 @@ impl NodeRuntime {
         creation: &kv9_meta::data_groups::CreationIntent,
         lost_node: u64,
     ) -> Result<Option<Decision>> {
-        use kv9_meta::schema::NODES_DESC;
         let store = &self.node.meta_raft.store;
         let txn = store.begin()?;
         let certified = kv9_meta::root::certified_root(&txn)?
@@ -273,33 +272,11 @@ impl NodeRuntime {
         {
             return Ok(None);
         }
-        // Candidates: active registered stores that are not members and not the lost node.
-        let member_nodes: BTreeSet<u64> = members.iter().map(|(m, _)| m.node.0).collect();
-        let mut hosted: BTreeMap<u64, usize> = BTreeMap::new();
-        for other in kv9_meta::data_groups::committed_creations(store)? {
-            for (m, _) in kv9_meta::data_groups::committed_members(&txn, root, other.intent())? {
-                *hosted.entry(m.node.0).or_insert(0) += 1;
-            }
-        }
-        let mut best: Option<(usize, u64)> = None;
-        for row in txn.scan(&NODES_DESC, usize::MAX)? {
-            let Some(kv9_meta::ColumnValue::Uint(id)) = row.value.get(kv9_meta::schema::ColumnId(1)).cloned() else { continue };
-            if id == lost_node || member_nodes.contains(&id) {
-                continue;
-            }
-            let active = kv9_meta::endpoint::node_endpoint(&txn, NodeId(id))
-                .ok()
-                .flatten()
-                .is_some_and(|e| e.active);
-            if !active {
-                continue;
-            }
-            let load = hosted.get(&id).copied().unwrap_or(0);
-            if best.is_none_or(|(l, n)| (load, id) < (l, n)) {
-                best = Some((load, id));
-            }
-        }
-        let Some((_, destination)) = best else {
+        // Destination: the least-loaded active store outside the group that is
+        // not draining and not the lost node (runtime/placement.rs).
+        let mut exclude: BTreeSet<u64> = members.iter().map(|(m, _)| m.node.0).collect();
+        exclude.insert(lost_node);
+        let Some(destination) = super::placement::choose_destination(&txn, store, root, &exclude)? else {
             self.replica_repair.error = Some(format!(
                 "region {}: voter {} lost and no active store outside the group to move it to",
                 creation.region().0,
@@ -312,7 +289,7 @@ impl NodeRuntime {
             root,
             operation,
             lost,
-            destination: NodeId(destination),
+            destination,
         }))
     }
 

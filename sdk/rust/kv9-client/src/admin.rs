@@ -50,6 +50,20 @@ pub struct NodeRow {
     /// `pending`, `consumed`, `revoked`, `superseded` or empty.
     pub admission_state: String,
     pub admission_expires_unix: u64,
+    /// A committed drain names this node's current store (docs/DRAIN-NODE.md).
+    pub draining: bool,
+    /// Draining and already out of every data group and the metadata group.
+    pub drained: bool,
+}
+
+/// The receipt of [`Client::drain_node`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DrainPlanned {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    /// `false` confirms an identical committed drain.
+    pub changed: bool,
+    pub applied: Applied,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -154,8 +168,30 @@ impl Client {
                     recent_active: n.recent_active,
                     admission_state: n.admission_state,
                     admission_expires_unix: n.admission_expires_unix,
+                    draining: n.draining,
+                    drained: n.drained,
                 })
                 .collect(),
+        })
+    }
+
+    /// Commit the intent that `node`'s current store leaves the cluster
+    /// (docs/DRAIN-NODE.md). Idempotent per store incarnation; the cluster does
+    /// the moves. Poll [`Client::list_nodes`] for `drained`.
+    pub async fn drain_node(&self, node: u64) -> Result<DrainPlanned, Error> {
+        let r = self
+            .invoke(false, proto::DrainNodeRequest { node_id: node }, |mut c, r| async move {
+                c.drain_node(r).await
+            })
+            .await?;
+        Ok(DrainPlanned {
+            task: r.task,
+            operation: r.operation,
+            changed: r.changed,
+            applied: Applied {
+                term: r.applied_term,
+                index: r.applied_index,
+            },
         })
     }
 

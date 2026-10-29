@@ -687,6 +687,16 @@ jobs:
         env:
           KV9_MINIO_EXTERNAL: "1"
 
+      # Drain a node (docs/DRAIN-NODE.md): one verb moves every replica off a store,
+      # hands its leaderships away and takes it out of the metadata group.
+      - name: Run node drain on MinIO
+        run: |
+          set -o pipefail
+          scripts/node-drain-e2e.sh 2>&1 | tee /tmp/node-drain-e2e.out
+          grep -q '^PASS: node drain' /tmp/node-drain-e2e.out
+        env:
+          KV9_MINIO_EXTERNAL: "1"
+
       - name: Run persistent workload executable against three replicas and MinIO
         run: |
           set -euo pipefail
