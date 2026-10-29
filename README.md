@@ -7,9 +7,12 @@ of truth**.
 > Status: **v0, a working distributed Raw KV with multiple Raft groups; APIs and on-disk formats are not stable.**
 >
 > **Working today**
-> - **Self-hosted, highly available metadata.** The catalog (tenants, keyspaces, regions, peers, membership) is
->   replicated by kv9's own `META_REGION_0` Raft group across three voters: elect first, then the winner initializes.
->   Learner admission and promotion, leader failover and full restart are covered by multi-process tests.
+> - **Self-hosted metadata.** The catalog (tenants, keyspaces, regions, peers, membership) is replicated by kv9's
+>   own `META_REGION_0` Raft group across three voters: elect first, then the winner initializes. Learner admission
+>   and promotion, leader failover and full restart are covered by multi-process tests. **Fault envelope today:
+>   one voter loss**, and recovery assumes the lost voter returns with its store — a dead voter is never replaced
+>   automatically, so a second loss makes the group unavailable however many learners exist. The repair is
+>   designed, not built: [VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md).
 > - **Raw KV:** `RawPut/Get/Scan/Delete/DeleteRange/BatchGet/BatchPut`, optional TTL, and the **atomic range
 >   batch** `RawBatch` (mixed puts/deletes applied as one Raft entry inside one range — see below). Reads are
 >   linearizable through a quorum ReadIndex barrier; writes answer with the exact applied `(term, index)`.
