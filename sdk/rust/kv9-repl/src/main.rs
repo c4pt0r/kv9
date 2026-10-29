@@ -311,17 +311,30 @@ async fn run(session: &mut Session, tokens: &[String]) -> Result<(), String> {
                 .get(3)
                 .map_or(Ok(64), |t| t.parse())
                 .map_err(|e| format!("{e}"))?;
-            let page = ks()?.scan(start, end, limit).await.map_err(rpc)?;
-            for (k, v) in &page.pairs {
-                println!("{} => {}", show(k), show(v));
-            }
-            if !page.resume_from.is_empty() {
-                println!(
-                    "(paused at a range boundary; continue from {})",
-                    show(&page.resume_from)
-                );
-            } else {
-                println!("({} row(s))", page.pairs.len());
+            // A span may cross a range boundary whose next chunk is led elsewhere:
+            // the page then carries `resume_from`, and the REPL follows it until the
+            // requested limit is met, like the SDKs' walk helpers do.
+            let keyspace = ks()?;
+            let mut shown = 0u32;
+            let mut cursor = start;
+            loop {
+                let page = keyspace.scan(cursor, end.clone(), limit - shown).await.map_err(rpc)?;
+                for (k, v) in &page.pairs {
+                    println!("{} => {}", show(k), show(v));
+                }
+                shown += page.pairs.len() as u32;
+                if page.resume_from.is_empty() || shown >= limit {
+                    if !page.resume_from.is_empty() {
+                        println!(
+                            "({shown} row(s); limit reached at a range boundary, continue from {})",
+                            show(&page.resume_from)
+                        );
+                    } else {
+                        println!("({shown} row(s))");
+                    }
+                    break;
+                }
+                cursor = page.resume_from;
             }
         }
         "delrange" => {

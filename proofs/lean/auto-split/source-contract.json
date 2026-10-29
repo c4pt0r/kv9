@@ -19,6 +19,6 @@
     "crates/server/src/runtime.rs": "7c108db6f6be5f825b6636f851b6cff4a67c23e5924bca67ab87fa9116384d5f",
     "proto/kv9_raft.proto": "68f320e9b0c7ef4447b872d11ab30e58f5c9be2af56f135831558491bcacd083",
     "scripts/auto-split-e2e.py": "62764b44233e47111d9aedbfe7ab7f4999ae34df9a016089cf4893d310c8ce78",
-    "docs/RANGE-SPLIT.md": "87e2c02c97a68c2b85957f2281fe7a517031d769b32a8c5d1591cdb1510ddfe5"
+    "docs/RANGE-SPLIT.md": "3f7244f49bc66cc525dc6aabcfd6834b96ceb8062950932d059326f501b5e3e6"
   }
 }

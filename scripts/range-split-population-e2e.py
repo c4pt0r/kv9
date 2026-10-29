@@ -244,6 +244,24 @@ def main():
                        success=None)
             return out if all(f'{c}' in out for c in ('a', 'm', 'z', 'zz', 'b')) and 'error' not in out.lower() else None
         wait('the children serve every pre-split key and new writes on both sides', served, 60)
+        # Spans that cross the child boundary: a scan walks both children in key
+        # order (the SDK follows `resume_from` when the next chunk's leader is
+        # elsewhere), a bounded scan clamps at the boundary, and a delete-range
+        # clears keys on both sides while keys outside it survive.
+        def crossing_scan():
+            out = repl('scan-across', ['use split-me', 'scan k/j k/p 100'], success=None)
+            keys = [l.split(' => ')[0] for l in out.splitlines() if ' => ' in l]
+            return out if keys == [f'k/{c}' for c in 'jklmno'] else None
+        wait('a scan across the boundary returns both halves in order', crossing_scan, 60)
+        out = repl('scan-bounded', ['use split-me', 'scan k/a k/zzz 3'], success=None)
+        keys = [l.split(' => ')[0] for l in out.splitlines() if ' => ' in l]
+        require(keys == ['k/a', 'k/b', 'k/c'], f'a bounded scan honours its limit: {keys}')
+        out = repl('delrange-across', ['use split-me', 'delrange k/l k/o', 'get k/k', 'get k/l', 'get k/m', 'get k/n', 'get k/o'], success=None)
+        require('error' not in out.lower(), f'delete-range across the boundary: {out[-300:]}')
+        lines = [l.strip() for l in out.splitlines()]
+        require(lines.count('k') == 1 and lines.count('o') == 1 and not any(l in ('l', 'm', 'n') for l in lines),
+                f'keys in [k/l, k/o) are gone on both sides and their neighbours survive: {lines}')
+        repl('restore', ['use split-me', 'put k/l l', 'put k/m m', 'put k/n n'])
         # The sealed parent is history: every replica retires itself on the committed
         # sealed binding, and with KV9_RECLAIM_RETIRED=1 its payload is deleted.
         def replica_states(creation_task):

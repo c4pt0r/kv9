@@ -76,6 +76,7 @@ service and is never reachable with a client token.
 
 ## 7. What is not a primitive yet
 
-An automatic merge of small siblings, load- or time-based split triggers, scans and batches that cross a range boundary, `node replace`, retention
-verbs and `group abort` in `kv9-admin`, and any placement policy beyond "least-loaded active
-store" ([DEVELOPMENT-PATH](DEVELOPMENT-PATH.md)).
+An automatic merge of small siblings, load- or time-based split triggers, atomic batches that
+cross a range boundary (scans and delete-range do cross it, following `resume_from`), `node
+replace`, retention verbs and `group abort` in `kv9-admin`, and any placement policy beyond
+"least-loaded active store" ([DEVELOPMENT-PATH](DEVELOPMENT-PATH.md)).

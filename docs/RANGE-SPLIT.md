@@ -178,8 +178,12 @@ child. `kv9-admin group merge <low-task> <high-task>`; `ListDataGroups.merges` o
 
 ## 10. What follows
 
-Scans and batches that cross a child boundary (refused whole today, as before the split), load-
-or time-based triggers beyond the footprint, and an automatic merge of small siblings.
+Load- or time-based triggers beyond the footprint, and an automatic merge of small siblings.
+Cross-range **scans and delete-range** already work over the partition (the server walks the
+unsealed ranges in key order, clamps each chunk at its range end and serves it under that group's
+own authorization; when the next chunk's leader is another node the page carries `resume_from` and
+the SDKs continue from it) — the split/merge e2e proves it across the published boundary. An
+atomic **batch** that crosses a boundary stays refused whole, by design: atomicity is per range.
 
 ## 11. The automatic split trigger (implemented)
 
