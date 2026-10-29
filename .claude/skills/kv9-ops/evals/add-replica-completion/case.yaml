@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: add-replica-completion
+expected_outcome: |
+  The answer says the Add is complete: an Add plan's last catalog stage is evidenced, decided
+  exists only for a Move's removal decision, and the destination voting (voters [1,2,3,4]) is the
+  completion signal; it tells the user not to abort. For the split it says children take the
+  parent's four members and that this works on current kv9 (fixed 2026-10-29), noting the parent is
+  unavailable between seal and publication and that a live plan and a split exclude each other.

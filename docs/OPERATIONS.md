@@ -83,6 +83,9 @@ service and is never reachable with a client token.
 [OPERATIONS-DRILL-2026-10-29](OPERATIONS-DRILL-2026-10-29.md) walks every verb above on a seven-node
 cluster, with the transcript, the timings, what it found and what an operator should expect
 (a transfer refused once, an Add plan ending at `evidenced`, health `fail` while a node is down).
+The same practice is packaged for Claude Code sessions as the project skill `kv9-ops`
+(`.claude/skills/kv9-ops/`: the verbs with what to expect, a command cookbook with the drill's
+outputs, a stuck-operation checklist, and how to run and extend the drill).
 
 ## 8. What is not a primitive yet
 

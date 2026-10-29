@@ -20,3 +20,6 @@ __pycache__/
 /sdk/python/**/__pycache__/
 /sdk/python/*.egg-info/
 /sdk/python/.pytest_cache/
+
+# skill eval workspaces (skill-creator runs), never committed
+.claude/skills/*-workspace/

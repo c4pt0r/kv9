@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: stuck-drain-on-retired-parent
+expected_outcome: |
+  The answer identifies that regions 100, 101 and 102 are the sealed, retired parents of the
+  published split and merge, that plan 132 targets region 100 which has no leader to drive it,
+  that this is the defect fixed on 2026-10-29 (retired_regions_in_txn) and the binary predates the
+  fix or the plan predates the upgrade; it recommends aborting plan 132 with task abort, upgrading,
+  and re-issuing the drain, and notes that only region 103 is a real membership.
