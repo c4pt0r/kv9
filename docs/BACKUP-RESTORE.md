@@ -275,12 +275,21 @@ closure verification is partial, 6 on `--wait` deadlines). `backup create --wait
 5. **PITR.** Per-range WAL segment archiving between anchors under the backup owner, `restore
    --to <index | time>` replaying the interval onto the populated base.
 
-## 11. Open questions for the owner
+## 11. Decisions taken (2026-10-29, with the owner)
 
-- Should a backup also exclude concurrent replica plans on the range (conservative, as written),
-  or only splits and merges? Capture slots are per operation, so both may be possible.
-- Default placement for restore targets: least-loaded three active stores (as written), or "the
-  source range's current members" when restoring into the same cluster?
-- The bundle prefix and whether bundles of retired backups are deleted or tombstoned in place.
-- Whether `backup create` should refuse a keyspace whose ranges exceed the image budget in
-  increment 1 already, so that every backup taken is one increment 2 can restore.
+- **A range with an unanchored backup excludes replica plans too**, not only splits and merges.
+  Capture slots are per operation and two captures on one group may well coexist, but nothing
+  has verified it; a backup holds a range for tens of seconds, which a plan can wait. Revisit
+  when a workload needs both.
+- **Restore targets default to placement's least-loaded three active stores**, and `--voters
+  a,b,c` overrides. "The source range's current members" is not a default: it stacks load on the
+  same stores and is meaningless once the source moved or was drained.
+- **Retirement tombstones the bundle; nothing is deleted.** Kind 121 marks the backup retired,
+  `backup list` hides it unless `--all`, the bundle object stays for audit. Object deletion is
+  GC's job, under C04's delayed-delete rules, when GC exists. The prefix is
+  `backups/<cluster-id>/<backup-task>/`.
+- **Increment 1 does not refuse large keyspaces.** A backup whose range exceeds the checkpoint
+  image budget is still taken (its data is pinned and its anchors exact) and `backup describe`
+  reports `restorable: no (range … exceeds the image budget; restore needs the streamed path of
+  increment 4)` so that no operator mistakes "kept" for "restorable". A backup that keeps the
+  data is always better than none.
