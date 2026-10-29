@@ -42,7 +42,7 @@
     "crates/meta/src/checkpoint.rs": "79697c1e933f83cc417fd30c12861fdffad9c16ee30fcae75668c652c473d4c4",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
     "crates/raft/src/state_machine/checkpoint_recovery.rs": "42232fb98a6f2d8c43313b832f3147a8deade58b24787f1b53264be7e90f5ac5",
-    "crates/engine/src/persist.rs": "0d5726b850ad5e7ca955a5d5198743e7bc2f6806c3e0ec34a6a1f0857a126238",
+    "crates/engine/src/persist.rs": "04481cb1dc1814140a31db1d3ce680de0a93d38fde1ff499c05e58c143e6e43f",
     "crates/server/src/runtime.rs": "3a77007256ded9a3552937617da1cd62bdf9f14fe51b19ad8b2992cf9fc0e293",
     "crates/server/src/remote_storage.rs": "0f6ea528133442900893fca81b59055ea20a2ed1a3d38ec133c056ac48503314"
   }

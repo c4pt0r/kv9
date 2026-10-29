@@ -1,7 +1,7 @@
 # kv9-engine
 
 `Engine` provides atomic multi-column-family batches and stable `ReadView` snapshots.
-`MemEngine` uses structurally shared ordered maps; `WalEngine` adds local durability.
+`MemEngine` uses structurally shared ordered maps; `VersionedMemEngine` keeps the same contract on an in-place B-tree with versioned keys (`docs/BBTREE-EVALUATION.md`) and is the index under `WalEngine`, which adds local durability.
 `ReplicatedEngine` requires data and its exact `(term,index)` in one durable record.
 WAL v2 supports positioned and unpositioned records, reads legacy v1, and rejects
 complete non-monotonic positioned histories.

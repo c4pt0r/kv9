@@ -35,10 +35,10 @@
     "CheckpointOwnerProof"
   ],
   "source_pins": {
-    "crates/engine/src/checkpoint.rs": "d6a7269fe8d20f6ac319393c2c4ce061617ee52b98dc445f726ff04320034460",
+    "crates/engine/src/checkpoint.rs": "e0fbb3eebe61851188a10d869a32e29db3c741bc7d126608eb78e2898a0255f7",
     "crates/engine/src/flush_journal.rs": "e46c15357a7e23840096e38750352472d28579d520f9b2c0699653307b214e9d",
-    "crates/engine/src/mem.rs": "479b87909b7c64b78ed2e47913eccfc36650ef796a51c704e2aafd0e73da4d9a",
-    "crates/engine/src/persist.rs": "0d5726b850ad5e7ca955a5d5198743e7bc2f6806c3e0ec34a6a1f0857a126238",
+    "crates/engine/src/mem.rs": "b11617d998cfa5c0b43e98afc01bfe925087393b7a471589e2bb2ac7b59d7389",
+    "crates/engine/src/persist.rs": "04481cb1dc1814140a31db1d3ce680de0a93d38fde1ff499c05e58c143e6e43f",
     "crates/server/src/checkpoint_retention.rs": "fd711c8eb856a60a3d768b33875f46794ef2800793514c544f466e7fe83ba67d",
     "crates/server/src/remote_storage.rs": "0f6ea528133442900893fca81b59055ea20a2ed1a3d38ec133c056ac48503314",
     "crates/server/src/runtime.rs": "3a77007256ded9a3552937617da1cd62bdf9f14fe51b19ad8b2992cf9fc0e293",

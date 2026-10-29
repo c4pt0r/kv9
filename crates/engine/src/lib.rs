@@ -3,7 +3,7 @@
 //! Storage engine abstraction and the v0 in-memory implementation (DESIGN §6.2, §8.1).
 //!
 //! `Engine` is a trait; a region owns a logical LSM keyed within its range. v0 ships
-//! [`MemEngine`]; a real `LsmEngine` plugs in behind the same trait later (DESIGN §12).
+//! [`MemEngine`] and [`VersionedMemEngine`]; a real `LsmEngine` plugs in behind the same trait later (DESIGN §12).
 
 pub mod cf;
 pub mod mem;
@@ -100,6 +100,14 @@ pub trait ReadView: Send + Sync {
     fn resident_len(&self, _cf: ColumnFamily) -> Option<usize> {
         None
     }
+    /// `get` for a view that can answer without waiting on a lock or performing I/O,
+    /// at the cost of one copy of the value. Outer `None` declines, exactly as for
+    /// [`get_resident`](ReadView::get_resident); the default copies out of it, and a
+    /// view that cannot lend a borrow (`VersionedMemEngine`) overrides this one.
+    fn get_resident_value(&self, cf: ColumnFamily, key: &[u8]) -> Option<Option<Value>> {
+        self.get_resident(cf, key)
+            .map(|value| value.map(<[u8]>::to_vec))
+    }
 
     /// Forward range scan `[start, end)` over a column family, bounded by `limit`.
     fn scan(
@@ -177,6 +185,9 @@ impl<T: ReadView + ?Sized> ReadView for &T {
     }
     fn resident_len(&self, cf: ColumnFamily) -> Option<usize> {
         (**self).resident_len(cf)
+    }
+    fn get_resident_value(&self, cf: ColumnFamily, key: &[u8]) -> Option<Option<Value>> {
+        (**self).get_resident_value(cf, key)
     }
 
     fn scan(

@@ -480,7 +480,7 @@ impl Context<'_> {
     fn inspect_image(
         &self,
         manifest: &CheckpointManifest,
-        image: &kv9_engine::MemEngine,
+        image: &kv9_engine::VersionedMemEngine,
     ) -> Result<()> {
         self.check()?;
         let range = self.group.target();

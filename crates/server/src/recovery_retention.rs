@@ -5,7 +5,7 @@ use crate::installation_retention::RetainedImages;
 use kv9_common::retention::{OwnerId, PinPhase};
 use kv9_common::{Error, Result, RootDescriptor, StoreIdentity};
 use kv9_engine::checkpoint::{CheckpointManifest, CheckpointRestore, RemoteUploader};
-use kv9_engine::MemEngine;
+use kv9_engine::VersionedMemEngine;
 use kv9_meta::retention::{
     checkpoint_intent::CheckpointIntent, decode_owner_observation, OwnerKind,
 };
@@ -72,7 +72,7 @@ fn retry(error: Error) -> Error {
     Error::MetaNotReady(format!("recovery Reader unavailable: {error}"))
 }
 impl CheckpointRestore for RecoveryReader<'_> {
-    fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
+    fn restore(&self, manifest: &CheckpointManifest) -> Result<VersionedMemEngine> {
         (|| {
             self.retention.ready()?;
             let image = self
@@ -105,7 +105,7 @@ impl DataCheckpointReader for RecoveryReader<'_> {
         &self,
         manifest: &CheckpointManifest,
         predecessor: u64,
-    ) -> Result<MemEngine> {
+    ) -> Result<VersionedMemEngine> {
         (|| {
             self.retention.ready()?;
             let root = &self.retention.root;

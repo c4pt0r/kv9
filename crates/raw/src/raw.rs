@@ -314,24 +314,19 @@ impl RawExecutor {
         max_value_bytes: usize,
     ) -> Result<Option<Vec<Option<Value>>>> {
         let mut remaining = max_value_bytes;
-        let mut borrowed = Vec::with_capacity(keys.len());
+        let mut values = Vec::with_capacity(keys.len());
         for key in keys {
             let physical = encode_key(KeyMode::Raw, keyspace, key)?;
-            let Some(value) = read.view.get_resident(RAW_CF, &physical) else {
+            let Some(value) = read.view.get_resident_value(RAW_CF, &physical) else {
                 return Ok(None);
             };
-            let Some(next) = remaining.checked_sub(value.map_or(0, <[u8]>::len)) else {
+            let Some(next) = remaining.checked_sub(value.as_ref().map_or(0, Vec::len)) else {
                 return Ok(None);
             };
             remaining = next;
-            borrowed.push(value);
+            values.push(value);
         }
-        Ok(Some(
-            borrowed
-                .into_iter()
-                .map(|value| value.map(<[u8]>::to_vec))
-                .collect(),
-        ))
+        Ok(Some(values))
     }
 
     /// Range scan, returning **user** keys (the physical prefix is stripped back off).

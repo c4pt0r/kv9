@@ -92,29 +92,6 @@ pub(crate) fn changes_data_revision(cf: ColumnFamily, key: &[u8]) -> bool {
             || key == kv9_common::data_range::COMPACTION_CONFIRMED_KEY)
 }
 
-/// Private, unpublished restoration state. It cannot provide a read view or an
-/// applied position; only a completely verified checkpoint may finish it.
-#[derive(Default)]
-pub(crate) struct CheckpointBuilder {
-    state: State,
-}
-impl CheckpointBuilder {
-    pub(crate) fn put(&mut self, cf: ColumnFamily, key: &[u8], value: &[u8]) {
-        if changes_data_revision(cf, key) {
-            self.state.data_revision = 1;
-        }
-        self.state
-            .cf_mut(cf)
-            .insert_mut(key.to_vec(), value.to_vec());
-    }
-    pub(crate) fn finish(mut self, at: AppliedPosition) -> MemEngine {
-        self.state.applied = Some(at);
-        MemEngine {
-            state: RwLock::new(self.state),
-        }
-    }
-}
-
 /// In-memory engine. One persistent ordered map per column family behind a single
 /// `RwLock` (DESIGN §6.2). Suitable for the v0 skeleton and unit tests; **not durable**.
 ///
@@ -151,6 +128,7 @@ impl MemEngine {
         Some(Box::new(MemSnapshot { state }))
     }
 
+    #[cfg(test)]
     pub(crate) fn try_positioned_resident_snapshot(&self) -> Option<crate::PositionedReadView> {
         let state = match self.state.try_read() {
             Ok(state) => state.clone(),
@@ -332,6 +310,7 @@ impl ReplicatedEngine for MemEngine {
 }
 
 impl MemEngine {
+    #[cfg(test)]
     pub(crate) fn freeze_parts(&self) -> (MemSnapshot, Option<AppliedPosition>, u64) {
         let state = self.read();
         let position = state.applied;
@@ -363,30 +342,6 @@ impl MemEngine {
 #[derive(Debug)]
 pub(crate) struct MemSnapshot {
     state: State,
-}
-
-impl MemSnapshot {
-    /// Borrow entries while a checkpoint owns this immutable snapshot. Limits
-    /// can be checked before allocating another copy of a large value.
-    pub(crate) fn iter_all_ref(
-        &self,
-        cf: ColumnFamily,
-    ) -> impl Iterator<Item = (&[u8], &[u8])> + '_ {
-        self.state
-            .cf(cf)
-            .iter()
-            .map(|(k, v)| (k.as_slice(), v.as_slice()))
-    }
-
-    pub(crate) fn iter_all(
-        &self,
-        cf: ColumnFamily,
-    ) -> impl Iterator<Item = Result<ScanEntry>> + '_ {
-        self.state
-            .cf(cf)
-            .iter()
-            .map(|(k, v)| Ok((k.clone(), v.clone())))
-    }
 }
 
 impl ReadView for MemSnapshot {

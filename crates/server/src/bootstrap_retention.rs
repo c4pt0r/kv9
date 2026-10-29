@@ -8,7 +8,7 @@ use kv9_common::{Error, Result, RootDescriptor, RootDigest, StoreIdentity};
 use kv9_engine::checkpoint::{
     CheckpointManifest, CheckpointRestore, ExecutionIdentity, RemoteUploader,
 };
-use kv9_engine::MemEngine;
+use kv9_engine::VersionedMemEngine;
 use kv9_meta::retention::{
     bootstrap_reader, checkpoint_intent::CheckpointIntent, decode_owner_observation,
     encode_request, LedgerRequest, OwnerKind,
@@ -315,7 +315,7 @@ pub(crate) struct BootstrapReader<'a> {
     pub uploader: &'a RemoteUploader,
 }
 impl CheckpointRestore for BootstrapReader<'_> {
-    fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
+    fn restore(&self, manifest: &CheckpointManifest) -> Result<VersionedMemEngine> {
         self.identity.verify(self.root, self.identity.node_id)?;
         let digest = image(manifest)?;
         let grant = load(self.directory, self.identity)?

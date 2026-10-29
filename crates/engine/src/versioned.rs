@@ -25,8 +25,15 @@
 //!
 //! What this engine does not offer, by design: `ReadView::get_resident` and
 //! `resident_len` decline (a view cannot borrow into a tree that is being updated in
-//! place), and memory held by superseded versions is returned by `collect_garbage`, not
-//! by dropping a view. See `docs/BBTREE-EVALUATION.md` for the measurements behind this.
+//! place; [`ReadView::get_resident_value`] serves the same no-wait, no-I/O purpose with
+//! one copy), and memory held by superseded versions is returned by garbage collection
+//! ([`VersionedMemEngine::gc_step`] incrementally, [`VersionedMemEngine::collect_garbage`]
+//! in full), not by dropping a view. See `docs/BBTREE-EVALUATION.md` for the measurements.
+//!
+//! Lock order inside this module: `writer → published → registry shard`. `published` is
+//! held while a positioned view registers itself, so that the version a view fixes and
+//! the registration a collector sees are one event; nothing here is held across a call
+//! back into user code.
 
 use std::collections::{BTreeMap, VecDeque};
 use std::ops::ControlFlow;
@@ -204,6 +211,10 @@ pub struct GarbageReport {
     pub oldest_live_version: u64,
     /// Superseded versions and settled tombstones removed, over all column families.
     pub removed: usize,
+    /// Stored entries examined.
+    pub scanned: usize,
+    /// Whether the cursor wrapped around: every column family was walked to its end.
+    pub cycle_complete: bool,
 }
 
 impl VersionedMemEngine {
@@ -282,11 +293,21 @@ impl VersionedMemEngine {
 
     /// A view and the applied position published with its version, from one instant.
     pub fn try_positioned_resident_snapshot(&self) -> Option<PositionedReadView> {
-        let published = *self.shared.published.lock().expect("published poisoned");
+        let (view, position, _) = self.freeze_parts();
         Some(PositionedReadView {
-            view: Box::new(View::new(self.shared.clone(), published.version)),
-            position: published.applied,
+            view: Box::new(view),
+            position,
         })
+    }
+
+    /// A view, the applied position and the data revision published with its version,
+    /// from one instant. The view registers itself **while `published` is held**: a
+    /// collector that runs after a later write has moved the watermark must already
+    /// see this registration, or it would remove the versions this view reads.
+    pub(crate) fn freeze_parts(&self) -> (View, Option<AppliedPosition>, u64) {
+        let published = self.shared.published.lock().expect("published poisoned");
+        let view = View::new(self.shared.clone(), published.version);
+        (view, published.applied, published.data_revision)
     }
 
     /// The position last recorded by [`ReplicatedEngine::write_applied`]; meaningless
@@ -324,75 +345,127 @@ impl VersionedMemEngine {
 
     /// Remove what no live view can read any more: for every key, the versions older
     /// than the newest one visible at the oldest live version, and that newest one too
-    /// when it is a tombstone. Runs concurrently with readers and writers; bounded
-    /// chunks of removals so that the collector never holds a large doomed set.
+    /// when it is a tombstone. One full pass over every column family; runs
+    /// concurrently with readers and writers. [`Self::gc_step`] is the incremental form.
     pub fn collect_garbage(&self) -> GarbageReport {
+        let mut cursor = GcCursor::default();
+        let mut total = GarbageReport::default();
+        loop {
+            let step = self.gc_step(&mut cursor, usize::MAX);
+            total.oldest_live_version = step.oldest_live_version;
+            total.removed += step.removed;
+            total.scanned += step.scanned;
+            if step.cycle_complete {
+                total.cycle_complete = true;
+                return total;
+            }
+        }
+    }
+
+    /// One bounded leg of garbage collection: scans about `scan_budget` stored entries
+    /// from where `cursor` left off (always stopping at a key boundary), removes what
+    /// is garbage among them, and advances the cursor; a cursor that reaches the end
+    /// of the last column family wraps around and the report says so.
+    ///
+    /// Removal order is what keeps a racing reader safe: within a key the older
+    /// versions go before the newer kept one or the tombstone, and a key is never split
+    /// across two legs, so a reader at any live version meets the tombstone (or the kept
+    /// version) before an older value could be missing.
+    pub fn gc_step(&self, cursor: &mut GcCursor, scan_budget: usize) -> GarbageReport {
         const CHUNK: usize = 4096;
+        let scan_budget = scan_budget.max(1);
         let oldest = self.shared.oldest_live_version();
-        let mut removed = 0usize;
-        for cf in ColumnFamily::ALL {
+        let mut report = GarbageReport {
+            oldest_live_version: oldest,
+            ..GarbageReport::default()
+        };
+        loop {
+            let cf = ColumnFamily::ALL[cursor.cf];
             let tree = self.shared.tree(cf);
-            let mut cursor: Option<VersionedKey> = None;
-            // Per-key state carried across chunks: the key being examined and whether
-            // its surviving version has been seen.
-            let mut current: Option<Vec<u8>> = None;
-            let mut kept = false;
-            loop {
-                let mut doomed: Vec<VersionedKey> = Vec::new();
-                let mut last_seen: Option<VersionedKey> = None;
+            let mut doomed: Vec<VersionedKey> = Vec::new();
+            let mut resume: Option<VersionedKey> = None;
+            let mut budget_spent = false;
+            {
+                let current = &mut cursor.current;
+                let kept = &mut cursor.kept;
+                let scanned = &mut report.scanned;
                 let scan = |k: &VersionedKey, v: &Slot| {
-                    last_seen = Some(k.clone());
                     if current.as_deref() != Some(k.key.as_slice()) {
-                        current = Some(k.key.clone());
-                        kept = false;
+                        // A key boundary: the only place a leg may end.
+                        if doomed.len() >= CHUNK || *scanned >= scan_budget {
+                            budget_spent = *scanned >= scan_budget;
+                            resume = Some(VersionedKey::first_of(&k.key));
+                            return ControlFlow::Break(());
+                        }
+                        *current = Some(k.key.clone());
+                        *kept = false;
                     }
+                    *scanned += 1;
                     if k.version() > oldest {
                         return ControlFlow::Continue(()); // a live view may still need it
                     }
-                    if kept {
+                    if *kept {
                         doomed.push(k.clone()); // superseded by the version kept above
                     } else {
-                        kept = true;
+                        *kept = true;
                         if v.is_none() {
                             doomed.push(k.clone()); // a settled tombstone
                         }
                     }
-                    if doomed.len() >= CHUNK {
-                        ControlFlow::Break(())
-                    } else {
-                        ControlFlow::Continue(())
-                    }
+                    ControlFlow::Continue(())
                 };
-                let stopped = match &cursor {
-                    None => tree.scan(.., scan).is_some(),
-                    Some(from) => tree
-                        .scan(
-                            (
-                                std::ops::Bound::Excluded(from.clone()),
-                                std::ops::Bound::Unbounded,
-                            ),
-                            scan,
-                        )
-                        .is_some(),
+                match &cursor.resume {
+                    None => tree.scan(.., scan),
+                    Some(from) => tree.scan(
+                        (
+                            std::ops::Bound::Included(from.clone()),
+                            std::ops::Bound::Unbounded,
+                        ),
+                        scan,
+                    ),
                 };
-                // Oldest first within a key, so that a reader racing this pass meets
-                // the tombstone (or the kept version) before any older value is gone.
-                for key in doomed.iter().rev() {
-                    if tree.remove(key).is_some() {
-                        removed += 1;
+            }
+            // Oldest first within a key (the scan met them newest first).
+            for key in doomed.iter().rev() {
+                if tree.remove(key).is_some() {
+                    report.removed += 1;
+                }
+            }
+            match resume {
+                Some(next) => {
+                    cursor.resume = Some(next);
+                    if budget_spent {
+                        return report;
                     }
                 }
-                if !stopped {
-                    break;
+                None => {
+                    cursor.resume = None;
+                    cursor.current = None;
+                    cursor.kept = false;
+                    cursor.cf += 1;
+                    if cursor.cf == ColumnFamily::ALL.len() {
+                        cursor.cf = 0;
+                        report.cycle_complete = true;
+                        return report;
+                    }
+                    if report.scanned >= scan_budget {
+                        return report;
+                    }
                 }
-                cursor = last_seen;
             }
         }
-        GarbageReport {
-            oldest_live_version: oldest,
-            removed,
-        }
     }
+}
+
+/// Where an incremental garbage collection stands between two [`VersionedMemEngine::gc_step`]
+/// calls: the column family, the key to resume at, and the per-key state of the key
+/// that leg stopped in front of (none: a leg always ends at a key boundary).
+#[derive(Debug, Default)]
+pub struct GcCursor {
+    cf: usize,
+    resume: Option<VersionedKey>,
+    current: Option<Vec<u8>>,
+    kept: bool,
 }
 
 impl Engine for VersionedMemEngine {
@@ -464,7 +537,7 @@ impl ReplicatedEngine for VersionedMemEngine {
 }
 
 /// A point-in-time view: every read answers from the versions `<= version`.
-struct View {
+pub(crate) struct View {
     shared: Arc<Shared>,
     version: u64,
     /// Where and as which version this view is registered (`<= version`).
@@ -519,15 +592,21 @@ impl View {
     const SKIP_LIMIT: usize = 8;
 
     /// Forward page of `[start, end)` at this version: up to `limit` live entries.
-    fn page(&self, cf: ColumnFamily, start: &[u8], end: &[u8], limit: usize) -> Vec<ScanEntry> {
-        use std::ops::Bound::{Excluded, Included};
+    fn page(
+        &self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: Option<&[u8]>,
+        limit: usize,
+    ) -> Vec<ScanEntry> {
+        use std::ops::Bound::{Excluded, Included, Unbounded};
         let mut out = Vec::new();
-        if limit == 0 || start >= end {
+        if limit == 0 || end.is_some_and(|end| start >= end) {
             return out;
         }
         let tree = self.shared.tree(cf);
         let version = self.version;
-        let upper = VersionedKey::first_of(end);
+        let upper = end.map_or(Unbounded, |end| Excluded(VersionedKey::first_of(end)));
         let mut cursor = VersionedKey::first_of(start);
         loop {
             // One leaf walk from `cursor`. Per key: skip the versions newer than this
@@ -538,7 +617,7 @@ impl View {
             let mut skipped = 0usize;
             let mut seek: Option<VersionedKey> = None;
             tree.scan(
-                (Included(cursor.clone()), Excluded(upper.clone())),
+                (Included(cursor.clone()), upper.clone()),
                 |k, v| {
                     if current.as_deref() != Some(k.key.as_slice()) {
                         current = Some(k.key.clone());
@@ -607,9 +686,64 @@ impl View {
     }
 }
 
+impl View {
+    /// Every live entry of `cf` at this version, ascending, fetched one page at a time
+    /// and handed out owned: a checkpoint writer streams it while apply continues.
+    pub(crate) fn iter_all(&self, cf: ColumnFamily) -> impl Iterator<Item = ScanEntry> + '_ {
+        Pages {
+            view: self,
+            cf,
+            start: Vec::new(),
+            end: None,
+            forward: true,
+            buffer: VecDeque::new(),
+            done: false,
+        }
+        .map(|entry| entry.expect("an in-memory page never fails"))
+    }
+}
+
 impl Drop for View {
     fn drop(&mut self) {
         self.shared.unregister(self.shard, self.registered);
+    }
+}
+
+/// Builds the image of a verified checkpoint: every row at version 1, published once
+/// together with the exact applied position by [`CheckpointBuilder::finish`]. Neither
+/// the engine nor its position escapes before every row is in (`crate::mem` has the
+/// same shape for `MemEngine`).
+#[derive(Default)]
+pub(crate) struct CheckpointBuilder {
+    engine: VersionedMemEngine,
+    changes: bool,
+}
+
+impl CheckpointBuilder {
+    pub(crate) fn put(&mut self, cf: ColumnFamily, key: &[u8], value: &[u8]) -> Result<()> {
+        self.changes |= changes_data_revision(cf, key);
+        self.engine
+            .shared
+            .tree(cf)
+            .insert(VersionedKey::new(key.to_vec(), 1), Some(value.to_vec()))
+            .map(drop)
+            .map_err(|_| Error::Engine("engine: out of memory for a checkpoint row".into()))
+    }
+
+    pub(crate) fn finish(self, at: AppliedPosition) -> VersionedMemEngine {
+        let shared = &self.engine.shared;
+        {
+            let mut writer = shared.writer.lock().expect("writer lock poisoned");
+            let mut published = shared.published.lock().expect("published poisoned");
+            *published = Published {
+                version: 1,
+                applied: Some(at),
+                data_revision: u64::from(self.changes),
+            };
+            shared.visible.store(1, Ordering::Release);
+            *writer = 1;
+        }
+        self.engine
     }
 }
 
@@ -625,7 +759,11 @@ impl ReadView for View {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<ScanEntry>> {
-        Ok(self.page(cf, start, end, limit))
+        Ok(self.page(cf, start, Some(end), limit))
+    }
+
+    fn get_resident_value(&self, cf: ColumnFamily, key: &[u8]) -> Option<Option<Value>> {
+        Some(self.newest_slot(self.shared.tree(cf), key).flatten())
     }
 
     fn seek_le(&self, cf: ColumnFamily, target: &[u8]) -> Result<Option<ScanEntry>> {
@@ -645,7 +783,7 @@ impl ReadView for View {
             view: self,
             cf,
             start: start.to_vec(),
-            end: end.to_vec(),
+            end: Some(end.to_vec()),
             forward: true,
             buffer: VecDeque::new(),
             done: false,
@@ -662,7 +800,7 @@ impl ReadView for View {
             view: self,
             cf,
             start: start.to_vec(),
-            end: end.to_vec(),
+            end: Some(end.to_vec()),
             forward: false,
             buffer: VecDeque::new(),
             done: false,
@@ -676,7 +814,8 @@ struct Pages<'a> {
     view: &'a View,
     cf: ColumnFamily,
     start: Vec<u8>,
-    end: Vec<u8>,
+    /// Exclusive upper bound; `None` is unbounded (forward only).
+    end: Option<Vec<u8>>,
     forward: bool,
     buffer: VecDeque<ScanEntry>,
     done: bool,
@@ -687,10 +826,11 @@ impl Pages<'_> {
 
     fn refill(&mut self) {
         let page = if self.forward {
-            self.view.page(self.cf, &self.start, &self.end, Self::PAGE)
-        } else {
             self.view
-                .page_rev(self.cf, &self.start, &self.end, Self::PAGE)
+                .page(self.cf, &self.start, self.end.as_deref(), Self::PAGE)
+        } else {
+            let end = self.end.as_deref().unwrap_or_default();
+            self.view.page_rev(self.cf, &self.start, end, Self::PAGE)
         };
         if page.len() < Self::PAGE {
             self.done = true;
@@ -701,7 +841,7 @@ impl Pages<'_> {
                 next.push(0);
                 self.start = next;
             } else {
-                self.end = last.clone(); // exclusive: everything below the last key handed out
+                self.end = Some(last.clone()); // exclusive: everything below the last key handed out
             }
         }
         self.buffer.extend(page);
@@ -1068,6 +1208,102 @@ mod tests {
             engine.scan(cf, b"cold", b"cole", usize::MAX).unwrap().len(),
             10_000
         );
+    }
+
+    #[test]
+    fn incremental_legs_collect_exactly_what_one_pass_collects() {
+        let fill = |engine: &VersionedMemEngine| {
+            for cf in ColumnFamily::ALL {
+                for i in 0..1_500u32 {
+                    let key = format!("k{i:05}");
+                    write(engine, cf, &[(key.as_bytes(), b"a")]);
+                    if i % 3 == 0 {
+                        write(engine, cf, &[(key.as_bytes(), b"b")]); // one superseded version
+                    }
+                    if i % 5 == 0 {
+                        let mut batch = WriteBatch::new();
+                        batch.delete(cf, key.into_bytes()); // a tombstone that settles
+                        engine.write(batch).unwrap();
+                    }
+                }
+            }
+        };
+        let whole = VersionedMemEngine::new();
+        fill(&whole);
+        let expected = whole.collect_garbage();
+        assert!(expected.cycle_complete && expected.removed > 0);
+
+        let legs = VersionedMemEngine::new();
+        fill(&legs);
+        let mut cursor = GcCursor::default();
+        let (mut removed, mut steps) = (0usize, 0usize);
+        loop {
+            let report = legs.gc_step(&mut cursor, 400);
+            removed += report.removed;
+            steps += 1;
+            // A leg stops at the first key boundary past its budget: at most one key's
+            // versions beyond it (three here).
+            assert!(report.scanned <= 400 + 3, "leg scanned {}", report.scanned);
+            if report.cycle_complete {
+                break;
+            }
+            assert!(steps < 1_000, "the cursor must make progress");
+        }
+        assert_eq!(removed, expected.removed);
+        assert!(steps > 3);
+        for cf in ColumnFamily::ALL {
+            assert_eq!(legs.stored_entries(cf), whole.stored_entries(cf));
+            assert_eq!(
+                legs.scan(cf, b"", b"z", usize::MAX).unwrap(),
+                whole.scan(cf, b"", b"z", usize::MAX).unwrap()
+            );
+        }
+        // A second cycle finds nothing more; the cursor is reusable.
+        let again = legs.collect_garbage();
+        assert_eq!(again.removed, 0);
+    }
+
+    #[test]
+    fn a_frozen_view_streams_every_entry_at_its_version_while_writes_continue() {
+        let engine = VersionedMemEngine::new();
+        let cf = ColumnFamily::Default;
+        let mut batch = WriteBatch::new();
+        for i in 0..600u32 {
+            put(&mut batch, cf, format!("k{i:04}").as_bytes(), b"old");
+            put(&mut batch, ColumnFamily::Lock, format!("l{i:04}").as_bytes(), b"x");
+        }
+        engine
+            .write_applied(batch, AppliedPosition { term: 3, index: 9 })
+            .unwrap();
+        let (view, position, revision) = engine.freeze_parts();
+        assert_eq!(position, Some(AppliedPosition { term: 3, index: 9 }));
+        assert_eq!(revision, 1);
+
+        // Overwrite, delete and add after the freeze; collect what can be collected.
+        for i in (0..600u32).step_by(2) {
+            write(&engine, cf, &[(format!("k{i:04}").as_bytes(), b"new")]);
+        }
+        let mut batch = WriteBatch::new();
+        batch.delete(cf, b"k0001".to_vec());
+        put(&mut batch, cf, b"k9999", b"added");
+        engine
+            .write_applied(batch, AppliedPosition { term: 3, index: 10 })
+            .unwrap();
+        assert_eq!(engine.collect_garbage().removed, 0, "the frozen view pins its versions");
+
+        let frozen: Vec<ScanEntry> = view.iter_all(cf).collect();
+        assert_eq!(frozen.len(), 600);
+        assert!(frozen.iter().all(|(_, v)| v == b"old"));
+        assert!(frozen.windows(2).all(|w| w[0].0 < w[1].0));
+        assert_eq!(view.iter_all(ColumnFamily::Lock).count(), 600);
+        assert_eq!(view.iter_all(ColumnFamily::Write).count(), 0);
+
+        let now = engine.snapshot().unwrap();
+        assert_eq!(now.get(cf, b"k0000").unwrap().as_deref(), Some(&b"new"[..]));
+        assert_eq!(now.get(cf, b"k0001").unwrap(), None);
+        assert_eq!(now.scan(cf, b"", b"z", usize::MAX).unwrap().len(), 600);
+        drop(view);
+        assert!(engine.collect_garbage().removed >= 301);
     }
 
     #[test]

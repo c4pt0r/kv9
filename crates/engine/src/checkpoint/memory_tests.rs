@@ -1,7 +1,7 @@
 use super::*;
 
 fn frozen(rows: &[(ColumnFamily, &[u8], &[u8])]) -> FrozenFlush {
-    let engine = MemEngine::new();
+    let engine = VersionedMemEngine::new();
     let mut batch = WriteBatch::new();
     for (cf, key, value) in rows {
         batch.put(*cf, key.to_vec(), value.to_vec());
@@ -447,7 +447,7 @@ fn borrowed_planner_matches_legacy_partition_and_limit_acceptance_matrix() {
         for cf in ColumnFamily::ALL {
             let mut writer = SstWriter::new(cf);
             let mut size = 0;
-            for (key, value) in source.view.iter_all_ref(cf) {
+            for (key, value) in source.view.iter_all(cf) {
                 let row_size = 8 + key.len() + value.len();
                 size += row_size;
                 if size > target && !writer.is_empty() {
@@ -457,7 +457,7 @@ fn borrowed_planner_matches_legacy_partition_and_limit_acceptance_matrix() {
                     writer = SstWriter::new(cf);
                     size = row_size;
                 }
-                writer.add_bounded(key, value, limit - total)?;
+                writer.add_bounded(&key, &value, limit - total)?;
             }
             if !writer.is_empty() {
                 let bytes = writer.finish()?;

@@ -26,15 +26,15 @@ pub struct CheckpointReader<'a>(&'a RemoteUploader);
 /// A recovery dependency which can only restore an image. Implementations may
 /// admit, drain and persist a Reader report around each exact manifest restore.
 pub trait CheckpointRestore {
-    fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine>;
+    fn restore(&self, manifest: &CheckpointManifest) -> Result<VersionedMemEngine>;
 }
 impl CheckpointRestore for RemoteUploader {
-    fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
+    fn restore(&self, manifest: &CheckpointManifest) -> Result<VersionedMemEngine> {
         RemoteUploader::restore(self, manifest)
     }
 }
 impl CheckpointRestore for CheckpointReader<'_> {
-    fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
+    fn restore(&self, manifest: &CheckpointManifest) -> Result<VersionedMemEngine> {
         CheckpointReader::restore(self, manifest)
     }
 }
@@ -42,7 +42,7 @@ impl CheckpointReader<'_> {
     pub fn bind_execution(&self, identity: ExecutionIdentity) -> Result<()> {
         self.0.bind_execution(identity)
     }
-    pub fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
+    pub fn restore(&self, manifest: &CheckpointManifest) -> Result<VersionedMemEngine> {
         self.0
             .execution
             .as_ref()

@@ -37,7 +37,7 @@
     "CheckpointPublicationProof"
   ],
   "source_pins": {
-    "crates/engine/src/persist.rs": "0d5726b850ad5e7ca955a5d5198743e7bc2f6806c3e0ec34a6a1f0857a126238",
+    "crates/engine/src/persist.rs": "04481cb1dc1814140a31db1d3ce680de0a93d38fde1ff499c05e58c143e6e43f",
     "crates/raft/src/state_machine.rs": "0b3c0e09996dc8a63cfc98d723795a292b063bda90daff63a27d93f3d12098cf",
     "crates/raft/src/state_machine/checkpoint_recovery.rs": "42232fb98a6f2d8c43313b832f3147a8deade58b24787f1b53264be7e90f5ac5",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",

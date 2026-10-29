@@ -145,7 +145,32 @@ Through the `Engine` trait (`examples/engine_bench.rs`, 1M entries, same keys as
 | mixed 95/5, 16 threads | 1.96 M ops/s | 10.87 M ops/s |
 | GC of 315k superseded versions | — | 271 ms |
 
-Not yet done: wiring it under `WalEngine` (the checkpoint writer borrows `MemSnapshot::iter_all_ref`,
-which a versioned view cannot offer — it needs an owned iterator), a GC schedule in the maintenance
-loop, and the fence/ReadIndex/checkpoint e2e on top of it.
+### 7.1 Under `WalEngine` (same day)
+
+`WalEngine`'s index is now a `VersionedMemEngine`; `MemEngine` stays as the volatile engine of the
+deterministic harness and the unit tests. What the wiring changed:
+
+- **Checkpoints stream owned pages.** `FrozenFlush` holds a versioned view fixed at the frozen
+  version (registered while the engine's `published` lock is held, so a collector racing a later
+  write cannot remove what the view reads — the same fix applies to the positioned resident
+  snapshot). The SST planner and the spooled writer pull `View::iter_all` one 256-entry page at a
+  time and borrow only one table's rows (≤ 8 MiB of entries) for the encoder; the layout pass
+  walks the same iterator. Restoring a checkpoint builds the image at version 1 through a
+  versioned `CheckpointBuilder` and publishes it with its exact applied position in one step, so
+  `CheckpointRestore::restore` now returns a `VersionedMemEngine`.
+- **Garbage collection is amortised in the write path.** `gc_step(cursor, budget)` is the
+  incremental form of `collect_garbage`: it scans about `budget` stored entries from a persistent
+  cursor and only ever stops at a key boundary, so a key is never split across two legs and the
+  older-before-newer removal order that protects a racing reader holds across legs too. `WalEngine`
+  runs one 4096-entry leg after every 128th write, outside the log lock and only if no other thread
+  is collecting (≈ 32 scanned entries per write), plus one full pass at the end of WAL replay;
+  `WalEngine::collect_garbage` is there for maintenance and tests.
+- **The resident read path copies once.** `ReadView::get_resident` cannot borrow into a tree that
+  is updated in place, so the trait gained `get_resident_value` (same no-wait, no-I/O contract,
+  one copy); the raw batch-get fast path uses it and the versioned view answers it, while
+  `MemSnapshot` still serves it from its borrow.
+
+Evidence: the engine crate's tests (checkpoint plan/spool/restore, WAL recovery, resident views,
+batch atomicity on both engines, incremental-GC equivalence and the frozen-view stream), the
+server's checkpoint and recovery tests, `scripts/raw-kv-e2e.sh` and `scripts/minio-kv-e2e.sh`.
 

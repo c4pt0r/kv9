@@ -23,8 +23,8 @@
     "crates/common/src/store_lifecycle.rs": "ec698d1812dec7d3ee4e3bae161accb4bf9b7e83c501c51569300e9ee79bb3fb",
     "crates/raft/src/storage/snapshot.rs": "48c17c334b132a28269eff5db1cca6ce1002f4f57c88c0c86a25ebe3beaec82c",
     "crates/raft/src/rawnode.rs": "d301c25a6f7f6c5e6941731ef1b241a6300fb5c12c2da0b1f8b39d247a91c6b5",
-    "crates/engine/src/persist.rs": "0d5726b850ad5e7ca955a5d5198743e7bc2f6806c3e0ec34a6a1f0857a126238",
-    "crates/engine/src/checkpoint.rs": "d6a7269fe8d20f6ac319393c2c4ce061617ee52b98dc445f726ff04320034460",
+    "crates/engine/src/persist.rs": "04481cb1dc1814140a31db1d3ce680de0a93d38fde1ff499c05e58c143e6e43f",
+    "crates/engine/src/checkpoint.rs": "e0fbb3eebe61851188a10d869a32e29db3c741bc7d126608eb78e2898a0255f7",
     "proofs/lean/joint-install/Installation.lean": "e9b5196e5d362b0633e339cc0b87e454e09e4790efe9196b910d3404f1d3e249",
     "proofs/lean/joint-install/README.md": "bb4a1c4698aa2eb7f29e9da0b25fd05a5472fe20977080ff3aa487c7076efc16"
   }

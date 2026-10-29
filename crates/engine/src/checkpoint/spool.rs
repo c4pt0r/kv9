@@ -102,14 +102,15 @@ impl RemoteUploader {
         let mut file = create()?;
         let mut files = Vec::new();
         for ((cf_id, cf), tables) in ColumnFamily::ALL.into_iter().enumerate().zip(layout.tables) {
-            let mut rows = frozen.view.iter_all_ref(cf);
+            let mut rows = frozen.view.iter_all(cf);
             for table in tables {
                 let _reservation = self.image_budget.reserve(table.bytes as u64)?;
+                let owned: Vec<(Vec<u8>, Vec<u8>)> = rows.by_ref().take(table.count).collect();
                 let bytes = crate::sst::encode_borrowed(
                     cf,
                     table.count,
                     table.bytes,
-                    rows.by_ref().take(table.count),
+                    owned.iter().map(|(k, v)| (k.as_slice(), v.as_slice())),
                 )?;
                 let (reference, bytes) = plan_sst(&frozen.scope, cf_id as u8, bytes)?;
                 file.write_all(&bytes).map_err(io)?;

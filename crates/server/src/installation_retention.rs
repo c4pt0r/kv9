@@ -6,7 +6,7 @@ use kv9_common::retention::{OwnerId, PinPhase};
 use kv9_common::store_lifecycle::StoreGuard;
 use kv9_common::{Error, ProcessIncarnation, Result, RootDescriptor, RootDigest, StoreIdentity};
 use kv9_engine::checkpoint::{CheckpointManifest, CheckpointRestore, RemoteUploader};
-use kv9_engine::MemEngine;
+use kv9_engine::VersionedMemEngine;
 use kv9_meta::retention::{
     decode_owner_observation, encode_owner_observation, LocalLifetime, OwnerBinding, OwnerKind,
 };
@@ -62,7 +62,7 @@ impl<'a, L: CheckpointLedger + ?Sized> RetainedImages<'a, L> {
     }
 }
 impl<L: CheckpointLedger + ?Sized> CheckpointRestore for RetainedImages<'_, L> {
-    fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
+    fn restore(&self, manifest: &CheckpointManifest) -> Result<VersionedMemEngine> {
         let resources =
             crate::checkpoint_retention::manifest_resources(self.root.digest(), manifest)?;
         let subject = *RootDigest::sha256(&manifest.encode()?).as_bytes();

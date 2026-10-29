@@ -22,18 +22,27 @@ use kv9_common::{AppliedPosition, Result, Value};
 
 use crate::cf::ColumnFamily;
 use crate::checkpoint::{CheckpointManifest, FlushScope, FrozenFlush, RemoteUploader};
-use crate::mem::MemEngine;
+use crate::versioned::{GarbageReport, GcCursor, VersionedMemEngine};
 use crate::wal::Wal;
 use crate::wal_stream::{RecoveryPlan, SegmentedWal, DEFAULT_SEGMENT_BYTES};
 use crate::write_batch::WriteBatch;
 use crate::{Durability, DurableAppliedPosition, Engine, ReadView, ReplicatedEngine, ScanEntry};
+
+/// Every this-many writes, [`WalEngine`] runs one garbage-collection leg over its index.
+const GC_EVERY_WRITES: u64 = 128;
+/// Entries one such leg examines: about 32 scanned entries per write, amortised.
+const GC_SCAN_BUDGET: usize = 4096;
 
 /// An [`Engine`] whose writes survive a restart.
 #[derive(Debug)]
 pub struct WalEngine {
     history: std::sync::Arc<crate::checkpoint_history::CheckpointHistory>,
     /// Visible state. Rebuilt from the log at open.
-    index: MemEngine,
+    index: VersionedMemEngine,
+    /// Where incremental garbage collection of the index stands; one leg runs after
+    /// every [`GC_EVERY_WRITES`]th write, outside the log lock.
+    gc: Mutex<GcCursor>,
+    writes: std::sync::atomic::AtomicU64,
     /// Durable state. Guarded separately so a write serializes on the log, which is also
     /// what keeps log order and index order identical.
     wal: Mutex<EngineWal>,
@@ -234,7 +243,7 @@ impl WalEngine {
         if RecoveryPlan::is_segmented(path)? {
             let plan = RecoveryPlan::read(path)?;
             let selected = plan.checkpoint().map(CheckpointManifest::position);
-            let index = std::cell::RefCell::new(MemEngine::new());
+            let index = std::cell::RefCell::new(VersionedMemEngine::new());
             let metrics = kv9_common::metrics::WalIoMetrics::shared();
             let (wal, report) = plan.recover(
                 DEFAULT_SEGMENT_BYTES,
@@ -263,12 +272,16 @@ impl WalEngine {
                     }
                 },
             )?;
+            // Replay overwrote keys without collecting; one full pass before serving.
+            index.borrow().collect_garbage();
             return Ok((
                 Self {
                     history: std::sync::Arc::new(
                         crate::checkpoint_history::CheckpointHistory::new(selected),
                     ),
                     index: index.into_inner(),
+                    gc: Mutex::new(GcCursor::default()),
+                    writes: std::sync::atomic::AtomicU64::new(0),
                     io_metrics: metrics.clone(),
                     wal: Mutex::new(EngineWal {
                         path: path.to_path_buf(),
@@ -300,7 +313,7 @@ impl WalEngine {
             }
             None => {
                 checkpoint_observer(None)?;
-                (MemEngine::new(), None)
+                (VersionedMemEngine::new(), None)
             }
         };
         let (wal, replay) = Wal::open_strict(path)?;
@@ -324,12 +337,15 @@ impl WalEngine {
             }
             report.replayed_records += 1;
         }
+        index.collect_garbage();
         Ok((
             WalEngine {
                 history: std::sync::Arc::new(crate::checkpoint_history::CheckpointHistory::new(
                     base,
                 )),
                 index,
+                gc: Mutex::new(GcCursor::default()),
+                writes: std::sync::atomic::AtomicU64::new(0),
                 io_metrics: wal.io_metrics(),
                 wal: Mutex::new(EngineWal {
                     path: path.to_path_buf(),
@@ -418,6 +434,28 @@ impl WalEngine {
 
     pub fn data_revision(&self) -> u64 {
         self.index.data_revision()
+    }
+
+    /// One full garbage-collection pass over the index: superseded versions and
+    /// settled tombstones that no live view can read any more. The write path runs
+    /// bounded legs of the same collection on its own; this is for maintenance and
+    /// tests that want the memory back now.
+    pub fn collect_garbage(&self) -> GarbageReport {
+        let _cursor = self.gc.lock().expect("gc cursor poisoned");
+        self.index.collect_garbage()
+    }
+
+    /// Amortised index garbage collection: every `GC_EVERY_WRITES`th write pays for
+    /// one leg of about `GC_SCAN_BUDGET` scanned entries, after the log lock is
+    /// released, and only if no other thread is already collecting.
+    fn after_write(&self) {
+        use std::sync::atomic::Ordering;
+        if self.writes.fetch_add(1, Ordering::Relaxed) % GC_EVERY_WRITES != GC_EVERY_WRITES - 1 {
+            return;
+        }
+        if let Ok(mut cursor) = self.gc.try_lock() {
+            self.index.gc_step(&mut cursor, GC_SCAN_BUDGET);
+        }
     }
 
     /// Read a checkpoint descriptor without opening or repairing a log.
@@ -583,8 +621,7 @@ impl WalEngine {
             let mut state = WriteBatch::new();
             let mut encoded_size = 4usize;
             for cf in ColumnFamily::ALL {
-                for entry in view.iter_all(cf) {
-                    let (key, value) = entry?;
+                for (key, value) in view.iter_all(cf) {
                     if cf != ColumnFamily::Default || key != marker {
                         encoded_size = encoded_size
                             .saturating_add(10)
@@ -784,9 +821,12 @@ impl Engine for WalEngine {
         // Durable first, visible second. Holding the log lock across both steps keeps the
         // log's order and the index's order the same, so replay reconstructs exactly the
         // state readers saw.
-        let mut wal = self.wal.lock().expect("wal lock poisoned");
-        wal.append(&batch)?;
-        self.index.write(batch)?;
+        {
+            let mut wal = self.wal.lock().expect("wal lock poisoned");
+            wal.append(&batch)?;
+            self.index.write(batch)?;
+        }
+        self.after_write();
         Ok(())
     }
 
@@ -863,18 +903,22 @@ impl ReplicatedEngine for WalEngine {
     }
 
     fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()> {
-        let mut wal = self.wal.lock().expect("wal lock poisoned");
-        if self
-            .index
-            .volatile_applied_position()
-            .is_some_and(|p| at.index <= p.index)
         {
-            return Err(kv9_common::Error::Engine(
-                "applied position must advance".into(),
-            ));
+            let mut wal = self.wal.lock().expect("wal lock poisoned");
+            if self
+                .index
+                .volatile_applied_position()
+                .is_some_and(|p| at.index <= p.index)
+            {
+                return Err(kv9_common::Error::Engine(
+                    "applied position must advance".into(),
+                ));
+            }
+            wal.append_applied(&batch, at)?;
+            self.index.write_applied(batch, at)?;
         }
-        wal.append_applied(&batch, at)?;
-        self.index.write_applied(batch, at)
+        self.after_write();
+        Ok(())
     }
 
     fn applied_position(&self) -> Result<DurableAppliedPosition> {
@@ -1493,7 +1537,8 @@ mod tests {
         let (e, _) = WalEngine::open(&path).unwrap();
         assert_eq!(e.durability(), Durability::DurableThroughLastWrite);
         // ...whereas the volatile engine must never claim otherwise.
-        assert_eq!(MemEngine::new().durability(), Durability::Volatile);
+        assert_eq!(crate::MemEngine::new().durability(), Durability::Volatile);
+        assert_eq!(VersionedMemEngine::new().durability(), Durability::Volatile);
     }
 
     /// Data and the exact applied position share one positioned WAL-v2 record and

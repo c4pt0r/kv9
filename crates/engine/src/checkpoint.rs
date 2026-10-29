@@ -14,7 +14,7 @@ use crate::minio::MinioObjectStore;
 #[cfg(test)]
 use crate::sst::Sst;
 use crate::sst::{SharedSst, SstView, SstWriter};
-use crate::{ColumnFamily, MemEngine, ObjectKey, ObjectStore};
+use crate::{ColumnFamily, ObjectKey, ObjectStore, VersionedMemEngine};
 #[cfg(test)]
 use crate::{ReplicatedEngine, WriteBatch};
 
@@ -55,7 +55,7 @@ pub struct FlushScope {
 /// fn duplicate(f: kv9_engine::checkpoint::FrozenFlush) { let _ = f.clone(); }
 /// ```
 pub struct FrozenFlush {
-    pub(crate) view: crate::mem::MemSnapshot,
+    pub(crate) view: crate::versioned::View,
     pub(crate) position: AppliedPosition,
     pub(crate) scope: FlushScope,
     pub(crate) data_revision: u64,
@@ -373,7 +373,7 @@ impl RemoteUploader {
         }
         upload_planned(&self.store(), planned)
     }
-    pub fn restore(&self, manifest: &CheckpointManifest) -> Result<MemEngine> {
+    pub fn restore(&self, manifest: &CheckpointManifest) -> Result<VersionedMemEngine> {
         restore(&self.store(), manifest)
     }
 
@@ -418,13 +418,16 @@ fn encode_plan(
     let mut files = Vec::new();
     let mut objects = Vec::new();
     for ((cf_id, cf), tables) in ColumnFamily::ALL.into_iter().enumerate().zip(layout.tables) {
-        let mut rows = frozen.view.iter_all_ref(cf);
+        let mut rows = frozen.view.iter_all(cf);
         for table in tables {
+            // One table's rows at a time (≤ SST_TARGET of entry bytes): the versioned
+            // view hands out owned pages, the encoder borrows from this bounded set.
+            let owned: Vec<(Vec<u8>, Vec<u8>)> = rows.by_ref().take(table.count).collect();
             let bytes = crate::sst::encode_borrowed(
                 cf,
                 table.count,
                 table.bytes,
-                rows.by_ref().take(table.count),
+                owned.iter().map(|(k, v)| (k.as_slice(), v.as_slice())),
             )?;
             let (sst, bytes) = plan_sst(&frozen.scope, cf_id as u8, bytes)?;
             files.push(sst);
@@ -458,7 +461,7 @@ fn image_layout(frozen: &FrozenFlush, target: usize, limit: usize) -> Result<Ima
     for (cf, tables) in ColumnFamily::ALL.into_iter().zip(&mut tables) {
         let (mut entries, mut first, mut last) = (0usize, 0usize, 0usize);
         let mut count = 0;
-        for (key, value) in frozen.view.iter_all_ref(cf) {
+        for (key, value) in frozen.view.iter_all(cf) {
             let row = key
                 .len()
                 .checked_add(value.len())
@@ -546,14 +549,14 @@ pub(crate) fn upload_planned(
         files,
     })
 }
-fn restore(store: &dyn ObjectStore, manifest: &CheckpointManifest) -> Result<MemEngine> {
+fn restore(store: &dyn ObjectStore, manifest: &CheckpointManifest) -> Result<VersionedMemEngine> {
     // Revalidate descriptors supplied via an API as well as those decoded from disk.
     let manifest = CheckpointManifest::decode(&manifest.encode()?)?;
-    let mut builder = crate::mem::CheckpointBuilder::default();
+    let mut builder = crate::versioned::CheckpointBuilder::default();
     for file in &manifest.files {
         let sst = verified_sst(store, file)?;
         for (key, value) in sst.iter() {
-            builder.put(sst.column_family(), key, value);
+            builder.put(sst.column_family(), key, value)?;
         }
     }
     // Neither an engine nor its position escapes before every SST has passed

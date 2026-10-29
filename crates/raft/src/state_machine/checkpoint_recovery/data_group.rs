@@ -47,14 +47,14 @@ pub trait DataCheckpointReader: CheckpointRestore {
         &self,
         manifest: &CheckpointManifest,
         predecessor: u64,
-    ) -> Result<kv9_engine::MemEngine>;
+    ) -> Result<kv9_engine::VersionedMemEngine>;
 }
 impl DataCheckpointReader for RemoteUploader {
     fn restore_published(
         &self,
         manifest: &CheckpointManifest,
         _: u64,
-    ) -> Result<kv9_engine::MemEngine> {
+    ) -> Result<kv9_engine::VersionedMemEngine> {
         self.restore(manifest)
     }
 }
@@ -64,7 +64,7 @@ struct SelectedReader<'a> {
     plan: &'a super::CheckpointReadPlan,
 }
 impl CheckpointRestore for SelectedReader<'_> {
-    fn restore(&self, manifest: &CheckpointManifest) -> Result<kv9_engine::MemEngine> {
+    fn restore(&self, manifest: &CheckpointManifest) -> Result<kv9_engine::VersionedMemEngine> {
         self.plan.check_selection(Some(manifest))?;
         match self.plan.predecessor() {
             Some(predecessor) => self.reader.restore_published(manifest, predecessor),
