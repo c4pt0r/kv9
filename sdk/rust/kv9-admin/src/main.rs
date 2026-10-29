@@ -65,6 +65,7 @@ fn usage() -> String {
      \u{20}        move-replica <creation-task> --from <node> --to <node> [--operation <hex> | --label <text>]\n\
      \u{20}        transfer-leader <creation-task> --to <node> [--wait]\n\
      \u{20}        split <creation-task> --at <key> | --at-hex <hex> [--operation <hex> | --label <text>]\n\
+     \u{20}        merge <low-creation-task> <high-creation-task> [--operation <hex> | --label <text>]\n\
      task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history\n\
      \u{20}        describe <id>\n\
      version\n\
@@ -1487,6 +1488,11 @@ fn group_json(g: &DataGroup) -> Value {
             "child_high": {"creation_task": s.child_high_task, "region_id": s.child_high_region},
             "evidence": s.evidence.iter().map(|e| json!({"task": e.task, "child_task": e.child_task, "digest": hex(&e.digest), "rows": e.rows})).collect::<Vec<_>>(),
         })).collect::<Vec<_>>(),
+        "merges": g.merges.iter().map(|m| json!({
+            "task": m.task, "operation": hex(&m.operation), "low_region": m.low_region, "high_region": m.high_region,
+            "child": {"creation_task": m.child_task, "region_id": m.child_region}, "stage": m.stage,
+            "evidence": if m.evidence_task == 0 { Value::Null } else { json!({"task": m.evidence_task, "digest": hex(&m.evidence_digest), "rows": m.evidence_rows}) },
+        })).collect::<Vec<_>>(),
         "keyspaces": g.keyspaces.iter().map(|k| json!({
             "keyspace_id": k.keyspace_id, "tenant_id": k.tenant_id, "bind_task": k.bind_task,
             "epoch": {"conf_ver": k.conf_ver, "version": k.version},
@@ -1621,6 +1627,45 @@ async fn group_split(global: &Global, cluster: &mut Cluster, args: &VerbArgs, cr
             "intent_task={} parent_region={region} split_key={} ({outcome})\nchild_low: task {} region {} [start, key)\nchild_high: task {} region {} [key, end)\nwatch: kv9-admin group describe {creation_task}",
             planned.intent_task, String::from_utf8_lossy(&key), planned.child_low_task, planned.child_low_region,
             planned.child_high_task, planned.child_high_region
+        ),
+        partial: Vec::new(),
+    })
+}
+
+async fn group_merge(global: &Global, cluster: &mut Cluster, args: &VerbArgs, low_task: u64, high_task: u64) -> Outcome {
+    let groups = cluster.leader.list_data_groups().await?;
+    let region_of = |task: u64| {
+        groups
+            .iter()
+            .find(|g| g.creation_task == task)
+            .map(|g| g.region_id)
+            .ok_or_else(|| Fail::Refused(format!("data group {task} is not committed")))
+    };
+    let (low, high) = (region_of(low_task)?, region_of(high_task)?);
+    let root = cluster.root_digest().await?;
+    let (operation, origin) = operation_for(args, &root, "kv9-admin/merge/v1", &format!("{low}/{high}"))?;
+    confirm(
+        global,
+        &format!(
+            "plan: MergeRanges low={low_task} (region {low}) high={high_task} (region {high}) operation={} ({origin}); the merged child is created on the groups' stores, then the cluster seals, copies, verifies and publishes",
+            hex(&operation)
+        ),
+        None,
+    )?;
+    let planned = cluster.leader.merge_ranges(root, operation, low, high).await?;
+    let outcome = if planned.changed { "committed" } else { "confirmed" };
+    Ok(Report {
+        command: "group merge".into(),
+        result: json!({
+            "intent_task": planned.intent_task, "low_region": low, "high_region": high,
+            "operation": hex(&operation), "operation_origin": origin,
+            "child": {"creation_task": planned.child_task, "region_id": planned.child_region},
+            "outcome": outcome, "stage": "intended",
+            "applied": {"term": planned.applied.term, "index": planned.applied.index},
+        }),
+        table: format!(
+            "intent_task={} low_region={low} high_region={high} ({outcome})\nchild: task {} region {} [low.start, high.end)\nwatch: kv9-admin group describe {low_task}",
+            planned.intent_task, planned.child_task, planned.child_region
         ),
         partial: Vec::new(),
     })
@@ -1964,6 +2009,11 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
             group_describe(&mut cluster, id).await?
         }
         ("group", "create") => group_create(global, &mut cluster, &args).await?,
+        ("group", "merge") => {
+            let low = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("group merge <low-creation-task> <high-creation-task>".into()))?, "low creation task")?;
+            let high = parse_id(args.positional.get(1).ok_or_else(|| Fail::Usage("group merge <low-creation-task> <high-creation-task>".into()))?, "high creation task")?;
+            group_merge(global, &mut cluster, &args, low, high).await?
+        }
         ("group", "split") => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("group split <creation-task> --at <key>".into()))?, "creation task")?;
             group_split(global, &mut cluster, &args, id).await?

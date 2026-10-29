@@ -133,6 +133,7 @@ service! {
     transfer_leader: TransferLeaderRequest => TransferLeaderResponse,
     drain_node: DrainNodeRequest => DrainNodeResponse,
     split_range: SplitRangeRequest => SplitRangeResponse,
+    merge_ranges: MergeRangesRequest => MergeRangesResponse,
     get_node_endpoint: GetNodeEndpointRequest => GetNodeEndpointResponse,
     change_node_endpoint: ChangeNodeEndpointRequest => ChangeNodeEndpointResponse,
     apply_retention: ApplyRetentionRequest => ApplyRetentionResponse,

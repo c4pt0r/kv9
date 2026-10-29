@@ -61,6 +61,9 @@ service Kv9 {
   // Commit a split intent for a bound range: the two children are created and
   // activated on the parent's stores in the same transaction (docs/RANGE-SPLIT.md §2).
   rpc SplitRange(SplitRangeRequest) returns (SplitRangeResponse);
+  // Commit a merge intent for two adjacent bound ranges on the same stores: the
+  // merged child is created and activated in the same transaction (docs/RANGE-SPLIT.md §6).
+  rpc MergeRanges(MergeRangesRequest) returns (MergeRangesResponse);
   rpc ChangeNodeEndpoint(ChangeNodeEndpointRequest) returns (ChangeNodeEndpointResponse);
   // Tracking-only retention administration. No object deletion or installation.
   rpc ApplyRetention(ApplyRetentionRequest) returns (ApplyRetentionResponse);
@@ -503,6 +506,8 @@ message DataGroupRow {
   repeated DataGroupReplica members = 11;
   // Committed split intents whose parent is this group (RANGE-SPLIT §2).
   repeated DataGroupSplit splits = 12;
+  // Committed merge intents in which this group is a parent (RANGE-SPLIT §6).
+  repeated DataGroupMerge merges = 13;
 }
 message AddReplicaRequest {
   bytes root_digest = 1;    // Exact 32-byte certified metadata root.
@@ -527,6 +532,32 @@ message SplitRangeResponse {
   bool changed = 6;             // false: an identical intent was confirmed
   uint64 applied_term = 7;
   uint64 applied_index = 8;
+}
+message MergeRangesRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+  uint64 low_region = 3;    // [s, m)
+  uint64 high_region = 4;   // [m, e)
+}
+message MergeRangesResponse {
+  uint64 intent_task = 1;   // the kind-115 row
+  uint64 child_task = 2;
+  uint64 child_region = 3;
+  bool changed = 4;
+  uint64 applied_term = 5;
+  uint64 applied_index = 6;
+}
+message DataGroupMerge {
+  uint64 task = 1;          // kind 115
+  bytes operation = 2;
+  uint64 low_region = 3;
+  uint64 high_region = 4;
+  uint64 child_task = 5;
+  uint64 child_region = 6;
+  string stage = 7;         // intended, populated, published
+  uint64 evidence_task = 8; // kind 116, 0 until populated
+  bytes evidence_digest = 9;
+  uint64 evidence_rows = 10;
 }
 message DataGroupSplit {
   uint64 task = 1;              // kind 113

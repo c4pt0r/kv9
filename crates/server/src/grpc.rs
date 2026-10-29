@@ -2497,6 +2497,43 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn merge_ranges(
+        &self,
+        request: Request<proto::MergeRangesRequest>,
+    ) -> Result<Response<proto::MergeRangesResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        if operation == [0; 16] || request.low_region == 0 || request.high_region == 0 || request.low_region == request.high_region {
+            return Err(Status::invalid_argument("nonzero operation and two distinct parent regions required"));
+        }
+        let (low, high) = (kv9_common::RegionId(request.low_region), kv9_common::RegionId(request.high_region));
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| backend.merge_ranges(&caller, root, operation, low, high))
+            .await?;
+        Ok(Response::new(proto::MergeRangesResponse {
+            intent_task: result.intent.task(),
+            child_task: result.child.task(),
+            child_region: result.child.region().0,
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+        }))
+    }
+
     async fn drain_node(
         &self,
         request: Request<proto::DrainNodeRequest>,
@@ -2613,6 +2650,22 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                                     rows,
                                 })
                                 .collect(),
+                        })
+                        .collect(),
+                    merges: g
+                        .merges
+                        .into_iter()
+                        .map(|m| proto::DataGroupMerge {
+                            task: m.task,
+                            operation: m.operation.to_vec(),
+                            low_region: m.low_region,
+                            high_region: m.high_region,
+                            child_task: m.child_task,
+                            child_region: m.child_region,
+                            stage: m.stage.to_string(),
+                            evidence_task: m.evidence.map_or(0, |e| e.0),
+                            evidence_digest: m.evidence.map_or(Vec::new(), |e| e.1.to_vec()),
+                            evidence_rows: m.evidence.map_or(0, |e| e.2),
                         })
                         .collect(),
                 })

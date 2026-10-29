@@ -224,10 +224,11 @@ deletes applied as one Raft entry.
 
 - The full dataset lives in memory on every replica; SSTs are checkpoints, not yet a read path (no
   incremental LSM, no block cache).
-- Range split is in this tree as one operator verb (`kv9-admin group split <task> --at <key>`): the cluster creates
-  the children, seals the parent, copies and verifies both halves and publishes the new partition by itself
-  ([RANGE-SPLIT](docs/RANGE-SPLIT.md)); the parent is unavailable between seal and publication, the sealed
-  parent group is not yet retired, splits are not automatic, and merge is a design goal; metadata is one Raft group.
+- Range split and merge are in this tree as operator verbs (`kv9-admin group split <task> --at <key>`,
+  `group merge <low> <high>`): the cluster creates the child groups, seals the parents, copies and verifies the
+  data and publishes the new partition by itself ([RANGE-SPLIT](docs/RANGE-SPLIT.md)); a parent is
+  unavailable between its seal and the publication, sealed parent groups are not yet retired, and nothing
+  splits or merges automatically; metadata is one Raft group.
 - Tenant admission and fairness are partial; TLS is not implemented (use a private network).
 - Acknowledged writes that are not yet checkpointed depend on the Raft replicas' local disks.
 - There are no transactions by design: the multi-key write primitive is the atomic range batch

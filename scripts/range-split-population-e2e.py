@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Range split, parts 2–4: seal, population and publication (docs/RANGE-SPLIT.md §3–§5).
+"""Range split and merge, end to end (docs/RANGE-SPLIT.md §3–§6).
 
 Three stores hold a data group with a bound keyspace holding k/a..k/z. After
 `kv9-admin group split <task> --at k/m` the cluster, by itself, installs the
@@ -9,7 +9,9 @@ row for row and commits one evidence row per child (stage `populated`), then the
 metadata leader publishes the new partition in one catalog transaction (stage
 `published`): the parent's binding is sealed, both children are bound to their
 halves, reads and writes flow again through the children, and the sealed parent
-answers nothing.
+answers nothing. Then `group merge low high` runs the pipeline backwards: the
+merged child is created, both children are sealed, copied and verified into it,
+and the publication binds the child to the whole keyspace again.
 """
 import argparse
 import hashlib
@@ -253,9 +255,40 @@ def main():
             for e in json.loads(status(node).get('range_split', '{}')).get('events', []):
                 steps.setdefault(e['step'], set()).add(node)
         require({'child_descriptor', 'seal', 'populate', 'publish'} <= set(steps), f'every step recorded: {steps}')
+
+        # ------------------------------------------------------------ merge them back
+        merged, _ = admin('merge', 'group', 'merge', str(low['creation_task']), str(high['creation_task']), '--label', 'merge-e2e')
+        mr = merged['result']
+        require(mr['outcome'] == 'committed' and mr['stage'] == 'intended', f'merge commits: {mr}')
+        merge_child = mr['child']
+        confirmed, _ = admin('merge-again', 'group', 'merge', str(low['creation_task']), str(high['creation_task']), '--label', 'merge-e2e')
+        require(confirmed['result']['outcome'] == 'confirmed' and confirmed['result']['child'] == merge_child, 'the merge confirms')
+        _, code = admin('merge-reversed', 'group', 'merge', str(high['creation_task']), str(low['creation_task']), '--label', 'other', success=False)
+        require(code == 1, f'a reversed pair is a typed refusal (exit {code})')
+        def merge_stage():
+            described, _ = admin('describe-low', 'group', 'describe', str(low['creation_task']), partial=True)
+            ms = described.get('result', {}).get('merges', [])
+            return ms[0]['stage'] if ms else None
+        wait('the merge reaches stage populated or published', lambda: merge_stage() in ('populated', 'published'), 240)
+        wait('the merge reaches stage published', lambda: merge_stage() == 'published', 120)
+        listed, _ = admin('group-list-merged', 'group', 'list')
+        rows_by_task = {g['creation_task']: g for g in listed['result']}
+        for child in (low, high):
+            ks = rows_by_task[child['creation_task']]['keyspaces']
+            require(len(ks) == 1 and ks[0]['sealed'] is True, f'split child {child} sealed after the merge: {ks}')
+        mks = rows_by_task[merge_child['creation_task']]['keyspaces']
+        require(len(mks) == 1 and not mks[0]['sealed'] and mks[0]['start'] == '' and mks[0]['end'] == '', f'merged child bound to the whole keyspace: {mks}')
+        described, _ = admin('describe-low-final', 'group', 'describe', str(low['creation_task']), partial=True)
+        ev = described['result']['merges'][0]['evidence']
+        require(ev and ev['rows'] == 13 + 14 + 2, f'the merged child holds every row of both halves plus the two post-split writes: {ev}')
+        def served_merged():
+            out = repl('read-after-merge', ['use split-me', 'get k/a', 'get k/m', 'get k/zz', 'get k/0a', 'put k/final f', 'get k/final'], success=None)
+            return out if all(f'{c}' in out for c in ('a', 'm', 'zz', 'b', 'f')) and 'error' not in out.lower() else None
+        wait('the merged child serves every key and new writes', served_merged, 60)
         manifest_record['verdict'] = 'passed'
         print(f'PASS: range split population (parent {task} split at k/m -> children {low["creation_task"]}/{high["creation_task"]} '
-              f'hold 13 + 14 rows with verified digests; published: parent sealed, children serve; steps: '
+              f'hold 13 + 14 rows with verified digests; published: parent sealed, children serve; then merged back into '
+              f'{merge_child["creation_task"]} with 29 verified rows and published; steps: '
               f'{ {k: sorted(v) for k, v in sorted(steps.items())} })', flush=True)
     except Exception as error:
         manifest_record['verdict'] = f'failed: {error}'

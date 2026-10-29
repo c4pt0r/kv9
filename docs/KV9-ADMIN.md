@@ -28,9 +28,10 @@ status contract ([STATUS-PROCESS-IDENTITY](STATUS-PROCESS-IDENTITY.md)) and the 
 > ([REPLICA-REPAIR](REPLICA-REPAIR.md)); `group describe` shows that plan like any other, and
 > its live view covers the group's committed `members` (not only the creation's replicas).
 > `node drain <id> [--wait]` ([DRAIN-NODE](DRAIN-NODE.md)) is the one-verb way to take a store out of
-> service; `node list` shows `draining`/`drained`. `group split <task> --at <key>` splits a bound range:
-> the cluster seals, copies, verifies and publishes by itself ([RANGE-SPLIT](RANGE-SPLIT.md));
-> `group describe` lists `splits` with their stage (`intended` → `populating` → `populated` → `published`).
+> service; `node list` shows `draining`/`drained`. `group split <task> --at <key>` splits a bound range and
+> `group merge <low-task> <high-task>` merges two adjacent siblings back: the cluster seals, copies, verifies
+> and publishes by itself ([RANGE-SPLIT](RANGE-SPLIT.md)); `group describe` lists `splits` and `merges` with
+> their stage (`intended` → `populating` → `populated` → `published`).
 > `node replace`, retention verbs and `group abort` remain open.
 
 ## The problem

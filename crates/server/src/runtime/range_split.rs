@@ -36,9 +36,9 @@ use super::range_api::RawGroup;
 use super::{NodeRuntime, RuntimeBackend};
 use crate::api::{RawApi, RequestContext, RequestOrigin};
 
-const PAGE: usize = 512;
-const SEAL_WAIT: Duration = Duration::from_secs(10);
-const DELIVERY_BUDGET: Duration = Duration::from_secs(10);
+pub(super) const PAGE: usize = 512;
+pub(super) const SEAL_WAIT: Duration = Duration::from_secs(10);
+pub(super) const DELIVERY_BUDGET: Duration = Duration::from_secs(10);
 const EVENT_HISTORY: usize = 32;
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -161,7 +161,7 @@ impl Step {
     }
 }
 
-fn printable(key: &[u8]) -> String {
+pub(super) fn printable(key: &[u8]) -> String {
     String::from_utf8_lossy(key).into_owned()
 }
 
@@ -181,7 +181,7 @@ fn half_descriptor(parent: &DataRange, child: &kv9_meta::data_groups::CreationIn
     }
 }
 
-fn applied_descriptor(engine: &WalEngine) -> Result<Option<DataRange>> {
+pub(super) fn applied_descriptor(engine: &WalEngine) -> Result<Option<DataRange>> {
     engine
         .get(ColumnFamily::Default, RANGE_KEY)?
         .map(|b| DataRange::decode(&b))
@@ -433,22 +433,29 @@ impl NodeRuntime {
 }
 
 /// The successor of `key` in scan order: the smallest key greater than it.
-fn successor(key: &[u8]) -> Vec<u8> {
+pub(super) fn successor(key: &[u8]) -> Vec<u8> {
     let mut next = key.to_vec();
     next.push(0);
     next
 }
 
 /// Scan `[start, end)` of `keyspace` from a snapshot of `engine`, one page.
-fn scan_page(engine: &WalEngine, keyspace: KeyspaceId, start: &[u8], end: &[u8], limit: usize) -> Result<Vec<(UserKey, Value)>> {
+pub(super) fn scan_page(engine: &WalEngine, keyspace: KeyspaceId, start: &[u8], end: &[u8], limit: usize) -> Result<Vec<(UserKey, Value)>> {
     let snapshot = engine.snapshot()?;
     let read = LeaderRead::new(snapshot.as_ref(), true, None)?;
     RawExecutor.scan(&read, keyspace, start, end, limit)
 }
 
 /// sha256 over every `(key, value)` of the half, in order, length-prefixed.
-fn digest_half(mut page: impl FnMut(&[u8]) -> Result<Vec<(UserKey, Value)>>, start: &[u8]) -> Result<(RootDigest, u64)> {
+pub(super) fn digest_half(page: impl FnMut(&[u8]) -> Result<Vec<(UserKey, Value)>>, start: &[u8]) -> Result<(RootDigest, u64)> {
     let mut hasher = Vec::new();
+    let rows = digest_into(&mut hasher, page, start)?;
+    Ok((RootDigest::sha256(&hasher), rows))
+}
+
+/// Feed every `(key, value)` of one range into `hasher`, length-prefixed, in order;
+/// returns the row count. A merge chains two ranges through one hasher.
+pub(super) fn digest_into(hasher: &mut Vec<u8>, mut page: impl FnMut(&[u8]) -> Result<Vec<(UserKey, Value)>>, start: &[u8]) -> Result<u64> {
     let mut rows = 0u64;
     let mut cursor = start.to_vec();
     let mut first = true;
@@ -471,7 +478,7 @@ fn digest_half(mut page: impl FnMut(&[u8]) -> Result<Vec<(UserKey, Value)>>, sta
             break;
         }
     }
-    Ok((RootDigest::sha256(&hasher), rows))
+    Ok(rows)
 }
 
 fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: Step) -> Result<Outcome> {
@@ -534,8 +541,9 @@ fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: 
 }
 
 /// Commit the evidence locally when this node leads the metadata group, else at a
-/// metadata candidate over the node-authenticated internal service.
-fn deliver(backend: &Arc<RuntimeBackend>, handle: &tokio::runtime::Handle, root: RootDigest, receipt: &[u8]) -> Result<String> {
+/// metadata candidate over the node-authenticated internal service. Split and
+/// merge receipts share this path; the leader dispatches on the receipt's magic.
+pub(super) fn deliver(backend: &Arc<RuntimeBackend>, handle: &tokio::runtime::Handle, root: RootDigest, receipt: &[u8]) -> Result<String> {
     if backend.driver.status().role == Role::Leader {
         let (task, changed, _) = backend.commit_split_evidence(root, receipt)?;
         return Ok(format!("evidence task {task} {} locally", if changed { "committed" } else { "confirmed" }));
@@ -609,13 +617,19 @@ impl RuntimeBackend {
         if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
             return Err(Error::Config("split evidence root differs".into()));
         }
-        let (evidence, changed) = kv9_meta::data_groups::split_evidence::plan_split_evidence(&mut txn, receipt)?;
+        let (task, changed) = if kv9_meta::data_groups::merge::is_merge_receipt(receipt) {
+            let (e, changed) = kv9_meta::data_groups::merge::plan_merge_evidence(&mut txn, receipt)?;
+            (e.task(), changed)
+        } else {
+            let (e, changed) = kv9_meta::data_groups::split_evidence::plan_split_evidence(&mut txn, receipt)?;
+            (e.task(), changed)
+        };
         let command = if changed {
             Command::from_batch(&txn.into_batch())
         } else {
             Command::Noop
         };
         let applied = self.commit_catalog(&command, term)?;
-        Ok((evidence.task(), changed, applied))
+        Ok((task, changed, applied))
     }
 }

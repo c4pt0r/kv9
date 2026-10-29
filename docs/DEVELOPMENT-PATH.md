@@ -129,7 +129,7 @@ Build the group runtime and routing before replica attachment, split/merge and a
 - [ ] [#23](https://github.com/c4pt0r/kv9/issues/23) **D02** - Route requests to real regions with epoch fencing and bounded retries
 - [ ] [#24](https://github.com/c4pt0r/kv9/issues/24) **D03** - Implement remote learner attachment and recoverable replica migration
 - [ ] [#25](https://github.com/c4pt0r/kv9/issues/25) **D04** - Implement recoverable pre-sharding and region splits (prototype parked on `experimental/range-split`, 2026-10-28; re-entered 2026-10-29 as intent → seal → population → publication, one operator verb, [RANGE-SPLIT](RANGE-SPLIT.md); retirement, auto-split and merge open)
-- [ ] [#26](https://github.com/c4pt0r/kv9/issues/26) **D05** - Implement adjacent region merges with crash recovery
+- [ ] [#26](https://github.com/c4pt0r/kv9/issues/26) **D05** - Implement adjacent region merges with crash recovery (operator merge of adjacent siblings on one store set landed 2026-10-29, [RANGE-SPLIT](RANGE-SPLIT.md) §6; retirement and the crash matrix open)
 - [ ] [#27](https://github.com/c4pt0r/kv9/issues/27) **D06** - Add load-aware placement, hotspot control and scale-out acceptance
 
 ### P3 - Tenant isolation (transactions retired)

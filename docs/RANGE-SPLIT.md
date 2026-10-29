@@ -8,12 +8,13 @@ Design packet, 2026-10-29. Parent [#9](https://github.com/c4pt0r/kv9/issues/9), 
 the plan driver, the admin tool — in the same committed-authority-first order the prototype proved:
 **intent → seal → population → publication**, each its own increment with its own proof and e2e.
 
-> **Status: parts 1–4 implemented** (2026-10-29): the committed split intent with its children
-> (§2), the seal (§3), the verified population with its evidence rows (§4) and the one-transaction
-> publication (§5), driven by `runtime/range_split.rs`; `scripts/range-split-intent-e2e.sh` and
-> `scripts/range-split-population-e2e.sh` (intent → published, children serving) pass and run in
-> CI. `kv9-admin group split <task> --at <key>` is the one verb; the rest is the cluster's. §9
-> records what the implementation settled; §10 what follows (retirement, auto-split, merge).
+> **Status: split and merge implemented** (2026-10-29): the committed split intent with its
+> children (§2), the seal (§3), the verified population with its evidence rows (§4), the
+> one-transaction publication (§5) and the merge, the same pipeline backwards (§6), driven by
+> `runtime/range_split.rs` and `runtime/range_merge.rs`; `scripts/range-split-intent-e2e.sh` and
+> `scripts/range-split-population-e2e.sh` (split → published → merged back → published) pass and
+> run in CI. `kv9-admin group split <task> --at <key>` and `group merge <low> <high>` are the two
+> verbs; the rest is the cluster's. §9 records what the implementation settled; §10 what follows.
 
 ## What master kept, and what it did not
 
@@ -100,8 +101,15 @@ REPLICA-REMOVAL rows: a later increment, as the prototype left it too).
 ## 6. Merge (D05), the same pipeline backwards
 
 Two adjacent unsealed siblings on the same members → one new child `[s_L, e_H)`; seal both,
-populate the child from both halves, publish the successor shape. It is parts 2–4 with two parents;
-it is specified here so part 2–4's rows carry a parent *set*, not a single parent.
+populate the child from both halves, publish the successor shape. **As built:** kind 115
+`KV9MRG01` (`plan_merge`: both bindings unsealed, `low.end == high.start` in one keyspace, same
+committed members, no live split or merge on either parent; the child created and activated in
+the same transaction), kind 116 `KV9MRE01` evidence (the split evidence's layout, carried over the
+same internal RPC and told apart by its magic), `plan_merge_publication` (both parent bindings
+sealed in place, the child bound to `[s_L, e_H)` with its region row, both parent region rows
+removed). The driver (`runtime/range_merge.rs`) copies the low parent to its end, then the high
+one, from the local sealed replicas, and verifies both chained through one digest against the
+child. `kv9-admin group merge <low-task> <high-task>`; `ListDataGroups.merges` on both parents.
 
 ## 7. Invariants
 
@@ -163,8 +171,8 @@ it is specified here so part 2–4's rows carry a parent *set*, not a single par
 
 ## 10. What follows
 
-Parent retirement (the sealed group keeps running fenced until removal decisions retire each
+Parent retirement (a sealed group keeps running fenced until removal decisions retire each
 member: REPLICA-REMOVAL's rows, driven), the auto-split trigger (prototype: `KV9_AUTO_SPLIT_BYTES`,
-median-key sampling, derived operations — now with the seal window as a cost to weigh), scans and
-batches that cross a child boundary (refused whole today, as before the split), and merges (§6)
-follow in that order.
+median-key sampling, derived operations — now with the seal window as a cost to weigh), and scans
+and batches that cross a child boundary (refused whole today, as before the split) follow in that
+order. Both split and merge are operator verbs; nothing is automatic yet.

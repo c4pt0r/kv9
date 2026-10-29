@@ -66,6 +66,7 @@ mod group_compaction;
 mod migration_capture;
 mod node_drain;
 mod placement;
+mod range_merge;
 mod range_split;
 mod replica_addition;
 mod replica_pressure;
@@ -2598,6 +2599,8 @@ impl AdminApi for RuntimeBackend {
         let plans = dg::addition::committed_plans(store)?;
         let splits = dg::split::committed_splits(store).unwrap_or_default();
         let split_evidence = dg::split_evidence::committed_split_evidence(store).unwrap_or_default();
+        let merges = dg::merge::committed_merges(store).unwrap_or_default();
+        let merge_evidence = dg::merge::committed_merge_evidence(store).unwrap_or_default();
         let certified = kv9_meta::root::certified_root(&store.begin()?)?;
         let view = store.begin()?.into_view();
         let mut groups = Vec::new();
@@ -2680,6 +2683,35 @@ impl AdminApi for RuntimeBackend {
                     }
                 })
                 .collect();
+            let group_merges = merges
+                .iter()
+                .filter(|m| m.low_region() == intent.region() || m.high_region() == intent.region())
+                .map(|m| {
+                    let evidence = merge_evidence
+                        .iter()
+                        .find(|e| e.operation() == m.operation())
+                        .map(|e| (e.task(), *e.digest().as_bytes(), e.rows()));
+                    let sealed = |region: RegionId| {
+                        ranges.iter().any(|r| r.range().region == region && r.range().sealed)
+                    };
+                    crate::api::DataGroupMerge {
+                        task: m.task(),
+                        operation: m.operation(),
+                        low_region: m.low_region().0,
+                        high_region: m.high_region().0,
+                        child_task: m.child(),
+                        child_region: region_of(m.child()),
+                        stage: if sealed(m.low_region()) && sealed(m.high_region()) {
+                            "published"
+                        } else if evidence.is_some() {
+                            "populated"
+                        } else {
+                            "intended"
+                        },
+                        evidence,
+                    }
+                })
+                .collect();
             groups.push(DataGroupSummary {
                 creation_task: task,
                 region_id: intent.region().0,
@@ -2687,6 +2719,7 @@ impl AdminApi for RuntimeBackend {
                 replicas: intent.replicas().iter().map(replica).collect(),
                 members,
                 splits: group_splits,
+                merges: group_merges,
                 activated: activated.contains(&task),
                 keyspaces: ranges
                     .iter()
@@ -2916,6 +2949,32 @@ impl AdminApi for RuntimeBackend {
         Ok(crate::api::SplitRangeResult { intent, child_low, child_high, changed, applied })
     }
 
+    fn merge_ranges(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        low_region: RegionId,
+        high_region: RegionId,
+    ) -> Result<crate::api::MergeRangesResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("merge request root differs".into()));
+        }
+        let (intent, child, changed) =
+            kv9_meta::data_groups::merge::plan_merge(&mut txn, operation, low_region, high_region)?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::MergeRangesResult { intent, child, changed, applied })
+    }
+
     fn drain_node(&self, _caller: &str, node: NodeId) -> Result<crate::api::DrainResult> {
         self.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
@@ -3030,6 +3089,8 @@ fn task_kind_name(kind: u64) -> &'static str {
         112 => "node_drain",
         113 => "split_intent",
         114 => "split_evidence",
+        115 => "merge_intent",
+        116 => "merge_evidence",
         _ => "unknown",
     }
 }
@@ -4920,6 +4981,7 @@ pub struct NodeRuntime {
     replica_repair: replica_repair::State,
     node_drain: node_drain::State,
     range_split: range_split::State,
+    range_merge: range_merge::State,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -5586,6 +5648,7 @@ impl NodeRuntime {
             replica_repair: replica_repair::State::new(replica_repair::Config::from_env()),
             node_drain: node_drain::State::new(node_drain::Config::from_env()),
             range_split: range_split::State::default(),
+            range_merge: range_merge::State::default(),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             raw_ttl_clock,
@@ -6154,6 +6217,8 @@ impl NodeRuntime {
                 // Committed split intents: child descriptors, the parent's seal and
                 // the children's population (RANGE-SPLIT §3–§4).
                 self.reconcile_range_split();
+                // Committed merge intents: the split pipeline backwards (RANGE-SPLIT §6).
+                self.reconcile_range_merge();
                 // Fence committed removals before any deferred engine read or
                 // driver restart; retirement of an unopened group needs no GET.
                 let retirement_ready = self.reconcile_retirement();
@@ -6901,6 +6966,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("range_split=");
         body.push_str(&self.range_split_status());
+        body.push('\n');
+        body.push_str("range_merge=");
+        body.push_str(&self.range_merge_status());
         body.push('\n');
         body.push_str("replica_pressure=");
         body.push_str(

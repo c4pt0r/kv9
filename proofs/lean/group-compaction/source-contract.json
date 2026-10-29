@@ -20,7 +20,7 @@
     "crates/meta/src/data_groups/compaction.rs": "1cad3713439dcf39e2430ca985612dd8fc1d420008180d9a3b87d8c9336f9f2d",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
     "crates/raft/src/rawnode.rs": "01148cc1c42208aa0204d3b901168ea1ef07cc773728e2e96ff499cabffc8eb0",
-    "crates/server/src/runtime.rs": "5ed07c0a27764d06a5c2f29aa2a0530e1f96dceb6d9e94c92fab138c083bee3d",
+    "crates/server/src/runtime.rs": "5462a8a2f503e0812de161428abc288f8a256e41d12eb8fcf8c336013a026701",
     "scripts/group-compaction-e2e.py": "7c984095f2b9ecd5a3cd2960ddc07035fb1c6671a1461e3ca6bc5ab1117b684e",
     "proofs/lean/group-compaction/GroupCompaction.lean": "e6794f6c492570c6b41b669da59373763493c6dedb52a3e4d46bc8640339cd77",
     "proofs/lean/group-compaction/README.md": "c5063635f8dda37eec0dba255cdf31034aae6c639ec6878d18d301714c28d047"

@@ -191,6 +191,11 @@ class Kv9Stub:
                 request_serializer=kv9__pb2.SplitRangeRequest.SerializeToString,
                 response_deserializer=kv9__pb2.SplitRangeResponse.FromString,
                 _registered_method=True)
+        self.MergeRanges = channel.unary_unary(
+                '/kv9.v1.Kv9/MergeRanges',
+                request_serializer=kv9__pb2.MergeRangesRequest.SerializeToString,
+                response_deserializer=kv9__pb2.MergeRangesResponse.FromString,
+                _registered_method=True)
         self.ChangeNodeEndpoint = channel.unary_unary(
                 '/kv9.v1.Kv9/ChangeNodeEndpoint',
                 request_serializer=kv9__pb2.ChangeNodeEndpointRequest.SerializeToString,
@@ -497,6 +502,14 @@ class Kv9Servicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def MergeRanges(self, request, context):
+        """Commit a merge intent for two adjacent bound ranges on the same stores: the
+        merged child is created and activated in the same transaction (docs/RANGE-SPLIT.md §6).
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ChangeNodeEndpoint(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -765,6 +778,11 @@ def add_Kv9Servicer_to_server(servicer, server):
                     servicer.SplitRange,
                     request_deserializer=kv9__pb2.SplitRangeRequest.FromString,
                     response_serializer=kv9__pb2.SplitRangeResponse.SerializeToString,
+            ),
+            'MergeRanges': grpc.unary_unary_rpc_method_handler(
+                    servicer.MergeRanges,
+                    request_deserializer=kv9__pb2.MergeRangesRequest.FromString,
+                    response_serializer=kv9__pb2.MergeRangesResponse.SerializeToString,
             ),
             'ChangeNodeEndpoint': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeNodeEndpoint,
@@ -1696,6 +1714,33 @@ class Kv9:
             '/kv9.v1.Kv9/SplitRange',
             kv9__pb2.SplitRangeRequest.SerializeToString,
             kv9__pb2.SplitRangeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def MergeRanges(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/MergeRanges',
+            kv9__pb2.MergeRangesRequest.SerializeToString,
+            kv9__pb2.MergeRangesResponse.FromString,
             options,
             channel_credentials,
             insecure,

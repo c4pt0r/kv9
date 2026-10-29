@@ -211,6 +211,40 @@ impl Client {
         })
     }
 
+    /// Commit a merge intent for the adjacent bound ranges `low` and `high` on the
+    /// same stores (docs/RANGE-SPLIT.md §6); the merged child is created and
+    /// activated in the same transaction and the cluster does the rest.
+    pub async fn merge_ranges(
+        &self,
+        root: [u8; 32],
+        operation: [u8; 16],
+        low_region: u64,
+        high_region: u64,
+    ) -> Result<MergePlanned, Error> {
+        let r = self
+            .invoke(
+                false,
+                proto::MergeRangesRequest {
+                    root_digest: root.to_vec(),
+                    operation_id: operation.to_vec(),
+                    low_region,
+                    high_region,
+                },
+                |mut c, r| async move { c.merge_ranges(r).await },
+            )
+            .await?;
+        Ok(MergePlanned {
+            intent_task: r.intent_task,
+            child_task: r.child_task,
+            child_region: r.child_region,
+            changed: r.changed,
+            applied: Applied {
+                term: r.applied_term,
+                index: r.applied_index,
+            },
+        })
+    }
+
     /// Commit the intent that `node`'s current store leaves the cluster
     /// (docs/DRAIN-NODE.md). Idempotent per store incarnation; the cluster does
     /// the moves. Poll [`Client::list_nodes`] for `drained`.
@@ -388,6 +422,34 @@ pub struct DataGroup {
     pub members: Vec<DataGroupReplica>,
     /// Committed split intents whose parent is this group (docs/RANGE-SPLIT.md).
     pub splits: Vec<DataGroupSplit>,
+    /// Committed merge intents in which this group is a parent (docs/RANGE-SPLIT.md §6).
+    pub merges: Vec<DataGroupMerge>,
+}
+
+/// One committed merge intent.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupMerge {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    pub low_region: u64,
+    pub high_region: u64,
+    pub child_task: u64,
+    pub child_region: u64,
+    /// `intended`, `populated`, `published`.
+    pub stage: String,
+    pub evidence_task: u64,
+    pub evidence_digest: Vec<u8>,
+    pub evidence_rows: u64,
+}
+
+/// The receipt of [`Client::merge_ranges`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MergePlanned {
+    pub intent_task: u64,
+    pub child_task: u64,
+    pub child_region: u64,
+    pub changed: bool,
+    pub applied: Applied,
 }
 
 /// One committed split intent of a group.
@@ -594,6 +656,22 @@ impl Client {
                                 rows: e.rows,
                             })
                             .collect(),
+                    })
+                    .collect(),
+                merges: g
+                    .merges
+                    .into_iter()
+                    .map(|m| DataGroupMerge {
+                        task: m.task,
+                        operation: m.operation,
+                        low_region: m.low_region,
+                        high_region: m.high_region,
+                        child_task: m.child_task,
+                        child_region: m.child_region,
+                        stage: m.stage,
+                        evidence_task: m.evidence_task,
+                        evidence_digest: m.evidence_digest,
+                        evidence_rows: m.evidence_rows,
                     })
                     .collect(),
                 activated: g.activated,

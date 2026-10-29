@@ -748,6 +748,19 @@ pub trait AdminApi {
     fn drain_node(&self, _caller: &str, _node: kv9_common::NodeId) -> Result<DrainResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::drain_node"))
     }
+    /// Commit a merge intent for the adjacent bound ranges `low` `[s,m)` and `high`
+    /// `[m,e)` on the same stores, creating and activating the merged child in the
+    /// same transaction (docs/RANGE-SPLIT.md §6).
+    fn merge_ranges(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _low_region: kv9_common::RegionId,
+        _high_region: kv9_common::RegionId,
+    ) -> Result<MergeRangesResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::merge_ranges"))
+    }
     /// Commit a split intent for the bound range of `parent_region` at `split_key`,
     /// creating and activating both children on the parent's stores in the same
     /// transaction (docs/RANGE-SPLIT.md §2). Nothing seals, copies or reroutes.
@@ -850,6 +863,31 @@ pub struct DataGroupSummary {
     pub members: Vec<DataGroupReplica>,
     /// Committed split intents whose parent is this group (docs/RANGE-SPLIT.md §2).
     pub splits: Vec<DataGroupSplit>,
+    /// Committed merge intents in which this group is a parent (docs/RANGE-SPLIT.md §6).
+    pub merges: Vec<DataGroupMerge>,
+}
+
+/// One committed merge intent, with its catalog-only stage.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupMerge {
+    pub task: u64,
+    pub operation: [u8; 16],
+    pub low_region: u64,
+    pub high_region: u64,
+    pub child_task: u64,
+    pub child_region: u64,
+    pub stage: &'static str,
+    /// `(evidence task, digest, rows)` once the child is populated.
+    pub evidence: Option<(u64, [u8; 32], u64)>,
+}
+
+/// The receipt of [`AdminApi::merge_ranges`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MergeRangesResult {
+    pub intent: kv9_meta::data_groups::merge::MergeIntent,
+    pub child: kv9_meta::data_groups::CreationIntent,
+    pub changed: bool,
+    pub applied: AppliedPosition,
 }
 
 /// One committed split intent of a group, with its catalog-only stage.

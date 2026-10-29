@@ -18,6 +18,7 @@ pub mod capture;
 pub mod compaction;
 pub mod drain;
 pub mod evidence;
+pub mod merge;
 pub mod migration;
 pub mod ranges;
 pub mod removal;

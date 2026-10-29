@@ -177,10 +177,17 @@ test "$(echo "$described" | jq_py "[k['keyspace_id'] for k in d['result']['keysp
 test "$(echo "$described" | jq_py 'sorted(r["observed"]["role"] for r in d["result"]["replica_views"])')" = "['Follower', 'Follower', 'Leader']"
 echo "group create/list/describe and keyspace create --group: group $gtask, keyspace $gks, three active replicas."
 # The grouped keyspace serves raw traffic through the SDK (epoch refresh + leader hint).
-printf 'use grouped\nput g/1 one\nget g/1\n' | KV9_CLIENT_TOKEN="$app_token" timeout 60 "$(dirname "$bin")/kv9-repl" \
-  --addr "$(follower_endpoint)" --peers "1=127.0.0.1:$((base_port + 1)),2=127.0.0.1:$((base_port + 2)),3=127.0.0.1:$((base_port + 3))" \
-  >"$artifact_dir/repl-group.out" 2>&1 || { cat "$artifact_dir/repl-group.out" >&2; exit 1; }
-grep -q '^one$' "$artifact_dir/repl-group.out"
+# The public route of a freshly bound keyspace is published a moment after the
+# group activates (REPLICA-ADDITION's known fact); the first write may race it.
+for attempt in $(seq 1 60); do
+  if printf 'use grouped\nput g/1 one\nget g/1\n' | KV9_CLIENT_TOKEN="$app_token" timeout 60 "$(dirname "$bin")/kv9-repl" \
+    --addr "$(follower_endpoint)" --peers "1=127.0.0.1:$((base_port + 1)),2=127.0.0.1:$((base_port + 2)),3=127.0.0.1:$((base_port + 3))" \
+    >"$artifact_dir/repl-group.out" 2>&1 && grep -q '^one$' "$artifact_dir/repl-group.out"; then
+    break
+  fi
+  if [[ "$attempt" == 60 ]]; then cat "$artifact_dir/repl-group.out" >&2; exit 1; fi
+  sleep 1
+done
 tasks="$(admin task list)"
 test "$(echo "$tasks" | jq_py 'sorted(set(t["kind"] for t in d["result"]["tasks"]))')" = "[100, 101, 102]"
 test "$(echo "$tasks" | jq_py 'd["result"]["next_after"]')" = "0"

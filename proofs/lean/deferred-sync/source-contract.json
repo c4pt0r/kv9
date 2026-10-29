@@ -22,7 +22,7 @@
     "crates/engine/src/wal_stream.rs": "74db29e84808a231d163ff6afa4e90ee55afb068b224e135886bd6dda727b301",
     "crates/engine/src/persist.rs": "04481cb1dc1814140a31db1d3ce680de0a93d38fde1ff499c05e58c143e6e43f",
     "crates/server/src/region_manager.rs": "3e02ef7fe700908c33a2069ddfaa892228017b38715e70da8908531311b85220",
-    "crates/server/src/runtime.rs": "5ed07c0a27764d06a5c2f29aa2a0530e1f96dceb6d9e94c92fab138c083bee3d",
+    "crates/server/src/runtime.rs": "5462a8a2f503e0812de161428abc288f8a256e41d12eb8fcf8c336013a026701",
     "scripts/deferred-sync-e2e.py": "36602393960902bad805877e4798faaff4012e9123ffb007d0def6af5956e511",
     "proofs/lean/deferred-sync/DeferredSync.lean": "864eec740ef55bd691657ef028434d924f56e0eadd3c112be719f7cd7056eb88",
     "proofs/lean/deferred-sync/README.md": "0d2650180f5f32b7129697922e2e5853c57c0c161d9434ab8959f4b596ebce6e"

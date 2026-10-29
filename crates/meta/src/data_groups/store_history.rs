@@ -289,6 +289,22 @@ pub fn project(
             }
             Task::load(view, e.child_task(), 100)?.creation(root)?;
         }
+        // A merge intent names one child creation with its own kind-100 origin;
+        // merge evidence introduces no store.
+        115 => {
+            let m = merge::MergeIntent::decode(&t.payload)?;
+            if m.root() != root || m.task() != t.id || m.encode() != t.payload {
+                return Err(invalid("store-history merge intent differs"));
+            }
+            Task::load(view, m.child(), 100)?.creation(root)?;
+        }
+        116 => {
+            let e = merge::MergeEvidence::decode(&t.payload)?;
+            if e.task() != t.id || e.encode() != t.payload {
+                return Err(invalid("store-history merge evidence differs"));
+            }
+            Task::load(view, e.child_task(), 100)?.creation(root)?;
+        }
         _ => {
             return Err(invalid(
                 "unsupported task kind leaves DATA store history unknown",
