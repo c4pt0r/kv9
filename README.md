@@ -57,6 +57,9 @@ Client SDKs for **Python, Rust, C++ and TypeScript** share one contract (`sdk/RE
 every SDK against a freshly booted cluster.
 
 See [QUICKSTART](docs/QUICKSTART.md) for prerequisites, MinIO configuration and a persistent cluster.
+Cluster administration today goes through `kv9 client` verbs addressed to the current leader;
+[KV9-ADMIN](docs/KV9-ADMIN.md) is the design for `kv9-admin`, one tool that resolves leaders, lists the
+catalog, drives membership and migration flows from their committed state and speaks JSON to scripts.
 Node-local queue, backend, Raft wait and WAL timing are described in [LATENCY-OBSERVABILITY](docs/LATENCY-OBSERVABILITY.md).
 
 ## Target architecture
