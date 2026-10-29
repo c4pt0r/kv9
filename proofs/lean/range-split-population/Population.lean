@@ -6,9 +6,10 @@ namespace Kv9.RangeSplitPopulation
 `childrenServe` says both children have a leader and an applied half descriptor;
 `sealed` the parent's descriptor; `copied` how many rows a child has copied, `half` how
 many the sealed parent half holds; `verified` that the child's rows equal the half;
-`evidence` counts committed evidence rows for the child; `published` and `routed` are
-part 4, never touched here; `parentWrites` counts writes the parent accepted after the
-seal (must stay zero). -/
+`evidence` counts committed evidence rows for the child and `otherEvidenced` says the
+sibling has its row; `published` is the one-transaction publication (§5) and `routed`
+that the catalog routes through the children; `parentWrites` counts writes the parent
+accepted after the seal (must stay zero). -/
 structure State where
   childrenServe : Bool := false
   sealed : Bool := false
@@ -16,6 +17,7 @@ structure State where
   copied : Nat := 0
   verified : Bool := false
   evidence : Nat := 0
+  otherEvidenced : Bool := false
   published : Bool := false
   routed : Bool := false
   parentWrites : Nat := 0
@@ -35,6 +37,11 @@ inductive Step : State → State → Prop where
   /-- Evidence: only after verification, once per child (a repeat confirms). -/
   | evidence {s} (v : s.verified = true) :
       Step s {s with evidence := if s.evidence = 0 then 1 else s.evidence}
+  | siblingEvidence {s} : Step s {s with otherEvidenced := true}
+  /-- Publication: one transaction, only with both children's evidence; routing flips
+  with it, never before. -/
+  | publish {s} (e : s.evidence = 1) (o : s.otherEvidenced = true) :
+      Step s {s with published := true, routed := true}
 
 inductive Reachable : State → Prop where
   | initial : Reachable {}
@@ -43,7 +50,8 @@ inductive Reachable : State → Prop where
 def Safe (s : State) : Prop :=
   s.parentWrites = 0 ∧ s.evidence ≤ 1 ∧ (s.evidence = 1 → s.verified = true) ∧
     (s.verified = true → s.sealed = true ∧ s.copied = s.half) ∧ s.copied ≤ s.half ∧
-    s.published = false ∧ s.routed = false ∧ (s.sealed = true → s.childrenServe = true)
+    (s.published = true → s.evidence = 1 ∧ s.otherEvidenced = true) ∧ s.routed = s.published ∧
+    (s.sealed = true → s.childrenServe = true)
 
 theorem initial_safe : Safe {} := by simp [Safe]
 
@@ -52,6 +60,8 @@ theorem step_safe {s t : State} (safe : Safe s) (step : Step s t) : Safe t := by
   cases step with
   | serve => exact ⟨hW, hE, hEV, hV, hC, hP, hR, fun _ => rfl⟩
   | sealParent c => exact ⟨hW, hE, hEV, fun v => ⟨rfl, (hV v).2⟩, hC, hP, hR, fun _ => c⟩
+  | siblingEvidence => exact ⟨hW, hE, hEV, hV, hC, fun p => ⟨(hP p).1, rfl⟩, hR, hS⟩
+  | publish e o => exact ⟨hW, hE, hEV, hV, hC, fun _ => ⟨e, o⟩, rfl, hS⟩
   | parentWrite u =>
       refine ⟨by simp [u, hW], hE, hEV, ?_, by simp; omega, hP, hR, hS⟩
       intro v
@@ -60,8 +70,10 @@ theorem step_safe {s t : State} (safe : Safe s) (step : Step s t) : Safe t := by
   | copy d more => exact ⟨hW, hE, hEV, fun v => by have := (hV v).2; simp_all, by simp; omega, hP, hR, hS⟩
   | verify d all => exact ⟨hW, hE, fun _ => rfl, fun _ => ⟨d, all⟩, hC, hP, hR, hS⟩
   | evidence v =>
-      refine ⟨hW, ?_, fun _ => v, hV, hC, hP, hR, hS⟩
-      by_cases h : s.evidence = 0 <;> simp [h] <;> omega
+      refine ⟨hW, ?_, fun _ => v, hV, hC, fun p => ?_, hR, hS⟩
+      · by_cases h : s.evidence = 0 <;> simp [h] <;> omega
+      · obtain ⟨e1, o⟩ := hP p
+        exact ⟨by simp [e1], o⟩
 
 theorem run_safe {s : State} (run : Reachable s) : Safe s := by
   induction run with
@@ -90,21 +102,27 @@ theorem the_seal_waits_for_the_children {s : State} (run : Reachable s) (d : s.s
     s.childrenServe = true :=
   (run_safe run).2.2.2.2.2.2.2 d
 
--- Parts 2–3 publish and route nothing.
-theorem nothing_is_published_or_routed_here {s : State} (run : Reachable s) :
-    s.published = false ∧ s.routed = false :=
-  ⟨(run_safe run).2.2.2.2.2.1, (run_safe run).2.2.2.2.2.2.1⟩
+-- S4/S5: publication needs both children's evidence, and routing flips exactly with it.
+theorem publication_needs_both_children {s : State} (run : Reachable s) (p : s.published = true) :
+    s.evidence = 1 ∧ s.otherEvidenced = true :=
+  (run_safe run).2.2.2.2.2.1 p
 
--- The chain reaches evidence for a half of three rows.
-theorem the_chain_reaches_evidence :
-    ∃ s, Reachable s ∧ s.evidence = 1 ∧ s.sealed = true ∧ s.copied = s.half := by
-  refine ⟨⟨true, true, 3, 3, true, 1, false, false, 0⟩, ?_, rfl, rfl, rfl⟩
-  have a : Reachable ⟨true, false, 3, 0, false, 0, false, false, 0⟩ := .step .initial .serve
-  have b : Reachable ⟨true, true, 3, 0, false, 0, false, false, 0⟩ := .step a (.sealParent rfl)
-  have c1 : Reachable ⟨true, true, 3, 1, false, 0, false, false, 0⟩ := .step b (.copy rfl (by decide))
-  have c2 : Reachable ⟨true, true, 3, 2, false, 0, false, false, 0⟩ := .step c1 (.copy rfl (by decide))
-  have c3 : Reachable ⟨true, true, 3, 3, false, 0, false, false, 0⟩ := .step c2 (.copy rfl (by decide))
-  have v : Reachable ⟨true, true, 3, 3, true, 0, false, false, 0⟩ := .step c3 (.verify rfl rfl)
-  exact .step v (.evidence rfl)
+theorem routing_follows_publication_atomically {s : State} (run : Reachable s) :
+    s.routed = s.published :=
+  (run_safe run).2.2.2.2.2.2.1
+
+-- The chain reaches a published split of a half of three rows.
+theorem the_chain_reaches_publication :
+    ∃ s, Reachable s ∧ s.published = true ∧ s.routed = true ∧ s.sealed = true ∧ s.copied = s.half := by
+  refine ⟨⟨true, true, 3, 3, true, 1, true, true, true, 0⟩, ?_, rfl, rfl, rfl, rfl⟩
+  have a : Reachable ⟨true, false, 3, 0, false, 0, false, false, false, 0⟩ := .step .initial .serve
+  have b : Reachable ⟨true, true, 3, 0, false, 0, false, false, false, 0⟩ := .step a (.sealParent rfl)
+  have c1 : Reachable ⟨true, true, 3, 1, false, 0, false, false, false, 0⟩ := .step b (.copy rfl (by decide))
+  have c2 : Reachable ⟨true, true, 3, 2, false, 0, false, false, false, 0⟩ := .step c1 (.copy rfl (by decide))
+  have c3 : Reachable ⟨true, true, 3, 3, false, 0, false, false, false, 0⟩ := .step c2 (.copy rfl (by decide))
+  have v : Reachable ⟨true, true, 3, 3, true, 0, false, false, false, 0⟩ := .step c3 (.verify rfl rfl)
+  have e : Reachable ⟨true, true, 3, 3, true, 1, false, false, false, 0⟩ := .step v (.evidence rfl)
+  have o : Reachable ⟨true, true, 3, 3, true, 1, true, false, false, 0⟩ := .step e .siblingEvidence
+  exact .step o (.publish rfl rfl)
 
 end Kv9.RangeSplitPopulation

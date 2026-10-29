@@ -10,17 +10,18 @@
     "the_sealed_parent_accepts_no_write",
     "a_copy_reads_only_a_sealed_parent",
     "the_seal_waits_for_the_children",
-    "nothing_is_published_or_routed_here",
-    "the_chain_reaches_evidence"
+    "publication_needs_both_children",
+    "routing_follows_publication_atomically",
+    "the_chain_reaches_publication"
   ],
   "source_sha256": {
-    "crates/server/src/runtime/range_split.rs": "99773449fba8c9d05b53cd4db9f0bcf6b38d004d84c1b7d971b2a14f07a66236",
-    "crates/meta/src/data_groups/split_evidence.rs": "d5487ba912646ea0f074914441d691b27dd6fcd0801c558ae4249416d3fc0dba",
-    "crates/meta/src/data_groups/split.rs": "5f1b9a894022cd61b9eb0357075c53ec2bbe03b3e8c6ce078d3b0449fc2e3906",
-    "crates/server/src/runtime.rs": "0dc1134dbfdfbb66b739b3e2476a13fa8674721d51cba6cb16229f224bd15387",
+    "crates/server/src/runtime/range_split.rs": "b1e43d558899771343a4df111e4143dee65bae86bb0a3eb87ada716590748ae8",
+    "crates/meta/src/data_groups/split_evidence.rs": "91a3ec25779b863a45de9eded54c21a1e55bd7cb41e4a7c5bda75f53c37456d6",
+    "crates/meta/src/data_groups/split.rs": "6065946f4e366226b8ae2568b5cb11c0a3adc55f28f04c12edec0169b7125dec",
+    "crates/server/src/runtime.rs": "5ed07c0a27764d06a5c2f29aa2a0530e1f96dceb6d9e94c92fab138c083bee3d",
     "proto/kv9_raft.proto": "34c64f25060d953dcb9c1ff806bde42ed136dac0880e9ffd3311c441dc334157",
     "crates/raft/src/grpc/split_evidence.rs": "5df9bb536b3e2a228f02f1deac34db4c97e9938cb7c2e8c18db92881d11f811d",
-    "scripts/range-split-population-e2e.py": "93b02beb3f10729fbfe3c816c9dfdfaab8c1dd009859271ec041802ba3df35e3",
-    "docs/RANGE-SPLIT.md": "a207fa5f307d5b0929a1b6041f5aaf9aecc50532e9d95321eadc1c01b1c3cb11"
+    "scripts/range-split-population-e2e.py": "551fdedb190d0aa4f24e3d5e1ae71eec9dc77f7ff51a1827e0e93c776efe9df9",
+    "docs/RANGE-SPLIT.md": "c0a61d6448085116a93b3badb868c06a4422837923513f37723b37e3386bddf7"
   }
 }

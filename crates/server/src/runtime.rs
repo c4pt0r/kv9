@@ -2664,10 +2664,17 @@ impl AdminApi for RuntimeBackend {
                         child_high_task: s.child_high(),
                         child_low_region: region_of(s.child_low()),
                         child_high_region: region_of(s.child_high()),
-                        stage: match evidence.len() {
-                            0 => "intended",
-                            1 => "populating",
-                            _ => "populated",
+                        stage: if ranges
+                            .iter()
+                            .any(|r| r.range().region == s.parent_region() && r.range().sealed)
+                        {
+                            "published"
+                        } else {
+                            match evidence.len() {
+                                0 => "intended",
+                                1 => "populating",
+                                _ => "populated",
+                            }
                         },
                         evidence,
                     }

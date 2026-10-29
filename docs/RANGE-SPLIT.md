@@ -8,11 +8,12 @@ Design packet, 2026-10-29. Parent [#9](https://github.com/c4pt0r/kv9/issues/9), 
 the plan driver, the admin tool — in the same committed-authority-first order the prototype proved:
 **intent → seal → population → publication**, each its own increment with its own proof and e2e.
 
-> **Status: parts 1–3 implemented** (2026-10-29): the committed split intent with its children
-> (§2), the seal (§3) and the verified population with its evidence rows (§4), driven by
-> `runtime/range_split.rs`; `scripts/range-split-intent-e2e.sh` and
-> `scripts/range-split-population-e2e.sh` pass and run in CI. Part 4 (publication) is designed
-> here and open; until it lands a split stops at `populated` with the parent sealed (§10).
+> **Status: parts 1–4 implemented** (2026-10-29): the committed split intent with its children
+> (§2), the seal (§3), the verified population with its evidence rows (§4) and the one-transaction
+> publication (§5), driven by `runtime/range_split.rs`; `scripts/range-split-intent-e2e.sh` and
+> `scripts/range-split-population-e2e.sh` (intent → published, children serving) pass and run in
+> CI. `kv9-admin group split <task> --at <key>` is the one verb; the rest is the cluster's. §9
+> records what the implementation settled; §10 what follows (retirement, auto-split, merge).
 
 ## What master kept, and what it did not
 
@@ -140,8 +141,19 @@ it is specified here so part 2–4's rows carry a parent *set*, not a single par
   catalog routes nothing to a child until part 4, so no client can reach one.
 - **The seal window.** `RawGroup::authorize` refuses reads and writes alike on a sealed range
   (typed `stale region epoch`), so between the seal and the publication the parent's keyspace is
-  unavailable. Part 4 closes the window; until then `group split` is an operator's deliberate,
-  observable act, never automatic.
+  unavailable: in the e2e that is the population of a few rows plus one catalog commit, in
+  production it is proportional to the parent's size. Clients with auto-refresh re-resolve the
+  route on the typed error and continue on the children once published. An automatic trigger
+  must weigh that window; `group split` stays an operator's deliberate act for now.
+- **Publication, as built** (`plan_split_publication`, the metadata leader's `publish` step once
+  both evidence rows exist). The parent's kind-102 binding row is sealed **in place** (payload →
+  version+1, sealed; the row's task is the intent's `parent_bind_task` and stays valid), the two
+  child bindings are inserted with `[s,k)` and `[k,e)` at epoch 1/1 together with their routable
+  region rows, and the parent's region row is removed so the catalog's key→region lookup names a
+  child. `ranges::read_in` validates the staged shape inside the transaction before it commits.
+  On every node the binding reconcile then finds each child's applied descriptor equal to its
+  new binding and inserts it into the raw directory; the parent re-enters it sealed and
+  `get_for` skips it. Nothing new is proposed into any group at publication.
 - **TTL-activated ranges cannot be sealed** (the state machine refuses the seal as a legacy command
   while TTL is enabled): the seal step fails loudly in the status line and the split waits; the
   TTL-preserving split is future work, as the prototype left it.
@@ -151,7 +163,8 @@ it is specified here so part 2–4's rows carry a parent *set*, not a single par
 
 ## 10. What follows
 
-Part 4 (publication) is the next increment: one catalog transaction with the parent binding's
-sealed successor and the two child bindings, the raw directory refresh, and the close of the seal
-window. Parent retirement, the auto-split trigger (prototype: `KV9_AUTO_SPLIT_BYTES`, median-key
-sampling, derived operations) and merges follow in that order.
+Parent retirement (the sealed group keeps running fenced until removal decisions retire each
+member: REPLICA-REMOVAL's rows, driven), the auto-split trigger (prototype: `KV9_AUTO_SPLIT_BYTES`,
+median-key sampling, derived operations — now with the seal window as a cost to weigh), scans and
+batches that cross a child boundary (refused whole today, as before the split), and merges (§6)
+follow in that order.

@@ -94,6 +94,12 @@ def main():
         ('a-second-evidence-row',
          "      Step s {s with evidence := if s.evidence = 0 then 1 else s.evidence}",
          "      Step s {s with evidence := s.evidence + 1}"),
+        ('publish-with-one-child',
+         "  | publish {s} (e : s.evidence = 1) (o : s.otherEvidenced = true) :",
+         "  | publish {s} (e : s.evidence = 1) (o : s.otherEvidenced = s.otherEvidenced) :"),
+        ('route-before-publication',
+         "      Step s {s with published := true, routed := true}",
+         "      Step s {s with published := s.published, routed := true}"),
     ]
     for label, before, after in controls:
         assert source.count(before) == 1, label

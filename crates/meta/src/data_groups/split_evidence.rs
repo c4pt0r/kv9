@@ -200,11 +200,15 @@ pub fn plan_split_evidence<E: Engine>(txn: &mut MetaTxn<'_, E>, receipt: &[u8]) 
 /// Every committed evidence row, re-validated against its intent.
 pub fn committed_split_evidence<E: Engine>(store: &MetaStore<E>) -> Result<Vec<SplitEvidence>> {
     let txn = store.begin()?;
-    let root = crate::root::certified_root(&txn)?
+    committed_split_evidence_in_txn(&txn)
+}
+
+pub fn committed_split_evidence_in_txn<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<SplitEvidence>> {
+    let root = crate::root::certified_root(txn)?
         .ok_or_else(|| invalid("split evidence readback requires a certified metadata root"))?;
-    let intents = super::split::committed_splits_in_txn(&txn)?;
+    let intents = super::split::committed_splits_in_txn(txn)?;
     let mut out: Vec<SplitEvidence> = Vec::new();
-    for row in task_rows(&txn) {
+    for row in task_rows(txn) {
         if let Some(evidence) = from_split_evidence_row(&row?, root.digest())? {
             let intent = intents
                 .iter()

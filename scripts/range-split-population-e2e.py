@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Range split, parts 2 and 3: seal and population (docs/RANGE-SPLIT.md §3–§4).
+"""Range split, parts 2–4: seal, population and publication (docs/RANGE-SPLIT.md §3–§5).
 
 Three stores hold a data group with a bound keyspace holding k/a..k/z. After
 `kv9-admin group split <task> --at k/m` the cluster, by itself, installs the
 children's half descriptors, seals the parent once both children serve, copies
 each half from the local sealed parent replica into its child, verifies the copy
-row for row and commits one evidence row per child: the split reaches stage
-`populated`. The parent then refuses writes with the typed stale-epoch error and
-still serves reads; nothing is rerouted (publication is part 4).
+row for row and commits one evidence row per child (stage `populated`), then the
+metadata leader publishes the new partition in one catalog transaction (stage
+`published`): the parent's binding is sealed, both children are bound to their
+halves, reads and writes flow again through the children, and the sealed parent
+answers nothing.
 """
 import argparse
 import hashlib
@@ -209,8 +211,8 @@ def main():
         def stage():
             s = group_view().get('splits', [])
             return s[0]['stage'] if s else None
-        wait('the split reaches stage populating or populated', lambda: stage() in ('populating', 'populated'), 180)
-        wait('the split reaches stage populated', lambda: stage() == 'populated', 180)
+        wait('the split reaches stage populating or later', lambda: stage() in ('populating', 'populated', 'published'), 180)
+        wait('the split reaches stage populated or published', lambda: stage() in ('populated', 'published'), 180)
         view = group_view()
         evidence = sorted(view['splits'][0]['evidence'], key=lambda e: e['child_task'])
         rows = {e['child_task']: e['rows'] for e in evidence}
@@ -221,14 +223,26 @@ def main():
         listed, _ = admin('task-list-114', 'task', 'list', '--kind', '114')
         require(len(listed['result']['tasks']) == 2, f"two kind-114 rows: {listed['result']}")
 
-        # ------------------------------------------------------------ the parent is sealed
-        # Between the seal and the publication (part 4) the parent refuses reads and
-        # writes alike with the typed stale-epoch error: the route still names it and
-        # nothing else is routable yet. That window is the price of parts 2–3 alone.
-        out = repl('read-after-seal', ['use split-me', 'get k/a'], success=None)
-        require('stale region epoch' in out and 'applied' not in out, f'the sealed parent refuses with the typed error: {out}')
-        out = repl('write-after-seal', ['use split-me', 'put k/new x'], success=None)
-        require('stale region epoch' in out and 'applied' not in out, f'a write to the sealed parent is refused: {out}')
+        # ------------------------------------------------------------ publication
+        wait('the split reaches stage published', lambda: stage() == 'published', 120)
+        listed, _ = admin('group-list-after', 'group', 'list')
+        rows_by_task = {g['creation_task']: g for g in listed['result']}
+        parent_row = rows_by_task[int(task)]
+        require(len(parent_row['keyspaces']) == 1 and parent_row['keyspaces'][0]['sealed'] is True
+                and parent_row['keyspaces'][0]['epoch']['version'] == 2, f'the parent binding is sealed at version 2: {parent_row["keyspaces"]}')
+        km = 'k/m'.encode().hex()
+        for child, (start, end) in ((low, ('', km)), (high, (km, ''))):
+            ks = rows_by_task[child['creation_task']]['keyspaces']
+            require(len(ks) == 1 and ks[0]['keyspace_id'] == parent_row['keyspaces'][0]['keyspace_id'] and not ks[0]['sealed']
+                    and ks[0]['start'] == start and ks[0]['end'] == end, f'child {child} bound to its half: {ks}')
+        # Reads and writes flow again, through the children; the client refreshes its
+        # route by itself. The pre-split data is all there.
+        def served():
+            out = repl('read-after-publish', ['use split-me', 'get k/a', 'get k/m', 'get k/z', 'put k/zz zz', 'get k/zz', 'put k/0a b', 'get k/0a'],
+                       success=None)
+            return out if all(f'{c}' in out for c in ('a', 'm', 'z', 'zz', 'b')) and 'error' not in out.lower() else None
+        wait('the children serve every pre-split key and new writes on both sides', served, 60)
+        # The sealed parent group still runs, fenced: its live view says so.
         live = group_leader_view()
         require(live is not None and sorted(live.get('voters', [])) == [1, 2, 3], f'parent voters unchanged: {live}')
 
@@ -238,10 +252,10 @@ def main():
         for node in processes:
             for e in json.loads(status(node).get('range_split', '{}')).get('events', []):
                 steps.setdefault(e['step'], set()).add(node)
-        require({'child_descriptor', 'seal', 'populate'} <= set(steps), f'every step recorded: {steps}')
+        require({'child_descriptor', 'seal', 'populate', 'publish'} <= set(steps), f'every step recorded: {steps}')
         manifest_record['verdict'] = 'passed'
         print(f'PASS: range split population (parent {task} split at k/m -> children {low["creation_task"]}/{high["creation_task"]} '
-              f'hold 13 + 14 rows with verified digests; parent sealed (typed refusal until publication); steps: '
+              f'hold 13 + 14 rows with verified digests; published: parent sealed, children serve; steps: '
               f'{ {k: sorted(v) for k, v in sorted(steps.items())} })', flush=True)
     except Exception as error:
         manifest_record['verdict'] = f'failed: {error}'

@@ -293,6 +293,108 @@ pub fn plan_split<E: Engine>(
     Ok((intent, low, high, true))
 }
 
+/// The published shape of an intent: the parent's binding sealed in place
+/// (version+1) and the two child bindings `[s,k)` / `[k,e)` with their routable
+/// region rows, in ONE catalog transaction (docs/RANGE-SPLIT.md §5). Requires the
+/// committed intent and BOTH children's population evidence (kind 114). `false`
+/// means the shape is already committed (a confirmation). The parent's region
+/// routing row is removed: a sealed range routes nothing. Readback validates the
+/// whole partition, so no reader ever observes a partial shape.
+pub fn plan_split_publication<E: Engine>(txn: &mut MetaTxn<'_, E>, operation: [u8; 16]) -> Result<(SplitIntent, bool)> {
+    use crate::schema::REGIONS_DESC;
+    let root = crate::root::certified_root(txn)?
+        .ok_or_else(|| invalid("split publication requires a certified metadata root"))?;
+    let intent = committed_splits_in_txn(txn)?
+        .into_iter()
+        .find(|s| s.operation() == operation)
+        .ok_or_else(|| invalid("split publication requires the committed intent"))?;
+    let bindings = super::ranges::read_in(txn)?;
+    let parent = bindings
+        .iter()
+        .find(|b| b.range().region == intent.parent_region)
+        .ok_or_else(|| invalid("split publication requires the parent binding"))?;
+    if parent.range().sealed {
+        return Ok((intent, false)); // readback already accepted it as the published shape
+    }
+    let evidenced: Vec<u64> = super::split_evidence::committed_split_evidence_in_txn(txn)?
+        .into_iter()
+        .filter(|e| e.operation() == operation)
+        .map(|e| e.child_task())
+        .collect();
+    if !(evidenced.contains(&intent.child_low) && evidenced.contains(&intent.child_high)) {
+        return Err(invalid("split publication requires both children's population evidence"));
+    }
+    let parent_range = parent.range().clone();
+    let parent_creation_task = parent.creation().intent().task();
+    let mut sealed = parent_range.clone();
+    sealed.version = parent_range
+        .version
+        .checked_add(1)
+        .ok_or_else(|| invalid("range version exhausted"))?;
+    sealed.sealed = true;
+    let mut payload = parent_creation_task.to_be_bytes().to_vec();
+    payload.extend_from_slice(&sealed.encode());
+    txn.update(
+        &TASKS_DESC,
+        &[memcmp_uint(parent.bind_task())],
+        vec![(ColumnId(3), ColumnValue::Bytes(payload))],
+    )?;
+    if txn.get(&REGIONS_DESC, &[memcmp_uint(parent_range.region.0)])?.is_some() {
+        txn.delete(&REGIONS_DESC, &[memcmp_uint(parent_range.region.0)])?;
+    }
+    for (task, start, end) in [
+        (intent.child_low, parent_range.start.clone(), intent.split_key.clone()),
+        (intent.child_high, intent.split_key.clone(), parent_range.end.clone()),
+    ] {
+        let child = creation_of(txn, root.digest(), task)?;
+        let range = kv9_common::data_range::DataRange {
+            root: root.digest(),
+            creation: child.digest(),
+            region: child.region(),
+            keyspace: parent_range.keyspace,
+            tenant: parent_range.tenant,
+            conf_ver: 1,
+            version: 1,
+            start,
+            end,
+            sealed: false,
+        };
+        range.validate()?;
+        let mut region = RowValue::new();
+        for (c, v) in [
+            (1, ColumnValue::Uint(range.region.0)),
+            (2, ColumnValue::Uint(u64::from(range.keyspace.0))),
+            (3, ColumnValue::Bytes(range.start.clone())),
+            (4, ColumnValue::Bytes(range.end.clone())),
+            (5, ColumnValue::Uint(1)),
+            (6, ColumnValue::Uint(1)),
+            (7, ColumnValue::Uint(0)),
+        ] {
+            region.set(ColumnId(c), v);
+        }
+        txn.insert(&REGIONS_DESC, &[memcmp_uint(range.region.0)], region)?;
+        let bind_task = txn.allocate_id(SequenceKind::Task)?;
+        let mut payload = task.to_be_bytes().to_vec();
+        payload.extend_from_slice(&range.encode());
+        let mut row = RowValue::new();
+        for (c, v) in [
+            (1, ColumnValue::Uint(bind_task)),
+            (2, ColumnValue::Uint(102)),
+            (3, ColumnValue::Bytes(payload)),
+            (4, ColumnValue::Uint(0)),
+            (5, ColumnValue::Uint(0)),
+        ] {
+            row.set(ColumnId(c), v);
+        }
+        txn.insert(&TASKS_DESC, &[memcmp_uint(bind_task)], row)?;
+    }
+    // The staged shape must read back as a legal partition, and the intent must
+    // still validate against it (its own published shape).
+    super::ranges::read_in(txn)?;
+    validate_against(txn, root.digest(), &intent)?;
+    Ok((intent, true))
+}
+
 /// Every committed split intent from one applied snapshot, with the full
 /// cross-validation re-run. Intents never expire or cancel.
 pub fn committed_splits<E: Engine>(store: &MetaStore<E>) -> Result<Vec<SplitIntent>> {
@@ -392,11 +494,44 @@ mod tests {
         let mut txn = store.begin().unwrap();
         assert!(plan_split(&mut txn, [4; 16], low.region(), b"c").is_err());
         drop(txn);
-        // Readback refuses an intent whose children lost their activation evidence
-        // (a tampered catalog), and decode refuses a tampered key length.
+        // Decode refuses a tampered key length.
         let mut bytes = intent.encode();
         bytes[97] ^= 1;
         assert!(SplitIntent::decode(&bytes).is_err());
         let _ = register_node;
+
+        // Publication needs both evidence rows, then seals the parent in place and
+        // binds the children as the exact partition; routing follows; a repeat confirms.
+        let mut txn = store.begin().unwrap();
+        assert!(plan_split_publication(&mut txn, [2; 16]).is_err(), "no evidence yet");
+        drop(txn);
+        for child in [low.task(), high.task()] {
+            let receipt = super::super::split_evidence::SplitEvidence::receipt(
+                &intent, child, RootDigest::sha256(&child.to_be_bytes()), 3).unwrap();
+            let mut txn = store.begin().unwrap();
+            super::super::split_evidence::plan_split_evidence(&mut txn, &receipt).unwrap();
+            txn.commit().unwrap();
+        }
+        let mut txn = store.begin().unwrap();
+        let (_, published) = plan_split_publication(&mut txn, [2; 16]).unwrap();
+        assert!(published);
+        txn.commit().unwrap();
+        let bindings = super::super::ranges::committed_ranges(&store).unwrap();
+        assert_eq!(bindings.len(), 3);
+        let parent_row = bindings.iter().find(|b| b.range().region == region).unwrap();
+        assert!(parent_row.range().sealed && parent_row.range().version == 2);
+        let txn = store.begin().unwrap();
+        let (hit, _) = super::super::ranges::route_in(&txn, parent_row.range().keyspace, b"a").unwrap().unwrap();
+        assert_eq!(hit.region, low.region());
+        let (hit, _) = super::super::ranges::route_in(&txn, parent_row.range().keyspace, b"m").unwrap().unwrap();
+        assert_eq!(hit.region, high.region());
+        let tables = crate::tables::Tables::new(&store);
+        assert_eq!(tables.region_for_key(parent_row.range().keyspace, b"a").unwrap().unwrap().id, low.region());
+        assert_eq!(tables.region_for_key(parent_row.range().keyspace, b"z").unwrap().unwrap().id, high.region());
+        drop(txn);
+        let mut txn = store.begin().unwrap();
+        let (_, again) = plan_split_publication(&mut txn, [2; 16]).unwrap();
+        assert!(!again, "a published shape confirms");
+        assert_eq!(committed_splits(&store).unwrap().len(), 1, "the intent reads back as its published shape");
     }
 }

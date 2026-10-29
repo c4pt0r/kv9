@@ -17,7 +17,7 @@
   "source_sha256": {
     "crates/raft/src/rawnode.rs": "01148cc1c42208aa0204d3b901168ea1ef07cc773728e2e96ff499cabffc8eb0",
     "crates/raft/src/driver.rs": "f3d005b47748d6aecacdf9450070095f9b70361b5c7677e3af35c786e6a986eb",
-    "crates/server/src/runtime.rs": "0dc1134dbfdfbb66b739b3e2476a13fa8674721d51cba6cb16229f224bd15387",
+    "crates/server/src/runtime.rs": "5ed07c0a27764d06a5c2f29aa2a0530e1f96dceb6d9e94c92fab138c083bee3d",
     "crates/server/src/api.rs": "d35236529e2bb3a022292c175a35b2466ce6197c699e3b2e7aa1a41c6a0458d9",
     "crates/server/src/grpc.rs": "8f700c3f064b50dab0b30a20311fe3358e303e6b90817dd6ef7dd7a63d795005",
     "crates/server/proto/kv9.proto": "302418f3616b9035fabffff545d027550279cf78a0a0be03e07790ac61a85532",

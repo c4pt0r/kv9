@@ -106,11 +106,17 @@ impl State {
 /// What a worker step produced.
 enum Outcome {
     Sealed(String),
+    Published(String),
     Copied { rows: u64, last: Vec<u8> },
     Evidenced { rows: u64, digest: RootDigest, message: String },
 }
 
 enum Step {
+    Publish {
+        parent_region: RegionId,
+        root: RootDigest,
+        operation: [u8; 16],
+    },
     Seal {
         region: RegionId,
         driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
@@ -130,18 +136,21 @@ enum Step {
 impl Step {
     fn name(&self) -> &'static str {
         match self {
+            Step::Publish { .. } => "publish",
             Step::Seal { .. } => "seal",
             Step::Populate { .. } => "populate",
         }
     }
     fn region(&self) -> u64 {
         match self {
+            Step::Publish { parent_region, .. } => parent_region.0,
             Step::Seal { region, .. } => region.0,
             Step::Populate { child_region, .. } => child_region.0,
         }
     }
     fn label(&self) -> String {
         match self {
+            Step::Publish { parent_region, .. } => format!("split of region {}", parent_region.0),
             Step::Seal { region, .. } => format!("parent region {}", region.0),
             Step::Populate { child_region, cursor, .. } => format!(
                 "child region {} from {}",
@@ -187,7 +196,7 @@ impl NodeRuntime {
                 return;
             }
             match handle.join() {
-                Ok(Ok(Outcome::Sealed(message))) => {
+                Ok(Ok(Outcome::Sealed(message))) | Ok(Ok(Outcome::Published(message))) => {
                     self.range_split.error = None;
                     self.range_split.record(region, step, format!("{label}: {message}"));
                 }
@@ -248,6 +257,9 @@ impl NodeRuntime {
                 continue;
             };
             let parent_range = parent_binding.range().clone();
+            if parent_range.sealed {
+                continue; // published: the directory does the rest
+            }
             let children: Vec<(u64, bool)> = vec![(intent.child_low(), true), (intent.child_high(), false)];
             let mut view = IntentView {
                 task: intent.task(),
@@ -279,6 +291,19 @@ impl NodeRuntime {
                 child_parts.push((*task, region, half, local));
             }
             if step.is_some() {
+                views.push(view);
+                continue;
+            }
+            // (0) The metadata leader publishes once both children are evidenced.
+            if self.driver.status().role == Role::Leader
+                && view.evidenced.contains(&intent.child_low())
+                && view.evidenced.contains(&intent.child_high())
+            {
+                step = Some(Step::Publish {
+                    parent_region: intent.parent_region(),
+                    root: intent.root(),
+                    operation: intent.operation(),
+                });
                 views.push(view);
                 continue;
             }
@@ -452,6 +477,15 @@ fn digest_half(mut page: impl FnMut(&[u8]) -> Result<Vec<(UserKey, Value)>>, sta
 fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: Step) -> Result<Outcome> {
     let _runtime = handle.enter();
     match step {
+        Step::Publish { root, operation, .. } => {
+            let (changed, applied) = backend.commit_split_publication(root, operation)?;
+            Ok(Outcome::Published(format!(
+                "{} at {}/{}",
+                if changed { "published" } else { "confirmed" },
+                applied.term,
+                applied.index
+            )))
+        }
         Step::Seal { driver, current, .. } => {
             let mut sealed = current.clone();
             sealed.version = current
@@ -547,6 +581,25 @@ fn deliver(backend: &Arc<RuntimeBackend>, handle: &tokio::runtime::Handle, root:
 }
 
 impl RuntimeBackend {
+    /// Publish the split (RANGE-SPLIT §5): one catalog transaction, metadata leader only.
+    fn commit_split_publication(&self, root: RootDigest, operation: [u8; 16]) -> Result<(bool, kv9_common::AppliedPosition)> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("split publication root differs".into()));
+        }
+        let (_, changed) = kv9_meta::data_groups::split::plan_split_publication(&mut txn, operation)?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok((changed, applied))
+    }
+
     /// Commit a kind-114 row from a child's receipt (metadata leader only).
     pub(super) fn commit_split_evidence(&self, root: RootDigest, receipt: &[u8]) -> Result<(u64, bool, kv9_common::AppliedPosition)> {
         self.ensure_serving()?;
