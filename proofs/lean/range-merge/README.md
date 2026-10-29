@@ -13,11 +13,11 @@ verification, evidence and the one-transaction publication.
 | `evidence` | `plan_merge_evidence` (kind 116) over the shared evidence RPC |
 | `publish` | `plan_merge_publication`: both parent bindings sealed in place, the child bound, in one transaction |
 
-Twelve theorems: safety initialization/preservation/reachability; one intent per pair; an intent
+Thirteen theorems: safety initialization/preservation/reachability; one intent per pair; an intent
 needs adjacent unsealed siblings on one store set; evidence means both halves verified; the low
 parent is copied first; a copy reads only sealed parents; a seal waits for the child; publication
-needs the evidence; routing follows publication atomically; the chain reaches a published merge.
-Seven semantic controls and two policy controls.
+needs the evidence; routing follows publication atomically; retirement needs publication; the chain
+reaches a published merge. Eight semantic controls and two policy controls.
 
 Source-mapped abstract reasoning with explicit premises: not verified Rust extraction; silent
-about the digest function and about the sealed parents' retirement.
+about the digest function; retirement is modelled as the step the sealed binding authorizes.

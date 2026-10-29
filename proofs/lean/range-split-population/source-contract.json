@@ -12,16 +12,17 @@
     "the_seal_waits_for_the_children",
     "publication_needs_both_children",
     "routing_follows_publication_atomically",
+    "retirement_needs_publication",
     "the_chain_reaches_publication"
   ],
   "source_sha256": {
     "crates/server/src/runtime/range_split.rs": "86b78f4f3208fbc85ed979b7c5e711e30748d5e857761815a0da5d5478c5d66b",
     "crates/meta/src/data_groups/split_evidence.rs": "91a3ec25779b863a45de9eded54c21a1e55bd7cb41e4a7c5bda75f53c37456d6",
     "crates/meta/src/data_groups/split.rs": "6065946f4e366226b8ae2568b5cb11c0a3adc55f28f04c12edec0169b7125dec",
-    "crates/server/src/runtime.rs": "5462a8a2f503e0812de161428abc288f8a256e41d12eb8fcf8c336013a026701",
+    "crates/server/src/runtime.rs": "bd9a0a7de085ea290b36b704cd6618820e4e865b29faa77f92d9a9b3e95c602c",
     "proto/kv9_raft.proto": "34c64f25060d953dcb9c1ff806bde42ed136dac0880e9ffd3311c441dc334157",
     "crates/raft/src/grpc/split_evidence.rs": "5df9bb536b3e2a228f02f1deac34db4c97e9938cb7c2e8c18db92881d11f811d",
-    "scripts/range-split-population-e2e.py": "7bfc686e9e3d7fac8fc2d5a03e271230884865e5b4fe086497137a92bb626efd",
-    "docs/RANGE-SPLIT.md": "4a0013c8f8d63bd6fb06ddb4268dc3eb8a66033a87a364e59fb771019f239956"
+    "scripts/range-split-population-e2e.py": "39ca062140e5876913c4e4e21552205ee76c44410765fee3cd7f349021494580",
+    "docs/RANGE-SPLIT.md": "802cad6ed4a4645dff79f52c697ffa45e0fccc24e28a7b35f0cba9a3b8b855a8"
   }
 }

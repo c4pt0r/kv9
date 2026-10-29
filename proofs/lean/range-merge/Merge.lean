@@ -25,6 +25,7 @@ structure State where
   evidence : Nat := 0
   published : Bool := false
   routed : Bool := false
+  retired : Bool := false
   deriving DecidableEq, Repr
 
 inductive Step : State → State → Prop where
@@ -47,6 +48,7 @@ inductive Step : State → State → Prop where
   | evidence {s} (v : s.verified = true) :
       Step s {s with evidence := if s.evidence = 0 then 1 else s.evidence}
   | publish {s} (e : s.evidence = 1) : Step s {s with published := true, routed := true}
+  | retire {s} (p : s.published = true) : Step s {s with retired := true}
 
 inductive Reachable : State → Prop where
   | initial : Reachable {}
@@ -58,36 +60,37 @@ def Safe (s : State) : Prop :=
     s.copiedLow ≤ s.low ∧ s.copiedHigh ≤ s.high ∧ (0 < s.copiedHigh → s.copiedLow = s.low) ∧
     (s.published = true → s.evidence = 1) ∧ s.routed = s.published ∧
     ((s.sealedLow = true ∨ s.sealedHigh = true) → s.childServes = true) ∧
-    (s.childServes = true → s.intents = 1)
+    (s.childServes = true → s.intents = 1) ∧ (s.retired = true → s.published = true)
 
 theorem initial_safe : Safe {} := by simp [Safe]
 
 theorem step_safe {s t : State} (safe : Safe s) (step : Step s t) : Safe t := by
-  obtain ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC⟩ := safe
+  obtain ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC, hT⟩ := safe
   cases step with
-  | notAdjacent => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC⟩
-  | otherStores => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC⟩
-  | foreignSeal => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC⟩
+  | notAdjacent => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC, hT⟩
+  | otherStores => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC, hT⟩
+  | foreignSeal => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC, hT⟩
   | intend a m u =>
-      refine ⟨?_, hE, hEV, hV, hL, hH, hO, hP, hR, hS, fun c => ?_⟩
+      refine ⟨?_, hE, hEV, hV, hL, hH, hO, hP, hR, hS, fun c => ?_, hT⟩
       · by_cases h : s.intents = 0 <;> simp [h] <;> omega
       · have := hC c
         simp [this]
-  | serve i => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, fun _ => rfl, fun _ => i⟩
-  | sealLow c => exact ⟨hI, hE, hEV, fun v => ⟨rfl, (hV v).2.1, (hV v).2.2.1, (hV v).2.2.2⟩, hL, hH, hO, hP, hR, fun _ => c, hC⟩
-  | sealHigh c => exact ⟨hI, hE, hEV, fun v => ⟨(hV v).1, rfl, (hV v).2.2.1, (hV v).2.2.2⟩, hL, hH, hO, hP, hR, fun _ => c, hC⟩
+  | serve i => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, fun _ => rfl, fun _ => i, hT⟩
+  | sealLow c => exact ⟨hI, hE, hEV, fun v => ⟨rfl, (hV v).2.1, (hV v).2.2.1, (hV v).2.2.2⟩, hL, hH, hO, hP, hR, fun _ => c, hC, hT⟩
+  | sealHigh c => exact ⟨hI, hE, hEV, fun v => ⟨(hV v).1, rfl, (hV v).2.2.1, (hV v).2.2.2⟩, hL, hH, hO, hP, hR, fun _ => c, hC, hT⟩
   | copyLow d e more =>
-      refine ⟨hI, hE, hEV, fun v => ?_, by simp; omega, hH, fun o => ?_, hP, hR, hS, hC⟩
+      refine ⟨hI, hE, hEV, fun v => ?_, by simp; omega, hH, fun o => ?_, hP, hR, hS, hC, hT⟩
       · have := (hV v).2.2.1; simp_all
       · have := hO o; simp_all
   | copyHigh d e lowDone more =>
-      exact ⟨hI, hE, hEV, fun v => by have := (hV v).2.2.2; simp_all, hL, by simp; omega, fun _ => lowDone, hP, hR, hS, hC⟩
-  | verify d e l h => exact ⟨hI, hE, fun _ => rfl, fun _ => ⟨d, e, l, h⟩, hL, hH, hO, hP, hR, hS, hC⟩
+      exact ⟨hI, hE, hEV, fun v => by have := (hV v).2.2.2; simp_all, hL, by simp; omega, fun _ => lowDone, hP, hR, hS, hC, hT⟩
+  | verify d e l h => exact ⟨hI, hE, fun _ => rfl, fun _ => ⟨d, e, l, h⟩, hL, hH, hO, hP, hR, hS, hC, hT⟩
   | evidence v =>
-      refine ⟨hI, ?_, fun _ => v, hV, hL, hH, hO, fun p => ?_, hR, hS, hC⟩
+      refine ⟨hI, ?_, fun _ => v, hV, hL, hH, hO, fun p => ?_, hR, hS, hC, hT⟩
       · by_cases h : s.evidence = 0 <;> simp [h] <;> omega
       · have := hP p; simp [this]
-  | publish e => exact ⟨hI, hE, hEV, hV, hL, hH, hO, fun _ => e, rfl, hS, hC⟩
+  | publish e => exact ⟨hI, hE, hEV, hV, hL, hH, hO, fun _ => e, rfl, hS, hC, fun _ => rfl⟩
+  | retire p => exact ⟨hI, hE, hEV, hV, hL, hH, hO, hP, hR, hS, hC, fun _ => p⟩
 
 theorem run_safe {s : State} (run : Reachable s) : Safe s := by
   induction run with
@@ -128,20 +131,25 @@ theorem routing_follows_publication_atomically {s : State} (run : Reachable s) :
     s.routed = s.published :=
   (run_safe run).2.2.2.2.2.2.2.2.1
 
+theorem retirement_needs_publication {s : State} (run : Reachable s) (r : s.retired = true) :
+    s.published = true :=
+  (run_safe run).2.2.2.2.2.2.2.2.2.2.2 r
+
 theorem the_chain_reaches_a_published_merge :
     ∃ s, Reachable s ∧ s.published = true ∧ s.routed = true ∧ s.copiedLow = s.low ∧ s.copiedHigh = s.high := by
-  refine ⟨⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, true, 1, true, true⟩, ?_, rfl, rfl, rfl, rfl⟩
-  have i : Reachable ⟨true, true, true, 1, false, false, false, 2, 2, 0, 0, false, 0, false, false⟩ :=
+  refine ⟨⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, true, 1, true, true, true⟩, ?_, rfl, rfl, rfl, rfl⟩
+  have i : Reachable ⟨true, true, true, 1, false, false, false, 2, 2, 0, 0, false, 0, false, false, false⟩ :=
     .step .initial (.intend rfl rfl rfl)
-  have sv : Reachable ⟨true, true, true, 1, true, false, false, 2, 2, 0, 0, false, 0, false, false⟩ := .step i (.serve rfl)
-  have sl : Reachable ⟨true, true, true, 1, true, true, false, 2, 2, 0, 0, false, 0, false, false⟩ := .step sv (.sealLow rfl)
-  have sh : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 0, 0, false, 0, false, false⟩ := .step sl (.sealHigh rfl)
-  have l1 : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 1, 0, false, 0, false, false⟩ := .step sh (.copyLow rfl rfl (by decide))
-  have l2 : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 0, false, 0, false, false⟩ := .step l1 (.copyLow rfl rfl (by decide))
-  have h1 : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 1, false, 0, false, false⟩ := .step l2 (.copyHigh rfl rfl rfl (by decide))
-  have h2 : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, false, 0, false, false⟩ := .step h1 (.copyHigh rfl rfl rfl (by decide))
-  have v : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, true, 0, false, false⟩ := .step h2 (.verify rfl rfl rfl rfl)
-  have e : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, true, 1, false, false⟩ := .step v (.evidence rfl)
-  exact .step e (.publish rfl)
+  have sv : Reachable ⟨true, true, true, 1, true, false, false, 2, 2, 0, 0, false, 0, false, false, false⟩ := .step i (.serve rfl)
+  have sl : Reachable ⟨true, true, true, 1, true, true, false, 2, 2, 0, 0, false, 0, false, false, false⟩ := .step sv (.sealLow rfl)
+  have sh : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 0, 0, false, 0, false, false, false⟩ := .step sl (.sealHigh rfl)
+  have l1 : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 1, 0, false, 0, false, false, false⟩ := .step sh (.copyLow rfl rfl (by decide))
+  have l2 : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 0, false, 0, false, false, false⟩ := .step l1 (.copyLow rfl rfl (by decide))
+  have h1 : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 1, false, 0, false, false, false⟩ := .step l2 (.copyHigh rfl rfl rfl (by decide))
+  have h2 : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, false, 0, false, false, false⟩ := .step h1 (.copyHigh rfl rfl rfl (by decide))
+  have v : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, true, 0, false, false, false⟩ := .step h2 (.verify rfl rfl rfl rfl)
+  have e : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, true, 1, false, false, false⟩ := .step v (.evidence rfl)
+  have p : Reachable ⟨true, true, true, 1, true, true, true, 2, 2, 2, 2, true, 1, true, true, false⟩ := .step e (.publish rfl)
+  exact .step p (.retire rfl)
 
 end Kv9.RangeMerge

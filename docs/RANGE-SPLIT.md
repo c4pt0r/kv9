@@ -168,11 +168,17 @@ child. `kv9-admin group merge <low-task> <high-task>`; `ListDataGroups.merges` o
 - **Restart.** The cursor is in memory; a child leader that restarts (or changes) copies again from
   the first key — idempotent puts of an immutable source. Evidence already committed ends a child's
   population for good; a differing digest for the same child is refused permanently.
+- **Retirement of the sealed parent (and merge parents).** A sealed binding is written only by a
+  publication, together with the successors that cover its keys, so it is the committed authority
+  that the group is history — reclamation already read it that way. Every replica now retires
+  itself on it (`reconcile_retirement` → `retire_locally`: the driver stops, the group leaves the
+  raw directory, the durable `Retired` record fences any restart), and with `KV9_RECLAIM_RETIRED=1`
+  the payload is deleted. No new row, no new verb; the e2e watches all three replicas reach
+  `retired` then `reclaimed` after the split and after the merge.
 
 ## 10. What follows
 
-Parent retirement (a sealed group keeps running fenced until removal decisions retire each
-member: REPLICA-REMOVAL's rows, driven), the auto-split trigger (prototype: `KV9_AUTO_SPLIT_BYTES`,
-median-key sampling, derived operations — now with the seal window as a cost to weigh), and scans
-and batches that cross a child boundary (refused whole today, as before the split) follow in that
-order. Both split and merge are operator verbs; nothing is automatic yet.
+The auto-split trigger (prototype: `KV9_AUTO_SPLIT_BYTES`, median-key sampling, derived
+operations — now with the seal window as a cost to weigh) and scans and batches that cross a child
+boundary (refused whole today, as before the split) follow in that order. Both split and merge are
+operator verbs; nothing is automatic yet.

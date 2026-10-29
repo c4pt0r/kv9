@@ -51,7 +51,7 @@ def main():
     env = dict(os.environ, KV9_CLUSTER_TOKEN='split2-e2e-cluster',
                KV9_CLIENT_TOKENS='admin=split2-e2e-client', KV9_CLIENT_TOKEN='split2-e2e-client',
                KV9_ADMIN_TOKEN='split2-e2e-client',
-               KV9_BOOTSTRAP_TOKEN='split2-e2e-bootstrap')
+               KV9_BOOTSTRAP_TOKEN='split2-e2e-bootstrap', KV9_RECLAIM_RETIRED='1')
     processes, handles, commands = {}, [], []
     manifest_record = dict(verdict='running', commands=commands,
                            binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -244,9 +244,13 @@ def main():
                        success=None)
             return out if all(f'{c}' in out for c in ('a', 'm', 'z', 'zz', 'b')) and 'error' not in out.lower() else None
         wait('the children serve every pre-split key and new writes on both sides', served, 60)
-        # The sealed parent group still runs, fenced: its live view says so.
-        live = group_leader_view()
-        require(live is not None and sorted(live.get('voters', [])) == [1, 2, 3], f'parent voters unchanged: {live}')
+        # The sealed parent is history: every replica retires itself on the committed
+        # sealed binding, and with KV9_RECLAIM_RETIRED=1 its payload is deleted.
+        def replica_states(creation_task):
+            described, _ = admin('describe-states', 'group', 'describe', str(creation_task), partial=True)
+            return sorted((v.get('observed') or {}).get('state', 'missing') for v in described.get('result', {}).get('replica_views', []))
+        wait('every replica of the sealed parent retires', lambda: all(s in ('retired', 'reclaimed') for s in replica_states(task)) and len(replica_states(task)) == 3, 120)
+        wait('the retired parent payloads are reclaimed', lambda: replica_states(task) == ['reclaimed'] * 3, 120)
 
         # The steps happened where their roles are: the seal at the parent leader, the
         # copies at the child leaders, the descriptors at the child leaders.
@@ -285,10 +289,13 @@ def main():
             out = repl('read-after-merge', ['use split-me', 'get k/a', 'get k/m', 'get k/zz', 'get k/0a', 'put k/final f', 'get k/final'], success=None)
             return out if all(f'{c}' in out for c in ('a', 'm', 'zz', 'b', 'f')) and 'error' not in out.lower() else None
         wait('the merged child serves every key and new writes', served_merged, 60)
+        for child in (low, high):
+            wait(f'the sealed split child {child["creation_task"]} retires and is reclaimed',
+                 lambda c=child: replica_states(c['creation_task']) == ['reclaimed'] * 3, 120)
         manifest_record['verdict'] = 'passed'
         print(f'PASS: range split population (parent {task} split at k/m -> children {low["creation_task"]}/{high["creation_task"]} '
               f'hold 13 + 14 rows with verified digests; published: parent sealed, children serve; then merged back into '
-              f'{merge_child["creation_task"]} with 29 verified rows and published; steps: '
+              f'{merge_child["creation_task"]} with 29 verified rows and published; sealed groups retired and reclaimed; steps: '
               f'{ {k: sorted(v) for k, v in sorted(steps.items())} })', flush=True)
     except Exception as error:
         manifest_record['verdict'] = f'failed: {error}'

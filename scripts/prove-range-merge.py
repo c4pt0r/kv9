@@ -97,6 +97,9 @@ def main():
         ('publish-without-evidence',
          "  | publish {s} (e : s.evidence = 1) : Step s {s with published := true, routed := true}",
          "  | publish {s} (e : s.evidence = s.evidence) : Step s {s with published := true, routed := true}"),
+        ('retire-before-publication',
+         "  | retire {s} (p : s.published = true) : Step s {s with retired := true}",
+         "  | retire {s} (p : s.published = s.published) : Step s {s with retired := true}"),
     ]
     for label, before, after in controls:
         assert source.count(before) == 1, label

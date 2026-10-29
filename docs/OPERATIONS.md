@@ -48,7 +48,7 @@ Without the switches the verdicts are still taken and shown (`voter_replacement=
 | Switch | What it does |
 | --- | --- |
 | `KV9_AUTO_COMPACT_ENTRIES`, `KV9_AUTO_COMPACT_BYTES`, `KV9_AUTO_COMPACT_AGE_SECS` (0 = off) | Automatic Raft-log compaction floors ([AUTO-COMPACTION](AUTO-COMPACTION.md), [BYTE-COMPACTION](BYTE-COMPACTION.md), [AGE-COMPACTION](AGE-COMPACTION.md)). |
-| `KV9_RECLAIM_RETIRED=1` | Delete the files of locally retired groups ([STORAGE-RECLAMATION](STORAGE-RECLAMATION.md)). |
+| `KV9_RECLAIM_RETIRED=1` | Delete the files of locally retired groups: removed replicas and the sealed parents of published splits and merges, which retire themselves ([STORAGE-RECLAMATION](STORAGE-RECLAMATION.md), [RANGE-SPLIT](RANGE-SPLIT.md) §9). |
 | `KV9_MAX_RAFT_LOG_ENTRIES` (65536, 0 off), `KV9_MIN_FREE_DISK_BYTES` | Write back-pressure and disk headroom ([RAW-WRITE-ADMISSION](RAW-WRITE-ADMISSION.md), [RAW-DISK-HEADROOM](RAW-DISK-HEADROOM.md)). |
 | `KV9_DATA_CHECKPOINTS`, `KV9_CHECKPOINT_*`, `KV9_OBJECT_*` | Checkpoints to object storage and their budgets ([OBJECT-STORAGE](OBJECT-STORAGE.md)). |
 
@@ -75,7 +75,6 @@ service and is never reachable with a client token.
 
 ## 7. What is not a primitive yet
 
-Retirement of a sealed parent group after a split or merge (it keeps running fenced), automatic
-split/merge triggers, scans and batches that cross a range boundary, `node replace`, retention
+Automatic split/merge triggers, scans and batches that cross a range boundary, `node replace`, retention
 verbs and `group abort` in `kv9-admin`, and any placement policy beyond "least-loaded active
 store" ([DEVELOPMENT-PATH](DEVELOPMENT-PATH.md)).

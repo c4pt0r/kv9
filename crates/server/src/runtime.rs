@@ -5774,6 +5774,22 @@ impl NodeRuntime {
                 ready = false;
             }
         }
+        // A SEALED binding is written by a split or merge publication only, together
+        // with the successors that now cover its keys, so it is the committed
+        // authority that the whole group is history (docs/RANGE-SPLIT.md §9): every
+        // replica retires itself, the same way reclamation already reads it.
+        if let Ok(bindings) = kv9_meta::data_groups::ranges::committed_ranges(&self.node.meta_raft.store) {
+            for binding in bindings.iter().filter(|b| b.range().sealed) {
+                let region = binding.range().region;
+                if self.data_groups.local_parts(region).is_none() {
+                    continue; // not hosted here, or already retired
+                }
+                if let Err(error) = self.data_groups.retire_locally(region) {
+                    self.group_control_error = Some(format!("retiring sealed group {}: {error}", region.0));
+                    ready = false;
+                }
+            }
+        }
         ready
     }
 

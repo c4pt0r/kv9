@@ -100,6 +100,9 @@ def main():
         ('route-before-publication',
          "      Step s {s with published := true, routed := true}",
          "      Step s {s with published := s.published, routed := true}"),
+        ('retire-before-publication',
+         "  | retire {s} (p : s.published = true) : Step s {s with retired := true}",
+         "  | retire {s} (p : s.published = s.published) : Step s {s with retired := true}"),
     ]
     for label, before, after in controls:
         assert source.count(before) == 1, label

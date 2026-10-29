@@ -21,6 +21,7 @@ structure State where
   published : Bool := false
   routed : Bool := false
   parentWrites : Nat := 0
+  retired : Bool := false
   deriving DecidableEq, Repr
 
 inductive Step : State → State → Prop where
@@ -42,6 +43,9 @@ inductive Step : State → State → Prop where
   with it, never before. -/
   | publish {s} (e : s.evidence = 1) (o : s.otherEvidenced = true) :
       Step s {s with published := true, routed := true}
+  /-- Every replica of the parent retires itself on the committed sealed binding,
+  which only the publication writes. -/
+  | retire {s} (p : s.published = true) : Step s {s with retired := true}
 
 inductive Reachable : State → Prop where
   | initial : Reachable {}
@@ -51,26 +55,27 @@ def Safe (s : State) : Prop :=
   s.parentWrites = 0 ∧ s.evidence ≤ 1 ∧ (s.evidence = 1 → s.verified = true) ∧
     (s.verified = true → s.sealed = true ∧ s.copied = s.half) ∧ s.copied ≤ s.half ∧
     (s.published = true → s.evidence = 1 ∧ s.otherEvidenced = true) ∧ s.routed = s.published ∧
-    (s.sealed = true → s.childrenServe = true)
+    (s.sealed = true → s.childrenServe = true) ∧ (s.retired = true → s.published = true)
 
 theorem initial_safe : Safe {} := by simp [Safe]
 
 theorem step_safe {s t : State} (safe : Safe s) (step : Step s t) : Safe t := by
-  obtain ⟨hW, hE, hEV, hV, hC, hP, hR, hS⟩ := safe
+  obtain ⟨hW, hE, hEV, hV, hC, hP, hR, hS, hT⟩ := safe
   cases step with
-  | serve => exact ⟨hW, hE, hEV, hV, hC, hP, hR, fun _ => rfl⟩
-  | sealParent c => exact ⟨hW, hE, hEV, fun v => ⟨rfl, (hV v).2⟩, hC, hP, hR, fun _ => c⟩
-  | siblingEvidence => exact ⟨hW, hE, hEV, hV, hC, fun p => ⟨(hP p).1, rfl⟩, hR, hS⟩
-  | publish e o => exact ⟨hW, hE, hEV, hV, hC, fun _ => ⟨e, o⟩, rfl, hS⟩
+  | serve => exact ⟨hW, hE, hEV, hV, hC, hP, hR, fun _ => rfl, hT⟩
+  | sealParent c => exact ⟨hW, hE, hEV, fun v => ⟨rfl, (hV v).2⟩, hC, hP, hR, fun _ => c, hT⟩
+  | siblingEvidence => exact ⟨hW, hE, hEV, hV, hC, fun p => ⟨(hP p).1, rfl⟩, hR, hS, hT⟩
+  | publish e o => exact ⟨hW, hE, hEV, hV, hC, fun _ => ⟨e, o⟩, rfl, hS, fun _ => rfl⟩
+  | retire p => exact ⟨hW, hE, hEV, hV, hC, hP, hR, hS, fun _ => p⟩
   | parentWrite u =>
-      refine ⟨by simp [u, hW], hE, hEV, ?_, by simp; omega, hP, hR, hS⟩
+      refine ⟨by simp [u, hW], hE, hEV, ?_, by simp; omega, hP, hR, hS, hT⟩
       intro v
       have := (hV v).1
       simp_all
-  | copy d more => exact ⟨hW, hE, hEV, fun v => by have := (hV v).2; simp_all, by simp; omega, hP, hR, hS⟩
-  | verify d all => exact ⟨hW, hE, fun _ => rfl, fun _ => ⟨d, all⟩, hC, hP, hR, hS⟩
+  | copy d more => exact ⟨hW, hE, hEV, fun v => by have := (hV v).2; simp_all, by simp; omega, hP, hR, hS, hT⟩
+  | verify d all => exact ⟨hW, hE, fun _ => rfl, fun _ => ⟨d, all⟩, hC, hP, hR, hS, hT⟩
   | evidence v =>
-      refine ⟨hW, ?_, fun _ => v, hV, hC, fun p => ?_, hR, hS⟩
+      refine ⟨hW, ?_, fun _ => v, hV, hC, fun p => ?_, hR, hS, hT⟩
       · by_cases h : s.evidence = 0 <;> simp [h] <;> omega
       · obtain ⟨e1, o⟩ := hP p
         exact ⟨by simp [e1], o⟩
@@ -100,7 +105,7 @@ theorem a_copy_reads_only_a_sealed_parent {s t : State} (step : Step s t)
 -- The seal waits for both children to serve.
 theorem the_seal_waits_for_the_children {s : State} (run : Reachable s) (d : s.sealed = true) :
     s.childrenServe = true :=
-  (run_safe run).2.2.2.2.2.2.2 d
+  (run_safe run).2.2.2.2.2.2.2.1 d
 
 -- S4/S5: publication needs both children's evidence, and routing flips exactly with it.
 theorem publication_needs_both_children {s : State} (run : Reachable s) (p : s.published = true) :
@@ -111,18 +116,24 @@ theorem routing_follows_publication_atomically {s : State} (run : Reachable s) :
     s.routed = s.published :=
   (run_safe run).2.2.2.2.2.2.1
 
+-- The parent retires only once the publication made it history.
+theorem retirement_needs_publication {s : State} (run : Reachable s) (r : s.retired = true) :
+    s.published = true :=
+  (run_safe run).2.2.2.2.2.2.2.2 r
+
 -- The chain reaches a published split of a half of three rows.
 theorem the_chain_reaches_publication :
     ∃ s, Reachable s ∧ s.published = true ∧ s.routed = true ∧ s.sealed = true ∧ s.copied = s.half := by
-  refine ⟨⟨true, true, 3, 3, true, 1, true, true, true, 0⟩, ?_, rfl, rfl, rfl, rfl⟩
-  have a : Reachable ⟨true, false, 3, 0, false, 0, false, false, false, 0⟩ := .step .initial .serve
-  have b : Reachable ⟨true, true, 3, 0, false, 0, false, false, false, 0⟩ := .step a (.sealParent rfl)
-  have c1 : Reachable ⟨true, true, 3, 1, false, 0, false, false, false, 0⟩ := .step b (.copy rfl (by decide))
-  have c2 : Reachable ⟨true, true, 3, 2, false, 0, false, false, false, 0⟩ := .step c1 (.copy rfl (by decide))
-  have c3 : Reachable ⟨true, true, 3, 3, false, 0, false, false, false, 0⟩ := .step c2 (.copy rfl (by decide))
-  have v : Reachable ⟨true, true, 3, 3, true, 0, false, false, false, 0⟩ := .step c3 (.verify rfl rfl)
-  have e : Reachable ⟨true, true, 3, 3, true, 1, false, false, false, 0⟩ := .step v (.evidence rfl)
-  have o : Reachable ⟨true, true, 3, 3, true, 1, true, false, false, 0⟩ := .step e .siblingEvidence
-  exact .step o (.publish rfl rfl)
+  refine ⟨⟨true, true, 3, 3, true, 1, true, true, true, 0, true⟩, ?_, rfl, rfl, rfl, rfl⟩
+  have a : Reachable ⟨true, false, 3, 0, false, 0, false, false, false, 0, false⟩ := .step .initial .serve
+  have b : Reachable ⟨true, true, 3, 0, false, 0, false, false, false, 0, false⟩ := .step a (.sealParent rfl)
+  have c1 : Reachable ⟨true, true, 3, 1, false, 0, false, false, false, 0, false⟩ := .step b (.copy rfl (by decide))
+  have c2 : Reachable ⟨true, true, 3, 2, false, 0, false, false, false, 0, false⟩ := .step c1 (.copy rfl (by decide))
+  have c3 : Reachable ⟨true, true, 3, 3, false, 0, false, false, false, 0, false⟩ := .step c2 (.copy rfl (by decide))
+  have v : Reachable ⟨true, true, 3, 3, true, 0, false, false, false, 0, false⟩ := .step c3 (.verify rfl rfl)
+  have e : Reachable ⟨true, true, 3, 3, true, 1, false, false, false, 0, false⟩ := .step v (.evidence rfl)
+  have o : Reachable ⟨true, true, 3, 3, true, 1, true, false, false, 0, false⟩ := .step e .siblingEvidence
+  have p : Reachable ⟨true, true, 3, 3, true, 1, true, true, true, 0, false⟩ := .step o (.publish rfl rfl)
+  exact .step p (.retire rfl)
 
 end Kv9.RangeSplitPopulation

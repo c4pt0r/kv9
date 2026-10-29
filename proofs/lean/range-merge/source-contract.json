@@ -13,14 +13,15 @@
     "a_seal_waits_for_the_child",
     "publication_needs_the_evidence",
     "routing_follows_publication_atomically",
+    "retirement_needs_publication",
     "the_chain_reaches_a_published_merge"
   ],
   "source_sha256": {
     "crates/server/src/runtime/range_merge.rs": "a3fde97fb5c951c39ed3fc7bbb419b28d75573489fea53d3b2b99b0b23a89b3e",
     "crates/meta/src/data_groups/merge.rs": "6a24f22b15e425375b9d7dc1682d4d49bd61855a9a227564ba1cb379a3a75717",
-    "crates/server/src/runtime.rs": "5462a8a2f503e0812de161428abc288f8a256e41d12eb8fcf8c336013a026701",
+    "crates/server/src/runtime.rs": "bd9a0a7de085ea290b36b704cd6618820e4e865b29faa77f92d9a9b3e95c602c",
     "crates/server/proto/kv9.proto": "a3690989bc60121a30016bdca71460990c2a04f12f3157b220cf33ae06431d98",
-    "scripts/range-split-population-e2e.py": "7bfc686e9e3d7fac8fc2d5a03e271230884865e5b4fe086497137a92bb626efd",
-    "docs/RANGE-SPLIT.md": "4a0013c8f8d63bd6fb06ddb4268dc3eb8a66033a87a364e59fb771019f239956"
+    "scripts/range-split-population-e2e.py": "39ca062140e5876913c4e4e21552205ee76c44410765fee3cd7f349021494580",
+    "docs/RANGE-SPLIT.md": "802cad6ed4a4645dff79f52c697ffa45e0fccc24e28a7b35f0cba9a3b8b855a8"
   }
 }

@@ -14,12 +14,11 @@ publication with the routing that flips with it.
 | `evidence` / `siblingEvidence` | `plan_split_evidence` (kind 114) once per child; a repeat confirms |
 | `publish` | `plan_split_publication`: the parent binding sealed in place and both child bindings in one catalog transaction, only with both evidence rows; `ranges::read_in` refuses any partial shape |
 
-Eleven theorems: safety initialization/preservation/reachability; evidence means a verified copy
+Twelve theorems: safety initialization/preservation/reachability; evidence means a verified copy
 of the whole sealed half; one evidence per child; the sealed parent accepts no write; a copy reads
 only a sealed parent; the seal waits for the children; publication needs both children; routing
-follows publication atomically; the chain reaches publication. Eight semantic controls and two
-policy controls.
+follows publication atomically; retirement needs publication; the chain reaches publication. Nine
+semantic controls and two policy controls.
 
 Source-mapped abstract reasoning with explicit premises: not verified Rust extraction; silent
-about the digest function, about TTL-activated parents (whose seal the state machine refuses) and
-about the sealed parent's retirement.
+about the digest function and about TTL-activated parents (whose seal the state machine refuses).
