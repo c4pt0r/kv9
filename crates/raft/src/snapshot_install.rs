@@ -681,6 +681,13 @@ fn adopt_with_reader_observed(
     if range.region != region {
         return Err(invalid("group record names a different region"));
     }
+    // Decide "nothing to adopt" WITHOUT the owner lock: a runtime that polls
+    // adoption while an installer is still filling the generation must not
+    // hold the lock (and its fsyncs) against that installer's retries. The
+    // locked re-check below remains authoritative.
+    if !directory.join(SELECTOR).try_exists().map_err(io)? {
+        return Err(invalid("no generation is selected for adoption"));
+    }
     let installer = JointInstaller::open_inner(store, identity, range.clone(), true)?;
     let marker_path = directory.join(ADOPTED);
     let adopted_before = marker_path.try_exists().map_err(io)?;
@@ -785,6 +792,14 @@ pub fn install_captured_record(
 }
 
 /// Exact installer with an externally retained, GET-only restore dependency.
+/// The checkpoint manifest a captured image record names, for callers that
+/// want to confirm the image's objects are present before opening a
+/// generation (`RemoteUploader::verify_checkpoint_objects`).
+pub fn captured_record_manifest(record: &[u8]) -> Result<CheckpointManifest> {
+    let (image, _) = snapshot::decode(record)?;
+    Ok(parse_image(&image)?.1)
+}
+
 pub fn install_captured_record_with_reader(
     guard: &StoreGuard,
     identity: StoreIdentity,

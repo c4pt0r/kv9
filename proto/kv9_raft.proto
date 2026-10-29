@@ -86,6 +86,9 @@ service Kv9Raft {
   // (KV9EVD01) to the metadata leader, which commits the kind-104 row through
   // the same planner the public verb uses (docs/REPLICA-ADDITION.md §5).
   rpc RecordInstallEvidence(InstallEvidenceRequest) returns (InstallEvidenceReceipt);
+  // A data-group leader commits a repair (a move plan) at the metadata leader
+  // (docs/REPLICA-REPAIR.md §2); the same planner AddReplica uses.
+  rpc PlanReplica(PlanReplicaRequest) returns (PlanReplicaReceipt);
 }
 
 message MigrationCaptureTransferRequest {
@@ -106,6 +109,19 @@ message MigrationCaptureChunk {
   bool last = 6;
 }
 
+message PlanReplicaRequest {
+  bytes root_digest = 1;
+  bytes operation_id = 2;
+  uint64 creation_task = 3;
+  uint64 destination_node = 4;
+  string mode = 5;         // "add" | "move"
+  uint64 source_node = 6;  // move only
+}
+message PlanReplicaReceipt {
+  uint64 plan_task = 1;
+  uint64 migration_task = 2;
+  bool changed = 3;
+}
 message InstallEvidenceRequest {
   bytes root_digest = 1;
   bytes receipt = 2;

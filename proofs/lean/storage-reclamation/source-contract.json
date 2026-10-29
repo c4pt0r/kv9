@@ -17,8 +17,8 @@
     "the_authorized_chain_completes"
   ],
   "source_sha256": {
-    "crates/server/src/region_manager.rs": "dc41fafde982bdd9e9e5f20389e74c855ec1f77dedabfda12c39ee56018d1a5f",
-    "crates/server/src/runtime.rs": "4fb04db7c7fc52c541bbd8a1dcee747e26a5a000a4885df02328956f406aafd3",
+    "crates/server/src/region_manager.rs": "9f5a43191dd47728001452ab935c7e6b518391790e0c36cd24207d7a50819db8",
+    "crates/server/src/runtime.rs": "dd12eea3d0ea2a0a5daed225fc095034225a76b2c5350e2196ad690a02697aa0",
     "proofs/lean/storage-reclamation/StorageReclamation.lean": "345c8851edd9e08cbf65cd027cab30687e2f5c69279ff938b7d7f9a7c511eb45",
     "proofs/lean/storage-reclamation/README.md": "bf578d368b65e4cc62a3641121dfe03d5b28611724f0506e6ba756240929c6bf"
   }

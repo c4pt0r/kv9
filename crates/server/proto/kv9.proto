@@ -488,6 +488,9 @@ message DataGroupRow {
   optional uint64 compaction_floor_term = 8;  // newest kind-110 row
   optional uint64 compaction_floor_index = 9;
   repeated DataGroupPlan plans = 10;
+  // Committed membership now: initial replicas, plus destinations with install
+  // evidence, minus sources a removal decision retired (REPLICA-ADDITION).
+  repeated DataGroupReplica members = 11;
 }
 message AddReplicaRequest {
   bytes root_digest = 1;    // Exact 32-byte certified metadata root.

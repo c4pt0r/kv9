@@ -249,6 +249,18 @@ pub fn project(
                 return Err(invalid("store-history compaction differs"));
             }
         }
+        // A replica plan (REPLICA-ADDITION) introduces no store of its own: the
+        // kind-103 migration it names does. Verify the pair and move on.
+        111 => {
+            let p = addition::ReplicaPlan::decode(&t.payload)?;
+            if p.root() != root || p.task() != t.id || p.encode() != t.payload {
+                return Err(invalid("store-history replica plan differs"));
+            }
+            let (m, _) = Task::load(view, p.migration_task(), 103)?.migration(view, root)?;
+            if m.operation() != p.operation() || m.region() != p.region() {
+                return Err(invalid("store-history replica plan migration differs"));
+            }
+        }
         _ => {
             return Err(invalid(
                 "unsupported task kind leaves DATA store history unknown",

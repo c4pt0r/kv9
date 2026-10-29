@@ -826,6 +826,9 @@ pub struct DataGroupSummary {
     pub migrations: Vec<DataGroupMigration>,
     pub compaction_floor: Option<AppliedPosition>,
     pub plans: Vec<DataGroupPlan>,
+    /// Committed membership now (`committed_members`): the nodes a describe
+    /// should ask for the group's live view.
+    pub members: Vec<DataGroupReplica>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]

@@ -47,6 +47,7 @@ pub mod data_membership;
 pub mod data_read_fence;
 mod endpoint;
 pub mod install_evidence;
+pub mod plan_replica;
 mod groups;
 pub mod log_pressure;
 pub mod migration_capture;
@@ -405,6 +406,22 @@ pub trait RegistrationBackend: Send + Sync + 'static {
     ) -> kv9_common::Result<(u64, bool, kv9_common::AppliedPosition)> {
         Err(Error::NotImplemented("install evidence delivery"))
     }
+    /// Commit a replica plan (docs/REPLICA-REPAIR.md §2) at the metadata leader;
+    /// returns `(plan_task, migration_task, changed)`. `NotLeader` tells the caller
+    /// to try another candidate.
+    #[allow(clippy::too_many_arguments)]
+    fn plan_replica(
+        &self,
+        _root: RootDigest,
+        _operation: [u8; 16],
+        _creation_task: u64,
+        _destination: NodeId,
+        _mode: &str,
+        _source: Option<NodeId>,
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<(u64, u64, bool)> {
+        Err(Error::NotImplemented("replica plan delivery"))
+    }
     fn checkpoint_selection(
         &self,
         _root: RootDigest,
@@ -679,6 +696,12 @@ impl Kv9Raft for RaftGrpcService {
         request: Request<pb::InstallEvidenceRequest>,
     ) -> std::result::Result<Response<pb::InstallEvidenceReceipt>, Status> {
         self.record_install_evidence_request(request).await
+    }
+    async fn plan_replica(
+        &self,
+        request: Request<pb::PlanReplicaRequest>,
+    ) -> std::result::Result<Response<pb::PlanReplicaReceipt>, Status> {
+        self.plan_replica_request(request).await
     }
     async fn inspect_migration_capture(
         &self,
@@ -2681,6 +2704,12 @@ mod tests {
             ) -> std::result::Result<Response<pb::InstallEvidenceReceipt>, Status> {
                 Err(Status::unimplemented("frozen fixture"))
             }
+            async fn plan_replica(
+                &self,
+                _: Request<pb::PlanReplicaRequest>,
+            ) -> std::result::Result<Response<pb::PlanReplicaReceipt>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
             async fn inspect_checkpoint_selection(
                 &self,
                 _: Request<pb::CheckpointHistoryRequest>,
@@ -3770,6 +3799,13 @@ mod tests {
                     ) -> std::result::Result<Response<pb::InstallEvidenceReceipt>, Status>
                     {
                         self.0.record_install_evidence(request).await
+                    }
+                    async fn plan_replica(
+                        &self,
+                        request: Request<pb::PlanReplicaRequest>,
+                    ) -> std::result::Result<Response<pb::PlanReplicaReceipt>, Status>
+                    {
+                        self.0.plan_replica(request).await
                     }
                     async fn inspect_checkpoint_selection(
                         &self,

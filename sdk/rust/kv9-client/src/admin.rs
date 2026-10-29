@@ -311,6 +311,21 @@ pub struct DataGroup {
     pub migrations: Vec<DataGroupMigration>,
     pub compaction_floor: Option<Applied>,
     pub plans: Vec<DataGroupPlan>,
+    /// Committed membership now: initial replicas plus evidenced destinations,
+    /// minus retired sources. Empty only from a server older than this field.
+    pub members: Vec<DataGroupReplica>,
+}
+
+impl DataGroup {
+    /// The nodes that hold the group today: `members`, or the initial replicas
+    /// when the server does not report membership.
+    pub fn current_members(&self) -> &[DataGroupReplica] {
+        if self.members.is_empty() {
+            &self.replicas
+        } else {
+            &self.members
+        }
+    }
 }
 
 /// The receipt of [`Client::add_replica`].
@@ -445,6 +460,7 @@ impl Client {
                 region_id: g.region_id,
                 operation: g.operation,
                 replicas: g.replicas.into_iter().map(|r| replica(Some(r))).collect(),
+                members: g.members.into_iter().map(|r| replica(Some(r))).collect(),
                 activated: g.activated,
                 keyspaces: g
                     .keyspaces

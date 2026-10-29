@@ -456,6 +456,13 @@ fn install(
         .as_deref()
         .ok_or_else(|| Error::Config("install requires configured object storage".into()))?;
     let identity = backend.ttl_context()?.local.identity();
+    // The capture descriptor is committed before the group leader uploads the
+    // image; installing an incomplete image would burn a retained generation
+    // for nothing. Confirm every object first and retry later otherwise.
+    let manifest = kv9_raft::snapshot_install::captured_record_manifest(&descriptor.image().record)?;
+    uploader
+        .verify_checkpoint_objects(&manifest)
+        .map_err(|error| Error::MetaNotReady(format!("image not fully uploaded yet: {error}")))?;
     let (source_owner, destination_owner) = crate::migration_retention::migration_owner_ids(
         f.certified.digest(),
         f.plan.operation(),

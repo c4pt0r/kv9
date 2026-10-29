@@ -193,6 +193,9 @@ pub(crate) type GroupHandles = Arc<
     >,
 >;
 
+/// One data group this node leads: `(intent, driver status, peer progress)`.
+pub(crate) type LedGroup = (CreationIntent, kv9_raft::driver::NodeStatus, Vec<kv9_raft::rawnode::PeerProgress>);
+
 pub(crate) struct RegionManager {
     pub(crate) raw_directory: Arc<crate::runtime::range_api::RawDirectory>,
     pub(crate) group_handles: GroupHandles,
@@ -1088,6 +1091,26 @@ impl RegionManager {
             }
             break;
         }
+    }
+
+    /// Every data group this node currently LEADS: its creation intent, the
+    /// driver's status and the leader's view of each peer. The repair verdict
+    /// (`runtime/replica_repair.rs`) reads this.
+    pub(crate) fn led_groups(&self) -> Vec<LedGroup> {
+        self.groups
+            .values()
+            .filter_map(|group| match group {
+                LocalGroup::Ready(p) => p.driver.as_ref().map(|d| (p, d)),
+                _ => None,
+            })
+            .filter_map(|(p, d)| {
+                let status = d.status();
+                if status.role != kv9_raft::Role::Leader || status.fatal.is_some() {
+                    return None;
+                }
+                Some((p.intent.clone(), status, d.peer_progress()))
+            })
+            .collect()
     }
 
     pub(crate) fn status_json(&self) -> String {

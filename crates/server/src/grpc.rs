@@ -2518,6 +2518,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                             stage: p.stage.to_string(),
                         })
                         .collect(),
+                    members: g.members.into_iter().map(replica).collect(),
                 })
                 .collect(),
         }))

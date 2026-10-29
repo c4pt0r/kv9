@@ -24,6 +24,9 @@ status contract ([STATUS-PROCESS-IDENTITY](STATUS-PROCESS-IDENTITY.md)) and the 
 > ([REPLICA-ADDITION](REPLICA-ADDITION.md)); `kv9-admin group add-replica / move-replica` are the
 > two verbs, and `group describe` shows the stage. `node transfer-leader` and `group
 > transfer-leader` ([LEADER-TRANSFER](LEADER-TRANSFER.md)) move leadership in one bounded step.
+> With `KV9_AUTO_REPAIR_REPLICA=1` a group leader commits the move plan for a lost voter by itself
+> ([REPLICA-REPAIR](REPLICA-REPAIR.md)); `group describe` shows that plan like any other, and
+> its live view covers the group's committed `members` (not only the creation's replicas).
 > `node replace`, retention verbs and `group abort` remain open.
 
 ## The problem

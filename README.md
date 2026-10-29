@@ -189,6 +189,9 @@ own, promotion first and removal second ([VOTER-REPLACEMENT](docs/VOTER-REPLACEM
 moving a data-group replica is one committed plan: the cluster attaches the learner, captures and
 pins the image in object storage, installs it inside the destination process, records the evidence,
 promotes the voter and retires the source by itself ([REPLICA-ADDITION](docs/REPLICA-ADDITION.md)).
+With `KV9_AUTO_REPAIR_REPLICA=1` each data group's leader takes the same lost-voter verdict for its own
+group and commits that move plan itself, to the least-loaded active store outside the group
+([REPLICA-REPAIR](docs/REPLICA-REPAIR.md)).
 
 ## Architecture
 

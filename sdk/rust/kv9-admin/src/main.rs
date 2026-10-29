@@ -529,7 +529,7 @@ impl Cluster {
             .find(|g| g.region_id == region)
             .ok_or_else(|| Fail::Refused(format!("region {region} is not a committed data group")))?;
         let _ = self.directory().await;
-        for replica in &group.replicas {
+        for replica in group.current_members() {
             if let Some(address) = self.peers.get(&replica.node_id) {
                 return Ok(Client::new(address.clone(), &self.token)?
                     .with_timeout(self.timeout)
@@ -1387,6 +1387,7 @@ fn group_json(g: &DataGroup) -> Value {
         "operation": hex(&g.operation),
         "activated": g.activated,
         "replicas": g.replicas.iter().map(|r| json!({"node_id": r.node_id, "store_incarnation": hex(&r.store_incarnation)})).collect::<Vec<_>>(),
+        "members": g.current_members().iter().map(|r| json!({"node_id": r.node_id, "store_incarnation": hex(&r.store_incarnation)})).collect::<Vec<_>>(),
         "keyspaces": g.keyspaces.iter().map(|k| json!({
             "keyspace_id": k.keyspace_id, "tenant_id": k.tenant_id, "bind_task": k.bind_task,
             "epoch": {"conf_ver": k.conf_ver, "version": k.version},
@@ -1486,7 +1487,7 @@ async fn group_list(cluster: &mut Cluster) -> Outcome {
             vec![
                 g.creation_task.to_string(),
                 g.region_id.to_string(),
-                ids(&g.replicas.iter().map(|r| r.node_id).collect::<Vec<_>>()),
+                ids(&g.current_members().iter().map(|r| r.node_id).collect::<Vec<_>>()),
                 if g.activated { "yes".into() } else { "no".into() },
                 ids(&g.keyspaces.iter().map(|k| k.keyspace_id as u64).collect::<Vec<_>>()),
                 g.migrations.len().to_string(),
@@ -1502,7 +1503,7 @@ async fn group_list(cluster: &mut Cluster) -> Outcome {
     Ok(Report {
         command: "group list".into(),
         result: json!(groups.iter().map(group_json).collect::<Vec<_>>()),
-        table: table(&["TASK", "REGION", "REPLICAS", "ACTIVATED", "KEYSPACES", "MIGRATIONS", "COMPACTED", "PLANS"], &rows),
+        table: table(&["TASK", "REGION", "MEMBERS", "ACTIVATED", "KEYSPACES", "MIGRATIONS", "COMPACTED", "PLANS"], &rows),
         partial: Vec::new(),
     })
 }
@@ -1557,7 +1558,9 @@ async fn group_describe(cluster: &mut Cluster, creation_task: u64) -> Outcome {
     let mut partial = Vec::new();
     let mut replicas = Vec::new();
     let mut rows = Vec::new();
-    for replica in &group.replicas {
+    // The live view comes from the committed members of today, not the
+    // creation's initial replicas: after a move the leader may be a destination.
+    for replica in group.current_members() {
         let address = cluster.peers.get(&replica.node_id).cloned();
         let observed = match &address {
             Some(address) => match cluster.client_at(address) {

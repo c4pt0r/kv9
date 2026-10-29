@@ -171,6 +171,12 @@ impl Kv9Raft for Endpoint {
     ) -> std::result::Result<Response<pb::InstallEvidenceReceipt>, Status> {
         self.service.record_install_evidence(request).await
     }
+    async fn plan_replica(
+        &self,
+        request: Request<pb::PlanReplicaRequest>,
+    ) -> std::result::Result<Response<pb::PlanReplicaReceipt>, Status> {
+        self.service.plan_replica(request).await
+    }
     async fn inspect_checkpoint_selection(
         &self,
         request: Request<pb::CheckpointHistoryRequest>,

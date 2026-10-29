@@ -666,7 +666,7 @@ class DataGroupPlan(_message.Message):
     def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., migration_task: _Optional[int] = ..., mode: _Optional[str] = ..., destination: _Optional[_Union[DataGroupReplica, _Mapping]] = ..., source: _Optional[_Union[DataGroupReplica, _Mapping]] = ..., stage: _Optional[str] = ...) -> None: ...
 
 class DataGroupRow(_message.Message):
-    __slots__ = ("creation_task", "region_id", "operation", "replicas", "activated", "keyspaces", "migrations", "compaction_floor_term", "compaction_floor_index", "plans")
+    __slots__ = ("creation_task", "region_id", "operation", "replicas", "activated", "keyspaces", "migrations", "compaction_floor_term", "compaction_floor_index", "plans", "members")
     CREATION_TASK_FIELD_NUMBER: _ClassVar[int]
     REGION_ID_FIELD_NUMBER: _ClassVar[int]
     OPERATION_FIELD_NUMBER: _ClassVar[int]
@@ -677,6 +677,7 @@ class DataGroupRow(_message.Message):
     COMPACTION_FLOOR_TERM_FIELD_NUMBER: _ClassVar[int]
     COMPACTION_FLOOR_INDEX_FIELD_NUMBER: _ClassVar[int]
     PLANS_FIELD_NUMBER: _ClassVar[int]
+    MEMBERS_FIELD_NUMBER: _ClassVar[int]
     creation_task: int
     region_id: int
     operation: bytes
@@ -687,7 +688,8 @@ class DataGroupRow(_message.Message):
     compaction_floor_term: int
     compaction_floor_index: int
     plans: _containers.RepeatedCompositeFieldContainer[DataGroupPlan]
-    def __init__(self, creation_task: _Optional[int] = ..., region_id: _Optional[int] = ..., operation: _Optional[bytes] = ..., replicas: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ..., activated: _Optional[bool] = ..., keyspaces: _Optional[_Iterable[_Union[DataGroupKeyspace, _Mapping]]] = ..., migrations: _Optional[_Iterable[_Union[DataGroupMigration, _Mapping]]] = ..., compaction_floor_term: _Optional[int] = ..., compaction_floor_index: _Optional[int] = ..., plans: _Optional[_Iterable[_Union[DataGroupPlan, _Mapping]]] = ...) -> None: ...
+    members: _containers.RepeatedCompositeFieldContainer[DataGroupReplica]
+    def __init__(self, creation_task: _Optional[int] = ..., region_id: _Optional[int] = ..., operation: _Optional[bytes] = ..., replicas: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ..., activated: _Optional[bool] = ..., keyspaces: _Optional[_Iterable[_Union[DataGroupKeyspace, _Mapping]]] = ..., migrations: _Optional[_Iterable[_Union[DataGroupMigration, _Mapping]]] = ..., compaction_floor_term: _Optional[int] = ..., compaction_floor_index: _Optional[int] = ..., plans: _Optional[_Iterable[_Union[DataGroupPlan, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[DataGroupReplica, _Mapping]]] = ...) -> None: ...
 
 class AddReplicaRequest(_message.Message):
     __slots__ = ("root_digest", "operation_id", "creation_task", "destination_node", "mode", "source_node")

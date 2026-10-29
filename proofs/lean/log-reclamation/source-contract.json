@@ -19,10 +19,10 @@
     "crates/raft/src/storage.rs": "d2ee607f012da79efe5321f0bb0f48e2a9a44ec697dd19adc8e96156b54388c4",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
     "crates/raft/src/rawnode.rs": "01148cc1c42208aa0204d3b901168ea1ef07cc773728e2e96ff499cabffc8eb0",
-    "crates/server/src/runtime.rs": "4fb04db7c7fc52c541bbd8a1dcee747e26a5a000a4885df02328956f406aafd3",
+    "crates/server/src/runtime.rs": "dd12eea3d0ea2a0a5daed225fc095034225a76b2c5350e2196ad690a02697aa0",
     "scripts/raft-log-reclaim-e2e.py": "62b2685ef21989eaf63fc1ba669821f2537586663c26bf2501df1e71c8a5c663",
     "scripts/raft-log-reclaim-crash-e2e.py": "e4e2d1844584998d7ed9de82a616fecf7c4841ba8526e6ed39aecb38f16169f4",
-    "crates/server/src/region_manager.rs": "dc41fafde982bdd9e9e5f20389e74c855ec1f77dedabfda12c39ee56018d1a5f",
+    "crates/server/src/region_manager.rs": "9f5a43191dd47728001452ab935c7e6b518391790e0c36cd24207d7a50819db8",
     "proofs/lean/log-reclamation/LogReclamation.lean": "0e97e0ddc1cd1b503adbeecf624cb217205c198fd99a9eced97836de9627c73e",
     "proofs/lean/log-reclamation/README.md": "c5e5f187a6aacb9969569e2340591f42f1666f7b2e8e96dbda5c64a716da80e8"
   }

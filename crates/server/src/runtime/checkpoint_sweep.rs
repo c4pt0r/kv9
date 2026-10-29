@@ -395,6 +395,11 @@ impl Maintenance {
     pub(super) fn stopped_unexpectedly(&self) -> bool {
         !self.cancel.is_cancelled() && self.task.as_ref().is_some_and(JoinHandle::is_finished)
     }
+    /// Cancelled by a maintenance withdrawal and fully stopped (its lane is
+    /// released), so the runtime may start a fresh sweep in its place.
+    pub(super) fn restartable(&self) -> bool {
+        self.cancel.is_cancelled() && self.task.as_ref().is_none_or(JoinHandle::is_finished)
+    }
     pub(super) fn cancel(&self) {
         self.cancel.cancel();
     }

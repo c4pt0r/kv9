@@ -66,6 +66,7 @@ mod group_compaction;
 mod migration_capture;
 mod replica_addition;
 mod replica_pressure;
+mod replica_repair;
 mod ttl_activation;
 mod ttl_maintenance;
 mod ttl_time;
@@ -2604,11 +2605,19 @@ impl AdminApi for RuntimeBackend {
                     }
                 })
                 .collect();
+            let members = match &certified {
+                Some(root) => dg::committed_members(&store.begin()?, root.digest(), intent)?
+                    .iter()
+                    .map(|(m, _)| replica(m))
+                    .collect(),
+                None => intent.replicas().iter().map(replica).collect(),
+            };
             groups.push(DataGroupSummary {
                 creation_task: task,
                 region_id: intent.region().0,
                 operation: intent.operation(),
                 replicas: intent.replicas().iter().map(replica).collect(),
+                members,
                 activated: activated.contains(&task),
                 keyspaces: ranges
                     .iter()
@@ -2993,6 +3002,31 @@ fn registration_error(error: Error) -> RegistrationError {
 }
 
 impl RegistrationBackend for RuntimeBackend {
+    fn plan_replica(
+        &self,
+        root: RootDigest,
+        operation: [u8; 16],
+        creation_task: u64,
+        destination: NodeId,
+        mode: &str,
+        source: Option<NodeId>,
+        _deadline: Instant,
+    ) -> Result<(u64, u64, bool)> {
+        use kv9_meta::data_groups::addition::PlanMode;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let mode = match mode {
+            "add" => PlanMode::Add,
+            "move" => PlanMode::Move,
+            _ => return Err(Error::Config("plan mode must be add or move".into())),
+        };
+        let r = AdminApi::add_replica(self, "node", root, operation, creation_task, destination, mode, source)?;
+        Ok((r.plan.task(), r.migration.task(), r.changed))
+    }
     fn record_install_evidence(
         &self,
         root: RootDigest,
@@ -4756,6 +4790,7 @@ pub struct NodeRuntime {
     /// (`runtime/voter_replacement.rs`, docs/VOTER-REPLACEMENT.md).
     voter_replacement: voter_replacement::State,
     replica_plans: replica_addition::State,
+    replica_repair: replica_repair::State,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -5419,6 +5454,7 @@ impl NodeRuntime {
             reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
             voter_replacement: voter_replacement::State::new(voter_replacement::Config::from_env()),
             replica_plans: replica_addition::State::from_env(),
+            replica_repair: replica_repair::State::new(replica_repair::Config::from_env()),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             raw_ttl_clock,
@@ -5939,6 +5975,20 @@ impl NodeRuntime {
             }
         }
         if maintenance_allowed {
+            // A withdrawal above cancels the retention sweep for good; once
+            // maintenance is allowed again the sweep must come back, or drain
+            // reports whose inline submission failed stay in the outbox and
+            // block every later capture on this node.
+            if self
+                .checkpoint_sweep
+                .as_ref()
+                .is_some_and(|task| task.restartable())
+            {
+                self.checkpoint_sweep = Some(checkpoint_sweep::Maintenance::start(
+                    self.rpc_backend.clone(),
+                    self.grpc_runtime.handle(),
+                ));
+            }
             let truncations = kv9_meta::data_groups::truncation::committed_truncations(
                 &self.node.meta_raft.store,
             )
@@ -5964,6 +6014,9 @@ impl NodeRuntime {
                 // Committed replica plans: each party takes the one verb its role and
                 // the committed rows enable, on a worker thread (REPLICA-ADDITION §2).
                 self.reconcile_replica_plans();
+                // Data-group voter verdicts; a lost voter becomes a move plan
+                // (REPLICA-REPAIR), committed on a worker thread.
+                self.reconcile_replica_repair();
                 // Fence committed removals before any deferred engine read or
                 // driver restart; retirement of an unopened group needs no GET.
                 let retirement_ready = self.reconcile_retirement();
@@ -6702,6 +6755,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("replica_plans=");
         body.push_str(&self.replica_plans_status());
+        body.push('\n');
+        body.push_str("replica_repair=");
+        body.push_str(&self.replica_repair_status());
         body.push('\n');
         body.push_str("replica_pressure=");
         body.push_str(
