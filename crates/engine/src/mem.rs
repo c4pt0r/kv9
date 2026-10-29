@@ -83,7 +83,7 @@ impl State {
     }
 }
 
-fn changes_data_revision(cf: ColumnFamily, key: &[u8]) -> bool {
+pub(crate) fn changes_data_revision(cf: ColumnFamily, key: &[u8]) -> bool {
     // Internal durable maintenance records cannot recursively schedule their
     // own checkpoint. The same byte prefix in another CF is user data.
     cf != ColumnFamily::Default

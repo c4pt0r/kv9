@@ -19,21 +19,25 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
-use kv9_engine::{ColumnFamily, Engine, MemEngine, WriteBatch};
+use kv9_engine::{ColumnFamily, Engine, MemEngine, VersionedMemEngine, WriteBatch};
+
+// Every test runs against both in-memory engines: the persistent-map `MemEngine` and the
+// versioned `VersionedMemEngine`, which must honour the same atomicity contract.
 
 /// Run `writer` and `reader` concurrently for `millis`, returning the reader's count.
 ///
 /// The writer flips state between two values; the reader counts observations that could
 /// only come from a half-applied batch.
-fn race<W, R>(millis: u64, writer: W, reader: R) -> usize
+fn race<E, W, R>(millis: u64, writer: W, reader: R) -> usize
 where
-    W: Fn(&MemEngine, u8) + Send + Sync + 'static,
-    R: Fn(&MemEngine) -> bool + Send + Sync + 'static,
+    E: Engine + Default + 'static,
+    W: Fn(&dyn Engine, u8) + Send + Sync + 'static,
+    R: Fn(&dyn Engine) -> bool + Send + Sync + 'static,
 {
-    let engine = Arc::new(MemEngine::new());
+    let engine = Arc::new(E::default());
 
     // Warm up so both keys exist before the reader starts.
-    writer(&engine, 1);
+    writer(&*engine, 1);
 
     let stop = Arc::new(AtomicBool::new(false));
     let hits = Arc::new(AtomicUsize::new(0));
@@ -45,7 +49,7 @@ where
             let mut v = 1u8;
             while !stop.load(Ordering::Relaxed) {
                 v = if v == 1 { 2 } else { 1 };
-                writer(&engine, v);
+                writer(&*engine, v);
             }
         })
     };
@@ -56,7 +60,7 @@ where
         let hits = Arc::clone(&hits);
         std::thread::spawn(move || {
             while !stop.load(Ordering::Relaxed) {
-                if reader(&engine) {
+                if reader(&*engine) {
                     hits.fetch_add(1, Ordering::Relaxed);
                 }
             }
@@ -72,7 +76,7 @@ where
 }
 
 /// Writes `a` and `b` to the same value in ONE batch, so every committed state has a == b.
-fn write_pair_one_batch(engine: &MemEngine, v: u8) {
+fn write_pair_one_batch(engine: &dyn Engine, v: u8) {
     let mut b = WriteBatch::new();
     b.put(ColumnFamily::Default, b"a".to_vec(), vec![v]);
     b.put(ColumnFamily::Default, b"b".to_vec(), vec![v]);
@@ -80,7 +84,7 @@ fn write_pair_one_batch(engine: &MemEngine, v: u8) {
 }
 
 /// Same keys, but two separate batches — an intermediate state is legitimate here.
-fn write_pair_two_batches(engine: &MemEngine, v: u8) {
+fn write_pair_two_batches(engine: &dyn Engine, v: u8) {
     let mut b1 = WriteBatch::new();
     b1.put(ColumnFamily::Default, b"a".to_vec(), vec![v]);
     engine.write(b1).unwrap();
@@ -90,14 +94,14 @@ fn write_pair_two_batches(engine: &MemEngine, v: u8) {
 }
 
 /// Writes across two column families in ONE batch (the catalog row + index shape).
-fn write_cross_cf_one_batch(engine: &MemEngine, v: u8) {
+fn write_cross_cf_one_batch(engine: &dyn Engine, v: u8) {
     let mut b = WriteBatch::new();
     b.put(ColumnFamily::Default, b"k".to_vec(), vec![v]);
     b.put(ColumnFamily::Lock, b"k".to_vec(), vec![v]);
     engine.write(b).unwrap();
 }
 
-fn write_cross_cf_two_batches(engine: &MemEngine, v: u8) {
+fn write_cross_cf_two_batches(engine: &dyn Engine, v: u8) {
     let mut b1 = WriteBatch::new();
     b1.put(ColumnFamily::Default, b"k".to_vec(), vec![v]);
     engine.write(b1).unwrap();
@@ -108,23 +112,22 @@ fn write_cross_cf_two_batches(engine: &MemEngine, v: u8) {
 
 /// One `scan()` materializes the whole range under a single lock, so it cannot straddle a
 /// commit. Seeing `a != b` through it therefore means the batch was half-applied.
-fn scan_sees_mismatch(engine: &MemEngine) -> bool {
+fn scan_sees_mismatch(engine: &dyn Engine) -> bool {
     let entries = engine.scan(ColumnFamily::Default, b"a", b"c", 10).unwrap();
     entries.len() == 2 && entries[0].1 != entries[1].1
 }
 
 /// A single `ReadView` is one consistent version of the data, so the same argument
 /// applies — and unlike `scan`, it spans column families.
-fn snapshot_sees_cross_cf_mismatch(engine: &MemEngine) -> bool {
+fn snapshot_sees_cross_cf_mismatch(engine: &dyn Engine) -> bool {
     let view = engine.snapshot().unwrap();
     let d = view.get(ColumnFamily::Default, b"k").unwrap();
     let l = view.get(ColumnFamily::Lock, b"k").unwrap();
     d != l
 }
 
-#[test]
-fn single_scan_never_observes_a_half_applied_batch() {
-    let torn = race(400, write_pair_one_batch, scan_sees_mismatch);
+fn single_scan_never_observes_a_half_applied_batch_on<E: Engine + Default + 'static>() {
+    let torn = race::<E, _, _>(400, write_pair_one_batch, scan_sees_mismatch);
     assert_eq!(
         torn, 0,
         "a single scan observed a half-applied WriteBatch {torn} times"
@@ -132,8 +135,13 @@ fn single_scan_never_observes_a_half_applied_batch() {
 }
 
 #[test]
-fn control_single_cf_separate_batches_do_show_mismatch() {
-    let seen = race(200, write_pair_two_batches, scan_sees_mismatch);
+fn single_scan_never_observes_a_half_applied_batch() {
+    single_scan_never_observes_a_half_applied_batch_on::<MemEngine>();
+    single_scan_never_observes_a_half_applied_batch_on::<VersionedMemEngine>();
+}
+
+fn control_single_cf_separate_batches_do_show_mismatch_on<E: Engine + Default + 'static>() {
+    let seen = race::<E, _, _>(200, write_pair_two_batches, scan_sees_mismatch);
     assert!(
         seen > 0,
         "control saw no mismatch — the single-CF probe is not sensitive, so the \
@@ -142,8 +150,13 @@ fn control_single_cf_separate_batches_do_show_mismatch() {
 }
 
 #[test]
-fn read_view_never_observes_a_half_applied_cross_cf_batch() {
-    let torn = race(
+fn control_single_cf_separate_batches_do_show_mismatch() {
+    control_single_cf_separate_batches_do_show_mismatch_on::<MemEngine>();
+    control_single_cf_separate_batches_do_show_mismatch_on::<VersionedMemEngine>();
+}
+
+fn read_view_never_observes_a_half_applied_cross_cf_batch_on<E: Engine + Default + 'static>() {
+    let torn = race::<E, _, _>(
         400,
         write_cross_cf_one_batch,
         snapshot_sees_cross_cf_mismatch,
@@ -155,8 +168,13 @@ fn read_view_never_observes_a_half_applied_cross_cf_batch() {
 }
 
 #[test]
-fn control_cross_cf_separate_batches_do_show_mismatch() {
-    let seen = race(
+fn read_view_never_observes_a_half_applied_cross_cf_batch() {
+    read_view_never_observes_a_half_applied_cross_cf_batch_on::<MemEngine>();
+    read_view_never_observes_a_half_applied_cross_cf_batch_on::<VersionedMemEngine>();
+}
+
+fn control_cross_cf_separate_batches_do_show_mismatch_on<E: Engine + Default + 'static>() {
+    let seen = race::<E, _, _>(
         200,
         write_cross_cf_two_batches,
         snapshot_sees_cross_cf_mismatch,
@@ -168,13 +186,18 @@ fn control_cross_cf_separate_batches_do_show_mismatch() {
     );
 }
 
+#[test]
+fn control_cross_cf_separate_batches_do_show_mismatch() {
+    control_cross_cf_separate_batches_do_show_mismatch_on::<MemEngine>();
+    control_cross_cf_separate_batches_do_show_mismatch_on::<VersionedMemEngine>();
+}
+
 /// A `ReadView` taken once must not change under it, no matter how much the engine moves
 /// on. This is the property `meta`'s `index_scan` → `get(pk)` and routing's
 /// `seek_le` → `end_key` check both rest on.
-#[test]
-fn read_view_is_stable_under_concurrent_writes() {
-    let engine = Arc::new(MemEngine::new());
-    write_pair_one_batch(&engine, 1);
+fn read_view_is_stable_under_concurrent_writes_on<E: Engine + Default + 'static>() {
+    let engine = Arc::new(E::default());
+    write_pair_one_batch(&*engine, 1);
 
     let view = engine.snapshot().unwrap();
     let stop = Arc::new(AtomicBool::new(false));
@@ -186,7 +209,7 @@ fn read_view_is_stable_under_concurrent_writes() {
             let mut v = 1u8;
             while !stop.load(Ordering::Relaxed) {
                 v = if v == 1 { 2 } else { 1 };
-                write_pair_one_batch(&engine, v);
+                write_pair_one_batch(&*engine, v);
             }
         })
     };
@@ -209,4 +232,10 @@ fn read_view_is_stable_under_concurrent_writes() {
 
     stop.store(true, Ordering::Relaxed);
     w.join().unwrap();
+}
+
+#[test]
+fn read_view_is_stable_under_concurrent_writes() {
+    read_view_is_stable_under_concurrent_writes_on::<MemEngine>();
+    read_view_is_stable_under_concurrent_writes_on::<VersionedMemEngine>();
 }

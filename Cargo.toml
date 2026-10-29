@@ -46,6 +46,9 @@ protobuf = "2"
 # Persistent (structurally-shared) ordered map: O(1) snapshots for MemEngine.
 # MIT-licensed, to keep the dependency set copyleft-free.
 rpds = "1"
+# Versioned in-memory engine (crates/engine/src/versioned.rs): a B-tree with inline keys
+# and optimistic reads; kv9 adds versions + a visibility watermark on top (docs/BBTREE-EVALUATION.md).
+bbtree = "=0.1.6"
 # Object storage client. ROADMAP "Dependency decisions" names this crate; `aws` only,
 # defaults off, because MinIO speaks the S3 API and every other cloud backend stays out.
 #

@@ -17,6 +17,7 @@ pub mod replicated;
 pub mod sst;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
+mod versioned;
 pub mod wal;
 pub mod wal_segment;
 pub mod wal_stream;
@@ -29,6 +30,7 @@ pub use minio::{MinioConfig, MinioObjectStore};
 pub use object_store::{MemoryObjectStore, ObjectKey, ObjectStore};
 pub use persist::{EngineReplay, WalEngine};
 pub use replicated::{DurableAppliedPosition, ReplicatedEngine};
+pub use versioned::VersionedMemEngine;
 pub mod checkpoint;
 pub mod checkpoint_history;
 pub mod checkpoint_memory;

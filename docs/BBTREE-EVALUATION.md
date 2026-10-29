@@ -101,7 +101,51 @@ many reads from one view.
 
 ## 6. Recommendation
 
+(Superseded the same day by §7: the user chose to build the versioned engine.)
+
+
 Keep `rpds` under `MemEngine` on `master`. Open the incremental-memtable engine as its own design packet with
 bbtree as the candidate mutable layer, gated on the same acceptance that governs the engine today (fence
 tests, ReadIndex partition evidence, checkpoint/recovery e2e). Until that exists, the measured headroom is a
 reason to do that work, not to swap the type.
+
+## 7. Implementation: `VersionedMemEngine` (2026-10-28)
+
+`crates/engine/src/versioned.rs` implements the `MemEngine` contract (`Engine` + `ReplicatedEngine`,
+owned `ReadView`s, atomic multi-CF batches, refused non-advancing applied positions) on bbtree, with
+the design of §4/§5 chosen as value-level versioning rather than layering:
+
+- one `BBTreeMap<(key, !version), Option<value>>` per column family; a batch is stamped with one fresh
+  version, inserted, then published as the visibility watermark (an atomic store) — that store is
+  the all-or-nothing point across the three trees;
+- a `ReadView` is `(Arc<shared>, version)`; it registers itself (sharded by thread) **before** fixing
+  its version, which closes the race where a collector computes its floor between a reader's load and
+  its registration;
+- `collect_garbage` removes, per key, the versions older than the newest one visible at the oldest
+  live view and settled tombstones, oldest first so that a racing reader never sees a value come
+  back; chunked (4096 removals per scan leg);
+- forward paging walks leaves and seeks past a key after eight skipped versions (a hot key under a
+  held view must cost a descent, not a step per version — the linear form hung a test for 28 minutes);
+  reverse paging looks up each key's newest visible version directly (two descents per key).
+
+Tests: eight unit tests (visibility, versions/tombstones in scans, seeks and both iterators, delete
+range, refused positions, data revision, GC ordering, a concurrent writer + collector + four readers
+asserting no half batch and no resurrection) and `tests/batch_atomicity.rs`, which now runs every case
+against both engines.
+
+Through the `Engine` trait (`examples/engine_bench.rs`, 1M entries, same keys as §3):
+
+| path (1 thread unless noted) | `MemEngine` (rpds) | `VersionedMemEngine` |
+| --- | --- | --- |
+| `write` one-key batch | 1270 ns | 476 ns |
+| `get` (snapshot per read) | 1248 ns | 457 ns |
+| `scan` 100 rows | 26.9 µs | 21.1 µs (both dominated by owned-entry allocation) |
+| overwrite under a held view | 1135 ns | 668 ns |
+| mixed 95/5, 8 threads | 2.39 M ops/s | 8.23 M ops/s |
+| mixed 95/5, 16 threads | 1.96 M ops/s | 10.87 M ops/s |
+| GC of 315k superseded versions | — | 271 ms |
+
+Not yet done: wiring it under `WalEngine` (the checkpoint writer borrows `MemSnapshot::iter_all_ref`,
+which a versioned view cannot offer — it needs an owned iterator), a GC schedule in the maintenance
+loop, and the fence/ReadIndex/checkpoint e2e on top of it.
+
