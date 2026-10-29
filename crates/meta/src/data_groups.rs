@@ -13,6 +13,7 @@ use crate::store::{MetaStore, MetaTxn, Row, SequenceKind, FIRST_DYNAMIC_ID};
 
 pub mod abort;
 pub mod activation;
+pub mod addition;
 pub mod capture;
 pub mod compaction;
 pub mod evidence;
@@ -256,6 +257,65 @@ pub fn plan_empty_group<E: Engine>(
     }
     txn.insert(&TASKS_DESC, &[memcmp_uint(intent.task)], row)?;
     Ok(intent)
+}
+
+/// Whether a migration operation is **settled** for the purpose of admitting the
+/// group's next one (docs/REPLICA-ADDITION.md §1): aborted, or evidenced and — when a
+/// replica plan drives it as a move — decided for removal. One operation at a time
+/// binds a group; a settled one leaves the group free for the next.
+pub(crate) fn operation_settled<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    root: RootDigest,
+    operation: [u8; 16],
+) -> Result<bool> {
+    let (mut aborted, mut evidenced, mut decided, mut move_plan) = (false, false, false, false);
+    for row in task_rows(txn) {
+        let row = row?;
+        if abort::from_abort_row(&row, root)?.is_some_and(|a| a.operation() == operation) {
+            aborted = true;
+        }
+        if evidence::from_row_for_siblings(&row, root)?.is_some_and(|e| e.operation() == operation) {
+            evidenced = true;
+        }
+        if removal::from_removal_row(&row, root)?.is_some_and(|d| d.operation() == operation) {
+            decided = true;
+        }
+        if addition::from_plan_row(&row, root)?
+            .is_some_and(|p| p.operation() == operation && p.mode() == addition::PlanMode::Move)
+        {
+            move_plan = true;
+        }
+    }
+    Ok(aborted || (evidenced && (!move_plan || decided)))
+}
+
+/// The group's committed membership: the creation's initial replicas, plus every
+/// migration destination with committed install evidence, minus every replica a
+/// committed removal decision retired. Each member carries the task that introduced
+/// it (0 for an initial replica, the evidence task otherwise).
+pub fn committed_members<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    root: RootDigest,
+    creation: &CreationIntent,
+) -> Result<Vec<(InitialReplica, u64)>> {
+    let mut members: Vec<(InitialReplica, u64)> =
+        creation.replicas().iter().map(|r| (*r, 0)).collect();
+    let mut removed = Vec::new();
+    for row in task_rows(txn) {
+        let row = row?;
+        if let Some(e) = evidence::from_row_for_siblings(&row, root)? {
+            if e.region() == creation.region() {
+                members.push((e.destination(), e.task()));
+            }
+        }
+        if let Some(d) = removal::from_removal_row(&row, root)? {
+            if d.region() == creation.region() {
+                removed.push(d.source());
+            }
+        }
+    }
+    members.retain(|(replica, _)| !removed.contains(replica));
+    Ok(members)
 }
 
 /// Read only from the local applied metadata engine, never a caller's overlay.

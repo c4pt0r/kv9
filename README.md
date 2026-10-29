@@ -172,20 +172,23 @@ export KV9_ADMIN_TOKEN=client-secret
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 group create --voters 1,2,3 --label orders   # a data group
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 keyspace create --name orders --group <creation-task>
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 group describe <creation-task>              # every replica's view
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 group add-replica <creation-task> --to 4    # the cluster does the rest
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 group move-replica <creation-task> --from 1 --to 5
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node admit 4 --addr 127.0.0.1:20164
 #   → join_ticket=…; on the new host: KV9_JOIN_TICKET=… kv9 join …, then kv9 start …
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node promote 4 --wait  # learner → voter
 ./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node remove 2 --wait   # keeps ≥ 3 voters
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node transfer-leader --to 3 --wait   # planned maintenance
 ```
 
 `KV9_ADMIN_PRINCIPALS=admin` on the servers limits the administrative RPCs to that token's principal;
 application tokens keep the data plane. Each node also writes `<data-dir>/status` and
 `<data-dir>/metrics.json` once a second, and `cluster status` shows the same document over gRPC. With
 `KV9_AUTO_REPLACE_VOTER=1` the metadata leader replaces a lost voter with a caught-up learner on its
-own, promotion first and removal second ([VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md)). Migrating a
-data group between stores is still driven step by step with `kv9 client` verbs
-([MIGRATION-AUTHORITY](docs/MIGRATION-AUTHORITY.md)); the `kv9-admin` driver for it is the next
-increment of [KV9-ADMIN](docs/KV9-ADMIN.md).
+own, promotion first and removal second ([VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md)). Adding or
+moving a data-group replica is one committed plan: the cluster attaches the learner, captures and
+pins the image in object storage, installs it inside the destination process, records the evidence,
+promotes the voter and retires the source by itself ([REPLICA-ADDITION](docs/REPLICA-ADDITION.md)).
 
 ## Architecture
 

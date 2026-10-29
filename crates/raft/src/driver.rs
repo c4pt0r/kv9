@@ -797,6 +797,33 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         self.peer.peer_progress()
     }
 
+    /// Ask raft to hand leadership to `transferee` (see
+    /// [`crate::rawnode::RaftPeer::transfer_leader`] for the guards), then wait up to
+    /// `deadline` for this node to observe a leader other than itself. `Ok(status)`
+    /// carries what it observed; `Err` with the transfer expired means this node
+    /// leads again and the caller may retry.
+    pub fn transfer_leader(&self, transferee: NodeId, deadline: Duration) -> Result<NodeStatus> {
+        self.peer.transfer_leader(transferee)?;
+        let me = self.status().node_id;
+        let start = Instant::now();
+        loop {
+            let status = self.status();
+            if status.fatal.is_some() {
+                return Err(Error::Raft("driver is fatally stopped".into()));
+            }
+            if status.role != Role::Leader && status.leader_id.is_some_and(|l| l != me) {
+                return Ok(status);
+            }
+            if start.elapsed() >= deadline {
+                return Err(Error::Raft(format!(
+                    "leadership transfer to node {} expired; node {} leads again (term {})",
+                    transferee.0, me.0, status.term
+                )));
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+    }
+
     /// Wait until the conf change proposed at `at` is applied HERE, verified by
     /// exact `(term, index)`; returns the post-change membership actually
     /// produced by `apply_conf_change` (never the proposal-time expectation).

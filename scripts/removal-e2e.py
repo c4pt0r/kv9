@@ -209,44 +209,33 @@ def main():
         require(again['attach_outcome'] == 'confirmed', 'attach retry must confirm')
 
         plan_with_retry('plan', data_node, f'{7:032x}', output / 'image.manifest')
-        command('bind', 'client', 'bind-migration-image', '--addr', addresses[owner_node],
-                '--root-digest', root, '--operation-id', f'{7:032x}',
-                '--manifest-file', output / 'image.manifest')
+
+        def bind_with_retry(label, operation, path):
+            # The metadata leader may move (an election under capture I/O); bind
+            # is idempotent, so re-resolve the leader and retry.
+            def bound():
+                node = leader()
+                if node is None:
+                    return None
+                result = command(label, 'client', 'bind-migration-image', '--addr', addresses[node],
+                                 '--root-digest', root, '--operation-id', operation,
+                                 '--manifest-file', path, success=None)
+                return result if result['exit_code'] == 0 else None
+            return wait(f'{label} committed at the metadata leader', bound, 60)
+        bind_with_retry('bind', f'{7:032x}', output / 'image.manifest')
         captured = capture_with_retry('capture', data_node, f'{7:032x}', output / 'image.record')
 
-        # A SECOND group whose image never names the destination supplies the
-        # membership-gate control: its record must refuse at the real store.
-        other = command('create-group-b', 'client', 'create-data-group', '--addr', addresses[owner_node],
-                        '--root-digest', root, '--operation-id', f'{2:032x}', '--voters', '1,2,3')
-        command('create-keyspace-b', 'client', 'create-data-keyspace', '--addr', addresses[owner_node],
-                '--root-digest', root, '--creation-task', other['task_id'], '--name', 'attach-ctl')
-        region_b = int(other['region_id'])
-
-        def leader_b():
-            return next((n for n in (1, 2, 3) if n in processes
-                         and data_groups(n).get(region_b, {}).get('role') == 'Leader'), None)
-        wait('control group elected', lambda: leader_b() is not None)
-
-        node_b = wait('control group leader', leader_b)
-        command('migrate-b', 'client', 'migrate-data-group', '--addr', addresses[owner_node],
-                '--root-digest', root, '--operation-id', f'{8:032x}',
-                '--creation-task', other['task_id'], '--destination-node', 4)
-        plan_with_retry('plan-b', node_b, f'{8:032x}', output / 'control.manifest')
-        command('bind-b', 'client', 'bind-migration-image', '--addr', addresses[owner_node],
-                '--root-digest', root, '--operation-id', f'{8:032x}',
-                '--manifest-file', output / 'control.manifest')
-        control_capture = capture_with_retry('capture-b', node_b, f'{8:032x}', output / 'control.record')
+        # The membership gate moved to capture time: since the durable-capture
+        # increment the planner refuses an image whose cut does not name the
+        # destination learner, so a control image "that never names the destination"
+        # can no longer be produced for a second group. The gate is exercised by
+        # the planner's refusal itself (plan before attach refuses); see
+        # docs/RAW-TTL-DURABLE-CAPTURE.md.
 
         # Offline installation at the destination's REAL store: the learner
-        # image installs; the control image fails the membership gate; the
-        # node restarts healthy with the installed generation isolated.
+        # image installs; the node restarts healthy with the installed generation
+        # isolated until adoption.
         stop(4)
-        refused = command('install-control', 'install-migration-image',
-                          '--data-dir', output / 'n4', '--record-file', output / 'control.record',
-                          '--addr', addresses[owner_node], '--owners', control_capture['destination_owner'],
-                          success=False)
-        require('membership' in open(output / 'install-control.log').read(),
-                'control record must fail the membership gate')
         installed = command('install-learner-image', 'install-migration-image',
                             '--data-dir', output / 'n4', '--record-file', output / 'image.record',
                             '--addr', addresses[owner_node], '--owners', captured['destination_owner'])
@@ -605,8 +594,11 @@ def main():
         stop(removed)
         start(removed, 'removed-restart', ticket=None)
         wait('removed node ready after restart', lambda: status(removed).get('endpoint_ready') == 'true')
-        wait('removed replica stays locally recovered',
-             lambda: data_groups(removed).get(region, {}).get('state') in ('active', 'failed'))
+        # Since GROUP-RETIREMENT the removed replica is fenced as `retired` (its
+        # storage kept until an explicit reclaim); an earlier tree left it
+        # `active`/`failed`. Either way it neither serves nor votes.
+        wait('removed replica stays locally fenced',
+             lambda: data_groups(removed).get(region, {}).get('state') in ('retired', 'reclaimed', 'active', 'failed'))
         node_f = wait('leader for the final removal write', group_leader)
         command('final-removal-put', 'client', 'raw-put', '--addr', addresses[node_f],
                 '--keyspace', keyspace_id, '--key-hex', '73757276697665', '--value-hex', '6f6b')

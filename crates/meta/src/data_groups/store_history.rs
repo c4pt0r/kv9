@@ -193,11 +193,23 @@ pub fn project(
                 return Err(invalid("store-history removal differs"));
             }
             let (e, c) = Task::load(view, d.evidence_task(), 104)?.evidence(view, root)?;
-            if e.operation() != d.operation()
-                || e.region() != d.region()
-                || !c.replicas().contains(&d.source())
-            {
+            if e.operation() != d.operation() || e.region() != d.region() {
                 return Err(invalid("store-history removal evidence or source differs"));
+            }
+            // V1 retires an initial replica; V2 one introduced by the evidence row
+            // it points at (one more exact point read, no scan).
+            if d.origin_task() == 0 {
+                if !c.replicas().contains(&d.source()) {
+                    return Err(invalid("store-history removal source is not a creation replica"));
+                }
+            } else {
+                let (origin, _) = Task::load(view, d.origin_task(), 104)?.evidence(view, root)?;
+                if origin.region() != d.region()
+                    || origin.destination() != d.source()
+                    || origin.operation() == d.operation()
+                {
+                    return Err(invalid("store-history removal origin does not introduce the source"));
+                }
             }
             out.push(t.origin(&c, d.source()));
         }

@@ -247,7 +247,9 @@ pub fn plan_install_evidence<E: Engine>(
                     return Err(invalid("evidence operation binding conflicts"));
                 }
                 existing = Some(previous);
-            } else if previous.region == receipt.region {
+            } else if previous.region == receipt.region
+                && !super::operation_settled(txn, root.digest(), previous.operation)?
+            {
                 return Err(invalid("a committed evidence row already binds this group"));
             }
         }
@@ -290,11 +292,10 @@ pub fn committed_install_evidence<E: Engine>(store: &MetaStore<E>) -> Result<Vec
                 .find(|m| m.operation() == evidence.operation)
                 .ok_or_else(|| invalid("evidence requires the committed migration"))?;
             matches_migration(&evidence, migration)?;
-            if out.iter().any(|prior| {
-                prior.task == evidence.task
-                    || prior.operation == evidence.operation
-                    || prior.region == evidence.region
-            }) {
+            if out
+                .iter()
+                .any(|prior| prior.task == evidence.task || prior.operation == evidence.operation)
+            {
                 return Err(invalid("duplicate evidence identity"));
             }
             out.push(evidence);

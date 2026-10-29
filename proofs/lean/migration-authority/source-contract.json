@@ -18,8 +18,8 @@
     "confirmation_is_not_a_new_mutation"
   ],
   "source_sha256": {
-    "crates/meta/src/data_groups.rs": "70c5a0c27a73c40c3e1ecf8be3d6ef29433955579f2c9c4879a8861f1d196903",
-    "crates/meta/src/data_groups/migration.rs": "04988eef1b551b36423543015b1d9c4037b78666e77fc2a56880fe9d3736baf0",
+    "crates/meta/src/data_groups.rs": "058e1f7518dc90395fff98ac8d00c2e41c96eaf712cf10a87934918cee14d6f3",
+    "crates/meta/src/data_groups/migration.rs": "188447ab913c0f09907cf6ba5b7f6901240cf61cbaead419c3dbccaa86d78456",
     "crates/meta/src/data_groups/activation.rs": "71d8e42478e517b48096697d9df1f7a5029140ee446f9e97f684fd72f6127a2e",
     "crates/meta/src/data_groups/ranges.rs": "05f842066e8e70cce1976285099a758dc33fbc154e974ff33f0bb0846c59b45c",
     "crates/meta/src/retention.rs": "15279c6d41b13bc39e052c97dc40e81cc3a07debf066cdf7e12cccd0e6742698",

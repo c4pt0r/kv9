@@ -165,6 +165,12 @@ impl Kv9Raft for Endpoint {
     ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
         self.service.inspect_migration_capture(request).await
     }
+    async fn record_install_evidence(
+        &self,
+        request: Request<pb::InstallEvidenceRequest>,
+    ) -> std::result::Result<Response<pb::InstallEvidenceReceipt>, Status> {
+        self.service.record_install_evidence(request).await
+    }
     async fn inspect_checkpoint_selection(
         &self,
         request: Request<pb::CheckpointHistoryRequest>,

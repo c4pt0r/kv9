@@ -40,9 +40,9 @@ pub mod proto {
 
 pub mod admin;
 pub use admin::{
-    DataGroup, DataGroupCreated, DataGroupKeyspace, DataGroupMigration, DataGroupReplica,
-    DataKeyspaceCreated, MembershipChange, NodeDirectory, NodeEndpoint, NodeRow, NodeStatus,
-    TaskPage, TaskRow,
+    DataGroup, DataGroupCreated, DataGroupKeyspace, DataGroupMigration, DataGroupPlan,
+    DataGroupReplica, DataKeyspaceCreated, LeaderTransfer, MembershipChange, NodeDirectory,
+    NodeEndpoint, NodeRow, NodeStatus, ReplicaPlanned, TaskPage, TaskRow, META_REGION_ID,
 };
 
 use proto::kv9_client::Kv9Client;

@@ -717,6 +717,31 @@ pub trait AdminApi {
     fn list_tasks(&self, _caller: &str, _after: u64, _limit: usize, _kind: u64) -> Result<TaskPage> {
         Err(kv9_common::Error::NotImplemented("AdminApi::list_tasks"))
     }
+    /// Hand leadership of `region` (the metadata group or a data group) to a
+    /// caught-up voter (docs/LEADER-TRANSFER.md). Leader-only; nothing is committed.
+    fn transfer_leader(
+        &self,
+        _caller: &str,
+        _region: kv9_common::RegionId,
+        _transferee: kv9_common::NodeId,
+    ) -> Result<LeaderTransferResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::transfer_leader"))
+    }
+    /// Commit a migration intent and the replica plan that drives it, in one
+    /// catalog transaction (docs/REPLICA-ADDITION.md §1).
+    #[allow(clippy::too_many_arguments)]
+    fn add_replica(
+        &self,
+        _caller: &str,
+        _root: kv9_common::RootDigest,
+        _operation: [u8; 16],
+        _creation_task: u64,
+        _destination: kv9_common::NodeId,
+        _mode: kv9_meta::data_groups::addition::PlanMode,
+        _source: Option<kv9_common::NodeId>,
+    ) -> Result<AddReplicaResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::add_replica"))
+    }
     fn change_node_endpoint(
         &self,
         _caller: &str,
@@ -757,6 +782,38 @@ pub struct DataGroupMigration {
     pub truncation_task: u64,
 }
 
+/// What this node observed after asking raft to transfer leadership.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct LeaderTransferResult {
+    pub previous_leader: u64,
+    /// The leader observed after the transfer; `None` only when the wait expired.
+    pub leader: Option<u64>,
+    pub term: u64,
+    /// `false`: raft abandoned the transfer and the previous leader leads again.
+    pub completed: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AddReplicaResult {
+    pub plan: kv9_meta::data_groups::addition::ReplicaPlan,
+    pub migration: kv9_meta::data_groups::migration::MigrationIntent,
+    /// False confirms an identical committed plan; the receipt is a NEW commit.
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+/// One committed replica plan of a group, with its catalog-only stage.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupPlan {
+    pub task: u64,
+    pub operation: [u8; 16],
+    pub migration_task: u64,
+    pub mode: &'static str,
+    pub destination: DataGroupReplica,
+    pub source: Option<DataGroupReplica>,
+    pub stage: &'static str,
+}
+
 /// One row of [`AdminApi::list_data_groups`].
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct DataGroupSummary {
@@ -768,6 +825,7 @@ pub struct DataGroupSummary {
     pub keyspaces: Vec<DataGroupKeyspace>,
     pub migrations: Vec<DataGroupMigration>,
     pub compaction_floor: Option<AppliedPosition>,
+    pub plans: Vec<DataGroupPlan>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]

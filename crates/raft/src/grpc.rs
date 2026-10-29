@@ -46,6 +46,7 @@ pub mod configuration_timeline;
 pub mod data_membership;
 pub mod data_read_fence;
 mod endpoint;
+pub mod install_evidence;
 mod groups;
 pub mod log_pressure;
 pub mod migration_capture;
@@ -393,6 +394,17 @@ pub trait RegistrationBackend: Send + Sync + 'static {
     ) -> kv9_common::Result<Option<[u8; 32]>> {
         Err(Error::NotImplemented("migration capture observation"))
     }
+    /// Commit a destination's install-evidence receipt (kind 104) at the metadata
+    /// leader; returns `(evidence_task, changed, applied)`. `NotLeader` tells the
+    /// caller to try another candidate (docs/REPLICA-ADDITION.md §5).
+    fn record_install_evidence(
+        &self,
+        _root: RootDigest,
+        _receipt: &[u8],
+        _deadline: std::time::Instant,
+    ) -> kv9_common::Result<(u64, bool, kv9_common::AppliedPosition)> {
+        Err(Error::NotImplemented("install evidence delivery"))
+    }
     fn checkpoint_selection(
         &self,
         _root: RootDigest,
@@ -661,6 +673,12 @@ impl Kv9Raft for RaftGrpcService {
         request: Request<pb::MigrationCaptureTransferRequest>,
     ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
         self.replicate_migration_payload(request).await
+    }
+    async fn record_install_evidence(
+        &self,
+        request: Request<pb::InstallEvidenceRequest>,
+    ) -> std::result::Result<Response<pb::InstallEvidenceReceipt>, Status> {
+        self.record_install_evidence_request(request).await
     }
     async fn inspect_migration_capture(
         &self,
@@ -2657,6 +2675,12 @@ mod tests {
             ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status> {
                 Err(Status::unimplemented("frozen fixture"))
             }
+            async fn record_install_evidence(
+                &self,
+                _: Request<pb::InstallEvidenceRequest>,
+            ) -> std::result::Result<Response<pb::InstallEvidenceReceipt>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
             async fn inspect_checkpoint_selection(
                 &self,
                 _: Request<pb::CheckpointHistoryRequest>,
@@ -3739,6 +3763,13 @@ mod tests {
                     ) -> std::result::Result<Response<pb::MigrationCaptureResponse>, Status>
                     {
                         self.0.inspect_migration_capture(request).await
+                    }
+                    async fn record_install_evidence(
+                        &self,
+                        request: Request<pb::InstallEvidenceRequest>,
+                    ) -> std::result::Result<Response<pb::InstallEvidenceReceipt>, Status>
+                    {
+                        self.0.record_install_evidence(request).await
                     }
                     async fn inspect_checkpoint_selection(
                         &self,

@@ -158,8 +158,9 @@ fn decode<E: Engine>(
             return Err(invalid("duplicate migration identity"));
         }
         // Region reuse is legal EXACTLY when every other migration of this
-        // region is settled by a committed abort — the recovery path. Two
-        // live (or evidenced) migrations of one region stay a divergence.
+        // region is settled (committed abort, or evidence plus — for a move — its
+        // removal decision; `operation_settled`). Two live migrations of one
+        // region stay a divergence.
         if intents
             .iter()
             .any(|(prior, _)| prior.region == intent.region)
@@ -170,16 +171,13 @@ fn decode<E: Engine>(
                 .map(|(prior, _)| prior.operation)
                 .collect();
             region_ops.push(intent.operation);
-            let mut aborted = 0usize;
-            for row in task_rows(txn) {
-                let row = row?;
-                if let Some(abort) = super::abort::from_abort_row(&row, root)? {
-                    if region_ops.contains(&abort.operation()) {
-                        aborted += 1;
-                    }
+            let mut unsettled = 0usize;
+            for operation in &region_ops {
+                if !super::operation_settled(txn, root, *operation)? {
+                    unsettled += 1;
                 }
             }
-            if aborted + 1 < region_ops.len() {
+            if unsettled > 1 {
                 return Err(invalid("duplicate migration identity"));
             }
         }
@@ -237,21 +235,13 @@ pub fn plan_migration<E: Engine>(
             }
             return Ok((previous, false));
         }
-        if previous.region == creation.region() {
-            // A committed ABORT settles the previous operation permanently:
-            // the region is re-migratable — that is the recovery. An
-            // unsettled or evidenced predecessor keeps refusing.
-            let mut aborted = false;
-            for row in task_rows(txn) {
-                if super::abort::from_abort_row(&row?, root.digest())?
-                    .is_some_and(|a| a.operation() == previous.operation)
-                {
-                    aborted = true;
-                }
-            }
-            if !aborted {
-                return Err(invalid("a committed migration already binds this group"));
-            }
+        if previous.region == creation.region()
+            && !super::operation_settled(txn, root.digest(), previous.operation)?
+        {
+            // One operation at a time binds a group. A committed ABORT settles the
+            // predecessor permanently; so does its evidence (plus, for a move, its
+            // removal decision). Anything else keeps refusing.
+            return Err(invalid("a committed migration already binds this group"));
         }
     }
     let intent = MigrationIntent {

@@ -1255,6 +1255,52 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// way to construct "a specific node is leader" in tests; it is NOT a
     /// product API — deliberately absent from `RawApi` and every server
     /// surface, so no production path can call it.
+    /// Hand leadership to `transferee` (docs/LEADER-TRANSFER.md §1): this peer must
+    /// lead, the transferee must be a voter whose `matched` equals this log's last
+    /// index, and no transfer may be in flight. The lease is revoked in this same
+    /// critical section, before raft is asked, so no lease read is served after the
+    /// decision; raft then sends `MsgTimeoutNow` and abandons the attempt after one
+    /// election timeout if the transferee does not campaign. Membership and
+    /// catalog authority live ABOVE this call; this is the raft mechanism only.
+    pub fn transfer_leader(&self, transferee: NodeId) -> Result<()> {
+        let mut g = self.lock();
+        g.check_fatal()?;
+        if g.raw.raft.state != StateRole::Leader {
+            return Err(Error::NotLeader {
+                leader: (g.raw.raft.leader_id != 0).then_some(NodeId(g.raw.raft.leader_id)),
+            });
+        }
+        if transferee.0 == g.raw.raft.id {
+            return Err(Error::Config("the leader cannot transfer to itself".into()));
+        }
+        if g.raw.raft.lead_transferee.is_some() {
+            return Err(Error::Config("a leadership transfer is already in flight".into()));
+        }
+        let conf = g.raw.raft.prs().conf().to_conf_state();
+        if !conf.voters.contains(&transferee.0) {
+            return Err(Error::Config(format!(
+                "node {} is not a voter of this group",
+                transferee.0
+            )));
+        }
+        let last = g.raw.raft.raft_log.last_index();
+        let matched = g.raw.raft.prs().get(transferee.0).map(|p| p.matched);
+        if matched != Some(last) {
+            return Err(Error::Config(format!(
+                "node {} is not caught up (matched {:?}, last index {last})",
+                transferee.0, matched
+            )));
+        }
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if let Some(lease) = &mut g.lease {
+            lease.revoke_leader();
+        }
+        g.raw.transfer_leader(transferee.0);
+        drop(g);
+        self.work_signal.notify();
+        Ok(())
+    }
+
     #[cfg(any(test, feature = "testing"))]
     pub fn transfer_leader_for_tests(&self, transferee: NodeId) {
         let mut g = self.lock();

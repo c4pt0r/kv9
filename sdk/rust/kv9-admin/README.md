@@ -26,10 +26,14 @@ kv9-admin [--context <name> | --endpoints <[id=]host:port,...>] [--token <t>]
            revoke <id>
            promote <id> [--wait [--wait-secs <n>]]   learner → voter
            remove <id>  [--wait [--wait-secs <n>]]   refused below three voters
+           transfer-leader --to <id> [--wait]        hand metadata leadership to a caught-up voter
   keyspace list | describe <id|name> | create --name <n> [--tenant <id>] [--group <creation-task>]
   group    list                      committed data groups: task, region, replicas, keyspaces, migrations
            describe <creation-task>  the rows plus every replica's live view (state, role, term, applied)
            create --voters <id,id,id> [--operation <hex> | --label <text>]
+           add-replica <creation-task> --to <node> [--operation <hex> | --label <text>]
+           move-replica <creation-task> --from <node> --to <node> [--operation <hex> | --label <text>]
+           transfer-leader <creation-task> --to <node>   hand the group's leadership to a caught-up voter
   task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history, paged
            describe <id>
   version
@@ -73,5 +77,13 @@ repeating one confirms the same configuration.
 RPCs to those principals (by the name in `KV9_CLIENT_TOKENS`); other tokens keep the data plane and
 get a typed `PermissionDenied`. Unset means every authenticated principal, as before.
 
-`scripts/kv9-admin-e2e.sh` runs all of this, including a data group and a keyspace bound to it,
-against a fresh five-node cluster.
+**Replica plans.** `group add-replica` and `group move-replica` commit one plan; from there the
+cluster attaches the learner, captures and pins the image, installs it inside the destination
+process, records the evidence, promotes the voter and (for a move) retires the source, with no
+further operator action ([REPLICA-ADDITION](../../../docs/REPLICA-ADDITION.md)). `group describe`
+shows the plan's catalog stage (`planned → captured → pinned → evidenced → decided`) and every
+replica's live view, including the voter set; each node's status line `replica_plans=` lists the
+steps it took.
+
+`scripts/kv9-admin-e2e.sh` runs the administrative verbs against a fresh five-node cluster;
+`scripts/replica-addition-e2e.sh` runs an addition and a move on a real MinIO container.

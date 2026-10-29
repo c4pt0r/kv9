@@ -184,6 +184,8 @@ batch_service! {
     list_nodes: ListNodesRequest => ListNodesResponse,
     list_data_groups: ListDataGroupsRequest => ListDataGroupsResponse,
     list_tasks: ListTasksRequest => ListTasksResponse,
+    add_replica: AddReplicaRequest => AddReplicaResponse,
+    transfer_leader: TransferLeaderRequest => TransferLeaderResponse,
     get_node_endpoint: GetNodeEndpointRequest => GetNodeEndpointResponse,
     change_node_endpoint: ChangeNodeEndpointRequest => ChangeNodeEndpointResponse,
     apply_retention: ApplyRetentionRequest => ApplyRetentionResponse,

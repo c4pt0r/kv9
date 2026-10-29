@@ -64,6 +64,7 @@ mod data_checkpoint;
 mod endpoint_recovery;
 mod group_compaction;
 mod migration_capture;
+mod replica_addition;
 mod replica_pressure;
 mod ttl_activation;
 mod ttl_maintenance;
@@ -2540,7 +2541,7 @@ impl AdminApi for RuntimeBackend {
     }
 
     fn list_data_groups(&self, _caller: &str) -> Result<Vec<crate::api::DataGroupSummary>> {
-        use crate::api::{DataGroupKeyspace, DataGroupMigration, DataGroupReplica, DataGroupSummary};
+        use crate::api::{DataGroupKeyspace, DataGroupMigration, DataGroupPlan, DataGroupReplica, DataGroupSummary};
         use kv9_meta::data_groups as dg;
         self.ensure_catalog_ready()?;
         let status = self.driver.status();
@@ -2566,6 +2567,9 @@ impl AdminApi for RuntimeBackend {
         let removals = dg::removal::committed_removals(store)?;
         let truncations = dg::truncation::committed_truncations(store)?;
         let floors = dg::compaction::committed_compaction_floors(store)?;
+        let plans = dg::addition::committed_plans(store)?;
+        let certified = kv9_meta::root::certified_root(&store.begin()?)?;
+        let view = store.begin()?.into_view();
         let mut groups = Vec::new();
         for creation in dg::committed_creations(store)? {
             let intent = creation.intent();
@@ -2629,9 +2633,183 @@ impl AdminApi for RuntimeBackend {
                     .filter(|f| f.creation_task() == task)
                     .map(|f| f.floor())
                     .max_by_key(|f| f.index),
+                plans: plans
+                    .iter()
+                    .filter(|p| p.region() == intent.region())
+                    .filter_map(|p| {
+                        let migration = migrations
+                            .iter()
+                            .find(|m| m.intent().operation() == p.operation())?
+                            .intent();
+                        let evidenced = evidence.iter().any(|e| e.operation() == p.operation());
+                        let pinned = certified.as_ref().is_some_and(|certified| {
+                            crate::migration_retention::migration_owner_ids(
+                                certified.digest(),
+                                p.operation(),
+                                &migration.destination().incarnation,
+                            )
+                            .ok()
+                            .and_then(|(source_owner, _)| {
+                                kv9_meta::retention::retention_owner(view.as_ref(), certified, source_owner).ok().flatten()
+                            })
+                            .is_some_and(|o| o.phase == kv9_common::retention::PinPhase::Published)
+                        });
+                        let captured = certified.as_ref().is_some_and(|certified| {
+                            dg::capture::committed_capture(view.as_ref(), certified, p.operation())
+                                .ok()
+                                .flatten()
+                                .is_some()
+                        });
+                        let stage = if aborts.iter().any(|a| a.operation() == p.operation()) {
+                            "aborted"
+                        } else if removals.iter().any(|r| r.operation() == p.operation()) {
+                            "decided"
+                        } else if evidenced {
+                            "evidenced"
+                        } else if pinned {
+                            "pinned"
+                        } else if captured {
+                            "captured"
+                        } else {
+                            "planned"
+                        };
+                        Some(DataGroupPlan {
+                            task: p.task(),
+                            operation: p.operation(),
+                            migration_task: p.migration_task(),
+                            mode: p.mode().label(),
+                            destination: replica(&migration.destination()),
+                            source: p.source().map(|s| replica(&s)),
+                            stage,
+                        })
+                    })
+                    .collect(),
             });
         }
         Ok(groups)
+    }
+
+    fn transfer_leader(
+        &self,
+        _caller: &str,
+        region: RegionId,
+        transferee: NodeId,
+    ) -> Result<crate::api::LeaderTransferResult> {
+        self.ensure_serving()?;
+        // Bounded by raft's own abandonment: one election timeout plus slack.
+        const TRANSFER_WAIT: Duration = Duration::from_secs(3);
+        let me = self.node.id.0;
+        let observed = if region == kv9_common::META_REGION_0 {
+            let status = self.driver.status();
+            if status.role != Role::Leader {
+                return Err(Error::NotLeader {
+                    leader: status.leader_id,
+                });
+            }
+            self.driver.transfer_leader(transferee, TRANSFER_WAIT)
+        } else {
+            let group = self
+                .raw_directory
+                .by_region(region)
+                .ok_or_else(|| Error::MetaNotReady("group is not active locally".into()))?;
+            let (driver, _, _) = group.capture_parts();
+            let status = driver.status();
+            if status.role != Role::Leader {
+                return Err(Error::NotLeader {
+                    leader: status.leader_id,
+                });
+            }
+            driver.transfer_leader(transferee, TRANSFER_WAIT)
+        };
+        match observed {
+            Ok(status) => Ok(crate::api::LeaderTransferResult {
+                previous_leader: me,
+                leader: status.leader_id.map(|l| l.0),
+                term: status.term,
+                completed: true,
+            }),
+            Err(Error::Raft(message)) if message.contains("expired") => {
+                Ok(crate::api::LeaderTransferResult {
+                    previous_leader: me,
+                    leader: Some(me),
+                    term: 0,
+                    completed: false,
+                })
+            }
+            Err(error) => Err(error),
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn add_replica(
+        &self,
+        _caller: &str,
+        root: RootDigest,
+        operation: [u8; 16],
+        creation_task: u64,
+        destination: NodeId,
+        mode: kv9_meta::data_groups::addition::PlanMode,
+        source: Option<NodeId>,
+    ) -> Result<crate::api::AddReplicaResult> {
+        use kv9_meta::data_groups::addition::{plan_replica, PlanMode};
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("replica plan request root differs".into()));
+        }
+        // A move names a committed member by node (an initial replica or one an
+        // earlier migration evidenced); its exact incarnation comes from the
+        // catalog, never from the caller.
+        let source = match (mode, source) {
+            (PlanMode::Move, Some(node)) => {
+                let creation =
+                    kv9_meta::data_groups::committed_creation(&self.node.meta_raft.store, creation_task)?
+                        .ok_or_else(|| Error::Config("replica plan creation is not committed".into()))?;
+                let members =
+                    kv9_meta::data_groups::committed_members(&txn, root, creation.intent())?;
+                Some(
+                    members
+                        .iter()
+                        .map(|(member, _)| *member)
+                        .find(|r| r.node == node)
+                        .ok_or_else(|| {
+                            Error::Config(format!(
+                                "node {} is not a committed member of the group",
+                                node.0
+                            ))
+                        })?,
+                )
+            }
+            (PlanMode::Add, None) => None,
+            (PlanMode::Move, None) => {
+                return Err(Error::Config("a move names the source node to retire".into()))
+            }
+            (PlanMode::Add, Some(_)) => {
+                return Err(Error::Config("an addition names no source".into()))
+            }
+        };
+        let (migration, migration_changed) = kv9_meta::data_groups::migration::plan_migration(
+            &mut txn,
+            operation,
+            creation_task,
+            destination,
+        )?;
+        let (plan, plan_changed) = plan_replica(&mut txn, operation, mode, source)?;
+        let changed = migration_changed || plan_changed;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::AddReplicaResult {
+            plan,
+            migration,
+            changed,
+            applied,
+        })
     }
 
     fn list_tasks(&self, _caller: &str, after: u64, limit: usize, kind: u64) -> Result<crate::api::TaskPage> {
@@ -2729,6 +2907,7 @@ fn task_kind_name(kind: u64) -> &'static str {
         107 => "retired_split",
         108 => "migration_abort",
         110 => "group_compaction",
+        111 => "replica_plan",
         _ => "unknown",
     }
 }
@@ -2814,6 +2993,21 @@ fn registration_error(error: Error) -> RegistrationError {
 }
 
 impl RegistrationBackend for RuntimeBackend {
+    fn record_install_evidence(
+        &self,
+        root: RootDigest,
+        receipt: &[u8],
+        _deadline: Instant,
+    ) -> Result<(u64, bool, AppliedPosition)> {
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let r = AdminApi::record_install_evidence(self, "node", root, receipt)?;
+        Ok((r.evidence.task(), r.changed, r.applied))
+    }
     fn export_migration_capture(
         &self,
         root: RootDigest,
@@ -4561,6 +4755,7 @@ pub struct NodeRuntime {
     /// promote-then-remove repair of a lost metadata voter
     /// (`runtime/voter_replacement.rs`, docs/VOTER-REPLACEMENT.md).
     voter_replacement: voter_replacement::State,
+    replica_plans: replica_addition::State,
     next_group_reconcile: Instant,
     group_control_error: Option<String>,
     node: Arc<Node<WalEngine>>,
@@ -4611,7 +4806,7 @@ pub struct NodeRuntime {
     /// Present only with configured remote object storage; adoption of
     /// installed generations requires it and simply waits otherwise.
     uploader: Option<Arc<kv9_engine::checkpoint::RemoteUploader>>,
-    _store_guard: kv9_common::store_lifecycle::StoreGuard,
+    _store_guard: Arc<kv9_common::store_lifecycle::StoreGuard>,
 }
 
 impl NodeRuntime {
@@ -5223,6 +5418,7 @@ impl NodeRuntime {
                 .unwrap_or(0),
             reclaim_retired: std::env::var("KV9_RECLAIM_RETIRED").as_deref() == Ok("1"),
             voter_replacement: voter_replacement::State::new(voter_replacement::Config::from_env()),
+            replica_plans: replica_addition::State::from_env(),
             next_group_reconcile: Instant::now(),
             group_control_error: None,
             raw_ttl_clock,
@@ -5265,7 +5461,7 @@ impl NodeRuntime {
             #[cfg(test)]
             route_snapshot_gate: std::sync::Mutex::new(None),
             uploader: backend.uploader.clone(),
-            _store_guard: store_guard,
+            _store_guard: Arc::new(store_guard),
         })
     }
 
@@ -5765,6 +5961,9 @@ impl NodeRuntime {
                 // proposes at most one configuration change per pass and never
                 // waits for its apply here.
                 self.reconcile_voter_replacement();
+                // Committed replica plans: each party takes the one verb its role and
+                // the committed rows enable, on a worker thread (REPLICA-ADDITION §2).
+                self.reconcile_replica_plans();
                 // Fence committed removals before any deferred engine read or
                 // driver restart; retirement of an unopened group needs no GET.
                 let retirement_ready = self.reconcile_retirement();
@@ -6500,6 +6699,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("voter_replacement=");
         body.push_str(&self.voter_replacement_status());
+        body.push('\n');
+        body.push_str("replica_plans=");
+        body.push_str(&self.replica_plans_status());
         body.push('\n');
         body.push_str("replica_pressure=");
         body.push_str(

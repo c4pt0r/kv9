@@ -69,6 +69,18 @@ pub struct MembershipChange {
     pub join_ticket: Option<String>,
 }
 
+/// The outcome of [`Client::transfer_leader`].
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct LeaderTransfer {
+    pub previous_leader: u64,
+    pub leader: Option<u64>,
+    pub term: u64,
+    pub completed: bool,
+}
+
+/// The metadata group's region id, for [`Client::transfer_leader`].
+pub const META_REGION_ID: u64 = 1;
+
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct NodeEndpoint {
     pub node_id: u64,
@@ -209,6 +221,25 @@ impl Client {
         Ok(membership(r))
     }
 
+    /// Hand leadership of `region_id` (1 = the metadata group) to a caught-up voter.
+    /// Leader-only (follows the hint); `completed == false` means raft abandoned the
+    /// transfer and the previous leader leads again.
+    pub async fn transfer_leader(&self, region_id: u64, transferee: u64) -> Result<LeaderTransfer, Error> {
+        let r = self
+            .invoke(
+                false,
+                proto::TransferLeaderRequest { region_id, transferee },
+                |mut c, r| async move { c.transfer_leader(r).await },
+            )
+            .await?;
+        Ok(LeaderTransfer {
+            previous_leader: r.previous_leader,
+            leader: (r.leader != 0).then_some(r.leader),
+            term: r.term,
+            completed: r.completed,
+        })
+    }
+
     /// Remove a voter. The server refuses below three voters and never removes the
     /// leader itself; promote a replacement first.
     pub async fn remove_node(&self, node_id: u64) -> Result<MembershipChange, Error> {
@@ -254,6 +285,20 @@ pub struct DataGroupMigration {
     pub truncation_task: u64,
 }
 
+/// One committed replica plan (kind 111) of a group and its catalog-only stage.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DataGroupPlan {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    pub migration_task: u64,
+    /// `add` or `move`.
+    pub mode: String,
+    pub destination: DataGroupReplica,
+    pub source: Option<DataGroupReplica>,
+    /// `planned`, `captured`, `pinned`, `evidenced`, `decided` or `aborted`.
+    pub stage: String,
+}
+
 /// One committed data group as the metadata leader sees it.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct DataGroup {
@@ -265,6 +310,18 @@ pub struct DataGroup {
     pub keyspaces: Vec<DataGroupKeyspace>,
     pub migrations: Vec<DataGroupMigration>,
     pub compaction_floor: Option<Applied>,
+    pub plans: Vec<DataGroupPlan>,
+}
+
+/// The receipt of [`Client::add_replica`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ReplicaPlanned {
+    pub plan_task: u64,
+    pub migration_task: u64,
+    pub region_id: u64,
+    /// `false` confirms an identical committed plan.
+    pub changed: bool,
+    pub applied: Applied,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -420,8 +477,59 @@ impl Client {
                     (Some(term), Some(index)) => Some(Applied { term, index }),
                     _ => None,
                 },
+                plans: g
+                    .plans
+                    .into_iter()
+                    .map(|p| DataGroupPlan {
+                        task: p.task,
+                        operation: p.operation,
+                        migration_task: p.migration_task,
+                        mode: p.mode,
+                        destination: replica(p.destination),
+                        source: p.source.map(|s| replica(Some(s))),
+                        stage: p.stage,
+                    })
+                    .collect(),
             })
             .collect())
+    }
+
+    /// Commit one replica plan: `mode` is `"add"` (grow the group by `destination`) or
+    /// `"move"` (grow, then retire `source`, an initial replica of the group). The
+    /// cluster drives the rest by itself (docs/REPLICA-ADDITION.md).
+    pub async fn add_replica(
+        &self,
+        root: [u8; 32],
+        operation: [u8; 16],
+        creation_task: u64,
+        destination: u64,
+        mode: &str,
+        source: Option<u64>,
+    ) -> Result<ReplicaPlanned, Error> {
+        let r = self
+            .invoke(
+                false,
+                proto::AddReplicaRequest {
+                    root_digest: root.to_vec(),
+                    operation_id: operation.to_vec(),
+                    creation_task,
+                    destination_node: destination,
+                    mode: mode.to_owned(),
+                    source_node: source.unwrap_or(0),
+                },
+                |mut c, r| async move { c.add_replica(r).await },
+            )
+            .await?;
+        Ok(ReplicaPlanned {
+            plan_task: r.plan_task,
+            migration_task: r.migration_task,
+            region_id: r.region_id,
+            changed: r.changed,
+            applied: Applied {
+                term: r.applied_term,
+                index: r.applied_index,
+            },
+        })
     }
 
     /// One page of the committed task history after `after` (0 = start), at most

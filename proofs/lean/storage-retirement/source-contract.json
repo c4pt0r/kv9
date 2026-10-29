@@ -15,10 +15,10 @@
     "the_committed_chain_reaches_retirement"
   ],
   "source_sha256": {
-    "crates/server/src/region_manager.rs": "a711ed4da137bc96ca3b8e43f0936c7bf7ba5c8af2c06625c51e2827a250e83e",
-    "crates/server/src/runtime.rs": "82d760f6905509010e7b7ceca5cb06325edb7231044b78b3d41b42fc577f4e61",
+    "crates/server/src/region_manager.rs": "dc41fafde982bdd9e9e5f20389e74c855ec1f77dedabfda12c39ee56018d1a5f",
+    "crates/server/src/runtime.rs": "4fb04db7c7fc52c541bbd8a1dcee747e26a5a000a4885df02328956f406aafd3",
     "crates/server/src/runtime/range_api.rs": "7255e63f017be12459fc1953356af4ea89a30e02dbe460b0174c5172a18788f3",
-    "crates/meta/src/data_groups/removal.rs": "cf5bf96f42499268e2e7715df3e73446ffe84a7c3f20d66bce1f0c4986a586a9",
+    "crates/meta/src/data_groups/removal.rs": "32448a1cb8b909e360d5e6e5fc3f93e5a203214b44a678f3cb99cd888da6a373",
     "scripts/retirement-e2e.py": "d7ea654a8968df603b52dfab5fda2b577c9229c60aac31601f9e9bc164d39949",
     "proofs/lean/storage-retirement/Retirement.lean": "a2e99d1baa4931c917eb61abf7b20595da124a251325248501fcf65665b4fbaa",
     "proofs/lean/storage-retirement/README.md": "a5c7f9b850fcf2e724fbdd4163484032b06a6943f688a63f1b5aa2d3101f1ab3"

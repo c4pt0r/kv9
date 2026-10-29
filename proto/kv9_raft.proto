@@ -82,6 +82,10 @@ service Kv9Raft {
   rpc FetchMigrationCapture(MigrationCaptureTransferRequest) returns (stream MigrationCaptureChunk);
   // Pull and atomically persist that same file at another existing data voter.
   rpc ReplicateMigrationCapture(MigrationCaptureTransferRequest) returns (MigrationCaptureResponse);
+  // A migration destination delivers its durable install-evidence receipt
+  // (KV9EVD01) to the metadata leader, which commits the kind-104 row through
+  // the same planner the public verb uses (docs/REPLICA-ADDITION.md §5).
+  rpc RecordInstallEvidence(InstallEvidenceRequest) returns (InstallEvidenceReceipt);
 }
 
 message MigrationCaptureTransferRequest {
@@ -100,6 +104,17 @@ message MigrationCaptureChunk {
   uint64 total_bytes = 4;
   bytes payload = 5; // At most 256 KiB. Exact ordered stream, no resumable holes.
   bool last = 6;
+}
+
+message InstallEvidenceRequest {
+  bytes root_digest = 1;
+  bytes receipt = 2;
+}
+message InstallEvidenceReceipt {
+  uint64 evidence_task = 1;
+  bool changed = 2;
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
 }
 
 message MigrationCaptureRequest {

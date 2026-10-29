@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "model": "Kv9.LeaderTransfer",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "no_lease_read_after_the_decision",
+    "the_window_holds_no_lease",
+    "nomination_requires_a_caught_up_voter",
+    "a_transfer_is_not_nominated_twice",
+    "completion_advances_the_term_to_the_transferee",
+    "the_window_ends_by_completion_or_expiry",
+    "a_transfer_can_complete",
+    "a_transfer_can_expire_and_the_leader_relearns_its_lease"
+  ],
+  "source_sha256": {
+    "crates/raft/src/rawnode.rs": "01148cc1c42208aa0204d3b901168ea1ef07cc773728e2e96ff499cabffc8eb0",
+    "crates/raft/src/driver.rs": "f3d005b47748d6aecacdf9450070095f9b70361b5c7677e3af35c786e6a986eb",
+    "crates/server/src/runtime.rs": "4fb04db7c7fc52c541bbd8a1dcee747e26a5a000a4885df02328956f406aafd3",
+    "crates/server/src/api.rs": "2798d93264c429a6501437de91d1af3f029f9266db251cc11c0f789b8fcb19c9",
+    "crates/server/src/grpc.rs": "2f2b3ac38e4f02041283c71915aa2f00a6c41334703245d1bfd2ec6d7140fe20",
+    "crates/server/proto/kv9.proto": "9b1250451ea10f0aa6e4738299f622d3de00a7c187a7977d1795e35fc063e360",
+    "sdk/rust/kv9-admin/src/main.rs": "8615fbc09e66b479f9e28484258b8c5943ea45c40d21cee4a1c1351884b3929e",
+    "scripts/kv9-admin-e2e.sh": "1181d1adc7807c2c748823b63d6213dd380ad7227cfb1e986b8d6e8d0be94845",
+    "docs/LEADER-TRANSFER.md": "1729a9cc2e10c5a7d53713781099e54e467ace965deb914d2644ff90229213b1"
+  }
+}

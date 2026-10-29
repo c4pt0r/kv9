@@ -53,10 +53,14 @@ fn usage() -> String {
      \u{20}        revoke <id>\n\
      \u{20}        promote <id> [--wait [--wait-secs <n>]]\n\
      \u{20}        remove <id>  [--wait [--wait-secs <n>]] refuses below three voters\n\
+     \u{20}        transfer-leader --to <id> [--wait]     hand metadata leadership to a caught-up voter\n\
      keyspace list | describe <id|name> | create --name <n> [--tenant <id>] [--group <creation-task>]\n\
      group    list                         committed data groups: task, region, replicas, keyspaces\n\
      \u{20}        describe <creation-task>     rows + every replica's live view of the group\n\
      \u{20}        create --voters <id,id,id> [--operation <hex> | --label <text>]\n\
+     \u{20}        add-replica <creation-task> --to <node> [--operation <hex> | --label <text>]\n\
+     \u{20}        move-replica <creation-task> --from <node> --to <node> [--operation <hex> | --label <text>]\n\
+     \u{20}        transfer-leader <creation-task> --to <node> [--wait]\n\
      task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history\n\
      \u{20}        describe <id>\n\
      version\n\
@@ -514,6 +518,25 @@ impl Cluster {
             verbose: global.verbose,
             unreachable,
         })
+    }
+
+    /// A client aimed at one replica of a data group (the first one whose node is
+    /// in the directory); the SDK follows the NotLeader hint to the group leader.
+    async fn group_leader_client(&mut self, region: u64) -> Result<Client, Fail> {
+        let groups = self.leader.list_data_groups().await?;
+        let group = groups
+            .iter()
+            .find(|g| g.region_id == region)
+            .ok_or_else(|| Fail::Refused(format!("region {region} is not a committed data group")))?;
+        let _ = self.directory().await;
+        for replica in &group.replicas {
+            if let Some(address) = self.peers.get(&replica.node_id) {
+                return Ok(Client::new(address.clone(), &self.token)?
+                    .with_timeout(self.timeout)
+                    .with_peers(self.peers.clone()));
+            }
+        }
+        Err(Fail::Refused(format!("no replica of region {region} has a known address")))
     }
 
     /// The certified metadata root digest, from the leader's status document.
@@ -1200,6 +1223,45 @@ async fn node_membership(
     Ok(report)
 }
 
+/// `node transfer-leader` (metadata group) and `group transfer-leader` (a data group).
+async fn transfer_leader(global: &Global, cluster: &mut Cluster, args: &VerbArgs, region: u64, label: &str) -> Outcome {
+    let to = parse_id(
+        args.flags.get("to").ok_or_else(|| Fail::Usage(format!("{label} transfer-leader needs --to <node>")))?,
+        "--to",
+    )?;
+    confirm(global, &format!("plan: TransferLeader region={region} to=node {to} (leader-only; nothing is committed)"), None)?;
+    let client = if region == kv9_client::META_REGION_ID {
+        cluster.leader.clone()
+    } else {
+        // Ask a replica of the group; the hint leads to the group leader.
+        cluster.group_leader_client(region).await?
+    };
+    let r = client.transfer_leader(region, to).await?;
+    let mut report = Report {
+        command: format!("{label} transfer-leader"),
+        result: json!({
+            "region_id": region, "transferee": to, "previous_leader": r.previous_leader,
+            "leader": r.leader, "term": r.term, "completed": r.completed,
+        }),
+        table: if r.completed {
+            format!("leadership of region {region} moved from node {} to node {} (term {})", r.previous_leader, r.leader.unwrap_or(0), r.term)
+        } else {
+            format!("transfer expired: node {} leads region {region} again; retry", r.previous_leader)
+        },
+        partial: Vec::new(),
+    };
+    if !r.completed {
+        report.result["exit_hint"] = json!(1);
+    }
+    if args.switches.iter().any(|s| s == "wait") && region == kv9_client::META_REGION_ID {
+        let status = cluster
+            .wait_for(&format!("node {to} leading the metadata group"), DEFAULT_WAIT, |status| status.u64("leader_id") == Some(to))
+            .await?;
+        report.result["waited"] = json!({ "leader_id": status.u64("leader_id"), "term": status.u64("term") });
+    }
+    Ok(report)
+}
+
 async fn keyspace_list(cluster: &mut Cluster) -> Outcome {
     let keyspaces = cluster.leader.list_keyspaces().await?;
     let rows: Vec<Vec<String>> = keyspaces
@@ -1337,6 +1399,82 @@ fn group_json(g: &DataGroup) -> Value {
             "removal_task": m.removal_task, "truncation_task": m.truncation_task,
         })).collect::<Vec<_>>(),
         "compaction_floor": g.compaction_floor.map(|f| json!({"term": f.term, "index": f.index})),
+        "plans": g.plans.iter().map(|p| json!({
+            "task": p.task, "operation": hex(&p.operation), "migration_task": p.migration_task,
+            "mode": p.mode, "stage": p.stage,
+            "destination": {"node_id": p.destination.node_id, "store_incarnation": hex(&p.destination.store_incarnation)},
+            "source": p.source.as_ref().map(|s| json!({"node_id": s.node_id, "store_incarnation": hex(&s.store_incarnation)})),
+        })).collect::<Vec<_>>(),
+    })
+}
+
+/// The 16-byte operation id of a plan: `--operation`, derived from `--label`, or minted.
+fn operation_for(args: &VerbArgs, root: &[u8; 32], domain: &str, subject: &str) -> Result<([u8; 16], &'static str), Fail> {
+    Ok(match (args.flags.get("operation"), args.flags.get("label")) {
+        (Some(hex_text), _) => {
+            let bytes = parse_hex(hex_text, "--operation", 16)?;
+            (bytes.try_into().expect("16 bytes"), "given")
+        }
+        (None, Some(label)) => (
+            derived_operation(domain, root, format!("{subject}/{label}").as_bytes()),
+            "derived from --label",
+        ),
+        (None, None) => {
+            let nanos = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos();
+            (
+                derived_operation(&format!("{domain}/random"), root, &nanos.to_be_bytes()),
+                "random (pass it back as --operation to retry)",
+            )
+        }
+    })
+}
+
+/// `group add-replica` / `group move-replica`: one committed plan; the cluster drives
+/// the chain (docs/REPLICA-ADDITION.md). Watch it with `group describe`.
+async fn group_plan_replica(global: &Global, cluster: &mut Cluster, args: &VerbArgs, creation_task: u64, mode: &str) -> Outcome {
+    let to = parse_id(
+        args.flags.get("to").ok_or_else(|| Fail::Usage(format!("group {mode}-replica <creation-task> --to <node>")))?,
+        "--to",
+    )?;
+    let from = match (mode, args.flags.get("from")) {
+        ("move", Some(from)) => Some(parse_id(from, "--from")?),
+        ("move", None) => return Err(Fail::Usage("group move-replica needs --from <node>".into())),
+        (_, Some(_)) => return Err(Fail::Usage("group add-replica takes no --from".into())),
+        _ => None,
+    };
+    let root = cluster.root_digest().await?;
+    let subject = format!("{creation_task}/{to}/{}", from.unwrap_or(0));
+    let (operation, origin) = operation_for(args, &root, "kv9-admin/replica-plan/v1", &subject)?;
+    confirm(
+        global,
+        &format!(
+            "plan: AddReplica group={creation_task} mode={mode} to=node {to}{} operation={} ({origin}); the cluster attaches, captures, installs, proves and promotes by itself",
+            from.map_or(String::new(), |f| format!(" from=node {f}")),
+            hex(&operation)
+        ),
+        None,
+    )?;
+    let planned = cluster
+        .leader
+        .add_replica(root, operation, creation_task, to, mode, from)
+        .await?;
+    let outcome = if planned.changed { "planned" } else { "confirmed" };
+    Ok(Report {
+        command: format!("group {mode}-replica"),
+        result: json!({
+            "plan_task": planned.plan_task, "migration_task": planned.migration_task,
+            "region_id": planned.region_id, "operation": hex(&operation), "operation_origin": origin,
+            "mode": mode, "destination": to, "source": from, "outcome": outcome,
+            "applied": {"term": planned.applied.term, "index": planned.applied.index},
+        }),
+        table: format!(
+            "plan_task={} migration_task={} region_id={} operation={} ({outcome})\nwatch: kv9-admin group describe {creation_task}",
+            planned.plan_task, planned.migration_task, planned.region_id, hex(&operation)
+        ),
+        partial: Vec::new(),
     })
 }
 
@@ -1353,13 +1491,18 @@ async fn group_list(cluster: &mut Cluster) -> Outcome {
                 ids(&g.keyspaces.iter().map(|k| k.keyspace_id as u64).collect::<Vec<_>>()),
                 g.migrations.len().to_string(),
                 g.compaction_floor.map_or("-".into(), |f| format!("{}/{}", f.term, f.index)),
+                g.plans
+                    .iter()
+                    .map(|p| format!("{}→{}:{}", p.mode, p.destination.node_id, p.stage))
+                    .collect::<Vec<_>>()
+                    .join(" "),
             ]
         })
         .collect();
     Ok(Report {
         command: "group list".into(),
         result: json!(groups.iter().map(group_json).collect::<Vec<_>>()),
-        table: table(&["TASK", "REGION", "REPLICAS", "ACTIVATED", "KEYSPACES", "MIGRATIONS", "COMPACTED"], &rows),
+        table: table(&["TASK", "REGION", "REPLICAS", "ACTIVATED", "KEYSPACES", "MIGRATIONS", "COMPACTED", "PLANS"], &rows),
         partial: Vec::new(),
     })
 }
@@ -1398,6 +1541,17 @@ async fn group_describe(cluster: &mut Cluster, creation_task: u64) -> Outcome {
     }
     if let Some(f) = group.compaction_floor {
         lines.push(format!("compacted:     through term {} index {}", f.term, f.index));
+    }
+    for p in &group.plans {
+        lines.push(format!(
+            "plan:          task {} {} → node {}{} stage {} (operation {})",
+            p.task,
+            p.mode,
+            p.destination.node_id,
+            p.source.as_ref().map_or(String::new(), |s| format!(" retiring node {}", s.node_id)),
+            p.stage,
+            hex(&p.operation)
+        ));
     }
     // Every replica's own view of the group, from its status document.
     let mut partial = Vec::new();
@@ -1488,30 +1642,7 @@ async fn group_create(global: &Global, cluster: &mut Cluster, args: &VerbArgs) -
         return Err(Fail::Usage("a data group has exactly 3, 5 or 7 voters".into()));
     }
     let root = cluster.root_digest().await?;
-    let (operation, origin): ([u8; 16], &str) = match (args.flags.get("operation"), args.flags.get("label")) {
-        (Some(hex_text), _) => {
-            let bytes = parse_hex(hex_text, "--operation", 16)?;
-            (bytes.try_into().expect("16 bytes"), "given")
-        }
-        (None, Some(label)) => (
-            derived_operation("kv9-admin/group-create/v1", &root, label.as_bytes()),
-            "derived from --label",
-        ),
-        (None, None) => {
-            // No subject to derive from: mint one and print it, so that a retry can
-            // pass it back as --operation and confirm instead of creating twice.
-            let mut seed = [0u8; 16];
-            let nanos = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_nanos();
-            seed[..16].copy_from_slice(&nanos.to_be_bytes());
-            (
-                derived_operation("kv9-admin/group-create/random", &root, &seed),
-                "random (pass it back as --operation to retry)",
-            )
-        }
-    };
+    let (operation, origin) = operation_for(args, &root, "kv9-admin/group-create/v1", "")?;
     confirm(
         global,
         &format!(
@@ -1652,6 +1783,17 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("node admit <id> --addr <host:port>".into()))?, "node id")?;
             node_admit(global, &mut cluster, &args, id).await?
         }
+        ("node", "transfer-leader") => transfer_leader(global, &mut cluster, &args, kv9_client::META_REGION_ID, "node").await?,
+        ("group", "transfer-leader") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("group transfer-leader <creation-task> --to <node>".into()))?, "creation task")?;
+            let groups = cluster.leader.list_data_groups().await?;
+            let region = groups
+                .iter()
+                .find(|g| g.creation_task == id)
+                .map(|g| g.region_id)
+                .ok_or_else(|| Fail::Refused(format!("data group {id} is not committed")))?;
+            transfer_leader(global, &mut cluster, &args, region, "group").await?
+        }
         ("node", verb @ ("revoke" | "promote" | "remove")) => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage(format!("node {verb} <id>")))?, "node id")?;
             node_membership(global, &mut cluster, verb, &args, id).await?
@@ -1668,6 +1810,10 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
             group_describe(&mut cluster, id).await?
         }
         ("group", "create") => group_create(global, &mut cluster, &args).await?,
+        ("group", verb @ ("add-replica" | "move-replica")) => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage(format!("group {verb} <creation-task> --to <node>")))?, "creation task")?;
+            group_plan_replica(global, &mut cluster, &args, id, verb.trim_end_matches("-replica")).await?
+        }
         ("task", "list") => task_list(&mut cluster, &args).await?,
         ("task", "describe") => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("task describe <id>".into()))?, "task id")?;

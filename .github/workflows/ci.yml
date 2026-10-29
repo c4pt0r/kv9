@@ -665,6 +665,17 @@ jobs:
         env:
           KV9_MINIO_EXTERNAL: "1"
 
+      # Replica addition and move driven by the cluster (docs/REPLICA-ADDITION.md): one
+      # `kv9-admin group add-replica` takes a group to four voters, one `move-replica`
+      # retires an original replica, with the install done inside the destination.
+      - name: Run replica addition and move on MinIO
+        run: |
+          set -o pipefail
+          scripts/replica-addition-e2e.sh 2>&1 | tee /tmp/replica-addition-e2e.out
+          grep -q '^PASS: replica addition and move driven by the cluster' /tmp/replica-addition-e2e.out
+        env:
+          KV9_MINIO_EXTERNAL: "1"
+
       - name: Run persistent workload executable against three replicas and MinIO
         run: |
           set -euo pipefail
@@ -837,6 +848,12 @@ jobs:
           - script: kv9-admin-e2e.sh
             base_port: 27200
             success_marker: "PASS: kv9-admin"
+          # Leader transfer (docs/LEADER-TRANSFER.md): metadata leadership moved to a
+          # follower and back in one bounded step with writes continuing, a data group's
+          # leadership moved to a replica; learner, non-member and self refused.
+          - script: leader-transfer-e2e.sh
+            base_port: 27300
+            success_marker: "PASS: leader transfer"
           # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
           # isolated leader must refuse raw reads with the NAMED typed families
           # (read_unconfirmed / not_leader) — transport errors explicitly do not

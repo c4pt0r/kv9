@@ -41,6 +41,6 @@
   "source_pins": {
     "crates/raft/src/storage.rs": "d2ee607f012da79efe5321f0bb0f48e2a9a44ec697dd19adc8e96156b54388c4",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
-    "crates/raft/src/rawnode.rs": "d301c25a6f7f6c5e6941731ef1b241a6300fb5c12c2da0b1f8b39d247a91c6b5"
+    "crates/raft/src/rawnode.rs": "01148cc1c42208aa0204d3b901168ea1ef07cc773728e2e96ff499cabffc8eb0"
   }
 }

@@ -12,8 +12,12 @@
 use super::*;
 
 const SOURCE_REMOVAL: u64 = 106;
+/// V1 names one of the creation's initial replicas; V2 adds the evidence task that
+/// introduced a replica which joined through an earlier, settled migration.
 const RMV_MAGIC: &[u8; 8] = b"KV9RMV01";
-pub const MAX_REMOVAL_BYTES: usize = 8 + 32 + 16 + 8 + 8 + 8 + 8 + 16;
+const RMV2_MAGIC: &[u8; 8] = b"KV9RMV02";
+const RMV1_BYTES: usize = 8 + 32 + 16 + 8 + 8 + 8 + 8 + 16;
+pub const MAX_REMOVAL_BYTES: usize = RMV1_BYTES + 8;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RemovalDecision {
@@ -23,6 +27,9 @@ pub struct RemovalDecision {
     evidence_task: u64,
     region: RegionId,
     source: InitialReplica,
+    /// 0 for an initial replica of the creation; otherwise the kind-104 evidence
+    /// task of the migration that introduced `source`.
+    origin_task: u64,
 }
 
 impl RemovalDecision {
@@ -44,10 +51,14 @@ impl RemovalDecision {
     pub fn source(&self) -> InitialReplica {
         self.source
     }
+    /// The evidence task that introduced the source, or 0 for an initial replica.
+    pub fn origin_task(&self) -> u64 {
+        self.origin_task
+    }
 
     pub fn encode(&self) -> Vec<u8> {
         let mut bytes = Vec::with_capacity(MAX_REMOVAL_BYTES);
-        bytes.extend_from_slice(RMV_MAGIC);
+        bytes.extend_from_slice(if self.origin_task == 0 { RMV_MAGIC } else { RMV2_MAGIC });
         bytes.extend_from_slice(self.root.as_bytes());
         bytes.extend_from_slice(&self.operation);
         bytes.extend_from_slice(&self.task.to_be_bytes());
@@ -55,14 +66,21 @@ impl RemovalDecision {
         bytes.extend_from_slice(&self.region.0.to_be_bytes());
         bytes.extend_from_slice(&self.source.node.0.to_be_bytes());
         bytes.extend_from_slice(self.source.incarnation.as_bytes());
+        if self.origin_task != 0 {
+            bytes.extend_from_slice(&self.origin_task.to_be_bytes());
+        }
         bytes
     }
 
     /// Decode data only. This does not mint committed truncation authority.
     pub fn decode(bytes: &[u8]) -> Result<Self> {
-        if bytes.len() != MAX_REMOVAL_BYTES || &bytes[..8] != RMV_MAGIC {
-            return Err(invalid("invalid removal decision encoding"));
-        }
+        let origin_task = match (bytes.len(), bytes.get(..8)) {
+            (RMV1_BYTES, Some(magic)) if magic == RMV_MAGIC => 0,
+            (MAX_REMOVAL_BYTES, Some(magic)) if magic == RMV2_MAGIC => {
+                u64::from_be_bytes(bytes[RMV1_BYTES..].try_into().unwrap())
+            }
+            _ => return Err(invalid("invalid removal decision encoding")),
+        };
         let decision = Self {
             root: RootDigest::from_bytes(bytes[8..40].try_into().unwrap()),
             operation: bytes[40..56].try_into().unwrap(),
@@ -73,8 +91,10 @@ impl RemovalDecision {
                 node: NodeId(u64::from_be_bytes(bytes[80..88].try_into().unwrap())),
                 incarnation: StoreIncarnation::from_bytes(bytes[88..104].try_into().unwrap()),
             },
+            origin_task,
         };
-        if decision.root.as_bytes() == &[0; 32]
+        if (origin_task != 0 && (origin_task < FIRST_DYNAMIC_ID || origin_task == decision.evidence_task))
+            || decision.root.as_bytes() == &[0; 32]
             || decision.operation == [0; 16]
             || decision.task < FIRST_DYNAMIC_ID
             || decision.evidence_task < FIRST_DYNAMIC_ID
@@ -89,7 +109,7 @@ impl RemovalDecision {
     }
 }
 
-fn from_removal_row(row: &Row, root: RootDigest) -> Result<Option<RemovalDecision>> {
+pub(crate) fn from_removal_row(row: &Row, root: RootDigest) -> Result<Option<RemovalDecision>> {
     if row.value.get(ColumnId(2)) != Some(&ColumnValue::Uint(SOURCE_REMOVAL)) {
         return Ok(None);
     }
@@ -112,6 +132,7 @@ fn matches_authority(
     decision: &RemovalDecision,
     evidence: &super::evidence::InstallEvidence,
     creation: &CreationIntent,
+    origin: Option<&super::evidence::InstallEvidence>,
 ) -> Result<()> {
     if evidence.task() != decision.evidence_task
         || evidence.operation() != decision.operation
@@ -120,10 +141,22 @@ fn matches_authority(
     {
         return Err(invalid("decision differs from the committed evidence"));
     }
-    // Only an INITIAL replica of the creation may be retired, and never the
-    // migration destination the evidence names.
-    if !creation.replicas().contains(&decision.source) {
-        return Err(invalid("removal names a replica outside the creation"));
+    // Only a committed member may be retired: an initial replica of the creation
+    // (V1), or a destination that an earlier, settled migration evidenced (V2,
+    // pointed at by its evidence task) — and never the destination this
+    // operation's own evidence names.
+    match origin {
+        None if creation.replicas().contains(&decision.source) => {}
+        None => return Err(invalid("removal names a replica outside the creation")),
+        Some(origin) => {
+            if origin.task() != decision.origin_task
+                || origin.region() != decision.region
+                || origin.destination() != decision.source
+                || origin.operation() == decision.operation
+            {
+                return Err(invalid("removal origin does not introduce the named replica"));
+            }
+        }
     }
     if decision.source == evidence.destination()
         || decision.source.node == evidence.destination().node
@@ -131,6 +164,24 @@ fn matches_authority(
         return Err(invalid("removal cannot name the migration destination"));
     }
     Ok(())
+}
+
+/// The evidence row that introduced `source` into `region`, if it joined through a
+/// migration rather than the creation.
+fn origin_of<E: Engine>(
+    txn: &MetaTxn<'_, E>,
+    root: RootDigest,
+    region: RegionId,
+    source: InitialReplica,
+) -> Result<Option<super::evidence::InstallEvidence>> {
+    for row in task_rows(txn) {
+        if let Some(e) = super::evidence::from_row_for_siblings(&row?, root)? {
+            if e.region() == region && e.destination() == source {
+                return Ok(Some(e));
+            }
+        }
+    }
+    Ok(None)
 }
 
 /// Stage one idempotent removal decision in the serialized, term-fenced
@@ -164,6 +215,11 @@ pub fn plan_removal<E: Engine>(
         .ok_or_else(|| invalid("removal creation is missing"))?;
     let creation = from_row(&creation_row, root.digest())?
         .ok_or_else(|| invalid("removal creation row differs"))?;
+    let origin = if creation.replicas().contains(&source) {
+        None
+    } else {
+        origin_of(txn, root.digest(), evidence.region(), source)?
+    };
     let decision = RemovalDecision {
         root: root.digest(),
         operation,
@@ -171,6 +227,7 @@ pub fn plan_removal<E: Engine>(
         evidence_task: evidence.task(),
         region: evidence.region(),
         source,
+        origin_task: origin.as_ref().map_or(0, |o| o.task()),
     };
     for row in task_rows(txn) {
         let row = row?;
@@ -185,8 +242,8 @@ pub fn plan_removal<E: Engine>(
                 }
                 return Ok((previous, false));
             }
-            if previous.region == evidence.region() {
-                return Err(invalid("a committed removal already binds this group"));
+            if previous.region == evidence.region() && previous.source == source {
+                return Err(invalid("a committed removal already retires this replica"));
             }
         }
     }
@@ -194,7 +251,7 @@ pub fn plan_removal<E: Engine>(
         task: txn.allocate_id(SequenceKind::Task)?,
         ..decision
     };
-    matches_authority(&decision, &evidence, &creation)?;
+    matches_authority(&decision, &evidence, &creation, origin.as_ref())?;
     RemovalDecision::decode(&decision.encode())?;
     let mut row = RowValue::new();
     for (column, value) in [
@@ -243,11 +300,16 @@ pub fn committed_removals<E: Engine>(store: &MetaStore<E>) -> Result<Vec<Removal
                 .ok_or_else(|| invalid("removal creation is missing"))?;
             let creation = from_row(&creation_row, root.digest())?
                 .ok_or_else(|| invalid("removal creation row differs"))?;
-            matches_authority(&decision, &evidence, &creation)?;
+            let origin = if decision.origin_task == 0 {
+                None
+            } else {
+                origin_of(&txn, root.digest(), decision.region, decision.source)?
+            };
+            matches_authority(&decision, &evidence, &creation, origin.as_ref())?;
             if out.iter().any(|prior| {
                 prior.task == decision.task
                     || prior.operation == decision.operation
-                    || prior.region == decision.region
+                    || (prior.region == decision.region && prior.source == decision.source)
             }) {
                 return Err(invalid("duplicate removal identity"));
             }
@@ -345,6 +407,11 @@ mod tests {
         assert!(
             plan_removal(&mut txn, operation, creation.replicas()[1]).is_err(),
             "one operation never retires a second replica"
+        );
+        assert_eq!(
+            RemovalDecision::decode(&planned.encode()).unwrap().origin_task(),
+            0,
+            "an initial replica keeps the V1 encoding"
         );
     }
 

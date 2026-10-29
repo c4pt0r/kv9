@@ -2505,8 +2505,107 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                         .collect(),
                     compaction_floor_term: g.compaction_floor.map(|f| f.term),
                     compaction_floor_index: g.compaction_floor.map(|f| f.index),
+                    plans: g
+                        .plans
+                        .into_iter()
+                        .map(|p| proto::DataGroupPlan {
+                            task: p.task,
+                            operation: p.operation.to_vec(),
+                            migration_task: p.migration_task,
+                            mode: p.mode.to_string(),
+                            destination: Some(replica(p.destination)),
+                            source: p.source.map(replica),
+                            stage: p.stage.to_string(),
+                        })
+                        .collect(),
                 })
                 .collect(),
+        }))
+    }
+
+    async fn transfer_leader(
+        &self,
+        request: Request<proto::TransferLeaderRequest>,
+    ) -> Result<Response<proto::TransferLeaderResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        if request.region_id == 0 || request.transferee == 0 {
+            return Err(Status::invalid_argument("region and transferee are required"));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.transfer_leader(
+                    &caller,
+                    kv9_common::RegionId(request.region_id),
+                    NodeId(request.transferee),
+                )
+            })
+            .await?;
+        Ok(Response::new(proto::TransferLeaderResponse {
+            previous_leader: result.previous_leader,
+            leader: result.leader.unwrap_or(0),
+            term: result.term,
+            completed: result.completed,
+        }))
+    }
+
+    async fn add_replica(
+        &self,
+        request: Request<proto::AddReplicaRequest>,
+    ) -> Result<Response<proto::AddReplicaResponse>, Status> {
+        use kv9_meta::data_groups::addition::PlanMode;
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        let root = kv9_common::RootDigest::from_bytes(
+            request
+                .root_digest
+                .try_into()
+                .map_err(|_| Status::invalid_argument("root_digest must contain 32 bytes"))?,
+        );
+        let operation: [u8; 16] = request
+            .operation_id
+            .try_into()
+            .map_err(|_| Status::invalid_argument("operation_id must contain 16 bytes"))?;
+        let mode = match request.mode.as_str() {
+            "add" => PlanMode::Add,
+            "move" => PlanMode::Move,
+            _ => return Err(Status::invalid_argument("mode must be add or move")),
+        };
+        if operation == [0; 16] || request.destination_node == 0 || request.creation_task == 0 {
+            return Err(Status::invalid_argument(
+                "nonzero operation, creation task and destination required",
+            ));
+        }
+        let source = (request.source_node != 0).then_some(NodeId(request.source_node));
+        let destination = NodeId(request.destination_node);
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.add_replica(
+                    &caller,
+                    root,
+                    operation,
+                    request.creation_task,
+                    destination,
+                    mode,
+                    source,
+                )
+            })
+            .await?;
+        Ok(Response::new(proto::AddReplicaResponse {
+            plan_task: result.plan.task(),
+            migration_task: result.migration.task(),
+            region_id: result.migration.region().0,
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
         }))
     }
 

@@ -1138,6 +1138,7 @@ impl RegionManager {
                         serde_json::json!({
                             "region": region.0, "state": if s.fatal.is_some() { "failed" } else { "active" },
                             "role": format!("{:?}", s.role), "term": s.term,
+                            "voters": s.voters, "learners": s.learners,
                             "leader": s.leader_id.map(|n| n.0), "committed": s.raft_committed,
                             "log_first_index": s.log_first_index,
                             "log_last_index": s.log_last_index,

@@ -19,8 +19,12 @@ status contract ([STATUS-PROCESS-IDENTITY](STATUS-PROCESS-IDENTITY.md)) and the 
 > (one follower address must be enough to find the leader, §3); `group create` derives its operation
 > id from `--label` (or takes `--operation`, or mints one) because a group has no natural subject;
 > JSON schemas are not yet frozen as files (§8); the `kv9 client` verbs still work as before and are
-> not yet delegations (§9). Increment 3 (the migration driver, `node replace`, retention, `group
-> abort`) is next.
+> not yet delegations (§9). **Increment 3 changed shape:** instead of a client-side driver for the
+> thirteen migration verbs, the cluster drives a committed replica plan by itself
+> ([REPLICA-ADDITION](REPLICA-ADDITION.md)); `kv9-admin group add-replica / move-replica` are the
+> two verbs, and `group describe` shows the stage. `node transfer-leader` and `group
+> transfer-leader` ([LEADER-TRANSFER](LEADER-TRANSFER.md)) move leadership in one bounded step.
+> `node replace`, retention verbs and `group abort` remain open.
 
 ## The problem
 
