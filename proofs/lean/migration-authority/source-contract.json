@@ -21,12 +21,12 @@
     "crates/meta/src/data_groups.rs": "1d67503adb61ddb2ec2b9b5ad648cb7288e6fa534b9dde8c4c3ba6b452766bf3",
     "crates/meta/src/data_groups/migration.rs": "70cc5374751662206e40b0dc5aa6348b3d455ec1f2cfa07e4db9362713423505",
     "crates/meta/src/data_groups/activation.rs": "71d8e42478e517b48096697d9df1f7a5029140ee446f9e97f684fd72f6127a2e",
-    "crates/meta/src/data_groups/ranges.rs": "05f842066e8e70cce1976285099a758dc33fbc154e974ff33f0bb0846c59b45c",
+    "crates/meta/src/data_groups/ranges.rs": "bb66e916a1bfa48bc73f122ff8fbf57775e0f94c76d5d5f80609d62278cbced8",
     "crates/meta/src/retention.rs": "15279c6d41b13bc39e052c97dc40e81cc3a07debf066cdf7e12cccd0e6742698",
     "crates/common/src/retention.rs": "163f87a0e7d6fc6597bc2a5e29ae7bf191898d1ef38d19cab354210ed01084ec",
     "crates/server/src/migration_retention.rs": "2999af948ae8a635cadc6927ac6cb670e4b4971e86a0838cab4868aa640e7465",
     "crates/server/src/checkpoint_retention.rs": "fd711c8eb856a60a3d768b33875f46794ef2800793514c544f466e7fe83ba67d",
-    "crates/server/src/runtime/tests/data_group_tests.rs": "b5cabebed7cdcb293fc3041547de006689e6995d0cd984d916351f2d2db925cf",
+    "crates/server/src/runtime/tests/data_group_tests.rs": "4b118da94145878026e007e8e4194f74140f53ab7d5a34ad7ab6fbf2db418812",
     "proofs/lean/migration-authority/Authority.lean": "18a8c85abbe8bf0d47995b09cad6891ea708e599412a4794f0c92205821bfbd9",
     "proofs/lean/migration-authority/README.md": "e8f3bb5ca08dc26075c17c33aac94a2fbb64c15134738e0dd67127d23060b568"
   }

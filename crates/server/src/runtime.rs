@@ -2290,7 +2290,7 @@ impl AdminApi for RuntimeBackend {
             // Not hosted here: a committed member is the next hop; it answers with
             // the group's actual leader.
             let txn = self.node.meta_raft.store.begin()?;
-            location.leader = gate::data_range_member_hint(&txn, keyspace, key)?;
+            location.leader = gate::data_range_member_hint(&txn, keyspace, key, Some(self.node.id))?;
         }
         Ok(location)
     }
@@ -2346,6 +2346,7 @@ impl AdminApi for RuntimeBackend {
             voters: status.voters,
             learners: status.learners,
             join_ticket: Some(ticket),
+            changed: true,
         })
     }
 
@@ -2374,6 +2375,7 @@ impl AdminApi for RuntimeBackend {
             voters: status.voters,
             learners: status.learners,
             join_ticket: None,
+            changed: true,
         })
     }
 
@@ -2384,6 +2386,23 @@ impl AdminApi for RuntimeBackend {
             return Err(Error::NotLeader {
                 leader: status.leader_id,
             });
+        }
+        if status.voters.contains(&node.0) {
+            // Already a voter: the target state holds; confirm instead of proposing
+            // a conf change raft would have to judge.
+            return Ok(MembershipChangeResult {
+                applied: AppliedPosition { term: status.term, index: status.raft_committed },
+                voters: status.voters.clone(),
+                learners: status.learners.clone(),
+                join_ticket: None,
+                changed: false,
+            });
+        }
+        if !status.learners.contains(&node.0) {
+            return Err(Error::Config(format!(
+                "node {} is not a learner of the metadata group; admit and join it first",
+                node.0
+            )));
         }
         let proposed = self.driver.promote_voter(node)?;
         let receipt = self
@@ -2397,6 +2416,7 @@ impl AdminApi for RuntimeBackend {
             voters: receipt.voters,
             learners: receipt.learners,
             join_ticket: None,
+            changed: true,
         })
     }
 
@@ -2414,9 +2434,19 @@ impl AdminApi for RuntimeBackend {
         if node == self.node.id {
             return Err(Error::Config("a leader never removes itself".into()));
         }
+        if !status.voters.contains(&node.0) && !status.learners.contains(&node.0) {
+            // Already gone: confirm.
+            return Ok(MembershipChangeResult {
+                applied: AppliedPosition { term: status.term, index: status.raft_committed },
+                voters: status.voters.clone(),
+                learners: status.learners.clone(),
+                join_ticket: None,
+                changed: false,
+            });
+        }
         if !status.voters.contains(&node.0) {
             return Err(Error::Config(format!(
-                "node {} is not a voter of the metadata group",
+                "node {} is a learner of the metadata group, not a voter; a drain or its abort removes learners",
                 node.0
             )));
         }
@@ -2437,6 +2467,7 @@ impl AdminApi for RuntimeBackend {
             voters: receipt.voters,
             learners: receipt.learners,
             join_ticket: None,
+            changed: true,
         })
     }
 
@@ -2831,8 +2862,18 @@ impl AdminApi for RuntimeBackend {
         // Bounded by raft's own abandonment: one election timeout plus slack.
         const TRANSFER_WAIT: Duration = Duration::from_secs(3);
         let me = self.node.id.0;
+        // The target state already holds: confirm, whichever node answers.
+        let confirmed = |status: &kv9_raft::driver::NodeStatus| crate::api::LeaderTransferResult {
+            previous_leader: transferee.0,
+            leader: Some(transferee.0),
+            term: status.term,
+            completed: true,
+        };
         let observed = if region == kv9_common::META_REGION_0 {
             let status = self.driver.status();
+            if status.leader_id == Some(transferee) {
+                return Ok(confirmed(&status));
+            }
             if status.role != Role::Leader {
                 return Err(Error::NotLeader {
                     leader: status.leader_id,
@@ -2846,6 +2887,9 @@ impl AdminApi for RuntimeBackend {
                 .ok_or_else(|| Error::MetaNotReady("group is not active locally".into()))?;
             let (driver, _, _) = group.capture_parts();
             let status = driver.status();
+            if status.leader_id == Some(transferee) {
+                return Ok(confirmed(&status));
+            }
             if status.role != Role::Leader {
                 return Err(Error::NotLeader {
                     leader: status.leader_id,
@@ -3835,28 +3879,55 @@ mod gate {
     ///
     /// A free function so the production endpoints and the tests call the *same* code — a gate
     /// verified through a parallel re-implementation is not verified.
+    #[allow(dead_code)] // the test-facing entry; production answers through `check_context_at`
     pub(super) fn check_context<E: kv9_engine::Engine>(
         store: &kv9_meta::store::MetaStore<E>,
         keyspace_id: KeyspaceId,
         epoch: &kv9_region::RegionEpoch,
         span: KeySpan<'_>,
     ) -> Result<ValidatedFence> {
-        let txn = store.begin()?;
-        check_context_in(store, &txn, keyspace_id, epoch, span)
+        check_context_at(store, None, keyspace_id, epoch, span)
     }
 
-    /// A committed member of the unsealed range covering `key` in a data keyspace,
-    /// preferring the region row's recorded leader, for redirecting a request that
-    /// landed on a node that does not host the range.
+    /// [`check_context`] knowing which node answers, so a redirect never names it.
+    pub(super) fn check_context_at<E: kv9_engine::Engine>(
+        store: &kv9_meta::store::MetaStore<E>,
+        local: Option<kv9_common::NodeId>,
+        keyspace_id: KeyspaceId,
+        epoch: &kv9_region::RegionEpoch,
+        span: KeySpan<'_>,
+    ) -> Result<ValidatedFence> {
+        let txn = store.begin()?;
+        check_context_in(store, &txn, local, keyspace_id, epoch, span)
+    }
+
+    /// A COMMITTED member (initial replicas plus evidenced destinations, minus retired
+    /// sources) of the unsealed range covering `key` in a data keyspace, never the
+    /// answering node itself: the redirect for a request that landed where the range
+    /// is not hosted. That member serves or redirects to the group's leader.
     pub(super) fn data_range_member_hint<E: kv9_engine::Engine>(
         txn: &kv9_meta::store::MetaTxn<'_, E>,
         keyspace_id: KeyspaceId,
         key: &[u8],
+        local: Option<kv9_common::NodeId>,
     ) -> Result<Option<kv9_common::NodeId>> {
-        let Some((_, members)) = kv9_meta::data_groups::ranges::route_in(txn, keyspace_id, key)? else {
+        let Some((range, _)) = kv9_meta::data_groups::ranges::route_in(txn, keyspace_id, key)? else {
             return Ok(None);
         };
-        Ok(members.first().map(|m| m.node))
+        let Some(root) = kv9_meta::root::certified_root(txn)? else {
+            return Ok(None);
+        };
+        let Some(binding) = kv9_meta::data_groups::ranges::committed_ranges_in_txn(txn)?
+            .into_iter()
+            .find(|b| b.range().region == range.region)
+        else {
+            return Ok(None);
+        };
+        let members = kv9_meta::data_groups::committed_members(txn, root.digest(), binding.creation().intent())?;
+        Ok(members
+            .iter()
+            .map(|(m, _)| m.node)
+            .find(|node| Some(*node) != local))
     }
 
     /// The same gate over a CALLER-OWNED transaction — one body, two entry
@@ -3872,6 +3943,7 @@ mod gate {
     pub(super) fn check_context_in<E: kv9_engine::Engine>(
         store: &kv9_meta::store::MetaStore<E>,
         txn: &kv9_meta::store::MetaTxn<'_, E>,
+        local: Option<kv9_common::NodeId>,
         keyspace_id: KeyspaceId,
         epoch: &kv9_region::RegionEpoch,
         span: KeySpan<'_>,
@@ -3883,7 +3955,7 @@ mod gate {
             // client at a committed member of that range (the typed NotLeader redirect
             // it already follows); that member serves or redirects to the group's
             // leader. A node that left the group (a move, a drain) answers the same way.
-            return Err(match data_range_member_hint(txn, keyspace_id, span.anchor())? {
+            return Err(match data_range_member_hint(txn, keyspace_id, span.anchor(), local)? {
                 Some(member) => Error::NotLeader { leader: Some(member) },
                 None => Error::RegionNotFound,
             });
@@ -4027,7 +4099,9 @@ mod gate {
     }
 }
 
-use gate::{check_context, check_context_in, ValidatedFence};
+use gate::{check_context_at, check_context_in, ValidatedFence};
+#[cfg(test)]
+use gate::check_context;
 
 /// Does a half-open range ending at `end` stay inside a region ending at `region_end`?
 ///
@@ -4257,8 +4331,9 @@ impl RuntimeBackend {
     /// Thin wiring; the decision lives in [`check_context`] so tests exercise the same
     /// function production does rather than a re-implementation of it.
     fn validated_context(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<ValidatedFence> {
-        check_context(
+        check_context_at(
             &self.node.meta_raft.store,
+            Some(self.node.id),
             ctx.keyspace,
             &ctx.region_epoch,
             span,
@@ -4300,7 +4375,7 @@ impl RuntimeBackend {
         let txn = store.begin_at(view);
         // Reads drop the minted fence: it is the WRITE-authorisation half of
         // the gate verdict, and reads have no apply step to present it to.
-        let _fence = check_context_in(store, &txn, ctx.keyspace, &ctx.region_epoch, span)?;
+        let _fence = check_context_in(store, &txn, Some(self.node.id), ctx.keyspace, &ctx.region_epoch, span)?;
         // The SAME view continues into the data read — surrendered, not
         // re-taken; a second snapshot here is exactly the defect above.
         Ok(txn.into_view())

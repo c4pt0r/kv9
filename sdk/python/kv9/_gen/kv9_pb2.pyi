@@ -1034,18 +1034,20 @@ class RevokeAdmissionRequest(_message.Message):
     def __init__(self, node_id: _Optional[int] = ...) -> None: ...
 
 class MembershipChangeResponse(_message.Message):
-    __slots__ = ("applied_term", "applied_index", "voters", "learners", "join_ticket")
+    __slots__ = ("applied_term", "applied_index", "voters", "learners", "join_ticket", "changed")
     APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
     APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
     VOTERS_FIELD_NUMBER: _ClassVar[int]
     LEARNERS_FIELD_NUMBER: _ClassVar[int]
     JOIN_TICKET_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
     applied_term: int
     applied_index: int
     voters: _containers.RepeatedScalarFieldContainer[int]
     learners: _containers.RepeatedScalarFieldContainer[int]
     join_ticket: str
-    def __init__(self, applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., voters: _Optional[_Iterable[int]] = ..., learners: _Optional[_Iterable[int]] = ..., join_ticket: _Optional[str] = ...) -> None: ...
+    changed: bool
+    def __init__(self, applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., voters: _Optional[_Iterable[int]] = ..., learners: _Optional[_Iterable[int]] = ..., join_ticket: _Optional[str] = ..., changed: _Optional[bool] = ...) -> None: ...
 
 class RawWriteResponse(_message.Message):
     __slots__ = ("applied_term", "applied_index")

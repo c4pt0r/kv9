@@ -84,9 +84,11 @@ echo "Leader is n${agreed_leader}."
 # ---------------------------------------------------------------- metadata group
 orig_leader="$agreed_leader"
 follower=$(( agreed_leader == 1 ? 2 : 1 ))
-# Refusals first: the leader itself, a non-member.
-expect_exit 1 env KV9_ADMIN_TOKEN="$admin_token" "$admin_bin" --endpoints "127.0.0.1:$((base_port + 1))" --output json --yes node transfer-leader --to "$agreed_leader"
-grep -q "transfer to itself" "$artifact_dir/last.out"
+# The leader itself: the target state already holds, so the verb confirms (completed,
+# leader unchanged) instead of refusing; a non-member is a refusal.
+self_out="$(env KV9_ADMIN_TOKEN="$admin_token" "$admin_bin" --endpoints "127.0.0.1:$((base_port + 1))" --output json --yes node transfer-leader --to "$agreed_leader")"
+test "$(printf '%s' "$self_out" | jq_py 'd["result"]["completed"]')" = "True"
+test "$(printf '%s' "$self_out" | jq_py 'd["result"]["leader"]')" = "$agreed_leader"
 expect_exit 1 env KV9_ADMIN_TOKEN="$admin_token" "$admin_bin" --endpoints "127.0.0.1:$((base_port + 1))" --output json --yes node transfer-leader --to 9
 grep -q "not a voter" "$artifact_dir/last.out"
 # A learner is not a voter either.
@@ -147,4 +149,4 @@ group_on_target() { test "$(group_leader)" = "[$gtarget]"; }
 wait_until "data group led by node $gtarget" 30 group_on_target
 echo "data group $gtask leadership moved from n$gleader to n$gtarget."
 
-echo "PASS: leader transfer (metadata group to a follower and back with writes continuing; data group to a replica; learner, non-member and self refused)"
+echo "PASS: leader transfer (metadata group to a follower and back with writes continuing; data group to a replica; learner and non-member refused, self confirmed)"

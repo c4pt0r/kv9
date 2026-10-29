@@ -81,6 +81,8 @@ pub struct MembershipChange {
     pub learners: Vec<u64>,
     /// Present only on `admit_node`: the one-time join ticket, returned once.
     pub join_ticket: Option<String>,
+    /// `false` when the target state already held (a repeated verb confirms).
+    pub changed: bool,
 }
 
 /// The outcome of [`Client::transfer_leader`].
@@ -114,6 +116,7 @@ fn membership(r: proto::MembershipChangeResponse) -> MembershipChange {
         voters: r.voters,
         learners: r.learners,
         join_ticket: Some(r.join_ticket).filter(|t| !t.is_empty()),
+        changed: r.changed,
     }
 }
 

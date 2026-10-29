@@ -182,7 +182,9 @@ def main():
         require(keyspace['result']['outcome'] == 'created', 'keyspace bound to the group')
 
         def group_view():
-            described, _ = admin('describe', 'group', 'describe', task, partial=True)
+            # Used inside waits: the drained node may be the metadata leader and is
+            # killed mid-drain, so an election window is a retry, not a failure.
+            described, _ = admin('describe', 'group', 'describe', task, success=None)
             return described.get('result', {})
 
         def group_leader_view():
@@ -231,11 +233,25 @@ def main():
         before = {n['node_id']: n for n in listed['result']['nodes']}
         require(not before[1]['draining'] and not before[1]['drained'], 'node 1 is not draining before the verb')
 
-        # ------------------------------------------------------------ the drain
-        drained, _ = admin('drain-1', 'node', 'drain', '1', '--wait', '--wait-secs', '600', partial=True)
+        # ------------------------------------------------------------ the drain, under a fault
+        drained, _ = admin('drain-1', 'node', 'drain', '1', partial=True)
         require(drained['result']['outcome'] == 'committed', f"drain outcome {drained['result'].get('outcome')}")
-        require(drained['result'].get('waited', {}).get('drained') is True, 'the verb waited until drained')
         drain_task = drained['result']['task']
+        # The drained node is KILLED once the cluster has committed its first move plan
+        # and restarted a few seconds later: the plan completes without it (the source's
+        # removal needs only the group's quorum), and on return it hands away nothing it
+        # no longer leads, then leaves the metadata group as planned.
+        wait('the cluster committed the move plan', lambda: any((p.get('source') or {}).get('node_id') == 1 for p in group_view().get('plans', [])), 240)
+        print('killing the drained node n1 mid-drain', flush=True)
+        processes.pop(1).kill()
+        time.sleep(5)
+        start(1, 'restarted')
+        wait('n1 is back', lambda: status(1).get('endpoint_ready') == 'true' or status(1).get('pid'), 120)
+        def drained_now():
+            listed, _ = admin('nodes-poll', 'node', 'list', partial=True)
+            row = next((n for n in listed.get('result', {}).get('nodes', []) if n['node_id'] == 1), None)
+            return row is not None and row['drained']
+        wait('node 1 is drained despite the restart', drained_now, 900)
 
         # ------------------------------------------------------------ the checks
         listed, _ = admin('nodes-after', 'node', 'list', partial=True)
@@ -268,10 +284,12 @@ def main():
                 steps.setdefault(e['step'], set()).add(node)
         require('move_plan' in steps and 'promote_learner' in steps and 'remove_voter' in steps,
                 f'the metadata leader took every step: {steps}')
-        require('transfer_group_leader' in steps and 'transfer_metadata_leader' in steps,
-                f'node 1 handed its leaderships away: {steps}')
+        # Node 1 was restarted mid-drain: its own in-memory event log (the leadership
+        # hand-offs) is gone; what matters is the committed outcome, checked above,
+        # and that it leads nothing now.
+        require(group_leader_id() != 1 and leader() != 1, 'node 1 leads nothing after the restart')
         manifest_record['verdict'] = 'passed'
-        print(f'PASS: node drain (node 1 led both groups; moved region to 4, promoted {promoted}, removed 1; '
+        print(f'PASS: node drain (node 1 led both groups, was killed and restarted mid-drain; moved region to 4, promoted {promoted}, removed 1; '
               f'members {members}, metadata voters {voters}; steps: '
               f'{ {k: sorted(v) for k, v in sorted(steps.items())} })', flush=True)
     except Exception as error:

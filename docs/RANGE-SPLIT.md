@@ -230,6 +230,30 @@ follow both to the group's actual leader. The REPL's `delrange`, like its `scan`
 anything: committed intents wait. It is the operator's brake and what the abort e2e uses to
 abort deterministically before a seal.
 
+## 13. Recovery under faults (tested)
+
+The review also found that none of the day's increments had a fault-injection run. Three now
+do, all in CI:
+
+- **Split population, child leader killed mid-copy** (`scripts/range-split-recovery-e2e.sh`):
+  3000 rows, population slowed with the test-only `KV9_RANGE_POPULATE_DELAY_MS`; the node leading
+  the low child is killed after its first page; another replica leads, copies the half again from
+  its own sealed parent replica (idempotent puts; the cursor was the dead node's memory), both
+  digests verify whole, the split publishes, every row is served; the killed node restarts,
+  follows both children and retires its parent replica on the committed sealed binding.
+- **Replica plan, destination killed and restarted during the move** (`replica-addition-e2e.sh`):
+  the destination's driver loses its in-memory once-per-process marks, re-derives every step from
+  committed state, redoes the install into a fresh generation and the plan completes; the final
+  read tolerates the election that the removed source's departure triggers.
+- **Drain, the drained node killed and restarted mid-drain** (`node-drain-e2e.sh`): the move plan
+  completes on the group's quorum without it; on return it leads nothing and leaves the metadata
+  group as planned; `drained` is reached without the `--wait` ever being told.
+
+Membership verbs confirm instead of refusing when their target state already holds
+(`node promote` of a voter, `node remove` of an absent node, `transfer-leader` to the current
+leader): `outcome: confirmed`, asserted by the kv9-admin e2e. `node promote` of a node that is
+neither voter nor learner is a typed refusal; `node remove` of a learner points at drain.
+
 Evidence: `proofs/lean/operation-abort` (ten theorems: one abort per operation, a published
 operation's abort is ineffective, a move needs the abort, children retire only on abort, an
 abort is refused after a seal, a late seal makes the abort ineffective; five controls) and

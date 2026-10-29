@@ -29,16 +29,16 @@
     "crates/meta/src/data_groups/removal.rs": "32448a1cb8b909e360d5e6e5fc3f93e5a203214b44a678f3cb99cd888da6a373",
     "crates/meta/src/data_groups/abort.rs": "43251e252fb68b40c375a554a03bffbca11e000eac3cff930b6cad12223bb7cb",
     "crates/server/src/runtime/replica_addition.rs": "33ad31f729e0850dc674d5d919a012ea10ba03647d8f4e1be13ec7739da0c275",
-    "crates/server/src/runtime.rs": "33085af9b8d941ec71943d1f76880dfec753d634a997529fa6c4f92dbe33e70c",
-    "crates/server/src/api.rs": "2f1e76d9c9b49f6db0415714850b85f71bfa9a86fb37b6a576d6509d09a6ac0b",
-    "crates/server/src/grpc.rs": "09c730f8b06911bc20a020c3e8d51816911f4f7abd4dfbc058088e77a125f13b",
+    "crates/server/src/runtime.rs": "a0472c9eff645e68ba6840afd54463baeebd4e870a5465a616ec4cf18276be34",
+    "crates/server/src/api.rs": "8c8db3f3aa1dda06cc530a5d40a3305a6e12b4d2a16cf15ce72ca6b981f541f1",
+    "crates/server/src/grpc.rs": "6cd54f442ff97253e709ae6cc76bf6b9e2ee57aa91d0647b2f104f9292797505",
     "crates/server/src/installation_retention.rs": "869b11a71cde7c7fd71bbea6eaa4bce4bdf73e5768d9d6a2e709df5b5a4f1eeb",
     "crates/raft/src/grpc/install_evidence.rs": "72ec7854b64c0398b86086e47641d3b8e7087d6f2e44ab354664ef18bbee96c3",
     "crates/raft/src/snapshot_install.rs": "e6489dc439af2b7fd84ed36a132e9d0e39ff332d57a72db7f8a4c99eab952e75",
     "proto/kv9_raft.proto": "68f320e9b0c7ef4447b872d11ab30e58f5c9be2af56f135831558491bcacd083",
-    "crates/server/proto/kv9.proto": "65ac1434dac1cffc610f00aaa5cf8b820d398765a5512cf267a09da1e5995cad",
-    "sdk/rust/kv9-admin/src/main.rs": "005ca0e43fab87ed2f6d91ab6564e9b125979a5d52c9f9f632f60b18107eee2d",
-    "scripts/replica-addition-e2e.py": "91df3d61ef34894eccc5e9eeccaafc050b59bb92f52c3310dc6bbf4d06b1a6a9",
+    "crates/server/proto/kv9.proto": "581f03fc2faf08a450b6aa4833ec33c4d034ed9422cc2ed6a5b2b362ca5b1283",
+    "sdk/rust/kv9-admin/src/main.rs": "f083ec35634674a486b613148817266f12c231bd993e6f1fb617102d37416a71",
+    "scripts/replica-addition-e2e.py": "fc2df29157169d61feef9b170adad775fdaf897f40f46637ef9d9ed2c3e07479",
     "docs/REPLICA-ADDITION.md": "50ee01c3f2787b145ddbb2ef281b4007c99ea92e2e52cc2965e0eb92d4070e68"
   }
 }

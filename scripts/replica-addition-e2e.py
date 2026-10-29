@@ -224,9 +224,23 @@ def main():
         def moved_voters():
             observed = group_leader_view()
             return observed is not None and sorted(observed.get('voters', [])) == [2, 3, 4, 5]
+        # The destination is KILLED once the move plan is committed and restarted five
+        # seconds later: its driver loses its in-memory once-per-process marks and
+        # re-derives every step from committed state; an install that had started is
+        # redone into a fresh generation. The plan completes.
+        print('killing the destination n5 during the move plan', flush=True)
+        processes.pop(5).kill()
+        time.sleep(5)
+        start(5, 'restarted')
+        wait('n5 is back', lambda: status(5).get('pid') is not None, 120)
         wait('node 5 promoted and node 1 retired by the cluster', moved_voters, 480)
         require(stage_of(moved['result']['plan_task']) == 'decided', 'the move plan reached its removal decision')
-        out = repl('read-after-move', ['use moved', 'get k/1', 'get k/2', 'get k/3', 'put k/4 four', 'get k/4'])
+        # The removed source may have led the group: its removal triggers an election,
+        # and a read in that second sees a stale leader hint. Retry briefly.
+        def read_after_move():
+            out = repl('read-after-move', ['use moved', 'get k/1', 'get k/2', 'get k/3', 'put k/4 four', 'get k/4'], success=None)
+            return out if 'error' not in out.lower() else None
+        out = wait('the moved group serves after the election', read_after_move, 60)
         require(all(v in out for v in ('one', 'two', 'three', 'four')), 'every key readable after the move')
 
         # Each party recorded only its own steps. Status documents are written once

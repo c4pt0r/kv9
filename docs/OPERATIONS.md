@@ -13,7 +13,7 @@ committed state on the node whose role it is, and observable in each node's `<da
 | --- | --- | --- |
 | Create a cluster | `kv9 store-prepare` on each initial store → `kv9 root-create --voters 1@..,2@..,3@..` → `kv9 init` on each → `kv9 start` | `KV9_BOOTSTRAP_TOKEN` for formation, `KV9_CLUSTER_TOKEN` + `KV9_CLIENT_TOKENS=principal=token,...` for serving ([QUICKSTART](QUICKSTART.md)). |
 | Add a node | `node admit <id> --addr <host:port> [--ttl <secs>]` → on the host `KV9_JOIN_TICKET=… kv9 join …` then `kv9 start …` | The ticket is one-time; the node joins the metadata group as a **learner**. `node revoke <id>` cancels an unused admission. |
-| Make it vote | `node promote <id> [--wait]` | Learner → voter of the metadata group. |
+| Make it vote | `node promote <id> [--wait]` | Learner → voter of the metadata group. Repeating a membership verb whose state already holds answers `outcome: confirmed`. |
 | Retire a node | `node drain <id> [--wait [--wait-secs <n>]]` | One verb: the node hands away every leadership, the cluster moves every data-group replica off it (one plan at a time, `KV9_DRAIN_PARALLEL`), promotes a learner before removing it from a three-voter metadata group, reports `drained` in `node list`. Then stop the process ([DRAIN-NODE](DRAIN-NODE.md)). |
 | Remove a metadata voter by hand | `node remove <id> [--wait]` | Refuses below three voters and refuses the leader itself; promote a replacement first. |
 | Move metadata leadership | `node transfer-leader --to <id> [--wait]` | Planned maintenance; the transferee must be a caught-up voter ([LEADER-TRANSFER](LEADER-TRANSFER.md)). |

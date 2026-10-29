@@ -23,7 +23,7 @@ use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::{Command, Role};
 
 use super::range_api::RawGroup;
-use super::range_split::{applied_descriptor, deliver, digest_into, printable, range_driver_enabled, scan_page, seal_parent, successor, PAGE};
+use super::range_split::{applied_descriptor, deliver, digest_into, populate_delay, printable, range_driver_enabled, scan_page, seal_parent, successor, PAGE};
 use super::{NodeRuntime, RuntimeBackend};
 use crate::api::{RawApi, RequestContext, RequestOrigin};
 
@@ -379,6 +379,7 @@ fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: 
                 let (engine, range) = &parents[index as usize];
                 let pairs = scan_page(engine, range.keyspace, &from, &range.end, PAGE)?;
                 if !pairs.is_empty() {
+                    populate_delay();
                     child.raw_batch_put(&ctx, &pairs)?;
                     let last = pairs.last().map(|(k, _)| k.clone()).expect("non-empty");
                     return Ok(Outcome::Copied { rows: pairs.len() as u64, parent: index, last });

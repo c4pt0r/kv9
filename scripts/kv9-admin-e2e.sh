@@ -262,6 +262,14 @@ removed_node="$victim"
 test "$(echo "$removed" | jq_py "$victim not in d['result']['waited']['meta_voters']")" = "True"
 test "$(echo "$removed" | jq_py 'len(d["result"]["waited"]["meta_voters"])')" = "4"
 echo "remove --wait: voter $victim removed, four voters remain."
+# Repeating a membership verb whose target state already holds confirms instead of
+# refusing: promote an existing voter, remove the node already removed, transfer to
+# the current leader.
+test "$(admin node promote 4 | jq_py 'd["result"]["outcome"]')" = "confirmed"
+test "$(admin node remove "$victim" | jq_py 'd["result"]["outcome"]')" = "confirmed"
+leader_now="$(admin cluster info | jq_py 'd["result"]["leader_node_id"]')"
+test "$(admin node transfer-leader --to "$leader_now" | jq_py 'd["result"]["completed"]')" = "True"
+echo "repeated promote/remove/transfer-leader confirm."
 test "$(admin cluster health | jq_py 'd["result"]["overall"]')" = "ok"
 
 # A removed node that is still running is reported, not hidden: it stays in the directory

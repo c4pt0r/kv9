@@ -899,6 +899,12 @@ jobs:
           - script: operation-abort-e2e.sh
             base_port: 27750
             success_marker: "PASS: operation abort"
+          # Split recovery under faults (docs/RANGE-SPLIT.md §13): the child leader is
+          # killed mid-copy; another leader recopies, the split publishes, the node
+          # returns and retires its parent replica.
+          - script: range-split-recovery-e2e.sh
+            base_port: 27850
+            success_marker: "PASS: split recovery"
           # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
           # isolated leader must refuse raw reads with the NAMED typed families
           # (read_unconfirmed / not_leader) — transport errors explicitly do not

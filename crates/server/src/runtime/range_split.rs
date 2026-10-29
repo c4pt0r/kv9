@@ -493,6 +493,16 @@ pub(super) fn seal_parent(
     )))
 }
 
+/// `KV9_RANGE_POPULATE_DELAY_MS` (test only, default 0): sleep before each copied page
+/// so a fault-injection run can kill a child leader in the middle of a population.
+pub(super) fn populate_delay() {
+    if let Some(ms) = std::env::var("KV9_RANGE_POPULATE_DELAY_MS").ok().and_then(|v| v.parse::<u64>().ok()) {
+        if ms > 0 {
+            std::thread::sleep(Duration::from_millis(ms));
+        }
+    }
+}
+
 /// The successor of `key` in scan order: the smallest key greater than it.
 pub(super) fn successor(key: &[u8]) -> Vec<u8> {
     let mut next = key.to_vec();
@@ -566,6 +576,7 @@ fn execute(backend: &Arc<RuntimeBackend>, handle: tokio::runtime::Handle, step: 
             let from = cursor.as_ref().map_or(half.start.clone(), |c| successor(c));
             let pairs = scan_page(&parent_engine, half.keyspace, &from, &half.end, PAGE)?;
             if !pairs.is_empty() {
+                populate_delay();
                 child.raw_batch_put(&ctx, &pairs)?;
                 let last = pairs.last().map(|(k, _)| k.clone()).expect("non-empty");
                 return Ok(Outcome::Copied { rows: pairs.len() as u64, last });

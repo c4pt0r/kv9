@@ -693,6 +693,7 @@ fn membership_report(command: &str, change: &kv9_client::MembershipChange, extra
         "applied": { "term": change.applied.term, "index": change.applied.index },
         "voters": change.voters,
         "learners": change.learners,
+        "outcome": if change.changed { "committed" } else { "confirmed" },
     });
     if let Some(ticket) = &change.join_ticket {
         result["join_ticket"] = Value::String(ticket.clone());
@@ -703,7 +704,12 @@ fn membership_report(command: &str, change: &kv9_client::MembershipChange, extra
         }
     }
     let mut lines = vec![
-        format!("applied: term={} index={}", change.applied.term, change.applied.index),
+        format!(
+            "{}: term={} index={}",
+            if change.changed { "applied" } else { "confirmed (already so) at" },
+            change.applied.term,
+            change.applied.index
+        ),
         format!("voters:   {}", ids(&change.voters)),
         format!("learners: {}", ids(&change.learners)),
     ];

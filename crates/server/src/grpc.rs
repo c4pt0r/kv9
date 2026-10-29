@@ -2225,6 +2225,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             voters: result.voters,
             learners: result.learners,
             join_ticket: result.join_ticket.unwrap_or_default(),
+            changed: result.changed,
         }))
     }
 
@@ -2249,6 +2250,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             voters: result.voters,
             learners: result.learners,
             join_ticket: String::new(),
+            changed: result.changed,
         }))
     }
 
@@ -2273,6 +2275,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             voters: result.voters,
             learners: result.learners,
             join_ticket: String::new(),
+            changed: result.changed,
         }))
     }
 
@@ -2297,6 +2300,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             voters: result.voters,
             learners: result.learners,
             join_ticket: String::new(),
+            changed: result.changed,
         }))
     }
 

@@ -712,6 +712,8 @@ message MembershipChangeResponse {
   // Present only on AdmitNode. This one-time secret is returned once; the
   // catalog commits only its SHA-256 digest and PromoteNode leaves it empty.
   string join_ticket = 5;
+  // false when the target state already held: a repeated verb confirms.
+  bool changed = 6;
 }
 
 // The position a raw write actually reached in the replicated log.

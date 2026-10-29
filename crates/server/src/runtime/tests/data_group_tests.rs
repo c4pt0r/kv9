@@ -171,7 +171,9 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
     assert!(retry.applied.index > a.applied.index);
     let bindings = [a.range, b.range];
     // A pending/nonlocal dispatch entry must never send this namespace through
-    // the legacy metadata engine, even with its currently advertised epoch.
+    // the legacy metadata engine, even with its currently advertised epoch: the
+    // gate answers the typed redirect to a committed member of the range (or
+    // "no region" when the catalog has none), never a fence for the metadata engine.
     for range in &bindings {
         let node = &cluster.runtimes[metadata_leader].node;
         let txn = node.meta_raft.store.begin().unwrap();
@@ -179,6 +181,7 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
             check_context_in(
                 &node.meta_raft.store,
                 &txn,
+                None,
                 range.keyspace,
                 &kv9_region::RegionEpoch {
                     conf_ver: 1,
@@ -186,7 +189,7 @@ fn data_range_public_raw_routes_to_its_own_quorum_and_survives_restart() {
                 },
                 KeySpan::Point(b"same-key")
             ),
-            Err(Error::MetaNotReady(_))
+            Err(Error::NotLeader { leader: Some(_) } | Error::RegionNotFound)
         ));
         assert!(!kv9_raft::FenceAdjudicator::is_fresh(
             &crate::fence::CatalogFenceAdjudicator::new(node.clone()),

@@ -387,6 +387,8 @@ pub struct MembershipChangeResult {
     pub applied: AppliedPosition,
     pub voters: Vec<u64>,
     pub learners: Vec<u64>,
+    /// `false` when the target state already held (a repeated verb confirms).
+    pub changed: bool,
     /// One-time credential returned only by admission creation. Promotion and
     /// every later query return `None`; the committed catalog stores only its hash.
     pub join_ticket: Option<String>,

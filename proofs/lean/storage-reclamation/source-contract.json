@@ -18,7 +18,7 @@
   ],
   "source_sha256": {
     "crates/server/src/region_manager.rs": "3e02ef7fe700908c33a2069ddfaa892228017b38715e70da8908531311b85220",
-    "crates/server/src/runtime.rs": "33085af9b8d941ec71943d1f76880dfec753d634a997529fa6c4f92dbe33e70c",
+    "crates/server/src/runtime.rs": "a0472c9eff645e68ba6840afd54463baeebd4e870a5465a616ec4cf18276be34",
     "proofs/lean/storage-reclamation/StorageReclamation.lean": "345c8851edd9e08cbf65cd027cab30687e2f5c69279ff938b7d7f9a7c511eb45",
     "proofs/lean/storage-reclamation/README.md": "bf578d368b65e4cc62a3641121dfe03d5b28611724f0506e6ba756240929c6bf"
   }
