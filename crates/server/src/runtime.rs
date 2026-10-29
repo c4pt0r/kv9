@@ -832,6 +832,9 @@ struct RuntimeBackend {
     /// Present only when this node is configured for remote object storage.
     /// Capture refuses without it; nothing else consumes it here.
     uploader: Option<Arc<kv9_engine::checkpoint::RemoteUploader>>,
+    /// The last status document this process rendered (the same bytes as its
+    /// status file), served over `NodeStatus`. Written by the runtime thread.
+    status_cache: Arc<std::sync::Mutex<String>>,
 }
 
 impl RuntimeBackend {
@@ -2422,6 +2425,117 @@ impl AdminApi for RuntimeBackend {
             voters: receipt.voters,
             learners: receipt.learners,
             join_ticket: None,
+        })
+    }
+
+    fn node_status(&self, _caller: &str) -> Result<crate::api::NodeStatusReport> {
+        let body = self.status_cache.lock().expect("status cache poisoned").clone();
+        if body.is_empty() {
+            return Err(Error::MetaNotReady("status not rendered yet".into()));
+        }
+        let fields = body
+            .lines()
+            .filter(|line| !line.is_empty())
+            .map(|line| match line.split_once('=') {
+                Some((name, value)) => (name.to_string(), value.to_string()),
+                None => (line.to_string(), String::new()),
+            })
+            .collect();
+        // The local applied directory, no barrier: a hint for finding the leader,
+        // exactly what a NotLeader answer resolves its redirect from.
+        let mut peers = Vec::new();
+        if let Ok(txn) = self.node.meta_raft.store.begin() {
+            for row in txn.scan(&NODES_DESC, usize::MAX).unwrap_or_default() {
+                if let (Some(ColumnValue::Uint(id)), Some(ColumnValue::Text(addr))) =
+                    (row.value.get(ColumnId(1)), row.value.get(ColumnId(2)))
+                {
+                    if !addr.is_empty() {
+                        peers.push((*id, addr.clone()));
+                    }
+                }
+            }
+        }
+        for (node, addr) in &self.initial_voters {
+            if !peers.iter().any(|(id, _)| id == &node.0) {
+                peers.push((node.0, addr.to_string()));
+            }
+        }
+        Ok(crate::api::NodeStatusReport { fields, peers })
+    }
+
+    fn list_nodes(&self, _caller: &str) -> Result<crate::api::NodeDirectory> {
+        use crate::api::{NodeDirectory, NodeDirectoryRow};
+        self.ensure_catalog_ready()?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let progress: std::collections::BTreeMap<u64, (u64, bool)> = self
+            .driver
+            .peer_progress()
+            .into_iter()
+            .map(|p| (p.node.0, (p.matched, p.recent_active)))
+            .collect();
+        let txn = self.node.meta_raft.store.begin()?;
+        let mut nodes = Vec::new();
+        for row in txn.scan(&NODES_DESC, usize::MAX)? {
+            let node_id = match row.value.get(ColumnId(1)) {
+                Some(ColumnValue::Uint(id)) => *id,
+                _ => continue,
+            };
+            let address = match row.value.get(ColumnId(2)) {
+                Some(ColumnValue::Text(addr)) => addr.clone(),
+                _ => String::new(),
+            };
+            let heartbeat = match row.value.get(ColumnId(4)) {
+                Some(ColumnValue::Uint(at)) => *at,
+                _ => 0,
+            };
+            // An unregistered row (initial voter before registration) has no
+            // endpoint yet; that is "not registered", not an error.
+            let endpoint = kv9_meta::endpoint::node_endpoint(&txn, NodeId(node_id)).ok().flatten();
+            let admission = kv9_meta::admission::admission(&txn, NodeId(node_id))?;
+            let raft_role = if status.voters.contains(&node_id) {
+                "voter"
+            } else if status.learners.contains(&node_id) {
+                "learner"
+            } else {
+                "none"
+            };
+            let (matched_index, recent_active) = if node_id == self.node.id.0 {
+                (status.raft_committed, true)
+            } else {
+                progress.get(&node_id).copied().unwrap_or((0, false))
+            };
+            nodes.push(NodeDirectoryRow {
+                node_id,
+                address,
+                store_incarnation: endpoint
+                    .map(|e| e.incarnation.as_bytes().to_vec())
+                    .unwrap_or_default(),
+                endpoint_generation: endpoint.map_or(0, |e| e.generation),
+                active: endpoint.is_some_and(|e| e.active),
+                last_heartbeat_unix: heartbeat,
+                raft_role,
+                matched_index,
+                recent_active,
+                admission_state: match admission.as_ref().map(|a| a.state) {
+                    Some(kv9_meta::admission::AdmissionState::Pending) => "pending",
+                    Some(kv9_meta::admission::AdmissionState::Consumed) => "consumed",
+                    Some(kv9_meta::admission::AdmissionState::Revoked) => "revoked",
+                    Some(kv9_meta::admission::AdmissionState::Superseded) => "superseded",
+                    None => "",
+                },
+                admission_expires_unix: admission.map_or(0, |a| a.expires_unix),
+            });
+        }
+        Ok(NodeDirectory {
+            leader_node_id: self.node.id.0,
+            raft_committed: status.raft_committed,
+            nodes,
         })
     }
 }
@@ -4281,6 +4395,7 @@ pub struct NodeRuntime {
     registration_seed_cursor: RegistrationSeedCursor,
     data_dir: PathBuf,
     status_path: PathBuf,
+    status_cache: Arc<std::sync::Mutex<String>>,
     addr: std::net::SocketAddr,
     root: RootDescriptor,
     store_identity: StoreIdentity,
@@ -4693,6 +4808,7 @@ impl NodeRuntime {
             && local_member_is_active(&node, &driver, store_identity.store_incarnation)?;
         let authorized = !joining || recovered_member;
         let status_path = data_dir.join("status");
+        let status_cache = Arc::new(std::sync::Mutex::new(String::new()));
 
         let backend = Arc::new(RuntimeBackend {
             maintenance: Arc::default(),
@@ -4713,6 +4829,7 @@ impl NodeRuntime {
             endpoint_ready: endpoint_ready.clone(),
             initial_voters: seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
             uploader: remote.as_ref().map(|r| r.uploader.clone()),
+            status_cache: status_cache.clone(),
         });
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
         let public_api = Kv9Grpc::with_limits(backend.clone(), public_limits)?;
@@ -4941,6 +5058,7 @@ impl NodeRuntime {
             registration_seed_cursor: RegistrationSeedCursor::default(),
             data_dir,
             status_path,
+            status_cache,
             addr,
             root,
             store_identity,
@@ -4982,6 +5100,7 @@ impl NodeRuntime {
             endpoint_ready: self.endpoint_ready.clone(),
             initial_voters: self.seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
             uploader: None,
+            status_cache: self.status_cache.clone(),
         };
         backend.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
@@ -6302,6 +6421,7 @@ impl NodeRuntime {
             self.endpoint_recovery.receipt.map_or_else(|| "none".into(), |at| at.term.to_string()),
             self.endpoint_recovery.receipt.map_or_else(|| "none".into(), |at| at.index.to_string()),
         ));
+        *self.status_cache.lock().expect("status cache poisoned") = body.clone();
         let tmp = self.data_dir.join("status.tmp");
         fs::write(&tmp, body)
             .and_then(|_| fs::rename(&tmp, &self.status_path))
@@ -7753,6 +7873,7 @@ mod tests {
                 endpoint_ready: Arc::new(AtomicBool::new(false)),
                 initial_voters: Vec::new(),
                 uploader: None,
+                status_cache: Arc::default(),
             },
             runtime,
             dir,
@@ -9020,6 +9141,7 @@ mod tests {
                 .map(|voter| (voter.node_id, voter.addr))
                 .collect(),
             uploader: None,
+            status_cache: Arc::default(),
         }
     }
 
@@ -11283,6 +11405,7 @@ mod tests {
             ),
             initial_voters: Vec::new(),
             uploader: None,
+            status_cache: Arc::default(),
         };
 
         // Peers silent from here; only d1 pumps (real-time thread).
@@ -11669,6 +11792,7 @@ mod fence_firing_tests {
             // work, which added this field.)
             initial_voters: runtime.seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
             uploader: None,
+            status_cache: Arc::default(),
         }
     }
 

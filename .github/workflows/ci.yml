@@ -831,6 +831,12 @@ jobs:
           - script: voter-replacement-e2e.sh
             base_port: 27100
             success_marker: "PASS: voter replacement"
+          # kv9-admin (docs/KV9-ADMIN.md, increment 1): leader resolution through a
+          # follower, the directory and status fan-out, health verdicts, keyspaces,
+          # admit/promote/remove --wait, the exit-code table and KV9_ADMIN_PRINCIPALS.
+          - script: kv9-admin-e2e.sh
+            base_port: 27200
+            success_marker: "PASS: kv9-admin"
           # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
           # isolated leader must refuse raw reads with the NAMED typed families
           # (read_unconfirmed / not_leader) — transport errors explicitly do not

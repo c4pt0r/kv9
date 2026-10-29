@@ -154,26 +154,31 @@ SDK's smoke test against it.
 
 ## Administration
 
-Today's administrative surface is the `kv9 client …` sub-verbs (`./target/debug/kv9 --help` lists them),
-addressed to the current metadata leader:
+`kv9-admin` ([`sdk/rust/kv9-admin`](sdk/rust/kv9-admin/README.md)) is the operator's tool. Give it any
+node's address: it finds the metadata leader, reads the catalog, drives membership changes and waits
+for them to be committed, and prints JSON for scripts.
 
 ```bash
-export KV9_CLIENT_TOKEN=client-secret
-./target/debug/kv9 client create-keyspace --addr 127.0.0.1:20161 --name app --api-type raw
-./target/debug/kv9 client raw-put  --addr 127.0.0.1:20161 --keyspace 100 --key-hex 6b31 --value-hex 7631
-./target/debug/kv9 client admit-node   --addr 127.0.0.1:20161 --node-id 4 --node-addr 127.0.0.1:20164
-#   → prints a one-time join ticket; on the new host: KV9_JOIN_TICKET=… kv9 join …, then kv9 start …
-./target/debug/kv9 client promote-node --addr 127.0.0.1:20161 --node-id 4     # learner → voter
-./target/debug/kv9 client remove-node  --addr 127.0.0.1:20161 --node-id 2     # keeps ≥ 3 voters
+cargo build -p kv9-admin
+export KV9_ADMIN_TOKEN=client-secret
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 cluster info
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node list
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 cluster health        # exit 0 only when every verdict is ok
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 keyspace create --name app
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node admit 4 --addr 127.0.0.1:20164
+#   → join_ticket=…; on the new host: KV9_JOIN_TICKET=… kv9 join …, then kv9 start …
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node promote 4 --wait  # learner → voter
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node remove 2 --wait   # keeps ≥ 3 voters
 ```
 
-Each node writes `<data-dir>/status` (role, term, voters, applied position, bootstrap state, `fatal=`)
-and `<data-dir>/metrics.json` once a second. With `KV9_AUTO_REPLACE_VOTER=1` the metadata leader
-replaces a lost voter with a caught-up learner on its own, promotion first and removal second
-([VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md)). Data groups, their keyspaces and migrations are created
-with further `kv9 client` verbs described in [GROUP-CONTROL](docs/GROUP-CONTROL.md) and
-[MIGRATION-AUTHORITY](docs/MIGRATION-AUTHORITY.md). A single `kv9-admin` tool that resolves leaders,
-lists the catalog and drives these flows is designed in [KV9-ADMIN](docs/KV9-ADMIN.md).
+`KV9_ADMIN_PRINCIPALS=admin` on the servers limits the administrative RPCs to that token's principal;
+application tokens keep the data plane. Each node also writes `<data-dir>/status` and
+`<data-dir>/metrics.json` once a second, and `cluster status` shows the same document over gRPC. With
+`KV9_AUTO_REPLACE_VOTER=1` the metadata leader replaces a lost voter with a caught-up learner on its
+own, promotion first and removal second ([VOTER-REPLACEMENT](docs/VOTER-REPLACEMENT.md)). Data groups,
+their keyspaces and migrations are still driven with `kv9 client` verbs ([GROUP-CONTROL](docs/GROUP-CONTROL.md),
+[MIGRATION-AUTHORITY](docs/MIGRATION-AUTHORITY.md)); moving them into `kv9-admin` is the next increment
+of [KV9-ADMIN](docs/KV9-ADMIN.md).
 
 ## Architecture
 
@@ -218,7 +223,7 @@ The order of work is in [docs/ROADMAP.md](docs/ROADMAP.md); work packages are tr
 src/                   the single `kv9` binary (provisioning, start, `kv9 client` verbs)
 crates/
   common/  meta/  engine/  raft/  region/  raw/  server/
-sdk/                   python/  rust/kv9-client  rust/kv9-repl  cpp/  typescript/   (sdk/README.md)
+sdk/                   python/  rust/kv9-client  rust/kv9-repl  rust/kv9-admin  cpp/  typescript/
 proofs/                Lean / TLA+ models pinned to the sources they describe
 scripts/               acceptance, chaos and benchmark harnesses
 docs/                  design packets; start with ARCHITECTURE.md, QUICKSTART.md, ROADMAP.md

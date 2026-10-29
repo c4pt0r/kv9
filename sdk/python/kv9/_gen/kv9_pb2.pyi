@@ -521,6 +521,74 @@ class GetNodeEndpointRequest(_message.Message):
     node_id: int
     def __init__(self, node_id: _Optional[int] = ...) -> None: ...
 
+class NodeStatusRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class StatusField(_message.Message):
+    __slots__ = ("name", "value")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    value: str
+    def __init__(self, name: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+
+class StatusPeer(_message.Message):
+    __slots__ = ("node_id", "address")
+    NODE_ID_FIELD_NUMBER: _ClassVar[int]
+    ADDRESS_FIELD_NUMBER: _ClassVar[int]
+    node_id: int
+    address: str
+    def __init__(self, node_id: _Optional[int] = ..., address: _Optional[str] = ...) -> None: ...
+
+class NodeStatusResponse(_message.Message):
+    __slots__ = ("fields", "peers")
+    FIELDS_FIELD_NUMBER: _ClassVar[int]
+    PEERS_FIELD_NUMBER: _ClassVar[int]
+    fields: _containers.RepeatedCompositeFieldContainer[StatusField]
+    peers: _containers.RepeatedCompositeFieldContainer[StatusPeer]
+    def __init__(self, fields: _Optional[_Iterable[_Union[StatusField, _Mapping]]] = ..., peers: _Optional[_Iterable[_Union[StatusPeer, _Mapping]]] = ...) -> None: ...
+
+class ListNodesRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class NodeRow(_message.Message):
+    __slots__ = ("node_id", "address", "store_incarnation", "endpoint_generation", "active", "last_heartbeat_unix", "raft_role", "matched_index", "recent_active", "admission_state", "admission_expires_unix")
+    NODE_ID_FIELD_NUMBER: _ClassVar[int]
+    ADDRESS_FIELD_NUMBER: _ClassVar[int]
+    STORE_INCARNATION_FIELD_NUMBER: _ClassVar[int]
+    ENDPOINT_GENERATION_FIELD_NUMBER: _ClassVar[int]
+    ACTIVE_FIELD_NUMBER: _ClassVar[int]
+    LAST_HEARTBEAT_UNIX_FIELD_NUMBER: _ClassVar[int]
+    RAFT_ROLE_FIELD_NUMBER: _ClassVar[int]
+    MATCHED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    RECENT_ACTIVE_FIELD_NUMBER: _ClassVar[int]
+    ADMISSION_STATE_FIELD_NUMBER: _ClassVar[int]
+    ADMISSION_EXPIRES_UNIX_FIELD_NUMBER: _ClassVar[int]
+    node_id: int
+    address: str
+    store_incarnation: bytes
+    endpoint_generation: int
+    active: bool
+    last_heartbeat_unix: int
+    raft_role: str
+    matched_index: int
+    recent_active: bool
+    admission_state: str
+    admission_expires_unix: int
+    def __init__(self, node_id: _Optional[int] = ..., address: _Optional[str] = ..., store_incarnation: _Optional[bytes] = ..., endpoint_generation: _Optional[int] = ..., active: _Optional[bool] = ..., last_heartbeat_unix: _Optional[int] = ..., raft_role: _Optional[str] = ..., matched_index: _Optional[int] = ..., recent_active: _Optional[bool] = ..., admission_state: _Optional[str] = ..., admission_expires_unix: _Optional[int] = ...) -> None: ...
+
+class ListNodesResponse(_message.Message):
+    __slots__ = ("leader_node_id", "raft_committed", "nodes")
+    LEADER_NODE_ID_FIELD_NUMBER: _ClassVar[int]
+    RAFT_COMMITTED_FIELD_NUMBER: _ClassVar[int]
+    NODES_FIELD_NUMBER: _ClassVar[int]
+    leader_node_id: int
+    raft_committed: int
+    nodes: _containers.RepeatedCompositeFieldContainer[NodeRow]
+    def __init__(self, leader_node_id: _Optional[int] = ..., raft_committed: _Optional[int] = ..., nodes: _Optional[_Iterable[_Union[NodeRow, _Mapping]]] = ...) -> None: ...
+
 class GetNodeEndpointResponse(_message.Message):
     __slots__ = ("cluster_id", "endpoint")
     CLUSTER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -576,6 +644,12 @@ class AdmitNodeRequest(_message.Message):
     def __init__(self, node_id: _Optional[int] = ..., addr: _Optional[str] = ..., ttl_seconds: _Optional[int] = ...) -> None: ...
 
 class PromoteNodeRequest(_message.Message):
+    __slots__ = ("node_id",)
+    NODE_ID_FIELD_NUMBER: _ClassVar[int]
+    node_id: int
+    def __init__(self, node_id: _Optional[int] = ...) -> None: ...
+
+class RemoveNodeRequest(_message.Message):
     __slots__ = ("node_id",)
     NODE_ID_FIELD_NUMBER: _ClassVar[int]
     node_id: int

@@ -31,6 +31,7 @@ fn reopen_report_backend(f: &mut Fixture, root: &RootDescriptor) {
         endpoint_ready: old.endpoint_ready.clone(),
         initial_voters: old.initial_voters.clone(),
         uploader: None,
+        status_cache: Arc::default(),
     });
 }
 

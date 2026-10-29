@@ -25,7 +25,7 @@
     "crates/raft/src/state_machine/data_range.rs": "aa5782759406d2c7e412db24554e9c6cfe899d7ea0ec13c3a61dda2a3d583699",
     "crates/raft/src/rawnode.rs": "d301c25a6f7f6c5e6941731ef1b241a6300fb5c12c2da0b1f8b39d247a91c6b5",
     "crates/common/src/data_range.rs": "1c4c9b4abd34429443228683900ef622032574005f9642b5a3ea9afdba22f1cb",
-    "crates/server/src/runtime.rs": "3a77007256ded9a3552937617da1cd62bdf9f14fe51b19ad8b2992cf9fc0e293",
+    "crates/server/src/runtime.rs": "f00067e0e0de97fa53002902a0d3161dfcb463c99c14c259717576619eb26031",
     "crates/server/src/region_manager.rs": "a711ed4da137bc96ca3b8e43f0936c7bf7ba5c8af2c06625c51e2827a250e83e",
     "scripts/follower-compaction-e2e.py": "e3a8d1340bf577bda9863128d68b4c4c2f58e4c4b60ea0de9a79b3deb4ef7b15",
     "proofs/lean/follower-compaction/FollowerCompaction.lean": "83b73b1538b2462a1e63c7ea26c61e2d19850671efcda3129f86c1937b346eef",

@@ -598,6 +598,7 @@ fn with_uploader(old: &Arc<RuntimeBackend>, uploader: Arc<RemoteUploader>) -> Ar
         endpoint_ready: old.endpoint_ready.clone(),
         initial_voters: old.initial_voters.clone(),
         uploader: Some(uploader),
+        status_cache: Arc::default(),
     })
 }
 

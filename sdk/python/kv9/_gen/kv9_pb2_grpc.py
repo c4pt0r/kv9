@@ -141,10 +141,25 @@ class Kv9Stub:
                 request_serializer=kv9__pb2.PromoteNodeRequest.SerializeToString,
                 response_deserializer=kv9__pb2.MembershipChangeResponse.FromString,
                 _registered_method=True)
+        self.RemoveNode = channel.unary_unary(
+                '/kv9.v1.Kv9/RemoveNode',
+                request_serializer=kv9__pb2.RemoveNodeRequest.SerializeToString,
+                response_deserializer=kv9__pb2.MembershipChangeResponse.FromString,
+                _registered_method=True)
         self.GetNodeEndpoint = channel.unary_unary(
                 '/kv9.v1.Kv9/GetNodeEndpoint',
                 request_serializer=kv9__pb2.GetNodeEndpointRequest.SerializeToString,
                 response_deserializer=kv9__pb2.GetNodeEndpointResponse.FromString,
+                _registered_method=True)
+        self.NodeStatus = channel.unary_unary(
+                '/kv9.v1.Kv9/NodeStatus',
+                request_serializer=kv9__pb2.NodeStatusRequest.SerializeToString,
+                response_deserializer=kv9__pb2.NodeStatusResponse.FromString,
+                _registered_method=True)
+        self.ListNodes = channel.unary_unary(
+                '/kv9.v1.Kv9/ListNodes',
+                request_serializer=kv9__pb2.ListNodesRequest.SerializeToString,
+                response_deserializer=kv9__pb2.ListNodesResponse.FromString,
                 _registered_method=True)
         self.ChangeNodeEndpoint = channel.unary_unary(
                 '/kv9.v1.Kv9/ChangeNodeEndpoint',
@@ -377,7 +392,30 @@ class Kv9Servicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RemoveNode(self, request, context):
+        """Remove a metadata voter through the group's own log: leader-only, never
+        self, three voters must remain (docs/VOTER-REPLACEMENT.md).
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def GetNodeEndpoint(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def NodeStatus(self, request, context):
+        """Administrative read surface (docs/KV9-ADMIN.md §4). NodeStatus is served by
+        every node about itself from the same renderer as its status file; ListNodes is
+        a linearizable read of the catalog's node directory at the metadata leader.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListNodes(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -602,10 +640,25 @@ def add_Kv9Servicer_to_server(servicer, server):
                     request_deserializer=kv9__pb2.PromoteNodeRequest.FromString,
                     response_serializer=kv9__pb2.MembershipChangeResponse.SerializeToString,
             ),
+            'RemoveNode': grpc.unary_unary_rpc_method_handler(
+                    servicer.RemoveNode,
+                    request_deserializer=kv9__pb2.RemoveNodeRequest.FromString,
+                    response_serializer=kv9__pb2.MembershipChangeResponse.SerializeToString,
+            ),
             'GetNodeEndpoint': grpc.unary_unary_rpc_method_handler(
                     servicer.GetNodeEndpoint,
                     request_deserializer=kv9__pb2.GetNodeEndpointRequest.FromString,
                     response_serializer=kv9__pb2.GetNodeEndpointResponse.SerializeToString,
+            ),
+            'NodeStatus': grpc.unary_unary_rpc_method_handler(
+                    servicer.NodeStatus,
+                    request_deserializer=kv9__pb2.NodeStatusRequest.FromString,
+                    response_serializer=kv9__pb2.NodeStatusResponse.SerializeToString,
+            ),
+            'ListNodes': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListNodes,
+                    request_deserializer=kv9__pb2.ListNodesRequest.FromString,
+                    response_serializer=kv9__pb2.ListNodesResponse.SerializeToString,
             ),
             'ChangeNodeEndpoint': grpc.unary_unary_rpc_method_handler(
                     servicer.ChangeNodeEndpoint,
@@ -1278,6 +1331,33 @@ class Kv9:
             _registered_method=True)
 
     @staticmethod
+    def RemoveNode(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/RemoveNode',
+            kv9__pb2.RemoveNodeRequest.SerializeToString,
+            kv9__pb2.MembershipChangeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def GetNodeEndpoint(request,
             target,
             options=(),
@@ -1294,6 +1374,60 @@ class Kv9:
             '/kv9.v1.Kv9/GetNodeEndpoint',
             kv9__pb2.GetNodeEndpointRequest.SerializeToString,
             kv9__pb2.GetNodeEndpointResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def NodeStatus(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/NodeStatus',
+            kv9__pb2.NodeStatusRequest.SerializeToString,
+            kv9__pb2.NodeStatusResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListNodes(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/ListNodes',
+            kv9__pb2.ListNodesRequest.SerializeToString,
+            kv9__pb2.ListNodesResponse.FromString,
             options,
             channel_credentials,
             insecure,

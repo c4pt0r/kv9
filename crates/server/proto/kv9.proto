@@ -40,6 +40,11 @@ service Kv9 {
   // self, three voters must remain (docs/VOTER-REPLACEMENT.md).
   rpc RemoveNode(RemoveNodeRequest) returns (MembershipChangeResponse);
   rpc GetNodeEndpoint(GetNodeEndpointRequest) returns (GetNodeEndpointResponse);
+  // Administrative read surface (docs/KV9-ADMIN.md §4). NodeStatus is served by
+  // every node about itself from the same renderer as its status file; ListNodes is
+  // a linearizable read of the catalog's node directory at the metadata leader.
+  rpc NodeStatus(NodeStatusRequest) returns (NodeStatusResponse);
+  rpc ListNodes(ListNodesRequest) returns (ListNodesResponse);
   rpc ChangeNodeEndpoint(ChangeNodeEndpointRequest) returns (ChangeNodeEndpointResponse);
   // Tracking-only retention administration. No object deletion or installation.
   rpc ApplyRetention(ApplyRetentionRequest) returns (ApplyRetentionResponse);
@@ -384,6 +389,45 @@ message NodeEndpoint {
 }
 
 message GetNodeEndpointRequest { uint64 node_id = 1; }
+message NodeStatusRequest {}
+message StatusField {
+  string name = 1;
+  string value = 2;
+}
+message StatusPeer {
+  uint64 node_id = 1;
+  string address = 2;
+}
+message NodeStatusResponse {
+  // The node's status document, one field per line of its status file, in file
+  // order. JSON-valued lines (voter_replacement, data_groups, ...) stay JSON text.
+  repeated StatusField fields = 1;
+  // This node's LOCAL applied view of the node directory (id, address): enough for
+  // a client holding one follower's address to find the leader. Not linearizable;
+  // ListNodes is.
+  repeated StatusPeer peers = 2;
+}
+message ListNodesRequest {}
+message NodeRow {
+  uint64 node_id = 1;
+  string address = 2;
+  bytes store_incarnation = 3;    // empty until the node registered
+  uint64 endpoint_generation = 4;
+  bool active = 5;                // the catalog's membership state
+  uint64 last_heartbeat_unix = 6;
+  // Raft view from the answering leader: "voter", "learner" or "none".
+  string raft_role = 7;
+  uint64 matched_index = 8;
+  bool recent_active = 9;
+  // Pending admission, if any: "pending", "consumed", "revoked", "superseded" or "".
+  string admission_state = 10;
+  uint64 admission_expires_unix = 11;
+}
+message ListNodesResponse {
+  uint64 leader_node_id = 1;
+  uint64 raft_committed = 2;
+  repeated NodeRow nodes = 3;
+}
 message GetNodeEndpointResponse {
   bytes cluster_id = 1;
   // Absent means the node is not in the directory at this linearizable read.

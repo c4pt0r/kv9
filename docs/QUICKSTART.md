@@ -82,20 +82,26 @@ Stop a node with `kill` and restart it with the **same** `start` command and env
 directory holds its Raft log, catalog WAL and identity. Never rerun `root-create` or `init` for an
 existing store.
 
-A new node joins as a learner and is promoted when it has caught up. On the leader side `admit-node`
-returns a one-time join ticket; the new host provisions with it:
+A new node joins as a learner and is promoted when it has caught up. `kv9-admin` (build it with
+`cargo build -p kv9-admin`; any node's address will do, it finds the leader) admits the node and
+prints a one-time join ticket; the new host provisions with it:
 
 ```bash
-# On the current metadata leader (a follower answers not_leader=true leader_node_id=N):
-./target/debug/kv9 client admit-node --addr 127.0.0.1:20162 --node-id 4 --node-addr 127.0.0.1:20164 --ttl-seconds 600
-#   → join_ticket=<hex>
+export KV9_ADMIN_TOKEN=client-secret
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node admit 4 --addr 127.0.0.1:20164 --ttl 600
+#   → join_ticket: <hex>
 # On the new host, with the root descriptor copied over:
 KV9_JOIN_TICKET=<hex> ./target/debug/kv9 join  --root kv9-local/root.bin --node-id 4 --addr 127.0.0.1:20164 --data-dir kv9-local/n4
 KV9_JOIN_TICKET=<hex> ./target/debug/kv9 start --node-id 4 --addr 127.0.0.1:20164 --data-dir kv9-local/n4 &
-# Once meta_learners lists 4 and it has caught up:
-./target/debug/kv9 client promote-node --addr 127.0.0.1:20162 --node-id 4
-./target/debug/kv9 client remove-node  --addr 127.0.0.1:20162 --node-id 1   # refused below three voters
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node list            # 4 appears as a learner
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node promote 4 --wait
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 node remove 1 --wait # refused below three voters
+./target/debug/kv9-admin --endpoints 127.0.0.1:20161 cluster health
 ```
+
+The same verbs exist as `kv9 client admit-node / promote-node / remove-node --addr <leader>` for
+scripts that predate the tool. `KV9_ADMIN_PRINCIPALS=admin` in the nodes' environment limits the
+administrative RPCs to that principal (the name before `=` in `KV9_CLIENT_TOKENS`).
 
 With `KV9_AUTO_REPLACE_VOTER=1` in every node's environment the leader does the promote-then-remove
 itself when a voter has been silent for `KV9_VOTER_LOST_SECS` (default 300) and a caught-up learner

@@ -10,6 +10,7 @@ members = [
     "crates/server",
     "sdk/rust/kv9-client",
     "sdk/rust/kv9-repl",
+    "sdk/rust/kv9-admin",
 ]
 
 [workspace.package]

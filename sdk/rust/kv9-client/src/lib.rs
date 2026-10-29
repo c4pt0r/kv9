@@ -30,12 +30,16 @@ use std::time::Duration;
 
 use tonic::metadata::{Ascii, KeyRef, MetadataMap, MetadataValue};
 use tonic::transport::{Channel, Endpoint};
-use tonic::{Code, Request, Response, Status};
+use tonic::{Request, Response, Status};
+pub use tonic::Code;
 
 /// Generated protocol types (`kv9.v1`).
 pub mod proto {
     tonic::include_proto!("kv9.v1");
 }
+
+pub mod admin;
+pub use admin::{MembershipChange, NodeDirectory, NodeEndpoint, NodeRow, NodeStatus};
 
 use proto::kv9_client::Kv9Client;
 

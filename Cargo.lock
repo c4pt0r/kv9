@@ -980,6 +980,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "kv9-admin"
+version = "0.1.0"
+dependencies = [
+ "kv9-client",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "kv9-client"
 version = "0.1.0"
 dependencies = [

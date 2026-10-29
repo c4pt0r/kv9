@@ -923,6 +923,7 @@ impl Fixture {
                 endpoint_ready: Arc::new(AtomicBool::new(true)),
                 initial_voters: root.voters.iter().map(|v| (v.node_id, v.addr)).collect(),
                 uploader: None,
+                status_cache: Arc::default(),
             }));
             owners.push(meta[i].spawn(Duration::from_millis(5)).unwrap());
             owners.push(data[i].spawn(Duration::from_millis(5)).unwrap());

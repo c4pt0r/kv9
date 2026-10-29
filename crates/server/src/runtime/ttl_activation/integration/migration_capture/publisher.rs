@@ -302,6 +302,7 @@ async fn publisher_uncertain_entry_and_unknown_put_report_survive_lost_finish_ne
         endpoint_ready: old.endpoint_ready.clone(),
         initial_voters: old.initial_voters.clone(),
         uploader: None,
+        status_cache: Arc::default(),
     });
     f.meta[1].peer().transfer_leader_for_tests(NodeId(3));
     leader(&f.meta[2]).await;

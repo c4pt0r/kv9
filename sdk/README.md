@@ -27,7 +27,9 @@ without a typed marker, then retries the call exactly once if the epoch changed.
 `batch_put` (put-only atomic batch), `batch` (the atomic range batch: ordered puts and deletes applied at
 ONE `(term, index)` or not at all — see `DESIGN.md` §9.1), `scan` (one page; a nonempty `resume_from` means
 "continue exactly here, even if the page is empty"), `delete_range` (chunked; reports how many chunks
-committed). Admin: `create_keyspace`, `list_keyspaces`, `cluster_info`, `get_region`.
+committed). Admin: `create_keyspace`, `list_keyspaces`, `cluster_info`, `get_region`. The Rust SDK alone also
+exposes the operator surface (`admin` module: `node_status`, `list_nodes`, `admit_node`, `promote_node`,
+`remove_node`, …) that `kv9-admin` is built on; the other SDKs are data-plane clients.
 
 **Bounds, checked locally before any RPC.** Key ≤ 4096 bytes, value ≤ 65 536 bytes, batch items 1..=256,
 encoded message ≤ 1 MiB, one call deadline ≤ 30 s.

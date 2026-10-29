@@ -696,6 +696,16 @@ pub trait AdminApi {
             "AdminApi::get_node_endpoint",
         ))
     }
+    /// This node's status document, as `(name, value)` lines (docs/KV9-ADMIN.md §4).
+    /// Served by every node about itself; never a leader-only read.
+    fn node_status(&self, _caller: &str) -> Result<NodeStatusReport> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::node_status"))
+    }
+    /// The catalog's node directory joined with admissions and the leader's Raft
+    /// view of each peer. Linearizable, leader-only.
+    fn list_nodes(&self, _caller: &str) -> Result<NodeDirectory> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::list_nodes"))
+    }
     fn change_node_endpoint(
         &self,
         _caller: &str,
@@ -705,6 +715,39 @@ pub trait AdminApi {
             "AdminApi::change_node_endpoint",
         ))
     }
+}
+
+/// [`AdminApi::node_status`]: the status document and the local directory view.
+#[derive(Debug, Clone, Default)]
+pub struct NodeStatusReport {
+    pub fields: Vec<(String, String)>,
+    /// `(node_id, address)` from this node's applied catalog, without a barrier.
+    pub peers: Vec<(u64, String)>,
+}
+
+/// One row of [`AdminApi::list_nodes`].
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct NodeDirectoryRow {
+    pub node_id: u64,
+    pub address: String,
+    pub store_incarnation: Vec<u8>,
+    pub endpoint_generation: u64,
+    pub active: bool,
+    pub last_heartbeat_unix: u64,
+    /// `voter`, `learner` or `none`, from the answering leader's Raft configuration.
+    pub raft_role: &'static str,
+    pub matched_index: u64,
+    pub recent_active: bool,
+    /// `pending`, `consumed`, `revoked`, `superseded`, or empty when no admission row exists.
+    pub admission_state: &'static str,
+    pub admission_expires_unix: u64,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct NodeDirectory {
+    pub leader_node_id: u64,
+    pub raft_committed: u64,
+    pub nodes: Vec<NodeDirectoryRow>,
 }
 
 /// A snapshot of cluster state (DESIGN §11 `ClusterInfo`).

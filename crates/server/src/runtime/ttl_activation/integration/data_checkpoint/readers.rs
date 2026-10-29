@@ -265,6 +265,7 @@ async fn read_finish_outbox_survives_lost_receipt_new_process_new_leader_and_wal
         endpoint_ready: old.endpoint_ready.clone(),
         initial_voters: old.initial_voters.clone(),
         uploader: None,
+        status_cache: Arc::default(),
     });
     f.meta[1].peer().transfer_leader_for_tests(NodeId(3));
     until(|| f.meta[2].status().role == Role::Leader && f.meta[1].status().role != Role::Leader)

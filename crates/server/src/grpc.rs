@@ -262,10 +262,51 @@ impl BlockingBackend {
     }
 }
 
+/// Which principals may call the administrative verbs (membership, data groups,
+/// retention, endpoint changes and the directory reads). `KV9_ADMIN_PRINCIPALS=a,b`
+/// restricts them; unset means every authenticated principal, as before.
+#[derive(Clone, Debug, Default)]
+pub struct AdminPolicy {
+    principals: Option<Arc<std::collections::HashSet<String>>>,
+}
+
+impl AdminPolicy {
+    pub fn from_env() -> Self {
+        Self::from_list(std::env::var("KV9_ADMIN_PRINCIPALS").ok().as_deref())
+    }
+
+    pub fn from_list(list: Option<&str>) -> Self {
+        let principals = list.map(|list| {
+            Arc::new(
+                list.split(',')
+                    .map(str::trim)
+                    .filter(|p| !p.is_empty())
+                    .map(str::to_owned)
+                    .collect(),
+            )
+        });
+        Self { principals }
+    }
+
+    pub fn restricts(&self) -> bool {
+        self.principals.is_some()
+    }
+
+    fn check(&self, auth: &AuthContext) -> Result<(), Status> {
+        match &self.principals {
+            Some(allowed) if !allowed.contains(&*auth.principal) => Err(Status::permission_denied(
+                format!("principal {:?} may not administer this cluster", auth.principal),
+            )),
+            _ => Ok(()),
+        }
+    }
+}
+
 /// Public tonic service implementation.
 #[derive(Clone)]
 pub struct Kv9Grpc {
     backend: BlockingBackend,
+    admin: AdminPolicy,
 }
 
 pub type AuthenticatedKv9Service = tonic::service::interceptor::InterceptedService<
@@ -287,7 +328,14 @@ impl Kv9Grpc {
                 inner: backend,
                 admission: PublicAdmission::new(limits)?,
             },
+            admin: AdminPolicy::from_env(),
         })
+    }
+
+    /// Replace the admin-principal policy read from the environment.
+    pub fn with_admin_policy(mut self, admin: AdminPolicy) -> Self {
+        self.admin = admin;
+        self
     }
 
     pub fn admission(&self) -> Arc<PublicAdmission> {
@@ -1161,6 +1209,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         &self,
         request: Request<proto::ActivateRawTtlRequest>,
     ) -> Result<Response<proto::RawTtlResponse>, Status> {
+        self.admin.check(&auth_context(&request)?)?;
         self.activate_ttl(request).await
     }
     async fn raw_ttl(
@@ -1363,6 +1412,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::CreateDataKeyspaceRequest>,
     ) -> Result<Response<proto::CreateDataKeyspaceResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1397,6 +1447,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::CreateDataGroupRequest>,
     ) -> Result<Response<proto::CreateDataGroupResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1438,6 +1489,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::MigrateDataGroupRequest>,
     ) -> Result<Response<proto::MigrateDataGroupResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1477,6 +1529,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::AttachMigrationLearnerRequest>,
     ) -> Result<Response<proto::AttachMigrationLearnerResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1514,6 +1567,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::PlanMigrationImageRequest>,
     ) -> Result<Response<proto::PlanMigrationImageResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1550,6 +1604,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::CaptureMigrationImageRequest>,
     ) -> Result<Response<proto::CaptureMigrationImageResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1592,6 +1647,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::EmitInstallEvidenceRequest>,
     ) -> Result<Response<proto::EmitInstallEvidenceResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1624,6 +1680,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RecordInstallEvidenceRequest>,
     ) -> Result<Response<proto::RecordInstallEvidenceResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1657,6 +1714,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RecordGroupCompactionRequest>,
     ) -> Result<Response<proto::RecordGroupCompactionResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1700,6 +1758,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RecordMigrationAbortRequest>,
     ) -> Result<Response<proto::RecordMigrationAbortResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1735,6 +1794,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::DetachAbortedLearnerRequest>,
     ) -> Result<Response<proto::DetachAbortedLearnerResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1771,6 +1831,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RecordSourceTruncationRequest>,
     ) -> Result<Response<proto::RecordSourceTruncationResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1814,6 +1875,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::TruncateSourceLogRequest>,
     ) -> Result<Response<proto::TruncateSourceLogResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1850,6 +1912,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::PromoteMigrationVoterRequest>,
     ) -> Result<Response<proto::PromoteMigrationVoterResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1886,6 +1949,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RecordSourceRemovalRequest>,
     ) -> Result<Response<proto::RecordSourceRemovalResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1933,6 +1997,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RemoveSourceReplicaRequest>,
     ) -> Result<Response<proto::RemoveSourceReplicaResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -1969,6 +2034,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::BindMigrationImageRequest>,
     ) -> Result<Response<proto::BindMigrationImageResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let root = kv9_common::RootDigest::from_bytes(
@@ -2108,6 +2174,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::AdmitNodeRequest>,
     ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let caller = auth.principal.to_string();
@@ -2136,6 +2203,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RevokeAdmissionRequest>,
     ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let caller = auth.principal.to_string();
@@ -2159,6 +2227,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::PromoteNodeRequest>,
     ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let caller = auth.principal.to_string();
@@ -2182,6 +2251,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RemoveNodeRequest>,
     ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let caller = auth.principal.to_string();
@@ -2205,6 +2275,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::ApplyRetentionRequest>,
     ) -> Result<Response<proto::ApplyRetentionResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let caller = auth.principal.to_string();
         let command = request.into_inner().command;
@@ -2232,6 +2303,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::GetRetentionOwnerRequest>,
     ) -> Result<Response<proto::GetRetentionOwnerResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
         let caller = auth.principal.to_string();
         let request = request.into_inner();
@@ -2272,6 +2344,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::GetNodeEndpointRequest>,
     ) -> Result<Response<proto::GetNodeEndpointResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
         let caller = auth.principal.to_string();
         let node = NodeId(request.into_inner().node_id);
@@ -2287,11 +2360,73 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn node_status(
+        &self,
+        request: Request<proto::NodeStatusRequest>,
+    ) -> Result<Response<proto::NodeStatusResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let caller = auth.principal.to_string();
+        let report = self
+            .backend
+            .call(reservation, move |backend| backend.node_status(&caller))
+            .await?;
+        Ok(Response::new(proto::NodeStatusResponse {
+            fields: report
+                .fields
+                .into_iter()
+                .map(|(name, value)| proto::StatusField { name, value })
+                .collect(),
+            peers: report
+                .peers
+                .into_iter()
+                .map(|(node_id, address)| proto::StatusPeer { node_id, address })
+                .collect(),
+        }))
+    }
+
+    async fn list_nodes(
+        &self,
+        request: Request<proto::ListNodesRequest>,
+    ) -> Result<Response<proto::ListNodesResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let caller = auth.principal.to_string();
+        let directory = self
+            .backend
+            .call(reservation, move |backend| backend.list_nodes(&caller))
+            .await?;
+        Ok(Response::new(proto::ListNodesResponse {
+            leader_node_id: directory.leader_node_id,
+            raft_committed: directory.raft_committed,
+            nodes: directory
+                .nodes
+                .into_iter()
+                .map(|n| proto::NodeRow {
+                    node_id: n.node_id,
+                    address: n.address,
+                    store_incarnation: n.store_incarnation,
+                    endpoint_generation: n.endpoint_generation,
+                    active: n.active,
+                    last_heartbeat_unix: n.last_heartbeat_unix,
+                    raft_role: n.raft_role.to_string(),
+                    matched_index: n.matched_index,
+                    recent_active: n.recent_active,
+                    admission_state: n.admission_state.to_string(),
+                    admission_expires_unix: n.admission_expires_unix,
+                })
+                .collect(),
+        }))
+    }
+
     async fn change_node_endpoint(
         &self,
         request: Request<proto::ChangeNodeEndpointRequest>,
     ) -> Result<Response<proto::ChangeNodeEndpointResponse>, Status> {
         let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
         let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let caller = auth.principal.to_string();
         let change = crate::endpoints::decode_change(request.into_inner()).map_err(error_status)?;
@@ -2302,6 +2437,35 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             })
             .await?;
         Ok(Response::new(crate::endpoints::encode_update(result)))
+    }
+}
+
+#[cfg(test)]
+mod admin_policy_tests {
+    use super::*;
+
+    fn auth(principal: &str) -> AuthContext {
+        AuthContext {
+            principal: principal.into(),
+            node_id: None,
+            auth_kind: AuthKind::Client,
+        }
+    }
+
+    #[test]
+    fn unset_policy_admits_everyone_and_a_list_admits_only_its_names() {
+        let open = AdminPolicy::from_list(None);
+        assert!(!open.restricts());
+        assert!(open.check(&auth("app")).is_ok());
+        let closed = AdminPolicy::from_list(Some(" admin, ops ,"));
+        assert!(closed.restricts());
+        assert!(closed.check(&auth("admin")).is_ok());
+        assert!(closed.check(&auth("ops")).is_ok());
+        let denied = closed.check(&auth("app")).unwrap_err();
+        assert_eq!(denied.code(), tonic::Code::PermissionDenied);
+        assert!(denied.message().contains("may not administer"));
+        // An empty list restricts to nobody rather than falling open.
+        assert!(AdminPolicy::from_list(Some("")).check(&auth("admin")).is_err());
     }
 }
 
