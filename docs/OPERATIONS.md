@@ -65,6 +65,11 @@ Without the switches the verdicts are still taken and shown (`voter_replacement=
   fatal, lag), `cluster status [--node <id>]` (every node's status document), `cluster endpoints`,
   `node list` (raft role, matched index, recent activity, admission, `draining`/`drained`),
   `node describe <id>`.
+- `kv9-admin dashboard [--listen 127.0.0.1:9100] [--refresh 3]` serves a read-only web view of the
+  same reports: health verdicts, node cards, the placement matrix (data groups × nodes, leader /
+  voter / learner), keyspaces with their ranges in key order, operations in flight and backups;
+  `/api/state` is the JSON it renders. It binds localhost by default and the token stays in the
+  process.
 - The status document (`<data-dir>/status`, rewritten once a second) carries one line per
   subsystem: `replica_plans=`, `replica_repair=`, `voter_replacement=`, `node_drain=`,
   `range_split=`, `range_merge=`, `backup=`, `checkpoint_retention=`, `data_groups=`, … each with recent

@@ -118,6 +118,9 @@ kv9-admin [--context <name> | --endpoints <host:port,...>] [--token <t> | KV9_AD
   backup    create   --keyspace <name|id> [--label <t>] [--wait]   a retention point (BACKUP-RESTORE)
             list     [--all] ; describe <task> ; verify <task> ; retire <task>
 
+  dashboard [--listen <host:port>] [--refresh <secs>]   read-only web view: health, nodes, placement matrix,
+                                                         keyspaces and ranges, operations, backups; JSON at /api/state
+
   retention apply    --file <request> ; owner <hex>
   version ; completion <shell>
 ```

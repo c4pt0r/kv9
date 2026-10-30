@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kv9 dashboard</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #1b1f24; --muted: #6b7280; --line: #e5e7eb;
+    --ok: #15803d; --warn: #b45309; --fail: #b91c1c; --accent: #1d4ed8;
+    --leader: #1d4ed8; --voter: #0f766e; --learner: #a16207; --none: #d1d5db; --sealed: #9ca3af;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1115; --panel: #171a21; --ink: #e5e7eb; --muted: #9aa3b2; --line: #2a2f3a;
+            --ok: #4ade80; --warn: #fbbf24; --fail: #f87171; --accent: #60a5fa;
+            --leader: #60a5fa; --voter: #2dd4bf; --learner: #facc15; --none: #374151; --sealed: #4b5563; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: baseline; padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 2; }
+  header h1 { font-size: 16px; margin: 0; letter-spacing: .02em; }
+  header .meta { color: var(--muted); }
+  main { padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+  section.wide { grid-column: 1 / -1; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  td.num, th.num { text-align: right; }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); margin: 2px 4px 2px 0; }
+  .ok { color: var(--ok); border-color: var(--ok); } .warn { color: var(--warn); border-color: var(--warn); } .fail { color: var(--fail); border-color: var(--fail); }
+  .cards { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .card .id { font-weight: 700; } .card .addr { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+  .card .role { margin-top: 4px; }
+  .card.leader { border-color: var(--leader); } .card.down { border-color: var(--fail); opacity: .8; }
+  .matrix td.cell { text-align: center; width: 44px; }
+  .dot { display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 6px; font-size: 11px; font-weight: 700; color: #fff; text-align: center; }
+  .dot.L { background: var(--leader); } .dot.V { background: var(--voter); } .dot.l { background: var(--learner); color: #1b1f24; } .dot.n { background: var(--none); }
+  .range { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  .stage { font-size: 12px; color: var(--muted); }
+  .err { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 12px; }
+  footer { padding: 10px 16px; color: var(--muted); font-size: 12px; }
+  .legend span { margin-right: 12px; }
+  .empty { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+<header>
+  <h1>kv9 dashboard</h1>
+  <span class="meta" id="cluster">connecting…</span>
+  <span id="overall"></span>
+  <span class="meta" id="updated"></span>
+</header>
+<main>
+  <section class="wide"><h2>Health</h2><div id="health" class="empty">no data yet</div></section>
+  <section class="wide"><h2>Nodes</h2><div id="nodes" class="cards"></div></section>
+  <section class="wide"><h2>Placement: data groups × nodes</h2>
+    <div class="legend stage"><span><span class="dot L">L</span> leader</span><span><span class="dot V">V</span> voter</span><span><span class="dot l">l</span> learner</span><span><span class="dot n">·</span> none</span></div>
+    <div id="matrix"></div></section>
+  <section class="wide"><h2>Keyspaces and ranges</h2><div id="keyspaces"></div></section>
+  <section><h2>Operations</h2><div id="ops"></div></section>
+  <section><h2>Backups</h2><div id="backups"></div></section>
+</main>
+<footer id="foot"></footer>
+<script>
+const REFRESH_MS = __REFRESH_SECS__ * 1000;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hexToText = h => { if (!h) return ''; let out = ''; for (let i = 0; i < h.length; i += 2) { const c = parseInt(h.substr(i, 2), 16); out += c >= 32 && c < 127 ? String.fromCharCode(c) : '\\x' + h.substr(i, 2); } return out; };
+const age = unix => { if (!unix) return ''; const d = Math.max(0, Math.floor(Date.now() / 1000) - unix); return d < 60 ? d + 's' : d < 3600 ? Math.floor(d / 60) + 'm' : Math.floor(d / 3600) + 'h'; };
+const levelClass = l => l === 'ok' ? 'ok' : (l === 'warn' || l === 'warning') ? 'warn' : 'fail';
+
+function render(s) {
+  const info = s.info || {};
+  document.getElementById('cluster').textContent = s.connected
+    ? `cluster ${String(info.cluster_id || '').slice(0, 8)}… · leader n${info.leader_node_id ?? '?'} · term ${info.term ?? '?'} · voters ${(info.meta_voters || []).join(',')} · learners ${(info.meta_learners || []).join(',') || '-'} · ${info.node_count ?? '?'} nodes · ${info.keyspace_count ?? '?'} keyspaces · ${info.region_count ?? '?'} regions`
+    : 'not connected';
+  const health = s.health || {};
+  document.getElementById('overall').innerHTML = health.overall ? `<span class="chip ${levelClass(health.overall)}">health ${esc(health.overall)}</span>` : '';
+  document.getElementById('updated').textContent = s.updated_unix ? `updated ${age(s.updated_unix)} ago` : '';
+  document.getElementById('health').innerHTML = (health.verdicts || []).length
+    ? health.verdicts.map(v => `<span class="chip ${levelClass(v.level)}" title="${esc(v.detail)}">${esc(v.name)}: ${esc(v.level)}${v.level !== 'ok' ? ' — ' + esc(v.detail) : ''}</span>`).join('')
+    : '<span class="empty">no verdicts</span>';
+
+  // Nodes: directory rows joined with each node's status document.
+  const statuses = {};
+  for (const row of (s.status || [])) statuses[row.node_id] = row.status || { error: row.error };
+  const nodes = ((s.nodes || {}).nodes || []).slice().sort((a, b) => a.node_id - b.node_id);
+  const metaLeader = (s.nodes || {}).leader_node_id;
+  const groupsOf = {};
+  for (const [id, st] of Object.entries(statuses)) {
+    const dg = Array.isArray(st.data_groups) ? st.data_groups : [];
+    groupsOf[id] = dg;
+  }
+  const liveRegions = new Set((s.groups || []).filter(g => (g.keyspaces || []).some(k => !k.sealed)).map(g => g.region_id));
+  document.getElementById('nodes').innerHTML = nodes.map(n => {
+    const st = statuses[n.node_id] || {};
+    const down = !n.active || st.error;
+    const hostedViews = (groupsOf[n.node_id] || []).filter(g => liveRegions.has(g.region));
+    const led = hostedViews.filter(g => g.role === 'Leader').length;
+    const hosted = hostedViews.length;
+    const flags = [n.node_id === metaLeader ? 'meta leader' : n.raft_role, n.draining ? (n.drained ? 'drained' : 'draining') : '', st.fatal ? 'FATAL' : ''].filter(Boolean);
+    return `<div class="card ${n.node_id === metaLeader ? 'leader' : ''} ${down ? 'down' : ''}">
+      <div class="id">n${n.node_id} ${down ? '<span class="fail">●</span>' : '<span class="ok">●</span>'}</div>
+      <div class="addr" title="${esc(n.address)}">${esc(n.address)}</div>
+      <div class="role">${flags.map(f => `<span class="chip">${esc(f)}</span>`).join('')}</div>
+      <div class="stage">${st.error ? esc(st.error) : `term ${esc(st.term)} · applied ${esc(st.applied_index)}/${esc(st.raft_committed)} · matched ${esc(n.matched_index)}`}</div>
+      <div class="stage">groups ${hosted}${led ? ` (leads ${led})` : ''}</div>
+    </div>`;
+  }).join('') || '<span class="empty">no nodes</span>';
+
+  // Placement matrix: groups (live first) × nodes; the cell comes from the node's own view
+  // of the group when it has one, else from the committed members.
+  const groups = (s.groups || []).slice();
+  const liveness = g => (g.keyspaces || []).some(k => !k.sealed) ? 0 : 1;
+  groups.sort((a, b) => liveness(a) - liveness(b) || a.region_id - b.region_id);
+  const keyspaceNames = {};
+  for (const k of (s.keyspaces || [])) keyspaceNames[k.id] = k.name;
+  const cellOf = (g, nodeId) => {
+    const view = (groupsOf[nodeId] || []).find(x => x.region === g.region_id);
+    if (view) return view.role === 'Leader' ? 'L' : view.role === 'Learner' ? 'l' : (view.role ? 'V' : 'n');
+    return (g.members || []).some(m => m.node_id === nodeId) ? 'V' : 'n';
+  };
+  const liveGroups = groups.filter(g => liveness(g) === 0);
+  document.getElementById('matrix').innerHTML = liveGroups.length ? `<table class="matrix"><thead><tr><th>group</th><th>region</th><th>keyspace</th><th>range</th>${nodes.map(n => `<th class="cell">n${n.node_id}</th>`).join('')}<th>in flight</th></tr></thead><tbody>${
+    liveGroups.map(g => {
+      const ks = (g.keyspaces || []).filter(k => !k.sealed);
+      const inflight = [
+        ...(g.plans || []).filter(p => !['decided', 'aborted'].includes(p.stage) && !(p.mode === 'add' && p.stage === 'evidenced')).map(p => `${p.mode}→n${p.destination.node_id}:${p.stage}`),
+        ...(g.splits || []).filter(x => !['published', 'aborted'].includes(x.stage)).map(x => `split:${x.stage}`),
+        ...(g.merges || []).filter(x => !['published', 'aborted'].includes(x.stage)).map(x => `merge:${x.stage}`),
+      ];
+      return `<tr><td>${g.creation_task}</td><td>${g.region_id}</td><td>${ks.map(k => esc(keyspaceNames[k.keyspace_id] || k.keyspace_id)).join(', ')}</td><td class="range">${ks.map(k => `[${esc(hexToText(k.start)) || '-∞'}, ${esc(hexToText(k.end)) || '+∞'})`).join(' ')}</td>${
+        nodes.map(n => { const c = cellOf(g, n.node_id); return `<td class="cell"><span class="dot ${c}">${c === 'n' ? '·' : c}</span></td>`; }).join('')
+      }<td class="stage">${inflight.map(esc).join(' ') || '-'}</td></tr>`;
+    }).join('')}</tbody></table>` : '<span class="empty">no live data groups</span>';
+
+  // Keyspaces → ranges in key order → group → members.
+  const byKeyspace = {};
+  for (const g of liveGroups) for (const k of (g.keyspaces || [])) if (!k.sealed) (byKeyspace[k.keyspace_id] ||= []).push({ g, k });
+  const ksRows = Object.entries(byKeyspace).sort((a, b) => a[0] - b[0]).map(([id, ranges]) => {
+    ranges.sort((a, b) => a.k.start < b.k.start ? -1 : a.k.start > b.k.start ? 1 : 0);
+    return `<tr><td rowspan="${ranges.length}"><b>${esc(keyspaceNames[id] || id)}</b><div class="stage">id ${id} · ${ranges.length} range${ranges.length > 1 ? 's' : ''}</div></td>${
+      ranges.map((r, i) => `${i ? '<tr>' : ''}<td class="range">[${esc(hexToText(r.k.start)) || '-∞'}, ${esc(hexToText(r.k.end)) || '+∞'})</td><td>${r.g.creation_task} / region ${r.g.region_id}</td><td>${(r.g.members || []).map(m => { const c = cellOf(r.g, m.node_id); return `<span class="dot ${c}" title="n${m.node_id}">${m.node_id}</span>`; }).join(' ')}</td><td class="stage">epoch ${r.k.epoch?.conf_ver}/${r.k.epoch?.version}</td></tr>`).join('')}`;
+  });
+  document.getElementById('keyspaces').innerHTML = ksRows.length ? `<table><thead><tr><th>keyspace</th><th>range</th><th>group</th><th>replicas (leader in blue)</th><th>epoch</th></tr></thead><tbody>${ksRows.join('')}</tbody></table>` : '<span class="empty">no bound keyspaces</span>';
+
+  // Operations: every unsettled plan, split, merge across groups, plus retired parents.
+  const ops = [];
+  for (const g of groups) {
+    for (const p of (g.plans || [])) if (!['decided', 'aborted'].includes(p.stage) && !(p.mode === 'add' && p.stage === 'evidenced')) ops.push(['plan ' + p.task, `${p.mode} region ${g.region_id} → n${p.destination.node_id}`, p.stage]);
+    for (const x of (g.splits || [])) if (!['published', 'aborted'].includes(x.stage)) ops.push(['split ' + x.task, `region ${g.region_id} at ${esc(x.split_key)}`, x.stage]);
+    for (const x of (g.merges || [])) if (!['published', 'aborted'].includes(x.stage)) ops.push(['merge ' + x.task, `regions ${x.low_region}+${x.high_region}`, x.stage]);
+  }
+  const sealed = groups.filter(g => liveness(g) === 1).length;
+  document.getElementById('ops').innerHTML = (ops.length ? `<table><thead><tr><th>task</th><th>what</th><th>stage</th></tr></thead><tbody>${ops.map(o => `<tr><td>${o[0]}</td><td>${o[1]}</td><td class="stage">${esc(o[2])}</td></tr>`).join('')}</tbody></table>` : '<span class="empty">nothing in flight</span>')
+    + (sealed ? `<div class="stage" style="margin-top:8px">${sealed} retired group${sealed > 1 ? 's' : ''} (sealed parents of published splits/merges)</div>` : '');
+
+  // Backups.
+  const backups = (s.backups || []).slice().sort((a, b) => b.task - a.task);
+  document.getElementById('backups').innerHTML = backups.length ? `<table><thead><tr><th>task</th><th>keyspace</th><th>label</th><th>stage</th><th class="num">anchored</th><th>restorable</th><th>age</th></tr></thead><tbody>${
+    backups.map(b => `<tr><td>${b.task}</td><td>${esc(keyspaceNames[b.keyspace_id] || b.keyspace_id)}</td><td>${esc(b.label) || '-'}</td><td><span class="chip ${b.stage === 'complete' ? 'ok' : b.stage === 'aborted' ? 'fail' : ''}">${esc(b.stage)}</span></td><td class="num">${b.ranges.filter(r => r.anchor).length}/${b.ranges.length}</td><td>${b.stage === 'complete' ? (b.restorable ? '<span class="ok">yes</span>' : '<span class="warn">no</span>') : '-'}</td><td>${age(b.requested_unix)}</td></tr>`).join('')}</tbody></table>` : '<span class="empty">no backups</span>';
+
+  document.getElementById('foot').innerHTML = (s.errors || []).length ? `<div class="err">${s.errors.map(esc).join('\n')}</div>` : `read-only view · polled every ${REFRESH_MS / 1000}s through kv9-admin · JSON at <a href="/api/state">/api/state</a>`;
+}
+
+async function tick() {
+  try {
+    const r = await fetch('/api/state', { cache: 'no-store' });
+    render(await r.json());
+  } catch (e) {
+    document.getElementById('foot').innerHTML = `<div class="err">dashboard unreachable: ${esc(e.message)}</div>`;
+  }
+}
+tick();
+setInterval(tick, REFRESH_MS);
+</script>
+</body>
+</html>

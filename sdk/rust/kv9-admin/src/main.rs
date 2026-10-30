@@ -33,6 +33,8 @@ use sha2::{Digest, Sha256};
 const SCHEMA_VERSION: u64 = 1;
 const DEFAULT_WAIT: Duration = Duration::from_secs(30);
 /// A drain moves whole replicas through object storage; give it minutes by default.
+mod dashboard;
+
 const DEFAULT_DRAIN_WAIT: Duration = Duration::from_secs(900);
 const DEFAULT_BACKUP_WAIT: Duration = Duration::from_secs(600);
 /// Pending admissions that end within this many seconds are a health warning.
@@ -75,6 +77,7 @@ fn usage() -> String {
      task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history\n\
      \u{20}        describe <id>\n\
      \u{20}        abort <id>                   abort a split/merge intent (before its seal), a drain, a replica plan or an incomplete backup\n\
+     dashboard [--listen <host:port>] [--refresh <secs>]   serve a read-only web view (default 127.0.0.1:9100, 3 s)\n\
      version\n\
      \n\
      The token comes from --token, KV9_ADMIN_TOKEN, KV9_CLIENT_TOKEN or the context's\n\
@@ -165,6 +168,7 @@ enum Output {
     Json,
 }
 
+#[derive(Clone)]
 struct Global {
     context: Option<String>,
     endpoints: Vec<(Option<u64>, String)>,
@@ -2150,6 +2154,19 @@ async fn backup_retire(global: &Global, cluster: &mut Cluster, task: u64) -> Out
 }
 
 async fn dispatch(global: &Global, words: &[String]) -> Outcome {
+    if let [noun, rest @ ..] = words {
+        if noun == "dashboard" && rest.first().is_none_or(|w| w.starts_with("--") || w == "serve") {
+            let rest = if rest.first().is_some_and(|w| w == "serve") { &rest[1..] } else { rest };
+            let args = verb_args(rest, &[])?;
+            let listen = args.flags.get("listen").cloned().unwrap_or_else(|| "127.0.0.1:9100".into());
+            let refresh = match args.flags.get("refresh") {
+                Some(secs) => Duration::from_secs(secs.parse::<u64>().ok().filter(|s| *s >= 1).ok_or_else(|| Fail::Usage("--refresh must be whole seconds, at least 1".into()))?),
+                None => Duration::from_secs(3),
+            };
+            dashboard::serve(global, &listen, refresh).await?;
+            return Ok(Report { command: "dashboard".into(), result: json!({"listen": listen}), table: format!("dashboard stopped ({listen})"), partial: Vec::new() });
+        }
+    }
     let (noun, verb, rest) = match words {
         [noun, verb, rest @ ..] => (noun.as_str(), verb.as_str(), rest),
         [noun] if noun == "version" => {
