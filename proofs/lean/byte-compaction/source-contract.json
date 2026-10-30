@@ -16,10 +16,10 @@
     "the_byte_trigger_chain_commits_a_backed_floor"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "576a8bbb34f0e5d3526493e7f204fccd526614b365493dcab5b717ef2ff0caa1",
+    "crates/server/src/runtime.rs": "2d6d5c23fdd56e7b6528177971b6560d9baaaf1d3b8408913861f328e2872f62",
     "crates/server/src/region_manager.rs": "3e02ef7fe700908c33a2069ddfaa892228017b38715e70da8908531311b85220",
     "crates/raft/src/storage.rs": "d2ee607f012da79efe5321f0bb0f48e2a9a44ec697dd19adc8e96156b54388c4",
-    "crates/raft/src/rawnode.rs": "f45c8d85ca2e53843b1d8f81afc2c0e023ccfecd1b552c646beba8dc3d913a3a",
+    "crates/raft/src/rawnode.rs": "43b2694c06d12713106cbafbd07764453c683f7ad1b997d36aa65818cf0838b8",
     "scripts/auto-compact-bytes-e2e.py": "c7fb881817b1bde5cb15ab4e7241cb84013898a69038f487d50783d02e75120f",
     "proofs/lean/byte-compaction/ByteCompaction.lean": "55857cc8d7cae68846d234777a2eb111314aa7f089c8c05e07eec0dade5ba38c",
     "proofs/lean/byte-compaction/README.md": "61201266439d74e872e4cfd716cb61cb60f717201fbd416f842ad982c96f2290"

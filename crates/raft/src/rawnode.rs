@@ -419,7 +419,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             // must not report those positions as committed-but-unapplied.
             applied: installed_base.map_or(0, |base| base.index),
             id: node.0,
-            election_tick: 10,
+            election_tick: election_tick(),
             heartbeat_tick: 3,
             // DESIGN "5.3 MetaLeader election": disturbance protection + the
             // gray-failure discipline (leader steps down without an active quorum).
@@ -2003,4 +2003,26 @@ mod tests {
             .unwrap();
         assert!(follower.propose_traced(put(b"x", b"y")).is_err());
     }
+}
+
+/// Election timeout in ticks: 10 in every production build.
+#[cfg(not(any(test, feature = "testing")))]
+fn election_tick() -> usize {
+    10
+}
+
+#[cfg(any(test, feature = "testing"))]
+static TEST_ELECTION_TICK: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(10);
+
+/// Testing builds only: a longer election timeout for in-process clusters that share
+/// one loaded host, where a few hundred milliseconds of scheduling or fsync stall would
+/// otherwise depose healthy leaders and fail tests on churn they do not test.
+#[cfg(any(test, feature = "testing"))]
+pub fn set_test_election_tick(ticks: usize) {
+    TEST_ELECTION_TICK.store(ticks.max(4), std::sync::atomic::Ordering::Relaxed);
+}
+
+#[cfg(any(test, feature = "testing"))]
+fn election_tick() -> usize {
+    TEST_ELECTION_TICK.load(std::sync::atomic::Ordering::Relaxed)
 }

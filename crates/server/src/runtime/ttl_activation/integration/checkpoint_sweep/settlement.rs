@@ -542,7 +542,7 @@ async fn coexist_until(
     diagnostic: impl Fn() -> serde_json::Value,
 ) {
     // A liveness budget, not a timing claim: a loaded test run gets the same verdict, later.
-    coexist_until_for(Duration::from_secs(60), stage, condition, diagnostic).await;
+    coexist_until_for(Duration::from_secs(120), stage, condition, diagnostic).await;
 }
 
 async fn coexist_until_for(

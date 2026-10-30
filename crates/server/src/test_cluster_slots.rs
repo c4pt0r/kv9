@@ -42,8 +42,17 @@ thread_local! {
     static HELD: RefCell<Option<Held>> = const { RefCell::new(None) };
 }
 
-/// Take this test thread's cluster slot (once; later calls are free).
+/// Take this test thread's cluster slot (once; later calls are free). Clusters started
+/// by these tests also run with a 30-tick election timeout (`KV9_TEST_ELECTION_TICK`).
 pub(crate) fn take() {
+    static TICK: std::sync::Once = std::sync::Once::new();
+    TICK.call_once(|| {
+        let ticks = std::env::var("KV9_TEST_ELECTION_TICK")
+            .ok()
+            .and_then(|v| v.parse::<usize>().ok())
+            .unwrap_or(30);
+        kv9_raft::rawnode::set_test_election_tick(ticks);
+    });
     HELD.with(|held| {
         if held.borrow().is_some() {
             return;

@@ -9314,8 +9314,13 @@ mod tests {
         // then let n2 campaign. n2's watermark stays Some(term 1) while its
         // leader term moves on.
         d2.pause_apply(true);
-        for _ in 0..40 {
+        // Past the election timeout, whatever it is in this build (tests may run with a
+        // longer one): tick until check_quorum steps n1 down, bounded.
+        for _ in 0..400 {
             d1.tick_and_step().unwrap(); // no n2 ticks: no heartbeat ACKs
+            if d1.status().role != Role::Leader {
+                break;
+            }
         }
         assert_ne!(
             d1.status().role,

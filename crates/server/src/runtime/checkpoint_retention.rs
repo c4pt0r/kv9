@@ -63,7 +63,11 @@ const _: () = assert!(
 );
 
 const REQUEST_BUDGET: Duration = Duration::from_secs(2);
-pub(super) const CATALOG_WAIT: Duration = Duration::from_millis(100);
+/// How long a ledger request queues for the catalog transaction lock (fair, FIFO) before it
+/// answers "busy". One holder's commit includes a durable Raft round; at 100 ms a request
+/// behind one or two holders on a loaded host was refused every time, and the data
+/// checkpoint worker starved behind the metadata checkpoint and sweep traffic.
+pub(super) const CATALOG_WAIT: Duration = Duration::from_millis(500);
 fn remaining(deadline: Instant) -> Result<Duration> {
     deadline
         .checked_duration_since(Instant::now())
