@@ -36,6 +36,12 @@ plans and images · 5 split and merge · 6 drain, repair, replacement · 7 backu
 - **Tokens**: `KV9_BOOTSTRAP_TOKEN` (formation), `KV9_CLUSTER_TOKEN` (node-to-node),
   `KV9_CLIENT_TOKENS=principal=token,…` (what clients may present). The **admin principal** is
   the principal named by `KV9_ADMIN_PRINCIPALS`; `kv9-admin` must present its token.
+- **SDK**: the client libraries (Rust, Python, TypeScript, C++) on the public gRPC service;
+  `kv9-repl` and `kv9-admin` are built on the Rust one, whose `admin` module is the operator
+  surface. See `sdk.md`.
+- **Peers map**: `node id → address` given to an SDK or the REPL so it can follow `NotLeader`
+  hints to the leader.
+- **Receipt**: the exact applied `(term, index)` a write returns; compare the pair.
 - **Internal service**: node-authenticated RPCs between nodes (evidence delivery, install
   evidence, plan steps). Never reachable with a client token.
 

@@ -209,6 +209,9 @@ kv9> region r/00300                 region=102 epoch=(conf_ver=1, version=1) lea
 kv9> info                           nodes=7 keyspaces=2 regions=2
 ```
 
+The same calls from an application go through an SDK (`sdk.md`): `keyspace_named("orders")`,
+`put`, `get`, `scan` / `scan_all`, with a `peers` map so `NotLeader` hints are followed.
+
 `not leader (hint: node N); add the node to --peers to follow it` means the hint chain ended on a
 node the REPL could not follow or that was itself not leading yet; with every node in `--peers` a
 retry a second later serves.
