@@ -22,6 +22,8 @@ enough, and send the user there when they ask what something means.
 - **Metadata group** (region 0): the Raft group holding the catalog and the TASKS history; its
   leader commits every verb. **Voter** / **learner**: a member that votes / one that only
   replicates. A **store** is a node's data directory, identified by its **store incarnation**.
+  A **full** node is a voter or learner and keeps the whole catalog; a **scoped** node is no
+  metadata member and keeps a **slice** (the keyspaces it hosts, streamed from one full node).
 - **Keyspace** → one or more **ranges** `[start, end)`, each bound (kind 102 row) to a **data
   group** (a Raft group of 3/5/7 replicas, named by its **creation task**) in a **region**.
   **Epoch** is the shape version clients carry. A **sealed** binding is the retired parent of a
@@ -83,7 +85,7 @@ call list and how to test the SDKs (`scripts/sdk-e2e.sh`).
 | Need | Verb | What to expect |
 | --- | --- | --- |
 | Create a cluster | `kv9 store-prepare` ×N → `kv9 root-create --voters … --store-incarnations …` → `kv9 init` ×N → `kv9 start` ×N | `bootstrap_state=Serving` in every status file within seconds. Never rerun `root-create`/`init` on an existing store. |
-| Add a node | `node admit <id> --addr <h:p> --ttl <s>` → on the host `KV9_JOIN_TICKET=<ticket> kv9 join …` then `kv9 start …` | Joins as a metadata **learner**; `node list` shows `learner adm:consumed`. The ticket is one-time; `node revoke <id>` cancels an unused one. |
+| Add a node | `node admit <id> --addr <h:p> --ttl <s> [--meta auto\|full\|scoped]` → on the host `KV9_JOIN_TICKET=<ticket> kv9 join …` then `kv9 start …` | `full`: joins as a metadata **learner**; `node list` shows `learner adm:consumed`. `scoped`: no metadata membership (`raft none`, `META scoped`), status `meta_mode=scoped catalog_scope=current`; it hosts groups but `node promote` refuses it. `auto` (default) is `full` until `KV9_META_FULL_LEARNERS` (4) learners exist. The ticket is one-time; `node revoke <id>` cancels an unused one. |
 | Make it vote | `node promote <id> --wait` | `outcome: committed`; repeating answers `confirmed`. |
 | Observe | `cluster info`, `cluster health`, `node list`, `cluster status [--node]`, `node describe <id>`; `dashboard [--listen host:port]` for a browser view (placement matrix, ranges, operations, backups) | `health` exits 0 only when every verdict is ok. A stopped or dead node keeps `unreachable=fail` until it is forgotten (no verb yet): read the other verdicts. |
 | A data group + keyspace | `group create --voters a,b,c --label <t>` → `keyspace create --name <n> --group <creation-task>` | Three, five or seven *registered* stores (learners count as stores). Routable a second after activation. |

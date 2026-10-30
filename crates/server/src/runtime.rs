@@ -24,7 +24,7 @@ use kv9_common::{
 };
 use kv9_engine::{Engine, ReadView, ReplicatedEngine, WalEngine};
 use kv9_meta::admission::INVALID_JOIN_TICKET_MESSAGE;
-use kv9_meta::bootstrap::{init_marker_exists, write_init_marker};
+use kv9_meta::bootstrap::{init_marker_exists, scoped_marker_exists, write_init_marker, write_scoped_marker};
 use kv9_meta::codec::memcmp_uint;
 use kv9_meta::schema::{ColumnId, NODES_DESC, SCHEMA_VERSION_DESC};
 use kv9_meta::tables::Tables;
@@ -845,6 +845,43 @@ struct RuntimeBackend {
     /// The last status document this process rendered (the same bytes as its
     /// status file), served over `NodeStatus`. Written by the runtime thread.
     status_cache: Arc<std::sync::Mutex<String>>,
+    /// The metadata change ring scoped nodes are served from
+    /// (docs/META-REPLICA-MODES.md §3b); fed only while this node applies the
+    /// metadata log.
+    catalog_ring: Arc<crate::catalog_scope::ring::ChangeRing>,
+    /// A scoped node's slice position (docs/META-REPLICA-MODES.md).
+    slice_watch: Arc<crate::catalog_scope::SliceWatch>,
+    /// What this full node has served to scoped nodes.
+    scope_stats: Arc<crate::catalog_scope::serve::ServeStats>,
+}
+
+/// The full set as this node's metadata driver sees it.
+struct DriverFullSet {
+    node: Arc<Node<WalEngine>>,
+    driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
+}
+
+impl crate::catalog_scope::serve::FullSet for DriverFullSet {
+    fn servers(&self) -> Vec<(u64, String)> {
+        let status = self.driver.status();
+        let mut ids: Vec<u64> = status.voters.iter().chain(status.learners.iter()).copied().collect();
+        ids.sort_unstable();
+        ids.dedup();
+        let Ok(txn) = self.node.meta_raft.store.begin() else {
+            return Vec::new();
+        };
+        ids.into_iter()
+            .filter_map(|id| {
+                kv9_meta::endpoint::node_endpoint(&txn, NodeId(id))
+                    .ok()
+                    .flatten()
+                    .map(|e| (id, e.address.to_string()))
+            })
+            .collect()
+    }
+    fn leader(&self) -> u64 {
+        self.driver.status().leader_id.map_or(0, |n| n.0)
+    }
 }
 
 impl RuntimeBackend {
@@ -1533,7 +1570,11 @@ impl AdminApi for RuntimeBackend {
                 // The journal fixes identity, but grants no upload authority. Both
                 // exact pins must be locally applied Published before any object I/O.
                 let txn = self.node.meta_raft.store.begin()?;
-                owners.verify_published_locally(txn.into_view().as_ref(), certified)?;
+                let view = txn.into_view();
+                let handle = tokio::runtime::Handle::current();
+                owners.verify_published_with(|id| {
+                    self.retention_owner_for_mode(view.as_ref(), certified, id, &handle)
+                })?;
                 let captured = self.upload_migration_published(planned, uploader)?;
                 Ok(crate::api::CaptureMigrationImageResult {
                     record: captured.record,
@@ -2304,10 +2345,21 @@ impl AdminApi for RuntimeBackend {
 
     fn admit_node(
         &self,
+        caller: &str,
+        node: NodeId,
+        addr: &str,
+        ttl_seconds: u64,
+    ) -> Result<MembershipChangeResult> {
+        self.admit_node_mode(caller, node, addr, ttl_seconds, crate::api::MetaMode::Full)
+    }
+
+    fn admit_node_mode(
+        &self,
         _caller: &str,
         node: NodeId,
         addr: &str,
         ttl_seconds: u64,
+        mode: crate::api::MetaMode,
     ) -> Result<MembershipChangeResult> {
         self.ensure_serving()?;
         let status = self.driver.status();
@@ -2329,11 +2381,31 @@ impl AdminApi for RuntimeBackend {
         let _guard = self.node.meta_raft.lock_catalog_txn();
         let planning_term = self.prepare_catalog()?;
         let mut txn = self.node.meta_raft.store.begin()?;
+        // The full set is the metadata voters plus at most KV9_META_FULL_LEARNERS
+        // learners (docs/META-REPLICA-MODES.md R1): count the learners in the
+        // configuration and the full admissions not yet joined.
+        let cap = meta_full_learner_cap();
+        let pending_full = kv9_meta::admission::pending_admissions(&txn)?
+            .iter()
+            .filter(|a| a.role == kv9_meta::admission::AdmittedRole::Learner && !status.learners.contains(&a.node_id.0) && a.node_id != node)
+            .count();
+        let full_learners = status.learners.iter().filter(|l| **l != node.0).count() + pending_full;
+        let role = match mode {
+            crate::api::MetaMode::Scoped => kv9_meta::admission::AdmittedRole::Scoped,
+            crate::api::MetaMode::Full if full_learners >= cap => {
+                return Err(Error::Config(format!(
+                    "the full metadata set already has {full_learners} learner(s) (KV9_META_FULL_LEARNERS={cap}); admit this node as scoped or raise the cap"
+                )))
+            }
+            crate::api::MetaMode::Full => kv9_meta::admission::AdmittedRole::Learner,
+            crate::api::MetaMode::Auto if full_learners < cap => kv9_meta::admission::AdmittedRole::Learner,
+            crate::api::MetaMode::Auto => kv9_meta::admission::AdmittedRole::Scoped,
+        };
         kv9_meta::admission::admit_node_with_ticket_hash(
             &mut txn,
             node,
             addr,
-            kv9_meta::admission::AdmittedRole::Learner,
+            role,
             ticket_sha256.as_bytes(),
             expires,
         )?;
@@ -2347,6 +2419,7 @@ impl AdminApi for RuntimeBackend {
             voters: status.voters,
             learners: status.learners,
             join_ticket: Some(ticket),
+            meta_mode: Some(role.meta_mode()),
             changed: true,
         })
     }
@@ -2376,6 +2449,7 @@ impl AdminApi for RuntimeBackend {
             voters: status.voters,
             learners: status.learners,
             join_ticket: None,
+            meta_mode: None,
             changed: true,
         })
     }
@@ -2396,8 +2470,17 @@ impl AdminApi for RuntimeBackend {
                 voters: status.voters.clone(),
                 learners: status.learners.clone(),
                 join_ticket: None,
+                meta_mode: None,
                 changed: false,
             });
+        }
+        if kv9_meta::admission::admission(&self.node.meta_raft.store.begin()?, node)?
+            .is_some_and(|a| a.role == kv9_meta::admission::AdmittedRole::Scoped)
+        {
+            return Err(Error::Config(format!(
+                "node {} keeps a scoped catalog and cannot vote; drain it and admit it again with --meta full",
+                node.0
+            )));
         }
         if !status.learners.contains(&node.0) {
             return Err(Error::Config(format!(
@@ -2417,6 +2500,7 @@ impl AdminApi for RuntimeBackend {
             voters: receipt.voters,
             learners: receipt.learners,
             join_ticket: None,
+            meta_mode: None,
             changed: true,
         })
     }
@@ -2442,6 +2526,7 @@ impl AdminApi for RuntimeBackend {
                 voters: status.voters.clone(),
                 learners: status.learners.clone(),
                 join_ticket: None,
+                meta_mode: None,
                 changed: false,
             });
         }
@@ -2468,6 +2553,7 @@ impl AdminApi for RuntimeBackend {
             voters: receipt.voters,
             learners: receipt.learners,
             join_ticket: None,
+            meta_mode: None,
             changed: true,
         })
     }
@@ -2589,7 +2675,8 @@ impl AdminApi for RuntimeBackend {
                     Some(kv9_meta::admission::AdmissionState::Superseded) => "superseded",
                     None => "",
                 },
-                admission_expires_unix: admission.map_or(0, |a| a.expires_unix),
+                admission_expires_unix: admission.as_ref().map_or(0, |a| a.expires_unix),
+                meta_mode: admission.as_ref().map_or("full", |a| a.role.meta_mode()),
                 draining: endpoint.is_some_and(|e| {
                     kv9_meta::data_groups::drain::is_draining(
                         &drains,
@@ -3462,6 +3549,15 @@ fn task_kind_name(kind: u64) -> &'static str {
     }
 }
 
+/// `KV9_META_FULL_LEARNERS` (default 4): how many metadata learners the full set
+/// holds besides the voters (docs/META-REPLICA-MODES.md R1).
+pub(crate) fn meta_full_learner_cap() -> usize {
+    std::env::var("KV9_META_FULL_LEARNERS")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(4)
+}
+
 fn unix_now() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -3543,6 +3639,39 @@ fn registration_error(error: Error) -> RegistrationError {
 }
 
 impl RegistrationBackend for RuntimeBackend {
+    fn catalog_scope(
+        &self,
+        root: RootDigest,
+        subscriber: NodeId,
+        store: [u8; 16],
+        from: Option<AppliedPosition>,
+    ) -> Result<kv9_raft::grpc::catalog_scope::FrameReceiver> {
+        // Only a full node serves: one that applies the metadata log itself.
+        let status = self.driver.status();
+        if !(status.voters.contains(&self.node.id.0) || status.learners.contains(&self.node.id.0)) {
+            return Err(Error::MetaNotReady("this node keeps no full catalog".into()));
+        }
+        let txn = self.node.meta_raft.store.begin()?;
+        if kv9_meta::root::certified_root(&txn)?.map(|r| r.digest()) != Some(root) {
+            return Err(Error::Config("catalog scope root differs".into()));
+        }
+        // The subscriber must be the registered owner of that store.
+        let row = txn
+            .get(&NODES_DESC, &[memcmp_uint(subscriber.0)])?
+            .ok_or_else(|| Error::Config("catalog scope subscriber is not registered".into()))?;
+        if !matches!(row.value.get(ColumnId(5)), Some(ColumnValue::Bytes(b)) if b.as_slice() == store) {
+            return Err(Error::Config("catalog scope subscriber store differs".into()));
+        }
+        drop(txn);
+        crate::catalog_scope::serve::open(
+            self.node.meta_raft.store.engine().clone(),
+            self.catalog_ring.clone(),
+            Arc::new(DriverFullSet { node: self.node.clone(), driver: self.driver.clone() }),
+            subscriber.0,
+            from,
+            self.scope_stats.clone(),
+        )
+    }
     fn plan_replica(
         &self,
         root: RootDigest,
@@ -4004,8 +4133,32 @@ impl RegistrationBackend for RuntimeBackend {
         self.transport
             .register_catalog_peer(node, endpoint.address, endpoint.generation)
             .map_err(RegistrationError::Failed)?;
+        let scoped = kv9_meta::admission::admission(
+            &self.node.meta_raft.store.begin().map_err(RegistrationError::Failed)?,
+            node,
+        )
+        .map_err(RegistrationError::Failed)?
+        .is_some_and(|a| a.role == kv9_meta::admission::AdmittedRole::Scoped);
         let status = self.driver.status();
-        if status.voters.contains(&node.0) {
+        if scoped {
+            // A scoped node is never a metadata Raft member
+            // (docs/META-REPLICA-MODES.md): a voter must be removed by the
+            // operator first; a leftover learner entry is dropped here.
+            if status.voters.contains(&node.0) {
+                return Err(RegistrationError::Failed(Error::Config(
+                    "a metadata voter cannot register as scoped; remove it from the voters first".into(),
+                )));
+            }
+            if status.learners.contains(&node.0) {
+                let proposed = self
+                    .driver
+                    .remove_voter(node)
+                    .map_err(RegistrationError::Failed)?;
+                self.driver
+                    .wait_conf_applied(proposed, Duration::from_secs(10))
+                    .map_err(RegistrationError::Failed)?;
+            }
+        } else if status.voters.contains(&node.0) {
             if fresh_pending {
                 // An empty disk can never take over a VOTER identity: the
                 // voter's log is quorum state. Remove it first (operator
@@ -4073,6 +4226,7 @@ impl RegistrationBackend for RuntimeBackend {
             applied_index: applied.index,
             voters: status.voters,
             learners: status.learners,
+            scoped,
         })
     }
 }
@@ -4564,13 +4718,51 @@ impl RuntimeBackend {
     /// Thin wiring; the decision lives in [`check_context`] so tests exercise the same
     /// function production does rather than a re-implementation of it.
     fn validated_context(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<ValidatedFence> {
-        check_context_at(
+        let gate = check_context_at(
             &self.node.meta_raft.store,
             Some(self.node.id),
             ctx.keyspace,
             &ctx.region_epoch,
             span,
-        )
+        );
+        match gate {
+            // A scoped node holds only its slice (docs/META-REPLICA-MODES.md §3b):
+            // a keyspace or range it does not hold is not an answer, it is a request
+            // for a full node. Redirect to the metadata leader the stream names.
+            Err(Error::KeyspaceNotFound(_)) | Err(Error::RegionNotFound) if self.is_scoped_node() => {
+                Err(Error::NotLeader { leader: self.driver.status().leader_id })
+            }
+            other => other,
+        }
+    }
+
+    /// Wait until the committed metadata entry `at` is visible in the local
+    /// catalog: through the metadata driver on a full node, through the slice
+    /// position on a scoped node.
+    pub(crate) fn wait_catalog_applied(&self, at: AppliedPosition, budget: Duration) -> Result<()> {
+        if self.slice_watch.is_scoped() {
+            return if self.slice_watch.wait_index(at.index, budget) {
+                Ok(())
+            } else {
+                Err(Error::MetaNotReady(format!(
+                    "catalog slice has not reached index {} yet",
+                    at.index
+                )))
+            };
+        }
+        self.driver
+            .wait_applied(
+                kv9_raft::ProposedAt { term: at.term, index: kv9_raft::LogIndex(at.index) },
+                budget,
+            )
+            .map(|_| ())
+            .map_err(|e| Error::Raft(format!("{e:?}")))
+    }
+
+    /// Not a metadata Raft member: this node keeps a scoped catalog slice.
+    fn is_scoped_node(&self) -> bool {
+        let status = self.driver.status();
+        !(status.voters.contains(&self.node.id.0) || status.learners.contains(&self.node.id.0))
     }
 
     /// The point-read entry: ONE barrier, ONE view, and the context/region
@@ -5459,6 +5651,11 @@ pub struct NodeRuntime {
     campaign_started: bool,
     initial_proposal: Option<(ProposedAt, kv9_common::ClusterId)>,
     registration_receipt: Option<RegistrationReceipt>,
+    /// The scoped metadata mode's subscriber (docs/META-REPLICA-MODES.md); `None`
+    /// on a full node.
+    catalog_scope: Option<crate::catalog_scope::subscribe::Subscription>,
+    /// The full catalog's key count and when it was taken (`catalog_keys=`).
+    catalog_keys: std::sync::Mutex<(u64, Option<Instant>)>,
     /// Shared with this node's ClusterAuthenticator; written exactly once,
     /// by `advance_registration` on the typed `Registered` outcome.
     catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>>,
@@ -5714,7 +5911,13 @@ impl NodeRuntime {
             let term = storage.committed_term(index)?;
             engine.upgrade_legacy_applied(legacy_key, AppliedPosition { term, index })?;
         }
-        if let kv9_engine::DurableAppliedPosition::AppliedThrough(at) = engine.applied_position()? {
+        // A scoped node's metadata engine is its catalog slice, positioned by the
+        // scope stream (docs/META-REPLICA-MODES.md): there is no local metadata
+        // Raft history for those positions to agree with.
+        let scoped_slice = scoped_marker_exists(&data_dir);
+        if let (false, kv9_engine::DurableAppliedPosition::AppliedThrough(at)) =
+            (scoped_slice, engine.applied_position()?)
+        {
             if storage.committed_term(at.index)? != at.term {
                 return Err(Error::Engine(
                     "engine applied term disagrees with committed Raft history".into(),
@@ -5844,13 +6047,23 @@ impl NodeRuntime {
         // installed is node-local configuration and must never become a verdict that
         // differently-configured replicas would not share. Installing it here means the
         // window in which that error is reachable does not exist on a live node.
+        let catalog_ring = crate::catalog_scope::ring::ChangeRing::from_env(match engine.applied_position()? {
+            kv9_engine::DurableAppliedPosition::AppliedThrough(at) => Some(at),
+            kv9_engine::DurableAppliedPosition::AppliedNothing => Some(AppliedPosition { term: 0, index: 0 }),
+            kv9_engine::DurableAppliedPosition::Volatile => None,
+        });
         let mut state_machine = MemStateMachine::with_engine(engine)?;
+        state_machine.set_apply_observer(catalog_ring.clone());
         state_machine.set_fence_adjudicator(match overrides.adjudicator {
             Some(factory) => factory(node.clone()),
             None => Arc::new(CatalogFenceAdjudicator::new(node.clone())),
         });
         let driver = NodeDriver::new(peer, transport.clone(), state_machine)?;
-        driver.attach_log_debt(log_debt)?;
+        // A scoped node never runs this driver (docs/META-REPLICA-MODES.md); its
+        // engine position is the slice's, which no local metadata log backs.
+        if !scoped_slice {
+            driver.attach_log_debt(log_debt)?;
+        }
         // Initial root voters retain the existing first-formation/stable-log
         // contract. A dynamic member must carry an exact local incarnation
         // binding or obtain its own registration receipt before Raft runs.
@@ -5881,6 +6094,9 @@ impl NodeRuntime {
             initial_voters: seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
             uploader: remote.as_ref().map(|r| r.uploader.clone()),
             status_cache: status_cache.clone(),
+            catalog_ring,
+            slice_watch: Arc::default(),
+            scope_stats: Arc::default(),
         });
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
         let public_api = Kv9Grpc::with_limits(backend.clone(), public_limits)?;
@@ -6125,6 +6341,8 @@ impl NodeRuntime {
             campaign_started: false,
             initial_proposal: None,
             registration_receipt: None,
+            catalog_scope: None,
+            catalog_keys: std::sync::Mutex::new((0, None)),
             catchup_capability,
             next_discovery: Instant::now(),
             next_advertised_endpoint_probe: Instant::now(),
@@ -6160,6 +6378,9 @@ impl NodeRuntime {
             initial_voters: self.seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
             uploader: None,
             status_cache: self.status_cache.clone(),
+            catalog_ring: self.rpc_backend.catalog_ring.clone(),
+            slice_watch: self.rpc_backend.slice_watch.clone(),
+            scope_stats: self.rpc_backend.scope_stats.clone(),
         };
         backend.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
@@ -7120,6 +7341,24 @@ impl NodeRuntime {
             .cluster_id()
             .ok_or_else(|| Error::MetaNotReady("joining without a cluster identity".into()))?;
 
+        // A scoped member restarts from its marker, the init marker and its own
+        // Active row in the local slice; the subscriber catches the slice up.
+        if scoped_marker_exists(&self.data_dir)
+            && init_marker_exists(&self.data_dir)
+            && self.node.local_cluster_identity()? == Some(cluster_id)
+            && self.scoped_member_is_active()?
+        {
+            self.ensure_catalog_scope()?;
+            self.discovery.set_cluster_id(cluster_id);
+            self.node
+                .meta
+                .lock()
+                .expect("meta poisoned")
+                .bootstrap
+                .on_event(BootstrapEvent::Registered)?;
+            return Ok(());
+        }
+
         // A node that previously completed registration has both the init
         // marker (written only after the exact receipt was observed) and the
         // committed Active row + durable ConfState. On restart, those three
@@ -7204,7 +7443,16 @@ impl NodeRuntime {
                         .lock()
                         .expect("catchup capability slot poisoned") =
                         Some(CatchupCapability::from_receipt(&receipt));
+                    let scoped = receipt.scoped;
                     self.registration_receipt = Some(receipt);
+                    if scoped {
+                        // Scoped: no metadata Raft owner, ever. The marker comes
+                        // first so a restart never starts one either; data-group
+                        // Raft ingress opens once the slice is in place.
+                        write_scoped_marker(&self.data_dir)?;
+                        self.ensure_catalog_scope()?;
+                        return Ok(());
+                    }
                     // The sender catch-up capability and receipt are published
                     // before opening ingress. Only this typed success starts
                     // an owner for a previously unauthorized dynamic member.
@@ -7228,6 +7476,26 @@ impl NodeRuntime {
         }
 
         let receipt = self.registration_receipt.as_ref().expect("checked above");
+        if receipt.scoped {
+            // The slice must reach the receipt's position and show this node's
+            // Active row before the node serves (M2).
+            let at = self.catalog_scope_position();
+            if at.is_none_or(|p| p.index < receipt.applied_index) || !self.scoped_member_is_active()? {
+                return Ok(());
+            }
+            if self.node.local_cluster_identity()? != Some(cluster_id) {
+                return Ok(());
+            }
+            write_init_marker(&self.data_dir)?;
+            self.discovery.set_cluster_id(cluster_id);
+            self.node
+                .meta
+                .lock()
+                .expect("meta poisoned")
+                .bootstrap
+                .on_event(BootstrapEvent::Registered)?;
+            return Ok(());
+        }
         let exact = ProposedAt {
             term: receipt.applied_term,
             index: kv9_raft::LogIndex(receipt.applied_index),
@@ -7277,6 +7545,95 @@ impl NodeRuntime {
             .expect("meta poisoned")
             .bootstrap
             .on_event(BootstrapEvent::Registered)?;
+        Ok(())
+    }
+
+    /// Scoped mode: this store's NODES row is in the local slice and Active.
+    fn scoped_member_is_active(&self) -> Result<bool> {
+        let txn = self.node.meta_raft.store.begin()?;
+        let Some(row) = txn.get(&NODES_DESC, &[memcmp_uint(self.node.id.0)])? else {
+            return Ok(false);
+        };
+        if !matches!(row.value.get(ColumnId(5)), Some(ColumnValue::Bytes(bytes)) if bytes.as_slice() == self.store_identity.store_incarnation.as_bytes())
+        {
+            return Err(Error::Config(
+                "local registered store incarnation does not match durable store identity".into(),
+            ));
+        }
+        Ok(matches!(row.value.get(ColumnId(3)), Some(ColumnValue::Uint(2))))
+    }
+
+    /// Whether this node is an Active member, by its mode: a scoped node by its
+    /// slice, a full node by its row and the metadata configuration.
+    pub(crate) fn catalog_member_is_active(&self) -> Result<bool> {
+        if self.is_scoped() {
+            self.scoped_member_is_active()
+        } else {
+            self.local_membership_is_active()
+        }
+    }
+
+    pub(crate) fn is_scoped(&self) -> bool {
+        self.catalog_scope.is_some() || scoped_marker_exists(&self.data_dir)
+    }
+
+    /// How far the local catalog has applied: the slice position on a scoped
+    /// node, the metadata driver's on a full node.
+    pub(crate) fn catalog_applied_index(&self) -> u64 {
+        if self.is_scoped() {
+            self.catalog_scope_position().map_or(0, |p| p.index)
+        } else {
+            self.driver.status().applied_index
+        }
+    }
+
+    /// Keys of the local metadata engine, recounted at most every 30 s (the status
+    /// document is written every tick).
+    fn catalog_key_count(&self) -> u64 {
+        let mut cached = self.catalog_keys.lock().expect("catalog keys poisoned");
+        if cached.1.is_none_or(|at| at.elapsed() >= Duration::from_secs(30)) {
+            let mut count = 0u64;
+            if let Ok(view) = self.node.meta_raft.store.engine().snapshot() {
+                let _ = kv9_meta::scope::for_each(view.as_ref(), kv9_meta::scope::ALL_START, kv9_meta::scope::ALL_END, |_, _| {
+                    count += 1;
+                    Ok(())
+                });
+            }
+            *cached = (count, Some(Instant::now()));
+        }
+        cached.0
+    }
+
+    fn catalog_scope_position(&self) -> Option<AppliedPosition> {
+        self.catalog_scope
+            .as_ref()
+            .and_then(|s| s.state.lock().expect("scope state poisoned").position)
+    }
+
+    /// Start the scope subscriber once (scoped mode) and open data-group Raft
+    /// ingress: the metadata Raft group never runs here.
+    fn ensure_catalog_scope(&mut self) -> Result<()> {
+        if self.catalog_scope.is_some() {
+            return Ok(());
+        }
+        let seeds = self
+            .seeds
+            .iter()
+            .map(|s| (s.node_id.0, s.addr.to_string()))
+            .collect();
+        let subscription = crate::catalog_scope::subscribe::start(
+            self.node.meta_raft.store.engine().clone(),
+            crate::catalog_scope::subscribe::Config {
+                node: self.node.id,
+                store: *self.store_identity.store_incarnation.as_bytes(),
+                root: self.root.digest(),
+                token: Some(self.cluster_token.clone()),
+                seeds,
+                watch: self.rpc_backend.slice_watch.clone(),
+            },
+        )?;
+        self.catalog_scope = Some(subscription);
+        self.discovery.authorize_raft();
         Ok(())
     }
 
@@ -7597,6 +7954,54 @@ impl NodeRuntime {
             self.driver_thread.is_some(),
             self.addr,
         ));
+        // docs/META-REPLICA-MODES.md: which metadata mode this node runs, and for a
+        // scoped node how far its slice is and where it comes from.
+        match &self.catalog_scope {
+            None => {
+                use std::sync::atomic::Ordering::Relaxed;
+                let stats = &self.rpc_backend.scope_stats;
+                body.push_str(&format!(
+                    "meta_mode=full\ncatalog_ring_last={}\ncatalog_scope_streams={}\ncatalog_scope_frames_sent={}\ncatalog_scope_bytes_sent={}\ncatalog_scope_snapshots_sent={}\ncatalog_keys={}\n",
+                    self.rpc_backend.catalog_ring.last().map_or(0, |p| p.index),
+                    stats.streams.load(Relaxed),
+                    stats.frames.load(Relaxed),
+                    stats.bytes.load(Relaxed),
+                    stats.snapshots.load(Relaxed),
+                    self.catalog_key_count(),
+                ));
+            }
+            Some(scope) => {
+                let s = scope.state.lock().expect("scope state poisoned").clone();
+                self.driver
+                    .set_external_leader_hint((s.leader != 0).then_some(NodeId(s.leader)));
+                let age_ms = if s.last_frame_unix_ms == 0 {
+                    u64::MAX
+                } else {
+                    (std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .map(|d| d.as_millis() as u64)
+                        .unwrap_or(0))
+                    .saturating_sub(s.last_frame_unix_ms)
+                };
+                let fresh = age_ms <= (crate::catalog_scope::serve::idle_interval() * 3).as_millis() as u64 + 2000;
+                body.push_str(&format!(
+                    "meta_mode=scoped\ncatalog_scope_rows={}\ncatalog_scope_bytes_received={}\ncatalog_scope={}\ncatalog_scope_index={}\ncatalog_scope_regions={}\ncatalog_scope_region_ids={}\ncatalog_scope_server={}\ncatalog_scope_leader={}\ncatalog_scope_snapshots={}\ncatalog_scope_deltas={}\ncatalog_scope_refused={}\ncatalog_scope_frame_age_ms={}\ncatalog_scope_error={}\n",
+                    s.rows,
+                    s.bytes,
+                    if fresh { "current" } else { "stale" },
+                    s.position.map_or(0, |p| p.index),
+                    s.regions.len(),
+                    s.regions.iter().take(64).map(|r| r.to_string()).collect::<Vec<_>>().join(","),
+                    s.server.map_or(0, |n| n),
+                    s.leader,
+                    s.snapshots,
+                    s.deltas,
+                    s.refused,
+                    if age_ms == u64::MAX { -1 } else { age_ms as i64 },
+                    s.error.clone().unwrap_or_default().replace('\n', " "),
+                ));
+            }
+        }
         body.push_str(&self.metrics_exporter.status_lines());
         body.push_str(&format!(
             "endpoint_ready={}\nendpoint_recovery_attempts={}\nendpoint_recovery_last={}\nendpoint_confirmation_term={}\nendpoint_confirmation_index={}\n",
@@ -8185,6 +8590,7 @@ mod tests {
             applied_index: 9,
             voters: vec![1, 2, 3, 4],
             learners: vec![5],
+            scoped: false,
         }
     }
 
@@ -9059,6 +9465,9 @@ mod tests {
                 initial_voters: Vec::new(),
                 uploader: None,
                 status_cache: Arc::default(),
+                catalog_ring: crate::catalog_scope::ring::ChangeRing::from_env(None),
+                slice_watch: Arc::default(),
+                scope_stats: Arc::default(),
             },
             runtime,
             dir,
@@ -10327,6 +10736,9 @@ mod tests {
                 .collect(),
             uploader: None,
             status_cache: Arc::default(),
+            catalog_ring: crate::catalog_scope::ring::ChangeRing::from_env(None),
+            slice_watch: Arc::default(),
+            scope_stats: Arc::default(),
         }
     }
 
@@ -12591,6 +13003,9 @@ mod tests {
             initial_voters: Vec::new(),
             uploader: None,
             status_cache: Arc::default(),
+            catalog_ring: crate::catalog_scope::ring::ChangeRing::from_env(None),
+            slice_watch: Arc::default(),
+            scope_stats: Arc::default(),
         };
 
         // Peers silent from here; only d1 pumps (real-time thread).
@@ -12978,6 +13393,9 @@ mod fence_firing_tests {
             initial_voters: runtime.seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
             uploader: None,
             status_cache: Arc::default(),
+            catalog_ring: crate::catalog_scope::ring::ChangeRing::from_env(None),
+            slice_watch: Arc::default(),
+            scope_stats: Arc::default(),
         }
     }
 

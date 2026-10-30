@@ -37,6 +37,7 @@ pub mod recovery;
 pub mod retention;
 pub mod root;
 pub mod routing;
+pub mod scope;
 
 pub use bootstrap::{Bootstrap, BootstrapEvent, BootstrapState};
 pub use catalog::Catalog;

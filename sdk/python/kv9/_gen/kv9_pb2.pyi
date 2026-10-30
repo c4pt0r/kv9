@@ -562,7 +562,7 @@ class ListNodesRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class NodeRow(_message.Message):
-    __slots__ = ("node_id", "address", "store_incarnation", "endpoint_generation", "active", "last_heartbeat_unix", "raft_role", "matched_index", "recent_active", "admission_state", "admission_expires_unix", "draining", "drained")
+    __slots__ = ("node_id", "address", "store_incarnation", "endpoint_generation", "active", "last_heartbeat_unix", "raft_role", "matched_index", "recent_active", "admission_state", "admission_expires_unix", "draining", "drained", "meta_mode")
     NODE_ID_FIELD_NUMBER: _ClassVar[int]
     ADDRESS_FIELD_NUMBER: _ClassVar[int]
     STORE_INCARNATION_FIELD_NUMBER: _ClassVar[int]
@@ -576,6 +576,7 @@ class NodeRow(_message.Message):
     ADMISSION_EXPIRES_UNIX_FIELD_NUMBER: _ClassVar[int]
     DRAINING_FIELD_NUMBER: _ClassVar[int]
     DRAINED_FIELD_NUMBER: _ClassVar[int]
+    META_MODE_FIELD_NUMBER: _ClassVar[int]
     node_id: int
     address: str
     store_incarnation: bytes
@@ -589,7 +590,8 @@ class NodeRow(_message.Message):
     admission_expires_unix: int
     draining: bool
     drained: bool
-    def __init__(self, node_id: _Optional[int] = ..., address: _Optional[str] = ..., store_incarnation: _Optional[bytes] = ..., endpoint_generation: _Optional[int] = ..., active: _Optional[bool] = ..., last_heartbeat_unix: _Optional[int] = ..., raft_role: _Optional[str] = ..., matched_index: _Optional[int] = ..., recent_active: _Optional[bool] = ..., admission_state: _Optional[str] = ..., admission_expires_unix: _Optional[int] = ..., draining: _Optional[bool] = ..., drained: _Optional[bool] = ...) -> None: ...
+    meta_mode: str
+    def __init__(self, node_id: _Optional[int] = ..., address: _Optional[str] = ..., store_incarnation: _Optional[bytes] = ..., endpoint_generation: _Optional[int] = ..., active: _Optional[bool] = ..., last_heartbeat_unix: _Optional[int] = ..., raft_role: _Optional[str] = ..., matched_index: _Optional[int] = ..., recent_active: _Optional[bool] = ..., admission_state: _Optional[str] = ..., admission_expires_unix: _Optional[int] = ..., draining: _Optional[bool] = ..., drained: _Optional[bool] = ..., meta_mode: _Optional[str] = ...) -> None: ...
 
 class ListNodesResponse(_message.Message):
     __slots__ = ("leader_node_id", "raft_committed", "nodes")
@@ -1242,14 +1244,16 @@ class ChangeNodeEndpointResponse(_message.Message):
     def __init__(self, changed: _Optional[_Union[EndpointReceipt, _Mapping]] = ..., confirmed: _Optional[_Union[EndpointReceipt, _Mapping]] = ..., refused: _Optional[_Union[EndpointRefusal, str]] = ...) -> None: ...
 
 class AdmitNodeRequest(_message.Message):
-    __slots__ = ("node_id", "addr", "ttl_seconds")
+    __slots__ = ("node_id", "addr", "ttl_seconds", "meta_mode")
     NODE_ID_FIELD_NUMBER: _ClassVar[int]
     ADDR_FIELD_NUMBER: _ClassVar[int]
     TTL_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    META_MODE_FIELD_NUMBER: _ClassVar[int]
     node_id: int
     addr: str
     ttl_seconds: int
-    def __init__(self, node_id: _Optional[int] = ..., addr: _Optional[str] = ..., ttl_seconds: _Optional[int] = ...) -> None: ...
+    meta_mode: int
+    def __init__(self, node_id: _Optional[int] = ..., addr: _Optional[str] = ..., ttl_seconds: _Optional[int] = ..., meta_mode: _Optional[int] = ...) -> None: ...
 
 class PromoteNodeRequest(_message.Message):
     __slots__ = ("node_id",)
@@ -1270,20 +1274,22 @@ class RevokeAdmissionRequest(_message.Message):
     def __init__(self, node_id: _Optional[int] = ...) -> None: ...
 
 class MembershipChangeResponse(_message.Message):
-    __slots__ = ("applied_term", "applied_index", "voters", "learners", "join_ticket", "changed")
+    __slots__ = ("applied_term", "applied_index", "voters", "learners", "join_ticket", "changed", "meta_mode")
     APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
     APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
     VOTERS_FIELD_NUMBER: _ClassVar[int]
     LEARNERS_FIELD_NUMBER: _ClassVar[int]
     JOIN_TICKET_FIELD_NUMBER: _ClassVar[int]
     CHANGED_FIELD_NUMBER: _ClassVar[int]
+    META_MODE_FIELD_NUMBER: _ClassVar[int]
     applied_term: int
     applied_index: int
     voters: _containers.RepeatedScalarFieldContainer[int]
     learners: _containers.RepeatedScalarFieldContainer[int]
     join_ticket: str
     changed: bool
-    def __init__(self, applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., voters: _Optional[_Iterable[int]] = ..., learners: _Optional[_Iterable[int]] = ..., join_ticket: _Optional[str] = ..., changed: _Optional[bool] = ...) -> None: ...
+    meta_mode: str
+    def __init__(self, applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., voters: _Optional[_Iterable[int]] = ..., learners: _Optional[_Iterable[int]] = ..., join_ticket: _Optional[str] = ..., changed: _Optional[bool] = ..., meta_mode: _Optional[str] = ...) -> None: ...
 
 class RawWriteResponse(_message.Message):
     __slots__ = ("applied_term", "applied_index")

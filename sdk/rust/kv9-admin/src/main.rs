@@ -11,7 +11,7 @@
 //! kv9-admin [--context <name> | --endpoints <[id=]host:port,...>] [--token <t>]
 //!           [--output table|json] [--timeout <secs>] [--yes] [--no-redirect] [-v]
 //!   cluster  info | status [--node <id>] | health | endpoints
-//!   node     list | describe <id> | admit <id> --addr <host:port> [--ttl <secs>]
+//!   node     list | describe <id> | admit <id> --addr <host:port> [--ttl <secs>] [--meta auto|full|scoped]
 //!            | revoke <id> | promote <id> [--wait] | remove <id> [--wait]
 //!   keyspace list | describe <id|name> | create --name <n> [--tenant <id>]
 //!   version
@@ -54,7 +54,7 @@ fn usage() -> String {
      \u{20}        endpoints                    the node directory: id, address, generation, active\n\
      node     list                         directory + admissions + the leader's raft view\n\
      \u{20}        describe <id>                one node: directory row and status document\n\
-     \u{20}        admit <id> --addr <a> [--ttl <secs>]   prints the one-time join ticket\n\
+     \u{20}        admit <id> --addr <a> [--ttl <secs>] [--meta auto|full|scoped]   prints the one-time join ticket\n\
      \u{20}        revoke <id>\n\
      \u{20}        promote <id> [--wait [--wait-secs <n>]]\n\
      \u{20}        remove <id>  [--wait [--wait-secs <n>]] refuses below three voters\n\
@@ -1088,6 +1088,7 @@ fn node_row_json(n: &kv9_client::NodeRow) -> Value {
         "admission_expires_unix": n.admission_expires_unix,
         "draining": n.draining,
         "drained": n.drained,
+        "meta_mode": n.meta_mode,
     })
 }
 
@@ -1178,6 +1179,7 @@ async fn node_list(cluster: &mut Cluster) -> Outcome {
                 if n.recent_active { "yes".into() } else { "no".into() },
                 n.admission_state.clone(),
                 drain_cell(n),
+                n.meta_mode.clone(),
             ]
         })
         .collect();
@@ -1192,7 +1194,7 @@ async fn node_list(cluster: &mut Cluster) -> Outcome {
             "leader: node {}  committed: {}\n{}",
             directory.leader_node_id,
             directory.raft_committed,
-            table(&["NODE", "ADDRESS", "RAFT", "ACTIVE", "MATCHED", "RECENT", "ADMISSION", "DRAIN"], &rows)
+            table(&["NODE", "ADDRESS", "RAFT", "ACTIVE", "MATCHED", "RECENT", "ADMISSION", "DRAIN", "META"], &rows)
         ),
         partial: Vec::new(),
     })
@@ -1249,17 +1251,25 @@ async fn node_admit(global: &Global, cluster: &mut Cluster, args: &VerbArgs, nod
         Some(ttl) => ttl.parse().map_err(|_| Fail::Usage("--ttl must be seconds".into()))?,
         None => 600,
     };
+    let mode = args.flags.get("meta").map(String::as_str).unwrap_or("auto");
+    if !matches!(mode, "auto" | "full" | "scoped") {
+        return Err(Fail::Usage("--meta must be auto, full or scoped".into()));
+    }
     confirm(
         global,
-        &format!("plan: AdmitNode node={node_id} addr={address} ttl={ttl}s at leader node {}", cluster.leader_id),
+        &format!("plan: AdmitNode node={node_id} addr={address} ttl={ttl}s meta={mode} at leader node {}", cluster.leader_id),
         None,
     )?;
-    let change = cluster.leader.admit_node(node_id, address, ttl).await?;
-    Ok(membership_report(
+    let change = cluster.leader.admit_node_mode(node_id, address, ttl, mode).await?;
+    let mut report = membership_report(
         "node admit",
         &change,
-        json!({ "node_id": node_id, "address": address, "ttl_seconds": ttl }),
-    ))
+        json!({ "node_id": node_id, "address": address, "ttl_seconds": ttl, "meta_mode": change.meta_mode }),
+    );
+    if let Some(m) = &change.meta_mode {
+        report.table.push_str(&format!("\nmeta: {m}"));
+    }
+    Ok(report)
 }
 
 async fn node_membership(

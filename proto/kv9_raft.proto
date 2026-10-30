@@ -95,6 +95,44 @@ service Kv9Raft {
   // A data-group leader whose automatic split trigger fired asks the metadata
   // leader to commit the split intent (docs/RANGE-SPLIT.md §11).
   rpc PlanSplit(PlanSplitRequest) returns (PlanSplitReceipt);
+  // A scoped node's catalog slice (docs/META-REPLICA-MODES.md §3b): a full node
+  // streams the rows of the caller's scope, a snapshot first when the caller's
+  // position is not in its change ring, then filtered deltas and idle positions.
+  rpc CatalogScope(CatalogScopeRequest) returns (stream CatalogScopeMessage);
+}
+
+message CatalogScopeRequest {
+  bytes root_digest = 1;
+  bytes store_incarnation = 2; // the caller's store (16 bytes)
+  // The caller's position; 0/0 asks for a snapshot.
+  uint64 from_term = 3;
+  uint64 from_index = 4;
+}
+message ScopeOp {
+  uint32 cf = 1;
+  bytes key = 2;
+  bytes value = 3;
+  bool delete = 4;
+}
+message ScopeServer {
+  uint64 node_id = 1;
+  string addr = 2;
+}
+message CatalogScopeMessage {
+  // 1 delta: apply `ops` iff the caller is at prev and move to (term, index).
+  // 2 snapshot part: buffer `ops`.
+  // 3 snapshot end: replace the whole slice with the buffered parts plus `ops`
+  //   and move to (term, index); `regions` is the scope.
+  uint32 kind = 1;
+  uint64 prev_term = 2;
+  uint64 prev_index = 3;
+  uint64 term = 4;
+  uint64 index = 5;
+  repeated ScopeOp ops = 6;
+  repeated uint64 regions = 7;
+  // The full nodes (metadata voters and full learners) a caller may subscribe to.
+  repeated ScopeServer servers = 8;
+  uint64 leader = 9; // the metadata leader this server knows, 0 unknown
 }
 
 message MigrationCaptureTransferRequest {
@@ -405,6 +443,9 @@ message RegisterReceipt {
   // Membership as of that position (sorted node ids).
   repeated uint64 voters = 3;
   repeated uint64 learners = 4;
+  // The node was admitted SCOPED (docs/META-REPLICA-MODES.md): not a metadata
+  // Raft member; it takes its catalog from a scope stream.
+  bool scoped = 5;
 }
 
 // Fixed-size scope with a fresh correlation challenge; at most two seconds.

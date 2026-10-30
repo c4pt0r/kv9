@@ -31,3 +31,21 @@ catalog lacks. Two policy controls reject `sorry` and custom axioms.
 What it does not cover: that the Rust row → regions map is total and correct for every catalog
 key (a unit test over every table and task kind, failing on any unmapped kind, is part of the
 implementation); how full nodes compute subscribers; liveness.
+
+## Refinement (2026-10-30)
+
+The implementation's sources are pinned in `source-contract.json`; the prover refuses a stale pin.
+
+| Model | Rust |
+| --- | --- |
+| `Row.declared` | `kv9_meta::scope::classify` returning `Some(_)`; `task_subject` for TASKS rows over `DECLARED_KINDS` |
+| `Row.regions`, `relevant scope r` | `kv9_meta::scope::route` against a `Closure` (per keyspace, `closure`); `Route::Deliver` |
+| `enter s q` with its closure | a widening op returns `Route::Resnapshot`: the server sends a whole snapshot at the current position (`catalog_scope/serve.rs`), which `snapshot_rows` computes with the same `route` |
+| `leave s q` | a row that stops routing (or a delete of a held key) is sent as a delete; a snapshot replaces the slice |
+| `deliver s at r` only at its position | `catalog_scope/subscribe.rs`: a delta applies iff its `prev` is the slice position; a snapshot older than the slice is refused |
+| positions monotonic | `write_applied` refuses a non-advancing position; a same-position snapshot rewrites without moving it |
+| an undeclared row stops the stream | `Route::Undeclared` and `snapshot_rows` end the stream with an error (`catalog_scope_error=`) |
+
+The totality obligation the model leaves to the implementation is
+`every_key_a_data_keyspace_and_a_drain_write_is_declared` in `crates/meta/src/data_groups/subject.rs`,
+plus the e2e (`scripts/meta-scoped-e2e.sh`), which streams every key its verbs write through `classify`.

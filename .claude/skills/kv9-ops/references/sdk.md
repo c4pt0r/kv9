@@ -75,7 +75,7 @@ metadata leader (`Client` follows hints); writes commit one row and return its t
 | Need | Calls |
 | --- | --- |
 | Observe | `node_status`, `list_nodes`, `list_data_groups` / `list_data_groups_detailed` (with readback errors), `list_tasks`, `node_endpoint`; plus `cluster_info`, `list_keyspaces`, `get_region` on `Client` |
-| Membership | `admit_node` (returns the join ticket), `revoke_admission`, `promote_node`, `remove_node`, `transfer_leader` (metadata region or a data region) |
+| Membership | `admit_node` (full mode; returns the join ticket), `admit_node_mode(…, "auto"\|"full"\|"scoped")`, `revoke_admission`, `promote_node`, `remove_node`, `transfer_leader` (metadata region or a data region); `NodeRow.meta_mode` |
 | Groups and keyspaces | `create_data_group`, `create_data_keyspace`, `add_replica` (mode add or move) |
 | Ranges | `split_range`, `merge_ranges` |
 | Retire a node | `drain_node` |

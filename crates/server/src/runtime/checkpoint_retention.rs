@@ -409,16 +409,8 @@ impl RoutedLedger {
             &tokio::runtime::Handle::current(),
         )? {
             LedgerReply::Applied { applied, .. } => backend
-                .driver
-                .wait_applied(
-                    kv9_raft::ProposedAt {
-                        term: applied.term,
-                        index: kv9_raft::LogIndex(applied.index),
-                    },
-                    remaining(deadline)?,
-                )
-                .map(|_| ())
-                .map_err(|e| Error::Raft(format!("capture catalog local apply: {e:?}"))),
+                .wait_catalog_applied(applied, remaining(deadline)?)
+                .map_err(|e| Error::Raft(format!("capture catalog local apply: {e}"))),
             _ => Err(Error::MetaNotReady(
                 "capture catalog receipt differs".into(),
             )),
@@ -539,6 +531,45 @@ impl CheckpointLedger for RoutedLedger {
                 Ok(observation)
             }
             _ => Err(Error::MetaNotReady("checkpoint owner reply differs".into())),
+        }
+    }
+}
+
+impl RuntimeBackend {
+    /// One retention owner as the metadata leader holds it. A scoped node keeps
+    /// no retention ledger (docs/META-REPLICA-MODES.md §3b: ledger rows are
+    /// full-node rows), so its ledger reads go here.
+    pub(crate) fn remote_retention_owner(
+        &self,
+        root: &kv9_common::RootDescriptor,
+        id: OwnerId,
+        runtime: &tokio::runtime::Handle,
+    ) -> Result<Option<kv9_meta::retention::LedgerOwner>> {
+        let deadline = Instant::now() + Duration::from_secs(10);
+        match RoutedLedger::call_backend(self, LedgerQuery::Owner(id), Some(root.digest()), deadline, runtime)? {
+            LedgerReply::Owner(Some(bytes)) => Ok(Some(kv9_meta::retention::decode_owner_observation(
+                &bytes,
+                root.digest(),
+                id,
+            )?)),
+            LedgerReply::Owner(None) => Ok(None),
+            _ => Err(Error::MetaNotReady("retention owner reply differs".into())),
+        }
+    }
+
+    /// A retention owner from the local ledger on a full node, from the metadata
+    /// leader on a scoped node.
+    pub(crate) fn retention_owner_for_mode(
+        &self,
+        view: &dyn kv9_engine::ReadView,
+        root: &kv9_common::RootDescriptor,
+        id: OwnerId,
+        runtime: &tokio::runtime::Handle,
+    ) -> Result<Option<kv9_meta::retention::LedgerOwner>> {
+        if self.slice_watch.is_scoped() {
+            self.remote_retention_owner(root, id, runtime)
+        } else {
+            kv9_meta::retention::retention_owner(view, root, id)
         }
     }
 }

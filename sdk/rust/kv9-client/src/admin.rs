@@ -54,6 +54,8 @@ pub struct NodeRow {
     pub draining: bool,
     /// Draining and already out of every data group and the metadata group.
     pub drained: bool,
+    /// `full` or `scoped` (docs/META-REPLICA-MODES.md).
+    pub meta_mode: String,
 }
 
 /// The receipt of [`Client::backup_keyspace`].
@@ -200,6 +202,8 @@ pub struct MembershipChange {
     pub join_ticket: Option<String>,
     /// `false` when the target state already held (a repeated verb confirms).
     pub changed: bool,
+    /// Admission only: `full` or `scoped` (docs/META-REPLICA-MODES.md).
+    pub meta_mode: Option<String>,
 }
 
 /// The outcome of [`Client::transfer_leader`].
@@ -234,6 +238,7 @@ fn membership(r: proto::MembershipChangeResponse) -> MembershipChange {
         learners: r.learners,
         join_ticket: Some(r.join_ticket).filter(|t| !t.is_empty()),
         changed: r.changed,
+        meta_mode: Some(r.meta_mode).filter(|m| !m.is_empty()),
     }
 }
 
@@ -290,6 +295,7 @@ impl Client {
                     admission_expires_unix: n.admission_expires_unix,
                     draining: n.draining,
                     drained: n.drained,
+                    meta_mode: n.meta_mode,
                 })
                 .collect(),
         })
@@ -587,6 +593,28 @@ impl Client {
         addr: &str,
         ttl_seconds: u64,
     ) -> Result<MembershipChange, Error> {
+        self.admit_node_mode(node_id, addr, ttl_seconds, "full").await
+    }
+
+    /// [`Client::admit_node`] choosing the metadata mode: `auto` (full while the
+    /// full-learner set has room, scoped after), `full` or `scoped`
+    /// (docs/META-REPLICA-MODES.md).
+    pub async fn admit_node_mode(
+        &self,
+        node_id: u64,
+        addr: &str,
+        ttl_seconds: u64,
+        mode: &str,
+    ) -> Result<MembershipChange, Error> {
+        let meta_mode = match mode {
+            "auto" => 0,
+            "full" => 1,
+            "scoped" => 2,
+            other => {
+                let _ = other;
+                return Err(Error::Bounds("metadata mode must be auto, full or scoped"));
+            }
+        };
         let r = self
             .invoke(
                 false,
@@ -594,6 +622,7 @@ impl Client {
                     node_id,
                     addr: addr.to_owned(),
                     ttl_seconds,
+                    meta_mode,
                 },
                 |mut c, r| async move { c.admit_node(r).await },
             )

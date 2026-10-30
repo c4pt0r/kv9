@@ -41,7 +41,22 @@ pub const INVALID_JOIN_TICKET_MESSAGE: &str = "invalid join ticket";
 /// ConfChange, not an admission state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AdmittedRole {
+    /// A full metadata replica: joins the metadata Raft group as a learner and
+    /// may be promoted to voter.
     Learner = 1,
+    /// A scoped node (docs/META-REPLICA-MODES.md): registers as a store but never
+    /// joins the metadata Raft group; it keeps only the catalog scope of its own
+    /// regions, streamed from a full node.
+    Scoped = 2,
+}
+
+impl AdmittedRole {
+    pub fn meta_mode(self) -> &'static str {
+        match self {
+            AdmittedRole::Learner => "full",
+            AdmittedRole::Scoped => "scoped",
+        }
+    }
 }
 
 /// Admission lifecycle. `Pending` → `Consumed` on successful join (exactly
@@ -451,6 +466,7 @@ fn decode_admission(node_id: NodeId, row: &RowValue) -> Result<Admission> {
     };
     let role = match row.get(NA_ROLE) {
         Some(ColumnValue::Uint(1)) => AdmittedRole::Learner,
+        Some(ColumnValue::Uint(2)) => AdmittedRole::Scoped,
         Some(ColumnValue::Uint(other)) => {
             return Err(Error::Config(format!(
                 "unknown admission role code {other}"

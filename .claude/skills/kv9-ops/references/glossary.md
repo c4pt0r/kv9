@@ -27,10 +27,20 @@ plans and images · 5 split and merge · 6 drain, repair, replacement · 7 backu
   replicate without voting. `node list` shows `raft_role` voter/learner; `cluster info` lists
   `meta_voters` / `meta_learners`. The **metadata leader** is the node that commits catalog
   transactions and drives most operations (`cluster info → leader_node_id`).
-- **Admission**: `node admit <id> --addr … --ttl …` commits a one-time **join ticket**; the new
-  host presents it to `kv9 join` and `kv9 start`, which registers the node as a store and makes
-  it a metadata learner. `node revoke` cancels an unused ticket; `node promote` makes a learner a
-  voter; `node remove` drops a voter (never below three).
+- **Admission**: `node admit <id> --addr … --ttl … [--meta auto|full|scoped]` commits a one-time
+  **join ticket**; the new host presents it to `kv9 join` and `kv9 start`, which registers the
+  node as a store and, in the **full** mode, makes it a metadata learner. `node revoke` cancels an
+  unused ticket; `node promote` makes a learner a voter; `node remove` drops a voter (never below
+  three).
+- **Full node / scoped node** (docs/META-REPLICA-MODES.md): a **full** node is a metadata voter or
+  learner and keeps the whole catalog. A **scoped** node is not a metadata Raft member: it keeps a
+  **slice** of the catalog (the keyspaces it hosts replicas of, their ranges and task rows, the node
+  rows it needs) streamed from one full node (`catalog_scope_server`), and asks the metadata leader
+  for retention-ledger rows. It hosts data groups like any store but can never vote. The **full
+  set** is the voters plus at most `KV9_META_FULL_LEARNERS` (default 4) learners; `--meta auto`
+  admits `full` while it has room and `scoped` after. `node list` shows the mode in `META`.
+- **Slice position**: `catalog_scope_index`, the metadata applied index the slice reflects;
+  `catalog_scope=current|stale` says whether frames are arriving.
 - **Endpoint**: the address a node serves on, recorded in the node directory with a
   **generation** that increments on `change-node-endpoint`. `cluster endpoints` lists them.
 - **Tokens**: `KV9_BOOTSTRAP_TOKEN` (formation), `KV9_CLUSTER_TOKEN` (node-to-node),

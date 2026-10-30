@@ -40,6 +40,15 @@ Each is one JSON object with `events` (recent, with `at_unix`, `step`, `outcome`
 | `checkpoint_retention=`, `data_checkpoint=` | every node | object-storage housekeeping; `deferred: metadata not ready` lines at startup are normal |
 | `fault=` | test only | armed fault points (`KV9_FAULT_DIR`) |
 
+Scoped metadata mode (plain `key=value` lines, not JSON):
+
+| Line | On which node | Says |
+| --- | --- | --- |
+| `meta_mode=` | every node | `full` (metadata voter or learner) or `scoped` |
+| `catalog_scope=`, `catalog_scope_index=`, `catalog_scope_server=`, `catalog_scope_error=` | scoped nodes | `current` while frames arrive (else `stale`), the slice position, the full node streaming it, the last stream problem. An error naming an **undeclared metadata key** stops the slice by design: the binary does not know that row; upgrade it. |
+| `catalog_scope_rows=`, `catalog_scope_regions=`, `catalog_scope_region_ids=` | scoped nodes | the slice's size and the regions it covers |
+| `catalog_scope_streams=`, `catalog_scope_snapshots_sent=`, `catalog_keys=` | full nodes | subscribers served, snapshots sent, the full catalog's key count |
+
 ## 3. Task kinds (`task list --kind <n>`)
 
 100 group creation · 101 activation · 102 range binding · 103 migration · 104 install evidence ·

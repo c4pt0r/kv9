@@ -49,6 +49,7 @@ mod endpoint;
 pub mod install_evidence;
 pub mod plan_replica;
 pub mod plan_split;
+pub mod catalog_scope;
 pub mod split_evidence;
 mod groups;
 pub mod log_pressure;
@@ -242,6 +243,9 @@ pub struct RegistrationReceipt {
     pub applied_index: u64,
     pub voters: Vec<u64>,
     pub learners: Vec<u64>,
+    /// The node was admitted as SCOPED (docs/META-REPLICA-MODES.md): it is not a
+    /// metadata Raft member and must take its catalog from a scope stream.
+    pub scoped: bool,
 }
 
 /// Why a registration failed — TYPED, because the wire contract depends on
@@ -407,6 +411,18 @@ pub trait RegistrationBackend: Send + Sync + 'static {
         _deadline: std::time::Instant,
     ) -> kv9_common::Result<(u64, bool, kv9_common::AppliedPosition)> {
         Err(Error::NotImplemented("install evidence delivery"))
+    }
+    /// Open the catalog-scope stream for `subscriber` (docs/META-REPLICA-MODES.md §3b),
+    /// starting after `from` (a snapshot first when `from` is `None` or not in the
+    /// change ring). The receiver yields frames until the server ends the stream.
+    fn catalog_scope(
+        &self,
+        _root: RootDigest,
+        _subscriber: NodeId,
+        _store: [u8; 16],
+        _from: Option<kv9_common::AppliedPosition>,
+    ) -> kv9_common::Result<catalog_scope::FrameReceiver> {
+        Err(Error::NotImplemented("catalog scope stream"))
     }
     /// Commit a split intent (docs/RANGE-SPLIT.md §11) at the metadata leader; returns
     /// `(intent_task, child_low_task, child_high_task, changed)`.
@@ -739,6 +755,13 @@ impl Kv9Raft for RaftGrpcService {
     ) -> std::result::Result<Response<pb::PlanSplitReceipt>, Status> {
         self.plan_split_request(request).await
     }
+    type CatalogScopeStream = catalog_scope::FrameStream;
+    async fn catalog_scope(
+        &self,
+        request: Request<pb::CatalogScopeRequest>,
+    ) -> std::result::Result<Response<Self::CatalogScopeStream>, Status> {
+        self.catalog_scope_request(request).await
+    }
     async fn inspect_migration_capture(
         &self,
         request: Request<pb::MigrationCaptureRequest>,
@@ -974,6 +997,7 @@ impl Kv9Raft for RaftGrpcService {
             applied_index: receipt.applied_index,
             voters: receipt.voters,
             learners: receipt.learners,
+            scoped: receipt.scoped,
         }))
     }
 }
@@ -1199,6 +1223,7 @@ pub fn grpc_register(
                         applied_index: r.applied_index,
                         voters: r.voters,
                         learners: r.learners,
+                        scoped: r.scoped,
                     }))
                 }
                 Err(status) => {
@@ -2016,6 +2041,7 @@ mod tests {
                 applied_index: 17,
                 voters: vec![1, 2, 3],
                 learners: vec![node.0],
+                scoped: false,
             })
         }
     }
@@ -2052,6 +2078,7 @@ mod tests {
                 applied_index: 17,
                 voters: vec![1, 2, 3],
                 learners: vec![node.0],
+                scoped: false,
             })
         }
     }
@@ -2756,6 +2783,13 @@ mod tests {
                 &self,
                 _: Request<pb::PlanSplitRequest>,
             ) -> std::result::Result<Response<pb::PlanSplitReceipt>, Status> {
+                Err(Status::unimplemented("frozen fixture"))
+            }
+            type CatalogScopeStream = crate::grpc::catalog_scope::FrameStream;
+            async fn catalog_scope(
+                &self,
+                _: Request<pb::CatalogScopeRequest>,
+            ) -> std::result::Result<Response<Self::CatalogScopeStream>, Status> {
                 Err(Status::unimplemented("frozen fixture"))
             }
             async fn inspect_checkpoint_selection(
@@ -3868,6 +3902,14 @@ mod tests {
                     ) -> std::result::Result<Response<pb::PlanSplitReceipt>, Status>
                     {
                         self.0.plan_split(request).await
+                    }
+                    type CatalogScopeStream = crate::grpc::catalog_scope::FrameStream;
+                    async fn catalog_scope(
+                        &self,
+                        request: Request<pb::CatalogScopeRequest>,
+                    ) -> std::result::Result<Response<Self::CatalogScopeStream>, Status>
+                    {
+                        self.0.catalog_scope(request).await
                     }
                     async fn inspect_checkpoint_selection(
                         &self,

@@ -12,12 +12,34 @@ committed state on the node whose role it is, and observable in each node's `<da
 | Need | Primitive | Notes |
 | --- | --- | --- |
 | Create a cluster | `kv9 store-prepare` on each initial store → `kv9 root-create --voters 1@..,2@..,3@..` → `kv9 init` on each → `kv9 start` | `KV9_BOOTSTRAP_TOKEN` for formation, `KV9_CLUSTER_TOKEN` + `KV9_CLIENT_TOKENS=principal=token,...` for serving ([QUICKSTART](QUICKSTART.md)). |
-| Add a node | `node admit <id> --addr <host:port> [--ttl <secs>]` → on the host `KV9_JOIN_TICKET=… kv9 join …` then `kv9 start …` | The ticket is one-time; the node joins the metadata group as a **learner**. `node revoke <id>` cancels an unused admission. |
+| Add a node | `node admit <id> --addr <host:port> [--ttl <secs>] [--meta auto\|full\|scoped]` → on the host `KV9_JOIN_TICKET=… kv9 join …` then `kv9 start …` | The ticket is one-time; `node revoke <id>` cancels an unused admission. `full`: the node joins the metadata group as a **learner** and keeps the whole catalog. `scoped`: it joins no metadata Raft group and keeps only its catalog slice, streamed from a full node (below). `auto` (the default) is `full` while the full set has room (`KV9_META_FULL_LEARNERS`, default 4 learners) and `scoped` after. |
 | Make it vote | `node promote <id> [--wait]` | Learner → voter of the metadata group. Repeating a membership verb whose state already holds answers `outcome: confirmed`. |
 | Retire a node | `node drain <id> [--wait [--wait-secs <n>]]` | One verb: the node hands away every leadership, the cluster moves every data-group replica off it (one plan at a time, `KV9_DRAIN_PARALLEL`), promotes a learner before removing it from a three-voter metadata group, reports `drained` in `node list`. Then stop the process ([DRAIN-NODE](DRAIN-NODE.md)). |
 | Remove a metadata voter by hand | `node remove <id> [--wait]` | Refuses below three voters and refuses the leader itself; promote a replacement first. |
 | Move metadata leadership | `node transfer-leader --to <id> [--wait]` | Planned maintenance; the transferee must be a caught-up voter, one that holds every committed entry ([LEADER-TRANSFER](LEADER-TRANSFER.md)). |
 | Change a node's address | `kv9 client change-node-endpoint …` | Generation-fenced ([ENDPOINT-MIGRATION](ENDPOINT-MIGRATION.md)); not yet a `kv9-admin` verb. |
+
+### Scoped nodes ([META-REPLICA-MODES](META-REPLICA-MODES.md))
+
+A scoped node hosts data groups like any node but is not a metadata Raft member, so the metadata
+group's size and traffic stay constant as the cluster grows. What to know when running one:
+
+- **It cannot vote.** `node promote` refuses it. To make it a full node, drain it and admit it
+  again with `--meta full`.
+- **Its catalog is a slice.** It holds every keyspace it hosts a replica of (all of those
+  keyspaces' ranges and task rows), their tenants, and the node rows of itself, its co-members
+  and the full nodes. It holds no retention ledger; it asks the metadata leader for those rows.
+- **Status.** `meta_mode=scoped`; `catalog_scope=current` (a frame within three idle intervals)
+  or `stale`; `catalog_scope_index` is the slice position; `catalog_scope_server` is the full
+  node streaming to it; `catalog_scope_error` names the last stream problem. A full node shows
+  `catalog_scope_streams` (subscribers it serves) and `catalog_keys`.
+- **Requests outside the slice** get a `NotLeader` redirect to the metadata leader; clients with
+  a `peers` map follow it.
+- **A full node going away** moves only its subscribers, each to its next rendezvous choice;
+  watch `catalog_scope_server` change and `catalog_scope=current` return.
+- **`catalog_scope_error` naming an undeclared metadata key** means a catalog row this binary does
+  not classify reached the stream; the slice stops at its last position (fail-closed). Upgrade the
+  scoped nodes' binary to the full nodes' version.
 
 ## 2. Data groups, keyspaces, placement
 

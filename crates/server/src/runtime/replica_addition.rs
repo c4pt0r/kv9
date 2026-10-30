@@ -242,14 +242,26 @@ impl NodeRuntime {
                 &migration.intent().destination().incarnation,
             )?;
             // Without object storage there is no retention ledger: nothing is pinned,
-            // and the steps that need none (attach, detach) must still run.
-            let pinned = kv9_meta::retention::retention_owner(view.as_ref(), &certified, source_owner)
-                .ok()
-                .flatten()
-                .is_some_and(|o| o.phase == kv9_common::retention::PinPhase::Published);
+            // and the steps that need none (attach, detach) must still run. Pins
+            // matter only between the capture and the evidence; a scoped node asks
+            // the metadata leader then (it keeps no ledger).
+            let aborted = aborts.iter().any(|a| a.operation() == operation);
+            let evidenced = evidence.iter().any(|e| e.operation() == operation);
+            // Evidence is recorded only over published pins, so it implies them.
+            let pinned = if evidenced {
+                true
+            } else if capture.is_none() || aborted {
+                false
+            } else {
+                self.rpc_backend
+                    .retention_owner_for_mode(view.as_ref(), &certified, source_owner, self.grpc_runtime.handle())
+                    .ok()
+                    .flatten()
+                    .is_some_and(|o| o.phase == kv9_common::retention::PinPhase::Published)
+            };
             out.push(Facts {
-                aborted: aborts.iter().any(|a| a.operation() == operation),
-                evidence: evidence.iter().any(|e| e.operation() == operation),
+                aborted,
+                evidence: evidenced,
                 decided: removals.iter().any(|r| r.operation() == operation),
                 pinned,
                 capture,

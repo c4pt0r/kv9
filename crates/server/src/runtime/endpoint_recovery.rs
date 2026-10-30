@@ -123,7 +123,7 @@ impl NodeRuntime {
     pub(super) fn advance_endpoint_recovery(&mut self) -> Result<bool> {
         if !init_marker_exists(&self.data_dir)
             || self.node.local_cluster_identity()? != Some(self.root.cluster_id)
-            || !self.local_membership_is_active()?
+            || !self.catalog_member_is_active()?
         {
             self.endpoint_recovery.last = "membership_pending";
             return Ok(false);
@@ -133,7 +133,19 @@ impl NodeRuntime {
                 term: receipt.applied.term,
                 index: kv9_raft::LogIndex(receipt.applied.index),
             };
-            match self.driver.wait_applied(at, Duration::from_millis(1)) {
+            let outcome = if self.is_scoped() {
+                // A scoped slice reaches positions, not the exact entry: the
+                // confirmation is applied once the slice is at or past it, and
+                // the row check below decides.
+                if self.catalog_applied_index() >= receipt.applied.index {
+                    Ok(ApplyWaitOutcome::Applied(receipt.applied))
+                } else {
+                    Err(ApplyWaitError::Unconfirmed { index: receipt.applied.index, waited: Duration::ZERO })
+                }
+            } else {
+                self.driver.wait_applied(at, Duration::from_millis(1))
+            };
+            match outcome {
                 Ok(ApplyWaitOutcome::Applied(observed)) if observed == receipt.applied => {
                     let txn = self.node.meta_raft.store.begin()?;
                     let current = kv9_meta::endpoint::node_endpoint(&txn, self.node.id)?;
@@ -186,7 +198,7 @@ impl NodeRuntime {
                     // ConfirmEndpoint appends Command::Noop, whose position
                     // is persisted with the catalog. The per-process unified
                     // watermark deliberately starts empty after restart.
-                    && self.driver.status().applied_index >= saved.index
+                    && self.catalog_applied_index() >= saved.index
                 {
                     self.endpoint_recovery.last = "stable_local_authority";
                     return Ok(true);

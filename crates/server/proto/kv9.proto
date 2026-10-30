@@ -461,6 +461,7 @@ message NodeRow {
   // once it holds no data-group replica and is no member of the metadata group.
   bool draining = 12;
   bool drained = 13;
+  string meta_mode = 14;  // full or scoped (docs/META-REPLICA-MODES.md)
 }
 message ListNodesResponse {
   uint64 leader_node_id = 1;
@@ -819,6 +820,9 @@ message AdmitNodeRequest {
   uint64 node_id = 1;
   string addr = 2;
   uint64 ttl_seconds = 3;
+  // 0 auto (full while KV9_META_FULL_LEARNERS has room, scoped after), 1 full, 2 scoped
+  // (docs/META-REPLICA-MODES.md).
+  uint32 meta_mode = 4;
 }
 
 message PromoteNodeRequest { uint64 node_id = 1; }
@@ -839,6 +843,8 @@ message MembershipChangeResponse {
   string join_ticket = 5;
   // false when the target state already held: a repeated verb confirms.
   bool changed = 6;
+  // AdmitNode only: full or scoped.
+  string meta_mode = 7;
 }
 
 // The position a raw write actually reached in the replicated log.

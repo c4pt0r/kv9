@@ -924,6 +924,9 @@ impl Fixture {
                 initial_voters: root.voters.iter().map(|v| (v.node_id, v.addr)).collect(),
                 uploader: None,
                 status_cache: Arc::default(),
+                catalog_ring: crate::catalog_scope::ring::ChangeRing::from_env(None),
+                slice_watch: Arc::default(),
+                scope_stats: Arc::default(),
             }));
             owners.push(meta[i].spawn(Duration::from_millis(5)).unwrap());
             owners.push(data[i].spawn(Duration::from_millis(5)).unwrap());

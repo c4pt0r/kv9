@@ -8,6 +8,7 @@ pub mod admission;
 pub mod api;
 mod bootstrap_retention;
 mod catalog_lock;
+pub mod catalog_scope;
 pub mod client;
 pub mod data_groups;
 pub mod endpoints;

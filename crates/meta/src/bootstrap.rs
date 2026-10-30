@@ -61,6 +61,32 @@ pub fn write_init_marker(data_dir: &Path) -> Result<()> {
     std::fs::rename(&tmp, &path).map_err(|e| Error::MetaNotReady(format!("marker rename: {e}")))
 }
 
+/// Marker recording that this data-dir registered in the scoped metadata mode
+/// (docs/META-REPLICA-MODES.md): the node keeps a catalog slice and never runs
+/// the metadata Raft group. Written before the subscriber starts; read at startup.
+pub const SCOPED_MARKER_FILE: &str = "kv9-meta-scoped";
+
+pub fn scoped_marker_exists(data_dir: &Path) -> bool {
+    data_dir.join(SCOPED_MARKER_FILE).is_file()
+}
+
+/// Durably write the scoped marker (temp + fsync + rename).
+pub fn write_scoped_marker(data_dir: &Path) -> Result<()> {
+    std::fs::create_dir_all(data_dir)
+        .map_err(|e| Error::MetaNotReady(format!("create {}: {e}", data_dir.display())))?;
+    let tmp = data_dir.join(format!("{SCOPED_MARKER_FILE}.tmp"));
+    {
+        use std::io::Write;
+        let mut f = std::fs::File::create(&tmp)
+            .map_err(|e| Error::MetaNotReady(format!("scoped marker create: {e}")))?;
+        f.write_all(b"scoped\n")
+            .and_then(|_| f.sync_all())
+            .map_err(|e| Error::MetaNotReady(format!("scoped marker write: {e}")))?;
+    }
+    std::fs::rename(&tmp, data_dir.join(SCOPED_MARKER_FILE))
+        .map_err(|e| Error::MetaNotReady(format!("scoped marker rename: {e}")))
+}
+
 /// The node lifecycle states during bootstrap (DESIGN §5.2).
 ///
 /// **Structural fingerprint retirement (task #24, gate contract):** the

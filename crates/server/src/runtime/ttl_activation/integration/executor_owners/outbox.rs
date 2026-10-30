@@ -32,6 +32,9 @@ fn reopen_report_backend(f: &mut Fixture, root: &RootDescriptor) {
         initial_voters: old.initial_voters.clone(),
         uploader: None,
         status_cache: Arc::default(),
+        catalog_ring: crate::catalog_scope::ring::ChangeRing::from_env(None),
+        slice_watch: Arc::default(),
+        scope_stats: Arc::default(),
     });
 }
 

@@ -440,6 +440,20 @@ pub trait StateMachine: Send + Sync {
     fn applied_index(&self) -> LogIndex;
 }
 
+/// Sees every entry this state machine applies, in order, around the write that applies
+/// it (docs/META-REPLICA-MODES.md §3b: the change ring a full node serves scoped nodes
+/// from). `apply` must call `write` exactly once and return its result; it records the
+/// entry only when `write` succeeded. Holding a lock across `write` lets a reader of
+/// the engine and the observer's record agree on one applied position.
+pub trait ApplyObserver: Send + Sync {
+    fn apply(
+        &self,
+        at: AppliedPosition,
+        cmd: &Command,
+        write: &mut dyn FnMut() -> Result<ApplyResult>,
+    ) -> Result<ApplyResult>;
+}
+
 /// The Phase-1 metadata state machine: a KV over the mocked [`MemEngine`].
 ///
 /// The catalog engine writes/read through the same engine, so a committed
@@ -464,6 +478,9 @@ pub struct MemStateMachine<E: ApplyStore = MemEngine> {
     /// would not share. The server injects the catalog-backed adjudicator at
     /// startup, before any fenced proposal is possible.
     adjudicator: Option<Arc<dyn FenceAdjudicator>>,
+    /// The metadata group's change ring (docs/META-REPLICA-MODES.md); `None` on data
+    /// groups and in harnesses.
+    observer: Option<Arc<dyn ApplyObserver>>,
 }
 
 impl MemStateMachine<MemEngine> {
@@ -510,6 +527,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
             adjudicator: None,
             data_identity: None,
             ttl_enabled,
+            observer: None,
         })
     }
 
@@ -518,6 +536,11 @@ impl<E: ApplyStore> MemStateMachine<E> {
     /// apply error, not a verdict.
     pub fn set_fence_adjudicator(&mut self, adjudicator: Arc<dyn FenceAdjudicator>) {
         self.adjudicator = Some(adjudicator);
+    }
+
+    /// Install the apply observer (server startup, metadata group only).
+    pub fn set_apply_observer(&mut self, observer: Arc<dyn ApplyObserver>) {
+        self.observer = Some(observer);
     }
 
     /// The backing engine — the KV the `meta` catalog reads/writes (ROADMAP Phase 1).
@@ -535,6 +558,13 @@ impl<E: ApplyStore> MemStateMachine<E> {
     /// SAME atomic batch as the data (cross-CF batch atomicity is the engine's
     /// contract), so the two cannot diverge on disk.
     pub fn apply_at(&mut self, at: AppliedPosition, cmd: &Command) -> Result<ApplyResult> {
+        match self.observer.clone() {
+            None => self.apply_unobserved(at, cmd),
+            Some(observer) => observer.apply(at, cmd, &mut || self.apply_unobserved(at, cmd)),
+        }
+    }
+
+    fn apply_unobserved(&mut self, at: AppliedPosition, cmd: &Command) -> Result<ApplyResult> {
         let index = LogIndex(at.index);
         if index <= self.applied {
             return Ok(ApplyResult::write_ok(index));

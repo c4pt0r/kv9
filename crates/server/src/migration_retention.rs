@@ -124,13 +124,14 @@ impl MigrationOwners {
     /// committed and Published for exactly this image. Local visibility
     /// implies commitment; absence only means "not yet locally applied",
     /// which refuses in the safe direction. No retention mutation happens.
-    pub(crate) fn verify_published_locally(
+    /// Over any owner source: the local applied ledger on a full node; a scoped
+    /// node reads the owners from the metadata leader (it keeps no ledger).
+    pub(crate) fn verify_published_with(
         &self,
-        view: &dyn kv9_engine::ReadView,
-        root: &RootDescriptor,
+        owner_of: impl Fn(OwnerId) -> Result<Option<kv9_meta::retention::LedgerOwner>>,
     ) -> Result<()> {
         for binding in [&self.source, &self.destination] {
-            let owner = kv9_meta::retention::retention_owner(view, root, binding.descriptor.id)?
+            let owner = owner_of(binding.descriptor.id)?
                 .ok_or_else(|| {
                     invalid("image owners are not committed; bind the planned manifest first")
                 })?;

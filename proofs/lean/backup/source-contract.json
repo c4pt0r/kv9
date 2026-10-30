@@ -15,11 +15,11 @@
   ],
   "source_sha256": {
     "crates/meta/src/data_groups/backup.rs": "3c9e8541da8706700840a010aafcb56effc889b64361efd31f1c0fa64bc97e05",
-    "crates/meta/src/data_groups.rs": "e2e8601128d55b79aada89f620e4daa6ab4f07633834cd9714587a01193426f4",
+    "crates/meta/src/data_groups.rs": "ba0f87860af2fef1827d03b994c95b5f8a1c3da53ace859414666afb45ba763a",
     "crates/server/src/runtime/backup.rs": "f8f68679cdbf183d933e9e5d38659e47229e631097ecd6dcc93c9d809d64d077",
-    "crates/server/src/migration_retention.rs": "63643ecaa0cb445d563279b2e1eb97fceffb9fe53ef398eadf74f83f7919cd9d",
+    "crates/server/src/migration_retention.rs": "e62f21a2dabe1711381fc3ca2ceda55b2bacf6d82c9963e4a12b677add4f4b2f",
     "crates/server/src/runtime/migration_capture.rs": "3c78a37936bfa6eab039e194a06ad0ce14951daf5390077f0ec10402df411e74",
-    "crates/server/proto/kv9.proto": "55f512b90e1a0531dd0792f4413597044c7ca0d958626beab17924c04edd50c8",
+    "crates/server/proto/kv9.proto": "55d813a69b9a1c2437f1abd102137941ef5e2a0105fe1ef77fb53d77b461995c",
     "scripts/backup-e2e.py": "5ec767183061efc40aff0626e7c2fc85b8a1bd5ba1506b812e2d2dac9b14619a",
     "docs/BACKUP-RESTORE.md": "9f1200e121cdfd6e64afbafe1d644e345d251294cdaf9a2fd2b34615efd938df"
   }

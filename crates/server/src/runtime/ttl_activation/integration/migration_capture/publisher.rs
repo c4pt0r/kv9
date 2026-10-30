@@ -303,6 +303,9 @@ async fn publisher_uncertain_entry_and_unknown_put_report_survive_lost_finish_ne
         initial_voters: old.initial_voters.clone(),
         uploader: None,
         status_cache: Arc::default(),
+        catalog_ring: crate::catalog_scope::ring::ChangeRing::from_env(None),
+        slice_watch: Arc::default(),
+        scope_stats: Arc::default(),
     });
     f.meta[1].peer().transfer_leader_for_tests(NodeId(3));
     leader(&f.meta[2]).await;

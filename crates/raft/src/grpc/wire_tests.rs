@@ -189,6 +189,13 @@ impl Kv9Raft for Endpoint {
     ) -> std::result::Result<Response<pb::PlanSplitReceipt>, Status> {
         self.service.plan_split(request).await
     }
+    type CatalogScopeStream = crate::grpc::catalog_scope::FrameStream;
+    async fn catalog_scope(
+        &self,
+        request: Request<pb::CatalogScopeRequest>,
+    ) -> std::result::Result<Response<Self::CatalogScopeStream>, Status> {
+        self.service.catalog_scope(request).await
+    }
     async fn inspect_checkpoint_selection(
         &self,
         request: Request<pb::CheckpointHistoryRequest>,

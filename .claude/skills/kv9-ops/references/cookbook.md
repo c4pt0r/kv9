@@ -46,6 +46,21 @@ Keep some nodes as learners: they are registered stores, which is what replica p
 repairs place replicas on, and what voter replacement promotes. A learner that hosts data groups is
 a normal configuration.
 
+Beyond the full set (voters + `KV9_META_FULL_LEARNERS`, default 4 learners) admit nodes **scoped**;
+`--meta auto`, the default, does this by itself:
+
+```bash
+kv9-admin node admit 9 --addr h:p --ttl 600 --meta scoped   # result.meta_mode: scoped
+# join + start as above; no metadata learner is added
+grep -E '^(meta_mode|catalog_scope|catalog_scope_server|catalog_scope_index)=' $DATA/n9/status
+# meta_mode=scoped  catalog_scope=current  catalog_scope_server=2  catalog_scope_index=<metadata index>
+kv9-admin node list                                         # n9  raft none  META scoped
+kv9-admin node promote 9                                    # refused: keeps a scoped catalog and cannot vote
+```
+
+A scoped node hosts groups, is a plan destination and a split child like any store
+(`scripts/meta-scoped-e2e.sh` rehearses join, isolation, restart, failover, move and split).
+
 ## 3. A data group and a keyspace
 
 ```bash

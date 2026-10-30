@@ -169,6 +169,11 @@ chaos fixtures read it, and the RPC is the same renderer.
 
 ## 5. Membership flows
 
+`node admit … --meta auto|full|scoped` chooses the metadata mode (docs/META-REPLICA-MODES.md):
+`full` joins the metadata group as a learner, `scoped` keeps a catalog slice and joins no metadata
+Raft group, `auto` (the default) is `full` while `KV9_META_FULL_LEARNERS` has room. The response
+names the mode (`result.meta_mode`); `node list` shows it in the `META` column.
+
 `node admit/revoke/promote/remove` are one RPC each, plus `--wait`, which polls `NodeStatus` of the
 leader until `meta_voters`/`meta_learners` show the effect (the `MembershipChangeResponse` carries the
 applied index; the wait is for the *configuration*, which is what the operator cares about).

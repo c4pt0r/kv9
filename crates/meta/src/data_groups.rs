@@ -28,6 +28,7 @@ pub mod restore;
 pub mod split;
 pub mod split_evidence;
 pub mod store_history;
+pub mod subject;
 pub mod truncation;
 
 /// Stable task kind and encoding. This uses the existing tasks table, not a

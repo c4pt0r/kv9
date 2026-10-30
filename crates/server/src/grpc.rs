@@ -447,6 +447,9 @@ pub fn admit_node_blocking(
             node_id: node.0,
             addr: node_addr,
             ttl_seconds,
+            // The built-in admit command keeps the full mode; `kv9-admin node admit --meta`
+            // chooses (docs/META-REPLICA-MODES.md).
+            meta_mode: 1,
         });
         request.metadata_mut().insert(
             "authorization",
@@ -2211,11 +2214,12 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let result = self
             .backend
             .call(reservation, move |backend| {
-                backend.admit_node(
+                backend.admit_node_mode(
                     &caller,
                     NodeId(request.node_id),
                     &request.addr,
                     request.ttl_seconds,
+                    crate::api::MetaMode::from_wire(request.meta_mode)?,
                 )
             })
             .await?;
@@ -2226,6 +2230,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             learners: result.learners,
             join_ticket: result.join_ticket.unwrap_or_default(),
             changed: result.changed,
+            meta_mode: result.meta_mode.unwrap_or_default().to_string(),
         }))
     }
 
@@ -2251,6 +2256,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             learners: result.learners,
             join_ticket: String::new(),
             changed: result.changed,
+            meta_mode: String::new(),
         }))
     }
 
@@ -2276,6 +2282,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             learners: result.learners,
             join_ticket: String::new(),
             changed: result.changed,
+            meta_mode: String::new(),
         }))
     }
 
@@ -2301,6 +2308,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             learners: result.learners,
             join_ticket: String::new(),
             changed: result.changed,
+            meta_mode: String::new(),
         }))
     }
 
@@ -2452,6 +2460,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                     admission_expires_unix: n.admission_expires_unix,
                     draining: n.draining,
                     drained: n.drained,
+                    meta_mode: n.meta_mode.to_string(),
                 })
                 .collect(),
         }))

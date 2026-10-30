@@ -392,6 +392,29 @@ pub struct MembershipChangeResult {
     /// One-time credential returned only by admission creation. Promotion and
     /// every later query return `None`; the committed catalog stores only its hash.
     pub join_ticket: Option<String>,
+    /// Admission only: `full` or `scoped` (docs/META-REPLICA-MODES.md).
+    pub meta_mode: Option<&'static str>,
+}
+
+/// How much of the metadata an admitted node keeps (docs/META-REPLICA-MODES.md).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MetaMode {
+    /// `full` while the full-learner set has room (`KV9_META_FULL_LEARNERS`,
+    /// default 4), `scoped` after.
+    Auto,
+    Full,
+    Scoped,
+}
+
+impl MetaMode {
+    pub fn from_wire(code: u32) -> kv9_common::Result<Self> {
+        match code {
+            0 => Ok(MetaMode::Auto),
+            1 => Ok(MetaMode::Full),
+            2 => Ok(MetaMode::Scoped),
+            other => Err(kv9_common::Error::Config(format!("unknown metadata mode {other}"))),
+        }
+    }
 }
 
 pub use kv9_meta::endpoint::{EndpointChange, EndpointRefusal, NodeEndpoint};
@@ -662,6 +685,20 @@ pub trait AdminApi {
         _ttl_seconds: u64,
     ) -> Result<MembershipChangeResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::admit_node"))
+    }
+    /// [`AdminApi::admit_node`] choosing the node's metadata mode.
+    fn admit_node_mode(
+        &self,
+        caller: &str,
+        node: kv9_common::NodeId,
+        addr: &str,
+        ttl_seconds: u64,
+        mode: MetaMode,
+    ) -> Result<MembershipChangeResult> {
+        if mode == MetaMode::Full {
+            return self.admit_node(caller, node, addr, ttl_seconds);
+        }
+        Err(kv9_common::Error::NotImplemented("AdminApi::admit_node_mode"))
     }
     fn revoke_admission(
         &self,
@@ -1009,6 +1046,9 @@ pub struct NodeDirectoryRow {
     pub draining: bool,
     /// Draining, and already in no data group and out of the metadata group.
     pub drained: bool,
+    /// `full` (metadata voter or learner) or `scoped` (docs/META-REPLICA-MODES.md),
+    /// from the admission; nodes of the root descriptor are `full`.
+    pub meta_mode: &'static str,
 }
 
 /// The receipt of [`AdminApi::abort_task`].

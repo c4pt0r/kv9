@@ -7,7 +7,9 @@ whole TASKS history through the metadata Raft group. This packet adds a second m
 node keeps only the **scoped** of the catalog its own replicas need, and is not a member of the
 metadata Raft group at all.
 
-> **Status: design, not implemented.** §8 lists the increments; §9 the decisions for the owner.
+> **Status: implemented 2026-10-30** (increments 1–4 of §8). §10 records what was built and
+> where it departs from the design: the closure is per **keyspace**, not per region, and the
+> retention ledger stays on full nodes. Runbook: docs/OPERATIONS.md, "Scoped nodes".
 
 ## The problem
 
@@ -268,3 +270,107 @@ only the changes of its own groups. Today the same cluster sends c × N appends 
   explicitly; no other minimum is enforced.
 - **Name:** `scoped` (`KV9_META_REPLICA=full|scoped`, `node admit --meta scoped`, status line
   `catalog_scope=`); the rows a scoped node holds are its **scope**.
+
+## 10. As built (2026-10-30)
+
+**Admission.** `node admit <id> --addr <a> [--meta auto|full|scoped]` (`AdmitNodeRequest.meta_mode`,
+`AdmittedRole::Scoped = 2`). `auto`, the CLI default, admits `full` while voters' learners plus
+pending full admissions stay under `KV9_META_FULL_LEARNERS` (default 4) and `scoped` after; an
+explicit `full` beyond the cap is refused. The SDK's `admit_node` keeps `full`; `admit_node_mode`
+chooses. Registration of a scoped admission adds no metadata learner (a leftover learner entry is
+removed, a voter is refused) and marks the node's row Active as the receipt, which says `scoped`.
+`node promote` refuses a scoped node. `node list` has a `META` column (`meta_mode` in JSON).
+
+**The joiner.** On a scoped receipt the node writes `kv9-meta-scoped` in its data-dir, starts
+the subscriber and opens data-group Raft ingress; it never starts the metadata Raft owner. It
+Serves once its slice is at or past the receipt's index and shows its own row Active. A restart
+is recognised by the marker, the init marker and that row; the startup checks that bind the
+metadata engine's position to the metadata Raft log (committed term, log budget) do not apply to
+a slice, whose positions come from the stream. Endpoint recovery and catalog waits use the
+slice position (`SliceWatch`) instead of the metadata driver.
+
+**The closure, per keyspace.** Every existing reader of data-group state replays whole families
+of task rows and checks partition rules across a keyspace's bindings (`committed_ranges`: the
+unsealed ranges of a keyspace must cover it). A slice holding only some of a keyspace's ranges
+would fail those checks, so the closure is: every keyspace the node hosts a replica of (or is
+named by a row of: a creation's replica, a migration, evidence or abort destination, a plan or
+removal source, a region-peer row), **all** regions bound to those keyspaces, every task row
+whose subject touches those regions or keyspaces (references followed: a split's children, a
+merge's sides, an abort's target, a backup completion's intent), their tenants, and the node
+rows (directory and admission) of itself, of the full nodes and of every node those rows name.
+`crates/meta/src/scope.rs` (`classify`, `closure`, `route`, `snapshot_rows`) and
+`crates/meta/src/data_groups/subject.rs` (`task_subject`, one decoder per declared kind) are the
+whole rule. Per-region closure (S1 as written) needs slice-tolerant readers and is future work.
+
+**What stays on full nodes.** The retention ledger (`\0kv9\0retention_v1\0…`), the task-history
+stamp, id sequences, SST and quota rows, the metadata group's own manifest keys, engine-owned
+singletons and the data of keyspaces the metadata group serves itself. A scoped node reads a
+retention owner from the metadata leader through the routed ledger client (`retention_owner_for_mode`):
+the replica-plan driver's "pinned" fact and the source's check that both image owners are
+published before upload.
+
+**Fail-closed.** A key that no rule declares stops the stream with an error naming it (the
+`catalog_scope_error=` status line); nothing undeclared is routed or dropped silently. The
+totality unit test requires every key a data keyspace and a drain write to be declared, as a put
+and as a delete; the e2e streams every key its verbs write (moves, captures, retention, splits)
+through the same classifier, and any undeclared one would stop it.
+
+**The stream.** `Kv9Raft.CatalogScope` on the node-authenticated service; served only by a node in
+the metadata configuration, only to the registered owner of the named store, only under the
+certified root. A change ring (`ApplyObserver` on the metadata state machine, bounded by
+`KV9_SCOPE_RING_ENTRIES` 8192 and `KV9_SCOPE_RING_BYTES` 64 MiB) holds its lock across the apply
+write, so a snapshot's engine view and position are one instant. Per subscriber: a snapshot
+first (parts of at most 1 MiB, then an end frame with the position, the scope's regions, the full
+set with addresses and the leader), then deltas that name the position they apply on, coalesced,
+plus an idle delta every `KV9_SCOPE_IDLE_MS` (1000). An op that widens the closure, a full-set
+change or a position the ring no longer holds sends a fresh snapshot instead. A row that leaves
+the scope, or a delete of a value-routed row, is deleted where the subscriber holds it.
+
+**The subscriber.** One stream to one full node, chosen by rendezvous hash over the full set
+(R4), failing over with jitter after an error or three idle intervals of silence. A snapshot
+older than the slice is refused; a delta whose position is not the slice's ends the stream and
+resubscribes; a snapshot at the slice's own position replaces it without moving the position.
+
+**Redirects.** On a scoped node a keyspace or range not in the slice is answered with
+`NotLeader` naming the metadata leader. The metadata driver of a scoped node never runs, so it
+reports the stream's leader as its hint (`set_external_leader_hint`), which also routes evidence,
+plan and ledger RPCs to the leader.
+
+**Status lines.** Full node: `meta_mode=full`, `catalog_ring_last`, `catalog_scope_streams`,
+`catalog_scope_frames_sent`, `catalog_scope_bytes_sent`, `catalog_scope_snapshots_sent`,
+`catalog_keys`. Scoped node: `meta_mode=scoped`, `catalog_scope=current|stale`,
+`catalog_scope_index`, `catalog_scope_rows`, `catalog_scope_regions`, `catalog_scope_region_ids`,
+`catalog_scope_server`, `catalog_scope_leader`, `catalog_scope_snapshots`, `catalog_scope_deltas`,
+`catalog_scope_refused`, `catalog_scope_frame_age_ms`, `catalog_scope_error`,
+`catalog_scope_bytes_received`.
+
+**Evidence.**
+- Unit: `crates/meta/src/data_groups/subject.rs` tests (a scope is its keyspaces, tenants and the
+  nodes it names; a snapshot holds nothing of another keyspace; totality; routing of unrelated,
+  widening, drain and delete changes); the change ring's tests in
+  `crates/server/src/catalog_scope/ring.rs`.
+- e2e on MinIO, `scripts/meta-scoped-e2e.sh`: three voters, scoped nodes 4–6 join with no
+  metadata Raft owner; a group on the voters stays out of their slices; a group on 4–6 alone
+  activates, binds a keyspace and serves raw traffic through a scoped node; each slice holds its
+  own region only; a scoped node restarts from its slice; the full node serving a subscriber stops
+  and the subscriber moves; a replica moves from scoped n6 to a new scoped n7; the scoped group
+  splits and both sides serve.
+- Scale, `scripts/meta-scoped-scale.sh`, debug build, one host (NVMe), groups of three on disjoint
+  scoped triples, one keyspace each. The metadata group stayed three voters, no learners:
+
+  | Scoped nodes | Groups | Full catalog keys | Rows per slice | Slice / catalog | Streams per full node | Join (s) | Failover (s) |
+  | --- | --- | --- | --- | --- | --- | --- | --- |
+  | 24 | 8 | 135 | 22 | 16.3 % | 7 / 11 / 6 | 10 | < 1 |
+  | 48 | 16 | 247 | 22 | 8.9 % | 15 / 16 / 17 | 18 | 1 |
+
+  A slice's size does not move with the cluster (R2/R3); the full node serving the most
+  subscribers was stopped and exactly its subscribers moved, every slice current again within
+  about a second (R4). Not measured yet: hundreds of nodes, the metadata leader's send rate
+  against a full-learner baseline.
+- The Lean model `proofs/lean/catalog-scope` with this implementation's sources pinned in its
+  contract.
+
+**Not yet.** Merge, drain, backup and restore with scoped nodes in the roles listed in §7 are not
+covered by the e2e; per-region closures; `cluster health` paging (R7); a scope-lag verdict in
+`cluster health`; `KV9_SCOPE_SNAPSHOT_PARALLEL`.
+

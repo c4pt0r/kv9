@@ -599,6 +599,9 @@ fn with_uploader(old: &Arc<RuntimeBackend>, uploader: Arc<RemoteUploader>) -> Ar
         initial_voters: old.initial_voters.clone(),
         uploader: Some(uploader),
         status_cache: Arc::default(),
+        catalog_ring: crate::catalog_scope::ring::ChangeRing::from_env(None),
+        slice_watch: Arc::default(),
+        scope_stats: Arc::default(),
     })
 }
 

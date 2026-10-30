@@ -15,13 +15,13 @@
   ],
   "source_sha256": {
     "crates/meta/src/data_groups/range_abort.rs": "1a48012b07a928933908d517b68bbad68a45bca3bf07e5b3f9ec96e9e293a226",
-    "crates/meta/src/data_groups.rs": "e2e8601128d55b79aada89f620e4daa6ab4f07633834cd9714587a01193426f4",
+    "crates/meta/src/data_groups.rs": "ba0f87860af2fef1827d03b994c95b5f8a1c3da53ace859414666afb45ba763a",
     "crates/meta/src/data_groups/split.rs": "79d8a2d2fcf7d7db6e01274795b7ee65255f9545b7a4ac704cd5d8ebbeaaf20c",
     "crates/meta/src/data_groups/merge.rs": "8e0cf0d2694dfa4a6cba86d105f185ee4cef04389bb2a5a1520d3f35ac18995f",
     "crates/meta/src/data_groups/drain.rs": "faee4d0e7213deed6bde11dbd6dfedab5371aac3d3782913db62d0f648514538",
     "crates/server/src/runtime/range_split.rs": "73dc6a116dea8036fbbda151574cab6742620a0d56569c3d1ee4218b7ac6546e",
-    "crates/server/src/runtime/replica_addition.rs": "c337ca887b89caf0974cb04f9c0edc510b4021418c4a8285a3fd23e451f42086",
-    "crates/server/src/runtime.rs": "188979b60c57e48d33c25a4fd7012aa6817e726cc24147086bd228119025193a",
+    "crates/server/src/runtime/replica_addition.rs": "84dc2819c41012ec6eaa09ecbf6ca4362ba3b6ba1f81155c858ae1ee521aa071",
+    "crates/server/src/runtime.rs": "2ca88b2ec7932a7c99610024aa87da6fef64439c773396ed02454e40316cd962",
     "scripts/operation-abort-e2e.py": "3bb543a57088b5484be85b189138b49ebed046c7592ccddd888b56327cf2d78c",
     "docs/RANGE-SPLIT.md": "c04df04a020e001e4f848e68c3dea1780289484cdbd6fd129730120832797c47"
   }

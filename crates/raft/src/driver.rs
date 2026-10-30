@@ -251,6 +251,10 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     read_attempt_observer: Mutex<Option<std::sync::mpsc::Sender<()>>>,
     /// First fatal persistence/apply error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
+    /// A leader learned outside this group's own Raft (a scoped node's catalog
+    /// stream, docs/META-REPLICA-MODES.md). Reported only while Raft itself
+    /// knows no leader; 0 is none.
+    external_leader: std::sync::atomic::AtomicU64,
     /// Whether THE manifest seam over this node has been minted (task #9
     /// review round 1): slot state must be process-unique per node, so seam
     /// construction is once-CAS here — a second seam instance would carry a
@@ -355,6 +359,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             #[cfg(test)]
             read_attempt_observer: Mutex::new(None),
             fatal: Mutex::new(None),
+            external_leader: std::sync::atomic::AtomicU64::new(0),
             manifest_seam_minted: std::sync::atomic::AtomicBool::new(false),
             #[cfg(any(test, feature = "testing"))]
             apply_paused: std::sync::atomic::AtomicBool::new(false),
@@ -1249,7 +1254,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let status = self.peer.status_snapshot();
         if status.raw_role != Role::Leader {
             return Err(ReadIndexError::NotLeader {
-                hint: status.leader_hint,
+                hint: status.leader_hint.or_else(|| self.external_leader_hint()),
             });
         }
         // 2. Mint the context and request the read index. The incarnation
@@ -1364,6 +1369,19 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         }
     }
 
+    /// Record a leader learned outside this group's Raft; `None` clears it.
+    pub fn set_external_leader_hint(&self, leader: Option<NodeId>) {
+        self.external_leader
+            .store(leader.map_or(0, |n| n.0), std::sync::atomic::Ordering::Release);
+    }
+
+    fn external_leader_hint(&self) -> Option<NodeId> {
+        match self.external_leader.load(std::sync::atomic::Ordering::Acquire) {
+            0 => None,
+            id => Some(NodeId(id)),
+        }
+    }
+
     /// The queryable status surface.
     pub fn status(&self) -> NodeStatus {
         // ONE peer lock acquisition for everything peer-side: piecemeal reads
@@ -1387,7 +1405,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let applied = self.applied.lock().expect("applied poisoned");
         NodeStatus {
             node_id: p.node_id,
-            leader_id: p.leader_hint,
+            leader_id: p.leader_hint.or_else(|| self.external_leader_hint()),
             role,
             term: p.term,
             raft_committed: p.committed,

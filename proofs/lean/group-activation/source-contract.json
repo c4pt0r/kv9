@@ -21,11 +21,11 @@
   "source_sha256": {
     "crates/server/src/region_manager.rs": "3e02ef7fe700908c33a2069ddfaa892228017b38715e70da8908531311b85220",
     "crates/server/src/region_manager/tests.rs": "f33bca93756009e50c84e655fda3f94a24a386582ebdd5295965116ab72f60fb",
-    "crates/server/src/runtime.rs": "188979b60c57e48d33c25a4fd7012aa6817e726cc24147086bd228119025193a",
+    "crates/server/src/runtime.rs": "2ca88b2ec7932a7c99610024aa87da6fef64439c773396ed02454e40316cd962",
     "crates/server/src/runtime/tests/data_group_tests.rs": "4b118da94145878026e007e8e4194f74140f53ab7d5a34ad7ab6fbf2db418812",
     "crates/raft/src/storage.rs": "d2ee607f012da79efe5321f0bb0f48e2a9a44ec697dd19adc8e96156b54388c4",
     "crates/raft/src/work.rs": "aa7f49dc798da1f24c0b8defd4354ee95a763f71ff7d4436ff31b847c10139d5",
-    "crates/raft/src/driver.rs": "f3d005b47748d6aecacdf9450070095f9b70361b5c7677e3af35c786e6a986eb",
+    "crates/raft/src/driver.rs": "0e2e65cef609a25589d1ff881c725897880da07d56492dd1d0d02328fa1104e4",
     "crates/raft/src/driver/pool.rs": "7b2a96245cede619a3f18f99b5944c901ae34f38169940bb27e017ed6e59076e",
     "proofs/lean/group-activation/Activation.lean": "d37c3025cc8611630546a858989af0b6fa64ca7da06f6f79305ccf0f4e59ca15",
     "scripts/prove-group-activation.py": "0b3c1d8c001659ae32e50cf14e1dce703528fe0f9955c272d8469d6a9503b672",
