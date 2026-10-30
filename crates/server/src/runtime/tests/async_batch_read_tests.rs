@@ -89,8 +89,12 @@ fn assert_batch_reads_drained(backend: &RuntimeBackend) {
 
 #[test]
 fn async_batch_preserves_input_order_duplicates_missing_and_empty() {
-    let (rts, root, _, base) = serving_trio("async-batch-order");
+    let (mut rts, root, _, base) = serving_trio("async-batch-order");
     let leader = cluster_leader(&rts).unwrap();
+    // These tests count the leader\'s read barriers; the background sweep\'s would land in the window.
+    for rt in rts.iter_mut() {
+        rt.stop_checkpoint_sweep();
+    }
     let backend = Arc::new(backend_view(&rts[leader], &root));
     let ctx = batch_context(&backend, "async-batch-order");
     seed_batch(&backend, &ctx);
@@ -143,8 +147,12 @@ fn batch_epoch_case(force_blocking: bool) {
     } else {
         "async-batch-resident-epoch"
     };
-    let (rts, root, _, base) = serving_trio(tag);
+    let (mut rts, root, _, base) = serving_trio(tag);
     let leader = cluster_leader(&rts).unwrap();
+    // These tests count the leader\'s read barriers; the background sweep\'s would land in the window.
+    for rt in rts.iter_mut() {
+        rt.stop_checkpoint_sweep();
+    }
     let backend = Arc::new(backend_view(&rts[leader], &root));
     let executor = tokio::runtime::Builder::new_current_thread()
         .enable_time()
@@ -266,8 +274,12 @@ fn async_batch_waits_for_the_whole_committed_but_unapplied_write() {
         }
     }
 
-    let (rts, root, _, base) = serving_trio("async-batch-committed-apply");
+    let (mut rts, root, _, base) = serving_trio("async-batch-committed-apply");
     let leader = cluster_leader(&rts).unwrap();
+    // These tests count the leader\'s read barriers; the background sweep\'s would land in the window.
+    for rt in rts.iter_mut() {
+        rt.stop_checkpoint_sweep();
+    }
     let backend = Arc::new(backend_view(&rts[leader], &root));
     let ctx = batch_context(&backend, "async-batch-committed-apply");
     seed_batch(&backend, &ctx);
@@ -347,8 +359,12 @@ fn oversized_resident_batch_moves_its_captured_authorized_view_into_the_job() {
     use kv9_meta::codec::{memcmp_uint, ColumnValue};
     use kv9_meta::schema::{ColumnId, REGIONS_DESC};
 
-    let (rts, root, _, base) = serving_trio("async-batch-byte-budget");
+    let (mut rts, root, _, base) = serving_trio("async-batch-byte-budget");
     let leader = cluster_leader(&rts).unwrap();
+    // These tests count the leader\'s read barriers; the background sweep\'s would land in the window.
+    for rt in rts.iter_mut() {
+        rt.stop_checkpoint_sweep();
+    }
     let backend = Arc::new(backend_view(&rts[leader], &root));
     let executor = tokio::runtime::Builder::new_current_thread()
         .enable_time()

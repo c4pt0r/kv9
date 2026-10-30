@@ -7548,6 +7548,19 @@ impl NodeRuntime {
         Ok(())
     }
 
+    /// Stop the background checkpoint sweep for good (tests that count this node's read
+    /// barriers: the sweep's own barriers would land in their window).
+    #[cfg(test)]
+    pub(crate) fn stop_checkpoint_sweep(&mut self) {
+        if let Some(task) = self.checkpoint_sweep.take() {
+            task.cancel();
+            let deadline = Instant::now() + Duration::from_secs(10);
+            while !task.restartable() && Instant::now() < deadline {
+                std::thread::sleep(Duration::from_millis(5));
+            }
+        }
+    }
+
     /// Scoped mode: this store's NODES row is in the local slice and Active.
     fn scoped_member_is_active(&self) -> Result<bool> {
         let txn = self.node.meta_raft.store.begin()?;
@@ -7954,6 +7967,8 @@ impl NodeRuntime {
             self.driver_thread.is_some(),
             self.addr,
         ));
+        let (meta_msgs, meta_bytes) = self.transport.metadata_sent();
+        body.push_str(&format!("meta_raft_sent_msgs={meta_msgs}\nmeta_raft_sent_bytes={meta_bytes}\n"));
         // docs/META-REPLICA-MODES.md: which metadata mode this node runs, and for a
         // scoped node how far its slice is and where it comes from.
         match &self.catalog_scope {
@@ -7961,14 +7976,29 @@ impl NodeRuntime {
                 use std::sync::atomic::Ordering::Relaxed;
                 let stats = &self.rpc_backend.scope_stats;
                 body.push_str(&format!(
-                    "meta_mode=full\ncatalog_ring_last={}\ncatalog_scope_streams={}\ncatalog_scope_frames_sent={}\ncatalog_scope_bytes_sent={}\ncatalog_scope_snapshots_sent={}\ncatalog_keys={}\n",
+                    "meta_mode=full\ncatalog_ring_last={}\ncatalog_scope_streams={}\ncatalog_scope_frames_sent={}\ncatalog_scope_bytes_sent={}\ncatalog_scope_snapshots_sent={}\ncatalog_scope_snapshots_peak={}\ncatalog_scope_snapshots_waited={}\ncatalog_keys={}\n",
                     self.rpc_backend.catalog_ring.last().map_or(0, |p| p.index),
                     stats.streams.load(Relaxed),
                     stats.frames.load(Relaxed),
                     stats.bytes.load(Relaxed),
                     stats.snapshots.load(Relaxed),
+                    stats.snapshots_peak.load(Relaxed),
+                    stats.snapshots_waited.load(Relaxed),
                     self.catalog_key_count(),
                 ));
+                let now_ms = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .map(|d| d.as_millis() as u64)
+                    .unwrap_or(0);
+                let table: Vec<String> = stats
+                    .subscribers
+                    .lock()
+                    .expect("subscriber table poisoned")
+                    .iter()
+                    .map(|(node, (index, at))| format!("{node}:{index}:{}", now_ms.saturating_sub(*at)))
+                    .collect();
+                // node:index-sent:ms-since-last-frame, one per live subscriber (R7).
+                body.push_str(&format!("catalog_scope_subscribers={}\n", table.join(",")));
             }
             Some(scope) => {
                 let s = scope.state.lock().expect("scope state poisoned").clone();
@@ -12243,6 +12273,7 @@ mod tests {
         Vec<std::net::SocketAddr>,
         PathBuf,
     ) {
+        crate::test_cluster_slots::take();
         let base = std::env::temp_dir().join(format!(
             "kv9-{tag}-{}-{}",
             std::process::id(),
@@ -13598,6 +13629,8 @@ mod fence_firing_tests {
         // to be counted.
         let (mut runtime, dir) = serving_runtime(seen.clone(), true);
         drive_to_serving(&mut runtime);
+        // The barrier count below is this request's alone.
+        runtime.stop_checkpoint_sweep();
         let backend = backend_of(&runtime);
         let (keyspace, ctx, region) = keyspace_and_ctx(&runtime, &backend, b"");
 

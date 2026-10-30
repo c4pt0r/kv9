@@ -20,16 +20,16 @@
     "every_seen_row_is_declared"
   ],
   "source_sha256": {
-    "docs/META-REPLICA-MODES.md": "2baf89ab832198bdd2dd649403fc892705934b22827c023b172c555b9fa0e871",
+    "docs/META-REPLICA-MODES.md": "dd914ed1909abb207448ae29de02e5348dca47014adda41c1c4e5959e1a0b6ff",
     "crates/meta/src/scope.rs": "78c2a3b17066230e13d6b53144ef8f60fec5564cc6269ab220c5f4de032258cf",
     "crates/meta/src/data_groups/subject.rs": "344bbb14b26935f4e2d043115c5211cf3196ec11180e5ab464f2b2bc344de05d",
     "crates/server/src/catalog_scope/mod.rs": "48261ee6ec4c7428942f63a978aae96e95b8739497eb8f8f8755dd6acc483859",
     "crates/server/src/catalog_scope/ring.rs": "550fc0fa497210e6ddfcad3e4afbd22b646da61f2d196535f8fd8aaa2ec11a7a",
-    "crates/server/src/catalog_scope/serve.rs": "651acb8b93b8f6881ab6942943a1d7cf95f956d60f18de4c8132ae86da90007c",
+    "crates/server/src/catalog_scope/serve.rs": "40839518fc39af0e8cb582fd06f85a3d142447b8e3da45017a614193122efdf0",
     "crates/server/src/catalog_scope/subscribe.rs": "c1677b4b9ae16d6e8d23abda0d8e38dcb46adbf4a2013971c07b2bc8abdbb35a",
     "crates/raft/src/grpc/catalog_scope.rs": "8e1eeb3c9de88efc4aa526121e262cf9f2cd2f1d487610f785f29f7933f145a5",
     "proto/kv9_raft.proto": "f99a7d99fd4e66a9464a82c40c934fb8d2c1b19179bc75504cfdb85cf773b20f",
-    "scripts/meta-scoped-e2e.sh": "d68ec552149f0bbae7110baa19c71b84302c8efce5d4d8fde23a1d737cfb5844",
-    "scripts/meta-scoped-scale.sh": "b01e5d798946b042b61bdebf30ab1b9a975ef629592a1fef03ccc74ff6177a8e"
+    "scripts/meta-scoped-e2e.sh": "6cbe1e87a3689ad0b7f2dae1d5d6ccf7adc9781a57cd1d54a2aec75ff1c09604",
+    "scripts/meta-scoped-scale.sh": "4f8d285b44a1563962c4f9bcb54717e9b0a4692f872e45e4748b4cbe061f6ad7"
   }
 }

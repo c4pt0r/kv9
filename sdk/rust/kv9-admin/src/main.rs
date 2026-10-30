@@ -42,6 +42,8 @@ const ADMISSION_EXPIRY_WARNING_SECS: u64 = 3600;
 /// Entries between the leader's commit index and a node's applied index that count
 /// as lag.
 const APPLY_LAG_WARNING: u64 = 1024;
+/// A full node that has sent a scoped node nothing for this long no longer serves it.
+const SCOPE_SILENCE_MS: u64 = 10_000;
 
 fn usage() -> String {
     "usage: kv9-admin [--context <name> | --endpoints <[id=]host:port,...>] [--token <t>]\n\
@@ -50,7 +52,7 @@ fn usage() -> String {
      \n\
      cluster  info                         counters, ids, metadata leader\n\
      \u{20}        status [--node <id>]         every node's status document (fan-out), or one\n\
-     \u{20}        health                       verdicts: quorum margin, lost voters, fatal, lag, ...\n\
+     \u{20}        health [--full-only]         verdicts: quorum margin, lost voters, fatal, lag, scoped slices, ...\n\
      \u{20}        endpoints                    the node directory: id, address, generation, active\n\
      node     list                         directory + admissions + the leader's raft view\n\
      \u{20}        describe <id>                one node: directory row and status document\n\
@@ -590,14 +592,28 @@ impl Cluster {
     /// `NodeStatus` from every known peer, in parallel; unreachable ones are reported,
     /// not fatal.
     async fn fan_out(&self, only: Option<u64>) -> Vec<(u64, String, Result<NodeStatus, String>)> {
+        self.fan_out_to(|node| only.is_none_or(|id| id == node)).await
+    }
+
+    /// `NodeStatus` from the peers `wanted` selects, at most `KV9_ADMIN_FANOUT` (32) in
+    /// flight, so a poll of hundreds of nodes does not open hundreds of calls at once (R7).
+    async fn fan_out_to(&self, wanted: impl Fn(u64) -> bool) -> Vec<(u64, String, Result<NodeStatus, String>)> {
+        let limit = std::env::var("KV9_ADMIN_FANOUT")
+            .ok()
+            .and_then(|v| v.parse::<usize>().ok())
+            .filter(|v| *v > 0)
+            .unwrap_or(32);
+        let permits = std::sync::Arc::new(tokio::sync::Semaphore::new(limit));
         let mut tasks = Vec::new();
         for (node, address) in &self.peers {
-            if only.is_some_and(|id| id != *node) {
+            if !wanted(*node) {
                 continue;
             }
             let (node, address) = (*node, address.clone());
             let client = self.client_at(&address);
+            let permits = permits.clone();
             tasks.push(tokio::spawn(async move {
+                let _permit = permits.acquire_owned().await;
                 let result = match client {
                     Ok(client) => client.node_status().await.map_err(|e| e.to_string()),
                     Err(e) => Err(e.message().to_string()),
@@ -907,9 +923,27 @@ struct Verdict {
     detail: String,
 }
 
-async fn cluster_health(cluster: &mut Cluster) -> Outcome {
+async fn cluster_health(cluster: &mut Cluster, full_only: bool) -> Outcome {
     let directory = cluster.directory().await?;
-    let statuses = cluster.fan_out(None).await;
+    // --full-only asks the full nodes alone and judges scoped slices from the full nodes'
+    // subscriber tables (docs/META-REPLICA-MODES.md R7).
+    let full_ids: std::collections::BTreeSet<u64> = directory
+        .nodes
+        .iter()
+        .filter(|n| n.meta_mode != "scoped")
+        .map(|n| n.node_id)
+        .collect();
+    let scoped_ids: Vec<u64> = directory
+        .nodes
+        .iter()
+        .filter(|n| n.meta_mode == "scoped" && !n.drained)
+        .map(|n| n.node_id)
+        .collect();
+    let statuses = if full_only {
+        cluster.fan_out_to(|node| full_ids.contains(&node)).await
+    } else {
+        cluster.fan_out(None).await
+    };
     let leader_status = statuses
         .iter()
         .find(|(node, _, _)| *node == cluster.leader_id)
@@ -992,6 +1026,11 @@ async fn cluster_health(cluster: &mut Cluster) -> Outcome {
     let mut unreachable = Vec::new();
     let mut lagging = Vec::new();
     let mut control_errors = Vec::new();
+    // Scoped nodes (docs/META-REPLICA-MODES.md): no metadata driver; their catalog
+    // position is the slice's.
+    let mut scope_stale = Vec::new();
+    let mut scope_lagging = Vec::new();
+    let mut scoped_nodes = 0usize;
     let committed = leader_status
         .as_ref()
         .and_then(|s| s.u64("raft_committed"))
@@ -1002,7 +1041,16 @@ async fn cluster_health(cluster: &mut Cluster) -> Outcome {
                 if let Some(message) = status.get("fatal").filter(|m| !m.is_empty()) {
                     fatal.push(format!("node {node}: {message}"));
                 }
-                if let Some(applied) = status.u64("applied_index") {
+                if status.get("meta_mode") == Some("scoped") {
+                    scoped_nodes += 1;
+                    let at = status.u64("catalog_scope_index").unwrap_or(0);
+                    if status.get("catalog_scope") != Some("current") {
+                        let error = status.get("catalog_scope_error").unwrap_or_default();
+                        scope_stale.push(format!("node {node}: slice at {at} stale {error}").trim_end().to_string());
+                    } else if committed.saturating_sub(at) > APPLY_LAG_WARNING {
+                        scope_lagging.push(format!("node {node}: slice at {at} of {committed}"));
+                    }
+                } else if let Some(applied) = status.u64("applied_index") {
                     if committed.saturating_sub(applied) > APPLY_LAG_WARNING {
                         lagging.push(format!("node {node}: applied {applied} of {committed}"));
                     }
@@ -1017,6 +1065,52 @@ async fn cluster_health(cluster: &mut Cluster) -> Outcome {
             Err(error) => unreachable.push(format!("node {node} at {address}: {error}")),
         }
     }
+    if full_only {
+        // node -> (index sent, ms since the last frame), from every reachable full node.
+        let mut table: BTreeMap<u64, (u64, u64)> = BTreeMap::new();
+        for (_, _, result) in &statuses {
+            let Ok(status) = result else { continue };
+            for entry in status.get("catalog_scope_subscribers").unwrap_or_default().split(',') {
+                let parts: Vec<u64> = entry.split(':').filter_map(|p| p.parse().ok()).collect();
+                if let [node, index, age] = parts[..] {
+                    let best = table.entry(node).or_insert((index, age));
+                    if age < best.1 {
+                        *best = (index, age);
+                    }
+                }
+            }
+        }
+        scope_stale.clear();
+        scope_lagging.clear();
+        scoped_nodes = scoped_ids.len();
+        for node in &scoped_ids {
+            match table.get(node) {
+                None => scope_stale.push(format!("node {node}: no full node streams to it")),
+                Some((_, age)) if *age > SCOPE_SILENCE_MS => {
+                    scope_stale.push(format!("node {node}: last frame {age} ms ago"))
+                }
+                Some((index, _)) if committed.saturating_sub(*index) > APPLY_LAG_WARNING => {
+                    scope_lagging.push(format!("node {node}: slice at {index} of {committed}"))
+                }
+                _ => {}
+            }
+        }
+    }
+    verdicts.push(Verdict {
+        name: "catalog_scope",
+        level: if !scope_stale.is_empty() {
+            "fail"
+        } else if !scope_lagging.is_empty() {
+            "warn"
+        } else {
+            "ok"
+        },
+        detail: if scope_stale.is_empty() && scope_lagging.is_empty() {
+            format!("{scoped_nodes} scoped node(s), every slice current")
+        } else {
+            scope_stale.iter().chain(scope_lagging.iter()).cloned().collect::<Vec<_>>().join("; ")
+        },
+    });
     for (name, items, level) in [
         ("fatal", fatal, "fail"),
         ("unreachable", unreachable, "fail"),
@@ -2315,7 +2409,7 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
         }
         _ => return Err(Fail::Usage(usage())),
     };
-    let args = verb_args(rest, &["wait", "all"])?;
+    let args = verb_args(rest, &["wait", "all", "full-only"])?;
     let mut cluster = Cluster::connect(global).await?;
     let mut report = match (noun, verb) {
         ("cluster", "info") => cluster_info(&mut cluster).await?,
@@ -2324,7 +2418,7 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
             let only = args.flags.get("node").map(|n| parse_id(n, "--node")).transpose()?;
             cluster_status(&mut cluster, only).await?
         }
-        ("cluster", "health") => cluster_health(&mut cluster).await?,
+        ("cluster", "health") => cluster_health(&mut cluster, args.switches.iter().any(|s| s == "full-only")).await?,
         ("node", "list") => node_list(&mut cluster).await?,
         ("node", "describe") => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("node describe <id>".into()))?, "node id")?;

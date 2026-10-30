@@ -29,7 +29,7 @@ minio_name="kv9-scoped-e2e-minio-$base_port"
 export KV9_OBJECT_STORE_ENDPOINT="http://127.0.0.1:$minio_port" KV9_OBJECT_STORE_BUCKET=kv9-scoped-e2e
 export KV9_OBJECT_STORE_ACCESS_KEY=kv9scoped KV9_OBJECT_STORE_SECRET_KEY=kv9scoped-secret-key
 node_environment=(KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="admin=$admin_token,app=$app_token"
-  KV9_ADMIN_PRINCIPALS=admin KV9_SCOPE_IDLE_MS=500 KV9_STORAGE=minio)
+  KV9_ADMIN_PRINCIPALS=admin KV9_SCOPE_IDLE_MS=500 KV9_STORAGE=minio KV9_SCOPE_RING_ENTRIES=32)
 
 status_value() {
   local file="$artifact_dir/n${1}/status"
@@ -116,6 +116,8 @@ any_voter() {
   for node in 1 2 3; do [[ -n "${pids[$node]:-}" ]] && { endpoint_of "$node"; return; }; done
 }
 admin() { KV9_ADMIN_TOKEN="$admin_token" timeout 60 "$admin_bin" --endpoints "$(any_voter)" --output json --yes "$@"; }
+# Verbs that --wait for a whole operation (backup, restore, drain).
+admin_long() { KV9_ADMIN_TOKEN="$admin_token" timeout 1200 "$admin_bin" --endpoints "$(any_voter)" --output json --yes "$@"; }
 jq_py() { python3 -c 'import json,sys; d=json.load(sys.stdin); print(eval(sys.argv[1], {"d": d}))' "$1"; }
 
 scope_current() {
@@ -301,4 +303,94 @@ wait_until "scoped slices hold the parent and both children" 60 three_regions
 wait_until "reads on both sides of the split through n4" 60 read_back 4 s/2 two
 read_back 4 s/1 one
 echo "phase H: the scoped group split at s/2; slices hold parent and children; both sides serve."
-echo "PASS: scoped metadata mode (admission, slices, isolation, data group on scoped nodes, restart, failover, move, split)"
+
+# ---------------------------------------------------------------- phase I: a request outside the slice is redirected
+printf 'use on-voters\nput v/1 via-n4\n' | KV9_CLIENT_TOKEN="$app_token" timeout 30 "$repl_bin" --addr "$(endpoint_of 4)" \
+  >"$artifact_dir/repl-redirect-bare.out" 2>&1 || true
+grep -q 'not leader (hint: node [123])' "$artifact_dir/repl-redirect-bare.out" || {
+  echo "FAIL: n4 did not redirect a keyspace outside its slice to a full node" >&2; cat "$artifact_dir/repl-redirect-bare.out" >&2; exit 1; }
+redirected_write() {
+  printf 'use on-voters\nput v/1 via-n4\nget v/1\n' | KV9_CLIENT_TOKEN="$app_token" timeout 30 "$repl_bin" --addr "$(endpoint_of 4)" \
+    --peers "$peers" >"$artifact_dir/repl-redirect.out" 2>&1 && grep -qx 'via-n4' "$artifact_dir/repl-redirect.out"
+}
+wait_until "a client at n4 is served for the voters' keyspace through the redirect" 60 redirected_write
+for node in 4 5 7; do
+  test "$(status_value "$node" catalog_scope_regions)" = "3" || { echo "FAIL: n$node slice grew from a redirected request" >&2; exit 1; }
+done
+echo "phase I: n4 answers a keyspace outside its slice with a redirect to a full node; a client with peers is served."
+
+# ---------------------------------------------------------------- phase J: merge the scoped children back
+live_children() {
+  admin group list | python3 -c '
+import json,sys; ks=int(sys.argv[1]); gs=json.load(sys.stdin)["result"]
+live=sorted((min(k["start"] for k in g["keyspaces"] if k["keyspace_id"]==ks), g["creation_task"]) for g in gs if any(k["keyspace_id"]==ks and not k["sealed"] for k in g["keyspaces"]))
+print(" ".join(str(t) for _, t in live))' "$ks_b"
+}
+read -r low high <<<"$(live_children)"
+[[ -n "$low" && -n "$high" ]] || { echo "FAIL: two live children expected, got '$(live_children)'" >&2; exit 1; }
+merge="$(admin group merge "$low" "$high" --label scoped-merge)"
+mtask="$(echo "$merge" | jq_py 'd["result"]["intent_task"]')"
+merge_published() {
+  admin group describe "$low" | jq_py "[m['stage'] for m in d['result']['merges'] if m['task'] == $mtask]" | grep -qx "\['published'\]"
+}
+wait_until "merge $mtask published" 600 merge_published
+merged="$(live_children)"
+[[ "$merged" =~ ^[0-9]+$ ]] || { echo "FAIL: one live group expected after the merge, got '$merged'" >&2; exit 1; }
+wait_until "reads on both sides of the old boundary through n7" 60 read_back 7 s/2 two
+read_back 7 s/1 one
+four_regions() {
+  local node
+  for node in 4 5 7; do test "$(status_value "$node" catalog_scope_regions)" = "4" || return 1; done
+}
+wait_until "scoped slices hold parent, both children and the merged group" 60 four_regions
+echo "phase J: the scoped children merged into group $merged; both sides serve through n7; slices hold all four regions."
+
+# ---------------------------------------------------------------- phase K: back up the scoped keyspace while n5 is down
+stop_node 5
+snapshots_before="$(status_value 1 catalog_scope_snapshots_sent)"
+backup="$(admin_long backup create --keyspace on-scoped --label scoped-backup --wait --wait-secs 600)"
+btask="$(echo "$backup" | jq_py 'd["result"]["task"]')"
+test "$(echo "$backup" | jq_py 'd["result"]["waited"]["stage"]')" = "complete" || { echo "FAIL: backup: $backup" >&2; exit 1; }
+# Push the metadata log past the 32-entry ring so n5's restart cannot resume from it.
+for i in $(seq 1 12); do admin keyspace create --name "filler-$i" >/dev/null; done
+echo "phase K: backup $btask of the scoped keyspace complete with n5 down; the metadata log moved past the ring."
+
+# ---------------------------------------------------------------- phase L: restart behind the retained ring
+ring_last="$(status_value 1 catalog_ring_last)"
+start_joiner 5
+wait_until "n5 Serving after a restart behind the ring" 90 serving 5
+caught_up() { (( $(status_value 5 catalog_scope_index) >= ring_last )) && scope_current 5; }
+wait_until "n5 slice at or past index $ring_last" 60 caught_up
+(( $(status_value 5 catalog_scope_snapshots) >= 1 ))
+wait_until "n5 serves after the restart" 60 read_back 5 s/1 one
+echo "phase L: n5 restarted with the log $((ring_last)) entries on (ring 32); it caught up through a snapshot and serves."
+
+# ---------------------------------------------------------------- phase M: restore onto scoped voters
+restore="$(admin_long restore create --backup "$btask" --as on-scoped-restored --voters 4,5,7 --wait --wait-secs 600)"
+test "$(echo "$restore" | jq_py 'd["result"]["waited"]["stage"]')" = "published" || { echo "FAIL: restore: $restore" >&2; exit 1; }
+restored_read() {
+  printf 'use on-scoped-restored\nget s/1\nget s/2\n' | KV9_CLIENT_TOKEN="$app_token" timeout 30 "$repl_bin" --addr "$(endpoint_of 5)" \
+    --peers "$peers" >"$artifact_dir/repl-restored.out" 2>&1 && grep -qx one "$artifact_dir/repl-restored.out" && grep -qx two "$artifact_dir/repl-restored.out"
+}
+wait_until "the restored keyspace serves through scoped n5" 120 restored_read
+echo "phase M: restore of backup $btask onto scoped nodes 4,5,7 published; the new keyspace serves through n5."
+
+# ---------------------------------------------------------------- phase N: drain a scoped node
+admitted="$(admin node admit 8 --addr "$(endpoint_of 8)" --ttl 300 --meta scoped)"
+tickets[8]="$(echo "$admitted" | jq_py 'd["result"]["join_ticket"]')"
+mkdir -p "$artifact_dir/n8"
+KV9_JOIN_TICKET="${tickets[8]}" "$bin" join --root "$root_path" --node-id 8 --addr "$(endpoint_of 8)" \
+  --data-dir "$artifact_dir/n8" >"$artifact_dir/n8.join" 2>&1
+start_joiner 8
+wait_until "n8 Serving" 90 serving 8
+peers="$peers,8=$(endpoint_of 8)"
+admin_long node drain 4 --wait --wait-secs 1100 >"$artifact_dir/drain-4.json" || { cat "$artifact_dir/drain-4.json" >&2; exit 1; }
+test "$(admin node list | jq_py '[n["drained"] for n in d["result"]["nodes"] if n["node_id"] == 4][0]')" = "True"
+wait_until "the scoped keyspace still serves through n7 after the drain" 60 read_back 7 s/2 two
+wait_until "the restored keyspace serves through n8's peers after the drain" 120 restored_read
+echo "phase N: scoped n4 drained (its replicas moved, no metadata membership to release); both keyspaces serve."
+health="$(admin cluster health || true)"
+echo "$health" | jq_py '[v for v in d["result"]["verdicts"] if v["name"] == "catalog_scope"][0]' >"$artifact_dir/health-scope.txt"
+grep -q "'level': 'ok'" "$artifact_dir/health-scope.txt" || { echo "FAIL: catalog_scope health verdict: $(cat "$artifact_dir/health-scope.txt")" >&2; exit 1; }
+echo "cluster health: $(cat "$artifact_dir/health-scope.txt")"
+echo "PASS: scoped metadata mode (admission, slices, isolation, data group on scoped nodes, restart, failover, move, split, redirect, merge, backup, restart behind the ring, restore, drain, health)"

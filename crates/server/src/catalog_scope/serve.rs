@@ -30,13 +30,63 @@ pub trait FullSet: Send + Sync + 'static {
     fn leader(&self) -> u64;
 }
 
-/// What a full node has served, for its status document.
+/// What a full node has served, for its status document, and its snapshot limiter.
 #[derive(Default)]
 pub struct ServeStats {
     pub streams: std::sync::atomic::AtomicU64,
     pub frames: std::sync::atomic::AtomicU64,
     pub bytes: std::sync::atomic::AtomicU64,
     pub snapshots: std::sync::atomic::AtomicU64,
+    /// Snapshots being computed now, and the most ever at once.
+    pub snapshots_active: std::sync::Mutex<u64>,
+    pub snapshots_peak: std::sync::atomic::AtomicU64,
+    pub snapshots_waited: std::sync::atomic::AtomicU64,
+    snapshot_turn: std::sync::Condvar,
+    /// Per live subscriber: the index last sent and when (unix ms). What `cluster health
+    /// --full-only` reads instead of asking every scoped node (R7).
+    pub subscribers: std::sync::Mutex<std::collections::BTreeMap<u64, (u64, u64)>>,
+}
+
+fn unix_ms() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis() as u64)
+        .unwrap_or(0)
+}
+
+/// How many scope snapshots one full node computes at once (R4); more wait their turn.
+pub fn snapshot_parallel() -> u64 {
+    std::env::var("KV9_SCOPE_SNAPSHOT_PARALLEL")
+        .ok()
+        .and_then(|v| v.parse::<u64>().ok())
+        .filter(|v| *v > 0)
+        .unwrap_or(4)
+}
+
+struct SnapshotPermit<'a>(&'a ServeStats);
+
+impl ServeStats {
+    fn snapshot_permit(&self) -> SnapshotPermit<'_> {
+        use std::sync::atomic::Ordering::Relaxed;
+        let limit = snapshot_parallel();
+        let mut active = self.snapshots_active.lock().expect("snapshot limiter poisoned");
+        if *active >= limit {
+            self.snapshots_waited.fetch_add(1, Relaxed);
+        }
+        while *active >= limit {
+            active = self.snapshot_turn.wait(active).expect("snapshot limiter poisoned");
+        }
+        *active += 1;
+        self.snapshots_peak.fetch_max(*active, Relaxed);
+        SnapshotPermit(self)
+    }
+}
+
+impl Drop for SnapshotPermit<'_> {
+    fn drop(&mut self) {
+        *self.0.snapshots_active.lock().expect("snapshot limiter poisoned") -= 1;
+        self.0.snapshot_turn.notify_one();
+    }
 }
 
 pub fn idle_interval() -> Duration {
@@ -92,6 +142,13 @@ impl<E: ReplicatedEngine + 'static> Subscriber<E> {
         if message.kind == KIND_SNAPSHOT_END {
             self.stats.snapshots.fetch_add(1, Relaxed);
         }
+        if message.kind != KIND_SNAPSHOT_PART {
+            self.stats
+                .subscribers
+                .lock()
+                .expect("subscriber table poisoned")
+                .insert(self.node, (message.index, unix_ms()));
+        }
         self.tx
             .blocking_send(Ok(message))
             .map_err(|_| Error::MetaNotReady("catalog scope subscriber left".into()))
@@ -109,6 +166,8 @@ impl<E: ReplicatedEngine + 'static> Subscriber<E> {
     }
 
     fn snapshot(&mut self) -> Result<()> {
+        let stats = self.stats.clone();
+        let _permit = stats.snapshot_permit();
         self.servers = self.full.servers();
         let full: Vec<u64> = self.servers.iter().map(|(n, _)| *n).collect();
         let engine = self.engine.clone();
@@ -313,6 +372,7 @@ pub fn open<E: ReplicatedEngine + 'static>(
         .spawn(move || {
             subscriber.run();
             stats.streams.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+            stats.subscribers.lock().expect("subscriber table poisoned").remove(&node);
         })
         .map_err(|e| Error::Config(format!("spawn catalog scope server: {e}")))?;
     Ok(rx)

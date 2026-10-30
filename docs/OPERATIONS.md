@@ -37,6 +37,8 @@ group's size and traffic stay constant as the cluster grows. What to know when r
   a `peers` map follow it.
 - **A full node going away** moves only its subscribers, each to its next rendezvous choice;
   watch `catalog_scope_server` change and `catalog_scope=current` return.
+- **Health.** `cluster health` has a `catalog_scope` verdict; at hundreds of nodes use
+  `cluster health --full-only`, which reads every slice's position from the full nodes.
 - **`catalog_scope_error` naming an undeclared metadata key** means a catalog row this binary does
   not classify reached the stream; the slice stops at its last position (fail-closed). Upgrade the
   scoped nodes' binary to the full nodes' version.

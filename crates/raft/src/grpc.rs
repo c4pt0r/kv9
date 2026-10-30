@@ -1358,6 +1358,10 @@ pub struct GrpcTransport {
     /// recovery (which, in-process, would revive the wedged socket itself and
     /// erase the old/new discrimination).
     connect_attempts: Arc<AtomicU64>,
+    /// Messages and entry payload bytes this node sent in the metadata group
+    /// (docs/META-REPLICA-MODES.md: the leader's fan-out is what the scoped mode bounds).
+    meta_sent_msgs: AtomicU64,
+    meta_sent_bytes: AtomicU64,
     /// Deterministic partition injection (task #28). Consulted symmetrically:
     /// `send` drops outbound to a masked peer, `drain` drops inbound from one —
     /// both check this single mask, so one process isolates a peer in both
@@ -1370,6 +1374,11 @@ pub struct GrpcTransport {
 }
 
 impl GrpcTransport {
+    /// `(messages, bytes)` this node sent in the metadata group since start.
+    pub fn metadata_sent(&self) -> (u64, u64) {
+        (self.meta_sent_msgs.load(Ordering::Relaxed), self.meta_sent_bytes.load(Ordering::Relaxed))
+    }
+
     /// Runtime used by this node's internal control RPCs. Synchronous control
     /// callers can schedule bounded read-only format collection on it.
     pub fn runtime_handle(&self) -> tokio::runtime::Handle {
@@ -1394,6 +1403,8 @@ impl GrpcTransport {
             regions,
             root_digest,
             connect_attempts: Arc::new(AtomicU64::new(0)),
+            meta_sent_msgs: AtomicU64::new(0),
+            meta_sent_bytes: AtomicU64::new(0),
             #[cfg(any(test, feature = "testing"))]
             partition: crate::testing::PartitionState::from_env(),
         })
@@ -1566,6 +1577,11 @@ impl RaftTransport for GrpcTransport {
     }
 
     fn send(&self, to: NodeId, msg: Message) {
+        self.meta_sent_msgs.fetch_add(1, Ordering::Relaxed);
+        self.meta_sent_bytes.fetch_add(
+            msg.entries.iter().map(|e| e.data.len() as u64 + 16).sum::<u64>() + 32,
+            Ordering::Relaxed,
+        );
         self.send_region(0, to, msg);
     }
 

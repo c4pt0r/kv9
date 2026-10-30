@@ -715,6 +715,7 @@ impl Fixture {
     async fn with_log_budgets(
         budgets: Option<Vec<Arc<kv9_common::log_budget::LogBudget>>>,
     ) -> Self {
+        crate::test_cluster_slots::take();
         let path = std::env::temp_dir().join(format!(
             "kv9-ttl-admin-{}",
             StoreIncarnation::mint().unwrap()

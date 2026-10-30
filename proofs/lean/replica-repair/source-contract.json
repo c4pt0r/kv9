@@ -17,7 +17,7 @@
     "crates/server/src/runtime/replica_addition.rs": "84dc2819c41012ec6eaa09ecbf6ca4362ba3b6ba1f81155c858ae1ee521aa071",
     "crates/meta/src/data_groups/addition.rs": "87de0de7f5e6722a873f067040a32cf091e60d51defcb07fbb598a17709f3219",
     "crates/raft/src/grpc/plan_replica.rs": "01bbbfefd8b4cc00fb17594af41ff284a945af5e3af50aa5749d140da7207a52",
-    "crates/server/src/runtime.rs": "2ca88b2ec7932a7c99610024aa87da6fef64439c773396ed02454e40316cd962",
+    "crates/server/src/runtime.rs": "576a8bbb34f0e5d3526493e7f204fccd526614b365493dcab5b717ef2ff0caa1",
     "proto/kv9_raft.proto": "f99a7d99fd4e66a9464a82c40c934fb8d2c1b19179bc75504cfdb85cf773b20f",
     "scripts/replica-repair-e2e.py": "eedea90b3fc09173e9226d77cf30d5c884466d6497253b9c0f2cac44bbdbf2fd",
     "docs/REPLICA-REPAIR.md": "d8680588fe384497d7e3d3dc477ef751754fd56abf67301ec5fad925eff9c899"

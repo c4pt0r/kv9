@@ -223,10 +223,16 @@ impl NodeRuntime {
                 let capture = dg::capture::committed_capture(view.as_ref(), &certified, operation)?.map(|c| c.descriptor().clone());
                 let subject = CaptureSubject::Backup { intent: intent.clone(), range: range.clone() };
                 let (source_owner, _) = crate::migration_retention::backup_owner_ids(root, &subject)?;
-                let pinned = kv9_meta::retention::retention_owner(view.as_ref(), &certified, source_owner)
-                    .ok()
-                    .flatten()
-                    .is_some_and(|o| o.phase == kv9_common::retention::PinPhase::Published);
+                // A scoped node keeps no ledger: it asks the metadata leader, and only
+                // while the answer matters (captured, not yet anchored).
+                let pinned = !anchored
+                    && capture.is_some()
+                    && self
+                        .rpc_backend
+                        .retention_owner_for_mode(view.as_ref(), &certified, source_owner, self.grpc_runtime.handle())
+                        .ok()
+                        .flatten()
+                        .is_some_and(|o| o.phase == kv9_common::retention::PinPhase::Published);
                 out.ranges.push(RangeView {
                     region: range.region().0,
                     operation: hex(&operation),

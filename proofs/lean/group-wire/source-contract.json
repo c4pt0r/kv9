@@ -20,7 +20,7 @@
   ],
   "source_sha256": {
     "proto/kv9_raft.proto": "f99a7d99fd4e66a9464a82c40c934fb8d2c1b19179bc75504cfdb85cf773b20f",
-    "crates/raft/src/grpc.rs": "ff9e14e04a52b7fb5c29a4413962e00772f8fb73aa6cef39511c04781d526a67",
+    "crates/raft/src/grpc.rs": "d4f86a9f0116f0debd447b81d87d623d9a91024d980e4b2215170b95301f9027",
     "crates/raft/src/grpc/groups.rs": "daeb9553655f20e09823960e93db4e640eb58205b763903a75cbcbc08ae84f0f",
     "crates/raft/src/grpc/wire_tests.rs": "f16de2be3606a467b4173afe54cb142faea1f3fad0357778d7c6aded185541aa",
     "proofs/lean/group-wire/Wire.lean": "ec06b07ad9e9f069c05afa01344d7a9789cc85cf88e27524bf38d3d7b0069f58",

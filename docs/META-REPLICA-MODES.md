@@ -39,7 +39,7 @@ lead the metadata group.
 
 ## 1. The two modes
 
-`KV9_META_REPLICA=full|scoped` on `kv9 start` (default `full`), recorded at admission:
+The mode is chosen at admission (`node admit --meta auto|full|scoped`, §9) and recorded there:
 
 - **full** — today's behaviour: the node joins the metadata group as a learner (and may be
   promoted to voter). It holds the whole catalog and history and can be a metadata voter,
@@ -57,12 +57,22 @@ rows come from.
 
 The scope is defined by closure, not by a list of tables:
 
-> **S1 — closure.** For every region R the node hosts, is attached to, or is named as a
-> destination, target or child of, the scope contains **every** committed row that references R,
-> every row those rows reference (creation, migration, capture, owner, keyspace, binding), and
-> every abort, removal, evidence or seal row of the same operations. Plus the root, the node's
-> own directory row and drain rows, and the directory rows of the stores that are members of its
-> regions. Nothing global beyond the root: no row is in every scope.
+> **S1 — closure (decided 2026-10-30: per keyspace).** For every keyspace K in which the node
+> hosts, is attached to, or is named as a destination, target or child of any region, the scope
+> contains **every** region bound to K and every committed row that references any of them or K,
+> every row those rows reference (creation, migration, capture, keyspace, binding, intent), and
+> every abort, removal, evidence or seal row of the same operations; plus the tenants of those
+> keyspaces, the root, the node's own directory, admission and drain rows, and the directory
+> and admission rows of the full nodes and of every store those rows name. Retention-ledger rows
+> are not in any scope (§10). Nothing global beyond the root and the full nodes' directory rows.
+>
+> *Why per keyspace and not per region:* the readers of data-group state judge a keyspace as a
+> whole — the unsealed ranges of a keyspace must partition it (`committed_ranges`), a backup or
+> restore intent names every range of its keyspace — so a slice holding some of a keyspace's
+> ranges fails those checks or would grow back to the whole keyspace at the first backup.
+> Per-region scopes need those readers to accept a partial keyspace; that is a separate design
+> (§10, "Not yet"). The cost is bounded by the keyspaces a node hosts, not by the cluster
+> (§10, scale table).
 
 S1 is what makes the existing readers safe on a scope. Most catalog readers infer from absence:
 "no abort row ⇒ not aborted", "no evidence ⇒ not installed", "no sealed binding ⇒ live". Absence
@@ -88,9 +98,12 @@ internal RPC, `CatalogScope(from_position, regions)`:
    committed batch **filtered** to the subscriber's scope; a batch that adds a region to the scope
    (a new plan naming this node, a split child placed here) also carries that region's closure as
    of that position. Every message carries the position it brings the scope to.
-2. If the subscriber is behind the serving node's retained history, the serving node sends a
-   **scope snapshot** at its current position (the closure for every region in the subscription),
-   then continues with changes.
+2. Every subscription, a reconnect included, starts with a **scope snapshot** at the serving
+   node's current position, then continues with changes (as built: resuming mid-stream from a
+   position would need the server to know which keys the subscriber holds, and sending those is
+   as large as the snapshot; a snapshot is O(scope) and rate-limited by
+   `KV9_SCOPE_SNAPSHOT_PARALLEL`). The retained history (the change ring) serves the deltas of
+   a live stream; a stream that falls behind it gets a fresh snapshot.
 3. The subscriber writes each message into its local catalog store (the same `MetaStore` the
    readers use) in one batch with the new position, so a restart resumes from the last position
    it persisted. The store is never written by anything else on a scoped node.
@@ -270,6 +283,11 @@ only the changes of its own groups. Today the same cluster sends c × N appends 
   explicitly; no other minimum is enforced.
 - **Name:** `scoped` (`KV9_META_REPLICA=full|scoped`, `node admit --meta scoped`, status line
   `catalog_scope=`); the rows a scoped node holds are its **scope**.
+- **Closure granularity (2026-10-30):** per keyspace (S1), for the reason recorded under S1;
+  per-region scopes are a later, separate design.
+- **Mode selection:** at admission only (`node admit --meta`), recorded in the admission row and
+  the data-dir marker; there is no `KV9_META_REPLICA` start switch (a node cannot choose a mode
+  the cluster did not admit it in).
 
 ## 10. As built (2026-10-30)
 
@@ -354,7 +372,12 @@ plan and ledger RPCs to the leader.
   activates, binds a keyspace and serves raw traffic through a scoped node; each slice holds its
   own region only; a scoped node restarts from its slice; the full node serving a subscriber stops
   and the subscriber moves; a replica moves from scoped n6 to a new scoped n7; the scoped group
-  splits and both sides serve.
+  splits and both sides serve; a request to a scoped node for a keyspace outside its slice gets
+  a redirect to a full node and a client with peers is served; the children merge back; the
+  keyspace is backed up while a scoped replica is down; that node restarts after the metadata log
+  moved hundreds of entries past a 32-entry ring and catches up through a snapshot; the backup is
+  restored onto scoped voters and serves; a scoped node drains onto a fresh scoped spare; and
+  `cluster health` reports `catalog_scope ok` for every slice.
 - Scale, `scripts/meta-scoped-scale.sh`, debug build, one host (NVMe), groups of three on disjoint
   scoped triples, one keyspace each. The metadata group stayed three voters, no learners:
 
@@ -362,15 +385,39 @@ plan and ledger RPCs to the leader.
   | --- | --- | --- | --- | --- | --- | --- | --- |
   | 24 | 8 | 135 | 22 | 16.3 % | 7 / 11 / 6 | 10 | < 1 |
   | 48 | 16 | 247 | 22 | 8.9 % | 15 / 16 / 17 | 18 | 1 |
+  | 201 | 67 | 961 | 22 | 2.3 % | 78 / 59 / 64 | 81 | 2 |
 
-  A slice's size does not move with the cluster (R2/R3); the full node serving the most
-  subscribers was stopped and exactly its subscribers moved, every slice current again within
-  about a second (R4). Not measured yet: hundreds of nodes, the metadata leader's send rate
-  against a full-learner baseline.
+  A slice's size does not move with the cluster (R2/R3). The full node serving the most
+  subscribers was stopped and exactly its subscribers moved (78 at 201 nodes), every slice
+  current again within about two seconds (R4); snapshots peaked at the limiter's 4 at once.
+  `cluster health` took 424 ms over all 204 nodes and 164 ms with `--full-only` (R7).
+
+  Against the baseline (`KV9_SCALE_MODE=full`: the same nodes as full learners), the metadata
+  leader's sends (`meta_raft_sent_msgs`):
+
+  | Nodes beyond the voters | Mode | Messages while creating the groups | Messages / s, steady |
+  | --- | --- | --- | --- |
+  | 24 | full learners | 2 860 | 537 |
+  | 24 | scoped | 216 | 41 |
+  | 48 | full learners | 11 683 | 1 030 |
+  | 48 | scoped | 452 | 41 |
+  | 201 | scoped | 2 290 (67 groups) | 40 |
+
+  With full learners the leader's load grows with every node; with scoped nodes it stays at the
+  three-voter level (M4).
 - The Lean model `proofs/lean/catalog-scope` with this implementation's sources pinned in its
   contract.
 
-**Not yet.** Merge, drain, backup and restore with scoped nodes in the roles listed in §7 are not
-covered by the e2e; per-region closures; `cluster health` paging (R7); a scope-lag verdict in
-`cluster health`; `KV9_SCOPE_SNAPSHOT_PARALLEL`.
+**Snapshot limiter and health.** `KV9_SCOPE_SNAPSHOT_PARALLEL` (default 4) bounds the scope
+snapshots one full node computes at once (status `catalog_scope_snapshots_peak`,
+`catalog_scope_snapshots_waited`). `cluster health` has a `catalog_scope` verdict: `fail` for a
+stale slice (with its error), `warn` for a slice more than 1024 entries behind the leader's
+commit; scoped nodes are excluded from the `apply_lag` verdict (their metadata driver never runs).
+
+**Observation at scale (R7).** `kv9-admin` fans out with at most `KV9_ADMIN_FANOUT` (32) calls in
+flight. A full node publishes `catalog_scope_subscribers=node:index:ms,…`, and `cluster health
+--full-only` asks only the full nodes and judges every scoped slice from those tables (a node no
+full node streams to, or one silent for 10 s, is `fail`).
+
+**Not yet.** Per-region scopes (S1, see the decision there).
 

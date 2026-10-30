@@ -52,17 +52,27 @@ async fn automatic_data_checkpoints_resume_lost_owner_receipt_and_adopt_on_all_t
         TtlOutcome::Success { .. }
     ));
     for n in 0..36 {
-        let pairs = (0..8).map(|i| (vec![b'a' + i], vec![n; 65536])).collect();
-        assert!(matches!(
-            f.client(0)
+        // Seeding: the same put again is harmless, and under a loaded test run one large
+        // write can time out; retry it rather than fail on the setup.
+        let mut last = None;
+        for _ in 0..5 {
+            let pairs = (0..8).map(|i| (vec![b'a' + i], vec![n; 65536])).collect();
+            let outcome = f
+                .client(0)
                 .call(Operation::Put {
                     pairs,
-                    ttl_secs: Some(60)
+                    ttl_secs: Some(60),
                 })
                 .await
-                .outcome,
-            TtlOutcome::Success { .. }
-        ));
+                .outcome;
+            if matches!(outcome, TtlOutcome::Success { .. }) {
+                last = None;
+                break;
+            }
+            last = Some(format!("{outcome:?}"));
+            tokio::time::sleep(Duration::from_millis(200)).await;
+        }
+        assert!(last.is_none(), "seed put {n} failed: {last:?}");
     }
     let before: Vec<_> = (0..3)
         .map(|i| bytes(&engine(&f, i).path().with_extension("segments")))
@@ -592,17 +602,22 @@ async fn shared_node_budget_keeps_ttl_progress_with_two_blocked_uploads_and_drai
     );
     until(|| ttl.snapshot().candidates_applied == 2).await;
     until(|| budget.snapshot().waiting_classes > 0).await;
-    for range in [&f.range, &extra.range] {
-        let key =
-            kv9_common::codec::encode_key(kv9_common::codec::KeyMode::Raw, range.keyspace, b"k")
-                .unwrap();
-        for b in &f.backends {
-            let group = b.raw_directory.by_region(range.region).unwrap();
-            for cf in [ColumnFamily::Default, ColumnFamily::Write] {
-                assert!(group.capture_parts().1.get(cf, &key).unwrap().is_none());
-            }
-        }
-    }
+    // The leader applied both TTL candidates; a follower may still be one entry behind
+    // on a loaded run, so wait for every replica to drop the expired key.
+    until(|| {
+        [&f.range, &extra.range].into_iter().all(|range| {
+            let key =
+                kv9_common::codec::encode_key(kv9_common::codec::KeyMode::Raw, range.keyspace, b"k")
+                    .unwrap();
+            f.backends.iter().all(|b| {
+                let group = b.raw_directory.by_region(range.region).unwrap();
+                [ColumnFamily::Default, ColumnFamily::Write]
+                    .into_iter()
+                    .all(|cf| group.capture_parts().1.get(cf, &key).unwrap().is_none())
+            })
+        })
+    })
+    .await;
     assert_eq!(budget.snapshot().heavy_active, 2);
     assert!(budget.snapshot().peak <= 4);
     assert!(

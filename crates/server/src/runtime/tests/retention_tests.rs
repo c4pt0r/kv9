@@ -21,7 +21,12 @@ impl Drop for Fixture {
 }
 impl Fixture {
     fn new(tag: &str) -> Self {
-        let (rts, root, _, base) = serving_trio(tag);
+        let (mut rts, root, _, base) = serving_trio(tag);
+        // These tests compare ledger revisions across calls; the background sweep's own
+        // ledger writes would land between them.
+        for rt in rts.iter_mut() {
+            rt.stop_checkpoint_sweep();
+        }
         Self { rts, root, base }
     }
     fn client(&self) -> RetentionClient {
@@ -144,6 +149,9 @@ impl Fixture {
                 .unwrap()
             })
             .collect();
+        for rt in self.rts.iter_mut() {
+            rt.stop_checkpoint_sweep();
+        }
         wait_for(
             &mut self.rts,
             15,

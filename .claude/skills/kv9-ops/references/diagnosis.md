@@ -48,6 +48,8 @@ Scoped metadata mode (plain `key=value` lines, not JSON):
 | `catalog_scope=`, `catalog_scope_index=`, `catalog_scope_server=`, `catalog_scope_error=` | scoped nodes | `current` while frames arrive (else `stale`), the slice position, the full node streaming it, the last stream problem. An error naming an **undeclared metadata key** stops the slice by design: the binary does not know that row; upgrade it. |
 | `catalog_scope_rows=`, `catalog_scope_regions=`, `catalog_scope_region_ids=` | scoped nodes | the slice's size and the regions it covers |
 | `catalog_scope_streams=`, `catalog_scope_snapshots_sent=`, `catalog_keys=` | full nodes | subscribers served, snapshots sent, the full catalog's key count |
+| `catalog_scope_subscribers=` | full nodes | `node:index:ms` per subscriber; what `cluster health --full-only` judges slices by |
+| `meta_raft_sent_msgs=`, `meta_raft_sent_bytes=` | every node | metadata Raft traffic this node sent; on the leader, the fan-out scoped mode keeps flat |
 
 ## 3. Task kinds (`task list --kind <n>`)
 

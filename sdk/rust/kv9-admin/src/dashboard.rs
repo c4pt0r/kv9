@@ -62,7 +62,7 @@ async fn snapshot(global: &Global) -> Value {
         };
     }
     section!("info", cluster_info(&mut cluster));
-    section!("health", cluster_health(&mut cluster));
+    section!("health", cluster_health(&mut cluster, false));
     section!("nodes", node_list(&mut cluster));
     section!("status", cluster_status(&mut cluster, None));
     section!("groups", group_list(&mut cluster));

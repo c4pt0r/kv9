@@ -19,6 +19,8 @@ pub mod node;
 mod point_stream;
 #[cfg(test)]
 mod point_test_support;
+#[cfg(test)]
+mod test_cluster_slots;
 mod point_wire;
 mod recovery_retention;
 mod region_manager;
