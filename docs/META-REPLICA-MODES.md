@@ -205,11 +205,12 @@ only the changes of its own groups. Today the same cluster sends c × N appends 
 4. **Scale acceptance.** Many slice nodes behind a three-voter metadata group; measure the
    metadata leader's load against the full-learner baseline.
 
-## 9. Decisions for the owner
+## 9. Decisions (2026-10-29, with the owner)
 
-- **Default mode for new nodes:** `slice` once the full set (voters + `KV9_META_FULL_LEARNERS`)
-  is complete, as written in R1, or always `full` unless asked?
-- **Size of the full set:** the default cap of 4 full learners, and a minimum of 2 so voter
-  replacement always has a candidate and slice nodes always have more than one server?
-- **Name of the switch:** `KV9_META_REPLICA=full|slice` and `node admit --meta slice`, or other
-  words.
+- **Default mode for new nodes:** the scoped mode once the full set is complete. `node admit`
+  admits a new node as a full learner while the full set has room, and in the scoped mode after
+  that; `--meta full` beyond the cap is refused unless the cap is raised.
+- **Size of the full set:** `KV9_META_FULL_LEARNERS` defaults to 4 and is the operator's to change
+  explicitly; no other minimum is enforced.
+- **Name:** "slice" is replaced; the name is still open (the owner chooses among the candidates
+  in the conversation of 2026-10-29). This packet keeps "slice" as a placeholder until then.
