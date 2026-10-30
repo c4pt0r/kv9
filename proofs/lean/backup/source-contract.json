@@ -14,13 +14,13 @@
     "retirement_needs_completion"
   ],
   "source_sha256": {
-    "crates/meta/src/data_groups/backup.rs": "e0efe613382f5ced30e4d7b5bf6bc47a733170f4cb5df9dde339ce07fa5bf334",
-    "crates/meta/src/data_groups.rs": "2b28a0a6953180289cfb92e508d739bf8f3ed5d14b3d571e5bf8a0968ecbbff4",
+    "crates/meta/src/data_groups/backup.rs": "3c9e8541da8706700840a010aafcb56effc889b64361efd31f1c0fa64bc97e05",
+    "crates/meta/src/data_groups.rs": "e2e8601128d55b79aada89f620e4daa6ab4f07633834cd9714587a01193426f4",
     "crates/server/src/runtime/backup.rs": "f8f68679cdbf183d933e9e5d38659e47229e631097ecd6dcc93c9d809d64d077",
     "crates/server/src/migration_retention.rs": "63643ecaa0cb445d563279b2e1eb97fceffb9fe53ef398eadf74f83f7919cd9d",
     "crates/server/src/runtime/migration_capture.rs": "3c78a37936bfa6eab039e194a06ad0ce14951daf5390077f0ec10402df411e74",
-    "crates/server/proto/kv9.proto": "c016b267a3ed69f8ff762c90bbebac5db4fb1cb30a4955f8a7c1079a732033c7",
-    "scripts/backup-e2e.py": "f851cb93912ac5970b11c60d2107ca75f97656cf459aafe0118ae8853021d1b4",
-    "docs/BACKUP-RESTORE.md": "83c795652390df67fd42658544d1bcd83d89b95147293a0775d3d34fc4f17d27"
+    "crates/server/proto/kv9.proto": "55f512b90e1a0531dd0792f4413597044c7ca0d958626beab17924c04edd50c8",
+    "scripts/backup-e2e.py": "5ec767183061efc40aff0626e7c2fc85b8a1bd5ba1506b812e2d2dac9b14619a",
+    "docs/BACKUP-RESTORE.md": "9f1200e121cdfd6e64afbafe1d644e345d251294cdaf9a2fd2b34615efd938df"
   }
 }

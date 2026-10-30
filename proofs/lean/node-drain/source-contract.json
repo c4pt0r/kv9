@@ -19,8 +19,8 @@
     "crates/server/src/runtime/node_drain.rs": "035e8b13fabb72fdc25adf908161fde69b0aab87d1874640ec5f1042444bf38f",
     "crates/server/src/runtime/placement.rs": "db1a2d7c81a91f4fafdb6e04cef085c422cea0a23b8a4fa8ef5afcc4f7f8e893",
     "crates/meta/src/data_groups/drain.rs": "faee4d0e7213deed6bde11dbd6dfedab5371aac3d3782913db62d0f648514538",
-    "crates/server/src/runtime.rs": "f4577b4b4c267eddd96ff36bc411152d996d5554b86642297533c840dd951c31",
-    "crates/server/proto/kv9.proto": "c016b267a3ed69f8ff762c90bbebac5db4fb1cb30a4955f8a7c1079a732033c7",
+    "crates/server/src/runtime.rs": "188979b60c57e48d33c25a4fd7012aa6817e726cc24147086bd228119025193a",
+    "crates/server/proto/kv9.proto": "55f512b90e1a0531dd0792f4413597044c7ca0d958626beab17924c04edd50c8",
     "scripts/node-drain-e2e.py": "a91d8885159bac8d1e048033fda5c1acc1c0b942bc3aa7616694e8b1efe12524",
     "docs/DRAIN-NODE.md": "20d6fe5f5e6353382f1aa2dc84806195772ff982507b1498514b8583cca7c791"
   }

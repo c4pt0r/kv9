@@ -7,7 +7,7 @@ are what that run measured; a release build and real data change them, the shape
 
 Contents: 1 cluster formation · 2 adding nodes · 3 data group and keyspace · 4 leadership ·
 5 add and move a replica · 6 abort · 7 split and merge · 8 drain · 9 unplanned loss ·
-10 restart · 11 refusals you will meet · 12 the REPL · 13 backup
+10 restart · 11 refusals you will meet · 12 the REPL · 13 backup · 14 restore
 
 ## 1. Cluster formation
 
@@ -228,5 +228,29 @@ on each node shows per-range `state` (`-`, `planned`, `pinned`, `anchored`) and 
 is waiting for. While a range is unanchored the backup holds it: a split, merge or replica plan
 on that range is refused naming the backup; a backup is refused on a range under a live split,
 merge or plan. One live backup per keyspace: a second `create` confirms it; the next sequence
-starts once it is complete, aborted or retired. There is no restore verb yet (increment 2):
-a backup today is a verified, pinned retention point in the bucket.
+starts once it is complete, aborted or retired.
+
+## 14. Restore
+
+```bash
+# the logical error: somebody deleted half of `orders`
+kv9-admin restore create --backup 130 --as orders-20261029 --wait
+#   restore of backup 130 as "orders-20261029" committed as task 140 (keyspace id 102 reserved, 2 target(s): [105, 106])
+#   --wait: published after 9 s; keyspace "orders-20261029" (id 102) serves
+kv9-admin restore describe 140
+#   stage: published
+#   target 105: group 141 from region 101 [, r/00150) evidenced (task 143, 150 rows)
+#   target 106: group 142 from region 102 [r/00150, ) evidenced (task 144, 150 rows)
+kv9-admin keyspace describe orders-20261029 ; kv9-repl … use orders-20261029
+kv9-admin task abort <restore task>        # before publication only; the targets retire
+```
+
+What happens (BACKUP-RESTORE.md §5): the intent reserves the new keyspace id and creates one
+empty group per backed-up range (placement's least-loaded three stores, or `--voters`); each
+target's leader proposes its descriptor, restores the source range's anchored image under the
+image budget, copies it through the target's own log and digests the result; the metadata
+leader commits the evidence only if rows and digest equal the anchor's, and once every target
+is evidenced publishes the keyspace, bindings and routing rows in one transaction. Nothing is
+written into the source keyspace or the backup; the application switches to the new name.
+Refusals: the name exists (`a keyspace named … exists or is being restored`); the backup is not
+complete, or a range is `restorable: no`; `backup retire` while a restore is live.

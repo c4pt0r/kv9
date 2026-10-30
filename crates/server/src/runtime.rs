@@ -68,6 +68,7 @@ mod auto_split;
 mod fault;
 mod node_drain;
 mod backup;
+mod restore;
 mod placement;
 mod range_merge;
 mod range_split;
@@ -3272,6 +3273,82 @@ impl AdminApi for RuntimeBackend {
         })
     }
 
+    fn restore_keyspace(&self, _caller: &str, backup_task: u64, name: &str, tenant: TenantId, voters: &[NodeId]) -> Result<crate::api::RestoreResult> {
+        self.ensure_serving()?;
+        if self.uploader.is_none() {
+            return Err(Error::Config("restore requires configured object storage (KV9_STORAGE=minio)".into()));
+        }
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let store = &self.node.meta_raft.store;
+        let mut txn = store.begin()?;
+        // Default placement: the three least-loaded active, non-draining stores
+        // (docs/BACKUP-RESTORE.md §11); `--voters` overrides.
+        let voters: Vec<NodeId> = if voters.is_empty() {
+            let root = kv9_meta::root::certified_root(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("restore requires a certified root".into()))?
+                .digest();
+            let mut chosen = Vec::new();
+            let mut exclude = std::collections::BTreeSet::new();
+            for _ in 0..3 {
+                let next = placement::choose_destination(&txn, store, root, &exclude)?
+                    .ok_or_else(|| Error::Config("restore needs three active, non-draining stores; admit and join more nodes or pass --voters".into()))?;
+                exclude.insert(next.0);
+                chosen.push(next);
+            }
+            chosen
+        } else {
+            voters.to_vec()
+        };
+        let (intent, changed) = kv9_meta::data_groups::restore::plan_restore(&mut txn, backup_task, name, tenant, &voters, unix_now())?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::RestoreResult { intent, changed, applied })
+    }
+
+    fn list_restores(&self, _caller: &str) -> Result<Vec<crate::api::RestoreSummary>> {
+        use crate::api::{RestoreSummary, RestoreTargetSummary};
+        self.ensure_catalog_ready()?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let rows = kv9_meta::data_groups::restore::committed_restores(&self.node.meta_raft.store)?;
+        Ok(rows
+            .intents
+            .iter()
+            .map(|intent| RestoreSummary {
+                task: intent.task(),
+                operation: intent.operation(),
+                backup_task: intent.backup_task(),
+                keyspace: intent.keyspace().0,
+                tenant: intent.tenant().0,
+                name: intent.name().to_owned(),
+                requested_unix: intent.requested_unix(),
+                stage: rows.stage(intent).label(),
+                targets: intent
+                    .targets()
+                    .iter()
+                    .map(|t| RestoreTargetSummary {
+                        source_region: t.source_region().0,
+                        creation_task: t.creation_task(),
+                        region: t.region().0,
+                        start: t.start().to_vec(),
+                        end: t.end().to_vec(),
+                        evidence: rows.evidence_of(intent, t).map(|e| (e.task(), e.rows())),
+                    })
+                    .collect(),
+            })
+            .collect())
+    }
+
     fn list_tasks(&self, _caller: &str, after: u64, limit: usize, kind: u64) -> Result<crate::api::TaskPage> {
         use crate::api::{TaskPage, TaskRow};
         use kv9_meta::schema::TASKS_DESC;
@@ -3379,6 +3456,8 @@ fn task_kind_name(kind: u64) -> &'static str {
         120 => "backup_anchor",
         121 => "backup_retirement",
         122 => "backup_completion",
+        123 => "restore_intent",
+        124 => "restore_evidence",
         _ => "unknown",
     }
 }
@@ -5336,6 +5415,7 @@ pub struct NodeRuntime {
     replica_repair: replica_repair::State,
     node_drain: node_drain::State,
     backup: backup::State,
+    restore: restore::State,
     range_split: range_split::State,
     range_merge: range_merge::State,
     auto_split: auto_split::State,
@@ -6005,6 +6085,7 @@ impl NodeRuntime {
             replica_repair: replica_repair::State::new(replica_repair::Config::from_env()),
             node_drain: node_drain::State::new(node_drain::Config::from_env()),
             backup: backup::State::default(),
+            restore: restore::State::default(),
             range_split: range_split::State::default(),
             range_merge: range_merge::State::default(),
             auto_split: auto_split::State::new(auto_split::Config::from_env()),
@@ -6192,6 +6273,8 @@ impl NodeRuntime {
                 regions.push(c.intent().region());
             }
         }
+        // The targets of an aborted restore are abandoned empty groups too (B6).
+        regions.extend(restore::aborted_targets(store)?);
         Ok(regions)
     }
 
@@ -6641,6 +6724,9 @@ impl NodeRuntime {
                 // Committed backups: each range leader plans, captures and anchors; the
                 // metadata leader binds the pins and writes the bundle (BACKUP-RESTORE §3).
                 self.reconcile_backup();
+                // Committed restores: targets copy their range from the anchored image;
+                // the metadata leader publishes the new keyspace (BACKUP-RESTORE §5).
+                self.reconcile_restore();
                 // The automatic split trigger (RANGE-SPLIT §11), off unless
                 // KV9_AUTO_SPLIT_BYTES > 0: a group leader's size verdict becomes an intent.
                 self.reconcile_auto_split();
@@ -7397,6 +7483,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("backup=");
         body.push_str(&self.backup_status());
+        body.push('\n');
+        body.push_str("restore=");
+        body.push_str(&self.restore_status());
         body.push('\n');
         body.push_str("auto_split=");
         body.push_str(&self.auto_split_status());

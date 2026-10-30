@@ -1015,6 +1015,86 @@ class VerifyBackupResponse(_message.Message):
     ok: bool
     def __init__(self, task: _Optional[int] = ..., bundle_key: _Optional[str] = ..., bundle_ok: _Optional[bool] = ..., ranges: _Optional[_Iterable[_Union[BackupRangeVerdict, _Mapping]]] = ..., ok: _Optional[bool] = ...) -> None: ...
 
+class RestoreKeyspaceRequest(_message.Message):
+    __slots__ = ("backup_task", "name", "tenant_id", "voters")
+    BACKUP_TASK_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TENANT_ID_FIELD_NUMBER: _ClassVar[int]
+    VOTERS_FIELD_NUMBER: _ClassVar[int]
+    backup_task: int
+    name: str
+    tenant_id: int
+    voters: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, backup_task: _Optional[int] = ..., name: _Optional[str] = ..., tenant_id: _Optional[int] = ..., voters: _Optional[_Iterable[int]] = ...) -> None: ...
+
+class RestoreKeyspaceResponse(_message.Message):
+    __slots__ = ("task", "operation", "changed", "applied_term", "applied_index", "keyspace_id", "target_regions")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    KEYSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TARGET_REGIONS_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    operation: bytes
+    changed: bool
+    applied_term: int
+    applied_index: int
+    keyspace_id: int
+    target_regions: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., keyspace_id: _Optional[int] = ..., target_regions: _Optional[_Iterable[int]] = ...) -> None: ...
+
+class ListRestoresRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class RestoreTargetRow(_message.Message):
+    __slots__ = ("source_region", "creation_task", "region", "start", "end", "evidence_task", "rows")
+    SOURCE_REGION_FIELD_NUMBER: _ClassVar[int]
+    CREATION_TASK_FIELD_NUMBER: _ClassVar[int]
+    REGION_FIELD_NUMBER: _ClassVar[int]
+    START_FIELD_NUMBER: _ClassVar[int]
+    END_FIELD_NUMBER: _ClassVar[int]
+    EVIDENCE_TASK_FIELD_NUMBER: _ClassVar[int]
+    ROWS_FIELD_NUMBER: _ClassVar[int]
+    source_region: int
+    creation_task: int
+    region: int
+    start: bytes
+    end: bytes
+    evidence_task: int
+    rows: int
+    def __init__(self, source_region: _Optional[int] = ..., creation_task: _Optional[int] = ..., region: _Optional[int] = ..., start: _Optional[bytes] = ..., end: _Optional[bytes] = ..., evidence_task: _Optional[int] = ..., rows: _Optional[int] = ...) -> None: ...
+
+class RestoreRow(_message.Message):
+    __slots__ = ("task", "operation", "backup_task", "keyspace_id", "tenant_id", "name", "requested_unix", "stage", "targets")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    BACKUP_TASK_FIELD_NUMBER: _ClassVar[int]
+    KEYSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TENANT_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_UNIX_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    TARGETS_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    operation: bytes
+    backup_task: int
+    keyspace_id: int
+    tenant_id: int
+    name: str
+    requested_unix: int
+    stage: str
+    targets: _containers.RepeatedCompositeFieldContainer[RestoreTargetRow]
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., backup_task: _Optional[int] = ..., keyspace_id: _Optional[int] = ..., tenant_id: _Optional[int] = ..., name: _Optional[str] = ..., requested_unix: _Optional[int] = ..., stage: _Optional[str] = ..., targets: _Optional[_Iterable[_Union[RestoreTargetRow, _Mapping]]] = ...) -> None: ...
+
+class ListRestoresResponse(_message.Message):
+    __slots__ = ("restores",)
+    RESTORES_FIELD_NUMBER: _ClassVar[int]
+    restores: _containers.RepeatedCompositeFieldContainer[RestoreRow]
+    def __init__(self, restores: _Optional[_Iterable[_Union[RestoreRow, _Mapping]]] = ...) -> None: ...
+
 class DrainNodeRequest(_message.Message):
     __slots__ = ("node_id",)
     NODE_ID_FIELD_NUMBER: _ClassVar[int]

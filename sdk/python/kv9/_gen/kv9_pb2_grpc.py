@@ -206,6 +206,16 @@ class Kv9Stub:
                 request_serializer=kv9__pb2.VerifyBackupRequest.SerializeToString,
                 response_deserializer=kv9__pb2.VerifyBackupResponse.FromString,
                 _registered_method=True)
+        self.RestoreKeyspace = channel.unary_unary(
+                '/kv9.v1.Kv9/RestoreKeyspace',
+                request_serializer=kv9__pb2.RestoreKeyspaceRequest.SerializeToString,
+                response_deserializer=kv9__pb2.RestoreKeyspaceResponse.FromString,
+                _registered_method=True)
+        self.ListRestores = channel.unary_unary(
+                '/kv9.v1.Kv9/ListRestores',
+                request_serializer=kv9__pb2.ListRestoresRequest.SerializeToString,
+                response_deserializer=kv9__pb2.ListRestoresResponse.FromString,
+                _registered_method=True)
         self.SplitRange = channel.unary_unary(
                 '/kv9.v1.Kv9/SplitRange',
                 request_serializer=kv9__pb2.SplitRangeRequest.SerializeToString,
@@ -544,6 +554,19 @@ class Kv9Servicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RestoreKeyspace(self, request, context):
+        """Restore of a complete backup into a NEW keyspace (docs/BACKUP-RESTORE.md §5).
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListRestores(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def SplitRange(self, request, context):
         """Commit a split intent for a bound range: the two children are created and
         activated on the parent's stores in the same transaction (docs/RANGE-SPLIT.md §2).
@@ -851,6 +874,16 @@ def add_Kv9Servicer_to_server(servicer, server):
                     servicer.VerifyBackup,
                     request_deserializer=kv9__pb2.VerifyBackupRequest.FromString,
                     response_serializer=kv9__pb2.VerifyBackupResponse.SerializeToString,
+            ),
+            'RestoreKeyspace': grpc.unary_unary_rpc_method_handler(
+                    servicer.RestoreKeyspace,
+                    request_deserializer=kv9__pb2.RestoreKeyspaceRequest.FromString,
+                    response_serializer=kv9__pb2.RestoreKeyspaceResponse.SerializeToString,
+            ),
+            'ListRestores': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListRestores,
+                    request_deserializer=kv9__pb2.ListRestoresRequest.FromString,
+                    response_serializer=kv9__pb2.ListRestoresResponse.SerializeToString,
             ),
             'SplitRange': grpc.unary_unary_rpc_method_handler(
                     servicer.SplitRange,
@@ -1878,6 +1911,60 @@ class Kv9:
             '/kv9.v1.Kv9/VerifyBackup',
             kv9__pb2.VerifyBackupRequest.SerializeToString,
             kv9__pb2.VerifyBackupResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RestoreKeyspace(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/RestoreKeyspace',
+            kv9__pb2.RestoreKeyspaceRequest.SerializeToString,
+            kv9__pb2.RestoreKeyspaceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListRestores(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/ListRestores',
+            kv9__pb2.ListRestoresRequest.SerializeToString,
+            kv9__pb2.ListRestoresResponse.FromString,
             options,
             channel_credentials,
             insecure,

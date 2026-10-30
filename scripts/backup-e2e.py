@@ -13,9 +13,17 @@ live one; `task abort` makes it history and frees the ranges.
 Phase B, drivers on, with a crash armed after the metadata leader's `bind` step:
 `backup create --wait` completes: one anchor per range with the exact row count
 and a digest, one bundle object, every object GET-verified; the crash did not
-change the outcome. `backup verify` passes; a replica plan on an anchored range
-runs (the capture slot is free again); `backup retire` retires the backup and
-`backup list` hides it unless `--all`.
+change the outcome. `backup verify` passes.
+
+Phase D, the logical error and the restore (increment 2): half of `orders` is
+deleted and 200 new rows written; `restore create --backup <task> --as
+orders-restored --wait` publishes a NEW keyspace holding exactly the 300 anchored
+rows while `orders` keeps the damage; the backup refuses to retire while a second
+restore is live; that restore aborts and its targets retire.
+
+Phase C: a replica plan on an anchored range runs (the capture slot is free
+again); `backup retire` retires the backup and `backup list` hides it unless
+`--all`.
 
 Requires KV9_OBJECT_STORE_* (isolated real MinIO); servers run KV9_STORAGE=minio.
 """
@@ -306,6 +314,64 @@ def main():
         arm([])
         print('PASS: B: complete backup with two anchors, a verified bundle and the committed rows', flush=True)
 
+        # ------------------------------------------------------------ phase D: the logical error, then the restore
+        repl('damage', ['use orders', 'delrange r/00000 r/00150'] + [f'put n/{i:05d} new-{i}' for i in range(200)])
+        damaged = repl('probe-damage', ['use orders', 'get r/00007', 'get r/00200', 'get n/00001'], success=None)
+        require('value-7' not in damaged and 'value-200' in damaged and 'new-1' in damaged, f'D: the damage landed: {damaged}')
+
+        def restores():
+            listed, _ = admin('restores', 'restore', 'list', success=None)
+            return listed.get('result', []) if isinstance(listed.get('result'), list) else []
+
+        def restore_row(task):
+            return next((r for r in restores() if r['task'] == task), None)
+
+        planned, _ = admin('restore-create', 'restore', 'create', '--backup', str(backup_task), '--as', 'orders-restored', '--tenant', '0')
+        restore_task = planned['result']['task']
+        require(len(planned['result']['target_regions']) == 2 and planned['result']['keyspace_id'] not in (0, keyspace_id), f'D: two targets, a new keyspace id: {planned["result"]}')
+        refused, code = admin('restore-same-name', 'restore', 'create', '--backup', str(backup_task), '--as', 'orders', success=False)
+        require(code == 1, 'D: the source name is refused')
+        again, _ = admin('restore-again', 'restore', 'create', '--backup', str(backup_task), '--as', 'orders-restored')
+        require(again['result']['outcome'] == 'confirmed' and again['result']['task'] == restore_task, 'D: the live restore confirms')
+
+        def published():
+            row = restore_row(restore_task)
+            return row if row and row['stage'] == 'published' else None
+        row = wait('D: the restore publishes', published, 600)
+        require(all(t['evidence'] and t['evidence']['rows'] == 150 for t in row['targets']), f'D: every target evidenced with 150 rows: {row["targets"]}')
+
+        def restored_serves():
+            out = repl('probe-restored', ['use orders-restored', 'get r/00007', 'get r/00149', 'get r/00150', 'get r/00299', 'get n/00001', 'scan r/ s 1000'], success=None)
+            return out if 'value-7' in out and 'value-149' in out and 'value-150' in out and 'value-299' in out and 'new-1' not in out and '(300 row(s))' in out else None
+        wait('D: the restored keyspace serves exactly the anchored 300 rows', restored_serves, 120)
+        still = repl('probe-source', ['use orders', 'get r/00007', 'get n/00001', 'scan r/ s 1000'], success=None)
+        require('value-7' not in still and 'new-1' in still and '(150 row(s))' in still, f'D: the source keeps its damage: {still}')
+        described, _ = admin('restore-describe', 'restore', 'describe', restore_task)
+        require(described['result']['stage'] == 'published', 'D: describe shows published')
+        refused, code = admin('abort-published', 'task', 'abort', restore_task, success=False)
+        require(code == 1, 'D: a published restore does not abort')
+        # A second restore under another name is live: the backup cannot retire; abort it.
+        second, _ = admin('restore-second', 'restore', 'create', '--backup', str(backup_task), '--as', 'orders-copy')
+        second_task = second['result']['task']
+        refused, code = admin('retire-while-live', 'backup', 'retire', backup_task, success=False)
+        require(code == 1 and 'restore' in refused.get('error', {}).get('message', ''), f'D: retire refused while a restore is live: {refused}')
+        aborted, _ = admin('abort-second', 'task', 'abort', second_task)
+        require(aborted['result']['target'] == 'restore', f'D: abort targets the restore: {aborted}')
+        require(restore_row(second_task)['stage'] == 'aborted', 'D: aborted restore is history')
+        second_regions = set(second['result']['target_regions'])
+
+        def targets_retired():
+            for node in (1, 2, 3, 4, 5):
+                groups = json.loads(status(node).get('data_groups', '[]') or '[]')
+                if any(g.get('region') in second_regions for g in groups):
+                    return None
+            return True
+        wait('D: the aborted restore\'s targets retired everywhere', targets_retired, 180)
+        for kind, expected in ((123, 2), (124, 2)):
+            rows, _ = admin(f'kind-{kind}', 'task', 'list', '--kind', str(kind))
+            require(len(rows['result']['tasks']) == expected, f'D: kind {kind}: {len(rows["result"]["tasks"])} rows, expected {expected}')
+        print('PASS: D: restored a damaged keyspace into a new one with the anchored rows; the source untouched; a live restore blocks retirement; abort retires targets', flush=True)
+
         # ------------------------------------------------------------ phase C: the slot is free again; retire
         plan, _ = admin('add-after-backup', 'group', 'add-replica', low_task, '--to', '4', '--label', 'after-backup')
 
@@ -328,6 +394,7 @@ def main():
         manifest_record['verdict'] = 'passed'
         print(f'PASS: backup (keyspace orders in 2 ranges; held backup {held_task} excluded a split and a plan then aborted; '
               f'backup {backup_task} completed with 150+150 rows anchored and a verified bundle despite a crash after bind; '
+              f'restore {restore_task} published orders-restored with the 300 anchored rows after the source was damaged; '
               f'retired; plan on the anchored range reached voters 1,2,3,4)', flush=True)
     except Exception as error:
         manifest_record['verdict'] = f'failed: {error}'

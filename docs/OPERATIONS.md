@@ -35,7 +35,8 @@ committed state on the node whose role it is, and observable in each node's `<da
 | Pause the range drivers | `KV9_RANGE_DRIVER=0` on a node | Split, merge and auto-split wait there; nothing is lost. `KV9_REPLICA_DRIVER=0` is the same brake for replica plans. |
 | Back up a keyspace | `backup create --keyspace <name\|id> [--label <t>] [--wait]` | One committed retention point: each range leader captures its image at an exact cut and anchors it, the metadata leader pins the objects and writes one bundle to the bucket, GET-verified ([BACKUP-RESTORE](BACKUP-RESTORE.md)). Needs object storage. A held range refuses splits, merges and plans until it is anchored. |
 | Look at backups | `backup list [--all]`, `backup describe <task>`, `backup verify <task>` | Stages `intended → capturing → anchored → complete \| aborted \| retired`. `restorable: no` means a range exceeded the image budget: the data is kept, a restore needs the streamed path (not built yet). `verify` exits 4 when a range's objects fail. |
-| Release a backup | `backup retire <task>` | The only release of the pins; the bundle stays as a tombstone. An incomplete backup aborts instead (`task abort`). |
+| Release a backup | `backup retire <task>` | The only release of the pins; the bundle stays as a tombstone. An incomplete backup aborts instead (`task abort`). Refused while a restore of the backup is live. |
+| Restore a backup | `restore create --backup <task> --as <new name> [--tenant <id>] [--voters a,b,c] [--wait]`, `restore list`, `restore describe <task>` | A NEW keyspace, never in place: one empty group per backed-up range (placement's least-loaded three stores unless `--voters`), each target copies its range from the anchored image and proves it against the anchor, one transaction publishes the keyspace. Stages `intended → populating → populated → published \| aborted`; abort before publication. The application switches names. |
 | Fault points (test only) | `KV9_FAULT_DIR=<dir>` | Every driver step reads `armed.json` there and crashes or pauses once per armed point ([RANGE-SPLIT](RANGE-SPLIT.md) §14). Never set in production. |
 
 ## 3. Repair that the cluster does by itself
@@ -72,13 +73,13 @@ Without the switches the verdicts are still taken and shown (`voter_replacement=
   process.
 - The status document (`<data-dir>/status`, rewritten once a second) carries one line per
   subsystem: `replica_plans=`, `replica_repair=`, `voter_replacement=`, `node_drain=`,
-  `range_split=`, `range_merge=`, `backup=`, `checkpoint_retention=`, `data_groups=`, … each with recent
+  `range_split=`, `range_merge=`, `backup=`, `restore=`, `checkpoint_retention=`, `data_groups=`, … each with recent
   events and the last error. `<data-dir>/metrics.json` is the metrics export.
 - `task list --kind <n>`: 100 group creation, 101 activation, 102 range binding, 103 migration,
   104 install evidence, 105 truncation, 106 removal, 108 migration abort, 110 compaction,
   111 replica plan, 112 node drain, 113 split intent, 114 split evidence, 115 merge intent,
   116 merge evidence, 117 operation abort, 118 seal evidence, 119 backup intent, 120 backup
-  anchor, 121 backup retirement, 122 backup completion.
+  anchor, 121 backup retirement, 122 backup completion, 123 restore intent, 124 restore evidence.
 
 ## 6. Security of the control plane
 
@@ -98,10 +99,10 @@ outputs, a stuck-operation checklist, and how to run and extend the drill).
 
 ## 8. What is not a primitive yet
 
-**Restore.** Backups exist (§2): a committed set of per-range anchors pinned as a retention owner,
-with a self-describing bundle in the bucket. What does not exist yet is the restore that turns one
-back into a keyspace, in this cluster or another one ([BACKUP-RESTORE](BACKUP-RESTORE.md) §5,
-increments 2–5), nor PITR, nor rebuilding a cluster from the bucket alone (QUICKSTART §4).
+**Restore from another cluster, PITR.** Backup and restore within one cluster exist (§2). What
+does not exist yet: restoring another cluster's bundle, the fast path for ranges beyond the image
+budget, point-in-time recovery, and rebuilding a cluster from the bucket alone
+([BACKUP-RESTORE](BACKUP-RESTORE.md) §10, increments 3–5; QUICKSTART §4).
 
 Also missing: an automatic merge of small siblings, load- or time-based split triggers, atomic batches that
 cross a range boundary (scans and delete-range do cross it, following `resume_from`), `node

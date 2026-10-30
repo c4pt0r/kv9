@@ -135,6 +135,44 @@ pub struct BackupVerdict {
     pub ok: bool,
 }
 
+/// The receipt of [`Client::restore_keyspace`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RestorePlanned {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    pub changed: bool,
+    pub applied: Applied,
+    /// Reserved; published once every target is evidenced.
+    pub keyspace_id: u32,
+    pub target_regions: Vec<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RestoreTargetRow {
+    pub source_region: u64,
+    pub creation_task: u64,
+    pub region: u64,
+    pub start: Vec<u8>,
+    pub end: Vec<u8>,
+    pub evidence_task: u64,
+    pub rows: u64,
+}
+
+/// One committed restore (docs/BACKUP-RESTORE.md §5).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RestoreRow {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    pub backup_task: u64,
+    pub keyspace_id: u32,
+    pub tenant_id: u64,
+    pub name: String,
+    pub requested_unix: u64,
+    /// intended, populating, populated, published, aborted.
+    pub stage: String,
+    pub targets: Vec<RestoreTargetRow>,
+}
+
 /// The receipt of [`Client::drain_node`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DrainPlanned {
@@ -466,6 +504,61 @@ impl Client {
                 .collect(),
             ok: r.ok,
         })
+    }
+
+    /// Commit the restore of a complete backup as a NEW keyspace
+    /// (docs/BACKUP-RESTORE.md §5). Empty `voters` lets placement choose. Poll
+    /// [`Client::list_restores`] for `published`.
+    pub async fn restore_keyspace(&self, backup_task: u64, name: &str, tenant_id: u64, voters: &[u64]) -> Result<RestorePlanned, Error> {
+        let r = self
+            .invoke(
+                false,
+                proto::RestoreKeyspaceRequest { backup_task, name: name.to_owned(), tenant_id, voters: voters.to_vec() },
+                |mut c, r| async move { c.restore_keyspace(r).await },
+            )
+            .await?;
+        Ok(RestorePlanned {
+            task: r.task,
+            operation: r.operation,
+            changed: r.changed,
+            applied: Applied { term: r.applied_term, index: r.applied_index },
+            keyspace_id: r.keyspace_id,
+            target_regions: r.target_regions,
+        })
+    }
+
+    /// Every committed restore with its stage and targets.
+    pub async fn list_restores(&self) -> Result<Vec<RestoreRow>, Error> {
+        let r = self
+            .invoke(true, proto::ListRestoresRequest {}, |mut c, r| async move { c.list_restores(r).await })
+            .await?;
+        Ok(r
+            .restores
+            .into_iter()
+            .map(|x| RestoreRow {
+                task: x.task,
+                operation: x.operation,
+                backup_task: x.backup_task,
+                keyspace_id: x.keyspace_id,
+                tenant_id: x.tenant_id,
+                name: x.name,
+                requested_unix: x.requested_unix,
+                stage: x.stage,
+                targets: x
+                    .targets
+                    .into_iter()
+                    .map(|t| RestoreTargetRow {
+                        source_region: t.source_region,
+                        creation_task: t.creation_task,
+                        region: t.region,
+                        start: t.start,
+                        end: t.end,
+                        evidence_task: t.evidence_task,
+                        rows: t.rows,
+                    })
+                    .collect(),
+            })
+            .collect())
     }
 
     pub async fn node_endpoint(&self, node_id: u64) -> Result<Option<NodeEndpoint>, Error> {

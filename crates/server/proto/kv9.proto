@@ -63,6 +63,9 @@ service Kv9 {
   rpc ListBackups(ListBackupsRequest) returns (ListBackupsResponse);
   rpc RetireBackup(RetireBackupRequest) returns (RetireBackupResponse);
   rpc VerifyBackup(VerifyBackupRequest) returns (VerifyBackupResponse);
+  // Restore of a complete backup into a NEW keyspace (docs/BACKUP-RESTORE.md §5).
+  rpc RestoreKeyspace(RestoreKeyspaceRequest) returns (RestoreKeyspaceResponse);
+  rpc ListRestores(ListRestoresRequest) returns (ListRestoresResponse);
   // Commit a split intent for a bound range: the two children are created and
   // activated on the parent's stores in the same transaction (docs/RANGE-SPLIT.md §2).
   rpc SplitRange(SplitRangeRequest) returns (SplitRangeResponse);
@@ -676,6 +679,45 @@ message VerifyBackupResponse {
   bool bundle_ok = 3;
   repeated BackupRangeVerdict ranges = 4;
   bool ok = 5;
+}
+message RestoreKeyspaceRequest {
+  uint64 backup_task = 1;
+  string name = 2;            // the NEW keyspace's name; must not exist
+  uint64 tenant_id = 3;
+  repeated uint64 voters = 4; // empty: placement's least-loaded three stores
+}
+message RestoreKeyspaceResponse {
+  uint64 task = 1;            // the kind-123 row
+  bytes operation = 2;
+  bool changed = 3;           // false: the live restore of this backup under this name was confirmed
+  uint64 applied_term = 4;
+  uint64 applied_index = 5;
+  uint32 keyspace_id = 6;     // reserved; published once every target is evidenced
+  repeated uint64 target_regions = 7;
+}
+message ListRestoresRequest {}
+message RestoreTargetRow {
+  uint64 source_region = 1;
+  uint64 creation_task = 2;
+  uint64 region = 3;
+  bytes start = 4;
+  bytes end = 5;
+  uint64 evidence_task = 6;   // 0 until evidenced
+  uint64 rows = 7;
+}
+message RestoreRow {
+  uint64 task = 1;
+  bytes operation = 2;
+  uint64 backup_task = 3;
+  uint32 keyspace_id = 4;
+  uint64 tenant_id = 5;
+  string name = 6;
+  uint64 requested_unix = 7;
+  string stage = 8;           // intended, populating, populated, published, aborted
+  repeated RestoreTargetRow targets = 9;
+}
+message ListRestoresResponse {
+  repeated RestoreRow restores = 1;
 }
 message DrainNodeRequest {
   uint64 node_id = 1;

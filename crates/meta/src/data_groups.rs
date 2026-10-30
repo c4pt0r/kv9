@@ -24,6 +24,7 @@ pub mod migration;
 pub mod range_abort;
 pub mod ranges;
 pub mod removal;
+pub mod restore;
 pub mod split;
 pub mod split_evidence;
 pub mod store_history;

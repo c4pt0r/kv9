@@ -9,11 +9,14 @@ Builds on [SOURCE-CAPTURE](SOURCE-CAPTURE.md), [MIGRATION-AUTHORITY](MIGRATION-A
 [REPLICA-ADDITION](REPLICA-ADDITION.md), [RANGE-SPLIT](RANGE-SPLIT.md) and
 [RETENTION-LEDGER](RETENTION-LEDGER.md).
 
-> **Status: increment 1 (backup) implemented, 2026-10-29.** Kinds 119–122, the capture subject
-> generalization, `runtime/backup.rs`, `kv9-admin backup create / list / describe / verify /
-> retire`, `task abort` of an incomplete backup, the Lean model (`scripts/prove-backup.py`) and
-> `scripts/backup-e2e.sh` on real MinIO, in CI. §12 records what the implementation settled.
-> Restore (increments 2–5) is still design.
+> **Status: increments 1 (backup) and 2 (restore into this cluster) implemented, 2026-10-29.**
+> Kinds 119–124, the capture subject generalization, `runtime/backup.rs` and
+> `runtime/restore.rs`, `kv9-admin backup create / list / describe / verify / retire` and
+> `restore create / list / describe`, `task abort` of an incomplete backup or an unpublished
+> restore, the Lean models (`scripts/prove-backup.py`, `scripts/prove-restore.py`) and
+> `scripts/backup-e2e.sh` on real MinIO (backup, the logical error, the restore), in CI. §12
+> records what the implementation settled. Increments 3–5 (another cluster's bundle, the fast
+> path, PITR) are still design.
 
 ## The problem
 
@@ -85,12 +88,15 @@ Six TASKS kinds, continuing the sequence after 118 (the first four are built):
 122  KV9BKC01  backup completion  operation, bundle key, bundle digest, bundle bytes, ranges,
                                   completed_unix                   — the bundle was written and
                                   the whole closure GET-verified; `complete` is this row
-123  KV9RST01  restore intent     (design) operation, source (backup task | bundle reference:
-                                  cluster id, backup id, bundle digest), new keyspace (name,
-                                  tenant), targets[]: (source region, new creation_task) — the new
-                                  empty groups are created in the SAME catalog transaction
-124  KV9RSE01  restore evidence   (design) operation, source region, target region, rows,
-                                  rows_digest — one per target, by its leader; publication needs all
+123  KV9RST01  restore intent     operation, backup task + operation, sequence, the NEW keyspace's
+                                  reserved id, tenant, name, requested_unix, targets[]: (source
+                                  region, source range operation, target creation_task, target
+                                  region, start, end) — the targets are created and activated in
+                                  the SAME catalog transaction; a bundle reference instead of a
+                                  backup task is increment 3
+124  KV9RSE01  restore evidence   operation, source region, target creation_task, rows,
+                                  rows_digest — one per target, by its leader; committed only when
+                                  rows and digest equal the anchor's; publication needs all
 ```
 
 `BackupKeyspace(root, operation, keyspace, label)` at the metadata leader reads the keyspace's
@@ -326,6 +332,35 @@ closure verification is partial, 6 on `--wait` deadlines). `backup create --wait
   verified bundle, `verify` ok, the committed rows by kind; a replica plan then runs on the
   anchored range; `retire` retires and `list` hides it. Lean `proofs/lean/backup`: ten theorems,
   seven semantic controls.
+
+### Increment 2, as built
+
+- **The keyspace id is reserved at intent** (`SequenceKind::Keyspace`) and the keyspace row,
+  REGIONS rows and bindings are inserted at publication, in one transaction. Between the two
+  the targets carry descriptors for the reserved id (proposed once per term by each target's
+  leader, as a split child's half is), so their fences admit the copy while no client can
+  route to them: the name resolves to nothing until publication.
+- **The copy** restores the source range's anchored image under the image budget
+  (`RemoteUploader::restore` from the committed capture descriptor), scans it page by page
+  under the SOURCE keyspace id, writes each page through the target's own `raw_batch_put`
+  under the NEW keyspace id, then digests target and image with the split's row digest; the
+  receipt carries the target's rows and digest, and `plan_restore_evidence` refuses it unless
+  both equal the anchor's (B5). The whole range is copied in one worker step (images fit the
+  budget by construction: an unrestorable anchor refuses the intent).
+- **Names.** A restore refuses a name any keyspace has or a live restore is taking; the same
+  backup under the same name confirms the live restore; after abort the next sequence is free;
+  after publication the name is taken for good.
+- **Retirement waits.** `backup retire` refuses while a restore of the backup is live, because
+  the targets read its anchors and images (B1); a published or aborted restore no longer holds
+  it.
+- **Abort.** `task abort <restore>` before publication; the targets are abandoned empty groups
+  that the retirement pass retires like an aborted split's children (B6). A published restore
+  does not abort: its keyspace exists.
+- **Evidence.** `scripts/backup-e2e.sh` phase D: `delete-range` over half of `orders` plus
+  200 new rows; `restore create --backup <task> --as orders-restored --wait` publishes a
+  keyspace holding exactly the 300 anchored rows while `orders` keeps the damage; the source
+  name is refused; the live restore confirms; a second restore blocks `backup retire`, aborts,
+  and its targets retire everywhere. Lean `proofs/lean/restore`: ten theorems, seven controls.
 
 ## 11. Decisions taken (2026-10-29, with the owner)
 

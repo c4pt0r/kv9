@@ -348,6 +348,24 @@ pub fn project(
                 return Err(invalid("store-history backup completion differs"));
             }
         }
+        // A restore intent names target creations with their own kind-100 origins;
+        // its evidence introduces no store.
+        123 => {
+            let r = restore::RestoreIntent::decode(&t.payload)?;
+            if r.root() != root || r.task() != t.id || r.encode() != t.payload {
+                return Err(invalid("store-history restore intent differs"));
+            }
+            for target in r.targets() {
+                Task::load(view, target.creation_task(), 100)?.creation(root)?;
+            }
+        }
+        124 => {
+            let e = restore::RestoreEvidence::decode(&t.payload)?;
+            if e.root() != root || e.task() != t.id || e.encode() != t.payload {
+                return Err(invalid("store-history restore evidence differs"));
+            }
+            Task::load(view, e.target_task(), 100)?.creation(root)?;
+        }
         _ => {
             return Err(invalid(
                 "unsupported task kind leaves DATA store history unknown",

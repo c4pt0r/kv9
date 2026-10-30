@@ -2735,6 +2735,80 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn restore_keyspace(
+        &self,
+        request: Request<proto::RestoreKeyspaceRequest>,
+    ) -> Result<Response<proto::RestoreKeyspaceResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        if request.backup_task == 0 || request.name.is_empty() || request.name.len() > 1024 {
+            return Err(Status::invalid_argument("backup_task and a name of 1..1024 bytes are required"));
+        }
+        if request.voters.iter().any(|v| *v == 0) {
+            return Err(Status::invalid_argument("voters must be nonzero node ids"));
+        }
+        let caller = auth.principal.to_string();
+        let voters: Vec<NodeId> = request.voters.iter().map(|v| NodeId(*v)).collect();
+        let (backup_task, name, tenant) = (request.backup_task, request.name, TenantId(request.tenant_id));
+        let result = self
+            .backend
+            .call(reservation, move |backend| backend.restore_keyspace(&caller, backup_task, &name, tenant, &voters))
+            .await?;
+        Ok(Response::new(proto::RestoreKeyspaceResponse {
+            task: result.intent.task(),
+            operation: result.intent.operation().to_vec(),
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+            keyspace_id: result.intent.keyspace().0,
+            target_regions: result.intent.targets().iter().map(|t| t.region().0).collect(),
+        }))
+    }
+
+    async fn list_restores(
+        &self,
+        request: Request<proto::ListRestoresRequest>,
+    ) -> Result<Response<proto::ListRestoresResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let caller = auth.principal.to_string();
+        let restores = self
+            .backend
+            .call(reservation, move |backend| backend.list_restores(&caller))
+            .await?;
+        Ok(Response::new(proto::ListRestoresResponse {
+            restores: restores
+                .into_iter()
+                .map(|r| proto::RestoreRow {
+                    task: r.task,
+                    operation: r.operation.to_vec(),
+                    backup_task: r.backup_task,
+                    keyspace_id: r.keyspace,
+                    tenant_id: r.tenant,
+                    name: r.name,
+                    requested_unix: r.requested_unix,
+                    stage: r.stage.to_string(),
+                    targets: r
+                        .targets
+                        .into_iter()
+                        .map(|t| proto::RestoreTargetRow {
+                            source_region: t.source_region,
+                            creation_task: t.creation_task,
+                            region: t.region,
+                            start: t.start,
+                            end: t.end,
+                            evidence_task: t.evidence.map_or(0, |(task, _)| task),
+                            rows: t.evidence.map_or(0, |(_, rows)| rows),
+                        })
+                        .collect(),
+                })
+                .collect(),
+        }))
+    }
+
     async fn list_data_groups(
         &self,
         request: Request<proto::ListDataGroupsRequest>,

@@ -41,7 +41,7 @@ pub mod proto {
 pub mod admin;
 pub use admin::{
     BackupAnchorRow, BackupPlanned, BackupRangeRow, BackupRangeVerdict, BackupRetired, BackupRow,
-    BackupVerdict, DataGroup, DataGroupCreated, DataGroupKeyspace, DataGroupMigration,
+    BackupVerdict, RestorePlanned, RestoreRow, RestoreTargetRow, DataGroup, DataGroupCreated, DataGroupKeyspace, DataGroupMigration,
     DataGroupPlan, DataGroupReplica, DataKeyspaceCreated, LeaderTransfer, MembershipChange,
     NodeDirectory, NodeEndpoint, NodeRow, NodeStatus, ReplicaPlanned, TaskPage, TaskRow,
     META_REGION_ID,

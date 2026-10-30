@@ -26,6 +26,7 @@ pub enum AbortTarget {
     Merge = 2,
     Drain = 3,
     Backup = 4,
+    Restore = 5,
 }
 
 impl AbortTarget {
@@ -35,6 +36,7 @@ impl AbortTarget {
             2 => Self::Merge,
             3 => Self::Drain,
             4 => Self::Backup,
+            5 => Self::Restore,
             _ => return Err(invalid("invalid abort target")),
         })
     }
@@ -44,6 +46,7 @@ impl AbortTarget {
             Self::Merge => "merge",
             Self::Drain => "drain",
             Self::Backup => "backup",
+            Self::Restore => "restore",
         }
     }
 }
@@ -373,8 +376,14 @@ pub fn plan_range_abort<E: Engine>(txn: &mut MetaTxn<'_, E>, target_task: u64) -
             _ => {}
         }
         (b.operation(), AbortTarget::Backup)
+    } else if let Some(r) = restore::from_restore_row(&row, root.digest())? {
+        let rows = restore::committed_restores_in_txn(txn)?;
+        if rows.stage(&r) == restore::RestoreStage::Published {
+            return Err(invalid("the restore is published; the keyspace exists and nothing aborts"));
+        }
+        (r.operation(), AbortTarget::Restore)
     } else {
-        return Err(invalid("abort takes a split intent, a merge intent, a node drain or a backup (a replica plan aborts through its migration abort)"));
+        return Err(invalid("abort takes a split intent, a merge intent, a node drain, a backup or a restore (a replica plan aborts through its migration abort)"));
     };
     for other in task_rows(txn) {
         let other = other?;

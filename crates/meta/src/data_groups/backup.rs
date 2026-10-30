@@ -950,6 +950,11 @@ pub fn plan_backup_retirement<E: Engine>(txn: &mut MetaTxn<'_, E>, backup_task: 
         BackupStage::Aborted => return Err(invalid("the backup is aborted; nothing to retire")),
         other => return Err(invalid(&format!("the backup is {}; abort it instead of retiring it", other.label()))),
     }
+    // A live restore reads this backup's anchors and images: retirement waits (B1).
+    let live = super::restore::committed_restores_in_txn(txn)?.live_of_backup(backup_task).len();
+    if live > 0 {
+        return Err(invalid(&format!("{live} restore(s) of this backup are live; retire after they publish or abort")));
+    }
     let retirement = BackupRetirement {
         root,
         operation: intent.operation,

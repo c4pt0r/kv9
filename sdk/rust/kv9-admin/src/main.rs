@@ -74,9 +74,11 @@ fn usage() -> String {
      \u{20}        describe <task>              per-range anchors, bundle, restorable\n\
      \u{20}        verify <task>                GET-verify the bundle and every range's objects now\n\
      \u{20}        retire <task>                release the pins of a complete backup (the bundle stays)\n\
+     restore  create --backup <task> --as <name> [--tenant <id>] [--voters a,b,c] [--wait [--wait-secs <n>]]   a NEW keyspace from a complete backup\n\
+     \u{20}        list ; describe <task>       stages intended → populating → populated → published\n\
      task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history\n\
      \u{20}        describe <id>\n\
-     \u{20}        abort <id>                   abort a split/merge intent (before its seal), a drain, a replica plan or an incomplete backup\n\
+     \u{20}        abort <id>                   abort a split/merge intent (before its seal), a drain, a replica plan, an incomplete backup or an unpublished restore\n\
      dashboard [--listen <host:port>] [--refresh <secs>]   serve a read-only web view (default 127.0.0.1:9100, 3 s)\n\
      version\n\
      \n\
@@ -2153,6 +2155,130 @@ async fn backup_retire(global: &Global, cluster: &mut Cluster, task: u64) -> Out
     })
 }
 
+fn restore_row_json(r: &kv9_client::RestoreRow) -> serde_json::Value {
+    json!({
+        "task": r.task, "operation": hex(&r.operation), "backup_task": r.backup_task, "keyspace_id": r.keyspace_id,
+        "tenant_id": r.tenant_id, "name": r.name, "requested_unix": r.requested_unix, "stage": r.stage,
+        "targets": r.targets.iter().map(|t| json!({
+            "source_region": t.source_region, "creation_task": t.creation_task, "region": t.region,
+            "start": hex(&t.start), "end": hex(&t.end),
+            "evidence": if t.evidence_task == 0 { serde_json::Value::Null } else { json!({"task": t.evidence_task, "rows": t.rows}) },
+        })).collect::<Vec<_>>(),
+    })
+}
+
+async fn restore_create(global: &Global, cluster: &mut Cluster, args: &VerbArgs) -> Outcome {
+    let usage = "restore create --backup <task> --as <name> [--tenant <id>] [--voters a,b,c] [--wait]";
+    let backup = parse_id(args.flags.get("backup").ok_or_else(|| Fail::Usage(usage.into()))?, "--backup")?;
+    let name = args.flags.get("as").cloned().ok_or_else(|| Fail::Usage(usage.into()))?;
+    // Tenant 0 is the default tenant: a plain integer, zero allowed.
+    let tenant: u64 = match args.flags.get("tenant") {
+        Some(t) => t.parse().map_err(|_| Fail::Usage(format!("--tenant must be an integer, got {t:?}")))?,
+        None => 0,
+    };
+    let voters: Vec<u64> = match args.flags.get("voters") {
+        Some(v) => v.split(',').map(|n| parse_id(n.trim(), "--voters")).collect::<Result<_, _>>()?,
+        None => Vec::new(),
+    };
+    let wait = args.switches.iter().any(|s| s == "wait");
+    let wait_for = match args.flags.get("wait-secs") {
+        Some(secs) => Duration::from_secs(secs.parse().map_err(|_| Fail::Usage("--wait-secs must be seconds".into()))?),
+        None => DEFAULT_BACKUP_WAIT,
+    };
+    confirm(
+        global,
+        &format!(
+            "plan: RestoreKeyspace backup={backup} as {name:?} at leader node {}; one new group per backed-up range{}; the targets copy from the anchored images, the metadata leader publishes the keyspace",
+            cluster.leader_id,
+            if voters.is_empty() { " on placement's least-loaded stores".to_string() } else { format!(" on {voters:?}") }
+        ),
+        Some(&name),
+    )?;
+    let planned = cluster.leader.restore_keyspace(backup, &name, tenant, &voters).await?;
+    let mut result = json!({
+        "task": planned.task, "operation": hex(&planned.operation), "backup_task": backup, "name": name,
+        "keyspace_id": planned.keyspace_id, "target_regions": planned.target_regions,
+        "outcome": if planned.changed { "committed" } else { "confirmed" },
+        "applied": {"term": planned.applied.term, "index": planned.applied.index},
+    });
+    let mut table = format!(
+        "restore of backup {backup} as {name:?} {} as task {} (keyspace id {} reserved, {} target(s): {:?})\nwatch: kv9-admin restore describe {}",
+        if planned.changed { "committed" } else { "confirmed" },
+        planned.task,
+        planned.keyspace_id,
+        planned.target_regions.len(),
+        planned.target_regions,
+        planned.task
+    );
+    if wait {
+        let started = Instant::now();
+        loop {
+            if let Ok(restores) = cluster.leader.list_restores().await {
+                if let Some(row) = restores.iter().find(|r| r.task == planned.task) {
+                    match row.stage.as_str() {
+                        "published" => {
+                            result["waited"] = json!({"stage": "published", "seconds": started.elapsed().as_secs()});
+                            table.push_str(&format!("\n--wait: published after {} s; keyspace {name:?} (id {}) serves", started.elapsed().as_secs(), planned.keyspace_id));
+                            break;
+                        }
+                        "aborted" => return Err(Fail::Refused(format!("restore {} is aborted", planned.task))),
+                        _ => {}
+                    }
+                }
+            }
+            if started.elapsed() >= wait_for {
+                return Err(Fail::WaitDeadline(format!("restore {} not published after {} s", planned.task, wait_for.as_secs())));
+            }
+            tokio::time::sleep(Duration::from_millis(500)).await;
+        }
+    }
+    Ok(Report { command: "restore create".into(), result, table, partial: Vec::new() })
+}
+
+async fn restore_list(cluster: &mut Cluster) -> Outcome {
+    let restores = cluster.leader.list_restores().await?;
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs());
+    let rows: Vec<Vec<String>> = restores
+        .iter()
+        .map(|r| vec![
+            r.task.to_string(),
+            r.backup_task.to_string(),
+            r.name.clone(),
+            r.keyspace_id.to_string(),
+            format!("{}/{}", r.targets.iter().filter(|t| t.evidence_task != 0).count(), r.targets.len()),
+            r.stage.clone(),
+            format!("{}s", now.saturating_sub(r.requested_unix)),
+        ])
+        .collect();
+    Ok(Report {
+        command: "restore list".into(),
+        result: json!(restores.iter().map(restore_row_json).collect::<Vec<_>>()),
+        table: table(&["TASK", "BACKUP", "NAME", "KEYSPACE", "EVIDENCED", "STAGE", "AGE"], &rows),
+        partial: Vec::new(),
+    })
+}
+
+async fn restore_describe(cluster: &mut Cluster, task: u64) -> Outcome {
+    let restores = cluster.leader.list_restores().await?;
+    let r = restores.iter().find(|r| r.task == task).ok_or_else(|| Fail::Refused(format!("task {task} is not a restore")))?;
+    let mut table = format!(
+        "restore:    {}\nbackup:     {}\nkeyspace:   {} (id {}, tenant {})\nstage:      {}",
+        r.task, r.backup_task, r.name, r.keyspace_id, r.tenant_id, r.stage
+    );
+    for t in &r.targets {
+        table.push_str(&format!(
+            "\ntarget {:>6}: group {} from region {} [{}, {}) {}",
+            t.region,
+            t.creation_task,
+            t.source_region,
+            String::from_utf8_lossy(&t.start),
+            String::from_utf8_lossy(&t.end),
+            if t.evidence_task != 0 { format!("evidenced (task {}, {} rows)", t.evidence_task, t.rows) } else { "not evidenced".into() }
+        ));
+    }
+    Ok(Report { command: "restore describe".into(), result: restore_row_json(r), table, partial: Vec::new() })
+}
+
 async fn dispatch(global: &Global, words: &[String]) -> Outcome {
     if let [noun, rest @ ..] = words {
         if noun == "dashboard" && rest.first().is_none_or(|w| w.starts_with("--") || w == "serve") {
@@ -2255,6 +2381,12 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
         ("backup", "retire") => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("backup retire <task>".into()))?, "backup task")?;
             backup_retire(global, &mut cluster, id).await?
+        }
+        ("restore", "create") => restore_create(global, &mut cluster, &args).await?,
+        ("restore", "list") => restore_list(&mut cluster).await?,
+        ("restore", "describe") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("restore describe <task>".into()))?, "restore task")?;
+            restore_describe(&mut cluster, id).await?
         }
         ("task", "list") => task_list(&mut cluster, &args).await?,
         ("task", "abort") => {

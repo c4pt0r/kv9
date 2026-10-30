@@ -190,6 +190,8 @@ service! {
     list_backups: ListBackupsRequest => ListBackupsResponse,
     retire_backup: RetireBackupRequest => RetireBackupResponse,
     verify_backup: VerifyBackupRequest => VerifyBackupResponse,
+    restore_keyspace: RestoreKeyspaceRequest => RestoreKeyspaceResponse,
+    list_restores: ListRestoresRequest => ListRestoresResponse,
     split_range: SplitRangeRequest => SplitRangeResponse,
     merge_ranges: MergeRangesRequest => MergeRangesResponse,
     abort_task: AbortTaskRequest => AbortTaskResponse,

@@ -7,7 +7,7 @@
 
 use std::sync::Arc;
 
-use kv9_common::{KeyspaceId, Result, UserKey, Value};
+use kv9_common::{KeyspaceId, Result, TenantId, UserKey, Value};
 use kv9_raw::RawMutation;
 use kv9_region::RegionEpoch;
 
@@ -774,6 +774,17 @@ pub trait AdminApi {
     fn verify_backup(&self, _caller: &str, _task: u64) -> Result<BackupVerification> {
         Err(kv9_common::Error::NotImplemented("AdminApi::verify_backup"))
     }
+    /// Commit the restore of a complete backup as the NEW keyspace `name`
+    /// (docs/BACKUP-RESTORE.md §5): one empty target group per backed-up range on
+    /// `voters` (placement's least-loaded three when empty), the keyspace id
+    /// reserved; the targets copy and the metadata leader publishes from here.
+    fn restore_keyspace(&self, _caller: &str, _backup_task: u64, _name: &str, _tenant: TenantId, _voters: &[kv9_common::NodeId]) -> Result<RestoreResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::restore_keyspace"))
+    }
+    /// Every committed restore with its stage and targets.
+    fn list_restores(&self, _caller: &str) -> Result<Vec<RestoreSummary>> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::list_restores"))
+    }
     /// Commit a merge intent for the adjacent bound ranges `low` `[s,m)` and `high`
     /// `[m,e)` on the same stores, creating and activating the merged child in the
     /// same transaction (docs/RANGE-SPLIT.md §6).
@@ -1083,6 +1094,40 @@ pub struct BackupVerification {
     /// `(region, ok, detail)` per range.
     pub ranges: Vec<(u64, bool, String)>,
     pub ok: bool,
+}
+
+/// The receipt of [`AdminApi::restore_keyspace`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RestoreResult {
+    pub intent: kv9_meta::data_groups::restore::RestoreIntent,
+    /// False confirms the live restore of the same backup under the same name.
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RestoreTargetSummary {
+    pub source_region: u64,
+    pub creation_task: u64,
+    pub region: u64,
+    pub start: Vec<u8>,
+    pub end: Vec<u8>,
+    /// `(evidence task, rows)` once the target is evidenced.
+    pub evidence: Option<(u64, u64)>,
+}
+
+/// One committed restore with its catalog-only stage.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RestoreSummary {
+    pub task: u64,
+    pub operation: [u8; 16],
+    pub backup_task: u64,
+    pub keyspace: u32,
+    pub tenant: u64,
+    pub name: String,
+    pub requested_unix: u64,
+    pub stage: &'static str,
+    pub targets: Vec<RestoreTargetSummary>,
 }
 
 /// The receipt of [`AdminApi::drain_node`].

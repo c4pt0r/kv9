@@ -726,6 +726,9 @@ impl RuntimeBackend {
         } else if kv9_meta::data_groups::backup::is_anchor_receipt(receipt) {
             let (a, changed) = kv9_meta::data_groups::backup::plan_backup_anchor(&mut txn, receipt)?;
             (a.task(), changed)
+        } else if kv9_meta::data_groups::restore::is_restore_receipt(receipt) {
+            let (e, changed) = kv9_meta::data_groups::restore::plan_restore_evidence(&mut txn, receipt)?;
+            (e.task(), changed)
         } else if kv9_meta::data_groups::merge::is_merge_receipt(receipt) {
             let (e, changed) = kv9_meta::data_groups::merge::plan_merge_evidence(&mut txn, receipt)?;
             (e.task(), changed)
