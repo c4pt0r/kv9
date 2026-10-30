@@ -1,6 +1,6 @@
 ---
 name: kv9-ops
-description: Operate, grow, repair and diagnose a running kv9 cluster with kv9-admin and the status documents. Use this skill whenever the user wants to bring up or extend a kv9 cluster, add or remove nodes, create data groups or keyspaces, add or move replicas, transfer leadership, split or merge ranges, drain or retire a node, abort an operation, read `cluster health` or a node's `status` file, run or extend the operations drill (`scripts/ops-drill.sh`), or asks why a plan, split, merge, drain or repair is stuck, slow or refused — even when they only say "the cluster", "a node", "kv9-admin" or paste a status line without naming the operation.
+description: Operate, grow, repair, back up and diagnose a running kv9 cluster with kv9-admin and the status documents. Use this skill whenever the user wants to bring up or extend a kv9 cluster, add or remove nodes, create data groups or keyspaces, add or move replicas, transfer leadership, split or merge ranges, drain or retire a node, back up a keyspace or verify or retire a backup, abort an operation, read `cluster health` or a node's `status` file, run or extend the operations drill (`scripts/ops-drill.sh`), or asks why a plan, split, merge, drain, backup or repair is stuck, slow or refused — even when they only say "the cluster", "a node", "kv9-admin" or paste a status line without naming the operation.
 ---
 
 # kv9 operations
@@ -44,7 +44,8 @@ KV9_ADMIN_TOKEN=<admin token> kv9-admin --endpoints <any nodes, comma-separated>
 | Add / move a replica | `group add-replica <task> --to <n>`, `group move-replica <task> --from <a> --to <b>` | One committed plan (kind 111); needs object storage (`KV9_STORAGE=minio` + `KV9_OBJECT_STORE_*`). About 30–40 s each in a debug build. A group never shrinks first. |
 | Watch | `group describe <task>` (`plans`, `splits`, `merges` with stages + every replica's live view), `task list --kind <n>`, `task describe <id>` | Plan stages `planned → captured → pinned → evidenced → decided`; **an Add ends at `evidenced`** (only a Move has a removal decision) — completion is the destination in the live voter set. Splits/merges `intended → populating → populated → published`. |
 | Split / merge | `group split <task> --at <key>` (`--at-hex`), `group merge <low-task> <high-task>` | Children on the parent's members (four included). The parent refuses reads and writes between its seal and the publication; reads may bounce with `NotLeader` for a second after publication. Membership plans and range operations exclude each other while live; the refusal names the holder. |
-| Abort | `task abort <id>` | A split/merge before its first seal, a drain any time, a plan through its migration abort (`path: migration abort (no image planned)` when pre-capture). |
+| Abort | `task abort <id>` | A split/merge before its first seal, a drain any time, an incomplete backup, a plan through its migration abort (`path: migration abort (no image planned)` when pre-capture). |
+| Back up a keyspace | `backup create --keyspace <name> [--label] --wait`, `backup list [--all]`, `backup describe <task>`, `backup verify <task>`, `backup retire <task>` | Stages `intended → capturing → anchored → complete`; one anchor per range with rows and a digest, one bundle object `backups/<cluster>/<task>/bundle`, GET-verified. A held range refuses splits, merges and plans until anchored (seconds for small ranges). `restorable: no` = a range exceeded the image budget: kept, not restorable yet. A complete backup retires, never aborts. There is no restore verb yet. |
 | Retire a node | `node drain <id> --wait --wait-secs <n>` → stop the process | Moves every replica off (one plan at a time, `KV9_DRAIN_PARALLEL`), leaves the metadata group; `node list` → `drained`. Needs, per hosted group, a spare store that **never held that group** (placement never returns a group to a store that held it; initial replicas and removal sources are excluded too). |
 | Let the cluster repair itself | `KV9_AUTO_REPAIR_REPLICA=1`, `KV9_AUTO_REPLACE_VOTER=1` on every node | A lost voter (silent `KV9_*_LOST_SECS`, default 300) is replaced by a move plan to the least-loaded spare / by promoting a joined learner. Without the switches the verdicts are still shown (`replica_repair=`, `voter_replacement=`) and the decision is left to you. |
 | Pause the drivers | `KV9_REPLICA_DRIVER=0`, `KV9_RANGE_DRIVER=0` on a node | Committed plans wait; nothing is lost. `KV9_FAULT_DIR` is a test hook: never in production. |
@@ -61,11 +62,13 @@ Work from committed state outward; do not restart nodes on a hunch.
    done, not stuck.
 2. `task list --kind <n>`: is the row that the next stage needs there (103 migration, 104 install
    evidence, 106 removal, 108 migration abort, 111 plan, 112 drain, 113/114 split intent/evidence,
-   115/116 merge, 117 operation abort, 118 seal evidence)?
+   115/116 merge, 117 operation abort, 118 seal evidence, 119 backup intent, 120 backup anchor,
+   121 backup retirement, 122 backup completion)?
 3. Read the status line of the node whose role the next step is: `replica_plans=` on the group
    leader (attach, plan_image, capture, promote, decide_removal, remove) and on the destination
    (install, record_evidence); `node_drain=` on the metadata leader; `range_split=`/`range_merge=`
-   on the parent's and children's leaders. Each carries `events` with the last outcome and
+   on the parent's and children's leaders; `backup=` on each range leader (plan_image, capture)
+   and the metadata leader (bind, bundle), with per-range `state` and a `waiting` reason. Each carries `events` with the last outcome and
    `error`. A first-attempt `install: failed: image not fully uploaded yet` followed by success
    30 s later is normal.
 4. Check the known blockers: a live split/merge or plan on the same group (exclusive); no spare

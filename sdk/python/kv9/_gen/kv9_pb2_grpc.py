@@ -186,6 +186,26 @@ class Kv9Stub:
                 request_serializer=kv9__pb2.DrainNodeRequest.SerializeToString,
                 response_deserializer=kv9__pb2.DrainNodeResponse.FromString,
                 _registered_method=True)
+        self.BackupKeyspace = channel.unary_unary(
+                '/kv9.v1.Kv9/BackupKeyspace',
+                request_serializer=kv9__pb2.BackupKeyspaceRequest.SerializeToString,
+                response_deserializer=kv9__pb2.BackupKeyspaceResponse.FromString,
+                _registered_method=True)
+        self.ListBackups = channel.unary_unary(
+                '/kv9.v1.Kv9/ListBackups',
+                request_serializer=kv9__pb2.ListBackupsRequest.SerializeToString,
+                response_deserializer=kv9__pb2.ListBackupsResponse.FromString,
+                _registered_method=True)
+        self.RetireBackup = channel.unary_unary(
+                '/kv9.v1.Kv9/RetireBackup',
+                request_serializer=kv9__pb2.RetireBackupRequest.SerializeToString,
+                response_deserializer=kv9__pb2.RetireBackupResponse.FromString,
+                _registered_method=True)
+        self.VerifyBackup = channel.unary_unary(
+                '/kv9.v1.Kv9/VerifyBackup',
+                request_serializer=kv9__pb2.VerifyBackupRequest.SerializeToString,
+                response_deserializer=kv9__pb2.VerifyBackupResponse.FromString,
+                _registered_method=True)
         self.SplitRange = channel.unary_unary(
                 '/kv9.v1.Kv9/SplitRange',
                 request_serializer=kv9__pb2.SplitRangeRequest.SerializeToString,
@@ -499,6 +519,31 @@ class Kv9Servicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def BackupKeyspace(self, request, context):
+        """Backup of a keyspace (docs/BACKUP-RESTORE.md): intent, listing, retirement, verification.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListBackups(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RetireBackup(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def VerifyBackup(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def SplitRange(self, request, context):
         """Commit a split intent for a bound range: the two children are created and
         activated on the parent's stores in the same transaction (docs/RANGE-SPLIT.md §2).
@@ -786,6 +831,26 @@ def add_Kv9Servicer_to_server(servicer, server):
                     servicer.DrainNode,
                     request_deserializer=kv9__pb2.DrainNodeRequest.FromString,
                     response_serializer=kv9__pb2.DrainNodeResponse.SerializeToString,
+            ),
+            'BackupKeyspace': grpc.unary_unary_rpc_method_handler(
+                    servicer.BackupKeyspace,
+                    request_deserializer=kv9__pb2.BackupKeyspaceRequest.FromString,
+                    response_serializer=kv9__pb2.BackupKeyspaceResponse.SerializeToString,
+            ),
+            'ListBackups': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListBackups,
+                    request_deserializer=kv9__pb2.ListBackupsRequest.FromString,
+                    response_serializer=kv9__pb2.ListBackupsResponse.SerializeToString,
+            ),
+            'RetireBackup': grpc.unary_unary_rpc_method_handler(
+                    servicer.RetireBackup,
+                    request_deserializer=kv9__pb2.RetireBackupRequest.FromString,
+                    response_serializer=kv9__pb2.RetireBackupResponse.SerializeToString,
+            ),
+            'VerifyBackup': grpc.unary_unary_rpc_method_handler(
+                    servicer.VerifyBackup,
+                    request_deserializer=kv9__pb2.VerifyBackupRequest.FromString,
+                    response_serializer=kv9__pb2.VerifyBackupResponse.SerializeToString,
             ),
             'SplitRange': grpc.unary_unary_rpc_method_handler(
                     servicer.SplitRange,
@@ -1705,6 +1770,114 @@ class Kv9:
             '/kv9.v1.Kv9/DrainNode',
             kv9__pb2.DrainNodeRequest.SerializeToString,
             kv9__pb2.DrainNodeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def BackupKeyspace(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/BackupKeyspace',
+            kv9__pb2.BackupKeyspaceRequest.SerializeToString,
+            kv9__pb2.BackupKeyspaceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListBackups(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/ListBackups',
+            kv9__pb2.ListBackupsRequest.SerializeToString,
+            kv9__pb2.ListBackupsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RetireBackup(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/RetireBackup',
+            kv9__pb2.RetireBackupRequest.SerializeToString,
+            kv9__pb2.RetireBackupResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def VerifyBackup(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/kv9.v1.Kv9/VerifyBackup',
+            kv9__pb2.VerifyBackupRequest.SerializeToString,
+            kv9__pb2.VerifyBackupResponse.FromString,
             options,
             channel_credentials,
             insecure,

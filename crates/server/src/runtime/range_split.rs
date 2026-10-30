@@ -723,6 +723,9 @@ impl RuntimeBackend {
         let (task, changed) = if kv9_meta::data_groups::range_abort::is_seal_receipt(receipt) {
             let (e, changed) = kv9_meta::data_groups::range_abort::plan_seal_evidence(&mut txn, receipt)?;
             (e.task(), changed)
+        } else if kv9_meta::data_groups::backup::is_anchor_receipt(receipt) {
+            let (a, changed) = kv9_meta::data_groups::backup::plan_backup_anchor(&mut txn, receipt)?;
+            (a.task(), changed)
         } else if kv9_meta::data_groups::merge::is_merge_receipt(receipt) {
             let (e, changed) = kv9_meta::data_groups::merge::plan_merge_evidence(&mut txn, receipt)?;
             (e.task(), changed)

@@ -9,6 +9,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct NodeId(pub u64);
 
+/// The synthetic destination a BACKUP capture names (docs/BACKUP-RESTORE.md §12): a
+/// capture request needs a destination distinct from its source and a backup has none.
+/// Never a real node: admission refuses it, and the capture planner skips the
+/// "destination is a learner at the cut" rule for it alone.
+pub const BACKUP_DESTINATION_NODE: NodeId = NodeId(u64::MAX);
+
 /// Identifies a region (range shard = Raft group) (DESIGN §3.3).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct RegionId(pub u64);

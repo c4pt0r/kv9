@@ -266,6 +266,9 @@ pub fn plan_split<E: Engine>(
     if super::live_plan_on_region(txn, root.digest(), parent_region)? {
         return Err(invalid("the parent has an unsettled replica plan; split after it settles"));
     }
+    if super::backup::live_backup_on_region(txn, parent_region)?.is_some() {
+        return Err(invalid("a live backup holds the parent; split after it anchors"));
+    }
     let members: Vec<NodeId> = super::committed_members(txn, root.digest(), parent.creation().intent())?
         .into_iter()
         .map(|(m, _)| m.node)

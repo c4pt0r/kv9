@@ -211,7 +211,7 @@ pub fn plan_migration<E: Engine>(
     }
     if let Some(what) = super::live_range_operation(txn, root.digest(), creation.region())? {
         return Err(invalid(&format!(
-            "a live {what} binds this group's membership until it is published"
+            "a live {what} binds this group's membership until it settles"
         )));
     }
     // A sealed binding is a published split's or merge's parent: the group retires

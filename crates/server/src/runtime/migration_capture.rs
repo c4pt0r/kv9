@@ -2,7 +2,7 @@
 //! image. Retain the actual group owner until upload and object-job drain end.
 use super::*;
 use kv9_engine::checkpoint::{CheckpointManifest, RemoteUploader};
-use kv9_meta::data_groups::migration::CommittedMigration;
+use kv9_meta::data_groups::CaptureSubject;
 use kv9_raft::snapshot_install::capture::{
     plan_capture_durable, CaptureDescriptor, CaptureRequest, CapturedSourceImage, PlannedCapture,
 };
@@ -70,7 +70,7 @@ impl RuntimeBackend {
         operation: [u8; 16],
         work: impl FnOnce(
             &RootDescriptor,
-            &CommittedMigration,
+            &CaptureSubject,
             CaptureWork,
             &RemoteUploader,
         ) -> Result<T>,
@@ -86,25 +86,30 @@ impl RuntimeBackend {
         if certified.digest() != root {
             return Err(Error::Config("capture request root differs".into()));
         }
-        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
-            .into_iter()
-            .find(|m| m.intent().operation() == operation)
+        let migration = kv9_meta::data_groups::capture_subject(store, operation)?
             .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
         let aborts = kv9_meta::data_groups::abort::committed_aborts(store)?;
-        if aborts.iter().any(|a| a.operation() == operation) {
-            return Err(Error::Config(
-                "the operation is aborted; capture refuses permanently".into(),
-            ));
+        let backups = kv9_meta::data_groups::backup::committed_backups(store)?;
+        {
+            let txn = store.begin()?;
+            if kv9_meta::data_groups::capture_subject_aborted(&txn, root, &migration)? {
+                return Err(Error::Config(
+                    "the operation is aborted; capture refuses permanently".into(),
+                ));
+            }
         }
         let installed = kv9_meta::data_groups::evidence::committed_install_evidence(store)?;
-        let allow_create = !installed.iter().any(|e| e.operation() == operation);
+        // An operation whose image already proved itself (install evidence for a
+        // migration, an anchor for a backup range) gets no second capture.
+        let allow_create = !installed.iter().any(|e| e.operation() == operation)
+            && !backups.anchors.iter().any(|a| a.range_operation() == operation);
         let committed_range = kv9_meta::data_groups::ranges::committed_ranges(store)?
             .into_iter()
-            .find(|r| r.creation().intent().region() == migration.intent().region())
+            .find(|r| r.creation().intent().region() == migration.region())
             .ok_or_else(|| Error::Config("migration group has no committed range".into()))?;
         let group = self
             .raw_directory
-            .by_region(migration.intent().region())
+            .by_region(migration.region())
             .ok_or_else(|| Error::MetaNotReady("migration group is not active locally".into()))?;
         let (driver, engine, binding) = group.capture_parts();
         if binding != committed_range.range() {
@@ -121,7 +126,7 @@ impl RuntimeBackend {
                 "capture source store identity differs".into(),
             ));
         }
-        let destination = migration.intent().destination();
+        let destination = migration.destination();
         let request = CaptureRequest {
             source,
             destination: StoreIdentity {
@@ -212,24 +217,37 @@ impl RuntimeBackend {
                         && destination.incarnation == old.destination.store_incarnation
                         && selected == subject
                 };
-                Ok(aborts.iter().any(|a| {
-                    matches(
-                        a.operation(),
-                        a.root(),
-                        a.region(),
-                        a.destination(),
-                        a.subject(),
-                    )
-                }) || installed.iter().any(|e| {
-                    matches(
-                        e.operation(),
-                        e.root(),
-                        e.region(),
-                        e.destination(),
-                        e.subject(),
-                    ) && e.image_digest() == image_digest
-                        && e.cut() == manifest.position()
-                }))
+                // A slot held by an earlier BACKUP range is settled once that
+                // range is anchored with this exact image, or its backup is
+                // aborted; nothing else may reuse it.
+                let old_backup = backups.range_by_capture_operation(old.operation);
+                let backup_settled = old_backup.is_some_and(|(intent, range)| {
+                    old.range.region == range.region()
+                        && (backups.aborted.contains(&intent.operation())
+                            || backups
+                                .anchor_of_range(range)
+                                .is_some_and(|a| a.image_digest() == image_digest && a.cut() == manifest.position()))
+                });
+                Ok(backup_settled
+                    || aborts.iter().any(|a| {
+                        matches(
+                            a.operation(),
+                            a.root(),
+                            a.region(),
+                            a.destination(),
+                            a.subject(),
+                        )
+                    })
+                    || installed.iter().any(|e| {
+                        matches(
+                            e.operation(),
+                            e.root(),
+                            e.region(),
+                            e.destination(),
+                            e.subject(),
+                        ) && e.image_digest() == image_digest
+                            && e.cut() == manifest.position()
+                    }))
             },
         )?;
         let descriptor = planned.descriptor()?;

@@ -34,6 +34,7 @@ const SCHEMA_VERSION: u64 = 1;
 const DEFAULT_WAIT: Duration = Duration::from_secs(30);
 /// A drain moves whole replicas through object storage; give it minutes by default.
 const DEFAULT_DRAIN_WAIT: Duration = Duration::from_secs(900);
+const DEFAULT_BACKUP_WAIT: Duration = Duration::from_secs(600);
 /// Pending admissions that end within this many seconds are a health warning.
 const ADMISSION_EXPIRY_WARNING_SECS: u64 = 3600;
 /// Entries between the leader's commit index and a node's applied index that count
@@ -66,9 +67,14 @@ fn usage() -> String {
      \u{20}        transfer-leader <creation-task> --to <node> [--wait]\n\
      \u{20}        split <creation-task> --at <key> | --at-hex <hex> [--operation <hex> | --label <text>]\n\
      \u{20}        merge <low-creation-task> <high-creation-task> [--operation <hex> | --label <text>]\n\
+     backup   create --keyspace <name|id> [--label <text>] [--wait [--wait-secs <n>]]   a retention point of the keyspace\n\
+     \u{20}        list [--all]                 committed backups (retired ones with --all)\n\
+     \u{20}        describe <task>              per-range anchors, bundle, restorable\n\
+     \u{20}        verify <task>                GET-verify the bundle and every range's objects now\n\
+     \u{20}        retire <task>                release the pins of a complete backup (the bundle stays)\n\
      task     list [--kind <n>] [--after <id>] [--limit <n>]   the committed TASKS history\n\
      \u{20}        describe <id>\n\
-     \u{20}        abort <id>                   abort a split/merge intent (before its seal), a drain or a replica plan\n\
+     \u{20}        abort <id>                   abort a split/merge intent (before its seal), a drain, a replica plan or an incomplete backup\n\
      version\n\
      \n\
      The token comes from --token, KV9_ADMIN_TOKEN, KV9_CLIENT_TOKEN or the context's\n\
@@ -1954,6 +1960,195 @@ async fn task_describe(cluster: &mut Cluster, id: u64) -> Outcome {
     })
 }
 
+fn backup_row_json(b: &kv9_client::BackupRow) -> serde_json::Value {
+    json!({
+        "task": b.task, "operation": hex(&b.operation), "keyspace_id": b.keyspace_id, "tenant_id": b.tenant_id,
+        "label": b.label, "sequence": b.sequence, "requested_unix": b.requested_unix, "stage": b.stage,
+        "restorable": b.restorable,
+        "ranges": b.ranges.iter().map(|r| json!({
+            "region": r.region, "creation_task": r.creation_task, "bind_task": r.bind_task, "operation": hex(&r.operation),
+            "anchor": r.anchor.as_ref().map(|a| json!({
+                "task": a.task, "cut": {"term": a.cut.term, "index": a.cut.index}, "image_digest": hex(&a.image_digest),
+                "objects": a.objects, "object_bytes": a.object_bytes, "rows": a.rows, "rows_digest": hex(&a.rows_digest),
+                "restorable": a.restorable,
+            })),
+        })).collect::<Vec<_>>(),
+        "bundle": if b.bundle_key.is_empty() { serde_json::Value::Null } else { json!({
+            "key": b.bundle_key, "digest": hex(&b.bundle_digest), "bytes": b.bundle_bytes, "completed_unix": b.completed_unix,
+        }) },
+        "retired_unix": if b.retired_unix == 0 { serde_json::Value::Null } else { json!(b.retired_unix) },
+    })
+}
+
+async fn resolve_keyspace_id(cluster: &mut Cluster, which: &str) -> Result<(u32, String), Fail> {
+    let keyspaces = cluster.leader.list_keyspaces().await?;
+    let keyspace = keyspaces
+        .iter()
+        .find(|k| k.name == which)
+        .or_else(|| keyspaces.iter().find(|k| k.id.to_string() == which))
+        .ok_or_else(|| Fail::Refused(format!("keyspace {which:?} not found")))?;
+    Ok((keyspace.id, keyspace.name.clone()))
+}
+
+async fn backup_create(global: &Global, cluster: &mut Cluster, args: &VerbArgs) -> Outcome {
+    let which = args.flags.get("keyspace").ok_or_else(|| Fail::Usage("backup create --keyspace <name|id> [--label <text>] [--wait]".into()))?;
+    let (keyspace_id, name) = resolve_keyspace_id(cluster, which).await?;
+    let label = args.flags.get("label").cloned().unwrap_or_default();
+    let wait = args.switches.iter().any(|s| s == "wait");
+    let wait_for = match args.flags.get("wait-secs") {
+        Some(secs) => Duration::from_secs(secs.parse().map_err(|_| Fail::Usage("--wait-secs must be seconds".into()))?),
+        None => DEFAULT_BACKUP_WAIT,
+    };
+    confirm(
+        global,
+        &format!(
+            "plan: BackupKeyspace keyspace={name} (id {keyspace_id}) at leader node {}; each range leader captures its image, the metadata leader pins and bundles",
+            cluster.leader_id
+        ),
+        Some(&name),
+    )?;
+    let planned = cluster.leader.backup_keyspace(keyspace_id, &label).await?;
+    let mut result = json!({
+        "task": planned.task, "operation": hex(&planned.operation), "keyspace_id": keyspace_id, "keyspace": name,
+        "sequence": planned.sequence, "regions": planned.regions,
+        "outcome": if planned.changed { "committed" } else { "confirmed" },
+        "applied": {"term": planned.applied.term, "index": planned.applied.index},
+    });
+    let mut table = format!(
+        "backup of keyspace {name} {} as task {} (sequence {}, {} range(s): {:?})\nwatch: kv9-admin backup describe {}",
+        if planned.changed { "committed" } else { "confirmed" },
+        planned.task,
+        planned.sequence,
+        planned.regions.len(),
+        planned.regions,
+        planned.task
+    );
+    if wait {
+        let started = Instant::now();
+        loop {
+            if let Ok(backups) = cluster.leader.list_backups(true).await {
+                if let Some(row) = backups.iter().find(|b| b.task == planned.task) {
+                    match row.stage.as_str() {
+                        "complete" => {
+                            result["waited"] = json!({"stage": "complete", "seconds": started.elapsed().as_secs(), "bundle_key": row.bundle_key, "restorable": row.restorable});
+                            table.push_str(&format!(
+                                "\n--wait: complete after {} s; bundle {}; restorable: {}",
+                                started.elapsed().as_secs(),
+                                row.bundle_key,
+                                if row.restorable { "yes" } else { "no (a range exceeds the image budget; restore needs the streamed path)" }
+                            ));
+                            break;
+                        }
+                        "aborted" | "retired" => return Err(Fail::Refused(format!("backup {} is {}", planned.task, row.stage))),
+                        _ => {}
+                    }
+                }
+            }
+            if started.elapsed() >= wait_for {
+                return Err(Fail::WaitDeadline(format!("backup {} not complete after {} s", planned.task, wait_for.as_secs())));
+            }
+            tokio::time::sleep(Duration::from_millis(500)).await;
+        }
+    }
+    Ok(Report { command: "backup create".into(), result, table, partial: Vec::new() })
+}
+
+async fn backup_list(cluster: &mut Cluster, all: bool) -> Outcome {
+    let backups = cluster.leader.list_backups(all).await?;
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs());
+    let rows: Vec<Vec<String>> = backups
+        .iter()
+        .map(|b| {
+            vec![
+                b.task.to_string(),
+                b.keyspace_id.to_string(),
+                if b.label.is_empty() { "-".into() } else { b.label.clone() },
+                format!("{}/{}", b.ranges.iter().filter(|r| r.anchor.is_some()).count(), b.ranges.len()),
+                b.stage.clone(),
+                if b.stage == "complete" { if b.restorable { "yes".into() } else { "no".into() } } else { "-".into() },
+                b.ranges.iter().filter_map(|r| r.anchor.as_ref()).map(|a| a.object_bytes).sum::<u64>().to_string(),
+                format!("{}s", now.saturating_sub(b.requested_unix)),
+            ]
+        })
+        .collect();
+    Ok(Report {
+        command: "backup list".into(),
+        result: json!(backups.iter().map(backup_row_json).collect::<Vec<_>>()),
+        table: table(&["TASK", "KEYSPACE", "LABEL", "ANCHORED", "STAGE", "RESTORABLE", "BYTES", "AGE"], &rows),
+        partial: Vec::new(),
+    })
+}
+
+async fn backup_describe(cluster: &mut Cluster, task: u64) -> Outcome {
+    let backups = cluster.leader.list_backups(true).await?;
+    let b = backups.iter().find(|b| b.task == task).ok_or_else(|| Fail::Refused(format!("task {task} is not a backup")))?;
+    let mut table = format!(
+        "backup:     {}\nkeyspace:   {} (tenant {})\nlabel:      {}\nsequence:   {}\nstage:      {}\nrestorable: {}",
+        b.task,
+        b.keyspace_id,
+        b.tenant_id,
+        if b.label.is_empty() { "-" } else { &b.label },
+        b.sequence,
+        b.stage,
+        if b.stage != "complete" { "-".to_string() } else if b.restorable { "yes".into() } else { "no (a range exceeds the image budget; restore needs the streamed path of increment 4)".into() }
+    );
+    for r in &b.ranges {
+        match &r.anchor {
+            Some(a) => table.push_str(&format!(
+                "\nrange {:>6}: anchored (task {}) cut {}/{} image {} objects {} bytes {} rows {}{}",
+                r.region, a.task, a.cut.term, a.cut.index, &hex(&a.image_digest)[..12], a.objects, a.object_bytes,
+                if a.restorable { a.rows.to_string() } else { "-".into() },
+                if a.restorable { String::new() } else { " (not digested)".into() }
+            )),
+            None => table.push_str(&format!("\nrange {:>6}: not anchored", r.region)),
+        }
+    }
+    if !b.bundle_key.is_empty() {
+        table.push_str(&format!("\nbundle:     {} ({} bytes, digest {})", b.bundle_key, b.bundle_bytes, &hex(&b.bundle_digest)[..12]));
+    }
+    if b.retired_unix != 0 {
+        table.push_str(&format!("\nretired:    {}", b.retired_unix));
+    }
+    Ok(Report { command: "backup describe".into(), result: backup_row_json(b), table, partial: Vec::new() })
+}
+
+async fn backup_verify(cluster: &mut Cluster, task: u64) -> Outcome {
+    let v = cluster.leader.verify_backup(task).await?;
+    let mut table = format!("backup {}: bundle {} {}", v.task, v.bundle_key, if v.bundle_ok { "ok" } else { "FAILED" });
+    for r in &v.ranges {
+        table.push_str(&format!("\nrange {:>6}: {} ({})", r.region, if r.ok { "ok" } else { "FAILED" }, r.detail));
+    }
+    table.push_str(&format!("\nverdict:    {}", if v.ok { "ok" } else { "FAILED" }));
+    Ok(Report {
+        command: "backup verify".into(),
+        result: json!({
+            "task": v.task, "bundle_key": v.bundle_key, "bundle_ok": v.bundle_ok, "ok": v.ok,
+            "ranges": v.ranges.iter().map(|r| json!({"region": r.region, "ok": r.ok, "detail": r.detail})).collect::<Vec<_>>(),
+        }),
+        table,
+        partial: v.ranges.iter().filter(|r| !r.ok).map(|r| format!("range {}: {}", r.region, r.detail)).chain((!v.bundle_ok).then(|| "bundle failed verification".to_string())).collect(),
+    })
+}
+
+async fn backup_retire(global: &Global, cluster: &mut Cluster, task: u64) -> Outcome {
+    confirm(
+        global,
+        &format!("plan: RetireBackup task={task} at leader node {}; the pins are released, the bundle stays as a tombstone", cluster.leader_id),
+        Some(&task.to_string()),
+    )?;
+    let r = cluster.leader.retire_backup(task).await?;
+    Ok(Report {
+        command: "backup retire".into(),
+        result: json!({
+            "task": task, "retirement_task": r.retirement_task,
+            "outcome": if r.changed { "committed" } else { "confirmed" },
+            "applied": {"term": r.applied.term, "index": r.applied.index},
+        }),
+        table: format!("backup {task} retired as task {} ({})", r.retirement_task, if r.changed { "committed" } else { "confirmed" }),
+        partial: Vec::new(),
+    })
+}
+
 async fn dispatch(global: &Global, words: &[String]) -> Outcome {
     let (noun, verb, rest) = match words {
         [noun, verb, rest @ ..] => (noun.as_str(), verb.as_str(), rest),
@@ -1967,7 +2162,7 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
         }
         _ => return Err(Fail::Usage(usage())),
     };
-    let args = verb_args(rest, &["wait"])?;
+    let args = verb_args(rest, &["wait", "all"])?;
     let mut cluster = Cluster::connect(global).await?;
     let mut report = match (noun, verb) {
         ("cluster", "info") => cluster_info(&mut cluster).await?,
@@ -2029,6 +2224,20 @@ async fn dispatch(global: &Global, words: &[String]) -> Outcome {
         ("group", verb @ ("add-replica" | "move-replica")) => {
             let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage(format!("group {verb} <creation-task> --to <node>")))?, "creation task")?;
             group_plan_replica(global, &mut cluster, &args, id, verb.trim_end_matches("-replica")).await?
+        }
+        ("backup", "create") => backup_create(global, &mut cluster, &args).await?,
+        ("backup", "list") => backup_list(&mut cluster, args.switches.iter().any(|s| s == "all")).await?,
+        ("backup", "describe") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("backup describe <task>".into()))?, "backup task")?;
+            backup_describe(&mut cluster, id).await?
+        }
+        ("backup", "verify") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("backup verify <task>".into()))?, "backup task")?;
+            backup_verify(&mut cluster, id).await?
+        }
+        ("backup", "retire") => {
+            let id = parse_id(args.positional.first().ok_or_else(|| Fail::Usage("backup retire <task>".into()))?, "backup task")?;
+            backup_retire(global, &mut cluster, id).await?
         }
         ("task", "list") => task_list(&mut cluster, &args).await?,
         ("task", "abort") => {

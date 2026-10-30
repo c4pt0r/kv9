@@ -110,10 +110,13 @@ pub fn plan_capture_durable(
             "frozen range differs from committed capture binding",
         ));
     }
-    if !planned
-        .configuration
-        .learners
-        .contains(&request.destination.node_id.0)
+    // A migration's destination is a learner at the cut; a backup's synthetic
+    // destination is nobody's learner (docs/BACKUP-RESTORE.md §12).
+    if request.destination.node_id != kv9_common::BACKUP_DESTINATION_NODE
+        && !planned
+            .configuration
+            .learners
+            .contains(&request.destination.node_id.0)
     {
         return Err(invalid(
             "capture cut does not contain the destination learner",
@@ -216,7 +219,8 @@ pub(super) fn decode_metadata(
     if manifest.scope.cluster != source.cluster_id.to_string()
         || hs.term != cut.term
         || hs.vote != 0
-        || !configuration.learners.contains(&destination.node_id.0)
+        || (destination.node_id != kv9_common::BACKUP_DESTINATION_NODE
+            && !configuration.learners.contains(&destination.node_id.0))
     {
         return Err(invalid("durable capture manifest/configuration differs"));
     }

@@ -258,6 +258,9 @@ pub fn plan_merge<E: Engine>(
     if super::live_plan_on_region(txn, root.digest(), low_region)? || super::live_plan_on_region(txn, root.digest(), high_region)? {
         return Err(invalid("a parent has an unsettled replica plan; merge after it settles"));
     }
+    if super::backup::live_backup_on_region(txn, low_region)?.is_some() || super::backup::live_backup_on_region(txn, high_region)?.is_some() {
+        return Err(invalid("a live backup holds a parent; merge after it anchors"));
+    }
     if low.range().keyspace != high.range().keyspace || low.range().end.is_empty() || low.range().end != high.range().start {
         return Err(invalid("merge parents must be adjacent ranges of one keyspace"));
     }

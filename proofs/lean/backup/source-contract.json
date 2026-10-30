@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "model": "Kv9.Backup",
+  "theorems": [
+    "initial_safe",
+    "step_safe",
+    "run_safe",
+    "completion_needs_every_anchor",
+    "an_anchor_needs_a_live_backup",
+    "abort_refuses_after_completion",
+    "release_only_by_retirement",
+    "a_held_range_takes_no_split",
+    "anchors_are_bounded",
+    "retirement_needs_completion"
+  ],
+  "source_sha256": {
+    "crates/meta/src/data_groups/backup.rs": "e0efe613382f5ced30e4d7b5bf6bc47a733170f4cb5df9dde339ce07fa5bf334",
+    "crates/meta/src/data_groups.rs": "2b28a0a6953180289cfb92e508d739bf8f3ed5d14b3d571e5bf8a0968ecbbff4",
+    "crates/server/src/runtime/backup.rs": "f8f68679cdbf183d933e9e5d38659e47229e631097ecd6dcc93c9d809d64d077",
+    "crates/server/src/migration_retention.rs": "63643ecaa0cb445d563279b2e1eb97fceffb9fe53ef398eadf74f83f7919cd9d",
+    "crates/server/src/runtime/migration_capture.rs": "3c78a37936bfa6eab039e194a06ad0ce14951daf5390077f0ec10402df411e74",
+    "crates/server/proto/kv9.proto": "c016b267a3ed69f8ff762c90bbebac5db4fb1cb30a4955f8a7c1079a732033c7",
+    "scripts/backup-e2e.py": "f851cb93912ac5970b11c60d2107ca75f97656cf459aafe0118ae8853021d1b4",
+    "docs/BACKUP-RESTORE.md": "83c795652390df67fd42658544d1bcd83d89b95147293a0775d3d34fc4f17d27"
+  }
+}

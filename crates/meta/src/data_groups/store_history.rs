@@ -319,6 +319,35 @@ pub fn project(
                 return Err(invalid("store-history seal evidence differs"));
             }
         }
+        // A backup (BACKUP-RESTORE): the intent names ranges that carry their own
+        // kind-100 origins; anchors, completion and retirement introduce no store.
+        119 => {
+            let b = backup::BackupIntent::decode(&t.payload)?;
+            if b.root() != root || b.task() != t.id || b.encode() != t.payload {
+                return Err(invalid("store-history backup intent differs"));
+            }
+            for range in b.ranges() {
+                Task::load(view, range.creation_task(), 100)?.creation(root)?;
+            }
+        }
+        120 => {
+            let a = backup::BackupAnchor::decode(&t.payload)?;
+            if a.root() != root || a.task() != t.id || a.encode() != t.payload {
+                return Err(invalid("store-history backup anchor differs"));
+            }
+        }
+        121 => {
+            let r = backup::BackupRetirement::decode(&t.payload)?;
+            if r.root() != root || r.task() != t.id || r.encode() != t.payload {
+                return Err(invalid("store-history backup retirement differs"));
+            }
+        }
+        122 => {
+            let c = backup::BackupCompletion::decode(&t.payload)?;
+            if c.root() != root || c.task() != t.id || c.encode() != t.payload {
+                return Err(invalid("store-history backup completion differs"));
+            }
+        }
         _ => {
             return Err(invalid(
                 "unsupported task kind leaves DATA store history unknown",

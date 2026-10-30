@@ -25,7 +25,7 @@ pub mod store_lifecycle;
 pub use config::{Config, SeedPeer};
 pub use error::{Error, ReadBarrierPhase, Result};
 pub use ids::AppliedPosition;
-pub use ids::{ClusterId, KeyspaceId, NodeId, RegionId, TenantId, META_REGION_0};
+pub use ids::{ClusterId, KeyspaceId, NodeId, RegionId, TenantId, BACKUP_DESTINATION_NODE, META_REGION_0};
 pub use keyspace::{ApiType, Keyspace, Tenant};
 pub use root::{
     load_root_bundle, persist_root_bundle, write_new_root_descriptor, BootstrapGeneration,

@@ -7,7 +7,7 @@ are what that run measured; a release build and real data change them, the shape
 
 Contents: 1 cluster formation · 2 adding nodes · 3 data group and keyspace · 4 leadership ·
 5 add and move a replica · 6 abort · 7 split and merge · 8 drain · 9 unplanned loss ·
-10 restart · 11 refusals you will meet · 12 the REPL
+10 restart · 11 refusals you will meet · 12 the REPL · 13 backup
 
 ## 1. Cluster formation
 
@@ -180,6 +180,9 @@ status file changed before trusting `bootstrap_state`: the old file still says `
 | `a live split binds this group's membership until it is published` / `the parent has an unsettled replica plan` | Membership plans and range operations exclude each other on one group. |
 | `the group is retired: its range was sealed by a published split or merge` | No plan on a sealed parent; operate on the live child (`group list`). |
 | `group creation needs a nonzero operation and 3, 5 or 7 voters` | `group create` only; children of split/merge take the parent's count. |
+| `a live backup holds the parent; split after it anchors` / `a live backup binds this group's membership until it settles` | A backup of this keyspace is capturing; wait for `backup describe` to show the range anchored (seconds), or abort the backup. |
+| `the backup is complete; it retires (backup retire), it does not abort` | Use `backup retire`. |
+| `backup requires configured object storage (KV9_STORAGE=minio)` | Backups live in the bucket; configure `KV9_OBJECT_STORE_*` on every node. |
 | `migration destination is not an active registered store` | Admit and join the node first; a learner is enough. |
 | `sealed: irrevocable` | Abort after the first seal; let the split/merge publish, then merge/split back. |
 
@@ -198,3 +201,32 @@ kv9> info                           nodes=7 keyspaces=2 regions=2
 `not leader (hint: node N); add the node to --peers to follow it` means the hint chain ended on a
 node the REPL could not follow or that was itself not leading yet; with every node in `--peers` a
 retry a second later serves.
+
+## 13. Backup
+
+```bash
+kv9-admin backup create --keyspace orders --label nightly --wait
+#   backup of keyspace orders committed as task 130 (sequence 0, 2 range(s): [101, 102])
+#   --wait: complete after 12 s; bundle backups/<cluster-id>/130/bundle; restorable: yes
+kv9-admin backup describe 130
+#   stage: complete, restorable: yes
+#   range 101: anchored (task 131) cut 2/420 image 3f9c… objects 1 bytes 12637 rows 150
+#   range 102: anchored (task 132) …                                       rows 150
+#   bundle:    backups/…/130/bundle (1842 bytes, digest …)
+kv9-admin backup verify 130            # GETs the bundle and every SST again; exit 4 if a range fails
+kv9-admin backup list                  # TASK KEYSPACE LABEL ANCHORED STAGE RESTORABLE BYTES AGE
+kv9-admin backup retire 130            # the only release of the pins; `backup list --all` still shows it
+kv9-admin task abort <task>            # an INCOMPLETE backup; a complete one retires
+```
+
+What happens (BACKUP-RESTORE.md §3): each range leader plans a capture at its own exact cut
+(`plan_image`), the metadata leader publishes the owner pair (`bind`), the range leader uploads
+and verifies the image, restores it under the image budget to count and digest the rows, and
+commits the anchor (`capture`); once every range is anchored the metadata leader writes the
+bundle, GET-verifies every object and commits the completion (`bundle`). Status line `backup=`
+on each node shows per-range `state` (`-`, `planned`, `pinned`, `anchored`) and who the backup
+is waiting for. While a range is unanchored the backup holds it: a split, merge or replica plan
+on that range is refused naming the backup; a backup is refused on a range under a live split,
+merge or plan. One live backup per keyspace: a second `create` confirms it; the next sequence
+starts once it is complete, aborted or retired. There is no restore verb yet (increment 2):
+a backup today is a verified, pinned retention point in the bucket.

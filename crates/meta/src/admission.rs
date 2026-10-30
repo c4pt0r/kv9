@@ -190,6 +190,11 @@ fn admit_node_inner<E: Engine>(
             "node id 0 is reserved (means 'no node') and cannot be admitted".into(),
         ));
     }
+    if node_id == crate::data_groups::backup::BACKUP_DESTINATION_NODE {
+        return Err(Error::Config(
+            "node id u64::MAX is reserved (the synthetic backup capture destination) and cannot be admitted".into(),
+        ));
+    }
     // Canonical socket address only: the admission binds an exact endpoint,
     // and a free-form string would make the consume-time comparison
     // format-sensitive ("127.0.0.1:9" vs "127.000.000.001:9").

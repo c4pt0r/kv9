@@ -697,6 +697,14 @@ jobs:
         env:
           KV9_MINIO_EXTERNAL: "1"
 
+      - name: Run the backup of a keyspace on MinIO
+        run: |
+          set -o pipefail
+          scripts/backup-e2e.sh 2>&1 | tee /tmp/backup-e2e.out
+          grep -q '^PASS: backup' /tmp/backup-e2e.out
+        env:
+          KV9_MINIO_EXTERNAL: "1"
+
       # Deterministic fault matrix (docs/RANGE-SPLIT.md §14): every driver step crashed
       # before and after it, leader-only steps paused under a metadata leader switch;
       # the committed outcome must equal the fault-free one.

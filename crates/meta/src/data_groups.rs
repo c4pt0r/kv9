@@ -14,6 +14,7 @@ use crate::store::{MetaStore, MetaTxn, Row, SequenceKind, FIRST_DYNAMIC_ID};
 pub mod abort;
 pub mod activation;
 pub mod addition;
+pub mod backup;
 pub mod capture;
 pub mod compaction;
 pub mod drain;
@@ -321,7 +322,120 @@ pub(crate) fn live_range_operation<E: Engine>(
             return Ok(Some("merge"));
         }
     }
+    // A backup holds its ranges until each is anchored (docs/BACKUP-RESTORE.md §11):
+    // the capture slot and the pins are a plan's own mechanism.
+    if backup::live_backup_on_region(txn, region)?.is_some() {
+        return Ok(Some("backup"));
+    }
     Ok(None)
+}
+
+/// What a capture operation is FOR: a migration (its destination installs the
+/// image) or one range of a backup (the image is the anchor; the destination is
+/// synthetic). The capture catalog, the ledger owners, the source slot and the
+/// upload path all resolve their operation through this one lookup.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CaptureSubject {
+    Migration(migration::MigrationIntent),
+    Backup { intent: backup::BackupIntent, range: backup::BackupRange },
+}
+
+impl CaptureSubject {
+    pub fn operation(&self) -> [u8; 16] {
+        match self {
+            Self::Migration(m) => m.operation(),
+            Self::Backup { range, .. } => range.operation(),
+        }
+    }
+    pub fn region(&self) -> RegionId {
+        match self {
+            Self::Migration(m) => m.region(),
+            Self::Backup { range, .. } => range.region(),
+        }
+    }
+    pub fn creation_task(&self) -> u64 {
+        match self {
+            Self::Migration(m) => m.creation_task(),
+            Self::Backup { range, .. } => range.creation_task(),
+        }
+    }
+    /// The destination the capture request names: the migration's store, or the
+    /// backup range's synthetic one.
+    pub fn destination(&self) -> InitialReplica {
+        match self {
+            Self::Migration(m) => m.destination(),
+            Self::Backup { range, .. } => range.destination(),
+        }
+    }
+    pub fn is_backup(&self) -> bool {
+        matches!(self, Self::Backup { .. })
+    }
+    pub fn root(&self) -> RootDigest {
+        match self {
+            Self::Migration(m) => m.root(),
+            Self::Backup { intent, .. } => intent.root(),
+        }
+    }
+    /// The 32-byte operation identity the ledger owners carry: the migration
+    /// derivation for a migration, a distinct one for a backup range.
+    pub fn operation_digest(&self) -> [u8; 32] {
+        match self {
+            Self::Migration(m) => evidence::migration_operation_digest(m.root(), m.operation()),
+            Self::Backup { intent, range } => backup_operation_digest(intent.root(), range.operation()),
+        }
+    }
+    pub fn label(&self) -> &'static str {
+        match self {
+            Self::Migration(_) => "migration",
+            Self::Backup { .. } => "backup",
+        }
+    }
+}
+
+/// The ledger operation identity of one backup range's capture (the backup
+/// counterpart of `evidence::migration_operation_digest`).
+pub fn backup_operation_digest(root: RootDigest, range_operation: [u8; 16]) -> [u8; 32] {
+    let mut identity = b"kv9-backup-operation-v1".to_vec();
+    identity.extend(root.as_bytes());
+    identity.extend(range_operation);
+    *RootDigest::sha256(&identity).as_bytes()
+}
+
+/// Resolve `operation` to its committed subject, if any.
+pub fn capture_subject_in_txn<E: Engine>(txn: &MetaTxn<'_, E>, root: RootDigest, operation: [u8; 16]) -> Result<Option<CaptureSubject>> {
+    if let Some(intent) = migration::committed_migrations_in_txn(txn, root)?
+        .into_iter()
+        .find(|m| m.operation() == operation)
+    {
+        return Ok(Some(CaptureSubject::Migration(intent)));
+    }
+    let rows = backup::committed_backups_in_txn(txn)?;
+    Ok(rows
+        .range_by_capture_operation(operation)
+        .map(|(intent, range)| CaptureSubject::Backup { intent: intent.clone(), range: range.clone() }))
+}
+
+pub fn capture_subject<E: Engine>(store: &MetaStore<E>, operation: [u8; 16]) -> Result<Option<CaptureSubject>> {
+    let txn = store.begin()?;
+    let root = crate::root::certified_root(&txn)?
+        .ok_or_else(|| invalid("capture subject readback requires a certified metadata root"))?;
+    capture_subject_in_txn(&txn, root.digest(), operation)
+}
+
+/// Is the subject's operation aborted (a migration through kind 108, a backup
+/// through an effective kind 117)? Capture refuses permanently afterwards.
+pub fn capture_subject_aborted<E: Engine>(txn: &MetaTxn<'_, E>, root: RootDigest, subject: &CaptureSubject) -> Result<bool> {
+    match subject {
+        CaptureSubject::Migration(m) => {
+            for row in task_rows(txn) {
+                if abort::from_abort_row(&row?, root)?.is_some_and(|a| a.operation() == m.operation()) {
+                    return Ok(true);
+                }
+            }
+            Ok(false)
+        }
+        CaptureSubject::Backup { intent, .. } => Ok(range_abort::effective_aborts_in_txn(txn, root)?.contains(&intent.operation())),
+    }
 }
 
 /// An unsettled migration (an operator's, or one a replica plan drives) on `region`: a

@@ -859,6 +859,162 @@ class DataGroupSplitEvidence(_message.Message):
     rows: int
     def __init__(self, task: _Optional[int] = ..., child_task: _Optional[int] = ..., digest: _Optional[bytes] = ..., rows: _Optional[int] = ...) -> None: ...
 
+class BackupKeyspaceRequest(_message.Message):
+    __slots__ = ("keyspace_id", "label")
+    KEYSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    keyspace_id: int
+    label: str
+    def __init__(self, keyspace_id: _Optional[int] = ..., label: _Optional[str] = ...) -> None: ...
+
+class BackupKeyspaceResponse(_message.Message):
+    __slots__ = ("task", "operation", "changed", "applied_term", "applied_index", "sequence", "regions")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    SEQUENCE_FIELD_NUMBER: _ClassVar[int]
+    REGIONS_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    operation: bytes
+    changed: bool
+    applied_term: int
+    applied_index: int
+    sequence: int
+    regions: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ..., sequence: _Optional[int] = ..., regions: _Optional[_Iterable[int]] = ...) -> None: ...
+
+class ListBackupsRequest(_message.Message):
+    __slots__ = ("include_retired",)
+    INCLUDE_RETIRED_FIELD_NUMBER: _ClassVar[int]
+    include_retired: bool
+    def __init__(self, include_retired: _Optional[bool] = ...) -> None: ...
+
+class BackupAnchorRow(_message.Message):
+    __slots__ = ("task", "cut_term", "cut_index", "image_digest", "objects", "object_bytes", "rows", "rows_digest", "restorable")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    CUT_TERM_FIELD_NUMBER: _ClassVar[int]
+    CUT_INDEX_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_DIGEST_FIELD_NUMBER: _ClassVar[int]
+    OBJECTS_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_BYTES_FIELD_NUMBER: _ClassVar[int]
+    ROWS_FIELD_NUMBER: _ClassVar[int]
+    ROWS_DIGEST_FIELD_NUMBER: _ClassVar[int]
+    RESTORABLE_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    cut_term: int
+    cut_index: int
+    image_digest: bytes
+    objects: int
+    object_bytes: int
+    rows: int
+    rows_digest: bytes
+    restorable: bool
+    def __init__(self, task: _Optional[int] = ..., cut_term: _Optional[int] = ..., cut_index: _Optional[int] = ..., image_digest: _Optional[bytes] = ..., objects: _Optional[int] = ..., object_bytes: _Optional[int] = ..., rows: _Optional[int] = ..., rows_digest: _Optional[bytes] = ..., restorable: _Optional[bool] = ...) -> None: ...
+
+class BackupRangeRow(_message.Message):
+    __slots__ = ("region", "creation_task", "bind_task", "operation", "anchor")
+    REGION_FIELD_NUMBER: _ClassVar[int]
+    CREATION_TASK_FIELD_NUMBER: _ClassVar[int]
+    BIND_TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    ANCHOR_FIELD_NUMBER: _ClassVar[int]
+    region: int
+    creation_task: int
+    bind_task: int
+    operation: bytes
+    anchor: BackupAnchorRow
+    def __init__(self, region: _Optional[int] = ..., creation_task: _Optional[int] = ..., bind_task: _Optional[int] = ..., operation: _Optional[bytes] = ..., anchor: _Optional[_Union[BackupAnchorRow, _Mapping]] = ...) -> None: ...
+
+class BackupRow(_message.Message):
+    __slots__ = ("task", "operation", "keyspace_id", "tenant_id", "label", "sequence", "requested_unix", "stage", "ranges", "bundle_key", "bundle_digest", "bundle_bytes", "completed_unix", "retired_unix", "restorable")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    OPERATION_FIELD_NUMBER: _ClassVar[int]
+    KEYSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TENANT_ID_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    SEQUENCE_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_UNIX_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    RANGES_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_KEY_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_DIGEST_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_BYTES_FIELD_NUMBER: _ClassVar[int]
+    COMPLETED_UNIX_FIELD_NUMBER: _ClassVar[int]
+    RETIRED_UNIX_FIELD_NUMBER: _ClassVar[int]
+    RESTORABLE_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    operation: bytes
+    keyspace_id: int
+    tenant_id: int
+    label: str
+    sequence: int
+    requested_unix: int
+    stage: str
+    ranges: _containers.RepeatedCompositeFieldContainer[BackupRangeRow]
+    bundle_key: str
+    bundle_digest: bytes
+    bundle_bytes: int
+    completed_unix: int
+    retired_unix: int
+    restorable: bool
+    def __init__(self, task: _Optional[int] = ..., operation: _Optional[bytes] = ..., keyspace_id: _Optional[int] = ..., tenant_id: _Optional[int] = ..., label: _Optional[str] = ..., sequence: _Optional[int] = ..., requested_unix: _Optional[int] = ..., stage: _Optional[str] = ..., ranges: _Optional[_Iterable[_Union[BackupRangeRow, _Mapping]]] = ..., bundle_key: _Optional[str] = ..., bundle_digest: _Optional[bytes] = ..., bundle_bytes: _Optional[int] = ..., completed_unix: _Optional[int] = ..., retired_unix: _Optional[int] = ..., restorable: _Optional[bool] = ...) -> None: ...
+
+class ListBackupsResponse(_message.Message):
+    __slots__ = ("backups",)
+    BACKUPS_FIELD_NUMBER: _ClassVar[int]
+    backups: _containers.RepeatedCompositeFieldContainer[BackupRow]
+    def __init__(self, backups: _Optional[_Iterable[_Union[BackupRow, _Mapping]]] = ...) -> None: ...
+
+class RetireBackupRequest(_message.Message):
+    __slots__ = ("task",)
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    def __init__(self, task: _Optional[int] = ...) -> None: ...
+
+class RetireBackupResponse(_message.Message):
+    __slots__ = ("retirement_task", "changed", "applied_term", "applied_index")
+    RETIREMENT_TASK_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_TERM_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_INDEX_FIELD_NUMBER: _ClassVar[int]
+    retirement_task: int
+    changed: bool
+    applied_term: int
+    applied_index: int
+    def __init__(self, retirement_task: _Optional[int] = ..., changed: _Optional[bool] = ..., applied_term: _Optional[int] = ..., applied_index: _Optional[int] = ...) -> None: ...
+
+class VerifyBackupRequest(_message.Message):
+    __slots__ = ("task",)
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    def __init__(self, task: _Optional[int] = ...) -> None: ...
+
+class BackupRangeVerdict(_message.Message):
+    __slots__ = ("region", "ok", "detail")
+    REGION_FIELD_NUMBER: _ClassVar[int]
+    OK_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    region: int
+    ok: bool
+    detail: str
+    def __init__(self, region: _Optional[int] = ..., ok: _Optional[bool] = ..., detail: _Optional[str] = ...) -> None: ...
+
+class VerifyBackupResponse(_message.Message):
+    __slots__ = ("task", "bundle_key", "bundle_ok", "ranges", "ok")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_KEY_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_OK_FIELD_NUMBER: _ClassVar[int]
+    RANGES_FIELD_NUMBER: _ClassVar[int]
+    OK_FIELD_NUMBER: _ClassVar[int]
+    task: int
+    bundle_key: str
+    bundle_ok: bool
+    ranges: _containers.RepeatedCompositeFieldContainer[BackupRangeVerdict]
+    ok: bool
+    def __init__(self, task: _Optional[int] = ..., bundle_key: _Optional[str] = ..., bundle_ok: _Optional[bool] = ..., ranges: _Optional[_Iterable[_Union[BackupRangeVerdict, _Mapping]]] = ..., ok: _Optional[bool] = ...) -> None: ...
+
 class DrainNodeRequest(_message.Message):
     __slots__ = ("node_id",)
     NODE_ID_FIELD_NUMBER: _ClassVar[int]

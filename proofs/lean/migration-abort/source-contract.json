@@ -19,9 +19,9 @@
   "source_sha256": {
     "crates/meta/src/data_groups/abort.rs": "43251e252fb68b40c375a554a03bffbca11e000eac3cff930b6cad12223bb7cb",
     "crates/meta/src/data_groups/evidence.rs": "3e52fe4cb085359bee178da29ff9e6c8c2ac2cf2bc01dc2814713eb129c50d01",
-    "crates/meta/src/data_groups/migration.rs": "6791551d6910feadba5012e7a3f9f17baf2d281eb0a226b534b993a5d005f8b1",
+    "crates/meta/src/data_groups/migration.rs": "974e53c007f112775f445f746f14b6268ab5b79e59417fbf55b9bae008026889",
     "crates/meta/src/retention.rs": "15279c6d41b13bc39e052c97dc40e81cc3a07debf066cdf7e12cccd0e6742698",
-    "crates/server/src/runtime.rs": "98ab40013cc84bbe0685d58732657516c600b38f1fb8ef4f919f5d44bf1b89e3",
+    "crates/server/src/runtime.rs": "f4577b4b4c267eddd96ff36bc411152d996d5554b86642297533c840dd951c31",
     "scripts/migration-abort-e2e.py": "a47899f1dd3b4000ba3ef2df36d7a0413aa8c3b059668023cbdb6a1901e5e880",
     "proofs/lean/migration-abort/MigrationAbort.lean": "fabfb7a107e15e7e4b61a6581d4fe3e1bc6157bf343d0f6c385d731fbbd5c458",
     "proofs/lean/migration-abort/README.md": "37fa8343c01f03855dcf2d8883e2ade4e30d504ecff2cd308888aa2879fa9ef8"

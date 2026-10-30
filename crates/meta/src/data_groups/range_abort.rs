@@ -25,6 +25,7 @@ pub enum AbortTarget {
     Split = 1,
     Merge = 2,
     Drain = 3,
+    Backup = 4,
 }
 
 impl AbortTarget {
@@ -33,6 +34,7 @@ impl AbortTarget {
             1 => Self::Split,
             2 => Self::Merge,
             3 => Self::Drain,
+            4 => Self::Backup,
             _ => return Err(invalid("invalid abort target")),
         })
     }
@@ -41,6 +43,7 @@ impl AbortTarget {
             Self::Split => "split",
             Self::Merge => "merge",
             Self::Drain => "drain",
+            Self::Backup => "backup",
         }
     }
 }
@@ -361,8 +364,17 @@ pub fn plan_range_abort<E: Engine>(txn: &mut MetaTxn<'_, E>, target_task: u64) -
         (m.operation(), AbortTarget::Merge)
     } else if let Some(d) = drain::from_drain_row(&row, root.digest())? {
         (d.operation(), AbortTarget::Drain)
+    } else if let Some(b) = backup::from_backup_row(&row, root.digest())? {
+        let rows = backup::committed_backups_in_txn(txn)?;
+        match rows.stage(&b) {
+            backup::BackupStage::Complete | backup::BackupStage::Retired => {
+                return Err(invalid("the backup is complete; it retires (backup retire), it does not abort"));
+            }
+            _ => {}
+        }
+        (b.operation(), AbortTarget::Backup)
     } else {
-        return Err(invalid("abort takes a split intent, a merge intent or a node drain (a replica plan aborts through its migration abort)"));
+        return Err(invalid("abort takes a split intent, a merge intent, a node drain or a backup (a replica plan aborts through its migration abort)"));
     };
     for other in task_rows(txn) {
         let other = other?;

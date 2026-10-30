@@ -12,7 +12,7 @@ use std::num::NonZeroU64;
 use kv9_common::retention::{OwnerId, PinPhase};
 use kv9_common::{Error, Result, RootDescriptor, RootDigest};
 use kv9_engine::checkpoint::CheckpointManifest;
-use kv9_meta::data_groups::migration::CommittedMigration;
+use kv9_meta::data_groups::CaptureSubject;
 use kv9_meta::retention::{
     decode_owner_observation, encode_request, LedgerRequest, OwnerBinding, OwnerDescriptor,
     OwnerKind,
@@ -54,6 +54,37 @@ pub(crate) fn migration_owner_ids(
             destination_incarnation.as_bytes(),
         )?,
     ))
+}
+
+/// The two ledger owner IDs one backup range pins: the source snapshot owner and
+/// the `Backup` owner that outlives the capture (docs/BACKUP-RESTORE.md §4).
+pub(crate) fn backup_owner_ids(
+    root: RootDigest,
+    subject: &CaptureSubject,
+) -> Result<(OwnerId, OwnerId)> {
+    let operation = subject.operation_digest();
+    let region = subject.region().0.to_be_bytes();
+    let derive = |label: &[u8], salt: &[u8]| -> Result<OwnerId> {
+        let mut identity = label.to_vec();
+        identity.extend(root.as_bytes());
+        identity.extend(operation);
+        identity.extend(salt);
+        OwnerId::new(
+            RootDigest::sha256(&identity).as_bytes()[..16]
+                .try_into()
+                .unwrap(),
+        )
+        .map_err(|e| Error::Engine(e.to_string()))
+    };
+    Ok((derive(b"kv9-backup-source-v1", &[])?, derive(b"kv9-backup-v1", &region)?))
+}
+
+/// The owner ids of any capture subject: migration or backup.
+pub(crate) fn subject_owner_ids(root: RootDigest, subject: &CaptureSubject) -> Result<(OwnerId, OwnerId)> {
+    match subject {
+        CaptureSubject::Migration(m) => migration_owner_ids(root, m.operation(), &m.destination().incarnation),
+        CaptureSubject::Backup { .. } => backup_owner_ids(root, subject),
+    }
 }
 
 pub(crate) struct MigrationOwners {
@@ -128,29 +159,27 @@ impl MigrationOwners {
     /// prevents the same operation from ever naming a second image.
     pub(crate) fn new(
         root: &RootDescriptor,
-        migration: &CommittedMigration,
+        capture: &CaptureSubject,
         range: &kv9_common::data_range::DataRange,
         manifest: &CheckpointManifest,
     ) -> Result<Self> {
         let manifest = CheckpointManifest::decode(&manifest.encode()?)?;
-        let intent = migration.intent();
-        if intent.root() != root.digest() {
+        if capture.root() != root.digest() {
             return Err(invalid("migration root differs from the certified root"));
         }
         range.validate()?;
-        if range.region != intent.region() || range.root != intent.root() {
+        if range.region != capture.region() || range.root != capture.root() {
             return Err(invalid("published range differs from the migration group"));
         }
         if manifest.scope.cluster != root.cluster_id.to_string()
-            || manifest.scope.region != intent.region().0
+            || manifest.scope.region != capture.region().0
             || manifest.scope.conf_ver != range.conf_ver
             || manifest.scope.version != range.version
         {
             return Err(invalid("manifest scope differs from the committed range"));
         }
         let root = root.digest();
-        let operation =
-            kv9_meta::data_groups::evidence::migration_operation_digest(root, intent.operation());
+        let operation = capture.operation_digest();
         let subject = *RootDigest::sha256(&manifest.encode()?).as_bytes();
         let resources = manifest_resources(root, &manifest)?;
         let binding = |kind: OwnerKind, label: &[u8], salt: &[u8]| -> Result<OwnerBinding> {
@@ -181,12 +210,23 @@ impl MigrationOwners {
                 resources: resources.clone(),
             })
         };
-        let source = binding(OwnerKind::Snapshot, b"kv9-migration-source-v1", &[])?;
-        let destination = binding(
-            OwnerKind::Migration,
-            b"kv9-migration-destination-v1",
-            intent.destination().incarnation.as_bytes(),
-        )?;
+        // A migration pins for its destination store; a backup pins for the
+        // retention point itself, under the `Backup` owner kind, salted by the
+        // region (one range, one owner).
+        let (source, destination) = match capture {
+            CaptureSubject::Migration(intent) => (
+                binding(OwnerKind::Snapshot, b"kv9-migration-source-v1", &[])?,
+                binding(
+                    OwnerKind::Migration,
+                    b"kv9-migration-destination-v1",
+                    intent.destination().incarnation.as_bytes(),
+                )?,
+            ),
+            CaptureSubject::Backup { range, .. } => (
+                binding(OwnerKind::Snapshot, b"kv9-backup-source-v1", &[])?,
+                binding(OwnerKind::Backup, b"kv9-backup-v1", &range.region().0.to_be_bytes())?,
+            ),
+        };
         // Run the exact production semantic/closure bounds before any I/O.
         encode_request(root, &LedgerRequest::Acquire(source.clone()))?;
         encode_request(

@@ -58,6 +58,11 @@ service Kv9 {
   // Commit the intent that a node's current store leaves the cluster; the cluster
   // moves its replicas and metadata membership by itself (docs/DRAIN-NODE.md).
   rpc DrainNode(DrainNodeRequest) returns (DrainNodeResponse);
+  // Backup of a keyspace (docs/BACKUP-RESTORE.md): intent, listing, retirement, verification.
+  rpc BackupKeyspace(BackupKeyspaceRequest) returns (BackupKeyspaceResponse);
+  rpc ListBackups(ListBackupsRequest) returns (ListBackupsResponse);
+  rpc RetireBackup(RetireBackupRequest) returns (RetireBackupResponse);
+  rpc VerifyBackup(VerifyBackupRequest) returns (VerifyBackupResponse);
   // Commit a split intent for a bound range: the two children are created and
   // activated on the parent's stores in the same transaction (docs/RANGE-SPLIT.md §2).
   rpc SplitRange(SplitRangeRequest) returns (SplitRangeResponse);
@@ -593,6 +598,84 @@ message DataGroupSplitEvidence {
   uint64 child_task = 2;
   bytes digest = 3;       // the child's rows == the sealed parent half
   uint64 rows = 4;
+}
+message BackupKeyspaceRequest {
+  uint32 keyspace_id = 1;
+  string label = 2;           // up to 64 bytes, free text
+}
+message BackupKeyspaceResponse {
+  uint64 task = 1;            // the kind-119 row
+  bytes operation = 2;        // derived from (root, keyspace, sequence)
+  bool changed = 3;           // false: the keyspace's live backup was confirmed
+  uint64 applied_term = 4;
+  uint64 applied_index = 5;
+  uint64 sequence = 6;
+  repeated uint64 regions = 7;
+}
+message ListBackupsRequest {
+  bool include_retired = 1;
+}
+message BackupAnchorRow {
+  uint64 task = 1;            // kind 120
+  uint64 cut_term = 2;
+  uint64 cut_index = 3;
+  bytes image_digest = 4;
+  uint64 objects = 5;
+  uint64 object_bytes = 6;
+  uint64 rows = 7;
+  bytes rows_digest = 8;
+  bool restorable = 9;        // rows and digest were computed from the image
+}
+message BackupRangeRow {
+  uint64 region = 1;
+  uint64 creation_task = 2;
+  uint64 bind_task = 3;
+  bytes operation = 4;        // the range's capture operation
+  BackupAnchorRow anchor = 5; // absent until anchored
+}
+message BackupRow {
+  uint64 task = 1;
+  bytes operation = 2;
+  uint32 keyspace_id = 3;
+  uint64 tenant_id = 4;
+  string label = 5;
+  uint64 sequence = 6;
+  uint64 requested_unix = 7;
+  string stage = 8;           // intended, capturing, anchored, complete, aborted, retired
+  repeated BackupRangeRow ranges = 9;
+  string bundle_key = 10;     // empty until complete
+  bytes bundle_digest = 11;
+  uint64 bundle_bytes = 12;
+  uint64 completed_unix = 13;
+  uint64 retired_unix = 14;
+  bool restorable = 15;
+}
+message ListBackupsResponse {
+  repeated BackupRow backups = 1;
+}
+message RetireBackupRequest {
+  uint64 task = 1;
+}
+message RetireBackupResponse {
+  uint64 retirement_task = 1; // kind 121
+  bool changed = 2;
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
+}
+message VerifyBackupRequest {
+  uint64 task = 1;
+}
+message BackupRangeVerdict {
+  uint64 region = 1;
+  bool ok = 2;
+  string detail = 3;
+}
+message VerifyBackupResponse {
+  uint64 task = 1;
+  string bundle_key = 2;
+  bool bundle_ok = 3;
+  repeated BackupRangeVerdict ranges = 4;
+  bool ok = 5;
 }
 message DrainNodeRequest {
   uint64 node_id = 1;

@@ -9,7 +9,11 @@ Builds on [SOURCE-CAPTURE](SOURCE-CAPTURE.md), [MIGRATION-AUTHORITY](MIGRATION-A
 [REPLICA-ADDITION](REPLICA-ADDITION.md), [RANGE-SPLIT](RANGE-SPLIT.md) and
 [RETENTION-LEDGER](RETENTION-LEDGER.md).
 
-> **Status: design, not implemented.** §10 lists the increments; nothing here is a verb yet.
+> **Status: increment 1 (backup) implemented, 2026-10-29.** Kinds 119–122, the capture subject
+> generalization, `runtime/backup.rs`, `kv9-admin backup create / list / describe / verify /
+> retire`, `task abort` of an incomplete backup, the Lean model (`scripts/prove-backup.py`) and
+> `scripts/backup-e2e.sh` on real MinIO, in CI. §12 records what the implementation settled.
+> Restore (increments 2–5) is still design.
 
 ## The problem
 
@@ -66,23 +70,27 @@ node whose role it is, stages in the catalog, `kv9-admin` to ask and to watch.
 
 ## 1. The rows
 
-Five TASKS kinds, continuing the sequence after 118:
+Six TASKS kinds, continuing the sequence after 118 (the first four are built):
 
 ```
-119  KV9BKP01  backup intent      operation, keyspace (id, tenant, name at intent), label,
+119  KV9BKP01  backup intent      operation, keyspace (id, tenant), label, sequence,
                                   requested_unix, ranges[]: (region, creation_task, bind_task,
-                                  epoch, start, end)              — the shape, frozen at intent
-120  KV9BKA01  backup anchor      operation, region, cut (term, index), configuration position,
-                                  image_digest, manifest digest + subject, objects, object_bytes,
-                                  rows, rows_digest, owner_id     — one per range, by its leader
+                                  epoch, range capture operation)  — the shape, frozen at intent;
+                                  boundaries come from the bind rows, the bundle carries them
+120  KV9BKA01  backup anchor      backup operation, range operation, region, cut (term, index),
+                                  configuration position, image_digest, manifest_digest, objects,
+                                  object_bytes, rows, rows_digest, restorable, owner — one per
+                                  range, by its leader, through the shared evidence path
 121  KV9BKR01  backup retirement  operation, retired_unix          — the only release
-122  KV9RST01  restore intent     operation, source (backup task | bundle reference: cluster id,
-                                  backup id, bundle digest), new keyspace (name, tenant),
-                                  targets[]: (source region, new creation_task) — the new empty
-                                  groups are created in the SAME catalog transaction, as a
-                                  split's children are
-123  KV9RSE01  restore evidence   operation, source region, target region, rows, rows_digest
-                                  — one per target, by its leader; publication needs all
+122  KV9BKC01  backup completion  operation, bundle key, bundle digest, bundle bytes, ranges,
+                                  completed_unix                   — the bundle was written and
+                                  the whole closure GET-verified; `complete` is this row
+123  KV9RST01  restore intent     (design) operation, source (backup task | bundle reference:
+                                  cluster id, backup id, bundle digest), new keyspace (name,
+                                  tenant), targets[]: (source region, new creation_task) — the new
+                                  empty groups are created in the SAME catalog transaction
+124  KV9RSE01  restore evidence   (design) operation, source region, target region, rows,
+                                  rows_digest — one per target, by its leader; publication needs all
 ```
 
 `BackupKeyspace(root, operation, keyspace, label)` at the metadata leader reads the keyspace's
@@ -274,6 +282,50 @@ closure verification is partial, 6 on `--wait` deadlines). `backup create --wait
    intent; streamed SST views; lifts the image budget.
 5. **PITR.** Per-range WAL segment archiving between anchors under the backup owner, `restore
    --to <index | time>` replaying the interval onto the populated base.
+
+## 12. As built (increment 1)
+
+- **The capture subject.** Every path that resolved a capture operation to a migration — the
+  capture catalog (`capture::plan_record`), the ledger's owner-binding check and the capture
+  recording on the metadata leader (`migration_capture/catalog.rs`), the source slot's
+  `with_migration_capture`, the bind path and `MigrationOwners::new` — now resolves it through
+  `data_groups::CaptureSubject`: a migration intent, or one range of a backup. A backup range's
+  capture names a **synthetic destination** (node id `u64::MAX`, incarnation derived from the
+  range operation), because a capture request needs a destination distinct from its source and
+  the request format is durable; admission refuses that node id. The capture slot of a group
+  (`capture.plan`) is reusable after a backup once the range's anchor names the same image
+  (the slot's `superseded` rule), proven by the e2e's replica plan after the backup.
+- **Owners.** A backup range publishes two owners through the migration bind path: the source
+  snapshot owner (`kv9-backup-source-v1`) and the `Backup` owner (`kv9-backup-v1`, salted by the
+  region). Release (kind 121) is a committed fact; the ledger has no release path in this
+  increment for migrations either — GC, when it exists, consumes both.
+- **Rows and digest from the image.** After the upload the range leader restores the image
+  under the checkpoint image budget (`RemoteUploader::restore`) and digests it with the split's
+  row digest. An image the budget refuses is anchored with `restorable: false`, rows 0; the
+  backup is kept and `backup describe` says so (§11).
+- **The bundle** (`KV9BND01`, `backups/<cluster-id>/<task>/bundle`) carries provenance, the
+  keyspace's shape with boundaries, and per range the anchor and the committed capture
+  descriptor (request, image cut and configuration, manifest with the SST closure). Completion
+  is committed only after a `GET` of every referenced object verifies; `backup verify` repeats
+  that check and the bundle digest.
+- **Exclusivity.** `live_range_operation` answers `backup` for a range an unanchored backup
+  holds; the split, merge and migration planners refuse with the backup named. A backup refuses a
+  keyspace whose range is under a live split, merge or plan, and skips sealed bindings (the
+  published history of a split or merge; publication seals and binds in one transaction, so a
+  sealed row always has live successors). One live backup per keyspace: a second `create`
+  confirms it; sequences advance once it is complete, aborted or retired.
+- **Abort.** `task abort <backup>` is a kind-117 row with target `backup`, refused once the
+  backup is complete (retire instead). Capture refuses permanently afterwards; a later backup of
+  the keyspace is a new sequence with new range operations.
+- **Driver.** `runtime/backup.rs`, status line `backup=`, steps `plan_image` (range leader),
+  `bind` (metadata leader), `capture` (range leader: upload, digest, anchor receipt), `bundle`
+  (metadata leader); fault points `backup:<step>:before|after`; `KV9_RANGE_DRIVER=0` pauses it.
+- **Evidence.** `scripts/backup-e2e.sh`: a two-range keyspace of 300 rows; with the drivers
+  paused a held backup refuses a split and a plan, confirms, aborts; with the drivers on and a
+  crash armed after `bind`, `backup create --wait` completes with 150 + 150 rows anchored, a
+  verified bundle, `verify` ok, the committed rows by kind; a replica plan then runs on the
+  anchored range; `retire` retires and `list` hides it. Lean `proofs/lean/backup`: ten theorems,
+  seven semantic controls.
 
 ## 11. Decisions taken (2026-10-29, with the owner)
 

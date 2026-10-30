@@ -18,13 +18,13 @@
     "confirmation_is_not_a_new_mutation"
   ],
   "source_sha256": {
-    "crates/meta/src/data_groups.rs": "58689425a9f165ed52c76a227c2b9048d8a691fffdf73eece59efeb9069b93e1",
-    "crates/meta/src/data_groups/migration.rs": "6791551d6910feadba5012e7a3f9f17baf2d281eb0a226b534b993a5d005f8b1",
+    "crates/meta/src/data_groups.rs": "2b28a0a6953180289cfb92e508d739bf8f3ed5d14b3d571e5bf8a0968ecbbff4",
+    "crates/meta/src/data_groups/migration.rs": "974e53c007f112775f445f746f14b6268ab5b79e59417fbf55b9bae008026889",
     "crates/meta/src/data_groups/activation.rs": "71d8e42478e517b48096697d9df1f7a5029140ee446f9e97f684fd72f6127a2e",
     "crates/meta/src/data_groups/ranges.rs": "30d4319402e6d2adad2a31ef212385cde2ef60aefeea09d8e83350bc26dfba1f",
     "crates/meta/src/retention.rs": "15279c6d41b13bc39e052c97dc40e81cc3a07debf066cdf7e12cccd0e6742698",
     "crates/common/src/retention.rs": "163f87a0e7d6fc6597bc2a5e29ae7bf191898d1ef38d19cab354210ed01084ec",
-    "crates/server/src/migration_retention.rs": "2999af948ae8a635cadc6927ac6cb670e4b4971e86a0838cab4868aa640e7465",
+    "crates/server/src/migration_retention.rs": "63643ecaa0cb445d563279b2e1eb97fceffb9fe53ef398eadf74f83f7919cd9d",
     "crates/server/src/checkpoint_retention.rs": "fd711c8eb856a60a3d768b33875f46794ef2800793514c544f466e7fe83ba67d",
     "crates/server/src/runtime/tests/data_group_tests.rs": "4b118da94145878026e007e8e4194f74140f53ab7d5a34ad7ab6fbf2db418812",
     "proofs/lean/migration-authority/Authority.lean": "18a8c85abbe8bf0d47995b09cad6891ea708e599412a4794f0c92205821bfbd9",

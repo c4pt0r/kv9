@@ -56,6 +56,85 @@ pub struct NodeRow {
     pub drained: bool,
 }
 
+/// The receipt of [`Client::backup_keyspace`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupPlanned {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    /// `false` confirms the keyspace's live backup.
+    pub changed: bool,
+    pub applied: Applied,
+    pub sequence: u64,
+    pub regions: Vec<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupAnchorRow {
+    pub task: u64,
+    pub cut: Applied,
+    pub image_digest: Vec<u8>,
+    pub objects: u64,
+    pub object_bytes: u64,
+    pub rows: u64,
+    pub rows_digest: Vec<u8>,
+    pub restorable: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupRangeRow {
+    pub region: u64,
+    pub creation_task: u64,
+    pub bind_task: u64,
+    pub operation: Vec<u8>,
+    pub anchor: Option<BackupAnchorRow>,
+}
+
+/// One committed backup (docs/BACKUP-RESTORE.md §3).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupRow {
+    pub task: u64,
+    pub operation: Vec<u8>,
+    pub keyspace_id: u32,
+    pub tenant_id: u64,
+    pub label: String,
+    pub sequence: u64,
+    pub requested_unix: u64,
+    /// intended, capturing, anchored, complete, aborted, retired.
+    pub stage: String,
+    pub ranges: Vec<BackupRangeRow>,
+    pub bundle_key: String,
+    pub bundle_digest: Vec<u8>,
+    pub bundle_bytes: u64,
+    pub completed_unix: u64,
+    pub retired_unix: u64,
+    pub restorable: bool,
+}
+
+/// The receipt of [`Client::retire_backup`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupRetired {
+    pub retirement_task: u64,
+    pub changed: bool,
+    pub applied: Applied,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupRangeVerdict {
+    pub region: u64,
+    pub ok: bool,
+    pub detail: String,
+}
+
+/// The verdict of [`Client::verify_backup`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupVerdict {
+    pub task: u64,
+    pub bundle_key: String,
+    pub bundle_ok: bool,
+    pub ranges: Vec<BackupRangeVerdict>,
+    pub ok: bool,
+}
+
 /// The receipt of [`Client::drain_node`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DrainPlanned {
@@ -281,6 +360,111 @@ impl Client {
                 term: r.applied_term,
                 index: r.applied_index,
             },
+        })
+    }
+
+    /// Commit the backup intent of a keyspace (docs/BACKUP-RESTORE.md §1); the
+    /// cluster captures every range and writes the bundle. Poll
+    /// [`Client::list_backups`] for `complete`.
+    pub async fn backup_keyspace(&self, keyspace_id: u32, label: &str) -> Result<BackupPlanned, Error> {
+        let r = self
+            .invoke(
+                false,
+                proto::BackupKeyspaceRequest { keyspace_id, label: label.to_owned() },
+                |mut c, r| async move { c.backup_keyspace(r).await },
+            )
+            .await?;
+        Ok(BackupPlanned {
+            task: r.task,
+            operation: r.operation,
+            changed: r.changed,
+            applied: Applied { term: r.applied_term, index: r.applied_index },
+            sequence: r.sequence,
+            regions: r.regions,
+        })
+    }
+
+    /// Every committed backup with its stage, anchors and bundle; retired ones
+    /// only with `include_retired`.
+    pub async fn list_backups(&self, include_retired: bool) -> Result<Vec<BackupRow>, Error> {
+        let r = self
+            .invoke(true, proto::ListBackupsRequest { include_retired }, |mut c, r| async move {
+                c.list_backups(r).await
+            })
+            .await?;
+        Ok(r
+            .backups
+            .into_iter()
+            .map(|b| BackupRow {
+                task: b.task,
+                operation: b.operation,
+                keyspace_id: b.keyspace_id,
+                tenant_id: b.tenant_id,
+                label: b.label,
+                sequence: b.sequence,
+                requested_unix: b.requested_unix,
+                stage: b.stage,
+                ranges: b
+                    .ranges
+                    .into_iter()
+                    .map(|r| BackupRangeRow {
+                        region: r.region,
+                        creation_task: r.creation_task,
+                        bind_task: r.bind_task,
+                        operation: r.operation,
+                        anchor: r.anchor.map(|a| BackupAnchorRow {
+                            task: a.task,
+                            cut: Applied { term: a.cut_term, index: a.cut_index },
+                            image_digest: a.image_digest,
+                            objects: a.objects,
+                            object_bytes: a.object_bytes,
+                            rows: a.rows,
+                            rows_digest: a.rows_digest,
+                            restorable: a.restorable,
+                        }),
+                    })
+                    .collect(),
+                bundle_key: b.bundle_key,
+                bundle_digest: b.bundle_digest,
+                bundle_bytes: b.bundle_bytes,
+                completed_unix: b.completed_unix,
+                retired_unix: b.retired_unix,
+                restorable: b.restorable,
+            })
+            .collect())
+    }
+
+    /// Retire a complete backup: the only release of its pins.
+    pub async fn retire_backup(&self, task: u64) -> Result<BackupRetired, Error> {
+        let r = self
+            .invoke(false, proto::RetireBackupRequest { task }, |mut c, r| async move {
+                c.retire_backup(r).await
+            })
+            .await?;
+        Ok(BackupRetired {
+            retirement_task: r.retirement_task,
+            changed: r.changed,
+            applied: Applied { term: r.applied_term, index: r.applied_index },
+        })
+    }
+
+    /// GET-verify a complete backup's bundle and every range's object closure.
+    pub async fn verify_backup(&self, task: u64) -> Result<BackupVerdict, Error> {
+        let r = self
+            .invoke(true, proto::VerifyBackupRequest { task }, |mut c, r| async move {
+                c.verify_backup(r).await
+            })
+            .await?;
+        Ok(BackupVerdict {
+            task: r.task,
+            bundle_key: r.bundle_key,
+            bundle_ok: r.bundle_ok,
+            ranges: r
+                .ranges
+                .into_iter()
+                .map(|v| BackupRangeVerdict { region: v.region, ok: v.ok, detail: v.detail })
+                .collect(),
+            ok: r.ok,
         })
     }
 

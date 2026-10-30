@@ -78,29 +78,24 @@ pub fn plan_record<E: Engine>(
     let root = crate::root::certified_root(&txn)?
         .ok_or_else(|| invalid("capture requires certified root"))?;
     let request = descriptor.request();
-    let migration = migration::committed_migrations_in_txn(&txn, root.digest())?
-        .into_iter()
-        .find(|m| m.operation() == request.operation)
+    let subject = super::capture_subject_in_txn(&txn, root.digest(), request.operation)?
         .ok_or_else(|| invalid("capture migration missing"))?;
     let range = ranges::read_in(&txn)?
         .into_iter()
-        .find(|r| r.range().region == migration.region())
+        .find(|r| r.range().region == subject.region())
         .ok_or_else(|| invalid("capture range missing"))?;
-    if range.creation().intent().task() != migration.creation_task()
+    let destination = subject.destination();
+    if range.creation().intent().task() != subject.creation_task()
         || &request.range != range.range()
         || request.range.root != root.digest()
         || request.source.cluster_id != root.cluster_id
-        || request.destination.node_id != migration.destination().node
-        || request.destination.store_incarnation != migration.destination().incarnation
+        || request.destination.node_id != destination.node
+        || request.destination.store_incarnation != destination.incarnation
     {
         return Err(invalid("capture differs from committed migration/range"));
     }
-    for row in task_rows(&txn) {
-        if abort::from_abort_row(&row?, root.digest())?
-            .is_some_and(|a| a.operation() == request.operation)
-        {
-            return Err(invalid("aborted migration cannot record a capture"));
-        }
+    if super::capture_subject_aborted(&txn, root.digest(), &subject)? {
+        return Err(invalid("aborted migration cannot record a capture"));
     }
     let route = node_endpoint(&txn, request.source.node_id)?;
     let view = txn.into_view();

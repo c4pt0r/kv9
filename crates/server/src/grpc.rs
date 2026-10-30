@@ -2592,6 +2592,149 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
+    async fn backup_keyspace(
+        &self,
+        request: Request<proto::BackupKeyspaceRequest>,
+    ) -> Result<Response<proto::BackupKeyspaceResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let request = request.into_inner();
+        if request.keyspace_id == 0 {
+            return Err(Status::invalid_argument("keyspace_id required"));
+        }
+        if request.label.len() > kv9_meta::data_groups::backup::MAX_LABEL_BYTES {
+            return Err(Status::invalid_argument("label exceeds 64 bytes"));
+        }
+        let caller = auth.principal.to_string();
+        let keyspace = KeyspaceId(request.keyspace_id);
+        let label = request.label;
+        let result = self
+            .backend
+            .call(reservation, move |backend| backend.backup_keyspace(&caller, keyspace, &label))
+            .await?;
+        Ok(Response::new(proto::BackupKeyspaceResponse {
+            task: result.intent.task(),
+            operation: result.intent.operation().to_vec(),
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+            sequence: result.intent.sequence(),
+            regions: result.intent.ranges().iter().map(|r| r.region().0).collect(),
+        }))
+    }
+
+    async fn list_backups(
+        &self,
+        request: Request<proto::ListBackupsRequest>,
+    ) -> Result<Response<proto::ListBackupsResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let caller = auth.principal.to_string();
+        let include_retired = request.into_inner().include_retired;
+        let backups = self
+            .backend
+            .call(reservation, move |backend| backend.list_backups(&caller))
+            .await?;
+        Ok(Response::new(proto::ListBackupsResponse {
+            backups: backups
+                .into_iter()
+                .filter(|b| include_retired || b.stage != "retired")
+                .map(|b| proto::BackupRow {
+                    task: b.task,
+                    operation: b.operation.to_vec(),
+                    keyspace_id: b.keyspace,
+                    tenant_id: b.tenant,
+                    label: b.label,
+                    sequence: b.sequence,
+                    requested_unix: b.requested_unix,
+                    stage: b.stage.to_string(),
+                    ranges: b
+                        .ranges
+                        .into_iter()
+                        .map(|r| proto::BackupRangeRow {
+                            region: r.region,
+                            creation_task: r.creation_task,
+                            bind_task: r.bind_task,
+                            operation: r.operation.to_vec(),
+                            anchor: r.anchor.map(|a| proto::BackupAnchorRow {
+                                task: a.task,
+                                cut_term: a.cut.term,
+                                cut_index: a.cut.index,
+                                image_digest: a.image_digest.to_vec(),
+                                objects: a.objects,
+                                object_bytes: a.object_bytes,
+                                rows: a.rows,
+                                rows_digest: a.rows_digest.to_vec(),
+                                restorable: a.restorable,
+                            }),
+                        })
+                        .collect(),
+                    bundle_key: b.bundle_key,
+                    bundle_digest: b.bundle_digest.to_vec(),
+                    bundle_bytes: b.bundle_bytes,
+                    completed_unix: b.completed_unix,
+                    retired_unix: b.retired_unix,
+                    restorable: b.restorable,
+                })
+                .collect(),
+        }))
+    }
+
+    async fn retire_backup(
+        &self,
+        request: Request<proto::RetireBackupRequest>,
+    ) -> Result<Response<proto::RetireBackupResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let task = request.into_inner().task;
+        if task == 0 {
+            return Err(Status::invalid_argument("task required"));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| backend.retire_backup(&caller, task))
+            .await?;
+        Ok(Response::new(proto::RetireBackupResponse {
+            retirement_task: result.retirement.task(),
+            changed: result.changed,
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+        }))
+    }
+
+    async fn verify_backup(
+        &self,
+        request: Request<proto::VerifyBackupRequest>,
+    ) -> Result<Response<proto::VerifyBackupResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.admin.check(&auth)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let task = request.into_inner().task;
+        if task == 0 {
+            return Err(Status::invalid_argument("task required"));
+        }
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(reservation, move |backend| backend.verify_backup(&caller, task))
+            .await?;
+        Ok(Response::new(proto::VerifyBackupResponse {
+            task: result.task,
+            bundle_key: result.bundle_key,
+            bundle_ok: result.bundle_ok,
+            ranges: result
+                .ranges
+                .into_iter()
+                .map(|(region, ok, detail)| proto::BackupRangeVerdict { region, ok, detail })
+                .collect(),
+            ok: result.ok,
+        }))
+    }
+
     async fn list_data_groups(
         &self,
         request: Request<proto::ListDataGroupsRequest>,

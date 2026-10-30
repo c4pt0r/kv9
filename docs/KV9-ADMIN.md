@@ -113,6 +113,10 @@ kv9-admin [--context <name> | --endpoints <host:port,...>] [--token <t> | KV9_AD
 
   task      list     [--kind 103|104|105|106|...] [--after <id>] [--limit <n>]
             describe <id>
+            abort    <id>             a split/merge before its seal, a drain, a replica plan, an incomplete backup
+
+  backup    create   --keyspace <name|id> [--label <t>] [--wait]   a retention point (BACKUP-RESTORE)
+            list     [--all] ; describe <task> ; verify <task> ; retire <task>
 
   retention apply    --file <request> ; owner <hex>
   version ; completion <shell>

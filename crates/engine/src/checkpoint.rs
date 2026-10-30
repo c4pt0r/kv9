@@ -387,6 +387,18 @@ impl RemoteUploader {
     pub fn verify_checkpoint_objects(&self, manifest: &CheckpointManifest) -> Result<()> {
         self.with_local_execution(|uploader| uploader.recover_prepared(manifest).map(|_| ()))
     }
+
+    /// PUT one small descriptor object (a backup bundle) under the budgets and
+    /// the execution discipline every other PUT observes. Idempotent for equal
+    /// bytes; a different object under the same key is refused by the store.
+    pub fn put_object(&self, key: &ObjectKey, bytes: &[u8]) -> Result<()> {
+        self.with_local_execution(|uploader| uploader.store().put(key, bytes))
+    }
+
+    /// GET one small descriptor object, bounded by `max_bytes`.
+    pub fn get_object(&self, key: &ObjectKey, max_bytes: usize) -> Result<Option<Vec<u8>>> {
+        self.with_local_execution(|uploader| uploader.store().get_bounded(key, max_bytes))
+    }
 }
 
 #[cfg(test)]

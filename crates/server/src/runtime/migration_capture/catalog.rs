@@ -27,25 +27,34 @@ impl RuntimeBackend {
             LedgerRequest::Acquire(binding) | LedgerRequest::Share { to: binding, .. } => binding,
             _ => return Ok(()),
         };
-        for migration in
-            kv9_meta::data_groups::migration::committed_migrations(&self.node.meta_raft.store)?
-        {
-            let intent = migration.intent();
-            let (source, destination) = crate::migration_retention::migration_owner_ids(
-                root.digest(),
-                intent.operation(),
-                &intent.destination().incarnation,
-            )?;
+        let store = &self.node.meta_raft.store;
+        let mut subjects: Vec<kv9_meta::data_groups::CaptureSubject> =
+            kv9_meta::data_groups::migration::committed_migrations(store)?
+                .into_iter()
+                .map(|m| kv9_meta::data_groups::CaptureSubject::Migration(m.intent().clone()))
+                .collect();
+        let backups = kv9_meta::data_groups::backup::committed_backups(store)?;
+        for intent in &backups.intents {
+            for range in intent.ranges() {
+                subjects.push(kv9_meta::data_groups::CaptureSubject::Backup {
+                    intent: intent.clone(),
+                    range: range.clone(),
+                });
+            }
+        }
+        for subject in &subjects {
+            let (source, destination) =
+                crate::migration_retention::subject_owner_ids(root.digest(), subject)?;
             if binding.descriptor.id != source && binding.descriptor.id != destination {
                 continue;
             }
             if let Some(fixed) =
-                kv9_meta::data_groups::capture::committed_capture(view, root, intent.operation())?
+                kv9_meta::data_groups::capture::committed_capture(view, root, subject.operation())?
             {
                 let descriptor = fixed.descriptor();
                 crate::migration_retention::MigrationOwners::new(
                     root,
-                    &migration,
+                    subject,
                     &descriptor.request().range,
                     descriptor.manifest(),
                 )?
@@ -151,11 +160,11 @@ impl RuntimeBackend {
         remaining(deadline)?;
         // Existing pins from a prior binary/attempt must not be contradicted by
         // registering another protocol image under the same operation.
-        let migration =
-            kv9_meta::data_groups::migration::committed_migrations(&self.node.meta_raft.store)?
-                .into_iter()
-                .find(|m| m.intent().operation() == descriptor.request().operation)
-                .ok_or_else(|| Error::Config("capture migration missing".into()))?;
+        let migration = kv9_meta::data_groups::capture_subject(
+            &self.node.meta_raft.store,
+            descriptor.request().operation,
+        )?
+        .ok_or_else(|| Error::Config("capture migration missing".into()))?;
         let owners = crate::migration_retention::MigrationOwners::new(
             &certified,
             &migration,

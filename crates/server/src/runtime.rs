@@ -67,6 +67,7 @@ mod migration_capture;
 mod auto_split;
 mod fault;
 mod node_drain;
+mod backup;
 mod placement;
 mod range_merge;
 mod range_split;
@@ -1574,13 +1575,11 @@ impl AdminApi for RuntimeBackend {
             return Err(Error::Config("migration request root differs".into()));
         }
         let store = &self.node.meta_raft.store;
-        let migration = kv9_meta::data_groups::migration::committed_migrations(store)?
-            .into_iter()
-            .find(|m| m.intent().operation() == operation)
+        let migration = kv9_meta::data_groups::capture_subject(store, operation)?
             .ok_or_else(|| Error::Config("migration operation is not committed".into()))?;
         let range = kv9_meta::data_groups::ranges::committed_ranges(store)?
             .into_iter()
-            .find(|r| r.creation().intent().region() == migration.intent().region())
+            .find(|r| r.creation().intent().region() == migration.region())
             .ok_or_else(|| Error::Config("migration group has no committed range".into()))?;
         let fixed = kv9_meta::data_groups::capture::committed_capture(
             store.begin()?.into_view().as_ref(),
@@ -3128,6 +3127,151 @@ impl AdminApi for RuntimeBackend {
         Ok(crate::api::DrainResult { drain, changed, applied })
     }
 
+    fn backup_keyspace(&self, _caller: &str, keyspace: KeyspaceId, label: &str) -> Result<crate::api::BackupResult> {
+        self.ensure_serving()?;
+        if self.uploader.is_none() {
+            return Err(Error::Config("backup requires configured object storage (KV9_STORAGE=minio)".into()));
+        }
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        let (intent, changed) = kv9_meta::data_groups::backup::plan_backup(&mut txn, keyspace, label, unix_now())?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::BackupResult { intent, changed, applied })
+    }
+
+    fn list_backups(&self, _caller: &str) -> Result<Vec<crate::api::BackupSummary>> {
+        use crate::api::{BackupAnchorSummary, BackupRangeSummary, BackupSummary};
+        self.ensure_catalog_ready()?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let rows = kv9_meta::data_groups::backup::committed_backups(&self.node.meta_raft.store)?;
+        let mut out = Vec::with_capacity(rows.intents.len());
+        for intent in &rows.intents {
+            let ranges: Vec<BackupRangeSummary> = intent
+                .ranges()
+                .iter()
+                .map(|r| BackupRangeSummary {
+                    region: r.region().0,
+                    creation_task: r.creation_task(),
+                    bind_task: r.bind_task(),
+                    operation: r.operation(),
+                    anchor: rows.anchor_of_range(r).map(|a| BackupAnchorSummary {
+                        task: a.task(),
+                        cut: a.cut(),
+                        image_digest: *a.image_digest().as_bytes(),
+                        objects: a.objects(),
+                        object_bytes: a.object_bytes(),
+                        rows: a.rows(),
+                        rows_digest: *a.rows_digest().as_bytes(),
+                        restorable: a.restorable(),
+                    }),
+                })
+                .collect();
+            let completion = rows.completion_of(intent);
+            out.push(BackupSummary {
+                task: intent.task(),
+                operation: intent.operation(),
+                keyspace: intent.keyspace().0,
+                tenant: intent.tenant().0,
+                label: intent.label().to_owned(),
+                sequence: intent.sequence(),
+                requested_unix: intent.requested_unix(),
+                stage: rows.stage(intent).label(),
+                restorable: !ranges.is_empty() && ranges.iter().all(|r| r.anchor.as_ref().is_some_and(|a| a.restorable)),
+                ranges,
+                bundle_key: completion.map(|c| c.bundle_key().to_owned()).unwrap_or_default(),
+                bundle_digest: completion.map(|c| *c.bundle_digest().as_bytes()).unwrap_or([0; 32]),
+                bundle_bytes: completion.map_or(0, |c| c.bundle_bytes()),
+                completed_unix: completion.map_or(0, |c| c.completed_unix()),
+                retired_unix: rows.retirement_of(intent).map_or(0, |r| r.retired_unix()),
+            });
+        }
+        Ok(out)
+    }
+
+    fn retire_backup(&self, _caller: &str, task: u64) -> Result<crate::api::BackupRetireResult> {
+        self.ensure_serving()?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        let (retirement, changed) = kv9_meta::data_groups::backup::plan_backup_retirement(&mut txn, task, unix_now())?;
+        let command = if changed {
+            Command::from_batch(&txn.into_batch())
+        } else {
+            Command::Noop
+        };
+        let applied = self.commit_catalog(&command, term)?;
+        Ok(crate::api::BackupRetireResult { retirement, changed, applied })
+    }
+
+    fn verify_backup(&self, _caller: &str, task: u64) -> Result<crate::api::BackupVerification> {
+        use kv9_meta::data_groups::backup::{BackupBundle, MAX_BUNDLE_BYTES};
+        self.ensure_catalog_ready()?;
+        let uploader = self
+            .uploader
+            .as_deref()
+            .ok_or_else(|| Error::Config("backup verification requires configured object storage".into()))?;
+        let rows = kv9_meta::data_groups::backup::committed_backups(&self.node.meta_raft.store)?;
+        let intent = rows
+            .intents
+            .iter()
+            .find(|i| i.task() == task)
+            .ok_or_else(|| Error::Config(format!("task {task} is not a backup")))?;
+        let completion = rows
+            .completion_of(intent)
+            .ok_or_else(|| Error::Config(format!("backup {task} is {}; only a complete backup verifies", rows.stage(intent).label())))?;
+        let key = kv9_engine::ObjectKey::new(completion.bundle_key().to_owned())?;
+        let mut ranges = Vec::new();
+        let bundle_ok = match uploader.get_object(&key, MAX_BUNDLE_BYTES)? {
+            Some(bytes) if RootDigest::sha256(&bytes) == completion.bundle_digest() && bytes.len() as u64 == completion.bundle_bytes() => {
+                match BackupBundle::decode(&bytes) {
+                    Ok(bundle) => {
+                        for range in &bundle.ranges {
+                            let verdict = kv9_raft::snapshot_install::capture::CaptureDescriptor::decode(&range.descriptor)
+                                .and_then(|d| uploader.verify_checkpoint_objects(d.manifest()));
+                            ranges.push(match verdict {
+                                Ok(()) => (range.region.0, true, format!("{} objects verified", range.anchor.objects())),
+                                Err(error) => (range.region.0, false, error.to_string()),
+                            });
+                        }
+                        true
+                    }
+                    Err(error) => {
+                        ranges.push((0, false, format!("bundle does not decode: {error}")));
+                        false
+                    }
+                }
+            }
+            Some(_) => {
+                ranges.push((0, false, "bundle bytes differ from the committed completion".into()));
+                false
+            }
+            None => {
+                ranges.push((0, false, "bundle object is missing".into()));
+                false
+            }
+        };
+        let ok = bundle_ok && ranges.iter().all(|(_, ok, _)| *ok);
+        Ok(crate::api::BackupVerification {
+            task,
+            bundle_key: completion.bundle_key().to_owned(),
+            bundle_ok,
+            ranges,
+            ok,
+        })
+    }
+
     fn list_tasks(&self, _caller: &str, after: u64, limit: usize, kind: u64) -> Result<crate::api::TaskPage> {
         use crate::api::{TaskPage, TaskRow};
         use kv9_meta::schema::TASKS_DESC;
@@ -3231,6 +3375,10 @@ fn task_kind_name(kind: u64) -> &'static str {
         116 => "merge_evidence",
         117 => "operation_abort",
         118 => "seal_evidence",
+        119 => "backup_intent",
+        120 => "backup_anchor",
+        121 => "backup_retirement",
+        122 => "backup_completion",
         _ => "unknown",
     }
 }
@@ -5187,6 +5335,7 @@ pub struct NodeRuntime {
     replica_plans: replica_addition::State,
     replica_repair: replica_repair::State,
     node_drain: node_drain::State,
+    backup: backup::State,
     range_split: range_split::State,
     range_merge: range_merge::State,
     auto_split: auto_split::State,
@@ -5855,6 +6004,7 @@ impl NodeRuntime {
             replica_plans: replica_addition::State::from_env(),
             replica_repair: replica_repair::State::new(replica_repair::Config::from_env()),
             node_drain: node_drain::State::new(node_drain::Config::from_env()),
+            backup: backup::State::default(),
             range_split: range_split::State::default(),
             range_merge: range_merge::State::default(),
             auto_split: auto_split::State::new(auto_split::Config::from_env()),
@@ -6488,6 +6638,9 @@ impl NodeRuntime {
                 self.reconcile_range_split();
                 // Committed merge intents: the split pipeline backwards (RANGE-SPLIT §6).
                 self.reconcile_range_merge();
+                // Committed backups: each range leader plans, captures and anchors; the
+                // metadata leader binds the pins and writes the bundle (BACKUP-RESTORE §3).
+                self.reconcile_backup();
                 // The automatic split trigger (RANGE-SPLIT §11), off unless
                 // KV9_AUTO_SPLIT_BYTES > 0: a group leader's size verdict becomes an intent.
                 self.reconcile_auto_split();
@@ -7241,6 +7394,9 @@ impl NodeRuntime {
         body.push('\n');
         body.push_str("range_merge=");
         body.push_str(&self.range_merge_status());
+        body.push('\n');
+        body.push_str("backup=");
+        body.push_str(&self.backup_status());
         body.push('\n');
         body.push_str("auto_split=");
         body.push_str(&self.auto_split_status());

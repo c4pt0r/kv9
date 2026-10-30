@@ -34,6 +34,7 @@ Each is one JSON object with `events` (recent, with `at_unix`, `step`, `outcome`
 | `voter_replacement=` | the metadata leader | `baseline_voters`, lost voters, `pending` |
 | `node_drain=` | the metadata leader (`drains[]`: `memberships_left`, `plans_unsettled`, `meta_role`, `finished`, `waiting`) and the draining node (`this_store_draining`, `transfer_group_leader`) | |
 | `range_split=` / `range_merge=` | the parent's leader (seal, publish) and the children's leaders (child_descriptor, populate) | `intents`, `populations`, `in_flight` |
+| `backup=` | each range leader (plan_image, capture) and the metadata leader (bind, bundle) | per backup `stage`, per range `state` and `lead`, `waiting` |
 | `auto_split=` | each group leader | footprint verdicts when `KV9_AUTO_SPLIT_BYTES` is set |
 | `checkpoint_retention=`, `data_checkpoint=` | every node | object-storage housekeeping; `deferred: metadata not ready` lines at startup are normal |
 | `fault=` | test only | armed fault points (`KV9_FAULT_DIR`) |
@@ -43,7 +44,8 @@ Each is one JSON object with `events` (recent, with `at_unix`, `step`, `outcome`
 100 group creation · 101 activation · 102 range binding · 103 migration · 104 install evidence ·
 105 truncation · 106 removal · 108 migration abort · 110 compaction · 111 replica plan ·
 112 node drain · 113 split intent · 114 split evidence · 115 merge intent · 116 merge evidence ·
-117 operation abort (split/merge/drain) · 118 seal evidence.
+117 operation abort (split/merge/drain/backup) · 118 seal evidence · 119 backup intent ·
+120 backup anchor · 121 backup retirement · 122 backup completion.
 
 A healthy drill leaves, for one group that was added to, moved, split, merged, drained and
 repaired: 100 ×4, 102 ×4, 103 ×5, 106 ×3, 108 ×1, 111 ×5, 112 ×1, 113 ×1, 114 ×2, 115 ×1, 116 ×1,
@@ -58,6 +60,7 @@ repaired: 100 ×4, 102 ×4, 103 ×5, 106 ×3, 108 ×1, 111 ×5, 112 ×1, 113 ×1
 | Any plan | aborted | the kind-108 row exists; the driver detaches the learner afterwards |
 | Split / merge | intended → populating → populated → published | published: parent row `sealed`, children `live` in `group list` |
 | Drain | (status line) `finished: true` | `node list` shows `drained`; `memberships_left: []`, `meta_role: none` |
+| Backup | intended → capturing → anchored → complete | complete: the kind-122 row exists (bundle written and GET-verified); `restorable: yes` when every anchor carries rows and a digest |
 | Repair / voter replacement | a kind-111 plan / membership change appears | the lost node is out of the live voters |
 
 Settledness, which gates the next operation on a group: a plan is settled when aborted, or

@@ -22,12 +22,19 @@ pub(super) fn check_old_format(view: &dyn ReadView) -> Result<()> {
     Ok(())
 }
 
-/// Derive exactly the long-lived pair already used by MigrationOwners.
+/// Derive exactly the long-lived pair already used by MigrationOwners: for a
+/// migration the source snapshot and destination owners; for a BACKUP range
+/// (its request names the synthetic destination, docs/BACKUP-RESTORE.md §12) the
+/// source snapshot and the `Backup` owner, salted by the region.
 pub fn image_owners(d: &CaptureDescriptor) -> Result<(OwnerBinding, OwnerBinding)> {
     let request = d.request();
     let root = request.range.root;
-    let operation =
-        crate::data_groups::evidence::migration_operation_digest(root, request.operation);
+    let backup = request.destination.node_id == kv9_common::BACKUP_DESTINATION_NODE;
+    let operation = if backup {
+        crate::data_groups::backup_operation_digest(root, request.operation)
+    } else {
+        crate::data_groups::evidence::migration_operation_digest(root, request.operation)
+    };
     let source = |kind, label: &[u8], salt: &[u8]| -> Result<OwnerBinding> {
         let mut id = label.to_vec();
         id.extend_from_slice(root.as_bytes());
@@ -53,6 +60,12 @@ pub fn image_owners(d: &CaptureDescriptor) -> Result<(OwnerBinding, OwnerBinding
         owner.validate(root)?;
         Ok(owner)
     };
+    if backup {
+        return Ok((
+            source(OwnerKind::Snapshot, b"kv9-backup-source-v1", &[])?,
+            source(OwnerKind::Backup, b"kv9-backup-v1", &request.range.region.0.to_be_bytes())?,
+        ));
+    }
     Ok((
         source(OwnerKind::Snapshot, b"kv9-migration-source-v1", &[])?,
         source(
@@ -62,6 +75,13 @@ pub fn image_owners(d: &CaptureDescriptor) -> Result<(OwnerBinding, OwnerBinding
         )?,
     ))
 }
+/// A publisher record names its 16-byte capture operation; its owner carries the
+/// 32-byte ledger identity, derived the migration way or the backup way.
+fn operation_matches(root: RootDigest, operation: [u8; 16], digest: [u8; 32]) -> bool {
+    crate::data_groups::evidence::migration_operation_digest(root, operation) == digest
+        || crate::data_groups::backup_operation_digest(root, operation) == digest
+}
+
 pub fn binding(d: &CaptureDescriptor, lifetime: LocalLifetime) -> Result<OwnerBinding> {
     let (mut publisher, _) = image_owners(d)?;
     let root = publisher.descriptor.root;
@@ -157,8 +177,7 @@ fn read(
     if record.publisher != token
         || token.owner != owner.descriptor.id
         || record.binding != RootDigest::sha256(&owner_registration(owner))
-        || crate::data_groups::evidence::migration_operation_digest(p.root, record.operation)
-            != owner.descriptor.operation
+        || !operation_matches(p.root, record.operation, owner.descriptor.operation)
         || record.admitted_at > p.revision
         || record.finished_at > p.revision
     {
@@ -357,8 +376,7 @@ pub(super) fn finish(
     binding.validate(p.root)?;
     if binding.descriptor.kind != OwnerKind::Publisher
         || operation == [0; 16]
-        || crate::data_groups::evidence::migration_operation_digest(p.root, operation)
-            != binding.descriptor.operation
+        || !operation_matches(p.root, operation, binding.descriptor.operation)
     {
         return Err(conflict("publisher drain protocol or operation differs"));
     }

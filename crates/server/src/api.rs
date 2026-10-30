@@ -756,6 +756,24 @@ pub trait AdminApi {
     fn drain_node(&self, _caller: &str, _node: kv9_common::NodeId) -> Result<DrainResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::drain_node"))
     }
+    /// Commit the backup intent of `keyspace` (docs/BACKUP-RESTORE.md §1): its
+    /// bound ranges frozen, one capture per range from here on. The keyspace's
+    /// live backup confirms.
+    fn backup_keyspace(&self, _caller: &str, _keyspace: KeyspaceId, _label: &str) -> Result<BackupResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::backup_keyspace"))
+    }
+    /// Every committed backup with its stage, anchors and bundle.
+    fn list_backups(&self, _caller: &str) -> Result<Vec<BackupSummary>> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::list_backups"))
+    }
+    /// Retire a complete backup: the only release of its pins (§4).
+    fn retire_backup(&self, _caller: &str, _task: u64) -> Result<BackupRetireResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::retire_backup"))
+    }
+    /// GET-verify a complete backup's bundle and every range's object closure now.
+    fn verify_backup(&self, _caller: &str, _task: u64) -> Result<BackupVerification> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::verify_backup"))
+    }
     /// Commit a merge intent for the adjacent bound ranges `low` `[s,m)` and `high`
     /// `[m,e)` on the same stores, creating and activating the merged child in the
     /// same transaction (docs/RANGE-SPLIT.md §6).
@@ -993,6 +1011,78 @@ pub struct AbortResult {
     pub changed: bool,
     pub applied: AppliedPosition,
     pub path: &'static str,
+}
+
+/// The receipt of [`AdminApi::backup_keyspace`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupResult {
+    pub intent: kv9_meta::data_groups::backup::BackupIntent,
+    /// False confirms the keyspace's live backup.
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+/// The receipt of [`AdminApi::retire_backup`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupRetireResult {
+    pub retirement: kv9_meta::data_groups::backup::BackupRetirement,
+    pub changed: bool,
+    pub applied: AppliedPosition,
+}
+
+/// One range of a backup as `list_backups` reports it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupRangeSummary {
+    pub region: u64,
+    pub creation_task: u64,
+    pub bind_task: u64,
+    pub operation: [u8; 16],
+    pub anchor: Option<BackupAnchorSummary>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupAnchorSummary {
+    pub task: u64,
+    pub cut: AppliedPosition,
+    pub image_digest: [u8; 32],
+    pub objects: u64,
+    pub object_bytes: u64,
+    pub rows: u64,
+    pub rows_digest: [u8; 32],
+    pub restorable: bool,
+}
+
+/// One committed backup with its catalog-only stage (docs/BACKUP-RESTORE.md §3).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupSummary {
+    pub task: u64,
+    pub operation: [u8; 16],
+    pub keyspace: u32,
+    pub tenant: u64,
+    pub label: String,
+    pub sequence: u64,
+    pub requested_unix: u64,
+    pub stage: &'static str,
+    pub ranges: Vec<BackupRangeSummary>,
+    /// Empty until complete.
+    pub bundle_key: String,
+    pub bundle_digest: [u8; 32],
+    pub bundle_bytes: u64,
+    pub completed_unix: u64,
+    pub retired_unix: u64,
+    /// Every anchored range carries rows and a digest a restore can verify.
+    pub restorable: bool,
+}
+
+/// The verdict of [`AdminApi::verify_backup`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackupVerification {
+    pub task: u64,
+    pub bundle_key: String,
+    pub bundle_ok: bool,
+    /// `(region, ok, detail)` per range.
+    pub ranges: Vec<(u64, bool, String)>,
+    pub ok: bool,
 }
 
 /// The receipt of [`AdminApi::drain_node`].
