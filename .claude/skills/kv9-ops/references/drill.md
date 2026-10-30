@@ -52,6 +52,12 @@ manage processes; `sv N <field>` reads a status field. Keep the Add watch on `ev
 `pid=` after a restart, and budget spare stores: placement never returns a group to a store that
 held it, so a scenario that drains or repairs needs one never-hosting store per group per move.
 
+Backup and restore are not in the drill script; their rehearsal is `scripts/backup-e2e.sh`
+(about six minutes, MinIO): a two-range keyspace is backed up (one crash injected after `bind`),
+half of it is deleted and overwritten, `restore create --as orders-restored --wait` brings the
+backed-up rows back as a new keyspace, a second restore blocks `backup retire` and is aborted, and
+the backup retires. Run it after changing capture, retention, backup or restore code.
+
 Candidate scenarios not yet in the drill: a merge of groups whose members differ (refused), a
 split under writes with the client retrying through the seal window, a drain of a three-voter
 metadata group without a learner (waits and says so), a node whose disk fills

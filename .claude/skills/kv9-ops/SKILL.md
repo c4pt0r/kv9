@@ -1,6 +1,6 @@
 ---
 name: kv9-ops
-description: Operate, grow, repair, back up and diagnose a running kv9 cluster with kv9-admin and the status documents. Use this skill whenever the user wants to bring up or extend a kv9 cluster, add or remove nodes, create data groups or keyspaces, add or move replicas, transfer leadership, split or merge ranges, drain or retire a node, back up a keyspace or verify or retire a backup, abort an operation, read `cluster health` or a node's `status` file, run or extend the operations drill (`scripts/ops-drill.sh`), or asks why a plan, split, merge, drain, backup or repair is stuck, slow or refused — even when they only say "the cluster", "a node", "kv9-admin" or paste a status line without naming the operation.
+description: Operate, grow, repair, back up and diagnose a running kv9 cluster with kv9-admin and the status documents. Use this skill whenever the user wants to bring up or extend a kv9 cluster, add or remove nodes, create data groups or keyspaces, add or move replicas, transfer leadership, split or merge ranges, drain or retire a node, back up a keyspace, verify or retire a backup, restore a backup into a new keyspace or recover from a bad delete or overwrite, abort an operation, read `cluster health` or a node's `status` file, run or extend the operations drill (`scripts/ops-drill.sh`), or asks why a plan, split, merge, drain, backup, restore or repair is stuck, slow or refused — even when they only say "the cluster", "a node", "kv9-admin" or paste a status line without naming the operation.
 ---
 
 # kv9 operations
