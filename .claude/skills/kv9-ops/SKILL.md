@@ -13,6 +13,40 @@ document of the node that owns the next step when something does not advance. Th
 `docs/OPERATIONS.md`; this skill is the practice that goes with it, learned from the 2026-10-29
 drill (`docs/OPERATIONS-DRILL-2026-10-29.md`).
 
+## The words this skill uses
+
+kv9 has its own vocabulary and the verbs, status lines and refusals all speak it. The full list,
+with where each word shows up, is `references/glossary.md`; read it when a term below is not
+enough, and send the user there when they ask what something means.
+
+- **Metadata group** (region 0): the Raft group holding the catalog and the TASKS history; its
+  leader commits every verb. **Voter** / **learner**: a member that votes / one that only
+  replicates. A **store** is a node's data directory, identified by its **store incarnation**.
+- **Keyspace** → one or more **ranges** `[start, end)`, each bound (kind 102 row) to a **data
+  group** (a Raft group of 3/5/7 replicas, named by its **creation task**) in a **region**.
+  **Epoch** is the shape version clients carry. A **sealed** binding is the retired parent of a
+  published split or merge.
+- **TASKS history**: immutable rows by **kind** (100…124); a verb commits an **intent** with an
+  **operation id** (derived from `--label`; resubmitting **confirms**); the cluster drives it and
+  `describe` shows its **stage**. An operation is **settled** when aborted or complete; one live
+  operation holds a group at a time. **Evidence** rows are proofs committed by another node.
+- **Replica plan**: `add-replica` (Add, ends at `evidenced`) or `move-replica` (Move, ends at
+  `decided`). The leader **captures** an **image** at an exact **cut** (term, index), uploads it
+  to **object storage** with a **manifest**, the retention **ledger** **pins** its objects for an
+  **owner**, the destination **installs** it, is **promoted**, and for a Move the source is
+  **removed**.
+- **Split** / **merge**: children on the parent's members, the parent **sealed**, each child
+  **populated** and proven by a row **digest**, then **published** in one transaction.
+- **Drain**: every leadership handed away, every replica moved off, the node out of the metadata
+  group. **Repair** / **voter replacement**: the same moves taken by the cluster for a lost
+  store. **Placement**: the least-loaded spare that never held the group.
+- **Backup**: a **retention point** of a keyspace: one **anchor** per range (exact cut, image and
+  manifest digests, rows and row digest, the **Backup** owner that pins it) plus one **bundle**
+  object in the bucket, **complete** once the closure is GET-verified; **retire** is the only
+  release. **Restorable** is false when an image exceeded the **image budget**. **Restore**: a
+  NEW keyspace from a complete backup: one **target** group per range copies from the anchored
+  image, is proven against the anchor, and one transaction publishes the keyspace.
+
 ## How to address the cluster
 
 ```

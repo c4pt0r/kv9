@@ -4,6 +4,8 @@ Command sequences with the outputs to expect, taken from the 2026-10-29 drill
 (`docs/OPERATIONS-DRILL-2026-10-29.md`, run 6, debug build, NVMe, seven nodes, 400 rows). Times
 are what that run measured; a release build and real data change them, the shape does not.
 `kv9-admin` below means `kv9-admin --endpoints <nodes> --yes`, with `KV9_ADMIN_TOKEN` exported.
+Terms (creation task, binding, epoch, plan, image, cut, pin, evidence, stage, anchor, bundle,
+target…) are defined in `glossary.md`; the first use of each below carries a short gloss.
 
 Contents: 1 cluster formation · 2 adding nodes · 3 data group and keyspace · 4 leadership ·
 5 add and move a replica · 6 abort · 7 split and merge · 8 drain · 9 unplanned loss ·
@@ -55,6 +57,10 @@ kv9-admin group describe 100        # replica_views: one Leader/active, voters [
 kv9-admin group list                # TASK 100 REGION 100 MEMBERS 1,2,3 KEYSPACES 100
 ```
 
+`creation_task` (100) is the group's name in every later verb; `region_id` is its Raft group id;
+the keyspace's *binding* (a kind-102 row) ties the key interval `[start, end)` to the group and
+carries the *epoch* clients check.
+
 The group is active behind a leader about one second after creation and the keyspace routable
 right after; a first write that answers an error is a probe to retry, not a failure. Without
 `--group` a keyspace lives on the metadata group.
@@ -83,6 +89,11 @@ kv9-admin group add-replica 100 --to 4 --label add-4
 Stages seen in `group describe 100 → plans[].stage` (run 6): `planned` 0 s → `pinned` 1 s →
 `evidenced` 33 s, and the leader's view then shows `voters [1,2,3,4]`. **An Add stops at
 `evidenced`**: `decided` is the Move's removal decision. Reads and writes are served throughout.
+What the stages mean: *planned* the rows exist; *captured* the leader froze an image of the
+group at an exact cut and uploaded it to object storage; *pinned* the retention ledger holds
+the image's objects for this operation (nothing may delete them); *evidenced* the destination
+installed exactly that image and said so in a row of its own; *decided* (Move only) the leader
+committed the source's removal.
 
 ```bash
 kv9-admin group move-replica 100 --from 1 --to 5 --label move-1-5
@@ -219,6 +230,12 @@ kv9-admin backup retire 130            # the only release of the pins; `backup l
 kv9-admin task abort <task>            # an INCOMPLETE backup; a complete one retires
 ```
 
+Words: an *anchor* is one range's committed proof of its backup (exact cut, image and manifest
+digests, row count and row digest, the owner that pins the objects); the *bundle* is the one
+self-describing object in the bucket that lists every anchor and the keyspace's shape;
+*restorable: no* means a range's image was too large for the memory budget a node may spend
+restoring an image, so the data is kept but cannot be restored by the current path.
+
 What happens (BACKUP-RESTORE.md §3): each range leader plans a capture at its own exact cut
 (`plan_image`), the metadata leader publishes the owner pair (`bind`), the range leader uploads
 and verifies the image, restores it under the image budget to count and digest the rows, and
@@ -244,6 +261,11 @@ kv9-admin restore describe 140
 kv9-admin keyspace describe orders-20261029 ; kv9-repl … use orders-20261029
 kv9-admin task abort <restore task>        # before publication only; the targets retire
 ```
+
+Words: a *target* is one new, empty data group created for one backed-up range; *evidenced*
+means its leader copied the range from the anchored image and the metadata leader accepted
+rows and digest equal to the anchor's; *published* means the keyspace row, its bindings and
+routing rows exist, in one transaction.
 
 What happens (BACKUP-RESTORE.md §5): the intent reserves the new keyspace id and creates one
 empty group per backed-up range (placement's least-loaded three stores, or `--voters`); each
