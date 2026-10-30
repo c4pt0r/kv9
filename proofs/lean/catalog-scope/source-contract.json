@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "model": "Kv9.CatalogScope",
+  "theorems": [
+    "initial_safe",
+    "relevant_of_mem",
+    "deliver_safe",
+    "enter_safe",
+    "leave_safe",
+    "step_safe",
+    "run_safe",
+    "absence_verdicts_match",
+    "nothing_beyond_the_catalog",
+    "an_unrelated_change_delivers_no_rows",
+    "delivered_rows_are_in_scope",
+    "an_out_of_position_message_is_ignored",
+    "a_duplicate_is_identity",
+    "positions_are_monotonic",
+    "an_undeclared_row_stops_the_stream",
+    "every_seen_row_is_declared"
+  ],
+  "source_sha256": {
+    "docs/META-REPLICA-MODES.md": "6cf606a15de28ec0276c650c208f779b26940700c206bbf95e3e82cb83f6aac3"
+  }
+}

@@ -228,7 +228,12 @@ only the changes of its own groups. Today the same cluster sends c × N appends 
 
 ## 7. Evidence
 
-- Lean model: catalog positions, scopes, region membership changes; M1 (closure preserved under
+- **Written first:** `proofs/lean/catalog-scope` (`scripts/prove-catalog-scope.py`), sixteen
+  theorems and seven mutation controls: scoped verdicts equal full-catalog verdicts for every
+  scoped region (M1), nothing beyond the catalog (M3), no rows for unrelated changes (R2),
+  out-of-position and duplicate messages are no-ops, monotonic positions, fail-closed on an
+  undeclared row kind. The implementation pins its sources into this model's contract.
+- Lean model (remaining): catalog positions, scopes, region membership changes; M1 (closure preserved under
   every committed change), M3, and that a scope reader's absence verdict equals the full reader's
   for regions in the scope; controls for a scope that drops an abort row, a subscription that
   skips a closure on region add, a non-monotonic position.
