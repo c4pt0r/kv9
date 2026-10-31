@@ -17,7 +17,7 @@
     "crates/meta/src/data_groups/restore.rs": "ae1f8376d4ff1fba1889ea0d278bd7870a8d7c90df333749dc1659ff2c981e87",
     "crates/meta/src/data_groups/backup.rs": "3c9e8541da8706700840a010aafcb56effc889b64361efd31f1c0fa64bc97e05",
     "crates/server/src/runtime/restore.rs": "fa519ef187c356175597a84534dece32fc7a4516dcd8809973eb6a68a9bf3292",
-    "crates/server/src/runtime.rs": "722d76a44427e31432f0746f92f1a5cfdb4d7eb2855362a79433cfdcb490a6b1",
+    "crates/server/src/runtime.rs": "977d26ef6f721d2d54579b94ba9e09dcd44f11af21a7af6bf25fe26f30d49438",
     "crates/server/proto/kv9.proto": "55d813a69b9a1c2437f1abd102137941ef5e2a0105fe1ef77fb53d77b461995c",
     "scripts/backup-e2e.py": "5ec767183061efc40aff0626e7c2fc85b8a1bd5ba1506b812e2d2dac9b14619a",
     "docs/BACKUP-RESTORE.md": "9f1200e121cdfd6e64afbafe1d644e345d251294cdaf9a2fd2b34615efd938df"

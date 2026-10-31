@@ -85,9 +85,16 @@ def audit_cell(root, overrides=None):
         status = fields(scene / stage / 'status.txt')
         require(all(status[k] == before[k] for k in ('cluster_id', 'root_digest', 'store_incarnation', 'node_id', 'bootstrap_generation')),
                 'migration status changed immutable identity')
-        require(status['fatal'] == '' and status['raft_receive_authorized'] == status['raft_owner_started'] == 'true',
-                'migration lost durable Raft authority')
-        require(status['meta_voters'] == '1,2,3' and status['meta_learners'] == '4', 'endpoint migration changed Raft membership')
+        if status.get('meta_mode') == 'scoped':
+            # A scoped node (docs/META-REPLICA-MODES.md) keeps data-group Raft ingress but never
+            # runs the metadata Raft owner or appears as a metadata learner.
+            require(status['fatal'] == '' and status['raft_receive_authorized'] == 'true'
+                    and status['raft_owner_started'] == 'false', 'migration lost durable Raft authority')
+            require(status['meta_voters'] == '1,2,3' and status['meta_learners'] == '', 'endpoint migration changed Raft membership')
+        else:
+            require(status['fatal'] == '' and status['raft_receive_authorized'] == status['raft_owner_started'] == 'true',
+                    'migration lost durable Raft authority')
+            require(status['meta_voters'] == '1,2,3' and status['meta_learners'] == '4', 'endpoint migration changed Raft membership')
         require(read(scene / stage / 'proc-stat.txt').decode().split()[0] == status['pid'], 'migration status names another process')
         command = read(scene / stage / 'cmdline').split(b'\0')
         require(command[0] == b'/usr/local/bin/kv9' and b'start' in command and b'--node-id' in command,
@@ -117,7 +124,8 @@ def audit_cell(root, overrides=None):
             and int(duplicate['confirmation_index']) > int(mutation['mutation_index']) > 0,
             'duplicate endpoint CAS reused its mutation receipt')
     require(int(migrated['endpoint_confirmation_term']) > 0
-            and int(migrated['driver_applied_index']) >= int(migrated['endpoint_confirmation_index']) > int(mutation['mutation_index']),
+            and int(migrated['catalog_scope_index' if migrated.get('meta_mode') == 'scoped' else 'driver_applied_index'])
+                >= int(migrated['endpoint_confirmation_index']) > int(mutation['mutation_index']),
             'migrated owner did not apply a fresh exact confirmation')
     record = read(scene / 'confirmed/kv9-serving-endpoint')
     require(40 < len(record) <= 4096 and record[:8] == b'KV9ENDP2'

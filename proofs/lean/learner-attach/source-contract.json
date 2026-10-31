@@ -13,16 +13,16 @@
     "an_intent_alone_attaches_nothing"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "722d76a44427e31432f0746f92f1a5cfdb4d7eb2855362a79433cfdcb490a6b1",
+    "crates/server/src/runtime.rs": "977d26ef6f721d2d54579b94ba9e09dcd44f11af21a7af6bf25fe26f30d49438",
     "crates/server/src/runtime/tests/data_group_tests.rs": "4b118da94145878026e007e8e4194f74140f53ab7d5a34ad7ab6fbf2db418812",
     "crates/server/src/api.rs": "5183d80056a593c6a28f8032649da4c781c4952e1054929b4434ac3343c5e907",
-    "crates/server/src/grpc.rs": "9af19273092a01e4ab47ab9e5b808fcd57c1c592e10fc11da05e746561bd0932",
+    "crates/server/src/grpc.rs": "9ba218cb11b728892e9e323aec0771e4d9e0760c81d298bb1c79c4987f160ec2",
     "crates/server/src/data_groups.rs": "f33470b1af05476b4bf538870817f635469e26ea8f7d033fed5cfbf58c9c69fe",
     "crates/server/proto/kv9.proto": "55d813a69b9a1c2437f1abd102137941ef5e2a0105fe1ef77fb53d77b461995c",
     "crates/raft/src/snapshot_install.rs": "e6489dc439af2b7fd84ed36a132e9d0e39ff332d57a72db7f8a4c99eab952e75",
     "crates/raft/src/driver.rs": "0e2e65cef609a25589d1ff881c725897880da07d56492dd1d0d02328fa1104e4",
     "src/data_group_cli.rs": "c06a2f0c99b89cfb2830c0b48c34d7b2c37a951fdd3e39580527b1362b79c075",
-    "src/main.rs": "5e86b001de05b6e8a7d76af49fcc7616a9fcb4ef77298476c991c168e2a9d7c8",
+    "src/main.rs": "f9f5d3a947c7ed19007c687c18aa9b48afd8245ca87d83dd82848cac318f29d6",
     "scripts/learner-attach-e2e.py": "120c1c7b36a3f1090accfa42c5ff93b001d927d0d7e3d8d2484a65c1066b5a4b",
     "proofs/lean/learner-attach/Attach.lean": "c3b9195c163e1ac0bf4359a29756df1e1137e5486e67f293693e40a06dba0dcf",
     "proofs/lean/learner-attach/README.md": "d190670d1962007bf4f4d172316c509049338a6ad97fff0d9bca414d07953796"

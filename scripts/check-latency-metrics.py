@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 OUTCOMES = ['success', 'error', 'aborted', 'released', 'replaced', 'rejected', 'unconfirmed']
-NAMES = [f'public_{kind}_{phase}' for kind in ['raw_read', 'raw_write', 'metadata_read', 'metadata_write', 'transaction']
+NAMES = [f'public_{kind}_{phase}' for kind in ['raw_read', 'raw_write', 'metadata_read', 'metadata_write']
          for phase in ['prepare_queue', 'backend']]
 NAMES += ['raft_proposal_submission', 'runtime_logical_proposal_wait', 'raft_application_wait',
           'raft_read_establishment', 'raft_command_apply', 'raft_pump_service',

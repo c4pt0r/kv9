@@ -27,7 +27,8 @@ done = json.loads((root / 'admission-pressure.jsonl').read_text().splitlines()[-
 def counter(state, name): return int(dict(p.split('=') for p in state['public_rpc_raw_read'].split(','))[name])
 ready = (a['public_rpc_in_flight'] == '0' and a['public_rpc_encoded_bytes'] == '0'
          and counter(a, 'completed') - counter(b, 'completed') >= done['missing']
-         and counter(a, 'refused_count') - counter(b, 'refused_count') >= done['count_refusals'])
+         and counter(a, 'refused_count') - counter(b, 'refused_count')
+             + counter(a, 'refused_floor') - counter(b, 'refused_floor') >= done['count_refusals'])
 sys.exit(0 if ready else 1)
 PYTHON
 }

@@ -20,7 +20,7 @@ use kv9_common::{
     StoreIncarnation, ROOT_DESCRIPTOR_FILE, STORE_IDENTITY_FILE,
 };
 use kv9_server::{
-    admit_node_blocking, create_keyspace_blocking, promote_node_blocking, remove_node_blocking,
+    admit_node_blocking_mode, create_keyspace_blocking, promote_node_blocking, remove_node_blocking,
     revoke_admission_blocking, NodeRuntime, RawClient, RawClientOutcome, RuntimeAuth,
 };
 
@@ -75,7 +75,7 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client promote-migration-voter --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client record-source-removal --addr <leader-ip:port> --root-digest <hex> --operation-id <hex> --source-node <id> --source-incarnation <hex>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client remove-source-replica --addr <group-leader-ip:port> --root-digest <hex> --operation-id <hex>\n\
-           KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>] [--meta auto|full|scoped]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client remove-node --addr <leader-ip:port> --node-id <id>\n\
            KV9_CLIENT_TOKEN=<token> kv9 client get-node-endpoint --addr <leader-ip:port> --node-id <id>\n\
@@ -1116,6 +1116,7 @@ fn run_admit_node(mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut node_id = None;
     let mut node_addr = None;
     let mut ttl_seconds = 600u64;
+    let mut meta_mode = 1u32;
     while let Some(flag) = args.next() {
         let Some(value) = args.next() else {
             eprintln!("error: {flag} needs a value");
@@ -1124,6 +1125,15 @@ fn run_admit_node(mut args: impl Iterator<Item = String>) -> ExitCode {
         match flag.as_str() {
             "--addr" => addr = Some(value),
             "--node-id" => node_id = parse_client_node_id(&value),
+            "--meta" => match value.as_str() {
+                "auto" => meta_mode = 0,
+                "full" => meta_mode = 1,
+                "scoped" => meta_mode = 2,
+                _ => {
+                    eprintln!("error: --meta must be auto, full or scoped");
+                    return ExitCode::FAILURE;
+                }
+            },
             "--node-addr" => match value.parse::<SocketAddr>() {
                 Ok(value) => node_addr = Some(value),
                 Err(_) => {
@@ -1158,7 +1168,7 @@ fn run_admit_node(mut args: impl Iterator<Item = String>) -> ExitCode {
     let Some(token) = client_token() else {
         return ExitCode::FAILURE;
     };
-    match admit_node_blocking(&addr, &token, node_id, node_addr.to_string(), ttl_seconds) {
+    match admit_node_blocking_mode(&addr, &token, node_id, node_addr.to_string(), ttl_seconds, meta_mode) {
         Ok(response) => print_membership_response(response),
         Err(kv9_common::Error::NotLeader { leader }) => print_not_leader(leader),
         Err(error) => {
@@ -1304,6 +1314,9 @@ fn print_membership_response(
 ) -> ExitCode {
     println!("applied_term={}", response.applied_term);
     println!("applied_index={}", response.applied_index);
+    if !response.meta_mode.is_empty() {
+        println!("meta_mode={}", response.meta_mode);
+    }
     println!(
         "meta_voters={}",
         response

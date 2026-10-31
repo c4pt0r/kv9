@@ -6,6 +6,11 @@ persistent_active=0
 
 persistent_build() {
   python3 scripts/build-workload.py --output "$artifact/persistent-build"
+  # The retained workload build cleans every first-party package in the shared target
+  # first (scripts/build_cache.py), which deletes the kv9 binary and the example the
+  # image copies below: build them again after it.
+  cargo build --locked --bin kv9 >/dev/null 2>&1
+  cargo build --locked -p kv9-server --example admission-pressure >/dev/null 2>&1
   # Docker must copy real files from its context, including when Cargo's target
   # directory is shared outside this worktree. Do not use external symlinks.
   local cargo_target

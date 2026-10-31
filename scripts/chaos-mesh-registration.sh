@@ -94,8 +94,14 @@ YAML
   wait_injected networkchaos registration-seed-blackhole
   registration_fault_effect before
   join_leader="$(wait_majority_leader 'reachable leader for seed-blackhole registration' 25 1)"
+  # KV9_CHAOS_SCOPED_JOINER=1: the joiner is admitted in the scoped metadata mode
+  # (docs/META-REPLICA-MODES.md): no metadata learner, a catalog slice streamed from a
+  # full node it must find past the blackholed first seed.
+  local meta=full
+  [ "${KV9_CHAOS_SCOPED_JOINER:-0}" = 1 ] && meta=scoped
   client "$join_leader" admit-node --addr "$(service_ip "$join_leader"):20160" \
-    --node-id 4 --node-addr "$join_ip:20160" --ttl-seconds 120 >"$artifact/registration-admit.out"
+    --node-id 4 --node-addr "$join_ip:20160" --ttl-seconds 120 --meta "$meta" >"$artifact/registration-admit.out"
+  grep -Fxq "meta_mode=$meta" "$artifact/registration-admit.out" || { echo "FAIL: admission is not $meta" >&2; return 1; }
   join_ticket="$(awk -F= '$1 == "join_ticket" {print $2}' "$artifact/registration-admit.out")"
   [[ "$join_ticket" =~ ^[0-9a-f]{64}$ ]] || { echo 'FAIL: no admission ticket' >&2; return 1; }
   printf '%s\n' "$join_ticket" | k exec -i -n "$namespace" "$join_pod" -- \
@@ -103,16 +109,24 @@ YAML
   wait_until 'joiner registers and applies its exact receipt despite the first-seed blackhole' 45 registration_joiner_serving
   history_phase registration-seed-blackhole
   k exec -n "$namespace" "$join_pod" -- cat /data/status >"$artifact/registration-serving-status.txt"
-  python3 - "$artifact/registration-serving-status.txt" <<'PY'
+  python3 - "$artifact/registration-serving-status.txt" "$meta" <<'PY'
 from pathlib import Path
 import sys
 s = dict(line.split('=', 1) for line in Path(sys.argv[1]).read_text().splitlines())
 assert s['bootstrap_state'] == 'Serving' and s['fatal'] == ''
-assert s['meta_voters'] == '1,2,3' and s['meta_learners'] == '4'
 assert int(s['registration_attempts']) >= 2 and int(s['registration_errors']) >= 1
 assert s['registration_last'] == 'registered' and s['registration_last_walk'] == 'registered'
 assert int(s['registration_receipt_term']) > 0 and int(s['registration_receipt_index']) > 0
-assert int(s['driver_applied_index']) >= int(s['registration_receipt_index'])
+if sys.argv[2] == 'scoped':
+    # No metadata Raft membership: the slice, streamed past the blackholed seed, reached
+    # the receipt.
+    assert s['meta_voters'] == '1,2,3' and s['meta_learners'] == '', (s['meta_voters'], s['meta_learners'])
+    assert s['meta_mode'] == 'scoped' and s['raft_owner_started'] == 'false'
+    assert s['catalog_scope'] == 'current' and s['catalog_scope_server'] in ('2', '3'), s['catalog_scope_server']
+    assert int(s['catalog_scope_index']) >= int(s['registration_receipt_index'])
+else:
+    assert s['meta_voters'] == '1,2,3' and s['meta_learners'] == '4'
+    assert int(s['driver_applied_index']) >= int(s['registration_receipt_index'])
 PY
   # Raw reads currently require a leader. The caught-up learner must still
   # refuse with a typed leader hint; Serving alone grants no read authority.

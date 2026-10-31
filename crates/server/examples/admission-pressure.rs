@@ -126,7 +126,9 @@ async fn main() {
         barrier.wait().await;
         while let Some(result) = jobs.join_next().await {
             match result.unwrap() {
-                "request_count" => refused += 1,
+                // A count refusal from the shared pool, or from the part of it the metadata
+                // floor reserves (KV9_PUBLIC_METADATA_RESERVED): both bound the same count.
+                "request_count" | "metadata_floor" => refused += 1,
                 "missing" => completed += 1,
                 other => panic!("unexpected small-request outcome: {other}"),
             }

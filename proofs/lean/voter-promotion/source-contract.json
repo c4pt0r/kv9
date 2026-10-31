@@ -15,16 +15,16 @@
     "the_committed_chain_reaches_the_voter"
   ],
   "source_sha256": {
-    "crates/server/src/runtime.rs": "722d76a44427e31432f0746f92f1a5cfdb4d7eb2855362a79433cfdcb490a6b1",
+    "crates/server/src/runtime.rs": "977d26ef6f721d2d54579b94ba9e09dcd44f11af21a7af6bf25fe26f30d49438",
     "crates/server/src/api.rs": "5183d80056a593c6a28f8032649da4c781c4952e1054929b4434ac3343c5e907",
-    "crates/server/src/grpc.rs": "9af19273092a01e4ab47ab9e5b808fcd57c1c592e10fc11da05e746561bd0932",
+    "crates/server/src/grpc.rs": "9ba218cb11b728892e9e323aec0771e4d9e0760c81d298bb1c79c4987f160ec2",
     "crates/server/src/data_groups.rs": "f33470b1af05476b4bf538870817f635469e26ea8f7d033fed5cfbf58c9c69fe",
     "crates/server/proto/kv9.proto": "55d813a69b9a1c2437f1abd102137941ef5e2a0105fe1ef77fb53d77b461995c",
     "crates/raft/src/driver.rs": "0e2e65cef609a25589d1ff881c725897880da07d56492dd1d0d02328fa1104e4",
     "crates/raft/src/storage.rs": "d2ee607f012da79efe5321f0bb0f48e2a9a44ec697dd19adc8e96156b54388c4",
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
     "src/data_group_cli.rs": "c06a2f0c99b89cfb2830c0b48c34d7b2c37a951fdd3e39580527b1362b79c075",
-    "src/main.rs": "5e86b001de05b6e8a7d76af49fcc7616a9fcb4ef77298476c991c168e2a9d7c8",
+    "src/main.rs": "f9f5d3a947c7ed19007c687c18aa9b48afd8245ca87d83dd82848cac318f29d6",
     "scripts/promotion-e2e.py": "e54b31b588163d83a5743ef29063db263c426dfd9d8abcaebf7b9e1580022164",
     "proofs/lean/voter-promotion/Promotion.lean": "a9e87ee9da4487955c500b3f531e929d8044131ad8bbd6703a48c4e8c923735b",
     "proofs/lean/voter-promotion/README.md": "6530cbbb157cf4b730597d70d3368ff7bf815d51887da3fd98cef0d431fff16a"

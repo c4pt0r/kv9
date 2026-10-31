@@ -6,6 +6,8 @@ from pathlib import Path
 import sys
 
 
+METADATA_RESERVED = 2
+
 def fields(path):
     pairs = [line.split('=', 1) for line in path.read_text().splitlines()]
     assert len({p[0] for p in pairs}) == len(pairs), 'duplicate status field'
@@ -29,7 +31,9 @@ def check(root):
     reads = records[1:-1]
     assert 1 < len(reads) < 100_000 and done['requests'] == len(reads)
     assert sorted(r['sequence'] for r in reads) == list(range(len(reads)))
-    counts = dict(missing=0, request_count=0, request_too_large=0)
+    # A count refusal is the shared pool's or the metadata floor's (KV9_PUBLIC_METADATA_RESERVED).
+    refusals = ('request_count', 'metadata_floor')
+    counts = dict(missing=0, request_count=0, metadata_floor=0, request_too_large=0)
     for read in reads:
         assert read['type'] == 'read'
         assert start['time_ns'] <= read['start_ns'] <= read['end_ns'] <= done['time_ns']
@@ -39,10 +43,11 @@ def check(root):
         if read['sequence'] == 0:
             assert read['key_bytes'] == 2 * 1024 * 1024 + 1 and read['outcome'] == 'request_too_large'
         else:
-            assert read['key_bytes'] == 32 and read['outcome'] in ['missing', 'request_count']
+            assert read['key_bytes'] == 32 and read['outcome'] in ['missing', *refusals]
         assert read['code'] == (0 if read['outcome'] == 'missing' else 8)
     assert counts['request_too_large'] == 1
-    assert done['count_refusals'] == counts['request_count'] > 0, 'actual count refusal evidence is required'
+    refused = counts['request_count'] + counts['metadata_floor']
+    assert done['count_refusals'] == refused > 0, 'actual count refusal evidence is required'
     assert done['missing'] == counts['missing'] > 0
     snapshots = [fields(root / f'admission-{phase}.status') for phase in ['before', 'during', 'after']]
     for state in snapshots:
@@ -56,17 +61,20 @@ def check(root):
     before, _, after = snapshots
     assert before['node_id'] == after['node_id']
     assert int(after['public_rpc_in_flight']) == int(after['public_rpc_encoded_bytes']) == 0
-    assert int(after['public_rpc_peak_requests']) == 8
+    # Raw reads fill the shared pool (8 minus the metadata floor, KV9_PUBLIC_METADATA_RESERVED=2
+    # in the Chaos manifest); metadata traffic may use the floor on top. Never above the cap.
+    assert 8 - METADATA_RESERVED <= int(after['public_rpc_peak_requests']) <= 8
     def counter(state, name):
         return int(dict(item.split('=') for item in state['public_rpc_raw_read'].split(','))[name])
-    assert counter(after, 'refused_count') - counter(before, 'refused_count') >= counts['request_count']
+    assert (counter(after, 'refused_count') - counter(before, 'refused_count')
+            + counter(after, 'refused_floor') - counter(before, 'refused_floor')) >= refused
     assert counter(after, 'request_too_large') - counter(before, 'request_too_large') == 1
     assert counter(after, 'completed') - counter(before, 'completed') >= counts['missing']
     ready = int((root / 'admission-ready.txt').read_text())
     observed = timestamp((root / 'public-admission-overload-history-observed-at.txt').read_text())
     assert start['time_ns'] < ready < observed < done['time_ns'], 'history must overlap armed pressure'
-    assert any(r['outcome'] == 'request_count' and r['end_ns'] <= ready for r in reads)
-    assert any(r['outcome'] == 'request_count' and r['start_ns'] > observed for r in reads)
+    assert any(r['outcome'] in refusals and r['end_ns'] <= ready for r in reads)
+    assert any(r['outcome'] in refusals and r['start_ns'] > observed for r in reads)
     uids = set()
     effects = []
     for phase in ['before', 'after']:
@@ -103,13 +111,14 @@ def controls(root):
                 path = tree / 'admission-pressure.jsonl'
                 data = [json.loads(line) for line in path.read_text().splitlines()]
                 for row in data:
-                    if row.get('outcome') == 'request_count': row.update(outcome='missing', code=0)
+                    if row.get('outcome') in ('request_count', 'metadata_floor'): row.update(outcome='missing', code=0)
                 data[-1]['missing'] += data[-1]['count_refusals']
                 data[-1]['count_refusals'] = 0
                 path.write_text(''.join(json.dumps(row) + '\n' for row in data))
             elif name == 'exceeded-capacity':
                 path = tree / 'admission-after.status'
-                path.write_text(path.read_text().replace('public_rpc_peak_requests=8', 'public_rpc_peak_requests=9'))
+                import re
+                path.write_text(re.sub(r'(?m)^public_rpc_peak_requests=\d+$', 'public_rpc_peak_requests=9', path.read_text()))
             elif name == 'unarmed-fault':
                 path = tree / 'admission-after-fault.json'
                 data = json.loads(path.read_text())

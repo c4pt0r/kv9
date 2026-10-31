@@ -461,5 +461,26 @@ full node streams to, or one silent for 10 s, is `fail`).
   scoped node 9 with `kill -9`: self-repair took the group from [7, 9, 10] to [1, 7, 10] within
   a minute, and all 100 rows read back through scoped node 10.
 
+**Chaos Mesh** (disposable Kind cluster, `scripts/chaos-mesh-setup.sh` then
+`KV9_CHAOS_SCOPED_JOINER=1 scripts/chaos-mesh-e2e.sh`): the registration scenario admits its
+joiner scoped (`kv9 client admit-node --meta scoped`) while NetworkChaos partitions the first
+seed from everyone; the joiner reaches Serving with no metadata learner added, its slice
+streamed from a reachable full node and at or past its receipt, and a read it cannot serve is
+redirected with the leader's hint. This run found one scoped-mode defect, fixed: an
+asynchronous read of a metadata-served keyspace on a scoped node queued behind the metadata
+driver (which never runs there) and expired as "read unconfirmed"; it is now redirected at
+once. With the scoped node 4 in the cluster the whole suite then
+passes (72 checks: formation under partition, pod failure x3, partition, container and pod
+kill, public admission pressure, the Raft IO matrix, store loss and replacement, retained-PVC
+endpoint migration of the scoped node, the full history checker across 21 Chaos windows); the
+same suite in its default full mode passes too. The run also found the suite itself broken
+since earlier changes, all fixed: the metadata admission floor left no shared capacity under
+`KV9_PUBLIC_MAX_REQUESTS=8` (now `KV9_PUBLIC_METADATA_RESERVED=2`), the pressure tool and its
+checker did not know the floor's refusal, the latency checker still listed the removed
+transaction class, the retained workload build deleted the binaries the image copies, and
+the endpoint-migration checks assumed node 4 is a learner (they now read `meta_mode`). Kind
+v0.31 cannot `load` into kindest/node v1.35 (containerd config 4); the run streamed the image
+into the node's containerd instead.
+
 **Not yet.** Nothing from §7/§8 remains open; scopes are per region (S1).
 

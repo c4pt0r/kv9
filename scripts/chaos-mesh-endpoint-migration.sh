@@ -47,12 +47,14 @@ migration_owner_released() {
 }
 
 migration_owner_waiting() {
-  local pid pod
+  local pid pod owner=true
+  # A scoped joiner (KV9_CHAOS_SCOPED_JOINER=1) never starts the metadata Raft owner.
+  [ "${KV9_CHAOS_SCOPED_JOINER:-0}" = 1 ] && owner=false
   pod="$(pod_for 4)" || return 1
   [ "$(status_value 4 endpoint_ready)" = false ] &&
     [ "$(status_value 4 bootstrap_state)" = Joining ] &&
     [ "$(status_value 4 raft_receive_authorized)" = true ] &&
-    [ "$(status_value 4 raft_owner_started)" = true ] || return 1
+    [ "$(status_value 4 raft_owner_started)" = "$owner" ] || return 1
   pid="$(status_value 4 pid)" || return 1
   k exec -n "$namespace" "$pod" -- /bin/bash -c \
     'tr "\0" " " < "/proc/$1/cmdline" | grep -F -- "--advertise-addr $2"' \
@@ -64,7 +66,12 @@ migration_owner_confirmed() {
   [ "$(status_value 4 bootstrap_state)" = Serving ] &&
     [ "$(status_value 4 endpoint_ready)" = true ] || return 1
   index="$(status_value 4 endpoint_confirmation_index)" || return 1
-  applied="$(status_value 4 driver_applied_index)" || return 1
+  if [ "${KV9_CHAOS_SCOPED_JOINER:-0}" = 1 ]; then
+    # A scoped node's catalog position is its slice's.
+    applied="$(status_value 4 catalog_scope_index)" || return 1
+  else
+    applied="$(status_value 4 driver_applied_index)" || return 1
+  fi
   [[ "$index" =~ ^[1-9][0-9]*$ && "$applied" =~ ^[1-9][0-9]*$ ]] &&
     (( index > migration_mutation_index && applied >= index ))
 }

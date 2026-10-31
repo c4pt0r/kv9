@@ -5214,6 +5214,12 @@ impl RawApi for RuntimeBackend {
                 })))
             });
         }
+        // A scoped node never runs the metadata driver (docs/META-REPLICA-MODES.md): a read
+        // only a metadata quorum can confirm is redirected now, not queued until it expires.
+        if self.is_scoped_node() {
+            let leader = self.driver.status().leader_id;
+            return Box::pin(async move { Err(Error::NotLeader { leader }) });
+        }
         Box::pin(async move {
             #[cfg(any(test, feature = "experimental-leader-lease"))]
             let established = match self
@@ -5273,6 +5279,12 @@ impl RawApi for RuntimeBackend {
                     self.raw_batch_get(&ctx, &keys)
                 })))
             });
+        }
+        // A scoped node never runs the metadata driver (docs/META-REPLICA-MODES.md): a read
+        // only a metadata quorum can confirm is redirected now, not queued until it expires.
+        if self.is_scoped_node() {
+            let leader = self.driver.status().leader_id;
+            return Box::pin(async move { Err(Error::NotLeader { leader }) });
         }
         Box::pin(async move {
             #[cfg(any(test, feature = "experimental-leader-lease"))]

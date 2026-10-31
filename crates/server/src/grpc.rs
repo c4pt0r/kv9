@@ -437,6 +437,19 @@ pub fn admit_node_blocking(
     node_addr: String,
     ttl_seconds: u64,
 ) -> Result<proto::MembershipChangeResponse, Error> {
+    admit_node_blocking_mode(address, token, node, node_addr, ttl_seconds, 1)
+}
+
+/// [`admit_node_blocking`] with the metadata mode on the wire: 0 auto, 1 full, 2 scoped
+/// (docs/META-REPLICA-MODES.md).
+pub fn admit_node_blocking_mode(
+    address: &str,
+    token: &str,
+    node: NodeId,
+    node_addr: String,
+    ttl_seconds: u64,
+    meta_mode: u32,
+) -> Result<proto::MembershipChangeResponse, Error> {
     let runtime = tokio::runtime::Runtime::new()
         .map_err(|error| Error::Config(format!("create client runtime: {error}")))?;
     runtime.block_on(async move {
@@ -447,9 +460,7 @@ pub fn admit_node_blocking(
             node_id: node.0,
             addr: node_addr,
             ttl_seconds,
-            // The built-in admit command keeps the full mode; `kv9-admin node admit --meta`
-            // chooses (docs/META-REPLICA-MODES.md).
-            meta_mode: 1,
+            meta_mode,
         });
         request.metadata_mut().insert(
             "authorization",

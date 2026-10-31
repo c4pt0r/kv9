@@ -497,6 +497,9 @@ spec:
           env:
             - name: KV9_PUBLIC_MAX_REQUESTS
               value: "8"
+            # The metadata floor (default 8) must leave shared capacity under this cap.
+            - name: KV9_PUBLIC_METADATA_RESERVED
+              value: "2"
             - name: KV9_PUBLIC_MAX_ENCODED_BYTES
               value: "2097152"
             - name: KV9_CLUSTER_TOKEN
