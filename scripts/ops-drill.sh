@@ -12,8 +12,11 @@ export KV9_BOOTSTRAP_TOKEN=drill-bootstrap KV9_CLUSTER_TOKEN=drill-cluster
 export KV9_CLIENT_TOKENS="admin=drill-admin-token,app=drill-app-token"
 export KV9_ADMIN_TOKEN=drill-admin-token KV9_CLIENT_TOKEN=drill-app-token
 declare -A addr pid
-for n in 1 2 3 4 5 6 7 8; do addr[$n]=127.0.0.1:$((base + n)); done
-peers=$(for n in 1 2 3 4 5 6 7; do printf '%s=%s,' $n ${addr[$n]}; done); peers=${peers%,}
+# DRILL_SCOPED=1: nodes 7, 9, 10 and 11 join in the scoped metadata mode (docs/META-REPLICA-MODES.md);
+# 4 and 5 stay full and are promoted, 6 stays a full learner (voter replacement's spare).
+SCOPED=${DRILL_SCOPED:-0}
+for n in 1 2 3 4 5 6 7 8 9 10 11; do addr[$n]=127.0.0.1:$((base + n)); done
+peers=$(for n in 1 2 3 4 5 6 7 9 10 11; do printf '%s=%s,' $n ${addr[$n]}; done); peers=${peers%,}
 EP="${addr[1]},${addr[2]},${addr[3]}"
 
 ts() { date +%H:%M:%S; }
@@ -40,7 +43,7 @@ start_node() { local n=$1; shift
   printf '[%s] $ kv9 start --node-id %s --addr %s --data-dir n%s  (env: %s)\n' "$(ts)" $n ${addr[$n]} $n "${node_env[*]} $*"
   env "${node_env[@]}" "$@" "$KV9" start --node-id $n --addr ${addr[$n]} --data-dir "$D/n$n" >>"$D/n$n.log" 2>&1 & pid[$n]=$!; }
 serving() { [[ $(sv $1 pid) == "${pid[$1]}" && $(sv $1 bootstrap_state) == Serving && $(sv $1 endpoint_ready) == true ]]; }
-cleanup() { step "teardown"; for n in "${!pid[@]}"; do kill ${pid[$n]} 2>/dev/null; done; docker rm -f kv9-drill-minio >/dev/null 2>&1; sleep 1; cp "$D/drill.log" "$KEEP/drill-$(basename $D).log" 2>/dev/null; for n in 1 2 3 4 5 6 7; do cp "$D/n$n/status" "$KEEP/status-$(basename $D)-n$n" 2>/dev/null; done; echo "artifacts: $D (log copied to $KEEP)"; }
+cleanup() { step "teardown"; for n in "${!pid[@]}"; do kill ${pid[$n]} 2>/dev/null; done; docker rm -f kv9-drill-minio >/dev/null 2>&1; sleep 1; cp "$D/drill.log" "$KEEP/drill-$(basename $D).log" 2>/dev/null; for n in 1 2 3 4 5 6 7 9 10 11; do cp "$D/n$n/status" "$KEEP/status-$(basename $D)-n$n" 2>/dev/null; done; echo "artifacts: $D (log copied to $KEEP)"; }
 trap cleanup EXIT
 
 # ---------------------------------------------------------------- group helpers (JSON)
@@ -53,8 +56,8 @@ watch_stages() { # watch_stages <group-task> <family> <task> <final-regex> <secs
   local last="" s end=$((SECONDS + $5)); while (( SECONDS < end )); do s=$(stage_of "$1" "$2" "$3" 2>/dev/null)
     if [[ -n $s && $s != "$last" ]]; then printf '[%s]   %s task %s: stage=%s\n' "$(ts)" "$2" "$3" "$s"; last=$s; fi
     [[ $s =~ $4 ]] && return 0; sleep 1; done; echo "TIMEOUT watching $2 $3 (last=$last)"; return 1; }
-join_node() { local n=$1; local t
-  t=$(admj node admit $n --addr ${addr[$n]} --ttl 600 | py 'd["result"]["join_ticket"]')
+join_node() { local n=$1 meta=${2:-auto}; local t
+  t=$(admj node admit $n --addr ${addr[$n]} --ttl 600 --meta $meta | py 'd["result"]["join_ticket"]')
   printf '[%s] $ kv9-admin node admit %s --addr %s --ttl 600   -> join_ticket=%s...\n' "$(ts)" $n ${addr[$n]} "${t:0:12}"
   printf '[%s] $ KV9_JOIN_TICKET=... kv9 join --root root.bin --node-id %s --data-dir n%s\n' "$(ts)" $n $n
   KV9_JOIN_TICKET=$t "$KV9" join --root "$D/root.bin" --node-id $n --data-dir "$D/n$n" || return 1
@@ -87,7 +90,14 @@ grep -E '^(node_id|role|leader_id|meta_voters|meta_learners|applied_index|fatal|
 
 # ================================================================ 3. grow the cluster
 step "3. Add nodes 4-7 (admit -> join -> start), promote 4 and 5 to metadata voters"
-for n in 4 5 6 7; do join_node $n || exit 1; done
+if [[ $SCOPED == 1 ]]; then
+  for n in 4 5 6; do join_node $n full || exit 1; done
+  for n in 7 9 10 11; do join_node $n scoped || exit 1; done
+  note "scoped nodes: no metadata Raft owner, a streamed catalog slice"
+  for n in 7 9 10 11; do grep -E '^(meta_mode|catalog_scope|catalog_scope_server|raft_owner_started)=' "$D/n$n/status" | tr '\n' ' ' | sed "s/^/n$n /"; echo; done
+else
+  for n in 4 5 6 7; do join_node $n || exit 1; done
+fi
 adm node list
 adm node promote 4 --wait; adm node promote 5 --wait
 note "repeating a membership verb whose state already holds answers 'confirmed'"

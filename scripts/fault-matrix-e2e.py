@@ -45,6 +45,9 @@ def main():
     parser.add_argument('--repl-bin', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--base-port', type=int, default=26900)
+    parser.add_argument('--scoped', action='store_true',
+                        help='admit the joined nodes (4-6, half the cluster) in the scoped metadata mode '
+                             '(docs/META-REPLICA-MODES.md)')
     args = parser.parse_args()
     for name in ('KV9_OBJECT_STORE_ENDPOINT', 'KV9_OBJECT_STORE_BUCKET',
                  'KV9_OBJECT_STORE_ACCESS_KEY', 'KV9_OBJECT_STORE_SECRET_KEY'):
@@ -152,7 +155,8 @@ def main():
         return {g['region']: g for g in json.loads(status(node).get('data_groups', '[]'))}
 
     def join(node):
-        planned, _ = admin(f'admit-{node}', 'node', 'admit', node, '--addr', addresses[node], '--ttl', '600')
+        meta = ['--meta', 'scoped'] if args.scoped else ['--meta', 'full']
+        planned, _ = admin(f'admit-{node}', 'node', 'admit', node, '--addr', addresses[node], '--ttl', '600', *meta)
         ticket = planned['result']['join_ticket']
         command(f'join-{node}', 'join', '--root', output / 'root.bin', '--node-id', node, '--data-dir', output / f'n{node}',
                 extra_env={'KV9_JOIN_TICKET': ticket})
@@ -354,11 +358,16 @@ def main():
             return row is not None and row['drained']
         wait('G: node 5 drained despite a crash before every step it took', drained_now, 1200)
         check_fired('G', [f'drain:{p}:before' for p in drain_points], subset=True)
-        require(any(f[1] == 'drain:move_plan:before' for f in fired()) and any(f[1] in ('drain:remove_learner:before', 'drain:remove_voter:before') for f in fired()),
-                'G: the move plan and the metadata removal each crashed once')
+        if args.scoped:
+            # A scoped node holds no metadata membership: the drain has nothing to remove there.
+            require(any(f[1] == 'drain:move_plan:before' for f in fired()), 'G: the move plan crashed once')
+            require(status(5).get('meta_mode') == 'scoped', 'G: node 5 ran scoped')
+        else:
+            require(any(f[1] == 'drain:move_plan:before' for f in fired()) and any(f[1] in ('drain:remove_learner:before', 'drain:remove_voter:before') for f in fired()),
+                    'G: the move plan and the metadata removal each crashed once')
         arm([])
         manifest_record['verdict'] = 'passed'
-        print('PASS: fault matrix (plan add crash-before x7, move crash-after x9, add under metadata-leader switch; '
+        print(('PASS (scoped joiners): ' if args.scoped else 'PASS: ') + 'fault matrix (plan add crash-before x7, move crash-after x9, add under metadata-leader switch; '
               'split crash-before x4, crash-after x3 incl. seal-before-evidence, publish under leader switch; drain crash-before)', flush=True)
     except Exception as error:
         manifest_record['verdict'] = f'failed: {error}'

@@ -441,5 +441,22 @@ flight. A full node publishes `catalog_scope_subscribers=node:index:ms,…`, and
 --full-only` asks only the full nodes and judges every scoped slice from those tables (a node no
 full node streams to, or one silent for 10 s, is `fail`).
 
+**Fault matrix and drill with scoped nodes** (§7's last item, 2026-10-30):
+- `KV9_FAULT_SCOPED=1 scripts/fault-matrix-e2e.sh`: the joined half of the cluster (nodes 4-6)
+  is admitted scoped, then all seven cells run as before on real MinIO: a replica addition
+  with a crash before every step, a move with a crash after every step, an addition under a
+  metadata-leader switch, splits with crashes before and after their steps (including the
+  seal-before-evidence gap) and under a leader switch, and a drain of scoped node 5 with a
+  crash before every step it takes (a scoped node has no metadata membership to remove).
+  PASS; every armed point fired once; nodes 4-6 ended `meta_mode=scoped catalog_scope=current`
+  with no metadata Raft owner.
+- `DRILL_SCOPED=1 scripts/ops-drill.sh`: nodes 7, 9, 10, 11 join scoped (4 and 5 full and
+  promoted, 6 a full learner as voter replacement's spare). Every step completes: leader moves,
+  add and move replicas, the abort, split and merge, the drain of node 2, `kill -9` of node 3
+  with self-repair (data group [1,3,4,5] to [1,4,5,6], node 3 out of the metadata voters), the
+  metadata leader's restart. The scoped nodes ended current within 12 entries of the leader,
+  having moved their streams to node 1 when nodes 2 and 3 went away; health's only failing
+  verdict was `unreachable` for the two stopped nodes, as in the full-mode drill.
+
 **Not yet.** Nothing from §7/§8 remains open; scopes are per region (S1).
 

@@ -25,6 +25,8 @@ if [[ "${KV9_MINIO_EXTERNAL:-0}" != "1" ]]; then
   docker exec -e "MC_HOST_e2e=http://$KV9_OBJECT_STORE_ACCESS_KEY:$KV9_OBJECT_STORE_SECRET_KEY@127.0.0.1:9000" \
     "$container" mc mb --ignore-existing "e2e/$KV9_OBJECT_STORE_BUCKET" >/dev/null
 fi
+# KV9_FAULT_SCOPED=1 admits the joined half of the cluster in the scoped metadata mode.
+scoped=(); [[ "${KV9_FAULT_SCOPED:-0}" == 1 ]] && scoped=(--scoped)
 python3 scripts/fault-matrix-e2e.py --bin target/debug/kv9 --admin-bin target/debug/kv9-admin \
-  --repl-bin target/debug/kv9-repl --output "$artifact_dir/run" --base-port "$base_port"
+  --repl-bin target/debug/kv9-repl --output "$artifact_dir/run" --base-port "$base_port" "${scoped[@]}"
 echo "Artifacts: $artifact_dir"
