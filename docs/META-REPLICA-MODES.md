@@ -456,7 +456,10 @@ full node streams to, or one silent for 10 s, is `fail`).
   with self-repair (data group [1,3,4,5] to [1,4,5,6], node 3 out of the metadata voters), the
   metadata leader's restart. The scoped nodes ended current within 12 entries of the leader,
   having moved their streams to node 1 when nodes 2 and 3 went away; health's only failing
-  verdict was `unreachable` for the two stopped nodes, as in the full-mode drill.
+  verdict was `unreachable` for the stopped nodes, as in the full-mode drill. Step 11b, scoped
+  mode only, puts a group and a keyspace on scoped nodes 7, 9, 10, writes 100 rows, kills
+  scoped node 9 with `kill -9`: self-repair took the group from [7, 9, 10] to [1, 7, 10] within
+  a minute, and all 100 rows read back through scoped node 10.
 
 **Not yet.** Nothing from §7/§8 remains open; scopes are per region (S1).
 

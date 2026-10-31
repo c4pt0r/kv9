@@ -20,7 +20,7 @@
     "every_seen_row_is_declared"
   ],
   "source_sha256": {
-    "docs/META-REPLICA-MODES.md": "5447064b5bef5344670b87592fbab7f73afdc9487dd49f388583a2e97bd89575",
+    "docs/META-REPLICA-MODES.md": "4da03d34071e95aa743099dc54f991b682a6a57c01d9f041be968632f1c7c993",
     "crates/meta/src/scope.rs": "b0fcacfa226bddc976d74071953b480ad6f3ffca7a3812964525bb6000a91ae3",
     "crates/meta/src/data_groups/subject.rs": "51d9318f490cc50822fbb8e5fef059c82a5c73e1e30198e0e222fce8e93f4514",
     "crates/server/src/catalog_scope/mod.rs": "48261ee6ec4c7428942f63a978aae96e95b8739497eb8f8f8755dd6acc483859",

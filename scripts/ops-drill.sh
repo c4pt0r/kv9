@@ -199,6 +199,28 @@ adm cluster info; adm node list; adm task list --kind 111 | tail -5
 for n in 1 4 5; do grep -E '^(replica_repair|voter_replacement)=' "$D/n$n/status" | cut -c1-300 | sed "s/^/n$n /"; done
 adm cluster health
 
+# ================================================================ 11b. a group on scoped nodes under loss
+if [[ $SCOPED == 1 ]]; then
+step "11b. Scoped nodes host a group through a failure: group on 7,9,10, kill -9 node 9, self-repair"
+created2=$(admj group create --voters 7,9,10 --label scoped-orders); task2=$(echo "$created2" | py 'd["result"]["creation_task"]'); region2=$(echo "$created2" | py 'd["result"]["region_id"]')
+echo "creation_task=$task2 region=$region2 on scoped nodes 7,9,10"
+adm_until_ok keyspace create --name scoped-orders --group "$task2"
+wait_for "scoped group active behind a leader" 120 gleader "$task2"
+sfill=$(printf 'use scoped-orders\n'; for i in $(seq 0 99); do printf 'put s/%05d v-%d\n' $i $i; done)
+wait_for "scoped keyspace takes writes through n7" 120 bash -c "printf 'use scoped-orders\nput probe 1\n' | $REPL --addr ${addr[7]} --peers $peers --timeout-ms 5000 | grep -q applied"
+printf '%s\n' "$sfill" | "$REPL" --addr "${addr[7]}" --peers "$peers" --timeout-ms 10000 | sort | uniq -c | sort -rn | head -2
+slice_has() { [[ ",$(sv $1 catalog_scope_region_ids)," == *",$region2,"* ]]; }
+for n in 7 9 10; do wait_for "n$n slice holds region $region2" 60 slice_has $n; done
+echo "voters before: $(gvoters "$task2")"; kill -9 ${pid[9]}; unset 'pid[9]'; echo "[$(ts)] n9 (scoped) killed"
+wait_for "scoped group voters no longer include 9" 300 bash -c "[[ \$($ADMIN --endpoints $EP --yes --output json group describe $task2 | python3 -c 'import json,sys; d=json.load(sys.stdin); print(9 not in [v[\"observed\"] for v in d[\"result\"][\"replica_views\"] if (v.get(\"observed\") or {}).get(\"role\")==\"Leader\" and v[\"observed\"].get(\"state\")==\"active\"][0][\"voters\"])') == True ]]"
+echo "voters after repair: $(gvoters "$task2")"
+scoped_rows() { printf 'use scoped-orders\nscan s/ t 1000\n' | "$REPL" --addr "${addr[10]}" --peers "$peers" --timeout-ms 10000 | grep -q '^(100 row(s))$'; }
+wait_for "all 100 rows read back through scoped n10" 120 scoped_rows
+for n in 7 10 11; do echo "n$n $(grep -E '^(meta_mode|catalog_scope|catalog_scope_server)=' "$D/n$n/status" | tr '\n' ' ')"; done
+grep -E '^replica_repair=' "$D/n7/status" "$D/n10/status" | cut -c1-300
+adm cluster health
+fi
+
 # ================================================================ 12. restart a node
 step "12. Restart node 4 with the same start command; it rejoins with its data directory"
 note "node 4 is the metadata leader at this point, so this is also a leader restart"
