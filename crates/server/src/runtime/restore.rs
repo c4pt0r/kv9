@@ -122,8 +122,8 @@ impl Step {
     }
     fn backoff(&self) -> Duration {
         match self {
-            Step::Populate { .. } => Duration::from_secs(10),
-            Step::Publish { .. } => Duration::from_secs(3),
+            Step::Populate { .. } => super::driver_backoff(Duration::from_secs(10)),
+            Step::Publish { .. } => super::driver_backoff(Duration::from_secs(3)),
         }
     }
     fn label(&self) -> String {

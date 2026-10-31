@@ -82,6 +82,20 @@ mod voter_replacement;
 use endpoint_recovery::EndpointRecovery;
 
 const TICK: Duration = Duration::from_millis(20);
+
+/// Scale a driver step's retry backoff by `KV9_DRIVER_BACKOFF_PCT` (percent, default 100;
+/// read once). Tests lower it so a transient failure costs a second, not half a minute.
+pub(super) fn driver_backoff(base: Duration) -> Duration {
+    static PCT: std::sync::OnceLock<u32> = std::sync::OnceLock::new();
+    let pct = *PCT.get_or_init(|| {
+        std::env::var("KV9_DRIVER_BACKOFF_PCT")
+            .ok()
+            .and_then(|v| v.parse::<u32>().ok())
+            .filter(|v| (1..=1000).contains(v))
+            .unwrap_or(100)
+    });
+    base * pct / 100
+}
 const DISCOVERY_INTERVAL: Duration = Duration::from_millis(200);
 const DISCOVERY_TIMEOUT: Duration = Duration::from_millis(50);
 // Registration can require several durable consensus steps. Keep its one

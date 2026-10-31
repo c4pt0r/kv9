@@ -21,7 +21,7 @@
     "crates/raft/src/storage/configuration.rs": "4589a582e691ac1a2f9f9ab42f3d1a3a8dde7daf5f0a0fd1d2f2761843a26bc3",
     "crates/raft/src/rawnode.rs": "43b2694c06d12713106cbafbd07764453c683f7ad1b997d36aa65818cf0838b8",
     "crates/server/src/migration_retention.rs": "e62f21a2dabe1711381fc3ca2ceda55b2bacf6d82c9963e4a12b677add4f4b2f",
-    "crates/server/src/runtime.rs": "2d6d5c23fdd56e7b6528177971b6560d9baaaf1d3b8408913861f328e2872f62",
+    "crates/server/src/runtime.rs": "722d76a44427e31432f0746f92f1a5cfdb4d7eb2855362a79433cfdcb490a6b1",
     "crates/server/src/runtime/range_api.rs": "7255e63f017be12459fc1953356af4ea89a30e02dbe460b0174c5172a18788f3",
     "scripts/source-capture-e2e.py": "ea97a8b6d396bbd3bb3bdfc2220d589983e8c5e60de9ac71ca5440e0810f316a",
     "proofs/lean/source-capture/Capture.lean": "b0a22224800cca325e77617954965817ff8ca11e2952ba3ad7a995d4e22af7a9",

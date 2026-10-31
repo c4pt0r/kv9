@@ -9,6 +9,11 @@
 # through a scoped node; each slice holds that keyspace and not the other; a
 # scoped node restarts from its slice; a stopped full node's subscribers move to
 # another full node.
+#
+# Speed: about 2.5 minutes. The nodes run with KV9_DRIVER_BACKOFF_PCT=10 (driver retry gates
+# at a tenth of production: they dominated, at ~8 minutes) and KV9_DRAIN_PARALLEL=4; each
+# phase line shows the seconds it took. KV9_E2E_RELEASE=1 runs release binaries, which does
+# not help much: the time is protocol rounds, not CPU.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
@@ -29,7 +34,10 @@ minio_name="kv9-scoped-e2e-minio-$base_port"
 export KV9_OBJECT_STORE_ENDPOINT="http://127.0.0.1:$minio_port" KV9_OBJECT_STORE_BUCKET=kv9-scoped-e2e
 export KV9_OBJECT_STORE_ACCESS_KEY=kv9scoped KV9_OBJECT_STORE_SECRET_KEY=kv9scoped-secret-key
 node_environment=(KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="admin=$admin_token,app=$app_token"
-  KV9_ADMIN_PRINCIPALS=admin KV9_SCOPE_IDLE_MS=500 KV9_STORAGE=minio KV9_SCOPE_RING_ENTRIES=32)
+  KV9_ADMIN_PRINCIPALS=admin KV9_SCOPE_IDLE_MS=500 KV9_STORAGE=minio KV9_SCOPE_RING_ENTRIES=32
+  KV9_DRIVER_BACKOFF_PCT="${KV9_E2E_BACKOFF_PCT:-10}" KV9_DRAIN_PARALLEL=4)
+# KV9_E2E_RELEASE=1 builds and runs release binaries (several times faster per operation).
+profile=(); [[ "${KV9_E2E_RELEASE:-0}" == 1 ]] && profile=(--release)
 
 status_value() {
   local file="$artifact_dir/n${1}/status"
@@ -110,6 +118,9 @@ voters_agree() {
   leader="$first"
 }
 
+phase_started=$SECONDS
+# Each phase line carries the seconds it took.
+phase_echo() { echo "[$((SECONDS - phase_started)) s] $*"; phase_started=$SECONDS; }
 endpoint_of() { echo "127.0.0.1:$((base_port + $1))"; }
 any_voter() {
   local node
@@ -137,8 +148,8 @@ docker exec -e "MC_HOST_d=http://$KV9_OBJECT_STORE_ACCESS_KEY:$KV9_OBJECT_STORE_
   mc mb --ignore-existing "d/$KV9_OBJECT_STORE_BUCKET" >/dev/null
 
 echo "Building kv9 and kv9-admin..."
-bin="$(build_fixture_binary "$repo_dir" "$artifact_dir/build.jsonl")"
-cargo build --locked --manifest-path "$repo_dir/Cargo.toml" -p kv9-admin --bin kv9-admin >"$artifact_dir/build-admin.log" 2>&1
+bin="$(build_fixture_binary "$repo_dir" "$artifact_dir/build.jsonl" "${profile[@]}")"
+cargo build --locked --manifest-path "$repo_dir/Cargo.toml" "${profile[@]}" -p kv9-admin --bin kv9-admin -p kv9-repl --bin kv9-repl >"$artifact_dir/build-admin.log" 2>&1
 admin_bin="$(dirname "$bin")/kv9-admin"
 repl_bin="$(dirname "$bin")/kv9-repl"
 
@@ -174,7 +185,7 @@ test "$(echo "$nodes" | jq_py 'all(n["active"] for n in d["result"]["nodes"])')"
 info="$(admin cluster info)"
 test "$(echo "$info" | jq_py 'sorted(d["result"]["meta_voters"])')" = "[1, 2, 3]"
 test "$(echo "$info" | jq_py 'd["result"]["meta_learners"]')" = "[]"
-echo "phase A: nodes 4-6 admitted scoped, Serving, no metadata Raft owner, slices current."
+phase_echo "phase A: nodes 4-6 admitted scoped, Serving, no metadata Raft owner, slices current."
 
 # ---------------------------------------------------------------- phase B: another keyspace stays out of the slices
 group_a="$(admin group create --voters 1,2,3 --label scoped-e2e-a | jq_py 'd["result"]["creation_task"]')"
@@ -195,7 +206,7 @@ sleep 2
 for node in 4 5 6; do
   test "$(status_value "$node" catalog_scope_regions)" = "0" || { echo "FAIL: n$node slice holds regions of the voters' keyspace" >&2; exit 1; }
 done
-echo "phase B: group $group_a and keyspace $ks_a on the voters; scoped slices hold no region of it."
+phase_echo "phase B: group $group_a and keyspace $ks_a on the voters; scoped slices hold no region of it."
 
 # ---------------------------------------------------------------- phase C: a group on scoped nodes only
 group_b="$(admin group create --voters 4,5,6 --label scoped-e2e-b | jq_py 'd["result"]["creation_task"]')"
@@ -219,7 +230,7 @@ for attempt in $(seq 1 60); do
   if [[ "$attempt" == 60 ]]; then cat "$artifact_dir/repl-scoped.out" >&2; exit 1; fi
   sleep 1
 done
-echo "phase C: group $group_b on scoped nodes 4-6 is active; keyspace $ks_b serves raw traffic through n4."
+phase_echo "phase C: group $group_b on scoped nodes 4-6 is active; keyspace $ks_b serves raw traffic through n4."
 
 # ---------------------------------------------------------------- phase D: what each slice holds
 region_a="$(admin group describe "$group_a" | jq_py 'd["result"]["region_id"]')"
@@ -228,7 +239,7 @@ for node in 4 5 6; do
   test "$(status_value "$node" catalog_scope_region_ids)" = "$region_b" || {
     echo "FAIL: n$node slice regions $(status_value "$node" catalog_scope_region_ids), want $region_b (not $region_a)" >&2; exit 1; }
 done
-echo "phase D: each scoped slice holds region $region_b of its own group and not region $region_a."
+phase_echo "phase D: each scoped slice holds region $region_b of its own group and not region $region_a."
 
 repl_on() {
   local node="$1" lines="$2" out="$3"
@@ -255,7 +266,7 @@ wait_until "n5 Serving again" 60 serving 5
 wait_until "n5 slice current again" 30 scope_current 5
 test "$(status_value 5 raft_owner_started)" = "false"
 wait_until "n5 serves the write made while it was down" 60 read_back 5 e/1 while-five-down
-echo "phase E: n5 restarted from its slice (no metadata Raft owner) and serves data written while it was down."
+phase_echo "phase E: n5 restarted from its slice (no metadata Raft owner) and serves data written while it was down."
 
 # ---------------------------------------------------------------- phase F: a subscriber's full node stops
 served_by="$(status_value 4 catalog_scope_server)"
@@ -263,7 +274,7 @@ if (( served_by >= 1 && served_by <= 3 )); then
   stop_node "$served_by"
   moved() { local now; now="$(status_value 4 catalog_scope_server)"; [[ "$now" =~ ^[123]$ ]] && (( now != served_by )) && scope_current 4; }
   wait_until "n4 moves off stopped full node $served_by" 60 moved
-  echo "phase F: full node $served_by stopped; n4 now streams from node $(status_value 4 catalog_scope_server)."
+  phase_echo "phase F: full node $served_by stopped; n4 now streams from node $(status_value 4 catalog_scope_server)."
   start_voter "$served_by"
   wait_until "voters agree again" 60 voters_agree
 else
@@ -286,7 +297,7 @@ voters_are() {
 wait_until "group $group_b voters 4,5,7" 300 voters_are "4, 5, 7"
 wait_until "n7 slice holds region $region_b" 30 bash -c "grep -qx 'catalog_scope_region_ids=$region_b' '$artifact_dir/n7/status'"
 wait_until "n7 serves the moved group" 60 read_back 7 s/1 one
-echo "phase G: replica moved from scoped n6 to scoped n7; n7's slice holds the group and serves it."
+phase_echo "phase G: replica moved from scoped n6 to scoped n7; n7's slice holds the group and serves it."
 
 # ---------------------------------------------------------------- phase H: split the scoped group
 split="$(admin group split "$group_b" --at s/2 --label scoped-split)"
@@ -302,7 +313,7 @@ three_regions() {
 wait_until "scoped slices hold the parent and both children" 60 three_regions
 wait_until "reads on both sides of the split through n4" 60 read_back 4 s/2 two
 read_back 4 s/1 one
-echo "phase H: the scoped group split at s/2; slices hold parent and children; both sides serve."
+phase_echo "phase H: the scoped group split at s/2; slices hold parent and children; both sides serve."
 
 # ---------------------------------------------------------------- phase I: a request outside the slice is redirected
 printf 'use on-voters\nput v/1 via-n4\n' | KV9_CLIENT_TOKEN="$app_token" timeout 30 "$repl_bin" --addr "$(endpoint_of 4)" \
@@ -317,7 +328,7 @@ wait_until "a client at n4 is served for the voters' keyspace through the redire
 for node in 4 5 7; do
   test "$(status_value "$node" catalog_scope_regions)" = "3" || { echo "FAIL: n$node slice grew from a redirected request" >&2; exit 1; }
 done
-echo "phase I: n4 answers a keyspace outside its slice with a redirect to a full node; a client with peers is served."
+phase_echo "phase I: n4 answers a keyspace outside its slice with a redirect to a full node; a client with peers is served."
 
 # ---------------------------------------------------------------- phase J: merge the scoped children back
 live_children() {
@@ -343,7 +354,7 @@ four_regions() {
   for node in 4 5 7; do test "$(status_value "$node" catalog_scope_regions)" = "4" || return 1; done
 }
 wait_until "scoped slices hold parent, both children and the merged group" 60 four_regions
-echo "phase J: the scoped children merged into group $merged; both sides serve through n7; slices hold all four regions."
+phase_echo "phase J: the scoped children merged into group $merged; both sides serve through n7; slices hold all four regions."
 
 # ---------------------------------------------------------------- phase J2: one keyspace across disjoint scoped nodes
 # Split the merged group again, move its high child onto new scoped nodes 9-11, then split
@@ -384,7 +395,9 @@ for pair in "4 9" "5 10" "7 11"; do
   on_target() { group_voters "$m2" | grep -q "\b$to\b" && ! group_voters "$m2" | grep -q "\b$from\b"; }
   wait_until "group $m2 moved from n$from to n$to" 300 on_target
 done
-test "$(group_voters "$m2")" = "[9, 10, 11]" || { echo "FAIL: group $m2 voters $(group_voters "$m2")" >&2; exit 1; }
+spread_done() { test "$(group_voters "$m2")" = "[9, 10, 11]"; }
+# The last move hands leadership to its destination first; read once the new leader answers.
+wait_until "group $m2 on nodes 9-11 behind one leader" 60 spread_done
 split_and_wait "$m1" s/1 scoped-leaf-split
 read -r m1a m1b m2_again <<<"$(live_children)"
 [[ "$m2_again" == "$m2" ]] || { echo "FAIL: live groups after the leaf split: $(live_children)" >&2; exit 1; }
@@ -399,7 +412,7 @@ n4_has_leaves() { scope_current 4 && holds 4 "$r_m1a" && holds 4 "$r_m1b"; }
 wait_until "n4 holds the new leaves it hosts" 60 n4_has_leaves
 wait_until "the moved range serves through n9" 60 read_back 9 s/2 two
 wait_until "a range n9 does not hold serves through n9 by redirect" 60 read_back 9 s/1 one
-echo "phase J2: keyspace $ks_b spans nodes 4,5,7 and 9,10,11; n9's slice ($(status_value 9 catalog_scope_regions) regions: $(status_value 9 catalog_scope_region_ids)) holds its lineage and none of regions $r_m1a,$r_m1b."
+phase_echo "phase J2: keyspace $ks_b spans nodes 4,5,7 and 9,10,11; n9's slice ($(status_value 9 catalog_scope_regions) regions: $(status_value 9 catalog_scope_region_ids)) holds its lineage and none of regions $r_m1a,$r_m1b."
 
 # ---------------------------------------------------------------- phase K: back up the scoped keyspace while n5 is down
 stop_node 5
@@ -409,7 +422,7 @@ btask="$(echo "$backup" | jq_py 'd["result"]["task"]')"
 test "$(echo "$backup" | jq_py 'd["result"]["waited"]["stage"]')" = "complete" || { echo "FAIL: backup: $backup" >&2; exit 1; }
 # Push the metadata log past the 32-entry ring so n5's restart cannot resume from it.
 for i in $(seq 1 12); do admin keyspace create --name "filler-$i" >/dev/null; done
-echo "phase K: backup $btask of the scoped keyspace complete with n5 down; the metadata log moved past the ring."
+phase_echo "phase K: backup $btask of the scoped keyspace complete with n5 down; the metadata log moved past the ring."
 
 # ---------------------------------------------------------------- phase L: restart behind the retained ring
 ring_last="$(status_value 1 catalog_ring_last)"
@@ -419,7 +432,7 @@ caught_up() { (( $(status_value 5 catalog_scope_index) >= ring_last )) && scope_
 wait_until "n5 slice at or past index $ring_last" 60 caught_up
 (( $(status_value 5 catalog_scope_snapshots) >= 1 ))
 wait_until "n5 serves after the restart" 60 read_back 5 s/1 one
-echo "phase L: n5 restarted with the log $((ring_last)) entries on (ring 32); it caught up through a snapshot and serves."
+phase_echo "phase L: n5 restarted with the log $((ring_last)) entries on (ring 32); it caught up through a snapshot and serves."
 
 # ---------------------------------------------------------------- phase M: restore onto scoped voters
 restore="$(admin_long restore create --backup "$btask" --as on-scoped-restored --voters 4,5,7 --wait --wait-secs 600)"
@@ -429,7 +442,7 @@ restored_read() {
     --peers "$peers" >"$artifact_dir/repl-restored.out" 2>&1 && grep -qx one "$artifact_dir/repl-restored.out" && grep -qx two "$artifact_dir/repl-restored.out"
 }
 wait_until "the restored keyspace serves through scoped n5" 120 restored_read
-echo "phase M: restore of backup $btask onto scoped nodes 4,5,7 published; the new keyspace serves through n5."
+phase_echo "phase M: restore of backup $btask onto scoped nodes 4,5,7 published; the new keyspace serves through n5."
 
 # ---------------------------------------------------------------- phase N: drain a scoped node
 admitted="$(admin node admit 8 --addr "$(endpoint_of 8)" --ttl 300 --meta scoped)"
@@ -444,7 +457,7 @@ admin_long node drain 4 --wait --wait-secs 1100 >"$artifact_dir/drain-4.json" ||
 test "$(admin node list | jq_py '[n["drained"] for n in d["result"]["nodes"] if n["node_id"] == 4][0]')" = "True"
 wait_until "the scoped keyspace still serves through n7 after the drain" 60 read_back 7 s/2 two
 wait_until "the restored keyspace serves through n8's peers after the drain" 120 restored_read
-echo "phase N: scoped n4 drained (its replicas moved, no metadata membership to release); both keyspaces serve."
+phase_echo "phase N: scoped n4 drained (its replicas moved, no metadata membership to release); both keyspaces serve."
 health="$(admin cluster health || true)"
 echo "$health" | jq_py '[v for v in d["result"]["verdicts"] if v["name"] == "catalog_scope"][0]' >"$artifact_dir/health-scope.txt"
 grep -q "'level': 'ok'" "$artifact_dir/health-scope.txt" || { echo "FAIL: catalog_scope health verdict: $(cat "$artifact_dir/health-scope.txt")" >&2; exit 1; }

@@ -117,9 +117,9 @@ impl Step {
     /// How long after an attempt the same step may run again.
     fn backoff(&self) -> Duration {
         match self {
-            Step::Capture { .. } => Duration::from_secs(10),
-            Step::Bundle { .. } => Duration::from_secs(5),
-            _ => Duration::from_secs(2),
+            Step::Capture { .. } => super::driver_backoff(Duration::from_secs(10)),
+            Step::Bundle { .. } => super::driver_backoff(Duration::from_secs(5)),
+            _ => super::driver_backoff(Duration::from_secs(2)),
         }
     }
     fn label(&self) -> String {

@@ -39,6 +39,10 @@ group's size and traffic stay constant as the cluster grows. What to know when r
   a `peers` map follow it.
 - **A full node going away** moves only its subscribers, each to its next rendezvous choice;
   watch `catalog_scope_server` change and `catalog_scope=current` return.
+- **Rehearsal.** `scripts/meta-scoped-e2e.sh` (about 2.5 minutes) and
+  `scripts/meta-scoped-tree.sh` run their nodes with `KV9_DRIVER_BACKOFF_PCT=10`, which scales
+  the move, backup and restore drivers' retry gates (default 100 = production: 2 s per step,
+  10 s per capture, 30 s per install).
 - **Health.** `cluster health` has a `catalog_scope` verdict; at hundreds of nodes use
   `cluster health --full-only`, which reads every slice's position from the full nodes.
 - **`catalog_scope_error` naming an undeclared metadata key** means a catalog row this binary does

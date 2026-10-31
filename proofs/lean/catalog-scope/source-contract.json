@@ -29,9 +29,9 @@
     "crates/server/src/catalog_scope/subscribe.rs": "9c3dc969cfd68162b13fe001966e14fd0d22aa30357b8ced945621b18241a91f",
     "crates/raft/src/grpc/catalog_scope.rs": "8e1eeb3c9de88efc4aa526121e262cf9f2cd2f1d487610f785f29f7933f145a5",
     "proto/kv9_raft.proto": "f99a7d99fd4e66a9464a82c40c934fb8d2c1b19179bc75504cfdb85cf773b20f",
-    "scripts/meta-scoped-e2e.sh": "adaadbae9df8eba52dc3edd7ad53a2591796254dc6ced1df08e01f133632c11f",
+    "scripts/meta-scoped-e2e.sh": "82c9ca0d91bc9622f181d3b2514977bd6ba22ef65b4324b9441c06f29e5b044c",
     "scripts/meta-scoped-scale.sh": "4f8d285b44a1563962c4f9bcb54717e9b0a4692f872e45e4748b4cbe061f6ad7",
-    "scripts/meta-scoped-tree.sh": "fdd10bbb1fac6232402fa2ff543fe5de6daa782c251f93e55a8dda321d307abe",
+    "scripts/meta-scoped-tree.sh": "660127d5d32662f7e500ff54656d3569d31f763f77653b5b341f0088b5531cd4",
     "crates/meta/src/data_groups/ranges.rs": "f53a5703e8d35aabfa210bd609f2ae4db5a31b69f3ec7b290c32ace4be086789"
   }
 }

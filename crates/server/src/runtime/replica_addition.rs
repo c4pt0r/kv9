@@ -60,9 +60,9 @@ impl Step {
     /// How long after an attempt (success or failure) the same step may run again.
     fn backoff(self) -> Duration {
         match self {
-            Step::Capture => Duration::from_secs(10),
-            Step::Install => Duration::from_secs(30),
-            _ => Duration::from_secs(2),
+            Step::Capture => super::driver_backoff(Duration::from_secs(10)),
+            Step::Install => super::driver_backoff(Duration::from_secs(30)),
+            _ => super::driver_backoff(Duration::from_secs(2)),
         }
     }
 

@@ -26,7 +26,9 @@ export KV9_OBJECT_STORE_ENDPOINT="http://127.0.0.1:$minio_port" KV9_OBJECT_STORE
 export KV9_OBJECT_STORE_ACCESS_KEY=kv9tree KV9_OBJECT_STORE_SECRET_KEY=kv9tree-secret-key
 declare -A pids=()
 node_environment=(KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="admin=$admin_token,app=$app_token"
-  KV9_ADMIN_PRINCIPALS=admin KV9_SCOPE_IDLE_MS=1000 KV9_STORAGE=minio)
+  KV9_ADMIN_PRINCIPALS=admin KV9_SCOPE_IDLE_MS=1000 KV9_STORAGE=minio
+  KV9_DRIVER_BACKOFF_PCT="${KV9_E2E_BACKOFF_PCT:-10}")
+profile=(); [[ "${KV9_E2E_RELEASE:-0}" == 1 ]] && profile=(--release)
 
 status_value() {
   local file="$artifact_dir/n${1}/status"
@@ -73,8 +75,8 @@ for _ in $(seq 120); do curl -sf "$KV9_OBJECT_STORE_ENDPOINT/minio/health/live" 
 docker exec -e "MC_HOST_d=http://$KV9_OBJECT_STORE_ACCESS_KEY:$KV9_OBJECT_STORE_SECRET_KEY@127.0.0.1:9000" "$minio_name" \
   mc mb --ignore-existing "d/$KV9_OBJECT_STORE_BUCKET" >/dev/null
 echo "Building..."
-bin="$(build_fixture_binary "$repo_dir" "$artifact_dir/build.jsonl")"
-cargo build --locked --manifest-path "$repo_dir/Cargo.toml" -p kv9-admin -p kv9-repl >"$artifact_dir/build-admin.log" 2>&1
+bin="$(build_fixture_binary "$repo_dir" "$artifact_dir/build.jsonl" "${profile[@]}")"
+cargo build --locked --manifest-path "$repo_dir/Cargo.toml" "${profile[@]}" -p kv9-admin -p kv9-repl >"$artifact_dir/build-admin.log" 2>&1
 admin_bin="$(dirname "$bin")/kv9-admin"; repl_bin="$(dirname "$bin")/kv9-repl"
 KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
   --voters "$root_voters" --store-incarnations "$(prepare_root_stores "$bin" "$artifact_dir" "$root_voters")" >"$artifact_dir/root-create.log"

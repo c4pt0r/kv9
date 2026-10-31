@@ -16,7 +16,7 @@
   "source_sha256": {
     "crates/meta/src/data_groups/split.rs": "79d8a2d2fcf7d7db6e01274795b7ee65255f9545b7a4ac704cd5d8ebbeaaf20c",
     "crates/meta/src/data_groups/ranges.rs": "f53a5703e8d35aabfa210bd609f2ae4db5a31b69f3ec7b290c32ace4be086789",
-    "crates/server/src/runtime.rs": "2d6d5c23fdd56e7b6528177971b6560d9baaaf1d3b8408913861f328e2872f62",
+    "crates/server/src/runtime.rs": "722d76a44427e31432f0746f92f1a5cfdb4d7eb2855362a79433cfdcb490a6b1",
     "crates/server/proto/kv9.proto": "55d813a69b9a1c2437f1abd102137941ef5e2a0105fe1ef77fb53d77b461995c",
     "scripts/range-split-intent-e2e.py": "fca256cd0f1c513a83a1bd8ee6ae6286160834f98f7cc3506102780d01b1f680",
     "docs/RANGE-SPLIT.md": "c04df04a020e001e4f848e68c3dea1780289484cdbd6fd129730120832797c47"
