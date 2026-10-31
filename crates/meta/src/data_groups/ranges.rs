@@ -92,6 +92,29 @@ pub(super) fn read_in<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Vec<CommittedRa
     // start, first start empty, last end empty, each boundary shared with
     // its neighbor, never overlapping and never gapped. Sealed bindings are
     // routing history: they keep their row rules but cover nothing.
+    //
+    // A scoped node's slice holds only its regions' ranges
+    // (docs/META-REPLICA-MODES.md S1): there the ranges it holds must still never
+    // overlap, but gaps (other nodes' ranges) and a keyspace with nothing live here
+    // are what a slice looks like. Full nodes and the leader keep the whole rule.
+    if txn.is_slice()? {
+        let mut keyspaces: Vec<_> = bindings.iter().map(|b| b.range.keyspace).collect();
+        keyspaces.sort_unstable();
+        keyspaces.dedup();
+        for keyspace in keyspaces {
+            let mut live: Vec<&CommittedRange> = bindings
+                .iter()
+                .filter(|b| b.range.keyspace == keyspace && !b.range.sealed)
+                .collect();
+            live.sort_by(|a, b| a.range.start.cmp(&b.range.start));
+            for pair in live.windows(2) {
+                if pair[0].range.end.is_empty() || pair[0].range.end > pair[1].range.start {
+                    return Err(invalid("unsealed ranges in a slice overlap"));
+                }
+            }
+        }
+        return Ok(bindings);
+    }
     let mut keyspaces: Vec<_> = bindings.iter().map(|b| b.range.keyspace).collect();
     keyspaces.sort_unstable();
     keyspaces.dedup();

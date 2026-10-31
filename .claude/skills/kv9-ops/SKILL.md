@@ -23,7 +23,7 @@ enough, and send the user there when they ask what something means.
   leader commits every verb. **Voter** / **learner**: a member that votes / one that only
   replicates. A **store** is a node's data directory, identified by its **store incarnation**.
   A **full** node is a voter or learner and keeps the whole catalog; a **scoped** node is no
-  metadata member and keeps a **slice** (the keyspaces it hosts, streamed from one full node).
+  metadata member and keeps a **slice** (its regions and their ancestors, streamed from one full node).
 - **Keyspace** → one or more **ranges** `[start, end)`, each bound (kind 102 row) to a **data
   group** (a Raft group of 3/5/7 replicas, named by its **creation task**) in a **region**.
   **Epoch** is the shape version clients carry. A **sealed** binding is the retired parent of a

@@ -16,6 +16,9 @@ use crate::schema;
 use crate::ColumnValue;
 
 const RETENTION_PREFIX: &[u8] = b"\0kv9\0retention_v1\0";
+/// Written by a scoped node's subscriber into its own slice with every snapshot; never
+/// present on a full node, never streamed.
+pub const SLICE_MARKER: &[u8] = b"\0kv9\0catalog-slice\0";
 /// The metadata group's own manifest state (ManifestChange apply).
 const MANIFEST_PAIR_PREFIX: &[u8] = b"\0kv9\0manifest_pair\0";
 const MANIFEST_GEN_PREFIX: &[u8] = b"\0kv9\0manifest_gen\0";
@@ -65,6 +68,7 @@ pub fn classify(key: &[u8], value: Option<&[u8]>) -> Result<Option<RowClass>> {
         || key == crate::task_history::KEY
         || key.starts_with(MANIFEST_PAIR_PREFIX)
         || key.starts_with(MANIFEST_GEN_PREFIX)
+        || key == SLICE_MARKER
     {
         return Ok(Some(RowClass::FullOnly));
     }
@@ -196,6 +200,11 @@ pub struct Resolved {
     pub tenants: BTreeSet<u64>,
     pub nodes: BTreeSet<u64>,
     pub drain: Option<u64>,
+    /// Lineage `(child, parent)` regions this row states (directly or through a
+    /// referenced intent).
+    pub edges: BTreeSet<(u64, u64)>,
+    /// About a whole keyspace's ranges (itself or through a referenced intent).
+    pub umbrella: bool,
 }
 
 const MAX_REF_DEPTH: usize = 4;
@@ -252,9 +261,20 @@ impl<'v> Resolver<'v> {
             tenants: subject.tenants.iter().copied().collect(),
             nodes: subject.nodes.iter().map(|n| n.0).collect(),
             drain: subject.drain.map(|n| n.0),
+            edges: subject.edges.iter().map(|(c, p)| (c.0, p.0)).collect(),
+            umbrella: subject.umbrella,
         };
         if depth >= MAX_REF_DEPTH {
             return Ok(out);
+        }
+        for creation in &subject.child_creations {
+            if let Some(child) = self.task_depth(*creation, depth + 1)? {
+                for c in &child.regions {
+                    for p in &subject.parents {
+                        out.edges.insert((*c, p.0));
+                    }
+                }
+            }
         }
         let mut refs = subject.refs.clone();
         if let Some(operation) = subject.backup_operation {
@@ -265,6 +285,8 @@ impl<'v> Resolver<'v> {
             out.regions.extend(inner.regions);
             out.keyspaces.extend(inner.keyspaces);
             out.tenants.extend(inner.tenants);
+            out.edges.extend(inner.edges);
+            out.umbrella |= inner.umbrella;
             // Nodes named by a referenced task are that task's business (a creation's
             // replicas are not a split evidence's subject); regions and keyspaces carry.
         }
@@ -320,12 +342,24 @@ pub fn for_each(
 pub const ALL_START: &[u8] = &[];
 pub const ALL_END: &[u8] = &[0xff; 16];
 
-/// One node's scope (docs/META-REPLICA-MODES.md S1/S2): every keyspace it hosts a
-/// replica of, with all of those keyspaces' regions, their tenants, and the nodes
-/// it has to know (itself, the full nodes, every node its scope names).
+/// One node's scope (docs/META-REPLICA-MODES.md S1/S2), per region.
+///
+/// - **Anchors** (`anchors`): the regions the node hosts or is named for (a replica,
+///   destination or source of a row, a region-peer row), closed upward over lineage:
+///   a split's or merge's child brings its parents, a restore target its source.
+/// - **Regions** (`regions`): the anchors plus every region a non-umbrella row about an
+///   anchor names, one hop (a parent's split names both children). Lineage is followed
+///   up only, so a slice holds a region's ancestors and their siblings, not its
+///   keyspace.
+/// - Rows about a whole keyspace (umbrella rows: backup and restore intents, backup
+///   completions and retirements) are delivered where they touch the regions and never
+///   widen them; readers act only on the ranges they hold.
+/// - Keyspaces, tenants and nodes: those the delivered rows and the regions name, the
+///   node itself and the full nodes.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Closure {
     pub node: u64,
+    pub anchors: BTreeSet<u64>,
     pub regions: BTreeSet<u64>,
     pub keyspaces: BTreeSet<u64>,
     pub tenants: BTreeSet<u64>,
@@ -345,18 +379,46 @@ pub enum Route {
     Undeclared,
 }
 
+fn meets(a: &BTreeSet<u64>, b: &BTreeSet<u64>) -> bool {
+    a.iter().any(|x| b.contains(x))
+}
+
 impl Closure {
-    fn names_task(&self, r: &Resolved) -> bool {
-        r.drain == Some(self.node)
-            || r.nodes.contains(&self.node)
-            || r.regions.iter().any(|x| self.regions.contains(x))
-            || r.keyspaces.iter().any(|x| self.keyspaces.contains(x))
+    /// Whether a task row is delivered under this closure.
+    fn delivers(&self, r: &Resolved) -> bool {
+        if let Some(node) = r.drain {
+            return node == self.node;
+        }
+        if r.umbrella {
+            meets(&r.regions, &self.regions)
+        } else {
+            meets(&r.regions, &self.regions) && r.regions.is_subset(&self.regions)
+        }
     }
-    fn covers_task(&self, r: &Resolved) -> bool {
-        r.regions.is_subset(&self.regions)
-            && r.keyspaces.is_subset(&self.keyspaces)
-            && r.tenants.is_subset(&self.tenants)
-            && r.nodes.is_subset(&self.nodes)
+    /// Whether a task row would grow this closure (the same rules [`closure`] closes
+    /// over, so a snapshot's own rows never ask for another snapshot).
+    fn widened_by(&self, r: &Resolved) -> bool {
+        if r.drain.is_some() {
+            return false;
+        }
+        // Lineage counts from every row, umbrella ones included: a restore target
+        // anchors its source range.
+        if r.edges.iter().any(|(c, p)| self.anchors.contains(c) && !self.anchors.contains(p)) {
+            return true;
+        }
+        if r.umbrella {
+            return false;
+        }
+        if r.nodes.contains(&self.node) && !r.regions.is_subset(&self.anchors) {
+            return true;
+        }
+        if meets(&r.regions, &self.anchors) && !r.regions.is_subset(&self.regions) {
+            return true;
+        }
+        self.delivers(r)
+            && !(r.nodes.is_subset(&self.nodes)
+                && r.keyspaces.is_subset(&self.keyspaces)
+                && r.tenants.is_subset(&self.tenants))
     }
 }
 
@@ -392,51 +454,57 @@ pub fn closure(view: &dyn ReadView, node: u64, full: &[u64]) -> Result<Closure> 
             tasks.push(r);
         }
     }
+    let lineage: Vec<&Resolved> = tasks.iter().filter(|t| t.drain.is_none() && !t.umbrella).collect();
     let mut c = Closure { node, ..Closure::default() };
-    // S0: what names this node.
-    for t in &tasks {
+    // Seeds: what names this node.
+    for t in &lineage {
         if t.nodes.contains(&node) {
-            c.regions.extend(t.regions.iter().copied());
-            c.keyspaces.extend(t.keyspaces.iter().copied());
+            c.anchors.extend(t.regions.iter().copied());
         }
     }
     for (r, n) in &peers {
         if *n == node {
-            c.regions.insert(*r);
+            c.anchors.insert(*r);
         }
     }
-    // Fixpoint: a hosted region brings its keyspace, a keyspace brings all its regions.
+    // Up the lineage: a child brings its parents (umbrella rows' edges included).
     loop {
-        let before = (c.regions.len(), c.keyspaces.len());
-        for (r, k) in &region_keyspace {
-            if c.regions.contains(r) {
-                c.keyspaces.insert(*k);
-            }
-            if c.keyspaces.contains(k) {
-                c.regions.insert(*r);
-            }
-        }
-        for t in &tasks {
-            if t.regions.iter().any(|r| c.regions.contains(r)) || t.keyspaces.iter().any(|k| c.keyspaces.contains(k)) {
-                c.regions.extend(t.regions.iter().copied());
-                c.keyspaces.extend(t.keyspaces.iter().copied());
+        let before = c.anchors.len();
+        for t in tasks.iter().filter(|t| t.drain.is_none()) {
+            for (child, parent) in &t.edges {
+                if c.anchors.contains(child) {
+                    c.anchors.insert(*parent);
+                }
             }
         }
-        if before == (c.regions.len(), c.keyspaces.len()) {
+        if c.anchors.len() == before {
             break;
+        }
+    }
+    // One hop: every region a row about an anchor names.
+    c.regions = c.anchors.clone();
+    for t in &lineage {
+        if meets(&t.regions, &c.anchors) {
+            c.regions.extend(t.regions.iter().copied());
         }
     }
     c.nodes.insert(node);
     c.nodes.extend(full.iter().copied());
-    for t in &tasks {
-        if c.names_task(t) {
-            c.tenants.extend(t.tenants.iter().copied());
+    for t in &lineage {
+        if c.delivers(t) {
             c.nodes.extend(t.nodes.iter().copied());
+            c.keyspaces.extend(t.keyspaces.iter().copied());
+            c.tenants.extend(t.tenants.iter().copied());
         }
     }
     for (r, n) in &peers {
         if c.regions.contains(r) {
             c.nodes.insert(*n);
+        }
+    }
+    for (r, k) in &region_keyspace {
+        if c.regions.contains(r) {
+            c.keyspaces.insert(*k);
         }
     }
     for k in &c.keyspaces {
@@ -468,34 +536,20 @@ pub fn route(c: &Closure, resolver: &mut Resolver<'_>, key: &[u8], value: Option
         RowClass::Held => Route::IfHeld,
         RowClass::Task(subject) => {
             let r = resolver.resolve(&subject)?;
-            if !c.names_task(&r) {
-                Route::Skip
-            } else if r.drain.is_some() {
-                // A drain is about its node alone; it widens nothing.
-                if r.drain == Some(c.node) { Route::Deliver } else { Route::Skip }
-            } else if c.covers_task(&r) {
-                Route::Deliver
-            } else {
+            if c.widened_by(&r) {
                 Route::Resnapshot
-            }
-        }
-        RowClass::Region(r) => {
-            if c.regions.contains(&r.0) {
+            } else if c.delivers(&r) {
                 Route::Deliver
-            } else if let Some(bytes) = value.filter(|_| is_row(key)) {
-                match row_value(bytes)?.get(schema::ColumnId(2)) {
-                    Some(ColumnValue::Uint(k)) if c.keyspaces.contains(k) => Route::Resnapshot,
-                    _ => Route::Skip,
-                }
             } else {
                 Route::Skip
             }
         }
+        RowClass::Region(r) => if c.regions.contains(&r.0) { Route::Deliver } else { Route::Skip },
         RowClass::RegionPeer(r, n) => {
-            if c.regions.contains(&r.0) {
-                if c.nodes.contains(&n.0) || value.is_none() { Route::Deliver } else { Route::Resnapshot }
-            } else if n.0 == c.node && value.is_some() {
+            if n.0 == c.node && value.is_some() && !c.anchors.contains(&r.0) {
                 Route::Resnapshot
+            } else if c.regions.contains(&r.0) {
+                if c.nodes.contains(&n.0) || value.is_none() { Route::Deliver } else { Route::Resnapshot }
             } else {
                 Route::Skip
             }

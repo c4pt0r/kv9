@@ -139,6 +139,12 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
 
     // -- raw overlay-aware KV --------------------------------------------------
 
+    /// Whether this catalog is a scoped node's slice (docs/META-REPLICA-MODES.md):
+    /// readers that judge a whole keyspace relax to what a slice can show.
+    pub fn is_slice(&self) -> Result<bool> {
+        Ok(self.read_kv(crate::scope::SLICE_MARKER)?.is_some())
+    }
+
     fn read_kv(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
         if let Some(buffered) = self.overlay.get(key) {
             return Ok(buffered.clone());

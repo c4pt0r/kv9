@@ -34,8 +34,8 @@ plans and images · 5 split and merge · 6 drain, repair, replacement · 7 backu
   three).
 - **Full node / scoped node** (docs/META-REPLICA-MODES.md): a **full** node is a metadata voter or
   learner and keeps the whole catalog. A **scoped** node is not a metadata Raft member: it keeps a
-  **slice** of the catalog (the keyspaces it hosts replicas of, their ranges and task rows, the node
-  rows it needs) streamed from one full node (`catalog_scope_server`), and asks the metadata leader
+  **slice** of the catalog, per region (the regions it hosts, their ancestors and the ancestors'
+  other children, every row about them, the node rows it needs) streamed from one full node (`catalog_scope_server`), and asks the metadata leader
   for retention-ledger rows. It hosts data groups like any store but can never vote. The **full
   set** is the voters plus at most `KV9_META_FULL_LEARNERS` (default 4) learners; `--meta auto`
   admits `full` while it has room and `scoped` after. `node list` shows the mode in `META`.

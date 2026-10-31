@@ -577,3 +577,70 @@ impl RuntimeBackend {
         }
     }
 }
+
+/// A routed ledger that resubmits a request whose outcome came back unknown, a bounded
+/// number of times. Ledger requests are exact and idempotent: the same bytes again apply
+/// once and then confirm (the lost-receipt resumption every ledger worker relies on). A
+/// destination install wraps its image reader in this, because each failed attempt
+/// after the generation directory exists consumes one of the eight retained install
+/// generations for good (docs/JOINT-SNAPSHOT-INSTALL.md); a load blip on the ledger
+/// must not spend them.
+pub(crate) struct ResubmittingLedger<'a> {
+    inner: &'a RoutedLedger,
+    attempts: usize,
+}
+
+impl<'a> ResubmittingLedger<'a> {
+    pub(crate) fn new(inner: &'a RoutedLedger) -> Self {
+        Self { inner, attempts: 4 }
+    }
+
+    fn transient(error: &Error) -> bool {
+        matches!(error, Error::MetaNotReady(message)
+            if message.contains("outcome unconfirmed")
+                || message.contains("catalog busy")
+                || message.contains("leader unavailable"))
+            || matches!(error, Error::NotLeader { .. })
+    }
+
+    fn again<T>(&self, mut call: impl FnMut() -> Result<T>) -> Result<T> {
+        let mut last = None;
+        for attempt in 0..self.attempts {
+            match call() {
+                Err(error) if Self::transient(&error) => {
+                    last = Some(error);
+                    std::thread::sleep(Duration::from_millis(200 << attempt));
+                }
+                other => return other,
+            }
+        }
+        Err(last.expect("at least one attempt"))
+    }
+}
+
+impl CheckpointLedger for ResubmittingLedger<'_> {
+    fn data_read_fences(&self) -> Result<Option<Arc<kv9_common::data_read_fence::DataReadFences>>> {
+        self.inner.data_read_fences()
+    }
+    fn drain_outbox(&self) -> Result<Option<Arc<crate::checkpoint_retention::drain_outbox::DrainOutbox>>> {
+        self.inner.drain_outbox()
+    }
+    fn executors(
+        &self,
+        root: RootDigest,
+        pending: OwnerId,
+        after: Option<OwnerId>,
+        limit: usize,
+    ) -> Result<kv9_meta::retention::checkpoint_admission::ExecutorPage> {
+        self.again(|| CheckpointLedger::executors(self.inner, root, pending, after, limit))
+    }
+    fn local_lifetime(&self) -> Result<kv9_meta::retention::LocalLifetime> {
+        self.inner.local_lifetime()
+    }
+    fn apply(&self, request: Vec<u8>) -> Result<()> {
+        self.again(|| CheckpointLedger::apply(self.inner, request.clone()))
+    }
+    fn owner(&self, root: RootDigest, owner: OwnerId) -> Result<Option<Vec<u8>>> {
+        self.again(|| CheckpointLedger::owner(self.inner, root, owner))
+    }
+}

@@ -104,7 +104,8 @@ fn install_snapshot<E: ReplicatedEngine>(
     at: AppliedPosition,
     same_position: bool,
 ) -> Result<()> {
-    let keep: BTreeSet<&[u8]> = rows.iter().map(|op| op.key.as_slice()).collect();
+    let mut keep: BTreeSet<&[u8]> = rows.iter().map(|op| op.key.as_slice()).collect();
+    keep.insert(kv9_meta::scope::SLICE_MARKER);
     let mut batch = WriteBatch::new();
     let view = engine.snapshot()?;
     kv9_meta::scope::for_each(view.as_ref(), kv9_meta::scope::ALL_START, kv9_meta::scope::ALL_END, |key, _| {
@@ -117,6 +118,8 @@ fn install_snapshot<E: ReplicatedEngine>(
     for op in &rows {
         batch.put(ColumnFamily::Default, op.key.clone(), op.value.clone());
     }
+    // Readers that judge a whole keyspace relax on a slice (kv9_meta MetaTxn::is_slice).
+    batch.put(ColumnFamily::Default, kv9_meta::scope::SLICE_MARKER.to_vec(), b"slice".to_vec());
     if same_position {
         engine.write(batch)
     } else {

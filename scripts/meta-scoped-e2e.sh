@@ -345,6 +345,62 @@ four_regions() {
 wait_until "scoped slices hold parent, both children and the merged group" 60 four_regions
 echo "phase J: the scoped children merged into group $merged; both sides serve through n7; slices hold all four regions."
 
+# ---------------------------------------------------------------- phase J2: one keyspace across disjoint scoped nodes
+# Split the merged group again, move its high child onto new scoped nodes 9-11, then split
+# the low child once more. n9 hosts only the high child: its slice holds that child's
+# ancestors and their siblings, and nothing of the low child's new subtree (S1, per region).
+join_scoped() {
+  local node="$1" admitted
+  admitted="$(admin node admit "$node" --addr "$(endpoint_of "$node")" --ttl 300 --meta scoped)"
+  tickets[$node]="$(echo "$admitted" | jq_py 'd["result"]["join_ticket"]')"
+  mkdir -p "$artifact_dir/n$node"
+  KV9_JOIN_TICKET="${tickets[$node]}" "$bin" join --root "$root_path" --node-id "$node" --addr "$(endpoint_of "$node")" \
+    --data-dir "$artifact_dir/n$node" >"$artifact_dir/n$node.join" 2>&1
+  start_joiner "$node"
+  peers="$peers,$node=$(endpoint_of "$node")"
+}
+split_and_wait() {
+  local task="$1" key="$2" label="$3" out stask
+  out="$(admin group split "$task" --at "$key" --label "$label")"
+  stask="$(echo "$out" | jq_py 'd["result"]["intent_task"]')"
+  split_done() {
+    admin group describe "$task" | jq_py "[x['stage'] for x in d['result']['splits'] if x['task'] == $stask]" | grep -qx "\['published'\]"
+  }
+  wait_until "split $stask of group $task published" 600 split_done
+}
+region_of() { admin group describe "$1" | jq_py 'd["result"]["region_id"]'; }
+group_voters() {
+  admin group describe "$1" | jq_py 'next(iter([sorted(v["observed"]["voters"]) for v in d["result"]["replica_views"] if (v.get("observed") or {}).get("role") == "Leader" and v["observed"].get("state") == "active"]), None)'
+}
+merged_region="$(region_of "$merged")"
+split_and_wait "$merged" s/2 scoped-resplit
+read -r m1 m2 <<<"$(live_children)"
+[[ -n "$m1" && -n "$m2" ]] || { echo "FAIL: two live groups expected after the resplit" >&2; exit 1; }
+for node in 9 10 11; do join_scoped "$node"; done
+wait_until "scoped nodes 9-11 Serving" 90 serving 9 10 11
+for pair in "4 9" "5 10" "7 11"; do
+  read -r from to <<<"$pair"
+  admin group move-replica "$m2" --from "$from" --to "$to" --label "spread-$from-$to" >/dev/null
+  on_target() { group_voters "$m2" | grep -q "\b$to\b" && ! group_voters "$m2" | grep -q "\b$from\b"; }
+  wait_until "group $m2 moved from n$from to n$to" 300 on_target
+done
+test "$(group_voters "$m2")" = "[9, 10, 11]" || { echo "FAIL: group $m2 voters $(group_voters "$m2")" >&2; exit 1; }
+split_and_wait "$m1" s/1 scoped-leaf-split
+read -r m1a m1b m2_again <<<"$(live_children)"
+[[ "$m2_again" == "$m2" ]] || { echo "FAIL: live groups after the leaf split: $(live_children)" >&2; exit 1; }
+r_m1="$(region_of "$m1")"; r_m2="$(region_of "$m2")"; r_m1a="$(region_of "$m1a")"; r_m1b="$(region_of "$m1b")"
+holds() { tr ',' '\n' <<<"$(status_value "$1" catalog_scope_region_ids)" | grep -qx "$2"; }
+n9_scoped() {
+  scope_current 9 && holds 9 "$r_m2" && holds 9 "$merged_region" && holds 9 "$r_m1" \
+    && ! holds 9 "$r_m1a" && ! holds 9 "$r_m1b"
+}
+wait_until "n9 holds its region's lineage and none of the sibling's new children" 60 n9_scoped
+n4_has_leaves() { scope_current 4 && holds 4 "$r_m1a" && holds 4 "$r_m1b"; }
+wait_until "n4 holds the new leaves it hosts" 60 n4_has_leaves
+wait_until "the moved range serves through n9" 60 read_back 9 s/2 two
+wait_until "a range n9 does not hold serves through n9 by redirect" 60 read_back 9 s/1 one
+echo "phase J2: keyspace $ks_b spans nodes 4,5,7 and 9,10,11; n9's slice ($(status_value 9 catalog_scope_regions) regions: $(status_value 9 catalog_scope_region_ids)) holds its lineage and none of regions $r_m1a,$r_m1b."
+
 # ---------------------------------------------------------------- phase K: back up the scoped keyspace while n5 is down
 stop_node 5
 snapshots_before="$(status_value 1 catalog_scope_snapshots_sent)"

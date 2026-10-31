@@ -26,9 +26,11 @@ group's size and traffic stay constant as the cluster grows. What to know when r
 
 - **It cannot vote.** `node promote` refuses it. To make it a full node, drain it and admit it
   again with `--meta full`.
-- **Its catalog is a slice.** It holds every keyspace it hosts a replica of (all of those
-  keyspaces' ranges and task rows), their tenants, and the node rows of itself, its co-members
-  and the full nodes. It holds no retention ledger; it asks the metadata leader for those rows.
+- **Its catalog is a slice, per region.** It holds the regions it hosts, their ancestors
+  (split and merge parents, restore sources) and those ancestors' other children, with every row
+  about them; their keyspaces and tenants; and the node rows of itself, its co-members and the
+  full nodes. Not the rest of a keyspace split across other nodes: `catalog_scope_region_ids`
+  lists what it holds. It holds no retention ledger; it asks the metadata leader for those rows.
 - **Status.** `meta_mode=scoped`; `catalog_scope=current` (a frame within three idle intervals)
   or `stale`; `catalog_scope_index` is the slice position; `catalog_scope_server` is the full
   node streaming to it; `catalog_scope_error` names the last stream problem. A full node shows

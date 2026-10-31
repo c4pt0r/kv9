@@ -475,6 +475,20 @@ fn execute_inner(
             ))
         }
         Step::Remove => {
+            // A leader cannot remove itself: when the replica moving away is this
+            // group leader, hand leadership to the move's destination (a caught-up
+            // voter by now) first; the new leader takes this step on its next pass.
+            if let Some(source) = f.plan.source() {
+                if source.node == backend.node.id {
+                    let region = f.migration.intent().region();
+                    let destination = f.migration.intent().destination().node;
+                    let r = AdminApi::transfer_leader(backend.as_ref(), CALLER, region, destination)?;
+                    return Ok(format!(
+                        "handed group leadership to node {} before removing this node (term {})",
+                        destination.0, r.term
+                    ));
+                }
+            }
             let r = backend.remove_source_replica(CALLER, root, operation)?;
             Ok(format!(
                 "{} node {}; voters {:?}",
@@ -517,7 +531,8 @@ fn install(
         f.plan.operation(),
         &f.migration.intent().destination().incarnation,
     )?;
-    let ledger = super::checkpoint_retention::RoutedLedger::new(backend, handle);
+    let routed = super::checkpoint_retention::RoutedLedger::new(backend, handle);
+    let ledger = super::checkpoint_retention::ResubmittingLedger::new(&routed);
     let reader = crate::installation_retention::RetainedImages::new(
         uploader,
         &ledger,

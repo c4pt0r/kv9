@@ -7,8 +7,8 @@ whole TASKS history through the metadata Raft group. This packet adds a second m
 node keeps only the **scoped** of the catalog its own replicas need, and is not a member of the
 metadata Raft group at all.
 
-> **Status: implemented 2026-10-30** (increments 1–4 of §8). §10 records what was built and
-> where it departs from the design: the closure is per **keyspace**, not per region, and the
+> **Status: implemented 2026-10-30** (increments 1–4 of §8, and per-region scopes). §10 records
+> what was built and where it departs from the design: lineage is followed upward only, and the
 > retention ledger stays on full nodes. Runbook: docs/OPERATIONS.md, "Scoped nodes".
 
 ## The problem
@@ -57,22 +57,23 @@ rows come from.
 
 The scope is defined by closure, not by a list of tables:
 
-> **S1 — closure (decided 2026-10-30: per keyspace).** For every keyspace K in which the node
-> hosts, is attached to, or is named as a destination, target or child of any region, the scope
-> contains **every** region bound to K and every committed row that references any of them or K,
-> every row those rows reference (creation, migration, capture, keyspace, binding, intent), and
-> every abort, removal, evidence or seal row of the same operations; plus the tenants of those
-> keyspaces, the root, the node's own directory, admission and drain rows, and the directory
-> and admission rows of the full nodes and of every store those rows name. Retention-ledger rows
-> are not in any scope (§10). Nothing global beyond the root and the full nodes' directory rows.
+> **S1 — closure (per region, 2026-10-30).** A node's **anchors** are the regions it hosts,
+> is attached to, or is named as a replica, destination or source of, closed **upward** over
+> lineage: a split's or merge's child brings its parents, a restore target its source range.
+> Its scope holds the anchors and every region a row about an anchor names, **one hop** (a
+> parent's split names both children), and **every** committed row about those regions: their
+> creations, bindings, migrations, captures, evidence, aborts, removals, seals, the intents
+> that name them and the rows those reference. Rows about a whole keyspace (backup and restore
+> intents, backup completions and retirements) are delivered where they touch the scope and
+> never widen it. Plus the keyspaces and tenants of those rows, the root, the node's own
+> directory, admission and drain rows, and the directory and admission rows of the full nodes
+> and of every store those rows name. Retention-ledger rows are not in any scope (§10).
 >
-> *Why per keyspace and not per region:* the readers of data-group state judge a keyspace as a
-> whole — the unsealed ranges of a keyspace must partition it (`committed_ranges`), a backup or
-> restore intent names every range of its keyspace — so a slice holding some of a keyspace's
-> ranges fails those checks or would grow back to the whole keyspace at the first backup.
-> Per-region scopes need those readers to accept a partial keyspace; that is a separate design
-> (§10, "Not yet"). The cost is bounded by the keyspaces a node hosts, not by the cluster
-> (§10, scale table).
+> Lineage is followed up, not down: a region needs its ancestors' history, not its siblings'
+> descendants, so a slice holds a region's ancestor chain and the siblings along it — about
+> 2 × depth + 1 regions — and never a whole keyspace that has been split across nodes.
+> (Between 2026-10-30's first build and this rule the closure was per keyspace; §10 says why
+> that changed.)
 
 S1 is what makes the existing readers safe on a scope. Most catalog readers infer from absence:
 "no abort row ⇒ not aborted", "no evidence ⇒ not installed", "no sealed binding ⇒ live". Absence
@@ -283,8 +284,9 @@ only the changes of its own groups. Today the same cluster sends c × N appends 
   explicitly; no other minimum is enforced.
 - **Name:** `scoped` (`KV9_META_REPLICA=full|scoped`, `node admit --meta scoped`, status line
   `catalog_scope=`); the rows a scoped node holds are its **scope**.
-- **Closure granularity (2026-10-30):** per keyspace (S1), for the reason recorded under S1;
-  per-region scopes are a later, separate design.
+- **Closure granularity (2026-10-30):** per region with upward lineage (S1). A first build was
+  per keyspace; the owner asked for per-region scopes, which the slice-tolerant readers of §10
+  make possible.
 - **Mode selection:** at admission only (`node admit --meta`), recorded in the admission row and
   the data-dir marker; there is no `KV9_META_REPLICA` start switch (a node cannot choose a mode
   the cluster did not admit it in).
@@ -307,18 +309,38 @@ metadata engine's position to the metadata Raft log (committed term, log budget)
 a slice, whose positions come from the stream. Endpoint recovery and catalog waits use the
 slice position (`SliceWatch`) instead of the metadata driver.
 
-**The closure, per keyspace.** Every existing reader of data-group state replays whole families
-of task rows and checks partition rules across a keyspace's bindings (`committed_ranges`: the
-unsealed ranges of a keyspace must cover it). A slice holding only some of a keyspace's ranges
-would fail those checks, so the closure is: every keyspace the node hosts a replica of (or is
-named by a row of: a creation's replica, a migration, evidence or abort destination, a plan or
-removal source, a region-peer row), **all** regions bound to those keyspaces, every task row
-whose subject touches those regions or keyspaces (references followed: a split's children, a
-merge's sides, an abort's target, a backup completion's intent), their tenants, and the node
-rows (directory and admission) of itself, of the full nodes and of every node those rows name.
-`crates/meta/src/scope.rs` (`classify`, `closure`, `route`, `snapshot_rows`) and
-`crates/meta/src/data_groups/subject.rs` (`task_subject`, one decoder per declared kind) are the
-whole rule. Per-region closure (S1 as written) needs slice-tolerant readers and is future work.
+**The closure, per region.** `crates/meta/src/scope.rs` (`classify`, `closure`, `route`,
+`snapshot_rows`) and `crates/meta/src/data_groups/subject.rs` (`task_subject`, one decoder per
+declared kind, with each row's lineage edges and whether it is an umbrella row) are the whole
+rule. The router's widening test (`Closure::widened_by`) is the closure's own growth rule, so a
+snapshot's rows never ask for another snapshot; a unit test checks that fixpoint over every
+committed row of a two-level split tree.
+
+**Readers on a slice.** The subscriber writes a local marker (`\0kv9\0catalog-slice\0`,
+never streamed) with every snapshot, and `MetaTxn::is_slice` tells readers they are on one.
+`committed_ranges` then keeps its per-row rules and the no-overlap rule and drops the
+"unsealed ranges cover the keyspace" rule (a slice has gaps: other nodes' ranges). Every other
+reader was audited: the split and merge planners skip intents whose parents they do not hold
+and always have both children's creations (a delivered intent brings them); backup and restore
+planners act on led and local ranges only and look nothing up for the others; anchors,
+completions, retirements and restore evidence are always delivered with their intents; the
+request gate answers a key in a gap with a redirect. The first per-keyspace build is why S1 was
+once per keyspace: those readers judged whole keyspaces.
+
+**Per-region scopes, measured** (`scripts/meta-scoped-tree.sh`): one keyspace split into a
+balanced tree, every leaf moved onto its own triple of scoped nodes (moves run in parallel).
+
+| Leaves | Depth | Regions in the keyspace | Regions per leaf host (2 × depth + 1) | Rows per leaf host | Full catalog keys |
+| --- | --- | --- | --- | --- | --- |
+| 8 | 3 | 15 | 7 | 98 | 3 731 |
+| 16 | 4 | 31 | 9 | 109 | 7 790 |
+
+The e2e's phase J2 checks the same rule on a smaller tree with backup, restore and drain
+afterwards. Two move-plan defects surfaced while placing leaves and are fixed: a group leader
+moving off itself now hands leadership to the destination before the removal ("a leader cannot
+remove itself"), and a destination's install resubmits a ledger request whose outcome came back
+unknown (`ResubmittingLedger`), because each failed attempt spends one of the eight retained
+install generations for good.
 
 **What stays on full nodes.** The retention ledger (`\0kv9\0retention_v1\0…`), the task-history
 stamp, id sequences, SST and quota rows, the metadata group's own manifest keys, engine-owned
@@ -419,5 +441,5 @@ flight. A full node publishes `catalog_scope_subscribers=node:index:ms,…`, and
 --full-only` asks only the full nodes and judges every scoped slice from those tables (a node no
 full node streams to, or one silent for 10 s, is `fail`).
 
-**Not yet.** Per-region scopes (S1, see the decision there).
+**Not yet.** Nothing from §7/§8 remains open; scopes are per region (S1).
 

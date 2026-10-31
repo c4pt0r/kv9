@@ -39,8 +39,8 @@ The implementation's sources are pinned in `source-contract.json`; the prover re
 | Model | Rust |
 | --- | --- |
 | `Row.declared` | `kv9_meta::scope::classify` returning `Some(_)`; `task_subject` for TASKS rows over `DECLARED_KINDS` |
-| `Row.regions`, `relevant scope r` | `kv9_meta::scope::route` against a `Closure` (per keyspace, `closure`); `Route::Deliver` |
-| `enter s q` with its closure | a widening op returns `Route::Resnapshot`: the server sends a whole snapshot at the current position (`catalog_scope/serve.rs`), which `snapshot_rows` computes with the same `route` |
+| `Row.regions`, `relevant scope r` | `kv9_meta::scope::route` against a `Closure` (per region: anchors closed up the lineage plus one hop, `closure`); `Route::Deliver` |
+| `enter s q` with its closure | a widening op (`Closure::widened_by`, the closure's own growth rule) returns `Route::Resnapshot`: the server sends a whole snapshot at the current position (`catalog_scope/serve.rs`), which `snapshot_rows` computes with the same `route`; the fixpoint is unit-tested over every committed row |
 | `leave s q` | a row that stops routing (or a delete of a held key) is sent as a delete; a snapshot replaces the slice |
 | `deliver s at r` only at its position | `catalog_scope/subscribe.rs`: a delta applies iff its `prev` is the slice position; a snapshot older than the slice is refused |
 | positions monotonic | `write_applied` refuses a non-advancing position; a same-position snapshot rewrites without moving it |

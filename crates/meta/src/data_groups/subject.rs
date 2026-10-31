@@ -22,6 +22,16 @@ pub struct TaskSubject {
     pub backup_operation: Option<[u8; 16]>,
     /// A node drain: about that node alone.
     pub drain: Option<NodeId>,
+    /// Lineage: the creation tasks of the regions this row derives from `parents`
+    /// (a split's children, a merge's child, a restore target), and the parents.
+    pub child_creations: Vec<u64>,
+    pub parents: Vec<RegionId>,
+    /// Lineage given directly as `(child, parent)` regions (a restore's targets).
+    pub edges: Vec<(RegionId, RegionId)>,
+    /// A row about a whole keyspace's ranges (backup and restore intents, backup
+    /// completions and retirements): delivered where it touches a scope, never a
+    /// reason to widen one.
+    pub umbrella: bool,
 }
 
 /// Every task kind this module declares (the totality test checks production
@@ -119,6 +129,8 @@ pub fn task_subject(value: &RowValue) -> Result<Option<TaskSubject>> {
             let i = split::SplitIntent::decode(bytes)?;
             s.regions.push(i.parent_region());
             s.refs.extend([i.parent_bind_task(), i.child_low(), i.child_high()]);
+            s.child_creations.extend([i.child_low(), i.child_high()]);
+            s.parents.push(i.parent_region());
         }
         114 => {
             let e = split_evidence::SplitEvidence::decode(bytes)?;
@@ -128,6 +140,8 @@ pub fn task_subject(value: &RowValue) -> Result<Option<TaskSubject>> {
             let m = merge::MergeIntent::decode(bytes)?;
             s.regions.extend([m.low_region(), m.high_region()]);
             s.refs.extend([m.low_bind_task(), m.high_bind_task(), m.child()]);
+            s.child_creations.push(m.child());
+            s.parents.extend([m.low_region(), m.high_region()]);
         }
         116 => {
             let e = merge::MergeEvidence::decode(bytes)?;
@@ -143,6 +157,7 @@ pub fn task_subject(value: &RowValue) -> Result<Option<TaskSubject>> {
         }
         119 => {
             let b = backup::BackupIntent::decode(bytes)?;
+            s.umbrella = true;
             s.keyspaces.push(b.keyspace().0 as u64);
             s.tenants.push(b.tenant().0);
             for range in b.ranges() {
@@ -157,13 +172,17 @@ pub fn task_subject(value: &RowValue) -> Result<Option<TaskSubject>> {
         121 => {
             let r = backup::BackupRetirement::decode(bytes)?;
             s.backup_operation = Some(r.operation());
+            s.umbrella = true;
         }
         122 => {
             let c = backup::BackupCompletion::decode(bytes)?;
             s.backup_operation = Some(c.operation());
+            s.umbrella = true;
         }
         123 => {
             let r = restore::RestoreIntent::decode(bytes)?;
+            s.umbrella = true;
+            s.edges.extend(r.targets().iter().map(|t| (t.region(), t.source_region())));
             s.keyspaces.push(r.keyspace().0 as u64);
             s.tenants.push(r.tenant().0);
             s.refs.push(r.backup_task());
@@ -176,6 +195,8 @@ pub fn task_subject(value: &RowValue) -> Result<Option<TaskSubject>> {
             let e = restore::RestoreEvidence::decode(bytes)?;
             s.regions.push(e.source_region());
             s.refs.push(e.target_task());
+            s.child_creations.push(e.target_task());
+            s.parents.push(e.source_region());
         }
         _ => unreachable!("declared kinds are matched above"),
     }
@@ -199,6 +220,7 @@ mod tests {
     use super::super::tests::fixture;
     use super::*;
     use crate::scope::{classify, closure, route, snapshot_rows, Resolver, Route, ALL_END, ALL_START};
+    use std::collections::BTreeSet;
     use crate::schema::{NODES_DESC, TENANTS_DESC};
     use kv9_common::TenantId;
     use kv9_engine::{Engine, MemEngine};
@@ -328,5 +350,96 @@ mod tests {
         // An undeclared raw key stops the stream.
         assert_eq!(route(&c4, &mut resolver, b"\0kv9\0something-new\0", Some(b"x")).unwrap(), Route::Undeclared);
         let _ = a;
+    }
+
+    /// Split `region` at `key` under `operation` and publish it (both evidence rows).
+    fn split_published(
+        store: &MetaStore<MemEngine>,
+        operation: [u8; 16],
+        region: RegionId,
+        key: &[u8],
+    ) -> (CreationIntent, CreationIntent) {
+        let mut txn = store.begin().unwrap();
+        let (intent, low, high, _) = split::plan_split(&mut txn, operation, region, key).unwrap();
+        txn.commit().unwrap();
+        for child in [low.task(), high.task()] {
+            let receipt = split_evidence::SplitEvidence::receipt(
+                &intent,
+                child,
+                RootDigest::sha256(&child.to_be_bytes()),
+                1,
+            )
+            .unwrap();
+            let mut txn = store.begin().unwrap();
+            split_evidence::plan_split_evidence(&mut txn, &receipt).unwrap();
+            txn.commit().unwrap();
+        }
+        let mut txn = store.begin().unwrap();
+        split::plan_split_publication(&mut txn, operation).unwrap();
+        txn.commit().unwrap();
+        (low, high)
+    }
+
+    #[test]
+    fn a_region_scope_holds_its_ancestors_and_their_siblings_not_the_keyspace() {
+        // One keyspace on nodes 1-3: P splits into L and H, L splits into LL and LH.
+        let store = fixture();
+        let mut txn = store.begin().unwrap();
+        add_tenant(&mut txn, 1);
+        add_node(&mut txn, 9);
+        let p = plan_empty_group(&mut txn, [51; 16], &[NodeId(1), NodeId(2), NodeId(3)]).unwrap();
+        txn.commit().unwrap();
+        let mut txn = store.begin().unwrap();
+        ranges::plan_keyspace(&mut txn, p.root(), p.task(), "tree", TenantId(1)).unwrap();
+        txn.commit().unwrap();
+        let (l, h) = split_published(&store, [52; 16], p.region(), b"m");
+        let (ll, lh) = split_published(&store, [53; 16], l.region(), b"f");
+        // Node 9 hosts H alone (a region-peer row, as a moved replica would show).
+        let mut txn = store.begin().unwrap();
+        let mut peer = RowValue::new();
+        peer.set(ColumnId(1), ColumnValue::Uint(h.region().0));
+        peer.set(ColumnId(2), ColumnValue::Uint(9));
+        peer.set(ColumnId(3), ColumnValue::Uint(1));
+        txn.insert(
+            &crate::schema::REGION_PEERS_DESC,
+            &[memcmp_uint(h.region().0), memcmp_uint(9)],
+            peer,
+        )
+        .unwrap();
+        txn.commit().unwrap();
+
+        let view = store.engine().snapshot().unwrap();
+        let c9 = closure(view.as_ref(), 9, &[1, 2, 3]).unwrap();
+        let ids = |v: &[&CreationIntent]| v.iter().map(|c| c.region().0).collect::<BTreeSet<_>>();
+        assert_eq!(c9.anchors, ids(&[&h, &p]), "H and its parent");
+        assert_eq!(c9.regions, ids(&[&h, &p, &l]), "plus the parent's other child, one hop");
+        // Nothing of the sibling's own subtree reaches node 9.
+        let rows = snapshot_rows(view.as_ref(), &c9).unwrap();
+        let mut resolver = Resolver::new(view.as_ref());
+        for (key, value) in &rows {
+            if let Some(crate::scope::RowClass::Task(s)) = classify(key, Some(value)).unwrap() {
+                let r = resolver.resolve(&s).unwrap();
+                assert!(
+                    !r.regions.contains(&ll.region().0) && !r.regions.contains(&lh.region().0),
+                    "a row of L's subtree reached node 9: kind {}",
+                    s.kind
+                );
+            }
+        }
+        // A node on every region holds the whole tree.
+        let c1 = closure(view.as_ref(), 1, &[1, 2, 3]).unwrap();
+        assert_eq!(c1.regions, ids(&[&p, &l, &h, &ll, &lh]));
+        // The snapshot is a fixpoint: none of its rows asks for another snapshot, and
+        // L's split (outside node 9's regions) is skipped, not a reason to widen.
+        let mut resolver = Resolver::new(view.as_ref());
+        for (key, value) in &rows {
+            assert_ne!(route(&c9, &mut resolver, key, Some(value)).unwrap(), Route::Resnapshot);
+        }
+        crate::scope::for_each(view.as_ref(), crate::scope::ALL_START, crate::scope::ALL_END, |key, value| {
+            let route = route(&c9, &mut resolver, key, Some(value)).unwrap();
+            assert_ne!(route, Route::Resnapshot, "a committed row widens a fixpoint closure");
+            Ok(())
+        })
+        .unwrap();
     }
 }
